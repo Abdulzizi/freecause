@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Petition;
 
-class CategoryPetitionController extends Controller
+class PetitionController extends Controller
 {
-    public function index(string $locale, string $categorySlug, Category $category)
+    public function index(string $locale)
     {
-        if ($category->slug !== $categorySlug) {
-            return redirect()->to(url("/{$locale}/petitions/category-{$category->slug}-{$category->id}"));
-        }
-
         $petitions = Petition::query()
             ->where('locale', $locale)
             ->where('status', 'published')
@@ -21,9 +16,8 @@ class CategoryPetitionController extends Controller
             ->withQueryString();
 
         return view('pages.petitions-list', [
-            'pageTitle' => $category->name,
-            'heading' => "{$category->name} Petitions",
-            'category' => $category,
+            'pageTitle' => 'All the petitions',
+            'heading' => 'Petitions',
             'petitions' => $petitions,
             'petitionTitle' => fn($p) => $p->title,
             'petitionUrl' => fn($p) => url("/{$locale}/petition/{$p->slug}/{$p->id}"),

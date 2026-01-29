@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PetitionController;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', 'en|fr|it');
@@ -24,20 +25,11 @@ Route::group([
         return view('petition.demo_show', compact('locale', 'slug', 'id'));
     });
 
-    Route::get('/petitions', function () {
-        return view('pages.petitions');
-    });
+    Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
 
     Route::get('/faqs', function () {
         return view('pages.faq');
     });
 
-
-    Route::get(
-        '/petitions/category-{categorySlug}-{category}',
-        [CategoryPetitionController::class, 'index']
-    )->where([
-        'categorySlug' => '[a-z0-9\-]+',
-        'category' => '[0-9]+',
-    ])->name('petitions.byCategory');
+    Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])->where(['categorySlug' => '[a-z0-9\-]+', 'category' => '[0-9]+',])->name('petitions.byCategory');
 });
