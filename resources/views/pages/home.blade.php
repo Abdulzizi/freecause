@@ -13,17 +13,17 @@
 @endphp
 
 @php
-  $demoPetitionUrl = url('/' . app()->getLocale() . '/petition/stop-using-plastics-in-our-oceans/75241');
+    $demoPetitionUrl = url('/' . app()->getLocale() . '/petition/stop-using-plastics-in-our-oceans/75241');
 @endphp
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#slider .row a").hover(
-                function() {
+                function () {
                     $(this).find(".popup").slideDown("fast");
                 },
-                function() {
+                function () {
                     $(this).find(".popup").slideUp("fast");
                 }
             );
@@ -120,8 +120,10 @@
                                                                 laws, better enforcement, and increased awareness to end
                                                                 this injustice once and for all.</p>
                                                         </div>
-                                                        {{-- <a href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}">read more</a> --}}
-                                                    <a href="{{ $demoPetitionUrl }}">read more</a>
+                                                        {{-- <a
+                                                            href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}">read
+                                                            more</a> --}}
+                                                        <a href="{{ $demoPetitionUrl }}">read more</a>
                                                     </div>
 
                                                     @php
@@ -142,7 +144,9 @@
                                                     </div>
 
                                                     <a href="{{ $demoPetitionUrl }}" class="btn btn-danger">read more</a>
-                                                    {{-- <a href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}" class="btn btn-primary">read more</a> --}}
+                                                    {{-- <a
+                                                        href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}"
+                                                        class="btn btn-primary">read more</a> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -351,13 +355,13 @@
             </div>
 
             <div class="row category-row">
-                @foreach ($categories as $name)
-                    <div class="col-lg-3 col-sm-6 mb-3">
-                        <a href="#" class="category-card d-block">
-                            <span class="category-icon"><i class="bi bi-house-check"></i></span>
-                            <h3 class="h5">{{ $name }}</h3>
-                        </a>
-                    </div>
+                @foreach ($categories as $cat)
+                            <div class="col-lg-3 col-sm-6 mb-3">
+                                <a href="{{ url(app()->getLocale() . '/petitions/' . 'category-' . $cat->slug . '-' . $cat->id) }}" class="category-card d-block">
+                                    <span class="category-icon"><i class="bi bi-house-check"></i></span>
+                                    <h3 class="h5">{{ $cat->name }}</h3>
+                                </a>
+                            </div>
                 @endforeach
             </div>
         </div>
