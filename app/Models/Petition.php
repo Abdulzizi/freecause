@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PetitionModel extends Model
+class Petition extends Model
 {
     protected $fillable = [
         'user_id',

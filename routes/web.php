@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+
+Route::pattern('locale', 'en|fr|it');
 
 Route::redirect('/', '/en');
 
@@ -8,6 +11,10 @@ Route::group([
     'prefix' => '{locale}',
     'middleware' => 'setLocale'
 ], function () {
+
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::get('/', function () {
         return view('pages.home', [

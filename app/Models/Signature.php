@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SignatureModel extends Model
+class Signature extends Model
 {
     protected $fillable = [
         'petition_id',
@@ -15,7 +15,7 @@ class SignatureModel extends Model
 
     public function petition()
     {
-        return $this->belongsTo(PetitionModel::class);
+        return $this->belongsTo(Petition::class);
     }
 
     public function user()

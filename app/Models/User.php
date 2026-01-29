@@ -20,11 +20,11 @@ class User extends Authenticatable
 
     public function petitions()
     {
-        return $this->hasMany(PetitionModel::class);
+        return $this->hasMany(Petition::class);
     }
 
     public function signatures()
     {
-        return $this->hasMany(SignatureModel::class);
+        return $this->hasMany(Signature::class);
     }
 }
