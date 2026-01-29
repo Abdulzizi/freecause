@@ -1,0 +1,204 @@
+#header2 {
+	overflow:hidden; clear:both; font-family:Roboto,sans-serif;
+	
+	& .header-wrap {
+		height: 90px;
+		display: flex;
+		justify-content: space-around;
+		gap: 20px;
+		align-items: center;
+		
+		@include large-desktop {
+			justify-content: space-between;
+		}
+		
+		& a {
+			color: #3a3c4d;
+			text-decoration: none;
+			font-size: 20px;
+			display: block;
+			line-height: 30px;
+			text-align: center;
+			height: 30px;
+			
+			@include tablet {
+				line-height: 26px;
+				height: auto;
+				text-align: left;
+			}
+			
+			& span {
+				color:var(--color);
+			}
+			
+			& br {
+				display: none;
+				
+				@include tablet {
+					display:initial;
+				}
+			}
+		}
+
+		& .header-explore,
+		& .header-magazine,
+		& .header-search,
+		& .header-faq,
+		& .header-user {
+			display: none;
+	
+			@include desktop {
+				display: block;
+			}
+		}
+
+		& .header-country-switcher {
+			box-sizing: border-box;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			margin-right: 80px;
+			padding: 0 10px;
+			height: 100%;
+			
+			&.clicked {
+				/*border-top: 2px solid var(--color);
+				border-bottom: 2px solid var(--color);*/
+				background: rgb(230,168,168);
+				background: radial-gradient(circle, rgba(230,168,168,1) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%);
+			}
+			
+			@include tablet {
+				margin-right: 0;
+			}
+			
+			/* https://codepen.io/vandervals/pen/RJxrpr */
+			& img {
+				/* filter: invert(0.83) sepia(1) hue-rotate(310deg) saturate(1000%); */
+				width: 32px;
+				height: auto;
+			}
+		}
+
+	} // & .header-wrap
+
+	& .logo {
+		& a {
+			display: block;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+		}
+		
+		& img {
+			display: block;
+			max-width: 100%;
+			width: auto;
+		}
+	}
+		
+	& .header-country-list {
+		// starts hidden
+		display: none;
+		
+		// tabbed list of countries to pick from
+		& ul {
+			display: flex;
+			flex-flow: row wrap;
+			gap: 5px;
+			justify-content: center;
+			margin: 5px 0;
+			
+			& li {
+				
+				& a {
+					display: flex;
+					flex-direction: row;
+					flex-flow: nowrap;
+					gap: 4px;
+					justify-content: center;
+					
+					padding: 5px;
+					text-decoration: none;
+					border: 1px solid var(--color-light);
+					border-radius: 4px;
+					
+					&:hover {
+						border-color: var(--color);
+						background-color: var(--color);
+						color: white;
+					}
+					
+					& img {
+						width: 16px;
+						height: auto;
+					}
+				}
+			}
+		}
+	}
+}
+#header2 #boxsearch2 { display:inline-block; padding-top:25px; }
+#header2 #boxsearch2 input { float:left; }
+#header2 #boxsearch2 input[type="text"] {
+	font-size:16px; font-family:Roboto,Arial,sans-serif; color:#959595;
+	border:1px solid #cccccc; height:38px; line-height:38px; margin-right:4px; text-indent:10px; width:200px; border-radius:5px;
+}
+#header2 #boxsearch2 input[type="image"] { border:1px solid #959595; border-radius:5px; }
+/* Large Devices, Wide Screens */
+@media (min-width:1190px) { /* screen width > 1200 */
+	#header2 #boxsearch2 { margin:34px 0 0 0; padding:0; }
+	#header2 #boxsearch2 input[type="text"] { background:transparent url("./images/search-submit2.png") center left no-repeat; text-indent:40px; }
+	#header2 #boxsearch2 input[type="image"] { display:none; }
+}
+
+ul#menu { position:fixed; right:20px; top:20px; margin:0; }
+ul#menu li.cat-parent {
+	background: #eee;
+	padding: 7px;
+	float: right;
+	border: 1px solid;
+	cursor: pointer;
+}
+
+ul#menu li.cat-parent img {
+	margin: 0;
+	float: right;
+	max-width: 23px;
+}
+
+ul.children li a:hover, ul.children li a:focus {
+	background: #6e818a;
+}
+
+ul.children li a {
+	display: block;
+	padding: 14px 13px;
+	text-decoration: none;
+	width: 130px;
+	box-sizing: border-box;
+	background: #a70000;
+	color: #fff;
+	border-bottom: 1px solid;
+	transition: all 0.5s ease-in-out;
+}
+
+ul.children li {
+	display: block;
+}
+
+ul.children {
+	position: absolute;
+	transition: all 0.5s ease-in-out;
+	right: 0;
+	top: -450px;
+	width: 130px;
+}
+
+ul.children.shaded {
+	top: 45px;
+}
+@media screen and (min-width:992px) {
+	ul#menu { display:none; }
+}

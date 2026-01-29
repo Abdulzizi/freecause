@@ -1,0 +1,16 @@
+.pagebar {
+	margin-top: 20px;
+}
+
+.pagebar a {
+	display: inline-block;
+	text-decoration: none;
+	background-color: var(--light-gray);
+	border-radius: 5px;
+	padding: 5px 8px;
+}
+
+.pagebar a.current-page {
+	border-top: 2px solid var(--color);
+	border-bottom: 2px solid var(--color);
+}
