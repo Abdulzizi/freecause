@@ -16,6 +16,7 @@ class CategoryPetitionController extends Controller
         $petitions = Petition::query()
             ->where('locale', $locale)
             ->where('status', 'published')
+            ->where('category_id', $category->id)
             ->latest()
             ->paginate(15)
             ->withQueryString();

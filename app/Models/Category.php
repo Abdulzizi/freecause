@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     protected $fillable = ['name', 'slug', 'is_active', 'sort_order'];
+
+    public function petitions()
+    {
+        return $this->hasMany(Petition::class);
+    }
 }
