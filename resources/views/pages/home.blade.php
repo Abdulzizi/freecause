@@ -13,6 +13,16 @@
 @endphp
 
 @php
+    $featuredUrl = $featuredPetition
+        ? lroute('petition.show', ['slug' => $featuredPetition->slug, 'id' => $featuredPetition->id])
+        : lroute('petitions.index');
+
+    $signatures = $featuredPetition?->signature_count ?? 0;
+    $goal = $featuredPetition?->goal_signatures ?? 100;
+    $progress = $goal > 0 ? min(100, ($signatures / $goal) * 100) : 0;
+@endphp
+
+@php
     $demoPetitionUrl = url('/' . app()->getLocale() . '/petition/stop-using-plastics-in-our-oceans/75241');
 @endphp
 

@@ -23,4 +23,19 @@ class PetitionController extends Controller
             'petitionUrl' => fn($p) => url("/{$locale}/petition/{$p->slug}/{$p->id}"),
         ]);
     }
+
+    public function show(string $locale, string $slug, int $id)
+    {
+        $petition = Petition::query()
+            ->where('id', $id)
+            ->where('locale', $locale)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        if ($petition->slug !== $slug) {
+            return redirect()->to(lroute('petition.show', ['slug' => $petition->slug, 'id' => $petition->id]));
+        }
+
+        return view('petition.show', compact('petition'));
+    }
 }

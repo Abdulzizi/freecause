@@ -14,7 +14,6 @@ return new class extends Migration
             $table->foreignId('petition_id')
                 ->constrained()
                 ->cascadeOnDelete();
-
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained()
@@ -22,16 +21,15 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('email')->nullable();
+            $table->string('locale', 5)->default('en');
 
             $table->timestamps();
 
-            // prevent duplicate signing:
-            // - logged-in users: unique per petition
-            // - anonymous users: unique per email per petition
             $table->unique(['petition_id', 'user_id']);
             $table->unique(['petition_id', 'email']);
 
-            $table->index('created_at');
+            $table->index(['locale', 'created_at']);
+            $table->index(['email']);
         });
     }
 

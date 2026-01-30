@@ -4,10 +4,6 @@
         'en' => ['United States', 'en_US.png'],
         'fr' => ['France', 'fr_FR.png'],
         'it' => ['Italia', 'it_IT.png'],
-        'es' => ['España', 'es_ES.png'],
-        'de' => ['Deutschland', 'de_DE.png'],
-        'pt' => ['Portugal', 'pt_PT.png'],
-        'nl' => ['Nederland', 'nl_NL.png'],
     ];
 
     $locale = app()->getLocale();

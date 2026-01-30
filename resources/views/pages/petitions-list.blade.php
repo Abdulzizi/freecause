@@ -6,11 +6,11 @@
     <section class="py-5">
         <div class="container">
 
-            <div class="mb-4">
+            {{-- <div class="mb-4">
                 <h1 class="mb-2" style="font-size:24px;font-weight:600;">
                     {{ $heading ?? ($pageTitle ?? 'Petitions') }}
                 </h1>
-            </div>
+            </div> --}}
 
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
 

@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
 
-            // useful for your /{locale} routing + future UX
             $table->string('locale', 5)->default('en');
 
             $table->rememberToken();

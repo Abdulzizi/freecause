@@ -1,17 +1,34 @@
 <?php
 
-if (! function_exists('locale_url')) {
-    function locale_url(string $locale): string
-    {
-        $segments = request()->segments();
+use Illuminate\Support\Facades\Route;
 
-        // replace first segment (locale)
-        if (isset($segments[0])) {
-            $segments[0] = $locale;
-        } else {
-            array_unshift($segments, $locale);
+if (! function_exists('lroute')) {
+    function lroute(string $name, array $params = [], bool $absolute = true): string
+    {
+        $params = array_merge(['locale' => app()->getLocale()], $params);
+
+        return route($name, $params, $absolute);
+    }
+}
+
+if (! function_exists('locale_url')) {
+    function locale_url(string $newLocale): string
+    {
+        $route = Route::current();
+        $routeName = $route?->getName();
+
+        // fallback: go to home if route is unnamed
+        if (! $routeName) {
+            return url("/{$newLocale}");
         }
 
-        return '/' . implode('/', $segments);
+        // keep current route params, replace locale
+        $params = $route->parameters();
+        $params['locale'] = $newLocale;
+
+        // keep query string (?page=2 etc)
+        return route($routeName, $params) . (request()->getQueryString()
+            ? '?' . request()->getQueryString()
+            : '');
     }
 }
