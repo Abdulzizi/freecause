@@ -19,7 +19,7 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-    Route::get('/', HomeController::class)->name('home');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/petition/{slug}/{id}', function ($locale, $slug, $id) {
         return view('petition.demo_show', compact('locale', 'slug', 'id'));

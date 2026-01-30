@@ -3,10 +3,8 @@
 @section('title', 'Freecause - Online Petition')
 
 @php
-    // static random class like production (pic0..pic13)
     $picClass = 'pic' . random_int(0, 13);
 
-    // milestone static text
     $h1 = 'Change the World';
     $h2 =
         'Welcome to <span class="red">FreeCause - Online Petition</span>, the ultimate spot to kick off your online petition—let’s make some waves!';
@@ -26,21 +24,6 @@
     $demoPetitionUrl = url('/' . app()->getLocale() . '/petition/stop-using-plastics-in-our-oceans/75241');
 @endphp
 
-@push('scripts')
-    <script>
-        $(document).ready(function () {
-            $("#slider .row a").hover(
-                function () {
-                    $(this).find(".popup").slideDown("fast");
-                },
-                function () {
-                    $(this).find(".popup").slideUp("fast");
-                }
-            );
-        });
-    </script>
-@endpush
-
 @section('content')
     <section id="welcomes" class="main-banner {{ $picClass }}">
         <div class="container">
@@ -56,21 +39,6 @@
                                 class="btn btn-primary banner-btn-links">
                                 Create Petition
                             </a>
-                        </div>
-
-                        {{-- static country ui (no backend yet) --}}
-                        <p class="current-country d-flex align-items-center">
-                            <i class="fa fa-globe pe-2 red fs-20"></i>
-                            <span class="pe-2">Current country :</span>
-                            <strong><a href="#" id="countrybutton">United States</a></strong>
-                        </p>
-
-                        <div id="boxcountries" style="display:none;">
-                            <ul>
-                                <li class="selected"><a href="#">United States</a></li>
-                                <li><a href="#">France</a></li>
-                                <li><a href="#">Italy</a></li>
-                            </ul>
                         </div>
 
                     </div>
@@ -100,7 +68,7 @@
                         </ul>
 
                         <div class="tab-content" id="myTabContent">
-                            {{-- Featured --}}
+                            {{-- featured --}}
                             <div class="tab-pane fade show active" id="featured-petition-tab-pane" role="tabpanel">
                                 <div class="tab-card-content">
                                     <div class="row featured-row">
@@ -114,33 +82,28 @@
                                                             <img src="{{ asset('legacy/images/demo-featured.jpg') }}"
                                                                 class="img-fluid" alt="Featured" />
                                                         </div>
-                                                        <div class="col-sm-6 mb-4">
-                                                            <h5>End Child Labor: Enforce Stronger Global Regulations</h5>
-                                                            <p><strong>Petition target:</strong> Government of India</p>
-                                                            <p>Child labor is one of the greatest human rights violations of
-                                                                our time. Millions of children around the world are forced
-                                                                to work in hazardous conditions, depriving them of their
-                                                                childhood, education, and basic rights. This petition calls
-                                                                on the Government of India to enforce stricter regulations
-                                                                and ensure that children are protected from exploitation.
-                                                            </p>
-                                                            <p>By signing this petition, you are taking a stand against
-                                                                child labor and advocating for a brighter future for
-                                                                children everywhere. Together, we can push for stronger
-                                                                laws, better enforcement, and increased awareness to end
-                                                                this injustice once and for all.</p>
-                                                        </div>
-                                                        {{-- <a
-                                                            href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}">read
-                                                            more</a> --}}
-                                                        <a href="{{ $demoPetitionUrl }}">read more</a>
-                                                    </div>
 
-                                                    @php
-                                                        $signatures = 12500;
-                                                        $goal = 25000;
-                                                        $progress = ($signatures / $goal) * 100;
-                                                    @endphp
+                                                        <div class="col-sm-6 mb-4">
+                                                            @if ($featuredPetition)
+                                                                <h5>{{ $featuredPetition->title }}</h5>
+
+                                                                <p>
+                                                                    <strong>Petition target:</strong>
+                                                                    {{ $featuredPetition->target ?? '-' }}
+                                                                </p>
+
+                                                                <p>
+                                                                    {{ \Illuminate\Support\Str::limit($featuredPetition->description ?? '', 600) }}
+                                                                </p>
+                                                            @else
+                                                                <h5>no featured petition yet</h5>
+                                                                <p class="text-muted mb-0">no petitions yet for this locale
+                                                                </p>
+                                                            @endif
+                                                        </div>
+
+                                                        <a href="{{ $featuredUrl }}">read more</a>
+                                                    </div>
 
                                                     <div class="goal-progress mb-3">
                                                         <div class="progress mb-2">
@@ -153,147 +116,67 @@
                                                         </div>
                                                     </div>
 
-                                                    <a href="{{ $demoPetitionUrl }}" class="btn btn-danger">read more</a>
-                                                    {{-- <a
-                                                        href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}"
-                                                        class="btn btn-primary">read more</a> --}}
+                                                    <a href="{{ $featuredUrl }}" class="btn btn-danger">read more</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
-                            {{-- Recent activities --}}
+                            {{-- recent activities --}}
                             <div class="tab-pane fade" id="recent-activities-tab-pane" role="tabpanel">
                                 <div class="tab-card-content">
                                     <div class="row recent-activities-row">
                                         <div class="col-md-12">
                                             <div class="most-grid">
                                                 <ul class="recent-activities most-listing">
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">John D.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">2 hours ago</span>
-                                                            </div>
-                                                            <p class="fs-14">End Child Labor: Enforce Stronger Global
-                                                                Regulations</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Maria S.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">Yesterday</span>
-                                                            </div>
-                                                            <p class="fs-14">Protect Local Wildlife Habitats</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Alex T.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">3 days ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Support Renewable Energy Initiatives</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Emily R.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">1 week ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Ban Single-Use Plastics</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Michael
-                                                                        B.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">2 weeks ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Improve Access to Clean Drinking Water</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Sophia L.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">3 weeks ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Promote Equal Education Opportunities</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Liam W.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">1 month ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Save Endangered Rainforests</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Olivia K.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">1 month ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Advocate for Mental Health Awareness</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Noah J.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">2 months ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Reduce Carbon Emissions Globally</p>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#">
-                                                            <div
-                                                                class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                <p class="fs-14"><span class="user-name">Emma P.</span>
-                                                                    <strong>has signed</strong>
-                                                                </p>
-                                                                <span class="red fs-14">3 months ago</span>
-                                                            </div>
-                                                            <p class="fs-14">Ensure Fair Wages for All Workers</p>
-                                                        </a>
-                                                    </li>
+                                                    @forelse($recentActivities as $sig)
+                                                        @php
+                                                            $p = $sig->petition;
+                                                            $url = $p
+                                                                ? lroute('petition.show', [
+                                                                    'slug' => $p->slug,
+                                                                    'id' => $p->id,
+                                                                ])
+                                                                : '#';
+
+                                                            $name = trim((string) ($sig->name ?? 'someone'));
+                                                            $nameParts = preg_split(
+                                                                '/\s+/',
+                                                                $name,
+                                                                -1,
+                                                                PREG_SPLIT_NO_EMPTY,
+                                                            );
+                                                            $prettyName =
+                                                                count($nameParts) >= 2
+                                                                    ? $nameParts[0] .
+                                                                        ' ' .
+                                                                        strtoupper(mb_substr($nameParts[1], 0, 1)) .
+                                                                        '.'
+                                                                    : $name;
+                                                        @endphp
+
+                                                        <li>
+                                                            <a href="{{ $url }}">
+                                                                <div
+                                                                    class="d-flex justify-content-between recent-activities-times mb-1">
+                                                                    <p class="fs-14">
+                                                                        <span class="user-name">{{ $prettyName }}</span>
+                                                                        <strong>has signed</strong>
+                                                                    </p>
+                                                                    <span
+                                                                        class="red fs-14">{{ optional($sig->created_at)->diffForHumans() }}</span>
+                                                                </div>
+
+                                                                <p class="fs-14">{{ $p?->title ?? 'petition' }}</p>
+                                                            </a>
+                                                        </li>
+                                                    @empty
+                                                        <li>
+                                                            <div class="text-muted p-2">no recent activity yet</div>
+                                                        </li>
+                                                    @endforelse
                                                 </ul>
                                             </div>
                                         </div>
@@ -366,12 +249,13 @@
 
             <div class="row category-row">
                 @foreach ($categories as $cat)
-                            <div class="col-lg-3 col-sm-6 mb-3">
-                                <a href="{{ url(app()->getLocale() . '/petitions/' . 'category-' . $cat->slug . '-' . $cat->id) }}" class="category-card d-block">
-                                    <span class="category-icon"><i class="bi bi-house-check"></i></span>
-                                    <h3 class="h5">{{ $cat->name }}</h3>
-                                </a>
-                            </div>
+                    <div class="col-lg-3 col-sm-6 mb-3">
+                        <a href="{{ url(app()->getLocale() . '/petitions/' . 'category-' . $cat->slug . '-' . $cat->id) }}"
+                            class="category-card d-block">
+                            <span class="category-icon"><i class="bi bi-house-check"></i></span>
+                            <h3 class="h5">{{ $cat->name }}</h3>
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -402,3 +286,18 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#slider .row a").hover(
+                function() {
+                    $(this).find(".popup").slideDown("fast");
+                },
+                function() {
+                    $(this).find(".popup").slideUp("fast");
+                }
+            );
+        });
+    </script>
+@endpush
