@@ -79,7 +79,7 @@
 
                                                     <div class="row featured-box-inner">
                                                         <div class="col-sm-6 mb-4">
-                                                            <img src="{{ asset('legacy/images/demo-featured.jpg') }}"
+                                                            <img src="{{ $featuredPetition?->coverUrl() }}"
                                                                 class="img-fluid" alt="Featured" />
                                                         </div>
 

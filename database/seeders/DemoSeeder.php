@@ -16,6 +16,7 @@ class DemoSeeder extends Seeder
         $petitionsPerLocale = (int) env('SEED_PETITIONS', 2000);
         $minSign = (int) env('SEED_SIG_MIN', 5);
         $maxSign = (int) env('SEED_SIG_MAX', 200);
+        $signatureBatchSize = (int) env('SEED_SIG_BATCH', 5000);
 
         $categories = Category::query()->where('is_active', true)->get();
         if ($categories->isEmpty()) $categories = Category::query()->get();
@@ -25,34 +26,34 @@ class DemoSeeder extends Seeder
             ['name' => 'Demo User', 'password' => bcrypt('password'), 'locale' => 'en']
         );
 
-        $petitionsPerLocale = 2000;   // 2000 x 3 = 6000 petitions
-        $minSign = 2;                 // per petition
-        $maxSign = 200;               // per petition
-        $signatureBatchSize = 5000;   // insert signatures in batches
-
         foreach (['en', 'fr', 'it'] as $loc) {
-            // create petitions in chunks to avoid memory spikes
+
+            // Create petitions
             $createdPetitions = Petition::factory()
                 ->count($petitionsPerLocale)
-                ->state(fn() => [
-                    'user_id' => $owner->id,
-                    'locale' => $loc,
-                    'category_id' => $categories->random()->id,
-                ])
+                ->state(function () use ($owner, $loc, $categories) {
+                    $seed = Str::random(12);
+
+                    return [
+                        'user_id' => $owner->id,
+                        'locale' => $loc,
+                        'category_id' => $categories->random()->id,
+                        'cover_image' => "https://picsum.photos/seed/{$seed}/1200/600",
+                    ];
+                })
                 ->create();
 
-            // build signatures in big batches (much faster than factory()->count() per petition)
+            // Build signatures in batches
             $signatureRows = [];
             $now = now();
 
             foreach ($createdPetitions as $petition) {
                 $count = rand($minSign, $maxSign);
 
-                // update cached counter
+                // cached counter
                 $petition->update(['signature_count' => $count]);
 
                 for ($i = 0; $i < $count; $i++) {
-                    // unique email per petition (required by your unique index petition_id+email)
                     $email = $petition->id . '-' . $i . '@seed.test';
 
                     $signatureRows[] = [

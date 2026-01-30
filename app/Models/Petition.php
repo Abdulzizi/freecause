@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Petition extends Model
 {
@@ -30,5 +31,21 @@ class Petition extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function coverUrl(): string
+    {
+        // store on "public" disk: storage/app/public/...
+        if ($this->cover_image) {
+            if (str_starts_with($this->cover_image, 'http://') || str_starts_with($this->cover_image, 'https://')) {
+                return $this->cover_image;
+            }
+
+            return Storage::disk('public')->url($this->cover_image);
+        }
+
+        // fallback so it looks stable per petition
+        $n = $this->id ? ($this->id % 14) : 0; // 0..13
+        return asset("legacy/images/petitions/covers/pic{$n}.jpg");
     }
 }
