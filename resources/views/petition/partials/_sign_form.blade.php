@@ -4,16 +4,36 @@
     $useLabels = $variant === 'split';
 @endphp
 
-<form action="#" method="post" class="fc-sign-form fc-sign-form--{{ $variant }}">
+<form action="{{ route('petition.sign', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}"
+    method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+    @csrf
+
     <div class="row g-2">
+
+        @if ($errors->any())
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+
+                        @if (session('login_url'))
+                            <li><a class="red" href="{{ session('login_url') }}">go to login</a></li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
+        @endif
 
         {{-- Name --}}
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Name (mandatory)</label>
-                <input class="form-control" type="text">
+                <input class="form-control" type="text" name="name" value="{{ old('name') }}">
             @else
-                <input class="form-control" type="text" placeholder="Name (mandatory)">
+                <input class="form-control" type="text" name="name" value="{{ old('name') }}"
+                    placeholder="Name (mandatory)">
             @endif
         </div>
 
@@ -21,9 +41,10 @@
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Surname (mandatory)</label>
-                <input class="form-control" type="text">
+                <input class="form-control" type="text" name="surname" value="{{ old('surname') }}">
             @else
-                <input class="form-control" type="text" placeholder="Surname (mandatory)">
+                <input class="form-control" type="text" name="surname" value="{{ old('surname') }}"
+                    placeholder="Surname (mandatory)">
             @endif
         </div>
 
@@ -31,9 +52,10 @@
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Email (mandatory)</label>
-                <input class="form-control" type="email">
+                <input class="form-control" type="email" name="email" value="{{ old('email') }}">
             @else
-                <input class="form-control" type="email" placeholder="Email (mandatory)">
+                <input class="form-control" type="email" name="email" value="{{ old('email') }}"
+                    placeholder="Email (mandatory)">
             @endif
         </div>
 
@@ -41,9 +63,9 @@
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Choose a password (mandatory)</label>
-                <input class="form-control" type="password">
+                <input class="form-control" type="password" name="password">
             @else
-                <input class="form-control" type="password" placeholder="Choose a password (mandatory)">
+                <input class="form-control" type="password" name="password" placeholder="Choose a password (mandatory)">
             @endif
         </div>
 
@@ -58,9 +80,9 @@
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">City (optional)</label>
-                <input class="form-control" type="text">
+                <input class="form-control" type="text" name="city" value="{{ old('city') }}">
             @else
-                <input class="form-control" type="text" placeholder="City (optional)">
+                <input class="form-control" type="text" name="city" value="{{ old('city') }}" placeholder="City (optional)">
             @endif
         </div>
 
@@ -68,9 +90,10 @@
         <div class="{{ $col }} mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Nickname (optional)</label>
-                <input class="form-control" type="text">
+                <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}">
             @else
-                <input class="form-control" type="text" placeholder="Nickname (optional)">
+                <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}"
+                    placeholder="Nickname (optional)">
             @endif
         </div>
 
@@ -78,14 +101,15 @@
         <div class="col-12 mb-3">
             @if($useLabels)
                 <label class="form-label fc-mini-label">Comment</label>
-                <input class="form-control" type="text" value="I support this petition">
+                <input class="form-control" type="text" name="comment"
+                    value="{{ old('comment', 'I support this petition') }}">
             @else
-                <input class="form-control" type="text" placeholder="Comment" value="I support this petition">
+                <input class="form-control" type="text" name="comment"
+                    value="{{ old('comment', 'I support this petition') }}" placeholder="Comment">
             @endif
         </div>
 
         <div class="col-12">
-            {{-- keep this message only for split --}}
             @if ($variant === 'split')
                 <p class="mt-2 mb-3" style="font-size:13px;">
                     Attention, the email address you supply must be valid in order to validate the signature, otherwise it
@@ -99,10 +123,14 @@
                     I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>
                 </div>
                 <div class="mt-2">
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree1" checked> I
-                        agree</label>
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree1"> I do not
-                        agree</label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree1" value="agree" {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
+                        I agree
+                    </label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree1" value="no" {{ old('agree1') === 'no' ? 'checked' : '' }}>
+                        I do not agree
+                    </label>
                 </div>
             </div>
 
@@ -111,10 +139,14 @@
                     I confirm that I have read the <a class="red" href="#">Privacy Policy</a>
                 </div>
                 <div class="mt-2">
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree2" checked> I
-                        agree</label>
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree2"> I do not
-                        agree</label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree2" value="agree" {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
+                        I agree
+                    </label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree2" value="no" {{ old('agree2') === 'no' ? 'checked' : '' }}>
+                        I do not agree
+                    </label>
                 </div>
             </div>
 
@@ -123,14 +155,18 @@
                     I agree to the <a class="red" href="#">Personal Data Processing</a>
                 </div>
                 <div class="mt-2">
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree3" checked> I
-                        agree</label>
-                    <label class="d-block" style="font-size:14px;"><input type="radio" name="agree3"> I do not
-                        agree</label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree3" value="agree" {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
+                        I agree
+                    </label>
+                    <label class="d-block" style="font-size:14px;">
+                        <input type="radio" name="agree3" value="no" {{ old('agree3') === 'no' ? 'checked' : '' }}>
+                        I do not agree
+                    </label>
                 </div>
             </div>
 
-            <button class="btn btn-danger fc-sign-btn" type="button">Sign</button>
+            <button class="btn btn-danger fc-sign-btn" type="submit">Sign</button>
         </div>
 
     </div>

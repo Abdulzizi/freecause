@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Petition;
 use App\Models\Signature;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class PetitionController extends Controller
@@ -63,5 +66,136 @@ class PetitionController extends Controller
             'latest',
             'directLink'
         ));
+    }
+
+    public function sign(Request $request, string $locale, string $slug, int $id)
+    {
+        $petition = Petition::query()
+            ->where('id', $id)
+            ->where('locale', $locale)
+            ->firstOrFail();
+
+        // if logged in: just sign with their account (optional but nice)
+        if (auth()->check()) {
+            return $this->signAsAuthed($request, $locale, $petition);
+        }
+
+        // signup + sign (guest)
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:60'],
+            'surname' => ['required', 'string', 'max:60'],
+            'email' => ['required', 'email', 'max:190'],
+            'password' => ['required', 'string', 'min:6', 'max:72'],
+            'comment' => ['nullable', 'string', 'max:500'],
+            'city' => ['nullable', 'string', 'max:80'],
+            'nickname' => ['nullable', 'string', 'max:80'],
+
+            // prod-like “must agree”
+            'agree1' => ['required', 'in:agree'],
+            'agree2' => ['required', 'in:agree'],
+            'agree3' => ['required', 'in:agree'],
+        ]);
+
+        $email = strtolower(trim($data['email']));
+
+        // email already exists => do NOT sign in here, push them to login
+        if (User::where('email', $email)->exists()) {
+            $loginUrl = url("/{$locale}/login?email=" . urlencode($email) . "&redirect=" . urlencode(url()->previous()));
+
+            return back()
+                ->withInput($request->except('password'))
+                ->with('login_url', $loginUrl)
+                ->withErrors(['email' => 'this email is already registered. please sign in first.']);
+        }
+
+        // create user but DO NOT login
+        $user = User::create([
+            'name' => trim($data['name'] . ' ' . $data['surname']),
+            'email' => $email,
+            'password' => Hash::make($data['password']),
+            'locale' => $locale,
+            // if you later use email verification, keep email_verified_at NULL
+        ]);
+
+        // create signature (use email uniqueness per petition)
+        $sig = Signature::firstOrCreate(
+            [
+                'petition_id' => $petition->id,
+                'email' => $email,
+            ],
+            [
+                'user_id' => $user->id,
+                'name' => $data['nickname'] ?: $user->name, // prod-ish: nickname can be shown
+                'locale' => $locale,
+                'city' => $data['city'] ?? null,
+                'comment' => $data['comment'] ?? 'I support this petition',
+            ]
+        );
+
+        // only increment if it was new
+        if ($sig->wasRecentlyCreated) {
+            $petition->increment('signature_count');
+        }
+
+        // later: send verification mail here (optional for phase 1)
+        // $user->sendEmailVerificationNotification();
+
+        return redirect()->route('petition.thanks', [
+            'locale' => $locale,
+            'slug' => $petition->slug,
+            'id' => $petition->id,
+            'status' => 0,
+        ]);
+    }
+
+    private function signAsAuthed(Request $request, string $locale, Petition $petition)
+    {
+        $data = $request->validate([
+            'comment' => ['nullable', 'string', 'max:500'],
+            'agree1' => ['required', 'in:agree'],
+            'agree2' => ['required', 'in:agree'],
+            'agree3' => ['required', 'in:agree'],
+        ]);
+
+        $u = auth()->user();
+
+        $sig = Signature::firstOrCreate(
+            ['petition_id' => $petition->id, 'email' => $u->email],
+            [
+                'user_id' => $u->id,
+                'name' => $u->name,
+                'locale' => $locale,
+                'comment' => $data['comment'] ?? 'I support this petition',
+            ]
+        );
+
+        if ($sig->wasRecentlyCreated) {
+            $petition->increment('signature_count');
+        }
+
+        return redirect()->route('petition.thanks', [
+            'locale' => $locale,
+            'slug' => $petition->slug,
+            'id' => $petition->id,
+            'status' => 0,
+        ]);
+    }
+
+    public function thanks(Request $request, string $locale, string $slug, int $id, int $status = 0)
+    {
+        $petition = Petition::query()
+            ->where('id', $id)
+            ->where('locale', $locale)
+            ->firstOrFail();
+
+        $suggestions = Petition::query()
+            ->where('locale', $locale)
+            ->where('id', '!=', $petition->id)
+            ->when($petition->category_id, fn($q) => $q->where('category_id', $petition->category_id))
+            ->orderByDesc('signature_count')
+            ->limit(5)
+            ->get(['id', 'slug', 'title', 'locale']);
+
+        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status'));
     }
 }

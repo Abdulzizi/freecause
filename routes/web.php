@@ -22,9 +22,12 @@ Route::group([
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
 
-    // Route::get('/petition/{slug}/{id}', function ($locale, $slug, $id) {
-    //     return view('petition.demo_show', compact('locale', 'slug', 'id'));
-    // })->name('petition.show');
+    Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])
+    ->name('petition.sign');
+
+    Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
+        ->where('status', '[0-9]+')
+        ->name('petition.thanks');
 
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
         ->where(['id' => '[0-9]+'])

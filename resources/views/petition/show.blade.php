@@ -76,7 +76,7 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                                 logging in.
                             </p>
 
-                            @include('petition.partials._sign_form', ['variant' => 'split'])
+                            @include('petition.partials._sign_form', ['variant' => 'split', 'petition' => $petition])
                         </div>
 
                         <div class="mt-4">
@@ -119,7 +119,7 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                                         in</em></a>
                             </p>
 
-                            @include('petition.partials._sign_form', ['variant' => 'stack'])
+                            @include('petition.partials._sign_form', ['variant' => 'stack', 'petition' => $petition])
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
