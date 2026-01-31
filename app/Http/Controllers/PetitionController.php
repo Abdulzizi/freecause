@@ -32,6 +32,7 @@ class PetitionController extends Controller
     public function show(Request $request, string $locale, string $slug, int $id)
     {
         $hasSigned = false;
+        $oauthLoggedIn = session('oauth_logged_in', false);
 
         $petition = Petition::query()
             ->where('id', $id)
@@ -74,7 +75,8 @@ class PetitionController extends Controller
             'goalCurrent',
             'pct',
             'directLink',
-            'hasSigned'
+            'hasSigned',
+            'oauthLoggedIn'
         ));
     }
 
@@ -207,5 +209,42 @@ class PetitionController extends Controller
             ->get(['id', 'slug', 'title', 'locale']);
 
         return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status'));
+    }
+
+    public function signPage(Request $request, string $locale, string $slug, int $id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
+        }
+
+        $petition = Petition::query()
+            ->where('id', $id)
+            ->where('locale', $locale)
+            ->firstOrFail();
+
+        // keep canonical slug
+        if ($petition->slug !== $slug) {
+            return redirect()->route('petition.sign.page', [
+                'locale' => $locale,
+                'slug' => $petition->slug,
+                'id' => $petition->id,
+            ]);
+        }
+
+        $hasSigned = Signature::query()
+            ->where('petition_id', $petition->id)
+            ->where('email', auth()->user()->email)
+            ->exists();
+
+        // if already signed, go back to petition
+        if ($hasSigned) {
+            return redirect()->route('petition.show', [
+                'locale' => $locale,
+                'slug' => $petition->slug,
+                'id' => $petition->id,
+            ]);
+        }
+
+        return view('petition.sign_page', compact('petition', 'locale'));
     }
 }

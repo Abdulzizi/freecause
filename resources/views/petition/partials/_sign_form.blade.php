@@ -15,19 +15,11 @@
             Support and share your cause. Please click "like" button and sign the petition
         </p>
 
-        <form action="{{ route('petition.sign', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}"
-            method="POST">
-            @csrf
+        <a class="btn btn-danger fc-sign-btn"
+            href="{{ route('petition.sign.page', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+            Sign <span style="margin-left:10px;">»</span>
+        </a>
 
-            {{-- keep agreements if prod requires it; if not, remove these --}}
-            <input type="hidden" name="agree1" value="agree">
-            <input type="hidden" name="agree2" value="agree">
-            <input type="hidden" name="agree3" value="agree">
-
-            <button class="btn btn-danger fc-sign-btn" type="submit">
-                Sign <span style="margin-left:10px;">»</span>
-            </button>
-        </form>
     @endif
 
 @else

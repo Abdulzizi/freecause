@@ -1,3 +1,7 @@
+@php
+    $isAuthed = auth()->check();
+@endphp
+
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
@@ -23,9 +27,21 @@
                     <a class="nav-link" href="{{ lroute('faqs') }}">Help</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ lroute('login') }}">Login</a>
-                </li>
+                @if (!$isAuthed)
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ lroute('login') }}">Login</a>
+                    </li>
+                @else
+                    <li class="nav-item ms-lg-3 me-lg-3">
+                        <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
+                            <button type="submit" class="nav-link btn btn-link p-0 fc-logout">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                @endif
 
                 <li class="nav-item ms-lg-3">
                     <a class="btn btn-primary fc-startfree" href="#">Start Free</a>

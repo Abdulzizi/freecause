@@ -54,10 +54,10 @@ class PetitionOauthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('petition.show', [
+        return redirect()->route('petition.sign.page', [
             'locale' => $ctx['locale'],
             'slug' => $ctx['slug'],
             'id' => $ctx['petition_id'],
-        ])->with('oauth_logged_in', true);
+        ]);
     }
 }

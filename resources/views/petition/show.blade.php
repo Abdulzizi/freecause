@@ -1,5 +1,9 @@
 @extends('layouts.legacy')
 
+@php
+$isAuthed = auth()->check();
+@endphp
+
 @section('title', ($petition->title ?? 'Petition') . ' - FreeCause')
 
 @php
@@ -52,25 +56,27 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                                 </div>
                             </div>
 
-                            <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
+                            @if(!$isAuthed)
+                                <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>
-                            </div>
+                                </div>
 
-                            <div class="fc-or my-3"><span>OR</span></div>
+                                <div class="fc-or my-3"><span>OR</span></div>
 
-                            <p class="mb-3">
-                                If you already have an account <a class="red" href="/{{ $locale }}/login">please sign
-                                    in</a>,
-                                otherwise <strong>register an account</strong> for free then sign the petition filling the
-                                fields below.
-                                <br>
-                                Email and password will be your account data, you will be able to sign other petitions after
-                                logging in.
-                            </p>
+                                <p class="mb-3">
+                                    If you already have an account <a class="red" href="/{{ $locale }}/login">please sign
+                                        in</a>,
+                                    otherwise <strong>register an account</strong> for free then sign the petition filling the
+                                    fields below.
+                                    <br>
+                                    Email and password will be your account data, you will be able to sign other petitions after
+                                    logging in.
+                                </p>
+                            @endif
 
                             @include('petition.partials._sign_form', ['variant' => 'split', 'petition' => $petition])
                         </div>
@@ -96,20 +102,21 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                                 </div>
                             </div>
 
-                            <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
+                            @if(!$isAuthed)
+                                <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>
-                            </div>
+                                </div>
 
-                            <div class="fc-or my-3"><span>OR</span></div>
+                                <div class="fc-or my-3"><span>OR</span></div>
 
-                            <p class="mb-3">
-                                If you already have an account <a class="red" href="/{{ $locale }}/login"><em>please sign
-                                        in</em></a>
-                            </p>
+                                <p class="mb-3">
+                                    If you already have an account <a class="red" href="/{{ $locale }}/login"><em>please sign in</em></a>
+                                </p>
+                            @endif
 
                             @include('petition.partials._sign_form', ['variant' => 'stack', 'petition' => $petition])
                         </div>
