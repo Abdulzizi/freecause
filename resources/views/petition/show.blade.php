@@ -53,15 +53,11 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                             </div>
 
                             <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                <button type="button" class="btn fc-facebook-btn fc-oauth-btn">
-                                    <img src="{{ asset('legacy/images-v2/facebook.png') }}" alt="Facebook">
-                                    Continue with Facebook
-                                </button>
-
-                                <button type="button" class="btn fc-google-btn fc-oauth-btn">
-                                    <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
-                                    Continue with Google
-                                </button>
+                                    <a class="btn fc-google-btn fc-oauth-btn"
+                                        href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+                                        <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
+                                        Continue with Google
+                                    </a>
                             </div>
 
                             <div class="fc-or my-3"><span>OR</span></div>
@@ -101,15 +97,11 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                             </div>
 
                             <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                <button type="button" class="btn fc-facebook-btn fc-oauth-btn">
-                                    <img src="{{ asset('legacy/images-v2/facebook.png') }}" alt="Facebook">
-                                    Continue with Facebook
-                                </button>
-
-                                <button type="button" class="btn fc-google-btn fc-oauth-btn">
-                                    <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
-                                    Continue with Google
-                                </button>
+                                    <a class="btn fc-google-btn fc-oauth-btn"
+                                        href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+                                        <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
+                                        Continue with Google
+                                    </a>
                             </div>
 
                             <div class="fc-or my-3"><span>OR</span></div>

@@ -31,11 +31,20 @@ class PetitionController extends Controller
 
     public function show(Request $request, string $locale, string $slug, int $id)
     {
+        $hasSigned = false;
+
         $petition = Petition::query()
             ->where('id', $id)
             ->where('locale', $locale)
             ->with('category')
             ->firstOrFail();
+
+        if (auth()->check()) {
+            $hasSigned = Signature::query()
+                ->where('petition_id', $petition->id)
+                ->where('email', auth()->user()->email)
+                ->exists();
+        }
 
         if ($petition->slug !== $slug) {
             return redirect()->route('petition.show', [
@@ -58,13 +67,14 @@ class PetitionController extends Controller
         $directLink = url("/{$locale}/petition/{$petition->slug}/{$petition->id}");
 
         return view('petition.show', compact(
-            'locale',
             'petition',
+            'locale',
+            'latest',
             'goalTotal',
             'goalCurrent',
             'pct',
-            'latest',
-            'directLink'
+            'directLink',
+            'hasSigned'
         ));
     }
 

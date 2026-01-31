@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\PetitionOauthController;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', 'en|fr|it');
@@ -28,6 +29,12 @@ Route::group([
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
         ->where('status', '[0-9]+')
         ->name('petition.thanks');
+
+    Route::get('/petition/{slug}/{id}/oauth/google', [PetitionOauthController::class, 'redirect'])
+        ->name('petition.oauth.google');
+
+    Route::get('/oauth/google/callback', [PetitionOauthController::class, 'callback'])
+        ->name('oauth.google.callback');
 
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
         ->where(['id' => '[0-9]+'])
