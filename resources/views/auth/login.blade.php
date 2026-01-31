@@ -14,11 +14,12 @@
                             <h3 class="text-center mb-4">Sign In Using Your Account With</h3>
 
                             <div class="text-center mb-4">
-                                <button type="button" class="btn btn-light border px-3" style="border-radius:8px;" disabled>
+                                <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}"
+                                    class="btn btn-light border px-3" style="border-radius:8px;">
                                     <img src="{{ asset('legacy/images-v2/google.png') }}" alt=""
                                         style="width:18px;margin-right:8px;">
                                     Continue with Google
-                                </button>
+                                </a>
                             </div>
 
                             <div class="d-flex align-items-center gap-3 mb-4">
@@ -38,8 +39,13 @@
                                 </div>
                             @endif
 
-                            <form method="POST" action="{{ url(app()->getLocale() . '/login') }}">
+                            <form method="POST" action="{{ lroute('login.post') }}">
                                 @csrf
+
+                                {{-- keep redirect if present --}}
+                                @if(!empty($redirect))
+                                    <input type="hidden" name="redirect" value="{{ $redirect }}">
+                                @endif
 
                                 <div class="mb-3">
                                     <label class="form-label mb-1">Email</label>

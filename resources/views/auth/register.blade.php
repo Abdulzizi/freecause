@@ -14,7 +14,7 @@
                             <h3 class="text-center mb-4">Sign In Using Your Account With</h3>
 
                             <div class="text-center mb-4">
-                                <a href="{{ lroute('oauth.google') }}" class="btn btn-light border px-3" style="border-radius:8px;">
+                                <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}" class="btn btn-light border px-3" style="border-radius:8px;">
                                     <img src="{{ asset('legacy/images-v2/google.png') }}" alt="" style="width:18px;margin-right:8px;">
                                     Continue with Google
                                 </a>

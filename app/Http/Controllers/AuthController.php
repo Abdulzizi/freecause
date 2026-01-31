@@ -49,22 +49,29 @@ class AuthController extends Controller
         return redirect()->to("/{$locale}");
     }
 
-    public function login(Request $request)
+    public function login(Request $request, string $locale)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $remember = $request->boolean('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // keep locale if provided, fallback to /en
-            $locale = app()->getLocale();
+            $redirect = $request->input('redirect');
+            if ($redirect) {
+                return redirect()->to($redirect);
+            }
+
             return redirect()->to("/{$locale}");
         }
 
-        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
+        return back()
+            ->withErrors(['email' => 'invalid credentials'])
+            ->onlyInput('email');
     }
 
     public function logout(Request $request)

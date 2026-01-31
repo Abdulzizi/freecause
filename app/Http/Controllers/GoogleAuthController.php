@@ -12,14 +12,33 @@ class GoogleAuthController extends Controller
 {
     public function redirect(Request $request, string $locale)
     {
-        // where user came from (register/login)
-        $request->session()->put('oauth_intended', url()->previous());
+        $flow = $request->query('flow', 'register'); // register | petition
+
+        // store context for callback
+        if ($flow === 'petition') {
+            $request->session()->put('oauth_ctx', [
+                'flow' => 'petition',
+                'locale' => $locale,
+                'petition_id' => (int) $request->query('petition_id'),
+                'slug' => (string) $request->query('slug'),
+            ]);
+        } else {
+            $request->session()->put('oauth_ctx', [
+                'flow' => 'register',
+                'locale' => $locale,
+            ]);
+        }
 
         return Socialite::driver('google')->redirect();
     }
 
     public function callback(Request $request, string $locale)
     {
+        $ctx = $request->session()->pull('oauth_ctx', [
+            'flow' => 'register',
+            'locale' => $locale,
+        ]);
+
         $google = Socialite::driver('google')->user();
         $email = strtolower(trim($google->getEmail() ?? ''));
 
@@ -33,15 +52,24 @@ class GoogleAuthController extends Controller
             [
                 'name' => $google->getName() ?: 'Google User',
                 'password' => bcrypt(Str::random(32)),
-                'locale' => $locale,
-                // recommended if you treat google as verified:
+                'locale' => $ctx['locale'] ?? $locale,
+                // if you want google users treated as verified:
                 // 'email_verified_at' => now(),
             ]
         );
 
         Auth::login($user);
+        $request->session()->regenerate();
 
-        $intended = $request->session()->pull('oauth_intended');
-        return redirect()->to($intended ?: "/{$locale}");
+        // decide where to go next
+        if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
+            return redirect()->route('petition.sign.page', [
+                'locale' => $ctx['locale'],
+                'slug' => $ctx['slug'],
+                'id' => $ctx['petition_id'],
+            ])->with('oauth_logged_in', true);
+        }
+
+        return redirect("/{$locale}");
     }
 }

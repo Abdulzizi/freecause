@@ -59,7 +59,7 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                             @if(!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                        href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $petition->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>
@@ -105,7 +105,7 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                             @if(!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                        href="{{ route('petition.oauth.google', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $petition->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>

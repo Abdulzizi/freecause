@@ -17,13 +17,9 @@ Route::group([
     'middleware' => 'setLocale'
 ], function () {
 
-    // public oauth
-
-    Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])
-        ->name('oauth.google');
-
-    Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])
-        ->name('oauth.google.callback');
+    // centralized google oauth routes
+    Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
+    Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -48,11 +44,11 @@ Route::group([
         ->where('status', '[0-9]+')
         ->name('petition.thanks');
 
-    Route::get('/petition/{slug}/{id}/oauth/google', [PetitionOauthController::class, 'redirect'])
-        ->name('petition.oauth.google');
+    // Route::get('/petition/{slug}/{id}/oauth/google', [PetitionOauthController::class, 'redirect'])
+    //     ->name('petition.oauth.google');
 
-    Route::get('/oauth/google/callback', [PetitionOauthController::class, 'callback'])
-        ->name('oauth.google.callback');
+    // Route::get('/oauth/google/callback', [PetitionOauthController::class, 'callback'])
+    //     ->name('oauth.google.callback');
 
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
         ->where(['id' => '[0-9]+'])
