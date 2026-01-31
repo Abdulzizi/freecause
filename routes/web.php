@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\PetitionOauthController;
@@ -16,9 +17,19 @@ Route::group([
     'middleware' => 'setLocale'
 ], function () {
 
+    // public oauth
+
+    Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])
+        ->name('oauth.google');
+
+    Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->name('oauth.google.callback');
+
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');

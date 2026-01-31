@@ -65,7 +65,7 @@
 
                                 <div class="text-center mt-3">
                                     <span class="text-muted">Not a member yet?</span>
-                                    <a href="#" class="red">Sign up now</a>
+                                    <a href="{{ lroute('register') }}" class="red">Sign up now</a>
                                 </div>
                             </form>
 
