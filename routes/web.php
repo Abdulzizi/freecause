@@ -20,20 +20,24 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
 
-    Route::get('/petition/{slug}/{id}', function ($locale, $slug, $id) {
-        return view('petition.demo_show', compact('locale', 'slug', 'id'));
-    })->name('petition.show');
+    // Route::get('/petition/{slug}/{id}', function ($locale, $slug, $id) {
+    //     return view('petition.demo_show', compact('locale', 'slug', 'id'));
+    // })->name('petition.show');
+
+    Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
+        ->where(['id' => '[0-9]+'])
+        ->name('petition.show');
 
     Route::get('/magazine', function () {
         return view('pages.magazine'); // simple static page
     })->name('magazine');
 
-    Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
 
     Route::get('/faqs', function () {
         return view('pages.faq');
-    })->name('faqs');
+})->name('faqs');
 
     Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])->where(['categorySlug' => '[a-z0-9\-]+', 'category' => '[0-9]+',])->name('petitions.byCategory');
 });

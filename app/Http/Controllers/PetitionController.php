@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petition;
+use App\Models\Signature;
+use Illuminate\Http\Request;
 
 class PetitionController extends Controller
 {
@@ -24,18 +26,42 @@ class PetitionController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug, int $id)
+    public function show(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()
             ->where('id', $id)
             ->where('locale', $locale)
-            ->where('status', 'published')
+            ->with('category')
             ->firstOrFail();
 
         if ($petition->slug !== $slug) {
-            return redirect()->to(lroute('petition.show', ['slug' => $petition->slug, 'id' => $petition->id]));
+            return redirect()->route('petition.show', [
+                'locale' => $locale,
+                'slug' => $petition->slug,
+                'id' => $petition->id,
+            ]);
         }
 
-        return view('petition.show', compact('petition'));
+        $goalTotal = (int) ($petition->goal_signatures ?? 100);
+        $goalCurrent = (int) ($petition->signature_count ?? 0);
+        $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+
+        $latest = Signature::query()
+            ->where('petition_id', $petition->id)
+            ->latest('created_at')
+            ->limit(25)
+            ->get();
+
+        $directLink = url("/{$locale}/petition/{$petition->slug}/{$petition->id}");
+
+        return view('petition.show', compact(
+            'locale',
+            'petition',
+            'goalTotal',
+            'goalCurrent',
+            'pct',
+            'latest',
+            'directLink'
+        ));
     }
 }

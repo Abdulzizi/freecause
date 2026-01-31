@@ -1,48 +1,11 @@
 @extends('layouts.legacy')
 
-@section('title', 'Protect Our Oceans: Ban Single-Use Plastics Worldwide - FreeCause')
+@section('title', ($petition->title ?? 'Petition') . ' - FreeCause')
 
 @php
-    // phase 1: static mock
-    $petitionTitle = 'Protect Our Oceans: Ban Single-Use Plastics Worldwide';
-    $petitionImg = asset('legacy/images/demo-featured.jpg'); // put any image here
-    $petitionCredit = '© AP Images/European Union-EP';
-
-    $goalTotal = 100000;
-    $goalCurrent = 1000;
-    $pct = min(100, round(($goalCurrent / $goalTotal) * 100));
-
-    $latest = [
-        ['num' => 1000, 'name' => 'Jean B', 'date' => '2 March 2016', 'comment' => 'I support this petition'],
-        ['num' => 999, 'name' => 'Adrian D', 'date' => '1 March 2016', 'comment' => 'I support this petition'],
-        ['num' => 998, 'name' => 'Sheryl Leed', 'date' => '28 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 997, 'name' => 'Mette Henderson', 'date' => '28 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 996, 'name' => 'Marianna A', 'date' => '27 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 995, 'name' => 'Juliana D', 'date' => '27 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 994, 'name' => 'Lisa Z', 'date' => '27 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 993, 'name' => 'Brian T', 'date' => '27 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 992, 'name' => 'Kim W', 'date' => '26 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 991, 'name' => 'A S', 'date' => '25 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 990, 'name' => 'Kate D', 'date' => '25 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 989, 'name' => 'Misty W', 'date' => '25 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 988, 'name' => 'Candy H', 'date' => '24 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 987, 'name' => 'Justin Wagner', 'date' => '24 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 986, 'name' => 'Kelly M', 'date' => '24 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 985, 'name' => 'Susan G', 'date' => '24 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 984, 'name' => 'Joyce J', 'date' => '23 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 983, 'name' => 'Kim F', 'date' => '23 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 982, 'name' => 'Anthony J', 'date' => '22 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 981, 'name' => 'Larry S', 'date' => '22 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 980, 'name' => 'Gabriela V', 'date' => '22 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 979, 'name' => 'Roger M', 'date' => '22 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 978, 'name' => 'David S', 'date' => '21 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 977, 'name' => 'Sarah M', 'date' => '21 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 976, 'name' => 'Tammy W', 'date' => '21 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 975, 'name' => 'Sue S', 'date' => '21 February 2016', 'comment' => 'I support this petition'],
-        ['num' => 974, 'name' => '...', 'date' => '', 'comment' => ''],
-    ];
-
-    $directLink = url("/{$locale}/petition/{$slug}/{$id}");
+$petitionTitle = $petition->title ?? 'Petition';
+$petitionImg = $petition->coverUrl(); // dari model helper kamu
+$petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biarin kosong
 @endphp
 
 @section('content')
@@ -64,7 +27,9 @@
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
                             <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img">
-                            <span class="fc-img-credit">{{ $petitionCredit }}</span>
+                            @if($petitionCredit)
+                                <span class="fc-img-credit">{{ $petitionCredit }}</span>
+                            @endif
                         </a>
 
                         <h2 class="mt-3 mb-2" style="font-size:16px;font-weight:700;">
@@ -73,37 +38,9 @@
 
                         <div class="fc-content">
                             <h3>Introduction</h3>
-                            <p>
-                                The oceans, which cover more than 70% of our planet, are under siege from plastic pollution.
-                                Every year, an estimated <strong>8 million tons of plastic waste</strong> enter the
-                                oceans...
-                            </p>
-
-                            <h3>The Devastating Impact of Single-Use Plastics</h3>
-
-                            <h4>1. Marine Life Under Threat</h4>
-                            <p>Plastic pollution has catastrophic effects on marine life...</p>
-
-                            <h4>2. Human Health Risks</h4>
-                            <p>Microplastics have been found in fish, shellfish, and even human blood...</p>
-
-                            <h4>3. The Economic Cost of Plastic Pollution</h4>
-                            <p>Plastic waste damages industries such as fisheries, tourism, and coastal communities...</p>
-
-                            <h3>Our Demands</h3>
-                            <p>This petition calls on world leaders, policymakers, and businesses to:</p>
-                            <ul>
-                                <li>Enact legislation to ban single-use plastics</li>
-                                <li>Promote sustainable alternatives</li>
-                                <li>Improve waste management and cleanup efforts</li>
-                            </ul>
-
-                            <p class="mb-0">
-                                By signing this petition, you are sending a strong message that we demand real change.
-                            </p>
+                            <p>{!! nl2br(e($petition->description ?? '')) !!}</p>
                         </div>
 
-                        {{-- dotted separator + bottom sign form (like prod) --}}
                         <div class="fc-dots my-4"></div>
 
                         <div id="signFormBottom" class="bg-light rounded-3 p-4" style="border:1px solid #eee;">
@@ -214,23 +151,25 @@
                             </div>
 
                             <div class="fc-latest mt-3">
-                                @foreach($latest as $row)
-                                    @if($row['num'] === 974)
-                                        <a href="#" class="btn btn-sm btn-danger mt-2">browse all the signatures »</a>
-                                        @break
-                                    @endif
-
+                                @forelse($latest as $i => $sig)
                                     <div class="fc-latest-row">
-                                        <div class="fc-latest-date">{{ $row['date'] }}</div>
+                                        <div class="fc-latest-date">
+                                            {{ optional($sig->created_at)->format('j F Y') }}
+                                        </div>
                                         <div>
-                                            <strong>{{ $row['num'] }}.</strong>
-                                            <a href="#" class="red">{{ $row['name'] }}</a>
+                                            <strong>{{ $goalCurrent - $i }}.</strong>
+                                            <a href="#" class="red">{{ $sig->name ?? 'Anonymous' }}</a>
                                             <span class="text-muted">|</span>
-                                            <span>{{ $row['comment'] }}</span>
+                                            <span>{{ $sig->comment ?? 'I support this petition' }}</span>
                                         </div>
                                     </div>
-                                @endforeach
+                                @empty
+                                    <div class="text-muted" style="font-size:14px;">no signatures yet</div>
+                                @endforelse
+
+                                <a href="#" class="btn btn-sm btn-danger mt-2">browse all the signatures »</a>
                             </div>
+
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
@@ -244,15 +183,17 @@
                             <div class="mt-3" style="font-size:14px;line-height:1.8;">
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>By:</strong>
-                                    <a href="#" class="red">Bettie Kirby</a>
+                                    <a href="#" class="red">{{ $petition->user?->name ?? 'Demo User' }}</a>
                                 </div>
+
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>In:</strong>
-                                    <a href="#" class="red">School and Education</a>
+                                    <a href="{{ route('petitions.byCategory', ['locale' => $locale, 'categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}" class="red">{{ $petition->category?->name ?? '-' }}</a>
                                 </div>
+
                                 <div class="mt-2">
                                     <strong>Petition target:</strong><br>
-                                    President, Congress, BP Oil, U.S. Coast Guard, E.P.A.
+                                    {{ $petition->target ?? '-' }}
                                 </div>
                             </div>
                         </div>
@@ -311,19 +252,19 @@
                                 <div class="mt-3">
                                     <div class="mb-2"><strong>728×90</strong></div>
                                     <textarea class="form-control mb-3" rows="3"
-                                        readonly><script src="{{ url("/widgets/pbadge/{$id}") }}"></script></textarea>
+                                        readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
 
                                     <div class="mb-2"><strong>468×60</strong></div>
                                     <textarea class="form-control mb-3" rows="3"
-                                        readonly><script src="{{ url("/widgets/pbadge/{$id}") }}"></script></textarea>
+                                        readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
 
                                     <div class="mb-2"><strong>336×280</strong></div>
                                     <textarea class="form-control mb-3" rows="3"
-                                        readonly><script src="{{ url("/widgets/pbadge/{$id}") }}"></script></textarea>
+                                        readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
 
                                     <div class="mb-2"><strong>125×125</strong></div>
                                     <textarea class="form-control" rows="3"
-                                        readonly><script src="{{ url("/widgets/pbadge/{$id}") }}"></script></textarea>
+                                        readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
                                 </div>
                             </div>
                         </div>
