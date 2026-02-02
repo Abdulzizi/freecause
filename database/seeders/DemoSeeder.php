@@ -13,68 +13,86 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $petitionsPerLocale = (int) env('SEED_PETITIONS', 2000);
-        $minSign = (int) env('SEED_SIG_MIN', 5);
-        $maxSign = (int) env('SEED_SIG_MAX', 200);
-        $signatureBatchSize = (int) env('SEED_SIG_BATCH', 5000);
+        $petitionsPerLocale   = (int) env('SEED_PETITIONS', 2000);
+        $minSign              = (int) env('SEED_SIG_MIN', 5);
+        $maxSign              = (int) env('SEED_SIG_MAX', 200);
+        $signatureBatchSize   = (int) env('SEED_SIG_BATCH', 5000);
 
-        $categories = Category::query()->where('is_active', true)->get();
-        if ($categories->isEmpty()) $categories = Category::query()->get();
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->pluck('id');
+
+        if ($categories->isEmpty()) {
+            $categories = Category::query()->pluck('id');
+        }
+
+        if ($categories->isEmpty()) {
+            throw new \RuntimeException('No categories found. Run CategorySeeder first.');
+        }
 
         $owner = User::firstOrCreate(
             ['email' => 'demo@freecause.test'],
             ['name' => 'Demo User', 'password' => bcrypt('password'), 'locale' => 'en']
         );
 
-        foreach (['en', 'fr', 'it'] as $loc) {
+        $locales = ['en', 'fr', 'it'];
+        $now = now();
 
-            // Create petitions
-            $createdPetitions = Petition::factory()
-                ->count($petitionsPerLocale)
-                ->state(function () use ($owner, $loc, $categories) {
-                    $seed = Str::random(12);
+        $chunkSize = (int) env('SEED_PETITION_CHUNK', 250);
 
-                    return [
-                        'user_id' => $owner->id,
-                        'locale' => $loc,
-                        'category_id' => $categories->random()->id,
-                        'cover_image' => "https://picsum.photos/seed/{$seed}/1200/600",
-                    ];
-                })
-                ->create();
+        foreach ($locales as $loc) {
 
-            // Build signatures in batches
-            $signatureRows = [];
-            $now = now();
+            $remaining = $petitionsPerLocale;
 
-            foreach ($createdPetitions as $petition) {
-                $count = rand($minSign, $maxSign);
+            while ($remaining > 0) {
+                $take = min($chunkSize, $remaining);
+                $remaining -= $take;
 
-                // cached counter
-                $petition->update(['signature_count' => $count]);
+                $createdPetitions = Petition::factory()
+                    ->count($take)
+                    ->state(function () use ($owner, $loc, $categories) {
+                        $seed = Str::random(12);
 
-                for ($i = 0; $i < $count; $i++) {
-                    $email = $petition->id . '-' . $i . '@seed.test';
+                        return [
+                            'user_id' => $owner->id,
+                            'locale' => $loc,
+                            'status' => 'published',
+                            'category_id' => $categories->random(),
+                            'cover_image' => "https://picsum.photos/seed/{$seed}/1200/600",
+                        ];
+                    })
+                    ->create();
 
-                    $signatureRows[] = [
-                        'petition_id' => $petition->id,
-                        'user_id' => null,
-                        'name' => "Seeder " . Str::title(Str::random(6)),
-                        'email' => $email,
-                        'locale' => $loc,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ];
+                $signatureRows = [];
 
-                    if (count($signatureRows) >= $signatureBatchSize) {
-                        DB::table('signatures')->insert($signatureRows);
-                        $signatureRows = [];
+                foreach ($createdPetitions as $petition) {
+                    $count = rand($minSign, $maxSign);
+
+                    Petition::whereKey($petition->id)->update(['signature_count' => $count]);
+
+                    for ($i = 0; $i < $count; $i++) {
+                        $email = $petition->id . '-' . $i . '@seed.test';
+
+                        $signatureRows[] = [
+                            'petition_id' => $petition->id,
+                            'user_id' => null,
+                            'name' => "Seeder " . Str::title(Str::random(6)),
+                            'email' => $email,
+                            'locale' => $loc,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+
+                        if (count($signatureRows) >= $signatureBatchSize) {
+                            DB::table('signatures')->insert($signatureRows);
+                            $signatureRows = [];
+                        }
                     }
                 }
-            }
 
-            if (!empty($signatureRows)) {
-                DB::table('signatures')->insert($signatureRows);
+                if (!empty($signatureRows)) {
+                    DB::table('signatures')->insert($signatureRows);
+                }
             }
         }
     }

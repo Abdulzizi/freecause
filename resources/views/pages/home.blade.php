@@ -35,8 +35,7 @@
                         <h2 class="banner-subtitle">{!! $h2 !!}</h2>
 
                         <div class="banner-btn mb-3">
-                            <a href="{{ url(app()->getLocale() . '/petitions/demo-petition') }}"
-                                class="btn btn-primary banner-btn-links">
+                            <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
                                 Create Petition
                             </a>
                         </div>

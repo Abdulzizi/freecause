@@ -193,12 +193,23 @@ class PetitionController extends Controller
         ]);
     }
 
-    public function thanks(Request $request, string $locale, string $slug, int $id, int $status = 0)
+    public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
     {
         $petition = Petition::query()
             ->where('id', $id)
             ->where('locale', $locale)
             ->firstOrFail();
+
+        if ($petition->slug !== $slug) {
+            return redirect()->route('petition.thanks', [
+                'locale' => $locale,
+                'slug'   => $petition->slug,
+                'id'     => $petition->id,
+                'status' => $status,
+            ]);
+        }
+
+        $mode = ((string) $status === 'created') ? 'created' : 'signed';
 
         $suggestions = Petition::query()
             ->where('locale', $locale)
@@ -208,7 +219,7 @@ class PetitionController extends Controller
             ->limit(5)
             ->get(['id', 'slug', 'title', 'locale']);
 
-        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status'));
+        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode'));
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
