@@ -32,7 +32,11 @@
                         <a class="nav-link" href="{{ lroute('login') }}">Login</a>
                     </li>
                 @else
-                    <li class="nav-item ms-lg-3 me-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->name }}</a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2 me-lg-3">
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
                             <input type="hidden" name="locale" value="{{ app()->getLocale() }}">

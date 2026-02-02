@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Petition;
+use App\Models\Signature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -37,22 +38,29 @@ class PetitionCreateController extends Controller
             'city' => ['nullable', 'string', 'max:120'],
         ]);
 
-        // tags cleanup (max 10)
         $tags = collect(explode(',', $data['tags'] ?? ''))
             ->map(fn($t) => trim($t))
             ->filter()
             ->take(10)
             ->implode(',');
 
+        $baseSlug = Str::slug($data['title']);
+        $slug = $baseSlug;
+        $i = 1;
+        while (Petition::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $i++;
+        }
+
         $petition = new Petition();
         $petition->user_id = auth()->id();
         $petition->locale = $locale;
-        $petition->status = 'draft'; // phase 1
+        $petition->status = 'draft';
         $petition->title = $data['title'];
-        $petition->slug = Str::slug($data['title']);
+        $petition->slug = $slug;
         $petition->description = $data['description'];
         $petition->goal_signatures = $data['goal_signatures'];
         $petition->category_id = $data['category_id'];
+
         $petition->target = $data['target'] ?? null;
         $petition->tags = $tags ?: null;
         $petition->city = $data['city'] ?? null;
@@ -69,11 +77,33 @@ class PetitionCreateController extends Controller
 
         $petition->save();
 
+        $user = auth()->user();
+
+        $alreadySigned = Signature::query()
+            ->where('petition_id', $petition->id)
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('email', $user->email);
+            })
+            ->exists();
+
+        if (! $alreadySigned) {
+            Signature::create([
+                'petition_id' => $petition->id,
+                'user_id' => $user->id,
+                'name' => $user->name ?? 'Anonymous',
+                'email' => $user->email,
+                'locale' => $locale,
+            ]);
+
+            $petition->increment('signature_count');
+        }
+
         return redirect()->route('petition.thanks', [
             'locale' => $locale,
             'slug' => $petition->slug,
             'id' => $petition->id,
-            'status' => 'created',
+            'mode' => 'created',
         ]);
     }
 }

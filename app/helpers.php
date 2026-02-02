@@ -17,16 +17,13 @@ if (! function_exists('locale_url')) {
         $route = Route::current();
         $routeName = $route?->getName();
 
-        // fallback: go to home if route is unnamed
         if (! $routeName) {
             return url("/{$newLocale}");
         }
 
-        // keep current route params, replace locale
         $params = $route->parameters();
         $params['locale'] = $newLocale;
 
-        // keep query string (?page=2 etc)
         return route($routeName, $params) . (request()->getQueryString()
             ? '?' . request()->getQueryString()
             : '');

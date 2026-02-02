@@ -258,4 +258,36 @@ class PetitionController extends Controller
 
         return view('petition.sign_page', compact('petition', 'locale'));
     }
+
+    public function myPetitions(Request $request, string $locale)
+    {
+        $u = auth()->user();
+
+        $tab = $request->query('tab');
+
+        $signedBase = Petition::query()
+            ->select('petitions.*', 'signatures.created_at as signed_at')
+            ->join('signatures', 'signatures.petition_id', '=', 'petitions.id')
+            ->where('petitions.locale', $locale)
+            ->where('signatures.email', $u->email)
+            ->orderByDesc('signatures.created_at');
+
+        $createdBase = Petition::query()
+            ->where('locale', $locale)
+            ->where('user_id', $u->id)
+            ->latest('created_at');
+
+        if ($tab === 'signed') {
+            $signed = $signedBase->paginate(10)->withQueryString();
+            $created = $createdBase->limit(5)->get();
+        } elseif ($tab === 'created') {
+            $signed = $signedBase->limit(5)->get();
+            $created = $createdBase->paginate(10)->withQueryString();
+        } else {
+            $signed = $signedBase->limit(5)->get();
+            $created = $createdBase->limit(5)->get();
+        }
+
+        return view('petition.my-petitions', compact('locale', 'signed', 'created', 'tab'));
+    }
 }
