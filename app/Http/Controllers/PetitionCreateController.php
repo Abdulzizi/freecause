@@ -22,21 +22,68 @@ class PetitionCreateController extends Controller
     public function store(Request $request, string $locale)
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:190'],
-            'description' => ['required', 'string'],
+            'title' => [
+                'required',
+                'string',
+                'max:190',
+                function ($attr, $value, $fail) {
+                    $words = preg_split('/\s+/', trim((string) $value));
+                    $words = array_values(array_filter($words, fn($w) => $w !== ''));
+                    if (count($words) < 3) {
+                        $fail('Title must contain at least 3 words.');
+                    }
+                },
+            ],
+
+            'description' => ['required', 'string', 'min:30'],
+
             'goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
 
-            'tags' => ['nullable', 'string', 'max:255'],
+            'tags' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attr, $value, $fail) {
+                    $tags = collect(explode(',', (string) $value))
+                        ->map(fn($t) => trim($t))
+                        ->filter()
+                        ->values();
+
+                    if ($tags->count() > 10) {
+                        $fail('Tags: maximum 10 keywords.');
+                    }
+
+                    // optional: prevent very long single tags
+                    if ($tags->contains(fn($t) => mb_strlen($t) > 30)) {
+                        $fail('Tags: each keyword must be 30 characters or less.');
+                    }
+                },
+            ],
+
             'image' => ['nullable', 'image', 'max:4096'],
             'image_url' => ['nullable', 'url', 'max:500'],
-            'youtube' => ['nullable', 'string', 'max:200'],
+
+            'youtube' => ['nullable', 'url', 'max:200'],
 
             'target' => ['nullable', 'string', 'max:190'],
             'community' => ['nullable', 'string', 'max:190'],
             'community_url' => ['nullable', 'url', 'max:500'],
             'city' => ['nullable', 'string', 'max:120'],
+        ], [
+            'image.prohibited_with' => 'Please choose either upload an image OR use an external image link (not both).',
+            'image_url.prohibited_with' => 'Please choose either upload an image OR use an external image link (not both).',
         ]);
+
+        if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
+            return back()
+                ->withErrors([
+                    'image' => 'Please choose either upload an image OR use an external image link (not both).',
+                    'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
+                ])
+                ->withInput();
+        }
+
 
         $tags = collect(explode(',', $data['tags'] ?? ''))
             ->map(fn($t) => trim($t))

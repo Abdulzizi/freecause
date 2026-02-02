@@ -6,6 +6,17 @@
     <section class="py-5">
         <div class="container">
 
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+
             <h2 class="text-center mb-4">Start a free petition In Just 3 Easy Steps</h2>
 
             <div class="fc-steps mb-5">
@@ -45,16 +56,6 @@
                         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
                     </div>
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $e)
-                                    <li>{{ $e }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
                     <form method="POST" action="{{ lroute('petition.store') }}" enctype="multipart/form-data">
                         @csrf
 
@@ -65,8 +66,32 @@
 
                         <div class="mb-3">
                             <label class="form-label">Text (mandatory)</label>
-                            <textarea class="form-control" name="description" rows="8"
-                                required>{{ old('description') }}</textarea>
+
+                            <div class="fc-markup">
+                                <div class="fc-markup-bar">
+                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="strong"
+                                        title="Bold"><b>B</b></button>
+                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="em"
+                                        title="Italic"><i>I</i></button>
+                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="u"
+                                        title="Underline"><u>U</u></button>
+
+                                    <span class="fc-markup-divider"></span>
+
+                                    <button type="button" class="fc-mbtn" data-cmd="list" data-type="ul"
+                                        title="Bullet list">•</button>
+                                    <button type="button" class="fc-mbtn" data-cmd="list" data-type="ol"
+                                        title="Numbered list">1.</button>
+
+                                    <span class="fc-markup-spacer"></span>
+                                </div>
+
+                                <textarea id="petition_description"
+                                    class="form-control @error('description') is-invalid @enderror" name="description"
+                                    rows="10" required>{{ old('description') }}</textarea>
+                            </div>
+
+                            <div class="fc-markup-hint">allowed: br, p, strong, em, u, ul, ol, li</div>
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -227,4 +252,172 @@
     .fc-step-icon.is-active.fc-step-3 {
         background-position: 100% 100%;
     }
+
+    .fc-markup {
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .fc-markup-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px;
+        background: #f3f3f3;
+        border-bottom: 1px solid #d9d9d9;
+    }
+
+    .fc-mbtn {
+        width: 28px;
+        height: 26px;
+        border: 1px solid #cfcfcf;
+        background: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fc-mbtn:hover {
+        background: #f8f8f8;
+    }
+
+    .fc-markup-spacer {
+        flex: 1;
+    }
+
+    .fc-markup textarea {
+        border: 0;
+        border-radius: 0;
+    }
+
+    .fc-markup-hint {
+        padding: 8px 2px 0;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .fc-markup-divider {
+        width: 1px;
+        height: 20px;
+        background: #cfcfcf;
+        margin: 0 6px;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const ta = document.getElementById('petition_description');
+        if (!ta) return;
+
+        function getSelectionRange() {
+            return {
+                start: ta.selectionStart ?? 0,
+                end: ta.selectionEnd ?? 0,
+            };
+        }
+
+        function setCursor(pos) {
+            ta.focus();
+            ta.setSelectionRange(pos, pos);
+        }
+
+        function wrapTag(tag) {
+            const { start, end } = getSelectionRange();
+            const before = ta.value.slice(0, start);
+            const selected = ta.value.slice(start, end);
+            const after = ta.value.slice(end);
+
+            const open = `<${tag}>`;
+            const close = `</${tag}>`;
+
+            if (!selected) {
+                ta.value = before + open + close + after;
+                setCursor(before.length + open.length);
+                return;
+            }
+
+            ta.value = before + open + selected + close + after;
+            setCursor(before.length + open.length + selected.length + close.length);
+        }
+
+        function getLineBounds(pos) {
+            const v = ta.value;
+            const lineStart = v.lastIndexOf('\n', pos - 1) + 1;
+            const lineEnd = v.indexOf('\n', pos);
+            return { lineStart, lineEnd: lineEnd === -1 ? v.length : lineEnd };
+        }
+
+        function makeList(type) {
+            const { start, end } = getSelectionRange();
+            const v = ta.value;
+
+            let s = start, e = end;
+            if (s === e) {
+                const b = getLineBounds(s);
+                s = b.lineStart;
+                e = b.lineEnd;
+            } else {
+                const b1 = getLineBounds(s);
+                const b2 = getLineBounds(e);
+                s = b1.lineStart;
+                e = b2.lineEnd;
+            }
+
+            const before = v.slice(0, s);
+            const block = v.slice(s, e);
+            const after = v.slice(e);
+
+            let lines = block.split('\n');
+
+            while (lines.length && lines[0].trim() === '') lines.shift();
+            while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
+
+            if (!lines.length) return;
+
+            lines = lines.map(line => {
+                let x = line.trimEnd();
+                x = x.replace(/^\s*[-*]\s+/, '');      // bullets
+                x = x.replace(/^\s*\d+\.\s+/, '');     // numbered
+                return x;
+            });
+
+            const tag = type === 'ol' ? 'ol' : 'ul';
+            const listHtml =
+                `<${tag}>\n` +
+                lines.map(l => `  <li>${escapeHtmlLoose(l.trim())}</li>`).join('\n') +
+                `\n</${tag}>`;
+
+            ta.value = before + listHtml + after;
+
+            const newPos = before.length + listHtml.length;
+            setCursor(newPos);
+        }
+
+        function escapeHtmlLoose(s) {
+            return s
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;');
+        }
+
+        document.querySelectorAll('.fc-mbtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cmd = btn.dataset.cmd;
+
+                if (cmd === 'wrap') {
+                    wrapTag(btn.dataset.tag);
+                    return;
+                }
+
+                if (cmd === 'list') {
+                    makeList(btn.dataset.type);
+                    return;
+                }
+            });
+        });
+    });
+</script>
