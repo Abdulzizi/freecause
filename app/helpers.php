@@ -5,7 +5,20 @@ use Illuminate\Support\Facades\Route;
 if (! function_exists('lroute')) {
     function lroute(string $name, array $params = [], bool $absolute = true): string
     {
-        $params = array_merge(['locale' => app()->getLocale()], $params);
+        // Try multiple sources for locale
+        $locale = $params['locale']
+            ?? session('locale')
+            ?? request()->segment(1)
+            ?? app()->getLocale()
+            ?? 'en';
+
+        // Validate locale
+        $allowedLocales = ['en', 'fr', 'it', 'es', 'de', 'pt', 'nl'];
+        if (!in_array($locale, $allowedLocales)) {
+            $locale = 'en';
+        }
+
+        $params = array_merge(['locale' => $locale], $params);
 
         return route($name, $params, $absolute);
     }

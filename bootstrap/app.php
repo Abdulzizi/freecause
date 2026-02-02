@@ -25,8 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => $e->getMessage()], 401);
             }
 
-            $locale = $request->route('locale') ?? app()->getLocale() ?? 'en';
-
-            return redirect()->route('login', ['locale' => $locale]);
+            return redirect()->guest(lroute('login'));
         });
     })->create();

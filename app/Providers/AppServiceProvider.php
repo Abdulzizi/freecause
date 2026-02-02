@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\App;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $locale = request()->segment(1);
+
+        if (in_array($locale, ['en', 'fr', 'it'])) {
+            App::setLocale($locale);
+
+            URL::defaults(['locale' => $locale]);
+        } else {
+            URL::defaults(['locale' => 'en']);
+        }
     }
 }

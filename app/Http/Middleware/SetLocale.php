@@ -23,6 +23,8 @@ class SetLocale
 
         URL::defaults(['locale' => $locale]);
 
+        session(['locale' => $locale]);
+
         return $next($request);
     }
 }
