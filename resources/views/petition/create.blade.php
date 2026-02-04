@@ -70,11 +70,11 @@
                             <div class="fc-markup">
                                 <div class="fc-markup-bar">
                                     <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="strong"
-                                        title="Bold"><b>B</b></button>
+                                        title="Bold (Ctrl+B)"><b>B</b></button>
                                     <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="em"
-                                        title="Italic"><i>I</i></button>
+                                        title="Italic (Ctrl+I)"><i>I</i></button>
                                     <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="u"
-                                        title="Underline"><u>U</u></button>
+                                        title="Underline (Ctrl+U)"><u>U</u></button>
 
                                     <span class="fc-markup-divider"></span>
 
@@ -86,12 +86,16 @@
                                     <span class="fc-markup-spacer"></span>
                                 </div>
 
-                                <textarea id="petition_description"
-                                    class="form-control @error('description') is-invalid @enderror" name="description"
-                                    rows="10" required>{{ old('description') }}</textarea>
+                                <textarea id="petition_description" class="form-control" name="description" rows="10"
+                                    required>{{ old('description') }}</textarea>
                             </div>
 
                             <div class="fc-markup-hint">allowed: br, p, strong, em, u, ul, ol, li</div>
+
+                            <div class="mt-3">
+                                <div class="fw-semibold mb-2" style="font-size:14px;">Preview</div>
+                                <div id="petition_description_preview" class="fc-preview"></div>
+                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -305,25 +309,89 @@
         background: #cfcfcf;
         margin: 0 6px;
     }
+
+    .fc-preview {
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        padding: 12px;
+        background: #fff;
+        min-height: 120px;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .fc-preview ul,
+    .fc-preview ol {
+        margin: 0 0 0 22px;
+    }
+
+    .fc-preview p {
+        margin: 0 0 10px;
+    }
+
+    .fc-preview ul {
+        list-style: disc;
+        padding-left: 22px;
+    }
+
+    .fc-preview ol {
+        list-style: decimal;
+        padding-left: 22px;
+    }
+
+    .fc-preview li {
+        display: list-item;
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         const ta = document.getElementById('petition_description');
-        if (!ta) return;
+        const preview = document.getElementById('petition_description_preview');
+        if (!ta || !preview) return;
+
+        const ALLOWED = new Set(['BR', 'P', 'STRONG', 'EM', 'U', 'UL', 'OL', 'LI']);
+
+        function sanitizeToPreview(html) {
+            const tpl = document.createElement('template');
+            tpl.innerHTML = html;
+
+            const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT, null);
+            const toRemove = [];
+
+            while (walker.nextNode()) {
+                const el = walker.currentNode;
+
+                if (!ALLOWED.has(el.tagName)) {
+                    toRemove.push(el);
+                    continue;
+                }
+
+                [...el.attributes].forEach(a => el.removeAttribute(a.name));
+            }
+
+            toRemove.forEach(el => {
+                const parent = el.parentNode;
+                if (!parent) return;
+
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el);
+            });
+
+            return tpl.innerHTML;
+        }
+
+        function updatePreview() {
+            const html = ta.value || '';
+            preview.innerHTML = sanitizeToPreview(html.replace(/\n/g, '<br>'));
+        }
+
+        updatePreview();
 
         function getSelectionRange() {
-            return {
-                start: ta.selectionStart ?? 0,
-                end: ta.selectionEnd ?? 0,
-            };
+            return { start: ta.selectionStart ?? 0, end: ta.selectionEnd ?? 0 };
         }
-
-        function setCursor(pos) {
-            ta.focus();
-            ta.setSelectionRange(pos, pos);
-        }
+        function setCursor(pos) { ta.focus(); ta.setSelectionRange(pos, pos); }
 
         function wrapTag(tag) {
             const { start, end } = getSelectionRange();
@@ -337,11 +405,13 @@
             if (!selected) {
                 ta.value = before + open + close + after;
                 setCursor(before.length + open.length);
+                updatePreview();
                 return;
             }
 
             ta.value = before + open + selected + close + after;
             setCursor(before.length + open.length + selected.length + close.length);
+            updatePreview();
         }
 
         function getLineBounds(pos) {
@@ -351,6 +421,37 @@
             return { lineStart, lineEnd: lineEnd === -1 ? v.length : lineEnd };
         }
 
+        function sanitizeInline(html) {
+            const tpl = document.createElement('template');
+            tpl.innerHTML = html;
+
+            const allowedInline = new Set(['BR', 'STRONG', 'EM', 'U']);
+
+            const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT, null);
+            const toRemove = [];
+
+            while (walker.nextNode()) {
+                const el = walker.currentNode;
+
+                if (!allowedInline.has(el.tagName)) {
+                    toRemove.push(el);
+                    continue;
+                }
+
+                [...el.attributes].forEach(a => el.removeAttribute(a.name));
+            }
+
+            toRemove.forEach(el => {
+                const parent = el.parentNode;
+                if (!parent) return;
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el);
+            });
+
+            return tpl.innerHTML;
+        }
+
+
         function makeList(type) {
             const { start, end } = getSelectionRange();
             const v = ta.value;
@@ -358,13 +459,11 @@
             let s = start, e = end;
             if (s === e) {
                 const b = getLineBounds(s);
-                s = b.lineStart;
-                e = b.lineEnd;
+                s = b.lineStart; e = b.lineEnd;
             } else {
                 const b1 = getLineBounds(s);
                 const b2 = getLineBounds(e);
-                s = b1.lineStart;
-                e = b2.lineEnd;
+                s = b1.lineStart; e = b2.lineEnd;
             }
 
             const before = v.slice(0, s);
@@ -372,52 +471,45 @@
             const after = v.slice(e);
 
             let lines = block.split('\n');
-
             while (lines.length && lines[0].trim() === '') lines.shift();
             while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
-
             if (!lines.length) return;
 
             lines = lines.map(line => {
                 let x = line.trimEnd();
-                x = x.replace(/^\s*[-*]\s+/, '');      // bullets
-                x = x.replace(/^\s*\d+\.\s+/, '');     // numbered
+                x = x.replace(/^\s*[-*]\s+/, '');
+                x = x.replace(/^\s*\d+\.\s+/, '');
                 return x;
             });
 
             const tag = type === 'ol' ? 'ol' : 'ul';
             const listHtml =
                 `<${tag}>\n` +
-                lines.map(l => `  <li>${escapeHtmlLoose(l.trim())}</li>`).join('\n') +
+                lines.map(l => `  <li>${sanitizeInline(l.trim())}</li>`).join('\n') +
                 `\n</${tag}>`;
 
             ta.value = before + listHtml + after;
-
-            const newPos = before.length + listHtml.length;
-            setCursor(newPos);
-        }
-
-        function escapeHtmlLoose(s) {
-            return s
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;');
+            setCursor(before.length + listHtml.length);
+            updatePreview();
         }
 
         document.querySelectorAll('.fc-mbtn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const cmd = btn.dataset.cmd;
-
-                if (cmd === 'wrap') {
-                    wrapTag(btn.dataset.tag);
-                    return;
-                }
-
-                if (cmd === 'list') {
-                    makeList(btn.dataset.type);
-                    return;
-                }
+                if (cmd === 'wrap') return wrapTag(btn.dataset.tag);
+                if (cmd === 'list') return makeList(btn.dataset.type);
             });
+        });
+
+        ta.addEventListener('input', updatePreview);
+
+        ta.addEventListener('keydown', (e) => {
+            if (!(e.ctrlKey || e.metaKey)) return;
+
+            const k = e.key.toLowerCase();
+            if (k === 'b') { e.preventDefault(); wrapTag('strong'); }
+            if (k === 'i') { e.preventDefault(); wrapTag('em'); }
+            if (k === 'u') { e.preventDefault(); wrapTag('u'); }
         });
     });
 </script>
