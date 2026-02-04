@@ -87,7 +87,6 @@
                         </div>
                     </div>
 
-                    {{-- RIGHT SIDEBAR --}}
                     <div class="col-lg-4">
                         <div id="signFormTop" class="bg-light rounded-3 p-4 mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">Sign The Petition</div>
@@ -243,7 +242,6 @@
                                 </div>
                             </div>
 
-                            {{-- closed first load --}}
                             <div id="widgetsBody" class="collapse">
                                 <div class="mt-3">
                                     <div class="mb-2"><strong>728×90</strong></div>
@@ -293,6 +291,38 @@
 
     .fc-petition-description p {
         margin: 0 0 10px;
+    }
+
+    .fc-petition-description {
+        font-size: 16px;
+        line-height: 1.75;
+        color: #222;
+    }
+
+    .fc-petition-description ul {
+        list-style: disc !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .fc-petition-description ol {
+        list-style: decimal !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .fc-petition-description li {
+        display: list-item !important;
+        margin: 0 0 6px 0;
+    }
+
+    .fc-petition-description p {
+        margin: 0 0 12px;
+    }
+
+    .fc-petition-description li>ul,
+    .fc-petition-description li>ol {
+        margin-top: 8px !important;
     }
 </style>
 

@@ -35,7 +35,16 @@ class PetitionCreateController extends Controller
                 },
             ],
 
-            'description' => ['required', 'string', 'min:30'],
+            'description' => [
+                'required',
+                'string',
+                function ($attr, $value, $fail) {
+                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string)$value)));
+                    if (mb_strlen($text) < 30) {
+                        $fail('Text must contain at least 30 characters of meaningful content.');
+                    }
+                },
+            ],
 
             'goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
@@ -105,9 +114,7 @@ class PetitionCreateController extends Controller
         $petition->title = $data['title'];
         $petition->slug = $slug;
 
-        $raw = str_replace(["\r\n", "\r"], "\n", $data['description']);
-        $raw = str_replace("\n", "<br>", $raw);
-        $petition->description = $this->sanitizePetitionHtml($raw);
+        $petition->description = $this->sanitizePetitionHtml($data['description']);
 
         $petition->goal_signatures = $data['goal_signatures'];
         $petition->category_id = $data['category_id'];
