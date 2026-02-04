@@ -3,14 +3,6 @@
 @section('title', 'Freecause - Online Petition')
 
 @php
-    $picClass = 'pic' . random_int(0, 13);
-
-    $h1 = 'Change the World';
-    $h2 =
-        'Welcome to <span class="red">FreeCause - Online Petition</span>, the ultimate spot to kick off your online petition—let’s make some waves!';
-@endphp
-
-@php
     $featuredUrl = $featuredPetition
         ? lroute('petition.show', ['slug' => $featuredPetition->slug, 'id' => $featuredPetition->id])
         : lroute('petitions.index');
@@ -20,12 +12,8 @@
     $progress = $goal > 0 ? min(100, ($signatures / $goal) * 100) : 0;
 @endphp
 
-@php
-    $demoPetitionUrl = url('/' . app()->getLocale() . '/petition/stop-using-plastics-in-our-oceans/75241');
-@endphp
-
 @section('content')
-    <section id="welcomes" class="main-banner {{ $picClass }}">
+    <section id="welcomes" class="main-banner">
         <div class="container">
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-8 text-center">
