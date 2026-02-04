@@ -11,6 +11,11 @@ class PetitionFactory extends Factory
 {
     protected $model = Petition::class;
 
+    protected function withFaker()
+    {
+        return \Faker\Factory::create();
+    }
+
     public function definition(): array
     {
         $title = $this->faker->sentence(6);
@@ -54,10 +59,5 @@ class PetitionFactory extends Factory
             'image_url' => $this->faker->optional(0.4)->imageUrl(1200, 600, null, true),
             'cover_image' => null,
         ];
-    }
-
-    public function locale(string $locale): self
-    {
-        return $this->state(fn() => ['locale' => $locale]);
     }
 }
