@@ -1,22 +1,21 @@
 @extends('layouts.legacy')
 
 @php
-$isAuthed = auth()->check();
+    $isAuthed = auth()->check();
 @endphp
 
 @section('title', ($petition->title ?? 'Petition') . ' - FreeCause')
 
 @php
-$petitionTitle = $petition->title ?? 'Petition';
-$petitionImg = $petition->coverUrl(); // dari model helper kamu
-$petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biarin kosong
+    $petitionTitle = $petition->title ?? 'Petition';
+    $petitionImg = $petition->coverUrl(); // dari model helper kamu
+    $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biarin kosong
 @endphp
 
 @section('content')
     <section class="py-5">
         <div class="container">
 
-            {{-- TOP BOX --}}
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <h1 class="mb-0" style="font-size:22px;font-weight:700;line-height:1.3;">
@@ -27,7 +26,6 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                 </div>
 
                 <div class="row g-4">
-                    {{-- LEFT --}}
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
                             <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img">
@@ -36,13 +34,10 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                             @endif
                         </a>
 
-                        <h2 class="mt-3 mb-2" style="font-size:16px;font-weight:700;">
-                            {{ $petitionTitle }}
-                        </h2>
-
-                        <div class="fc-content">
-                            <h3>Introduction</h3>
-                            <p>{!! nl2br(e($petition->description ?? '')) !!}</p>
+                        <div class="fc-content mt-3">
+                            <div class="fc-petition-description">
+                                {!! $petition->description !!}
+                            </div>
                         </div>
 
                         <div class="fc-dots my-4"></div>
@@ -114,7 +109,8 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
                                 <div class="fc-or my-3"><span>OR</span></div>
 
                                 <p class="mb-3">
-                                    If you already have an account <a class="red" href="/{{ $locale }}/login"><em>please sign in</em></a>
+                                    If you already have an account <a class="red" href="/{{ $locale }}/login"><em>please sign
+                                            in</em></a>
                                 </p>
                             @endif
 
@@ -187,7 +183,8 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
 
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>In:</strong>
-                                    <a href="{{ route('petitions.byCategory', ['locale' => $locale, 'categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}" class="red">{{ $petition->category?->name ?? '-' }}</a>
+                                    <a href="{{ route('petitions.byCategory', ['locale' => $locale, 'categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}"
+                                        class="red">{{ $petition->category?->name ?? '-' }}</a>
                                 </div>
 
                                 <div class="mt-2">
@@ -288,25 +285,30 @@ $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biari
     </div>
 @endsection
 
+<style>
+    .fc-petition-description ul,
+    .fc-petition-description ol {
+        margin-left: 22px;
+    }
+
+    .fc-petition-description p {
+        margin: 0 0 10px;
+    }
+</style>
+
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('widgetsToggle');
-    const body = document.getElementById('widgetsBody');
-    if (!toggle || !body || !window.bootstrap) return;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('widgetsToggle');
+            const body = document.getElementById('widgetsBody');
+            if (!toggle || !body || !window.bootstrap) return;
 
-    body.addEventListener('shown.bs.collapse', () => {
-        // hide the arrow cleanly
-        // const arrow = toggle.querySelector('.fc-widgets-arrow');
-        // if (arrow) arrow.remove();
-
-        // disable further collapsing (no second click)
-        toggle.removeAttribute('data-bs-toggle');
-        toggle.removeAttribute('data-bs-target');
-        toggle.removeAttribute('aria-controls');
-        toggle.style.cursor = 'default';
-        // toggle.setAttribute('disabled', 'disabled');
-    }, { once: true });
-});
-</script>
+            body.addEventListener('shown.bs.collapse', () => {
+                toggle.removeAttribute('data-bs-toggle');
+                toggle.removeAttribute('data-bs-target');
+                toggle.removeAttribute('aria-controls');
+                toggle.style.cursor = 'default';
+            }, { once: true });
+        });
+    </script>
 @endpush

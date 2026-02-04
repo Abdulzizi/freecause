@@ -104,7 +104,11 @@ class PetitionCreateController extends Controller
         $petition->status = 'draft';
         $petition->title = $data['title'];
         $petition->slug = $slug;
-        $petition->description = $data['description'];
+
+        $raw = str_replace(["\r\n", "\r"], "\n", $data['description']);
+        $raw = str_replace("\n", "<br>", $raw);
+        $petition->description = $this->sanitizePetitionHtml($raw);
+
         $petition->goal_signatures = $data['goal_signatures'];
         $petition->category_id = $data['category_id'];
 
@@ -152,5 +156,59 @@ class PetitionCreateController extends Controller
             'id' => $petition->id,
             'mode' => 'created',
         ]);
+    }
+
+    private function sanitizePetitionHtml(string $html): string
+    {
+        $allowedTags = ['br', 'p', 'strong', 'em', 'u', 'ul', 'ol', 'li'];
+
+        libxml_use_internal_errors(true);
+
+        $doc = new \DOMDocument('1.0', 'UTF-8');
+        $doc->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        $container = $doc->getElementsByTagName('div')->item(0);
+
+        $this->domSanitizeNode($container, $allowedTags, $doc);
+
+        $out = '';
+        foreach ($container->childNodes as $child) {
+            $out .= $doc->saveHTML($child);
+        }
+
+        $out = str_ireplace(['<b>', '</b>', '<i>', '</i>'], ['<strong>', '</strong>', '<em>', '</em>'], $out);
+
+        return trim($out);
+    }
+
+    private function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc): void
+    {
+        if (!$node->hasChildNodes()) return;
+
+        for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
+            $child = $node->childNodes->item($i);
+
+            if ($child->nodeType === XML_ELEMENT_NODE) {
+                $tag = strtolower($child->nodeName);
+
+                if ($child->hasAttributes()) {
+                    while ($child->attributes->length) {
+                        $child->removeAttributeNode($child->attributes->item(0));
+                    }
+                }
+
+                if (!in_array($tag, $allowedTags, true)) {
+                    while ($child->firstChild) {
+                        $node->insertBefore($child->firstChild, $child);
+                    }
+                    $node->removeChild($child);
+                    continue;
+                }
+
+                $this->domSanitizeNode($child, $allowedTags, $doc);
+            } elseif ($child->nodeType === XML_COMMENT_NODE) {
+                $node->removeChild($child);
+            }
+        }
     }
 }
