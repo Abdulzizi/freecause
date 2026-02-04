@@ -287,10 +287,13 @@
     .fc-petition-description ul,
     .fc-petition-description ol {
         margin-left: 22px;
+        list-style: disc !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
     }
 
     .fc-petition-description p {
-        margin: 0 0 10px;
+        margin: 0 0 12px;
     }
 
     .fc-petition-description {
@@ -299,25 +302,8 @@
         color: #222;
     }
 
-    .fc-petition-description ul {
-        list-style: disc !important;
-        padding-left: 22px !important;
-        margin: 0 0 14px 0 !important;
-    }
-
-    .fc-petition-description ol {
-        list-style: decimal !important;
-        padding-left: 22px !important;
-        margin: 0 0 14px 0 !important;
-    }
-
     .fc-petition-description li {
-        display: list-item !important;
         margin: 0 0 6px 0;
-    }
-
-    .fc-petition-description p {
-        margin: 0 0 12px;
     }
 
     .fc-petition-description li>ul,
@@ -334,18 +320,10 @@
     }
 
     .fc-img-wrap {
-        display: block;
         position: relative;
         overflow: hidden;
         border-radius: 10px;
         background: #f3f3f3;
-    }
-
-    .fc-petition-img {
-        width: 100%;
-        height: 380px;
-        object-fit: cover;
-        display: block;
     }
 
     .fc-img-credit {

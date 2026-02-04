@@ -50,7 +50,7 @@ a {
 }
 
 li {
-    list-style-type: none;
+    list-style-type: decimal;
 }
 
 a:focus,
@@ -1017,9 +1017,9 @@ section.tabs-area {
     font-weight: 600;
 }
 
-.privacy-inner ul li {
+/* .privacy-inner ul li {
     list-style-type: disc;
-}
+} */
 
 .privacy-inner ul {
     padding-left: 20px;
