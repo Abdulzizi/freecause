@@ -68,34 +68,25 @@
                             <label class="form-label">Text (mandatory)</label>
 
                             <div class="fc-markup">
-                                <div class="fc-markup-bar">
-                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="strong"
-                                        title="Bold (Ctrl+B)"><b>B</b></button>
-                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="em"
-                                        title="Italic (Ctrl+I)"><i>I</i></button>
-                                    <button type="button" class="fc-mbtn" data-cmd="wrap" data-tag="u"
-                                        title="Underline (Ctrl+U)"><u>U</u></button>
+                                <div id="fc-quill-toolbar" class="fc-markup-bar">
+                                    <button class="ql-bold" type="button" title="Bold (Ctrl+B)"></button>
+                                    <button class="ql-italic" type="button" title="Italic (Ctrl+I)"></button>
+                                    <button class="ql-underline" type="button" title="Underline (Ctrl+U)"></button>
 
                                     <span class="fc-markup-divider"></span>
 
-                                    <button type="button" class="fc-mbtn" data-cmd="list" data-type="ul"
-                                        title="Bullet list">•</button>
-                                    <button type="button" class="fc-mbtn" data-cmd="list" data-type="ol"
-                                        title="Numbered list">1.</button>
+                                    <button class="ql-list" value="bullet" type="button" title="Bullet list"></button>
+                                    <button class="ql-list" value="ordered" type="button" title="Numbered list"></button>
 
                                     <span class="fc-markup-spacer"></span>
                                 </div>
 
-                                <textarea id="petition_description" class="form-control" name="description" rows="10"
-                                    required>{{ old('description') }}</textarea>
+                                <div id="petition_editor" class="fc-quill"></div>
+
+                                <textarea id="petition_description" class="d-none" name="description" required>{!! old('description') !!}</textarea>
                             </div>
 
                             <div class="fc-markup-hint">allowed: br, p, strong, em, u, ul, ol, li</div>
-
-                            <div class="mt-3">
-                                <div class="fw-semibold mb-2" style="font-size:14px;">Preview</div>
-                                <div id="petition_description_preview" class="fc-preview"></div>
-                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -310,206 +301,65 @@
         margin: 0 6px;
     }
 
-    .fc-preview {
-        border: 1px solid #e3e3e3;
-        border-radius: 4px;
+    .fc-editor {
+        min-height: 260px;
         padding: 12px;
         background: #fff;
-        min-height: 120px;
+        font-size: 14px;
+        line-height: 1.45;
+        outline: none;
+    }
+
+    .fc-quill .ql-container {
         font-size: 14px;
         line-height: 1.45;
     }
 
-    .fc-preview ul,
-    .fc-preview ol {
-        margin: 0 0 0 22px;
+    .fc-quill .ql-editor {
+        min-height: 260px;
     }
 
-    .fc-preview p {
-        margin: 0 0 10px;
+    .fc-quill .ql-editor ul {
+        list-style: disc !important;
+        padding-left: 22px !important;
     }
 
-    .fc-preview ul {
-        list-style: disc;
-        padding-left: 22px;
+    .fc-quill .ql-editor ol {
+        list-style: decimal !important;
+        padding-left: 22px !important;
     }
 
-    .fc-preview ol {
-        list-style: decimal;
-        padding-left: 22px;
-    }
-
-    .fc-preview li {
-        display: list-item;
+    .fc-quill .ql-editor li {
+        display: list-item !important;
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const ta = document.getElementById('petition_description');
-        const preview = document.getElementById('petition_description_preview');
-        if (!ta || !preview) return;
+        const editorEl = document.getElementById('petition_editor');
+        const hidden = document.getElementById('petition_description');
+        if (!editorEl || !hidden || typeof Quill === 'undefined') return;
 
-        const ALLOWED = new Set(['BR', 'P', 'STRONG', 'EM', 'U', 'UL', 'OL', 'LI']);
-
-        function sanitizeToPreview(html) {
-            const tpl = document.createElement('template');
-            tpl.innerHTML = html;
-
-            const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT, null);
-            const toRemove = [];
-
-            while (walker.nextNode()) {
-                const el = walker.currentNode;
-
-                if (!ALLOWED.has(el.tagName)) {
-                    toRemove.push(el);
-                    continue;
-                }
-
-                [...el.attributes].forEach(a => el.removeAttribute(a.name));
+        const quill = new Quill(editorEl, {
+            theme: 'snow',
+            modules: {
+                toolbar: '#fc-quill-toolbar'
             }
-
-            toRemove.forEach(el => {
-                const parent = el.parentNode;
-                if (!parent) return;
-
-                while (el.firstChild) parent.insertBefore(el.firstChild, el);
-                parent.removeChild(el);
-            });
-
-            return tpl.innerHTML;
-        }
-
-        function updatePreview() {
-            const html = ta.value || '';
-            preview.innerHTML = sanitizeToPreview(html.replace(/\n/g, '<br>'));
-        }
-
-        updatePreview();
-
-        function getSelectionRange() {
-            return { start: ta.selectionStart ?? 0, end: ta.selectionEnd ?? 0 };
-        }
-        function setCursor(pos) { ta.focus(); ta.setSelectionRange(pos, pos); }
-
-        function wrapTag(tag) {
-            const { start, end } = getSelectionRange();
-            const before = ta.value.slice(0, start);
-            const selected = ta.value.slice(start, end);
-            const after = ta.value.slice(end);
-
-            const open = `<${tag}>`;
-            const close = `</${tag}>`;
-
-            if (!selected) {
-                ta.value = before + open + close + after;
-                setCursor(before.length + open.length);
-                updatePreview();
-                return;
-            }
-
-            ta.value = before + open + selected + close + after;
-            setCursor(before.length + open.length + selected.length + close.length);
-            updatePreview();
-        }
-
-        function getLineBounds(pos) {
-            const v = ta.value;
-            const lineStart = v.lastIndexOf('\n', pos - 1) + 1;
-            const lineEnd = v.indexOf('\n', pos);
-            return { lineStart, lineEnd: lineEnd === -1 ? v.length : lineEnd };
-        }
-
-        function sanitizeInline(html) {
-            const tpl = document.createElement('template');
-            tpl.innerHTML = html;
-
-            const allowedInline = new Set(['BR', 'STRONG', 'EM', 'U']);
-
-            const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT, null);
-            const toRemove = [];
-
-            while (walker.nextNode()) {
-                const el = walker.currentNode;
-
-                if (!allowedInline.has(el.tagName)) {
-                    toRemove.push(el);
-                    continue;
-                }
-
-                [...el.attributes].forEach(a => el.removeAttribute(a.name));
-            }
-
-            toRemove.forEach(el => {
-                const parent = el.parentNode;
-                if (!parent) return;
-                while (el.firstChild) parent.insertBefore(el.firstChild, el);
-                parent.removeChild(el);
-            });
-
-            return tpl.innerHTML;
-        }
-
-
-        function makeList(type) {
-            const { start, end } = getSelectionRange();
-            const v = ta.value;
-
-            let s = start, e = end;
-            if (s === e) {
-                const b = getLineBounds(s);
-                s = b.lineStart; e = b.lineEnd;
-            } else {
-                const b1 = getLineBounds(s);
-                const b2 = getLineBounds(e);
-                s = b1.lineStart; e = b2.lineEnd;
-            }
-
-            const before = v.slice(0, s);
-            const block = v.slice(s, e);
-            const after = v.slice(e);
-
-            let lines = block.split('\n');
-            while (lines.length && lines[0].trim() === '') lines.shift();
-            while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
-            if (!lines.length) return;
-
-            lines = lines.map(line => {
-                let x = line.trimEnd();
-                x = x.replace(/^\s*[-*]\s+/, '');
-                x = x.replace(/^\s*\d+\.\s+/, '');
-                return x;
-            });
-
-            const tag = type === 'ol' ? 'ol' : 'ul';
-            const listHtml =
-                `<${tag}>\n` +
-                lines.map(l => `  <li>${sanitizeInline(l.trim())}</li>`).join('\n') +
-                `\n</${tag}>`;
-
-            ta.value = before + listHtml + after;
-            setCursor(before.length + listHtml.length);
-            updatePreview();
-        }
-
-        document.querySelectorAll('.fc-mbtn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const cmd = btn.dataset.cmd;
-                if (cmd === 'wrap') return wrapTag(btn.dataset.tag);
-                if (cmd === 'list') return makeList(btn.dataset.type);
-            });
         });
 
-        ta.addEventListener('input', updatePreview);
+        const initialHtml = (hidden.value || '').trim();
+        if (initialHtml) {
+            quill.clipboard.dangerouslyPasteHTML(initialHtml);
+        }
 
-        ta.addEventListener('keydown', (e) => {
-            if (!(e.ctrlKey || e.metaKey)) return;
+        function syncHidden() {
+            hidden.value = quill.root.innerHTML;
+        }
 
-            const k = e.key.toLowerCase();
-            if (k === 'b') { e.preventDefault(); wrapTag('strong'); }
-            if (k === 'i') { e.preventDefault(); wrapTag('em'); }
-            if (k === 'u') { e.preventDefault(); wrapTag('u'); }
-        });
+        quill.on('text-change', syncHidden);
+        syncHidden();
+
+        const form = editorEl.closest('form');
+        if (form) form.addEventListener('submit', syncHidden);
     });
 </script>

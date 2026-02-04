@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/style.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
     @stack('head')
 </head>
@@ -40,6 +41,7 @@
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('legacy/js-v2/slick.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
     @stack('scripts')
 </body>

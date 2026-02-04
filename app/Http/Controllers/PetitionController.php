@@ -87,12 +87,10 @@ class PetitionController extends Controller
             ->where('locale', $locale)
             ->firstOrFail();
 
-        // if logged in: just sign with their account (optional but nice)
         if (auth()->check()) {
             return $this->signAsAuthed($request, $locale, $petition);
         }
 
-        // signup + sign (guest)
         $data = $request->validate([
             'name' => ['required', 'string', 'max:60'],
             'surname' => ['required', 'string', 'max:60'],
@@ -102,7 +100,6 @@ class PetitionController extends Controller
             'city' => ['nullable', 'string', 'max:80'],
             'nickname' => ['nullable', 'string', 'max:80'],
 
-            // prod-like “must agree”
             'agree1' => ['required', 'in:agree'],
             'agree2' => ['required', 'in:agree'],
             'agree3' => ['required', 'in:agree'],
@@ -110,7 +107,6 @@ class PetitionController extends Controller
 
         $email = strtolower(trim($data['email']));
 
-        // email already exists => do NOT sign in here, push them to login
         if (User::where('email', $email)->exists()) {
             $loginUrl = url("/{$locale}/login?email=" . urlencode($email) . "&redirect=" . urlencode(url()->previous()));
 
@@ -120,16 +116,13 @@ class PetitionController extends Controller
                 ->withErrors(['email' => 'this email is already registered. please sign in first.']);
         }
 
-        // create user but DO NOT login
         $user = User::create([
             'name' => trim($data['name'] . ' ' . $data['surname']),
             'email' => $email,
             'password' => Hash::make($data['password']),
             'locale' => $locale,
-            // if you later use email verification, keep email_verified_at NULL
         ]);
 
-        // create signature (use email uniqueness per petition)
         $sig = Signature::firstOrCreate(
             [
                 'petition_id' => $petition->id,
@@ -137,14 +130,13 @@ class PetitionController extends Controller
             ],
             [
                 'user_id' => $user->id,
-                'name' => $data['nickname'] ?: $user->name, // prod-ish: nickname can be shown
+                'name' => $data['nickname'] ?: $user->name,
                 'locale' => $locale,
                 'city' => $data['city'] ?? null,
                 'comment' => $data['comment'] ?? 'I support this petition',
             ]
         );
 
-        // only increment if it was new
         if ($sig->wasRecentlyCreated) {
             $petition->increment('signature_count');
         }
