@@ -49,9 +49,9 @@ a {
     transition-timing-function: ease-out;
 }
 
-li {
+/* li {
     list-style-type: decimal;
-}
+} */
 
 a:focus,
 a:hover {
