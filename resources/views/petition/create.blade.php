@@ -97,20 +97,20 @@
                                     <option value="">(select one)</option>
 
                                     @php
-                                        $goals = [
-                                            50,
-                                            100,
-                                            1000,
-                                            5000,
-                                            10000,
-                                            50000,
-                                            100000,
-                                            500000,
-                                            1000000,
-                                            10000000,
-                                        ];
+$goals = [
+    50,
+    100,
+    1000,
+    5000,
+    10000,
+    50000,
+    100000,
+    500000,
+    1000000,
+    10000000,
+];
 
-                                        $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
+$goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
                                     @endphp
 
                                     @foreach ($goals as $g)
@@ -343,7 +343,8 @@
         const quill = new Quill(editorEl, {
             theme: 'snow',
             modules: {
-                toolbar: '#fc-quill-toolbar'
+                toolbar: '#fc-quill-toolbar',
+                clipboard: { matchVisual: false }
             }
         });
 

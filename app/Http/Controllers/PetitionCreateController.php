@@ -63,7 +63,6 @@ class PetitionCreateController extends Controller
                         $fail('Tags: maximum 10 keywords.');
                     }
 
-                    // optional: prevent very long single tags
                     if ($tags->contains(fn($t) => mb_strlen($t) > 30)) {
                         $fail('Tags: each keyword must be 30 characters or less.');
                     }

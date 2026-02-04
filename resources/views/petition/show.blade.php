@@ -324,6 +324,40 @@
     .fc-petition-description li>ol {
         margin-top: 8px !important;
     }
+
+    .fc-petition-img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+    }
+
+    .fc-img-wrap {
+        display: block;
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #f3f3f3;
+    }
+
+    .fc-petition-img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .fc-img-credit {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        background: rgba(0, 0, 0, .55);
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 6px;
+    }
 </style>
 
 @push('scripts')
