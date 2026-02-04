@@ -7,6 +7,8 @@ use App\Models\Petition;
 use App\Models\Signature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class PetitionCreateController extends Controller
 {
@@ -129,6 +131,16 @@ class PetitionCreateController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('petitions', 'public');
+
+            // absolute filesystem path to uploaded image
+            $abs = Storage::disk('public')->path($path);
+
+            // 1200x630
+            Image::read($abs)
+                ->cover(1200, 630)
+                ->toJpeg(82)
+                ->save($abs);
+
             $petition->cover_image = $path;
         }
 
