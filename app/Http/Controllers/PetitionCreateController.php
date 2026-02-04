@@ -95,6 +95,8 @@ class PetitionCreateController extends Controller
         }
 
 
+
+
         $tags = collect(explode(',', $data['tags'] ?? ''))
             ->map(fn($t) => trim($t))
             ->filter()
@@ -143,6 +145,14 @@ class PetitionCreateController extends Controller
 
             $petition->cover_image = $path;
         }
+
+        // dd([
+        //     'content_type' => $request->header('content-type'),
+        //     'hasFile(image)' => $request->hasFile('image'),
+        //     'file(image)' => $request->file('image'),
+        //     'allFiles' => $request->allFiles(),
+        //     'errors' => session('errors')?->all(),
+        // ]);
 
         $petition->save();
 
