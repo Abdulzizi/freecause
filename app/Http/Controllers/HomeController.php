@@ -60,8 +60,7 @@ class HomeController extends Controller
 
         return view('pages.home', compact(
             'locale',
-            'h1',
-            'h2',
+            'content',
             'categories',
             'featuredPetition',
             'recentActivities'
