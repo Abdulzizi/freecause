@@ -28,7 +28,7 @@ return new class extends Migration
             $table->unique(['petition_id', 'user_id']);
             $table->unique(['petition_id', 'email']);
 
-            $table->index(['locale', 'created_at']);
+            $table->index(['petition_id', 'created_at']);
             $table->index(['email']);
         });
     }

@@ -44,5 +44,29 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('navbarContent', $navbarContent);
         });
+
+        View::composer('partials.navbar', function ($view) {
+            $locale = app()->getLocale();
+
+            $pageContent = cache()->remember(
+                "page_contents:$locale",
+                now()->addHours(6),
+                fn() => \App\Models\PageContent::where('locale', $locale)->pluck('value', 'key')
+            );
+
+            $categories = cache()->remember(
+                "categories:list:$locale",
+                now()->addHours(12),
+                fn() => \App\Models\Category::query()
+                    ->join('category_translations as ct', function ($j) use ($locale) {
+                        $j->on('ct.category_id', '=', 'categories.id')
+                            ->where('ct.locale', '=', $locale);
+                    })
+                    ->orderBy('categories.id')
+                    ->get(['categories.id', 'ct.name as name', 'ct.slug as slug'])
+            );
+
+            $view->with(compact('pageContent', 'categories'));
+        });
     }
 }

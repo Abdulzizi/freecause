@@ -48,20 +48,38 @@ class PetitionController extends Controller
 
     public function index(string $locale)
     {
-        $rows = PetitionTranslation::query()
-            ->where('locale', $locale)
-            ->whereHas('petition', fn($q) => $q->where('status', 'published'))
-            ->with(['petition' => fn($q) => $q->select('id', 'signature_count', 'goal_signatures', 'category_id', 'cover_image')])
-            ->latest('id')
-            ->paginate(15)
-            ->withQueryString();
+        $page = (int) request('page', 1);
+
+        $cacheKey = "petitions:index:{$locale}:page:{$page}";
+
+        $petitions = cache()->remember($cacheKey, now()->addSeconds(60), function () use ($locale) {
+            return Petition::query()
+                ->select([
+                    'petitions.id',
+                    'petitions.signature_count',
+                    'petitions.goal_signatures',
+                    'petitions.category_id',
+                    'petitions.cover_image',
+                    'pt.title as tr_title',
+                    'pt.slug as tr_slug',
+                ])
+                ->join('petition_translations as pt', function ($join) use ($locale) {
+                    $join->on('pt.petition_id', '=', 'petitions.id')
+                        ->where('pt.locale', '=', $locale);
+                })
+                ->where('petitions.status', 'published')
+                ->orderByDesc('petitions.id')
+                ->paginate(15);
+        });
+
+        $petitions->withQueryString();
 
         return view('pages.petitions-list', [
             'pageTitle' => 'All the petitions',
             'heading' => 'Petitions',
-            'petitions' => $rows,
-            'petitionTitle' => fn($tr) => $tr->title,
-            'petitionUrl' => fn($tr) => url("/{$locale}/petition/{$tr->slug}/{$tr->petition_id}"),
+            'petitions' => $petitions,
+            'petitionTitle' => fn($row) => $row->tr_title,
+            'petitionUrl' => fn($row) => url("/{$locale}/petition/{$row->tr_slug}/{$row->id}"),
         ]);
     }
 

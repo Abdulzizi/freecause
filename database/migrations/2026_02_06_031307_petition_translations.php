@@ -22,6 +22,8 @@ return new class extends Migration
 
             $table->unique(['petition_id', 'locale']);
             $table->unique(['locale', 'slug']);
+
+            $table->index(['petition_id', 'locale']);
         });
     }
 
