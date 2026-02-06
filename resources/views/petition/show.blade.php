@@ -291,6 +291,30 @@
                             </div>
                         </div>
 
+                        @auth
+                            @if((int) auth()->id() === (int) $petition->user_id)
+                                <div class="bg-white rounded-3 p-4 shadow-sm my-4" style="border:1px solid #eee;">
+                                    <div class="fc-box-title">Operations</div>
+                                    <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
+                                        <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                    </div>
+
+                                    <div style="font-size:14px;line-height:1.9;">
+                                        <div>
+                                            <a class="red" href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">Edit</a>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            Download signatures :
+                                            <a class="red" href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
+                                            <span class="text-muted"> </span>
+                                            <a class="red" href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endauth
+
                     </div>
                 </div>
             </div>

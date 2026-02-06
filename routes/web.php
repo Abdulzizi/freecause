@@ -80,4 +80,25 @@ Route::group([
         ->where('id', '[0-9]+')
         ->where('status', '([0-9]+|created)?')
         ->name('petition.thanks');
+
+    // Petition owner operations
+    Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])
+        ->middleware('auth')
+        ->where(['id' => '[0-9]+'])
+        ->name('petition.edit');
+
+    Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])
+        ->middleware('auth')
+        ->where(['id' => '[0-9]+'])
+        ->name('petition.update');
+
+    Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])
+        ->middleware('auth')
+        ->where(['id' => '[0-9]+'])
+        ->name('petition.download.txt');
+
+    Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])
+        ->middleware('auth')
+        ->where(['id' => '[0-9]+'])
+        ->name('petition.download.pdf');
 });

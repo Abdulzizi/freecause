@@ -1,6 +1,28 @@
+@php
+    $mode = $mode ?? 'create'; // create|edit
+    $isEdit = $mode === 'edit';
+
+    // when editing, controller should pass: $petition, $tr, $locale, $categories
+    // when creating, controller should pass: $categories, $locale (and no $petition/$tr)
+
+    $oldTitle = old('title', $tr->title ?? '');
+    $oldDesc = old('description', $tr->description ?? '');
+
+    $oldGoal = old('goal_signatures', $petition->goal_signatures ?? null);
+    $oldCategory = old('category_id', $petition->category_id ?? null);
+
+    $oldTags = old('tags', $petition->tags ?? '');
+    $oldImageUrl = old('image_url', $petition->image_url ?? '');
+    $oldYoutube = old('youtube', $petition->youtube ?? '');
+    $oldTarget = old('target', $petition->target ?? '');
+    $oldCommunity = old('community', $petition->community ?? '');
+    $oldCommunityUrl = old('community_url', $petition->community_url ?? '');
+    $oldCity = old('city', $petition->city ?? '');
+@endphp
+
 @extends('layouts.legacy')
 
-@section('title', 'Create petition - FreeCause')
+@section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
 
 @section('content')
     <section class="py-5">
@@ -9,44 +31,44 @@
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
-                        @foreach($errors->all() as $e)
+                        @foreach ($errors->all() as $e)
                             <li>{{ $e }}</li>
                         @endforeach
                     </ul>
                 </div>
             @endif
 
+            @if(!$isEdit)
+                <h2 class="text-center mb-4">Start a free petition In Just 3 Easy Steps</h2>
 
-            <h2 class="text-center mb-4">Start a free petition In Just 3 Easy Steps</h2>
-
-            <div class="fc-steps mb-5">
-                <div class="fc-step">
-                    <span class="fc-step-icon fc-step-1 is-active"></span>
-                    <div class="fc-step-text">Create your petition</div>
-                </div>
-
-                <div class="fc-step">
-                    <span class="fc-step-icon fc-step-2"></span>
-                    <div class="fc-step-text">Share with friends</div>
-                </div>
-
-                <div class="fc-step">
-                    <span class="fc-step-icon fc-step-3"></span>
-                    <div class="fc-step-text">Change the world!</div>
-                </div>
-            </div>
-
-
-            @guest
-                <div class="row g-4 mb-4">
-                    <div class="col-lg-6">
-                        @include('auth.partials._register_card', ['redirect' => url()->current()])
+                <div class="fc-steps mb-5">
+                    <div class="fc-step">
+                        <span class="fc-step-icon fc-step-1 is-active"></span>
+                        <div class="fc-step-text">Create your petition</div>
                     </div>
-                    <div class="col-lg-6">
-                        @include('auth.partials._login_card', ['redirect' => url()->current()])
+
+                    <div class="fc-step">
+                        <span class="fc-step-icon fc-step-2"></span>
+                        <div class="fc-step-text">Share with friends</div>
+                    </div>
+
+                    <div class="fc-step">
+                        <span class="fc-step-icon fc-step-3"></span>
+                        <div class="fc-step-text">Change the world!</div>
                     </div>
                 </div>
-            @endguest
+
+                @guest
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-6">
+                            @include('auth.partials._register_card', ['redirect' => url()->current()])
+                        </div>
+                        <div class="col-lg-6">
+                            @include('auth.partials._login_card', ['redirect' => url()->current()])
+                        </div>
+                    </div>
+                @endguest
+            @endif
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
@@ -56,12 +78,14 @@
                         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
                     </div>
 
-                    <form method="POST" action="{{ lroute('petition.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ $isEdit
+                        ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
+                        : lroute('petition.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-3">
                             <label class="form-label">Title (mandatory)</label>
-                            <input class="form-control" name="title" value="{{ old('title') }}" required>
+                            <input class="form-control" name="title" value="{{ $oldTitle }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -83,7 +107,8 @@
 
                                 <div id="petition_editor" class="fc-quill"></div>
 
-                                <textarea id="petition_description" class="d-none" name="description" required>{!! old('description') !!}</textarea>
+                                <textarea id="petition_description" class="d-none" name="description"
+                                    required>{!! $oldDesc !!}</textarea>
                             </div>
 
                             <div class="fc-markup-hint">allowed: br, p, strong, em, u, ul, ol, li</div>
@@ -97,35 +122,25 @@
                                     <option value="">(select one)</option>
 
                                     @php
-$goals = [
-    50,
-    100,
-    1000,
-    5000,
-    10000,
-    50000,
-    100000,
-    500000,
-    1000000,
-    10000000,
-];
-
-$goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
+                                        $goals = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
+                                        $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
                                     @endphp
 
                                     @foreach ($goals as $g)
-                                        <option value="{{ $g }}" @selected((int) old('goal_signatures') === $g)>
+                                        <option value="{{ $g }}" @selected((int) $oldGoal === (int) $g)>
                                             {{ $goalLabel($g) }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Category (mandatory)</label>
                                 <select class="form-select" name="category_id" required>
                                     <option value="">(select one)</option>
-                                    @foreach($categories as $c)
-                                        <option value="{{ $c->id }}" @selected(old('category_id') == $c->id)>{{ $c->name }}
+                                    @foreach ($categories as $c)
+                                        <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
+                                            {{ $c->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -134,7 +149,7 @@ $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
 
                         <div class="mb-3">
                             <label class="form-label">Tags</label>
-                            <input class="form-control" name="tags" value="{{ old('tags') }}">
+                            <input class="form-control" name="tags" value="{{ $oldTags }}">
                             <small class="text-muted">10 keywords max, separated by comma</small>
                         </div>
 
@@ -143,42 +158,43 @@ $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
                             <input type="file" class="form-control" name="image">
                             <div class="mt-2">
                                 <label class="form-label">Or supply an external link :</label>
-                                <input class="form-control" name="image_url" value="{{ old('image_url') }}"
+                                <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
                                     placeholder="https://">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">URL Youtube video</label>
-                            <input class="form-control" name="youtube" value="{{ old('youtube') }}">
+                            <input class="form-control" name="youtube" value="{{ $oldYoutube }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Petition target</label>
-                            <input class="form-control" name="target" value="{{ old('target') }}">
+                            <input class="form-control" name="target" value="{{ $oldTarget }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Petition community</label>
-                            <input class="form-control" name="community" value="{{ old('community') }}">
+                            <input class="form-control" name="community" value="{{ $oldCommunity }}">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Petition community url</label>
-                            <input class="form-control" name="community_url" value="{{ old('community_url') }}">
+                            <input class="form-control" name="community_url" value="{{ $oldCommunityUrl }}">
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label">City</label>
-                            <input class="form-control" name="city" value="{{ old('city') }}">
+                            <input class="form-control" name="city" value="{{ $oldCity }}">
                         </div>
 
                         <div class="text-center">
                             @auth
-                                <button class="btn btn-danger px-5">Submit</button>
+                                <button class="btn btn-danger px-5">{{ $isEdit ? 'Update' : 'Submit' }}</button>
                             @else
                                 <button class="btn btn-danger px-5" disabled title="Please login first">Submit</button>
-                                <div class="text-muted mt-2" style="font-size:14px;">Please login or register above to submit.
+                                <div class="text-muted mt-2" style="font-size:14px;">
+                                    Please login or register above to submit.
                                 </div>
                             @endauth
                         </div>
@@ -191,63 +207,67 @@ $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
     </section>
 @endsection
 
+@if(!$isEdit)
+    <style>
+        .fc-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .fc-step {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-width: 240px;
+        }
+
+        .fc-step-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #111;
+            white-space: nowrap;
+        }
+
+        .fc-step-icon {
+            width: 64px;
+            height: 64px;
+            display: inline-block;
+            background-image: url('{{ asset("legacy/images/startpetition-icons.png") }}');
+            background-repeat: no-repeat;
+            background-size: 200% 300%;
+        }
+
+        .fc-step-1 {
+            background-position: 0% 0%;
+        }
+
+        .fc-step-2 {
+            background-position: 0% 50%;
+        }
+
+        .fc-step-3 {
+            background-position: 0% 100%;
+        }
+
+        .fc-step-icon.is-active.fc-step-1 {
+            background-position: 100% 0%;
+        }
+
+        .fc-step-icon.is-active.fc-step-2 {
+            background-position: 100% 50%;
+        }
+
+        .fc-step-icon.is-active.fc-step-3 {
+            background-position: 100% 100%;
+        }
+    </style>
+@endif
+
 <style>
-    .fc-steps {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 60px;
-        flex-wrap: wrap;
-        margin-bottom: 2.5rem;
-    }
-
-    .fc-step {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        min-width: 240px;
-    }
-
-    .fc-step-text {
-        font-size: 20px;
-        font-weight: 500;
-        color: #111;
-        white-space: nowrap;
-    }
-
-    .fc-step-icon {
-        width: 64px;
-        height: 64px;
-        display: inline-block;
-        background-image: url('{{ asset("legacy/images/startpetition-icons.png") }}');
-        background-repeat: no-repeat;
-        background-size: 200% 300%;
-    }
-
-    .fc-step-1 {
-        background-position: 0% 0%;
-    }
-
-    .fc-step-2 {
-        background-position: 0% 50%;
-    }
-
-    .fc-step-3 {
-        background-position: 0% 100%;
-    }
-
-    .fc-step-icon.is-active.fc-step-1 {
-        background-position: 100% 0%;
-    }
-
-    .fc-step-icon.is-active.fc-step-2 {
-        background-position: 100% 50%;
-    }
-
-    .fc-step-icon.is-active.fc-step-3 {
-        background-position: 100% 100%;
-    }
-
     .fc-markup {
         border: 1px solid #d9d9d9;
         border-radius: 4px;
@@ -334,33 +354,35 @@ $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' signatures';
     }
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const editorEl = document.getElementById('petition_editor');
-        const hidden = document.getElementById('petition_description');
-        if (!editorEl || !hidden || typeof Quill === 'undefined') return;
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editorEl = document.getElementById('petition_editor');
+            const hidden = document.getElementById('petition_description');
+            if (!editorEl || !hidden || typeof Quill === 'undefined') return;
 
-        const quill = new Quill(editorEl, {
-            theme: 'snow',
-            modules: {
-                toolbar: '#fc-quill-toolbar',
-                clipboard: { matchVisual: false }
+            const quill = new Quill(editorEl, {
+                theme: 'snow',
+                modules: {
+                    toolbar: '#fc-quill-toolbar',
+                    clipboard: { matchVisual: false }
+                }
+            });
+
+            const initialHtml = (hidden.value || '').trim();
+            if (initialHtml) {
+                quill.clipboard.dangerouslyPasteHTML(initialHtml);
             }
+
+            function syncHidden() {
+                hidden.value = quill.root.innerHTML;
+            }
+
+            quill.on('text-change', syncHidden);
+            syncHidden();
+
+            const form = editorEl.closest('form');
+            if (form) form.addEventListener('submit', syncHidden);
         });
-
-        const initialHtml = (hidden.value || '').trim();
-        if (initialHtml) {
-            quill.clipboard.dangerouslyPasteHTML(initialHtml);
-        }
-
-        function syncHidden() {
-            hidden.value = quill.root.innerHTML;
-        }
-
-        quill.on('text-change', syncHidden);
-        syncHidden();
-
-        const form = editorEl.closest('form');
-        if (form) form.addEventListener('submit', syncHidden);
-    });
-</script>
+    </script>
+@endpush
