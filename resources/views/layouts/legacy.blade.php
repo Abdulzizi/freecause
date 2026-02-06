@@ -32,10 +32,61 @@
     <div id="wp-remote-footer"></div>
     <script>
         (function () {
+            var SUPPORTED = ['en', 'fr', 'it'];
+
+            function getLocaleFromPath() {
+                var parts = (window.location.pathname || '/').split('/').filter(Boolean);
+                var first = parts[0];
+                return SUPPORTED.indexOf(first) !== -1 ? first : null;
+            }
+
+            function localizeWpFooterLinks(rootEl, locale) {
+                if (!rootEl || !locale) return;
+
+                var anchors = rootEl.querySelectorAll('a[href]');
+                anchors.forEach(function (a) {
+                    var href = a.getAttribute('href');
+                    if (!href) return;
+
+                    if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+                        return;
+                    }
+
+                    if (href.startsWith('http://') || href.startsWith('https://')) {
+                        try {
+                            var u = new URL(href);
+                            if (u.hostname.endsWith('freecause.com')) {
+                                href = u.pathname + (u.search || '') + (u.hash || '');
+                            } else {
+                                return;
+                            }
+                        } catch (e) {
+                            return;
+                        }
+                    }
+
+                    if (!href.startsWith('/')) return;
+
+                    var parts = href.split('/').filter(Boolean);
+                    if (parts.length && SUPPORTED.indexOf(parts[0]) !== -1) return;
+
+                    a.setAttribute('href', '/' + locale + href);
+                });
+            }
+
             fetch('https://www.freecause.com/magazine/wp-json/global/v2/footer')
-                .then(res => res.json())
-                .then(data => { if (data.html) document.getElementById('wp-remote-footer').innerHTML = data.html; })
-                .catch(() => { });
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (!data.html) return;
+
+                    var el = document.getElementById('wp-remote-footer');
+                    el.innerHTML = data.html;
+
+                    // patch links AFTER injection
+                    var locale = getLocaleFromPath();
+                    localizeWpFooterLinks(el, locale);
+                })
+                .catch(function () { });
         })();
     </script>
 

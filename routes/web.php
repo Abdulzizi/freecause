@@ -44,12 +44,16 @@ Route::group([
         ->name('account.petitions');
 
     // Static pages
-    Route::get('/magazine', function () {
-        return view('pages.magazine');
-    })->name('magazine');
-    Route::get('/faqs', function () {
-        return view('pages.faq');
-    })->name('faqs');
+    Route::get('/magazine', fn() => view('pages.magazine'))->name('magazine');
+    Route::get('/faqs', fn() => view('pages.faq'))->name('faqs');
+    Route::get('/terms-of-service', fn() => view('pages.terms-of-service'))->name('terms');
+    Route::get('/ethical-code', fn() => view('pages.ethical-code'))->name('ethical-code');
+    Route::get('/privacy-policy', fn() => view('pages.privacy-policy'))->name('privacy-policy');
+    Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
+
+    Route::post('/contacts', function () {
+        return back()->with('success', 'Thanks! (UI only for now)');
+    })->name('contacts.submit');
 
     // Home + Petitions
     Route::get('/', [HomeController::class, 'index'])->name('home');
