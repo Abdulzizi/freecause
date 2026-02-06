@@ -9,10 +9,10 @@ return new class extends Migration {
     {
         Schema::create('page_contents', function (Blueprint $table) {
             $table->id();
-            $table->string('page', 60);          // e.g. 'home'
-            $table->string('locale', 8);         // e.g. 'en', 'fr'
-            $table->string('key', 80);           // e.g. 'hero_h1'
-            $table->longText('value')->nullable(); // can contain HTML
+            $table->string('page', 60);
+            $table->string('locale', 8);
+            $table->string('key', 80);
+            $table->longText('value')->nullable();
             $table->timestamps();
 
             $table->unique(['page', 'locale', 'key']);

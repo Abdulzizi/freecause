@@ -10,10 +10,14 @@ return new class extends Migration
     {
         Schema::table('petitions', function (Blueprint $table) {
             if (Schema::hasColumn('petitions', 'title')) $table->dropColumn('title');
-            if (Schema::hasColumn('petitions', 'slug')) $table->dropUnique(['slug']);
+            if (Schema::hasColumn('petitions', 'slug')) {
+                $table->dropUnique('petitions_slug_unique');
+            }
             if (Schema::hasColumn('petitions', 'slug')) $table->dropColumn('slug');
             if (Schema::hasColumn('petitions', 'description')) $table->dropColumn('description');
-            if (Schema::hasColumn('petitions', 'locale')) $table->dropIndex(['locale', 'status']);
+            if (Schema::hasColumn('petitions', 'locale')) {
+                $table->dropIndex('petitions_locale_status_index');
+            }
             if (Schema::hasColumn('petitions', 'locale')) $table->dropColumn('locale');
         });
     }

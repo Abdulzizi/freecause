@@ -64,16 +64,37 @@ class Petition extends Model
     {
         $locale ??= app()->getLocale();
 
-        return $this->translations()
-            ->where('locale', $locale)
-            ->first();
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale);
+        }
+
+        return $this->translations()->where('locale', $locale)->first();
     }
 
     public function translationOrFallback(?string $locale = null): ?PetitionTranslation
     {
         $locale ??= app()->getLocale();
 
-        return $this->translation($locale)
-            ?? $this->translations()->orderBy('id')->first();
+        $t = $this->translation($locale);
+        if ($t) return $t;
+
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->sortBy('id')->first();
+        }
+
+        return $this->translations()->orderBy('id')->first();
+    }
+
+    public function slugFor(?string $locale = null): ?string
+    {
+        return $this->translationOrFallback($locale)?->slug;
+    }
+    public function titleFor(?string $locale = null): ?string
+    {
+        return $this->translationOrFallback($locale)?->title;
+    }
+    public function descriptionFor(?string $locale = null): ?string
+    {
+        return $this->translationOrFallback($locale)?->description;
     }
 }

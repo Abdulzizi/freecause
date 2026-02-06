@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index(['locale', 'status']);
+            $table->index(['status']);
             $table->index('created_at');
         });
     }
