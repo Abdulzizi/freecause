@@ -39,8 +39,8 @@ class PetitionFactory extends Factory
             'community' => $this->faker->optional(0.25)->company(),
             'community_url' => $this->faker->optional(0.25)->url(),
             'youtube_url' => $this->faker->optional(0.2)->url(),
-            'image_url' => $this->faker->optional(0.4)->imageUrl(1200, 600),
-            'cover_image' => null,
+            'image_url' => null,
+            'cover_image' =>  'https://picsum.photos/seed/' . $this->faker->uuid . '/1200/630'
         ];
     }
 }
