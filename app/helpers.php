@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PetitionTranslation;
 use Illuminate\Support\Facades\Route;
 
 if (! function_exists('lroute')) {
@@ -36,6 +37,21 @@ if (! function_exists('locale_url')) {
 
         $params = $route->parameters();
         $params['locale'] = $newLocale;
+
+        if (isset($params['id']) && (isset($params['slug']) || str_contains($routeName, 'petition.'))) {
+            $id = (int) $params['id'];
+
+            $tr = PetitionTranslation::query()
+                ->where('petition_id', $id)
+                ->where('locale', $newLocale)
+                ->first()
+                ?? PetitionTranslation::query()->where('petition_id', $id)->orderBy('id')->first();
+
+            if ($tr) {
+                $params['slug'] = $tr->slug;
+                $params['locale'] = $tr->locale;
+            }
+        }
 
         return route($routeName, $params) . (request()->getQueryString()
             ? '?' . request()->getQueryString()

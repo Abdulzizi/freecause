@@ -166,7 +166,7 @@ class PetitionCreateController extends Controller
                 'locale' => $locale,
                 'slug'   => $slug,
                 'id'     => $petition->id,
-                'mode'   => 'created',
+                'status'   => 'created',
             ]);
         });
     }

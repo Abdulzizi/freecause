@@ -199,9 +199,17 @@ class PetitionController extends Controller
             $petition->increment('signature_count');
         }
 
+        $tr = PetitionTranslation::query()
+            ->where('petition_id', $petition->id)
+            ->where('locale', $locale)
+            ->first()
+            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+
+        abort_if(! $tr, 404);
+
         return redirect()->route('petition.thanks', [
-            'locale' => $locale,
-            'slug' => $petition->slug,
+            'locale' => $tr->locale,
+            'slug' => $tr->slug,
             'id' => $petition->id,
             'status' => 0,
         ]);
@@ -209,16 +217,19 @@ class PetitionController extends Controller
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
     {
-        $petition = Petition::query()->findOrFail($id);
+        $petition = Petition::query()->with('category')->findOrFail($id);
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
             ->where('locale', $locale)
-            ->firstOrFail();
+            ->first()
+            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
 
-        if ($petition->slug !== $slug) {
+        abort_if(! $tr, 404);
+
+        if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.thanks', [
-                'locale' => $locale,
+                'locale' => $tr->locale,
                 'slug'   => $tr->slug,
                 'id'     => $petition->id,
                 'status' => $status,
@@ -228,14 +239,21 @@ class PetitionController extends Controller
         $mode = ((string) $status === 'created') ? 'created' : 'signed';
 
         $suggestions = Petition::query()
-            ->where('locale', $locale)
-            ->where('id', '!=', $petition->id)
-            ->when($petition->category_id, fn($q) => $q->where('category_id', $petition->category_id))
-            ->orderByDesc('signature_count')
+            ->select(['petitions.*', 'pt.title as tr_title', 'pt.slug as tr_slug'])
+            ->join('petition_translations as pt', function ($join) use ($locale) {
+                $join->on('pt.petition_id', '=', 'petitions.id')
+                    ->where('pt.locale', '=', $locale);
+            })
+            ->where('petitions.status', 'published')
+            ->where('petitions.id', '!=', $petition->id)
+            ->when($petition->category_id, fn($q) => $q->where('petitions.category_id', $petition->category_id))
+            ->orderByDesc('petitions.signature_count')
+            ->orderByDesc('petitions.id')
             ->limit(5)
-            ->get(['id', 'slug', 'title', 'locale']);
+            ->get();
 
-        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode'));
+
+        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode', 'tr'));
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
@@ -244,15 +262,20 @@ class PetitionController extends Controller
             return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
-        $petition = Petition::query()
-            ->where('id', $id)
-            ->where('locale', $locale)
-            ->firstOrFail();
+        $petition = Petition::query()->findOrFail($id);
 
-        if ($petition->slug !== $slug) {
+        $tr = PetitionTranslation::query()
+            ->where('petition_id', $petition->id)
+            ->where('locale', $locale)
+            ->first()
+            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+
+        abort_if(! $tr, 404);
+
+        if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.sign.page', [
-                'locale' => $locale,
-                'slug' => $petition->slug,
+                'locale' => $tr->locale,
+                'slug' => $tr->slug,
                 'id' => $petition->id,
             ]);
         }
@@ -264,13 +287,13 @@ class PetitionController extends Controller
 
         if ($hasSigned) {
             return redirect()->route('petition.show', [
-                'locale' => $locale,
-                'slug' => $petition->slug,
+                'locale' => $tr->locale,
+                'slug' => $tr->slug,
                 'id' => $petition->id,
             ]);
         }
 
-        return view('petition.sign_page', compact('petition', 'locale'));
+        return view('petition.sign_page', compact('petition', 'locale', 'tr'));
     }
 
     public function myPetitions(Request $request, string $locale)
@@ -279,17 +302,23 @@ class PetitionController extends Controller
 
         $tab = $request->query('tab');
 
+        $withTr = function ($q) use ($locale) {
+            $q->join('petition_translations as pt', function ($join) use ($locale) {
+                $join->on('pt.petition_id', '=', 'petitions.id')->where('pt.locale', '=', $locale);
+            })->addSelect(['pt.title as tr_title', 'pt.slug as tr_slug']);
+        };
+
         $signedBase = Petition::query()
             ->select('petitions.*', 'signatures.created_at as signed_at')
             ->join('signatures', 'signatures.petition_id', '=', 'petitions.id')
-            ->where('petitions.locale', $locale)
             ->where('signatures.email', $u->email)
+            ->tap($withTr)
             ->orderByDesc('signatures.created_at');
 
         $createdBase = Petition::query()
-            ->where('locale', $locale)
             ->where('user_id', $u->id)
-            ->latest('created_at');
+            ->tap($withTr)
+            ->latest('petitions.created_at');
 
         if ($tab === 'signed') {
             $signed = $signedBase->paginate(10)->withQueryString();
