@@ -217,29 +217,40 @@ class PetitionController extends Controller
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
     {
-        $petition = Petition::query()->with('category')->findOrFail($id);
+        $petition = Petition::query()
+            ->with('category')
+            ->findOrFail($id);
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
             ->where('locale', $locale)
             ->first()
-            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+            ?? PetitionTranslation::query()
+            ->where('petition_id', $petition->id)
+            ->orderBy('id')
+            ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.thanks', [
-                'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
-                'status' => $status,
+                'locale'  => $tr->locale,
+                'slug'    => $tr->slug,
+                'id'      => $petition->id,
+                'status'  => $status,
             ]);
         }
 
         $mode = ((string) $status === 'created') ? 'created' : 'signed';
 
         $suggestions = Petition::query()
-            ->select(['petitions.*', 'pt.title as tr_title', 'pt.slug as tr_slug'])
+            ->select([
+                'petitions.id',
+                'petitions.category_id',
+                'petitions.signature_count',
+                'pt.title as tr_title',
+                'pt.slug as tr_slug',
+            ])
             ->join('petition_translations as pt', function ($join) use ($locale) {
                 $join->on('pt.petition_id', '=', 'petitions.id')
                     ->where('pt.locale', '=', $locale);
@@ -251,7 +262,6 @@ class PetitionController extends Controller
             ->orderByDesc('petitions.id')
             ->limit(5)
             ->get();
-
 
         return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode', 'tr'));
     }

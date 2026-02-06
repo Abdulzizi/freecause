@@ -42,8 +42,8 @@
                         <div class="mb-2">
                             <a class="d-block p-2"
                                style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
-                               href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->slug, 'id' => $p->id]) }}">
-                                {{ $p->title }}
+                               href="{{ lroute('petition.show', ['slug' => $p->tr_slug, 'id' => $p->id]) }}">
+                                {{ $p->tr_title }}
                             </a>
                         </div>
                     @empty

@@ -45,15 +45,16 @@ class HomeController extends Controller
             ->first();
 
         $recentActivities = Signature::query()
-            ->where('locale', $locale)
             ->with([
                 'petition' => function ($q) use ($locale) {
-                    $q->select('petitions.*')
-                        ->with(['translations' => function ($t) use ($locale) {
-                            $t->where('locale', $locale);
-                        }]);
+                    $q->with(['translations' => function ($t) use ($locale) {
+                        $t->where('locale', $locale);
+                    }]);
                 },
             ])
+            ->whereHas('petition.translations', function ($t) use ($locale) {
+                $t->where('locale', $locale);
+            })
             ->latest('created_at')
             ->limit(10)
             ->get();
