@@ -23,8 +23,19 @@ class HomeController extends Controller
         $h2 = $content['hero_h2'] ?? '';
 
         $categories = Category::query()
-            ->where('is_active', true)
-            ->orderBy('name')
+            ->select([
+                'categories.id',
+                'categories.sort_order',
+                'categories.is_active',
+                'ct.name as tr_name',
+                'ct.slug as tr_slug',
+            ])
+            ->join('category_translations as ct', function ($join) use ($locale) {
+                $join->on('ct.category_id', '=', 'categories.id')
+                    ->where('ct.locale', '=', $locale);
+            })
+            ->where('categories.is_active', true)
+            ->orderBy('categories.sort_order')
             ->get();
 
         $featuredPetition = Petition::query()
@@ -45,17 +56,18 @@ class HomeController extends Controller
             ->first();
 
         $recentActivities = Signature::query()
-            ->with([
-                'petition' => function ($q) use ($locale) {
-                    $q->with(['translations' => function ($t) use ($locale) {
-                        $t->where('locale', $locale);
-                    }]);
-                },
+            ->select([
+                'signatures.*',
+                'petitions.id as petition_id',
+                'pt.title as petition_title',
+                'pt.slug as petition_slug',
             ])
-            ->whereHas('petition.translations', function ($t) use ($locale) {
-                $t->where('locale', $locale);
+            ->join('petitions', 'petitions.id', '=', 'signatures.petition_id')
+            ->join('petition_translations as pt', function ($join) use ($locale) {
+                $join->on('pt.petition_id', '=', 'petitions.id')
+                    ->where('pt.locale', '=', $locale);
             })
-            ->latest('created_at')
+            ->latest('signatures.created_at')
             ->limit(10)
             ->get();
 

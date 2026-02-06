@@ -132,11 +132,13 @@
                                                 <ul class="recent-activities most-listing">
                                                     @forelse($recentActivities as $sig)
                                                         @php
-                                                            $p = $sig->petition;
-                                                            $tr = $p?->translations?->first();
+                                                            $hasPetition = !empty($sig->petition_id) && !empty($sig->petition_slug);
 
-                                                            $url = ($p && $tr)
-                                                                ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $p->id])
+                                                            $url = $hasPetition
+                                                                ? lroute('petition.show', [
+                                                                    'slug' => $sig->petition_slug,
+                                                                    'id'   => $sig->petition_id,
+                                                                ])
                                                                 : '#';
 
                                                             $name = trim((string) ($sig->name ?? 'someone'));
@@ -145,6 +147,8 @@
                                                                 count($nameParts) >= 2
                                                                     ? $nameParts[0] . ' ' . strtoupper(mb_substr($nameParts[1], 0, 1)) . '.'
                                                                     : $name;
+
+                                                            $petitionTitle = $sig->petition_title ?? ($content['petition_fallback'] ?? 'petition');
                                                         @endphp
 
                                                         <li>
@@ -159,7 +163,7 @@
                                                                     </span>
                                                                 </div>
 
-                                                                <p class="fs-14">{{ $tr?->title ?? ($content['petition_fallback'] ?? 'petition') }}</p>
+                                                                <p class="fs-14">{{ $petitionTitle }}</p>
                                                             </a>
                                                         </li>
                                                     @empty
@@ -242,10 +246,10 @@
             <div class="row category-row">
                 @foreach ($categories as $cat)
                     <div class="col-lg-3 col-sm-6 mb-3">
-                        <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->slug, 'category' => $cat->id]) }}"
+                        <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="category-card d-block">
                             <span class="category-icon"><i class="bi bi-house-check"></i></span>
-                            <h3 class="h5">{{ $cat->name }}</h3>
+                            <h3 class="h5">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
                 @endforeach
