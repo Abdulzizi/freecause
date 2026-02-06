@@ -152,6 +152,53 @@ class PageContentSeeder extends Seeder
             ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_login',    'value' => 'Accedi'],
             ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_logout',   'value' => 'Esci'],
             ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_startfree', 'value' => 'Inizia gratis'],
+
+            // PETITION SIGN PAGE
+            ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'title',    'value' => 'Sign - :title'],
+            ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'h2_line1', 'value' => 'Support and share your cause.'],
+            ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'h2_line2', 'value' => 'Please click "like" button and sign the petition'],
+            ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'btn_sign', 'value' => 'Sign'],
+
+            ['page' => 'petition_sign', 'locale' => 'fr', 'key' => 'title',    'value' => 'Signer - :title'],
+            ['page' => 'petition_sign', 'locale' => 'fr', 'key' => 'h2_line1', 'value' => 'Soutenez et partagez votre cause.'],
+            ['page' => 'petition_sign', 'locale' => 'fr', 'key' => 'h2_line2', 'value' => 'Veuillez cliquer sur le bouton "J’aime" et signer la pétition'],
+            ['page' => 'petition_sign', 'locale' => 'fr', 'key' => 'btn_sign', 'value' => 'Signer'],
+
+            ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'title',    'value' => 'Firma - :title'],
+            ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'h2_line1', 'value' => 'Sostieni e condividi la tua causa.'],
+            ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'h2_line2', 'value' => 'Clicca sul pulsante "Mi piace" e firma la petizione'],
+            ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'btn_sign', 'value' => 'Firma'],
+
+            // PETITION THANKS PAGE
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'title_created',      'value' => 'Thanks! - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'title_signed',       'value' => 'Thank you for having signed - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'h1_created',         'value' => 'Thanks!'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'h1_signed',          'value' => 'Thank you for having signed:'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'p_created',          'value' => 'Your petition has been created successfully. You can open it now using the link above.'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'p_signed',           'value' => 'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'suggestions_h2',      'value' => 'Petitions you might like'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'suggestions_empty',   'value' => 'No suggestions yet.'],
+            ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'invite_btn',          'value' => 'Invite friends from your address book »'],
+
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'title_created',      'value' => 'Merci ! - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'title_signed',       'value' => 'Merci d’avoir signé - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'h1_created',         'value' => 'Merci !'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'h1_signed',          'value' => 'Merci d’avoir signé :'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'p_created',          'value' => 'Votre pétition a été créée avec succès. Vous pouvez l’ouvrir maintenant via le lien ci-dessus.'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'p_signed',           'value' => 'Votre inscription a bien été prise en compte. Vous devez toutefois activer votre compte en cliquant sur le lien que vous recevrez bientôt à l’adresse e-mail indiquée.'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'suggestions_h2',      'value' => 'Des pétitions qui pourraient vous plaire'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'suggestions_empty',   'value' => 'Pas encore de suggestions.'],
+            ['page' => 'petition_thanks', 'locale' => 'fr', 'key' => 'invite_btn',          'value' => 'Inviter des amis depuis votre carnet d’adresses »'],
+
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'title_created',      'value' => 'Grazie! - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'title_signed',       'value' => 'Grazie per aver firmato - FreeCause'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'h1_created',         'value' => 'Grazie!'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'h1_signed',          'value' => 'Grazie per aver firmato:'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'p_created',          'value' => 'La tua petizione è stata creata con successo. Puoi aprirla ora usando il link qui sopra.'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'p_signed',           'value' => 'La registrazione è avvenuta con successo, tuttavia devi ancora attivare il tuo account cliccando su un link che riceverai presto all’indirizzo email fornito.'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'suggestions_h2',      'value' => 'Petizioni che potrebbero piacerti'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'suggestions_empty',   'value' => 'Nessun suggerimento al momento.'],
+            ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'invite_btn',          'value' => 'Invita amici dalla tua rubrica »'],
         ];
 
         foreach ($rows as $r) {

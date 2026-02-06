@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
@@ -263,12 +264,17 @@ class PetitionController extends Controller
             ->limit(5)
             ->get();
 
-        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode', 'tr'));
+        $content = PageContent::query()
+            ->where('page', 'petition_thanks')
+            ->where('locale', $locale)
+            ->pluck('value', 'key');
+
+        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode', 'tr', 'content'));
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
@@ -303,7 +309,12 @@ class PetitionController extends Controller
             ]);
         }
 
-        return view('petition.sign_page', compact('petition', 'locale', 'tr'));
+        $content = PageContent::query()
+            ->where('page', 'petition_sign')
+            ->where('locale', $locale)
+            ->pluck('value', 'key');
+
+        return view('petition.sign_page', compact('petition', 'locale', 'tr', 'content'));
     }
 
     public function myPetitions(Request $request, string $locale)

@@ -1,57 +1,80 @@
 @extends('layouts.legacy')
 
-@section('title', ($mode ?? 'signed') === 'created'
-    ? 'Thanks! - FreeCause'
-    : 'Thank you for having signed - FreeCause'
-)
+@php
+    $content = $content ?? collect();
+
+    $isCreated = (($mode ?? 'signed') === 'created');
+
+    $pageTitle = $isCreated
+        ? ($content['title_created'] ?? 'Thanks! - FreeCause')
+        : ($content['title_signed'] ?? 'Thank you for having signed - FreeCause');
+
+    $h1Text = $isCreated
+        ? ($content['h1_created'] ?? 'Thanks!')
+        : ($content['h1_signed'] ?? 'Thank you for having signed:');
+
+    $pText = $isCreated
+        ? ($content['p_created'] ?? 'Your petition has been created successfully. You can open it now using the link above.')
+        : ($content['p_signed'] ?? 'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.');
+
+    $suggestionsTitle = $content['suggestions_h2'] ?? 'Petitions you might like';
+    $suggestionsEmpty = $content['suggestions_empty'] ?? 'No suggestions yet.';
+    $inviteBtnText = $content['invite_btn'] ?? 'Invite friends from your address book »';
+
+    $petitionUrl = isset($tr) && $tr
+        ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id])
+        : '#';
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
     <section class="py-5">
         <div class="container">
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee; max-width: 820px; margin: 0 auto;">
 
-                @if(($mode ?? 'signed') === 'created')
-                    <h1 class="mb-3" style="font-size:28px;">Thanks!</h1>
-                @else
-                    <h1 class="mb-3" style="font-size:28px;">Thank you for having signed:</h1>
-                @endif
+                <h1 class="mb-3" style="font-size:28px;">
+                    {{ $h1Text }}
+                </h1>
 
                 <div class="mb-3">
-                    <a class="red"
-                        href="{{ route('petition.show', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id]) }}">
-                        {{ $tr->title }}
+                    <a class="red" href="{{ $petitionUrl }}">
+                        {{ $tr->title ?? ($content['petition_fallback'] ?? 'petition') }}
                     </a>
                 </div>
 
-                @if(($mode ?? 'signed') === 'created')
-                    <p class="mb-4" style="font-size:15px;">
-                        Your petition has been created successfully.
-                        You can open it now using the link above.
-                    </p>
-                @else
-                    <p class="mb-4" style="font-size:15px;">
-                        Registration has been successful, however you still have to activate your account by clicking a link
-                        you'll receive soon at the supplied email address.
-                    </p>
-                @endif
+                <p class="mb-4" style="font-size:15px;">
+                    {{ $pText }}
+                </p>
 
-                <h2 class="mb-3" style="font-size:22px;">Petitions you might like</h2>
+                <h2 class="mb-3" style="font-size:22px;">
+                    {{ $suggestionsTitle }}
+                </h2>
 
                 <div class="mb-4">
                     @forelse($suggestions as $p)
+                        @php
+                            $sUrl = !empty($p->tr_slug)
+                                ? lroute('petition.show', ['slug' => $p->tr_slug, 'id' => $p->id])
+                                : '#';
+                        @endphp
+
                         <div class="mb-2">
-                            <a class="d-block p-2"
-                               style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
-                               href="{{ lroute('petition.show', ['slug' => $p->tr_slug, 'id' => $p->id]) }}">
-                                {{ $p->tr_title }}
+                            <a class="d-block p-2" style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
+                                href="{{ $sUrl }}">
+                                {{ $p->tr_title ?? ($content['petition_fallback'] ?? 'petition') }}
                             </a>
                         </div>
                     @empty
-                        <div class="text-muted" style="font-size:14px;">No suggestions yet.</div>
+                        <div class="text-muted" style="font-size:14px;">
+                            {{ $suggestionsEmpty }}
+                        </div>
                     @endforelse
                 </div>
 
-                <a class="btn btn-danger" href="#">Invite friends from your address book »</a>
+                <a class="btn btn-danger" href="#">
+                    {{ $inviteBtnText }}
+                </a>
             </div>
         </div>
     </section>
