@@ -4,7 +4,7 @@
     $isAuthed = auth()->check();
 @endphp
 
-@section('title', ($petition->title ?? 'Petition') . ' - FreeCause')
+@section('title', ($tr->title ?? 'Petition') . ' - FreeCause')
 
 @php
     $petitionTitle = $tr->title ?? ($petition->title ?? 'Petition');
@@ -73,7 +73,7 @@
                                 </p>
                             @endif
 
-                            @include('petition.partials._sign_form', ['variant' => 'split', 'petition' => $petition])
+                            @include('petition.partials._sign_form', ['variant' => 'split', 'petition' => $petition, 'tr' => $tr])
                         </div>
 
                         <div class="mt-4">
@@ -99,7 +99,7 @@
                             @if(!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $petition->slug]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>
@@ -113,7 +113,7 @@
                                 </p>
                             @endif
 
-                            @include('petition.partials._sign_form', ['variant' => 'stack', 'petition' => $petition])
+                            @include('petition.partials._sign_form', ['variant' => 'stack', 'petition' => $petition, 'tr' => $tr])
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">

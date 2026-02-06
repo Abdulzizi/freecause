@@ -17,8 +17,8 @@
                                     $date = $p->signed_at ? \Carbon\Carbon::parse($p->signed_at) : $p->created_at;
                                 @endphp
                                 <a class="fc-myp-item"
-                                    href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->slug, 'id' => $p->id]) }}">
-                                    <div class="fc-myp-title">{{ $p->title }}</div>
+                                    href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
+                                    <div class="fc-myp-title">{{ $p->tr_title }}</div>
                                     <div class="fc-myp-date">{{ $date->format('j F Y') }}</div>
                                 </a>
                             @empty
@@ -44,8 +44,8 @@
                         <div class="fc-myp-list">
                             @forelse($created as $p)
                                 <a class="fc-myp-item"
-                                    href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->slug, 'id' => $p->id]) }}">
-                                    <div class="fc-myp-title">{{ $p->title }}</div>
+                                    href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
+                                    <div class="fc-myp-title">{{ $p->tr_title }}</div>
                                     <div class="fc-myp-date">{{ optional($p->created_at)->format('j F Y') }}</div>
                                 </a>
                             @empty

@@ -16,14 +16,14 @@
         </p>
 
         <a class="btn btn-danger fc-sign-btn"
-            href="{{ route('petition.sign.page', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
+            href="{{ route('petition.sign.page', ['locale' => ($tr->locale ?? $locale), 'slug' => ($tr->slug ?? ''), 'id' => $petition->id]) }}">
             Sign <span style="margin-left:10px;">»</span>
         </a>
 
     @endif
 
 @else
-    <form action="{{ route('petition.sign', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}"
+    <form action="{{ route('petition.sign', ['locale' => ($tr->locale ?? $locale), 'slug' => ($tr->slug ?? ''), 'id' => $petition->id]) }}"
         method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
 

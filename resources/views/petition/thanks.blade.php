@@ -18,8 +18,8 @@
 
                 <div class="mb-3">
                     <a class="red"
-                       href="{{ route('petition.show', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}">
-                        {{ $petition->title }}
+                        href="{{ route('petition.show', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id]) }}">
+                        {{ $tr->title }}
                     </a>
                 </div>
 

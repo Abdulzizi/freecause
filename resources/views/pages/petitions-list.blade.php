@@ -25,7 +25,7 @@
                     @endforelse
                 </div>
 
-                @include('partials.paginatation', ['paginator' => $petitions])
+                @include('partials.pagination', ['paginator' => $petitions])
             </div>
         </div>
     </section>

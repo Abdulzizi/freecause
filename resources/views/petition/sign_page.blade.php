@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Sign - ' . ($petition->title ?? 'Petition'))
+@section('title', 'Sign - ' . ($tr->title ?? 'Petition'))
 
 @section('content')
     <section class="py-5">
@@ -12,7 +12,7 @@
                     Please click "like" button and sign the petition
                 </h2>
 
-                <form action="{{ route('petition.sign', ['locale' => $locale, 'slug' => $petition->slug, 'id' => $petition->id]) }}"
+                <form action="{{ route('petition.sign', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id]) }}"
                     method="POST" class="d-inline-block">
                     @csrf
 
