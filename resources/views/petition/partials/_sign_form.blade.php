@@ -3,28 +3,60 @@
     $col = $variant === 'split' ? 'col-md-6' : 'col-12';
     $useLabels = $variant === 'split';
     $isAuthed = auth()->check();
+
+    $content = $content ?? collect();
+
+    $tSignedAlready = $content['signed_already'] ?? 'You signed this petition.';
+    $tSignedHint = $content['signed_hint'] ?? 'Support and share your cause. Please click "like" button and sign the petition';
+    $tBtnSign = $content['btn_sign'] ?? 'Sign';
+    $tBtnArrow = $content['btn_sign_arrow'] ?? '»';
+
+    $phName = $content['ph_name'] ?? 'Name (mandatory)';
+    $phSurname = $content['ph_surname'] ?? 'Surname (mandatory)';
+    $phEmail = $content['ph_email'] ?? 'Email (mandatory)';
+    $phPassword = $content['ph_password'] ?? 'Choose a password (mandatory)';
+    $phCity = $content['ph_city'] ?? 'City (optional)';
+    $phNickname = $content['ph_nickname'] ?? 'Nickname (optional)';
+    $phComment = $content['ph_comment'] ?? 'Comment';
+    $defaultComment = $content['default_comment'] ?? 'I support this petition';
+
+    $lblName = $content['lbl_name'] ?? $phName;
+    $lblSurname = $content['lbl_surname'] ?? $phSurname;
+    $lblEmail = $content['lbl_email'] ?? $phEmail;
+    $lblPassword = $content['lbl_password'] ?? $phPassword;
+    $lblCity = $content['lbl_city'] ?? $phCity;
+    $lblNickname = $content['lbl_nickname'] ?? $phNickname;
+    $lblComment = $content['lbl_comment'] ?? $phComment;
+
+    $privacyHint = $content['privacy_hint'] ?? 'Privacy in the search engines? You can use a nickname:';
+    $emailWarning = $content['email_warning'] ?? 'Attention, the email address you supply must be valid in order to validate the signature, otherwise it will be deleted.';
+
+    $agree1Title = $content['agree1_title'] ?? 'I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>';
+    $agree2Title = $content['agree2_title'] ?? 'I confirm that I have read the <a class="red" href="#">Privacy Policy</a>';
+    $agree3Title = $content['agree3_title'] ?? 'I agree to the <a class="red" href="#">Personal Data Processing</a>';
+    $agreeYes = $content['agree_yes'] ?? 'I agree';
+    $agreeNo = $content['agree_no'] ?? 'I do not agree';
+
+    $signPageUrl = lroute('petition.sign.page', ['slug' => ($tr->slug ?? ''), 'id' => $petition->id]);
+    $signPostUrl = lroute('petition.sign', ['slug' => ($tr->slug ?? ''), 'id' => $petition->id]);
 @endphp
 
 @if($isAuthed)
     @if(!empty($hasSigned) && $hasSigned)
         <p class="mb-0" style="font-size:14px;">
-            You signed this petition.
+            {{ $tSignedAlready }}
         </p>
     @else
         <p class="mb-3" style="font-size:14px;">
-            Support and share your cause. Please click "like" button and sign the petition
+            {{ $tSignedHint }}
         </p>
 
-        <a class="btn btn-danger fc-sign-btn"
-            href="{{ route('petition.sign.page', ['locale' => ($tr->locale ?? $locale), 'slug' => ($tr->slug ?? ''), 'id' => $petition->id]) }}">
-            Sign <span style="margin-left:10px;">»</span>
+        <a class="btn btn-danger fc-sign-btn" href="{{ $signPageUrl }}">
+            {{ $tBtnSign }} <span style="margin-left:10px;">{{ $tBtnArrow }}</span>
         </a>
-
     @endif
-
 @else
-    <form action="{{ route('petition.sign', ['locale' => ($tr->locale ?? $locale), 'slug' => ($tr->slug ?? ''), 'id' => $petition->id]) }}"
-        method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+    <form action="{{ $signPostUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
 
         <div class="row g-2">
@@ -45,149 +77,137 @@
                 </div>
             @endif
 
-            {{-- Name --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Name (mandatory)</label>
+                    <label class="form-label fc-mini-label">{{ $lblName }}</label>
                     <input class="form-control" type="text" name="name" value="{{ old('name') }}">
                 @else
-                    <input class="form-control" type="text" name="name" value="{{ old('name') }}"
-                        placeholder="Name (mandatory)">
+                    <input class="form-control" type="text" name="name" value="{{ old('name') }}" placeholder="{{ $phName }}">
                 @endif
             </div>
 
-            {{-- Surname --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Surname (mandatory)</label>
+                    <label class="form-label fc-mini-label">{{ $lblSurname }}</label>
                     <input class="form-control" type="text" name="surname" value="{{ old('surname') }}">
                 @else
                     <input class="form-control" type="text" name="surname" value="{{ old('surname') }}"
-                        placeholder="Surname (mandatory)">
+                        placeholder="{{ $phSurname }}">
                 @endif
             </div>
 
-            {{-- Email --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Email (mandatory)</label>
+                    <label class="form-label fc-mini-label">{{ $lblEmail }}</label>
                     <input class="form-control" type="email" name="email" value="{{ old('email') }}">
                 @else
                     <input class="form-control" type="email" name="email" value="{{ old('email') }}"
-                        placeholder="Email (mandatory)">
+                        placeholder="{{ $phEmail }}">
                 @endif
             </div>
 
-            {{-- Password --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Choose a password (mandatory)</label>
+                    <label class="form-label fc-mini-label">{{ $lblPassword }}</label>
                     <input class="form-control" type="password" name="password">
                 @else
-                    <input class="form-control" type="password" name="password" placeholder="Choose a password (mandatory)">
+                    <input class="form-control" type="password" name="password" placeholder="{{ $phPassword }}">
                 @endif
             </div>
 
-            {{-- Privacy hint ONLY for split --}}
             @if($variant === 'split')
                 <div class="col-12" style="font-size:14px;">
-                    Privacy in the search engines? You can use a nickname:
+                    {{ $privacyHint }}
                 </div>
             @endif
 
-            {{-- City --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">City (optional)</label>
+                    <label class="form-label fc-mini-label">{{ $lblCity }}</label>
                     <input class="form-control" type="text" name="city" value="{{ old('city') }}">
                 @else
-                    <input class="form-control" type="text" name="city" value="{{ old('city') }}" placeholder="City (optional)">
+                    <input class="form-control" type="text" name="city" value="{{ old('city') }}" placeholder="{{ $phCity }}">
                 @endif
             </div>
 
-            {{-- Nickname --}}
             <div class="{{ $col }} mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Nickname (optional)</label>
+                    <label class="form-label fc-mini-label">{{ $lblNickname }}</label>
                     <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}">
                 @else
                     <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}"
-                        placeholder="Nickname (optional)">
+                        placeholder="{{ $phNickname }}">
                 @endif
             </div>
 
-            {{-- Comment --}}
             <div class="col-12 mb-3">
                 @if($useLabels)
-                    <label class="form-label fc-mini-label">Comment</label>
-                    <input class="form-control" type="text" name="comment"
-                        value="{{ old('comment', 'I support this petition') }}">
+                    <label class="form-label fc-mini-label">{{ $lblComment }}</label>
+                    <input class="form-control" type="text" name="comment" value="{{ old('comment', $defaultComment) }}">
                 @else
-                    <input class="form-control" type="text" name="comment"
-                        value="{{ old('comment', 'I support this petition') }}" placeholder="Comment">
+                    <input class="form-control" type="text" name="comment" value="{{ old('comment', $defaultComment) }}"
+                        placeholder="{{ $phComment }}">
                 @endif
             </div>
 
             <div class="col-12">
                 @if ($variant === 'split')
                     <p class="mt-2 mb-3" style="font-size:13px;">
-                        Attention, the email address you supply must be valid in order to validate the signature, otherwise it
-                        will be deleted.
+                        {{ $emailWarning }}
                     </p>
                 @endif
 
                 {{-- agreements --}}
                 <div class="mb-3">
                     <div style="font-weight:700;">
-                        I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>
+                        {!! $agree1Title !!}
                     </div>
                     <div class="mt-2">
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree1" value="agree" {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
-                            I agree
+                            {{ $agreeYes }}
                         </label>
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree1" value="no" {{ old('agree1') === 'no' ? 'checked' : '' }}>
-                            I do not agree
+                            {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <div style="font-weight:700;">
-                        I confirm that I have read the <a class="red" href="#">Privacy Policy</a>
+                        {!! $agree2Title !!}
                     </div>
                     <div class="mt-2">
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree2" value="agree" {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
-                            I agree
+                            {{ $agreeYes }}
                         </label>
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree2" value="no" {{ old('agree2') === 'no' ? 'checked' : '' }}>
-                            I do not agree
+                            {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <div style="font-weight:700;">
-                        I agree to the <a class="red" href="#">Personal Data Processing</a>
+                        {!! $agree3Title !!}
                     </div>
                     <div class="mt-2">
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree3" value="agree" {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
-                            I agree
+                            {{ $agreeYes }}
                         </label>
                         <label class="d-block" style="font-size:14px;">
                             <input type="radio" name="agree3" value="no" {{ old('agree3') === 'no' ? 'checked' : '' }}>
-                            I do not agree
+                            {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
-                <button class="btn btn-danger fc-sign-btn" type="submit">Sign</button>
+                <button class="btn btn-danger fc-sign-btn" type="submit">{{ $tBtnSign }}</button>
             </div>
-
         </div>
     </form>
 @endif

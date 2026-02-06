@@ -87,6 +87,14 @@ class PetitionController extends Controller
 
         $directLink = url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
 
+        $content = PageContent::where('page', 'petition_show')
+            ->where('locale', $locale)
+            ->pluck('value', 'key');
+
+        $formContent = PageContent::where('page', 'petition_sign_form')
+            ->where('locale', $locale)
+            ->pluck('value', 'key');
+
         return view('petition.show', compact(
             'petition',
             'tr',
@@ -97,7 +105,9 @@ class PetitionController extends Controller
             'pct',
             'directLink',
             'hasSigned',
-            'oauthLoggedIn'
+            'oauthLoggedIn',
+            'content',
+            'formContent'
         ));
     }
 

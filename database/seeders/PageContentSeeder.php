@@ -199,6 +199,210 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'suggestions_h2',      'value' => 'Petizioni che potrebbero piacerti'],
             ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'suggestions_empty',   'value' => 'Nessun suggerimento al momento.'],
             ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'invite_btn',          'value' => 'Invita amici dalla tua rubrica »'],
+
+            // PETITION SHOW PAGE
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'title', 'value' => ':title - FreeCause'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'btn_sign_now', 'value' => 'Sign Now'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_sign_title', 'value' => 'Sign The Petition'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'google_continue', 'value' => 'Continue with Google'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'or', 'value' => 'OR'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'auth_hint_split', 'value' => 'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'auth_hint_stack', 'value' => 'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_shoutbox', 'value' => 'Shoutbox'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_goal', 'value' => 'Goal'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'goal_signatures', 'value' => ':count signatures'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'goal_label', 'value' => 'Goal: :count'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_latest', 'value' => 'Latest Signatures'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'latest_empty', 'value' => 'no signatures yet'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'latest_browse_all', 'value' => 'browse all the signatures »'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_information', 'value' => 'Information'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'info_by', 'value' => 'By:'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'info_in', 'value' => 'In:'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'info_target', 'value' => 'Petition target:'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_tags', 'value' => 'Tags'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'tags_empty', 'value' => 'No tags'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_embed', 'value' => 'Embed Codes'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'embed_direct', 'value' => 'direct link'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'embed_html', 'value' => 'link for html'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'embed_forum_no_title', 'value' => 'link for forum without title'],
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'embed_forum_with_title', 'value' => 'link for forum with title'],
+
+            ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_widgets', 'value' => 'Widgets'],
+
+            // FR
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'title', 'value' => ':title - FreeCause'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'btn_sign_now', 'value' => 'Signer'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_sign_title', 'value' => 'Signer la pétition'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'google_continue', 'value' => 'Continuer avec Google'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'or', 'value' => 'OU'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'auth_hint_split', 'value' => 'Si vous avez déjà un compte <a class="red" href=":login_url">connectez-vous</a>, sinon <strong>créez un compte</strong> gratuitement puis signez la pétition en remplissant les champs ci-dessous.<br>L’email et le mot de passe seront vos identifiants et vous pourrez signer d’autres pétitions après connexion.'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'auth_hint_stack', 'value' => 'Si vous avez déjà un compte <a class="red" href=":login_url"><em>connectez-vous</em></a>'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_shoutbox', 'value' => 'Shoutbox'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_goal', 'value' => 'Objectif'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'goal_signatures', 'value' => ':count signatures'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'goal_label', 'value' => 'Objectif : :count'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_latest', 'value' => 'Dernières signatures'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'latest_empty', 'value' => 'aucune signature pour le moment'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'latest_browse_all', 'value' => 'voir toutes les signatures »'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_information', 'value' => 'Informations'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'info_by', 'value' => 'Par :'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'info_in', 'value' => 'Dans :'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'info_target', 'value' => 'Cible de la pétition :'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_tags', 'value' => 'Tags'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'tags_empty', 'value' => 'Aucun tag'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_embed', 'value' => 'Codes d’intégration'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'embed_direct', 'value' => 'lien direct'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'embed_html', 'value' => 'lien pour html'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'embed_forum_no_title', 'value' => 'lien forum sans titre'],
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'embed_forum_with_title', 'value' => 'lien forum avec titre'],
+
+            ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_widgets', 'value' => 'Widgets'],
+
+            // IT
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'title', 'value' => ':title - FreeCause'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'btn_sign_now', 'value' => 'Firma ora'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_sign_title', 'value' => 'Firma la petizione'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'google_continue', 'value' => 'Continua con Google'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'or', 'value' => 'OPPURE'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'auth_hint_split', 'value' => 'Se hai già un account <a class="red" href=":login_url">accedi</a>, altrimenti <strong>registrati gratuitamente</strong> e poi firma la petizione compilando i campi qui sotto.<br>Email e password saranno i tuoi dati di accesso, potrai firmare altre petizioni dopo aver effettuato l’accesso.'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'auth_hint_stack', 'value' => 'Se hai già un account <a class="red" href=":login_url"><em>accedi</em></a>'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_shoutbox', 'value' => 'Shoutbox'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_goal', 'value' => 'Obiettivo'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'goal_signatures', 'value' => ':count firme'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'goal_label', 'value' => 'Obiettivo: :count'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_latest', 'value' => 'Ultime firme'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'latest_empty', 'value' => 'nessuna firma ancora'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'latest_browse_all', 'value' => 'vedi tutte le firme »'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_information', 'value' => 'Informazioni'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'info_by', 'value' => 'Da:'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'info_in', 'value' => 'In:'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'info_target', 'value' => 'Destinatario della petizione:'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_tags', 'value' => 'Tag'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'tags_empty', 'value' => 'Nessun tag'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_embed', 'value' => 'Codici di incorporamento'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'embed_direct', 'value' => 'link diretto'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'embed_html', 'value' => 'link per html'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'embed_forum_no_title', 'value' => 'link forum senza titolo'],
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'embed_forum_with_title', 'value' => 'link forum con titolo'],
+
+            ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_widgets', 'value' => 'Widget'],
+
+            // PETITION SIGN FORM PARTIAL
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'signed_already', 'value' => 'You signed this petition.'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'signed_hint', 'value' => 'Support and share your cause. Please click "like" button and sign the petition'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'btn_sign', 'value' => 'Sign'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'btn_sign_arrow', 'value' => '»'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_name', 'value' => 'Name (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_surname', 'value' => 'Surname (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_email', 'value' => 'Email (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_password', 'value' => 'Choose a password (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_city', 'value' => 'City (optional)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_nickname', 'value' => 'Nickname (optional)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'ph_comment', 'value' => 'Comment'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'default_comment', 'value' => 'I support this petition'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_name', 'value' => 'Name (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_surname', 'value' => 'Surname (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_email', 'value' => 'Email (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_password', 'value' => 'Choose a password (mandatory)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_city', 'value' => 'City (optional)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_nickname', 'value' => 'Nickname (optional)'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'lbl_comment', 'value' => 'Comment'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'privacy_hint', 'value' => 'Privacy in the search engines? You can use a nickname:'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'email_warning', 'value' => 'Attention, the email address you supply must be valid in order to validate the signature, otherwise it will be deleted.'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree1_title', 'value' => 'I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree2_title', 'value' => 'I confirm that I have read the <a class="red" href="#">Privacy Policy</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree3_title', 'value' => 'I agree to the <a class="red" href="#">Personal Data Processing</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree_yes', 'value' => 'I agree'],
+            ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree_no', 'value' => 'I do not agree'],
+
+            // FR
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'signed_already', 'value' => 'Vous avez signé cette pétition.'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'signed_hint', 'value' => 'Soutenez et partagez votre cause. Cliquez sur "J’aime" et signez la pétition.'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'btn_sign', 'value' => 'Signer'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'btn_sign_arrow', 'value' => '»'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_name', 'value' => 'Prénom (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_surname', 'value' => 'Nom (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_email', 'value' => 'Email (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_password', 'value' => 'Choisissez un mot de passe (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_city', 'value' => 'Ville (optionnel)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_nickname', 'value' => 'Pseudo (optionnel)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'ph_comment', 'value' => 'Commentaire'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'default_comment', 'value' => 'Je soutiens cette pétition'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_name', 'value' => 'Prénom (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_surname', 'value' => 'Nom (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_email', 'value' => 'Email (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_password', 'value' => 'Choisissez un mot de passe (obligatoire)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_city', 'value' => 'Ville (optionnel)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_nickname', 'value' => 'Pseudo (optionnel)'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'lbl_comment', 'value' => 'Commentaire'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'privacy_hint', 'value' => 'Confidentialité sur les moteurs de recherche ? Vous pouvez utiliser un pseudo :'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'email_warning', 'value' => 'Attention, l’adresse email doit être valide pour valider la signature, sinon elle sera supprimée.'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree1_title', 'value' => 'Je confirme l’inscription et j’accepte les <a class="red" href="#">Conditions d’utilisation</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree2_title', 'value' => 'Je confirme avoir lu la <a class="red" href="#">Politique de confidentialité</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree3_title', 'value' => 'J’accepte le <a class="red" href="#">Traitement des données personnelles</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree_yes', 'value' => 'J’accepte'],
+            ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree_no', 'value' => 'Je n’accepte pas'],
+
+            // IT
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'signed_already', 'value' => 'Hai firmato questa petizione.'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'signed_hint', 'value' => 'Sostieni e condividi la tua causa. Clicca su "Mi piace" e firma la petizione.'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'btn_sign', 'value' => 'Firma'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'btn_sign_arrow', 'value' => '»'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_name', 'value' => 'Nome (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_surname', 'value' => 'Cognome (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_email', 'value' => 'Email (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_password', 'value' => 'Scegli una password (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_city', 'value' => 'Città (opzionale)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_nickname', 'value' => 'Nickname (opzionale)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'ph_comment', 'value' => 'Commento'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'default_comment', 'value' => 'Sostengo questa petizione'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_name', 'value' => 'Nome (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_surname', 'value' => 'Cognome (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_email', 'value' => 'Email (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_password', 'value' => 'Scegli una password (obbligatorio)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_city', 'value' => 'Città (opzionale)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_nickname', 'value' => 'Nickname (opzionale)'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'lbl_comment', 'value' => 'Commento'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'privacy_hint', 'value' => 'Privacy nei motori di ricerca? Puoi usare un nickname:'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'email_warning', 'value' => 'Attenzione: l’indirizzo email deve essere valido per convalidare la firma, altrimenti verrà eliminata.'],
+
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree1_title', 'value' => 'Confermo la registrazione e accetto le <a class="red" href="#">Condizioni d’uso</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree2_title', 'value' => 'Confermo di aver letto la <a class="red" href="#">Privacy Policy</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree3_title', 'value' => 'Accetto il <a class="red" href="#">Trattamento dei dati personali</a>'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree_yes', 'value' => 'Accetto'],
+            ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree_no', 'value' => 'Non accetto'],
         ];
 
         foreach ($rows as $r) {
