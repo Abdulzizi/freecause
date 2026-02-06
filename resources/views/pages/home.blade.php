@@ -4,8 +4,8 @@
 
 @php
     $featuredUrl = $featuredPetition
-        ? lroute('petition.show', ['slug' => $featuredPetition->slug, 'id' => $featuredPetition->id])
-        : lroute('petitions.index');
+    ? lroute('petition.show', ['slug' => $featuredPetition->tr_slug, 'id' => $featuredPetition->id])
+    : lroute('petitions.index');
 
     $signatures = $featuredPetition?->signature_count ?? 0;
     $goal = $featuredPetition?->goal_signatures ?? 100;
@@ -72,16 +72,14 @@
 
                                                         <div class="col-sm-6 mb-4">
                                                             @if ($featuredPetition)
-                                                                <h5>{{ $featuredPetition->title }}</h5>
+                                                                <h5>{{ $featuredPetition->tr_title }}</h5>
 
                                                                 <p>
                                                                     <strong>Petition target:</strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
-                                                                <p>
-                                                                    {{ \Illuminate\Support\Str::limit($featuredPetition->description ?? '', 600) }}
-                                                                </p>
+                                                                <p>{{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}</p>
                                                             @else
                                                                 <h5>no featured petition yet</h5>
                                                                 <p class="text-muted mb-0">no petitions yet for this locale
@@ -121,11 +119,10 @@
                                                     @forelse($recentActivities as $sig)
                                                         @php
                                                             $p = $sig->petition;
-                                                            $url = $p
-                                                                ? lroute('petition.show', [
-                                                                    'slug' => $p->slug,
-                                                                    'id' => $p->id,
-                                                                ])
+                                                            $tr = $p?->translations?->first();
+
+                                                            $url = ($p && $tr)
+                                                                ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $p->id])
                                                                 : '#';
 
                                                             $name = trim((string) ($sig->name ?? 'someone'));
@@ -156,7 +153,7 @@
                                                                         class="red fs-14">{{ optional($sig->created_at)->diffForHumans() }}</span>
                                                                 </div>
 
-                                                                <p class="fs-14">{{ $p?->title ?? 'petition' }}</p>
+                                                                <p class="fs-14">{{ $tr?->title ?? 'petition' }}</p>
                                                             </a>
                                                         </li>
                                                     @empty

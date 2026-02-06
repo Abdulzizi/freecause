@@ -11,11 +11,19 @@ class Petition extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'locale',
         'signature_count',
         'user_id',
+        'status',
+        'goal_signatures',
+        'category_id',
+        'target',
+        'tags',
+        'city',
+        'community',
+        'community_url',
+        'youtube_url',
+        'image_url',
+        'cover_image',
     ];
 
     public function user()
@@ -33,9 +41,13 @@ class Petition extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function translations()
+    {
+        return $this->hasMany(PetitionTranslation::class);
+    }
+
     public function coverUrl(): string
     {
-        // store on "public" disk: storage/app/public/...
         if ($this->cover_image) {
             if (str_starts_with($this->cover_image, 'http://') || str_starts_with($this->cover_image, 'https://')) {
                 return $this->cover_image;
@@ -44,8 +56,24 @@ class Petition extends Model
             return Storage::disk('public')->url($this->cover_image);
         }
 
-        // fallback so it looks stable per petition
         $n = $this->id ? ($this->id % 14) : 0; // 0..13
         return asset("legacy/images/petitions/covers/pic{$n}.jpg");
+    }
+
+    public function translation(?string $locale = null): ?PetitionTranslation
+    {
+        $locale ??= app()->getLocale();
+
+        return $this->translations()
+            ->where('locale', $locale)
+            ->first();
+    }
+
+    public function translationOrFallback(?string $locale = null): ?PetitionTranslation
+    {
+        $locale ??= app()->getLocale();
+
+        return $this->translation($locale)
+            ?? $this->translations()->orderBy('id')->first();
     }
 }

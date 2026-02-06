@@ -7,9 +7,9 @@
 @section('title', ($petition->title ?? 'Petition') . ' - FreeCause')
 
 @php
-    $petitionTitle = $petition->title ?? 'Petition';
-    $petitionImg = $petition->coverUrl(); // dari model helper kamu
-    $petitionCredit = $petition->image_credit ?? ''; // kalau belum ada kolom, biarin kosong
+    $petitionTitle = $tr->title ?? ($petition->title ?? 'Petition');
+    $petitionImg = $petition->coverUrl();
+    $petitionCredit = $petition->image_credit ?? '';
 @endphp
 
 @section('content')
@@ -36,7 +36,7 @@
 
                         <div class="fc-content mt-3">
                             <div class="fc-petition-description">
-                                {!! $petition->description !!}
+                                {!! $tr->description !!}
                             </div>
                         </div>
 
@@ -54,7 +54,7 @@
                             @if(!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $petition->slug]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         Continue with Google
                                     </a>
@@ -284,10 +284,14 @@
 @endsection
 
 <style>
-    .fc-petition-description ul,
-    .fc-petition-description ol {
-        margin-left: 22px;
+    .fc-petition-description ul {
         list-style: disc !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .fc-petition-description ol {
+        list-style: decimal !important;
         padding-left: 22px !important;
         margin: 0 0 14px 0 !important;
     }

@@ -50,18 +50,25 @@ class DemoSeeder extends Seeder
 
                 $createdPetitions = Petition::factory()
                     ->count($take)
-                    ->state(function () use ($owner, $loc, $categories) {
-                        $seed = Str::random(12);
-
-                        return [
-                            'user_id' => $owner->id,
-                            'locale' => $loc,
-                            'status' => 'published',
-                            'category_id' => $categories->random(),
-                            'cover_image' => "https://picsum.photos/seed/{$seed}/1200/600",
-                        ];
-                    })
+                    ->state(fn() => [
+                        'user_id' => $owner->id,
+                        'status' => 'published',
+                        'category_id' => $categories->random(),
+                    ])
                     ->create();
+
+                foreach ($createdPetitions as $petition) {
+                    foreach ($locales as $loc) {
+                        $title = fake($loc)->sentence(6);
+
+                        $petition->translations()->create([
+                            'locale' => $loc,
+                            'title' => $title,
+                            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
+                            'description' => fake($loc)->paragraphs(4, true),
+                        ]);
+                    }
+                }
 
                 $signatureRows = [];
 

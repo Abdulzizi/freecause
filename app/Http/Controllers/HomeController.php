@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $locale =  app()->getLocale();
+        $locale = app()->getLocale();
 
         $content = PageContent::query()
             ->where('page', 'home')
@@ -28,18 +28,32 @@ class HomeController extends Controller
             ->get();
 
         $featuredPetition = Petition::query()
-            ->where('locale', $locale)
-            ->whereNotNull('category_id')
-            ->orderByDesc('signature_count')
-            ->latest('id')
+            ->select([
+                'petitions.*',
+                'pt.title as tr_title',
+                'pt.slug as tr_slug',
+                'pt.description as tr_description',
+            ])
+            ->join('petition_translations as pt', function ($join) use ($locale) {
+                $join->on('pt.petition_id', '=', 'petitions.id')
+                    ->where('pt.locale', '=', $locale);
+            })
+            ->whereNotNull('petitions.category_id')
             ->with('category')
+            ->orderByDesc('petitions.signature_count')
+            ->orderByDesc('petitions.id')
             ->first();
 
         $recentActivities = Signature::query()
             ->where('locale', $locale)
-            ->with(['petition' => function ($q) use ($locale) {
-                $q->select('id', 'slug', 'title', 'locale');
-            }])
+            ->with([
+                'petition' => function ($q) use ($locale) {
+                    $q->select('petitions.*')
+                        ->with(['translations' => function ($t) use ($locale) {
+                            $t->where('locale', $locale);
+                        }]);
+                },
+            ])
             ->latest('created_at')
             ->limit(10)
             ->get();

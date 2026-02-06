@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Petition;
+use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PetitionCreateController extends Controller
 {
@@ -94,96 +96,79 @@ class PetitionCreateController extends Controller
                 ->withInput();
         }
 
+        return DB::transaction(function () use ($request, $data, $locale) {
 
+            $tags = collect(explode(',', $data['tags'] ?? ''))
+                ->map(fn($t) => trim($t))
+                ->filter()
+                ->take(10)
+                ->implode(',');
 
+            $petition = new Petition();
+            $petition->user_id = auth()->id();
+            $petition->status = 'draft';
+            $petition->goal_signatures = $data['goal_signatures'];
+            $petition->category_id = $data['category_id'];
+            $petition->target = $data['target'] ?? null;
+            $petition->tags = $tags ?: null;
+            $petition->city = $data['city'] ?? null;
+            $petition->community = $data['community'] ?? null;
+            $petition->community_url = $data['community_url'] ?? null;
+            $petition->youtube_url = $data['youtube'] ?? null;
+            $petition->image_url = $data['image_url'] ?? null;
 
-        $tags = collect(explode(',', $data['tags'] ?? ''))
-            ->map(fn($t) => trim($t))
-            ->filter()
-            ->take(10)
-            ->implode(',');
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('petitions', 'public');
+                $abs  = Storage::disk('public')->path($path);
 
-        $baseSlug = Str::slug($data['title']);
-        $slug = $baseSlug;
-        $i = 1;
-        while (Petition::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $i++;
-        }
+                Image::read($abs)
+                    ->cover(1200, 630)
+                    ->toJpeg(82)
+                    ->save($abs);
 
-        $petition = new Petition();
-        $petition->user_id = auth()->id();
-        $petition->locale = $locale;
-        $petition->status = 'draft';
-        $petition->title = $data['title'];
-        $petition->slug = $slug;
+                $petition->cover_image = $path;
+            }
 
-        $petition->description = $this->sanitizePetitionHtml($data['description']);
+            $petition->save();
 
-        $petition->goal_signatures = $data['goal_signatures'];
-        $petition->category_id = $data['category_id'];
+            $slug = $this->makeUniqueSlug($data['title'], $locale);
 
-        $petition->target = $data['target'] ?? null;
-        $petition->tags = $tags ?: null;
-        $petition->city = $data['city'] ?? null;
-
-        $petition->community = $data['community'] ?? null;
-        $petition->community_url = $data['community_url'] ?? null;
-        $petition->youtube_url = $data['youtube'] ?? null;
-        $petition->image_url = $data['image_url'] ?? null;
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('petitions', 'public');
-
-            // absolute filesystem path to uploaded image
-            $abs = Storage::disk('public')->path($path);
-
-            // 1200x630
-            Image::read($abs)
-                ->cover(1200, 630)
-                ->toJpeg(82)
-                ->save($abs);
-
-            $petition->cover_image = $path;
-        }
-
-        // dd([
-        //     'content_type' => $request->header('content-type'),
-        //     'hasFile(image)' => $request->hasFile('image'),
-        //     'file(image)' => $request->file('image'),
-        //     'allFiles' => $request->allFiles(),
-        //     'errors' => session('errors')?->all(),
-        // ]);
-
-        $petition->save();
-
-        $user = auth()->user();
-
-        $alreadySigned = Signature::query()
-            ->where('petition_id', $petition->id)
-            ->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                    ->orWhere('email', $user->email);
-            })
-            ->exists();
-
-        if (! $alreadySigned) {
-            Signature::create([
-                'petition_id' => $petition->id,
-                'user_id' => $user->id,
-                'name' => $user->name ?? 'Anonymous',
-                'email' => $user->email,
+            $petition->translations()->create([
                 'locale' => $locale,
+                'title' => $data['title'],
+                'slug' => $slug,
+                'description' => $this->sanitizePetitionHtml($data['description']),
             ]);
 
-            $petition->increment('signature_count');
-        }
+            $user = auth()->user();
 
-        return redirect()->route('petition.thanks', [
-            'locale' => $locale,
-            'slug' => $petition->slug,
-            'id' => $petition->id,
-            'mode' => 'created',
-        ]);
+            $alreadySigned = Signature::query()
+                ->where('petition_id', $petition->id)
+                ->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('email', $user->email);
+                })
+                ->exists();
+
+            if (! $alreadySigned) {
+                Signature::create([
+                    'petition_id' => $petition->id,
+                    'user_id' => $user->id,
+                    'name' => $user->name ?? 'Anonymous',
+                    'email' => $user->email,
+                    'locale' => $locale,
+                ]);
+
+                $petition->increment('signature_count');
+            }
+
+            return redirect()->route('petition.thanks', [
+                'locale' => $locale,
+                'slug'   => $slug,
+                'id'     => $petition->id,
+                'mode'   => 'created',
+            ]);
+        });
     }
 
     private function sanitizePetitionHtml(string $html): string
@@ -238,5 +223,20 @@ class PetitionCreateController extends Controller
                 $node->removeChild($child);
             }
         }
+    }
+
+    private function makeUniqueSlug(string $title, string $locale): string
+    {
+        $base = Str::slug($title);
+        $base = $base ?: 'petition';
+
+        $slug = $base;
+        $i = 1;
+
+        while (PetitionTranslation::where('locale', $locale)->where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+
+        return $slug;
     }
 }
