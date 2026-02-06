@@ -130,6 +130,28 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'it', 'key' => 'blog_title', 'value' => 'Ultime notizie dal magazine Freecause'],
             ['page' => 'home', 'locale' => 'it', 'key' => 'blog_subtitle', 'value' => 'Aggiornamenti e approfondimenti recenti'],
             ['page' => 'home', 'locale' => 'it', 'key' => 'blog_read_more', 'value' => 'Leggi di più'],
+
+            // NAVBAR
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_explore',  'value' => 'Explore petitions'],
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_magazine', 'value' => 'Magazine'],
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_help',     'value' => 'Help'],
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_login',    'value' => 'Login'],
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_logout',   'value' => 'Logout'],
+            ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_startfree', 'value' => 'Start Free'],
+
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_explore',  'value' => 'Explorer les pétitions'],
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_magazine', 'value' => 'Magazine'],
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_help',     'value' => 'Aide'],
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_login',    'value' => 'Connexion'],
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_logout',   'value' => 'Déconnexion'],
+            ['page' => 'navbar', 'locale' => 'fr', 'key' => 'nav_startfree', 'value' => 'Commencer gratuitement'],
+
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_explore',  'value' => 'Esplora petizioni'],
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_magazine', 'value' => 'Magazine'],
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_help',     'value' => 'Aiuto'],
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_login',    'value' => 'Accedi'],
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_logout',   'value' => 'Esci'],
+            ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_startfree', 'value' => 'Inizia gratis'],
         ];
 
         foreach ($rows as $r) {
