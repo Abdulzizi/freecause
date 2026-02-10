@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
@@ -18,7 +19,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('admin.auth')->group(function () {
-        Route::get('/', fn() => redirect()->route('admin.options.global'))->name('home');
+        // Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
+        Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
 
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');

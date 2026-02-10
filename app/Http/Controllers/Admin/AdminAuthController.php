@@ -3,38 +3,42 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminAuthController extends Controller
 {
     public function show()
     {
+        if (session()->has('admin_user_id')) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('admin.auth.login');
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'username' => ['required'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // TODO: replace with DB check
-        if (
-            $request->username === config('admin.username', 'sadmin') &&
-            $request->password === config('admin.password', 'secret')
-        ) {
+        $admin = AdminUser::where('email', $request->email)->first();
 
-            session()->put('admin_logged_in', true);
-            return redirect()->route('admin.home');
+        if (!$admin || !$admin->is_active || !Hash::check($request->password, $admin->password)) {
+            return back()->withErrors(['email' => 'invalid credentials'])->withInput();
         }
 
-        return back()->withErrors(['username' => 'invalid credentials'])->withInput();
+        session()->put('admin_user_id', $admin->id);
+
+        return redirect()->route('admin.dashboard');
     }
 
     public function logout()
     {
-        session()->forget('admin_logged_in');
+        session()->forget('admin_user_id');
         return redirect()->route('admin.login');
     }
 }

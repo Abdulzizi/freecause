@@ -4,12 +4,13 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminAuth
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if (!session()->get('admin_logged_in')) {
+        if (!session()->has('admin_user_id')) {
             return redirect()->route('admin.login');
         }
 
