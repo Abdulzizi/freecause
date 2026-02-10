@@ -5,12 +5,43 @@ use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PetitionController;
-use App\Http\Controllers\PetitionCreateController;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', 'en|fr|it');
 
 Route::redirect('/', '/en');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware('admin.auth')->group(function () {
+        Route::get('/', fn() => redirect()->route('admin.options.global'))->name('home');
+
+        Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
+        Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
+
+        // parity placeholders (build screens next)
+        Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
+        Route::view('/ads', 'admin.placeholders.ads')->name('ads');
+        Route::view('/users', 'admin.placeholders.users')->name('users');
+        Route::view('/categories', 'admin.placeholders.categories')->name('categories');
+        Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
+        Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
+        Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
+        Route::view('/pages', 'admin.placeholders.pages')->name('pages');
+        Route::view('/spam', 'admin.placeholders.spam')->name('spam');
+        Route::view('/stats', 'admin.placeholders.stats')->name('stats');
+        Route::view('/logs', 'admin.placeholders.logs')->name('logs');
+
+        Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
+        Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
+        Route::view('/system/permissions', 'admin.placeholders.system-permissions')->name('system.permissions');
+
+        Route::view('/utils/import', 'admin.placeholders.import')->name('utils.import');
+    });
+});
 
 Route::group([
     'prefix' => '{locale}',
@@ -66,10 +97,11 @@ Route::group([
         ->name('petitions.byCategory');
 
     // Petition creation
-    Route::get('/create-petition', [PetitionCreateController::class, 'create'])->name('petition.create');
-    Route::post('/create-petition', [PetitionCreateController::class, 'store'])
+    Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
+    Route::post('/create-petition', [PetitionController::class, 'store'])
         ->middleware('auth')
         ->name('petition.store');
+
     // Petition actions (show / sign / thanks)
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
         ->where(['id' => '[0-9]+'])
