@@ -21,7 +21,7 @@
         }
 
         .admin-auth-wrap {
-            min-height: 100%;
+            /* min-height: 100%; */
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -31,10 +31,10 @@
         .admin-auth-stage {
             width: 100%;
             max-width: 1050px;
-            background: #ffffff;
-            border: 1px solid #cfcfcf;
-            border-radius: 4px;
-            box-shadow: 0 0 0 6px rgba(120, 80, 80, 0.15);
+            /* background: #ffffff; */
+            /* border: 1px solid #cfcfcf; */
+            /* border-radius: 4px; */
+            /* box-shadow: 0 0 0 6px rgba(120, 80, 80, 0.15); */
             padding: 40px 20px 60px;
         }
 

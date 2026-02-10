@@ -32,13 +32,14 @@ class AdminAuthController extends Controller
         }
 
         session()->put('admin_user_id', $admin->id);
+        session()->put('admin_username', $admin->username ?? $admin->email);
 
         return redirect()->route('admin.dashboard');
     }
 
     public function logout()
     {
-        session()->forget('admin_user_id');
+        session()->forget(['admin_user_id', 'admin_username']);
         return redirect()->route('admin.login');
     }
 }

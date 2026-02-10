@@ -19,8 +19,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('admin.auth')->group(function () {
-        // Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
-        Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
+        Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
+        // Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
 
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
