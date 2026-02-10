@@ -43,6 +43,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
         Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
 
+        Route::post('users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
+
         // parity placeholders (build screens next)
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
         Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
