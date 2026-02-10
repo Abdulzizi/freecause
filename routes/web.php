@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\CountryOptionsController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
@@ -40,10 +41,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->header('Content-Type', 'text/plain; charset=UTF-8');
         });
 
+        Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
+        Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
+
         // parity placeholders (build screens next)
         // Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
         // Route::view('/ads', 'admin.placeholders.ads')->name('ads');
-        Route::view('/users', 'admin.placeholders.users')->name('users');
+        // Route::view('/users', 'admin.placeholders.users')->name('users');
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
         Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
         Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
