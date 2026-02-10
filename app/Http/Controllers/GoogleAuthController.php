@@ -14,7 +14,6 @@ class GoogleAuthController extends Controller
     {
         $flow = $request->query('flow', 'register'); // register | petition
 
-        // store context for callback
         if ($flow === 'petition') {
             $request->session()->put('oauth_ctx', [
                 'flow' => 'petition',
@@ -42,26 +41,48 @@ class GoogleAuthController extends Controller
         $google = Socialite::driver('google')->user();
         $email = strtolower(trim($google->getEmail() ?? ''));
 
+        $fullName = trim((string) ($google->getName() ?: 'Google User'));
+
+        $parts = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY);
+        $first = $parts[0] ?? $fullName;
+        $last  = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
+
+        $destLocale = $ctx['locale'] ?? $locale;
+
         if (!$email) {
-            return redirect("/{$locale}/register")
+            return redirect("/{$destLocale}/register")
                 ->withErrors(['email' => 'google did not provide email.']);
         }
 
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'name' => $google->getName() ?: 'Google User',
+                'name' => $fullName,
+                'first_name' => $first,
+                'last_name' => $last,
                 'password' => bcrypt(Str::random(32)),
-                'locale' => $ctx['locale'] ?? $locale,
-                // if you want google users treated as verified:
-                // 'email_verified_at' => now(),
+                'locale' => $this->toLocaleFull($destLocale),
+                'ip' => $request->ip(),
+                'level' => 'user',
+                'verified' => true,
             ]
         );
+
+        $user->ip = $request->ip();
+        $user->locale = $this->toLocaleFull($destLocale);
+
+        if (!$user->first_name) $user->first_name = $first;
+        if (!$user->last_name)  $user->last_name = $last;
+
+        if ($user->verified === false) {
+            $user->verified = true;
+        }
+
+        $user->save();
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        // decide where to go next
         if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
             return redirect()->route('petition.sign.page', [
                 'locale' => $ctx['locale'],
@@ -71,5 +92,17 @@ class GoogleAuthController extends Controller
         }
 
         return redirect("/{$locale}");
+    }
+
+    private function toLocaleFull(string $locale): string
+    {
+        $map = [
+            'en' => 'en_US',
+            'fr' => 'fr_FR',
+            'it' => 'it_IT',
+            'da' => 'da_DK',
+        ];
+
+        return $map[$locale] ?? 'en_US';
     }
 }

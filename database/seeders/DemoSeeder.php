@@ -32,7 +32,16 @@ class DemoSeeder extends Seeder
 
         $owner = User::firstOrCreate(
             ['email' => 'demo@freecause.test'],
-            ['name' => 'Demo User', 'password' => bcrypt('password'), 'locale' => 'en']
+            [
+                'name' => 'Demo User',
+                'first_name' => 'Demo',
+                'last_name' => 'User',
+                'password' => bcrypt('password'),
+                'locale' => 'en_US',
+                'level' => 'admin',
+                'verified' => true,
+                'ip' => '127.0.0.1',
+            ]
         );
 
         $locales = ['en', 'fr', 'it'];

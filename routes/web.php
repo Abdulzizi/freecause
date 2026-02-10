@@ -24,7 +24,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('admin.auth')->group(function () {
         Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
-        // Route::get('/', fn() => view('admin.dashboard'))->name('dashboard');
 
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
@@ -45,9 +44,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
 
         // parity placeholders (build screens next)
-        // Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
-        // Route::view('/ads', 'admin.placeholders.ads')->name('ads');
-        // Route::view('/users', 'admin.placeholders.users')->name('users');
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
         Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
         Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');

@@ -15,11 +15,22 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
+        $first = fake()->firstName();
+        $last  = fake()->lastName();
+
         return [
-            'name' => fake()->name(),
+            'first_name' => $first,
+            'last_name' => $last,
+            'name' => trim($first . ' ' . $last),
+
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'locale' => fake()->randomElement(['en', 'fr', 'it']),
+
+            'locale' => fake()->randomElement(['en_US', 'fr_FR', 'it_IT']),
+            'ip' => fake()->ipv4(),
+            'level' => 'user',
+            'verified' => fake()->boolean(20),
+
             'remember_token' => Str::random(10),
         ];
     }

@@ -41,9 +41,14 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $fullName,
+            'first_name' => $data['name'],
+            'last_name' => $data['surname'],
             'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
-            'locale' => $locale,
+            'locale' => $this->toLocaleFull($locale),
+            'ip' => $request->ip(),
+            'level' => 'user',
+            'verified' => false,
         ]);
 
         Auth::login($user);
@@ -67,6 +72,12 @@ class AuthController extends Controller
             $redirect = $request->input('redirect');
             if ($redirect) {
                 return redirect()->to($redirect);
+            }
+
+            $user = Auth::user();
+            if ($user && \Schema::hasColumn('users', 'ip')) {
+                $user->ip = $request->ip();
+                $user->save();
             }
 
             return redirect()->intended("/{$locale}");
@@ -174,5 +185,17 @@ class AuthController extends Controller
         $u->delete();
 
         return redirect()->to("/{$locale}")->with('success', 'account deleted');
+    }
+
+    private function toLocaleFull(string $locale): string
+    {
+        $map = [
+            'en' => 'en_US',
+            'fr' => 'fr_FR',
+            'it' => 'it_IT',
+            'da' => 'da_DK',
+        ];
+
+        return $map[$locale] ?? 'en_US';
     }
 }
