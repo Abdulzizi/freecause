@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\CountryOptionsController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
@@ -25,8 +26,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
 
+        Route::get('/options/country', [CountryOptionsController::class, 'edit'])->name('options.country');
+        Route::post('/options/country', [CountryOptionsController::class, 'update'])->name('options.country.update');
+
         // parity placeholders (build screens next)
-        Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
+        // Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
         Route::view('/ads', 'admin.placeholders.ads')->name('ads');
         Route::view('/users', 'admin.placeholders.users')->name('users');
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');

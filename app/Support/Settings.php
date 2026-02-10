@@ -8,15 +8,23 @@ class Settings
 {
     public static function get(string $key, $default = null, string $group = 'global')
     {
-        $row = Setting::where('group', $group)->where('key', $key)->first();
-        return $row ? $row->castedValue() : $default;
+        $row = Setting::query()
+            ->where('group', $group)
+            ->where('key', $key)
+            ->first();
+
+        return $row ? $row->castedValue($default) : $default;
     }
 
     public static function set(string $key, $value, string $type = 'string', string $group = 'global'): void
     {
-        Setting::updateOrCreate(
+        if (in_array($type, ['json', 'array'], true)) {
+            $value = json_encode($value);
+        }
+
+        Setting::query()->updateOrCreate(
             ['group' => $group, 'key' => $key],
-            ['type' => $type, 'value' => is_array($value) ? json_encode($value) : (string)$value]
+            ['value' => (string) $value, 'type' => $type]
         );
     }
 }
