@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\CountryOptionsController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\AuthController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PetitionController;
+use App\Support\Settings;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', 'en|fr|it');
@@ -29,9 +31,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/options/country', [CountryOptionsController::class, 'edit'])->name('options.country');
         Route::post('/options/country', [CountryOptionsController::class, 'update'])->name('options.country.update');
 
+        Route::get('/ads', [AdsTxtController::class, 'edit'])->name('ads');
+        Route::post('/ads', [AdsTxtController::class, 'update'])->name('ads.update');
+        Route::get('/ads.txt', function () {
+            $content = Settings::get('ads_txt', '', 'global');
+
+            return response($content, 200)
+                ->header('Content-Type', 'text/plain; charset=UTF-8');
+        });
+
         // parity placeholders (build screens next)
         // Route::view('/options/country', 'admin.placeholders.country')->name('options.country');
-        Route::view('/ads', 'admin.placeholders.ads')->name('ads');
+        // Route::view('/ads', 'admin.placeholders.ads')->name('ads');
         Route::view('/users', 'admin.placeholders.users')->name('users');
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
         Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
