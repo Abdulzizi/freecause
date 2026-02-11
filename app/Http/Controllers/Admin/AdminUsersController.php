@@ -78,7 +78,8 @@ class AdminUsersController extends Controller
 
         $q->orderByDesc('id');
 
-        $users = $q->simplePaginate(25)->appends($request->query());
+        // $users = $q->simplePaginate(25)->appends($request->query());
+        $users = $q->paginate(25)->withQueryString();
 
         $approxTotal = $this->approxTableRows('users');
 

@@ -5,6 +5,12 @@
 @section('content')
     <h1>users ({{ number_format($approxTotal) }})</h1>
 
+    {{-- @if(collect($filters)->filter(fn($v) => $v !== '')->count())
+        <div style="font-size:11px; color:#900; margin-bottom:6px;">
+            filters active
+        </div>
+    @endif --}}
+
     @if(session('success'))
         <div class="fc-success">{{ session('success') }}</div>
     @endif
@@ -45,13 +51,21 @@
     </div>
 
     <div class="fc-box" style="margin-top:10px;">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:6px;">
-            @include('admin.partials.simple-window-pagination', ['p' => $users])
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            {{-- @if(method_exists($users, 'currentPage'))
+                <div style="font-size:11px; color:#666;">
+                    page {{ $users->currentPage() }} of {{ $users->lastPage() }}
+                </div>
+            @endif --}}
+
+            @if($users->hasPages())
+                @include('admin.partials.simple-window-pagination', ['p' => $users])
+            @endif
         </div>
 
         <table style="width:100%; border-collapse:collapse;">
             <thead>
-                <tr style="border-bottom:1px solid #ccc;">
+                <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'" onmouseout="this.style.background=''">
                     <th style="text-align:left; width:90px;">id</th>
                     <th style="width:26px;"></th>
                     <th style="width:26px; text-align:left;">v</th>
@@ -242,5 +256,15 @@
             })
             .catch(() => alert('Network error'));
         });
+
+        function updateBulkState() {
+            const anyChecked = getBoxes().some(cb => cb.checked);
+            const ban = document.getElementById('bulk-banned');
+            ban.style.opacity = anyChecked ? '1' : '.4';
+            ban.style.pointerEvents = anyChecked ? 'auto' : 'none';
+        }
+
+        getBoxes().forEach(cb => cb.addEventListener('change', updateBulkState));
+        updateBulkState();
     });
 </script>

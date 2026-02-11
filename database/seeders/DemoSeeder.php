@@ -13,6 +13,18 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
+        $userCount = (int) env('SEED_USERS', 1000);
+
+        if (User::count() < $userCount) {
+            User::factory()
+                ->count($userCount)
+                ->state(fn() => [
+                    'level' => 'user',
+                    'verified' => rand(0, 1),
+                    'locale' => collect(['en_US', 'fr_FR', 'it_IT'])->random(),
+                ])
+                ->create();
+        }
         $petitionsPerLocale   = (int) env('SEED_PETITIONS', 2000);
         $minSign              = (int) env('SEED_SIG_MIN', 5);
         $maxSign              = (int) env('SEED_SIG_MAX', 200);
@@ -49,6 +61,8 @@ class DemoSeeder extends Seeder
 
         $chunkSize = (int) env('SEED_PETITION_CHUNK', 250);
 
+        $users = User::where('level', 'user')->get(['id', 'name', 'first_name', 'last_name', 'email']);
+
         foreach ($locales as $loc) {
 
             $remaining = $petitionsPerLocale;
@@ -67,14 +81,14 @@ class DemoSeeder extends Seeder
                     ->create();
 
                 foreach ($createdPetitions as $petition) {
-                    foreach ($locales as $loc) {
-                        $title = fake($loc)->sentence(6);
+                    foreach ($locales as $trLoc) {
+                        $title = fake($trLoc)->sentence(6);
 
                         $petition->translations()->create([
-                            'locale' => $loc,
+                            'locale' => $trLoc,
                             'title' => $title,
                             'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
-                            'description' => fake($loc)->paragraphs(4, true),
+                            'description' => fake($trLoc)->paragraphs(4, true),
                         ]);
                     }
                 }
@@ -86,18 +100,51 @@ class DemoSeeder extends Seeder
 
                     Petition::whereKey($petition->id)->update(['signature_count' => $count]);
 
+                    $usedUserIds = [];
+
                     for ($i = 0; $i < $count; $i++) {
                         $email = $petition->id . '-' . $i . '@seed.test';
 
-                        $signatureRows[] = [
-                            'petition_id' => $petition->id,
-                            'user_id' => null,
-                            'name' => "Seeder " . Str::title(Str::random(6)),
-                            'email' => $email,
-                            'locale' => $loc,
-                            'created_at' => $now,
-                            'updated_at' => $now,
-                        ];
+                        $useRealUser = rand(0, 1);
+
+                        if ($useRealUser && $users->isNotEmpty()) {
+                            $availableUsers = $users->whereNotIn('id', $usedUserIds);
+
+                            if ($availableUsers->isEmpty()) {
+                                $useRealUser = false;
+                            } else {
+                                $user = $availableUsers->random();
+                                $usedUserIds[] = $user->id;
+
+                                $name = $user->name
+                                    ?: trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))
+                                    ?: 'Anonymous';
+
+                                $email = $user->email ?: ($petition->id . '-' . $i . '@seed.test');
+
+                                $signatureRows[] = [
+                                    'petition_id' => $petition->id,
+                                    'user_id' => $user->id,
+                                    'name' => $name,
+                                    'email' => $email,
+                                    'locale' => $loc,
+                                    'created_at' => $now,
+                                    'updated_at' => $now,
+                                ];
+
+                                continue;
+                            }
+                        } else {
+                            $signatureRows[] = [
+                                'petition_id' => $petition->id,
+                                'user_id' => null,
+                                'name' => "Seeder " . Str::title(Str::random(6)),
+                                'email' => $email,
+                                'locale' => $loc,
+                                'created_at' => $now,
+                                'updated_at' => $now,
+                            ];
+                        }
 
                         if (count($signatureRows) >= $signatureBatchSize) {
                             DB::table('signatures')->insert($signatureRows);
