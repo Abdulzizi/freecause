@@ -85,6 +85,12 @@ class Petition extends Model
         return $this->translations()->orderBy('id')->first();
     }
 
+    public function scopeVisible($q)
+    {
+        return $q->where('status', 'published')
+            ->where('is_active', 1);
+    }
+
     public function slugFor(?string $locale = null): ?string
     {
         return $this->translationOrFallback($locale)?->slug;

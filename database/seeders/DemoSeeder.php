@@ -75,7 +75,6 @@ class DemoSeeder extends Seeder
                     ->count($take)
                     ->state(fn() => [
                         'user_id' => $owner->id,
-                        'status' => 'published',
                         'category_id' => $categories->random(),
                     ])
                     ->create();

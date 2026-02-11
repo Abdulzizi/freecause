@@ -26,11 +26,20 @@ class PetitionFactory extends Factory
             10000000,
         ];
 
+        $isPublished = $this->faker->boolean(85);
+
         return [
             'user_id' => User::factory(),
+
             'goal_signatures' => $this->faker->randomElement($allowedGoals),
             'signature_count' => 0,
-            'status' => 'published',
+
+            // 85% published, 15% draft
+            'status' => $this->faker->boolean(85) ? 'published' : 'draft',
+            // 95% active
+            'is_active' => $this->faker->boolean(95),
+            // only published petitions can be featured
+            'is_featured' => $isPublished && $this->faker->boolean(10),
 
             'target' => $this->faker->optional(0.6)->name(),
             'tags' => $this->faker->optional(0.7)->words(rand(2, 6), true),
@@ -40,7 +49,7 @@ class PetitionFactory extends Factory
             'community_url' => $this->faker->optional(0.25)->url(),
             'youtube_url' => $this->faker->optional(0.2)->url(),
             'image_url' => null,
-            'cover_image' =>  'https://picsum.photos/seed/' . $this->faker->uuid . '/1200/630'
+            'cover_image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/1200/630'
         ];
     }
 }

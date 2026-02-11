@@ -34,6 +34,7 @@ class CategoryPetitionController extends Controller
                     ->where('pt.locale', '=', $locale);
             })
             ->where('petitions.status', 'published')
+            ->where('petitions.is_active', 1)
             ->where('petitions.category_id', $category->id)
             ->orderByDesc('petitions.id')
             ->paginate(15)

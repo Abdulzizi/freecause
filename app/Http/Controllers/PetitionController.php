@@ -90,7 +90,10 @@ class PetitionController extends Controller
 
         $petition = Petition::query()
             ->with('category')
-            ->findOrFail($id);
+            ->where('id', $id)
+            ->where('status', 'published')
+            ->where('is_active', 1)
+            ->firstOrFail();
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
@@ -476,6 +479,7 @@ class PetitionController extends Controller
                     ->where('pt.locale', '=', $locale);
             })
             ->where('petitions.status', 'published')
+            ->where('petitions.is_actve', 1)
             ->where('petitions.id', '!=', $petition->id)
             ->when($petition->category_id, fn($q) => $q->where('petitions.category_id', $petition->category_id))
             ->orderByDesc('petitions.signature_count')

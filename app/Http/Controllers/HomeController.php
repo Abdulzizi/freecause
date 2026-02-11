@@ -19,9 +19,6 @@ class HomeController extends Controller
             ->where('locale', $locale)
             ->pluck('value', 'key');
 
-        $h1 = $content['hero_h1'] ?? '';
-        $h2 = $content['hero_h2'] ?? '';
-
         $categories = Category::query()
             ->select([
                 'categories.id',
@@ -49,6 +46,10 @@ class HomeController extends Controller
                 $join->on('pt.petition_id', '=', 'petitions.id')
                     ->where('pt.locale', '=', $locale);
             })
+            ->where('petitions.status', 'published')
+            ->where('petitions.is_active', 1)
+            ->where('petitions.is_featured', 1)
+            // ->visible()
             ->whereNotNull('petitions.category_id')
             ->with('category')
             ->orderByDesc('petitions.signature_count')
@@ -62,7 +63,11 @@ class HomeController extends Controller
                 'pt.title as petition_title',
                 'pt.slug as petition_slug',
             ])
-            ->join('petitions', 'petitions.id', '=', 'signatures.petition_id')
+            ->join('petitions', function ($join) {
+                $join->on('petitions.id', '=', 'signatures.petition_id')
+                    ->where('petitions.status', 'published')
+                    ->where('petitions.is_active', 1);
+            })
             ->join('petition_translations as pt', function ($join) use ($locale) {
                 $join->on('pt.petition_id', '=', 'petitions.id')
                     ->where('pt.locale', '=', $locale);

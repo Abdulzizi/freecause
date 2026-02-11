@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\CountryOptionsController;
@@ -45,9 +46,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::post('users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
 
+        Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
+        Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
+
         // parity placeholders (build screens next)
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
-        Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
+        // Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
         Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
         Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
         Route::view('/pages', 'admin.placeholders.pages')->name('pages');
