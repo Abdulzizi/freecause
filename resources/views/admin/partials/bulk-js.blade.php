@@ -34,6 +34,23 @@
             setBulkEnabled();
         });
 
+        document.querySelectorAll('.bulk-action').forEach(btn => {
+            btn.style.opacity = anyChecked ? '1' : '.4';
+            btn.style.pointerEvents = anyChecked ? 'auto' : 'none';
+        });
+
+        document.querySelectorAll('.bulk-action').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const ids = selectedIds();
+                if (!ids.length) return;
+
+                const action = btn.dataset.action;
+
+                // TODO: wire each action to a backend route
+                alert('action: ' + action + ' on ids: ' + ids.join(', '));
+            });
+        });
+
         getBoxes().forEach(cb => cb.addEventListener('change', setBulkEnabled));
         setBulkEnabled();
 
