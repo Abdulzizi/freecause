@@ -35,11 +35,15 @@
 
         <table style="width:100%; border-collapse:collapse;">
             <thead>
-                <tr style="border-bottom:1px solid #ccc;">
-                    <th>ID</th>
-                    <th>A</th>
-                    <th>P</th>
-                    <th>F</th>
+                <tr style="border-bottom:1px solid #ccc;"
+                    onmouseover="this.style.background='#f7f7f7'"
+                    onmouseout="this.style.background=''">
+
+                    <th style="text-align:left;">id</th>
+                    <th style="width:26px;"></th>
+                    <th style="width:26px;">A</th>
+                    <th style="width:26px;">P</th>
+                    <th style="width:26px;">F</th>
                     <th>Signatures</th>
                     <th>Title</th>
                     <th>Date</th>
@@ -55,9 +59,35 @@
                             </a>
                         </td>
 
-                        <td>{!! $p->is_active ? '✔' : '✖' !!}</td>
-                        <td>{!! $p->status === 'published' ? '✔' : '✖' !!}</td>
-                        <td>{!! $p->is_featured ? '✔' : '✖' !!}</td>
+                        <td style="text-align:left;">
+                            <input type="checkbox"
+                                class="bulk-checkbox"
+                                value="{{ $p->id }}">
+                        </td>
+
+                        <td>
+                            @if($p->is_active)
+                                <span style="color:#5c8f3a; font-weight:bold;">✔</span>
+                            @else
+                                <span style="color:#c00;">✖</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            @if($p->status === 'published')
+                                <span style="color:#5c8f3a; font-weight:bold;">✔</span>
+                            @else
+                                <span style="color:#c00;">✖</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            @if($p->is_featured)
+                                <span style="color:#5c8f3a; font-weight:bold;">✔</span>
+                            @else
+                                <span style="color:#c00;">✖</span>
+                            @endif
+                        </td>
 
                         <td>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
                         <td>{{ $p->title }}</td>
@@ -66,6 +96,13 @@
                 @endforeach
             </tbody>
         </table>
+        <div style="margin-top:6px; font-size:11px; color:#555;">
+            @include('admin.partials.bulk-toolbar', [
+                'banRoute' => route('admin.petitions.bulkBan'),
+                'banLabel' => 'Banned',
+                'banConfirm' => 'Ban selected petitions?'
+            ])
+        </div>
 
     </div>
 

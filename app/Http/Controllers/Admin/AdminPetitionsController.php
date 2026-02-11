@@ -134,4 +134,23 @@ class AdminPetitionsController extends Controller
             return $row ? (int) $row->TABLE_ROWS : 0;
         });
     }
+
+    public function bulkBan(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['ok' => false], 400);
+        }
+
+        DB::table('petitions')
+            ->whereIn('id', $ids)
+            ->update([
+                'status' => 'draft',
+                'is_active' => 0,
+                'is_featured' => 0,
+            ]);
+
+        return response()->json(['ok' => true]);
+    }
 }

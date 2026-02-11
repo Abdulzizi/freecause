@@ -52,12 +52,6 @@
 
     <div class="fc-box" style="margin-top:10px;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            {{-- @if(method_exists($users, 'currentPage'))
-                <div style="font-size:11px; color:#666;">
-                    page {{ $users->currentPage() }} of {{ $users->lastPage() }}
-                </div>
-            @endif --}}
-
             @if($users->hasPages())
                 @include('admin.partials.simple-window-pagination', ['p' => $users])
             @endif
@@ -109,25 +103,11 @@
             </tbody>
         </table>
         <div style="margin-top:6px; font-size:11px; color:#555;">
-            <a href="javascript:void(0)" id="bulk-all" style="margin-right:12px; text-decoration:none; color:#555;">
-                <span style="display:inline-block; width:14px; text-align:center;">✓</span>
-                <span>All</span>
-            </a>
-
-            <a href="javascript:void(0)" id="bulk-none" style="margin-right:12px; text-decoration:none; color:#555;">
-                <span style="display:inline-block; width:14px; text-align:center;">□</span>
-                <span>None</span>
-            </a>
-
-            <a href="javascript:void(0)" id="bulk-invert" style="margin-right:12px; text-decoration:none; color:#555;">
-                <span style="display:inline-block; width:14px; text-align:center;">↔</span>
-                <span>Invert</span>
-            </a>
-
-            <a href="javascript:void(0)" id="bulk-banned" style="text-decoration:none; color:#900;">
-                <span style="display:inline-block; width:14px; text-align:center;">✖</span>
-                <span>Banned</span>
-            </a>
+            @include('admin.partials.bulk-toolbar', [
+                'banRoute' => route('admin.users.bulkBan'),
+                'banLabel' => 'Banned',
+                'banConfirm' => 'Ban selected users?'
+            ])
         </div>
 
     </div>

@@ -43,15 +43,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
         Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
-
-        Route::post('users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
+        Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
 
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
+        Route::post('/petitions/bulk-banned', [AdminPetitionsController::class, 'bulkBan'])->name('petitions.bulkBan');
 
         // parity placeholders (build screens next)
         Route::view('/categories', 'admin.placeholders.categories')->name('categories');
-        // Route::view('/petitions', 'admin.placeholders.petitions')->name('petitions');
         Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
         Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
         Route::view('/pages', 'admin.placeholders.pages')->name('pages');
