@@ -100,11 +100,16 @@
                     </td>
 
                     <td style="text-align:center;">
-                        <a href="{{ url('/' . $s->locale . '/petitions/' . $s->petition_id) }}"
-                        target="_blank"
-                        style="text-decoration:none;">
+                    @if($s->petition_slug)
+                        <a href="{{ route('petition.show', [
+                            'locale' => $s->locale,
+                            'slug' => $s->petition_slug,
+                            'id' => $s->petition_id,
+                        ]) }}">
                             🔗
+
                         </a>
+                    @endif
                     </td>
 
                     <td style="max-width:520px;">

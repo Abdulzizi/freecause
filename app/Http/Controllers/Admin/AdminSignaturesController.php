@@ -56,6 +56,7 @@ class AdminSignaturesController extends Controller
                 's.created_at',
                 'p.category_id',
                 DB::raw("COALESCE(pt.title, '') as petition_title"),
+                'pt.slug as petition_slug',
                 'u.id as user_id',
                 'u.name as user_name',
                 'u.email as user_email',
