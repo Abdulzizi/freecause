@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
+use App\Support\Spam;
 
 class PetitionController extends Controller
 {
@@ -192,6 +193,19 @@ class PetitionController extends Controller
             'agree2' => ['required', 'in:agree'],
             'agree3' => ['required', 'in:agree'],
         ]);
+
+        // spam detection
+        if (Spam::isSpam($data['title'] . ' ' . $data['description'])) {
+            Spam::log('petition', $data['title']);
+            return back()->withErrors(['title' => 'Spam detected.'])->withInput();
+        }
+
+        // rate limiting
+        if (Spam::rateLimit('petition')) {
+            Spam::log('petition', 'Rate limit exceeded');
+            Spam::banCurrentIp('Too many petition attempts');
+            return back()->withErrors(['title' => 'Too many attempts.'])->withInput();
+        }
 
         $email = strtolower(trim($data['email']));
 

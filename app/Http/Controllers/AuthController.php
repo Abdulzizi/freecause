@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\Spam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -38,6 +39,18 @@ class AuthController extends Controller
         ]);
 
         $fullName = trim($data['name'] . ' ' . $data['surname']);
+
+        if (Spam::isSpam($data['email'])) {
+            Spam::log('register', $data['email']);
+            return back()->withErrors(['email' => 'Spam detected.'])->withInput();
+        }
+
+        if (Spam::rateLimit('register')) {
+            Spam::log('register', 'Rate limit exceeded');
+            Spam::banCurrentIp('Too many registrations');
+            return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
+        }
+
 
         $user = User::create([
             'name' => $fullName,
