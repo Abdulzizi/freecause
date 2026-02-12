@@ -33,6 +33,28 @@
     </div>
 
     @stack('scripts')
+
+    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.querySelector('textarea.fc-editor')) {
+                CKEDITOR.replace('content', {
+                    toolbar: [
+                        { name: 'clipboard', items: ['Undo', 'Redo'] },
+                        { name: 'styles', items: ['Format'] },
+                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline'] },
+                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'] },
+                        { name: 'links', items: ['Link', 'Unlink'] },
+                        { name: 'insert', items: ['Image', 'Table'] },
+                        { name: 'tools', items: ['Source'] }
+                    ],
+                    height: 350
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>
