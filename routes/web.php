@@ -1,17 +1,22 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminUsersController;
+
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\CountryOptionsController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PetitionController;
+
 use App\Support\Settings;
+
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', 'en|fr|it');
@@ -51,8 +56,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/petitions/bulk-banned', [AdminPetitionsController::class, 'bulkBan'])->name('petitions.bulkBan');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->name('petitions.bulkAction');
 
+        Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');
+        Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->name('categories.save');
+
         // parity placeholders (build screens next)
-        Route::view('/categories', 'admin.placeholders.categories')->name('categories');
         Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
         Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
         Route::view('/pages', 'admin.placeholders.pages')->name('pages');

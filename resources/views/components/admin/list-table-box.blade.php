@@ -5,7 +5,6 @@
 ])
 
 @php
-    // named slots become variables in the component view
     $hasFooter = isset($footer) && trim((string) $footer) !== '';
     $isEmpty = empty($p) ? true : $p->total() === 0;
 @endphp
@@ -31,11 +30,11 @@
             </tbody>
         </table>
 
-        @if (!empty($bulk) || $hasFooter)
+        @if ($bulk !== null || $hasFooter)
             <div
                 style="margin-top:6px; font-size:11px; color:#555; display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
-                    @if (!empty($bulk))
+                    @if ($bulk != null)
                         @include('admin.partials.bulk-toolbar', $bulk)
                     @endif
                 </div>
