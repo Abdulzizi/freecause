@@ -60,8 +60,15 @@ class DemoSeeder extends Seeder
         $now = now();
 
         $chunkSize = (int) env('SEED_PETITION_CHUNK', 250);
-
         $users = User::where('level', 'user')->get(['id', 'name', 'first_name', 'last_name', 'email']);
+
+        $petitionOwners = User::where('level', 'user')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($petitionOwners)) {
+            $petitionOwners = [$owner->id];
+        }
 
         foreach ($locales as $loc) {
 
@@ -73,10 +80,19 @@ class DemoSeeder extends Seeder
 
                 $createdPetitions = Petition::factory()
                     ->count($take)
-                    ->state(fn() => [
-                        'user_id' => $owner->id,
-                        'category_id' => $categories->random(),
-                    ])
+                    ->state(function () use ($petitionOwners, $categories) {
+
+                        $ownerId = fake()->randomElement($petitionOwners);
+
+                        if (rand(0, 10) === 1) {
+                            $ownerId = $petitionOwners[array_rand($petitionOwners)];
+                        }
+
+                        return [
+                            'user_id' => $ownerId,
+                            'category_id' => $categories->random(),
+                        ];
+                    })
                     ->create();
 
                 foreach ($createdPetitions as $petition) {
@@ -113,6 +129,7 @@ class DemoSeeder extends Seeder
                                 $useRealUser = false;
                             } else {
                                 $user = $availableUsers->random();
+
                                 $usedUserIds[] = $user->id;
 
                                 $name = $user->name
@@ -127,6 +144,10 @@ class DemoSeeder extends Seeder
                                     'name' => $name,
                                     'email' => $email,
                                     'locale' => $loc,
+                                    'text' => fake()->optional()->sentence(),
+                                    'confirmed' => rand(0, 1),
+                                    'ip_address' => fake()->ipv4(),
+                                    'is_spam' => rand(0, 50) === 1,
                                     'created_at' => $now,
                                     'updated_at' => $now,
                                 ];
@@ -140,6 +161,10 @@ class DemoSeeder extends Seeder
                                 'name' => "Seeder " . Str::title(Str::random(6)),
                                 'email' => $email,
                                 'locale' => $loc,
+                                'text' => fake()->optional()->sentence(),
+                                'confirmed' => rand(0, 1),
+                                'ip_address' => fake()->ipv4(),
+                                'is_spam' => rand(0, 50) === 1,
                                 'created_at' => $now,
                                 'updated_at' => $now,
                             ];

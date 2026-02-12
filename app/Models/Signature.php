@@ -14,7 +14,11 @@ class Signature extends Model
         'user_id',
         'name',
         'email',
-        'locale'
+        'locale',
+        'text',
+        'confirmed',
+        'ip_address',
+        'is_spam',
     ];
 
     public function petition()

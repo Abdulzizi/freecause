@@ -16,8 +16,12 @@ class SignatureFactory extends Factory
             'petition_id' => Petition::factory(),
             'user_id' => null,
             'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'email' => $this->faker->safeEmail(),
             'locale' => 'en',
+            'text' => $this->faker->optional()->sentence(),
+            'confirmed' => $this->faker->boolean(90),
+            'ip_address' => $this->faker->ipv4(),
+            'is_spam' => false,
         ];
     }
 
