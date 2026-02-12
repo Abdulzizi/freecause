@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminSpamController;
+use App\Http\Controllers\Admin\AdminStatsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 
 use App\Http\Controllers\Admin\AdsTxtController;
@@ -74,8 +75,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->name('spam');
 
+        Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats');
+
         // parity placeholders (build screens next)
-        Route::view('/stats', 'admin.placeholders.stats')->name('stats');
         Route::view('/logs', 'admin.placeholders.logs')->name('logs');
 
         Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
