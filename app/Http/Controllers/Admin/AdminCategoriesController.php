@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class AdminCategoriesController extends Controller
 {
+    use ApproxRows;
+
     public function index(Request $request)
     {
         $locale = $request->query('locale', 'en');
@@ -109,20 +112,5 @@ class AdminCategoriesController extends Controller
         return redirect()
             ->route('admin.categories', ['locale' => $data['locale'], 'select' => $data['id']])
             ->with('success', 'saved');
-    }
-
-    private function approxTableRows(string $table): int
-    {
-        return (int) Cache::remember("approx_rows:$table", 3600, function () use ($table) {
-            $db = DB::getDatabaseName();
-
-            $row = DB::table('information_schema.TABLES')
-                ->select('TABLE_ROWS')
-                ->where('TABLE_SCHEMA', $db)
-                ->where('TABLE_NAME', $table)
-                ->first();
-
-            return $row ? (int) $row->TABLE_ROWS : 0;
-        });
     }
 }

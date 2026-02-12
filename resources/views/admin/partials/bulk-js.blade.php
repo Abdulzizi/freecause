@@ -1,3 +1,7 @@
+@php
+    $actionRoute = $actionRoute ?? null;
+@endphp
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxSelector = @json($checkboxSelector ?? '.bulk-checkbox');

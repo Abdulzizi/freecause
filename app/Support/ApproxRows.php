@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Admin;
+namespace App\Support;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

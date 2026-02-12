@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class AdminPetitionsController extends Controller
 {
+    use ApproxRows;
+
     public function index(Request $request)
     {
         $locale = $request->query('locale', 'en');
@@ -118,21 +121,6 @@ class AdminPetitionsController extends Controller
         return redirect()
             ->route('admin.petitions', ['select' => $data['id'], 'locale' => $data['locale']])
             ->with('success', 'saved');
-    }
-
-    private function approxTableRows(string $table): int
-    {
-        return (int) Cache::remember("approx_rows:$table", 3600, function () use ($table) {
-            $db = DB::getDatabaseName();
-
-            $row = DB::table('information_schema.TABLES')
-                ->select('TABLE_ROWS')
-                ->where('TABLE_SCHEMA', $db)
-                ->where('TABLE_NAME', $table)
-                ->first();
-
-            return $row ? (int) $row->TABLE_ROWS : 0;
-        });
     }
 
     public function bulkBan(Request $request)

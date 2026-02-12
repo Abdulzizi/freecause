@@ -35,7 +35,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('signatures', function (Blueprint $table) {
-            //
+            foreach (['text','confirmed','ip_address','is_spam'] as $col) {
+                if (Schema::hasColumn('signatures', $col)) $table->dropColumn($col);
+            }
         });
     }
 };

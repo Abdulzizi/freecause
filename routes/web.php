@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminFanpagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
+use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminUsersController;
 
 use App\Http\Controllers\Admin\AdsTxtController;
@@ -62,8 +63,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->name('fanpages');
 
+        Route::get('/signatures', [AdminSignaturesController::class, 'index'])->name('signatures');
+        Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->name('signatures.bulkDelete');
+
         // parity placeholders (build screens next)
-        Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
         Route::view('/pages', 'admin.placeholders.pages')->name('pages');
         Route::view('/spam', 'admin.placeholders.spam')->name('spam');
         Route::view('/stats', 'admin.placeholders.stats')->name('stats');
