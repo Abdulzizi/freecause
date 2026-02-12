@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
+use App\Http\Controllers\Admin\AdminFanpagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 
@@ -59,8 +60,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');
         Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->name('categories.save');
 
+        Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->name('fanpages');
+
         // parity placeholders (build screens next)
-        Route::view('/fanpages', 'admin.placeholders.fanpages')->name('fanpages');
         Route::view('/signatures', 'admin.placeholders.signatures')->name('signatures');
         Route::view('/pages', 'admin.placeholders.pages')->name('pages');
         Route::view('/spam', 'admin.placeholders.spam')->name('spam');
