@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminFanpagesController;
+use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminSignaturesController;
@@ -77,9 +78,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats');
 
-        // parity placeholders (build screens next)
-        Route::view('/logs', 'admin.placeholders.logs')->name('logs');
+        Route::get('/logs', [AdminLogsController::class, 'index'])->name('logs');
+        Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->name('logs.bulkDelete');
 
+        // parity placeholders (build screens next)
         Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
         Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
         Route::view('/system/permissions', 'admin.placeholders.system-permissions')->name('system.permissions');
