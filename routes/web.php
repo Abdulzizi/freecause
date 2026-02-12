@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminFanpagesController;
+use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminUsersController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 
 use App\Support\Settings;
@@ -66,8 +68,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->name('signatures.bulkDelete');
 
+        Route::get('/pages', [AdminPagesController::class, 'index'])->name('pages');
+        Route::post('/pages/save', [AdminPagesController::class, 'save'])->name('pages.save');
+
         // parity placeholders (build screens next)
-        Route::view('/pages', 'admin.placeholders.pages')->name('pages');
         Route::view('/spam', 'admin.placeholders.spam')->name('spam');
         Route::view('/stats', 'admin.placeholders.stats')->name('stats');
         Route::view('/logs', 'admin.placeholders.logs')->name('logs');
@@ -84,6 +88,9 @@ Route::group([
     'prefix' => '{locale}',
     'middleware' => 'setLocale'
 ], function () {
+    Route::get('/{slug}', [PageController::class, 'show'])
+        ->where('slug', '[a-z0-9\-]+')
+        ->name('page.show');
 
     // Auth + OAuth
     // centralized google oauth routes
