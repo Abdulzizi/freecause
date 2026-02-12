@@ -12,7 +12,7 @@
 
         function setBulkEnabled() {
             const anyChecked = selectedIds().length > 0;
-            const btn = document.getElementById('bulk-banned'); // keep your current id from bulk-toolbar
+            const btn = document.getElementById('bulk-banned');
             if (!btn) return;
 
             btn.style.opacity = anyChecked ? '1' : '.4';
@@ -42,12 +42,31 @@
         document.querySelectorAll('.bulk-action').forEach(btn => {
             btn.addEventListener('click', function () {
                 const ids = selectedIds();
-                if (!ids.length) return;
+                if (!ids.length) {
+                    alert(@json($emptyMsg ?? 'No items selected'));
+                    return;
+                }
 
-                const action = btn.dataset.action;
+                const action = btn.dataset.action || '';
+                if (!action) return;
 
-                // TODO: wire each action to a backend route
-                alert('action: ' + action + ' on ids: ' + ids.join(', '));
+                const msg = 'Run "' + action + '" on ' + ids.length + ' selected ' + @json($noun ?? 'items') + '?';
+                if (!confirm(msg)) return;
+
+                fetch(@json($actionRoute), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': @json(csrf_token()),
+                    },
+                    body: JSON.stringify({ action, ids })
+                })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res && res.ok) location.reload();
+                        else alert((res && res.msg) ? res.msg : 'Operation failed');
+                    })
+                    .catch(() => alert('Network error'));
             });
         });
 

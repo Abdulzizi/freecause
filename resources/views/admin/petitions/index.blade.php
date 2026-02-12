@@ -236,6 +236,7 @@
 @endsection
 
 @include('admin.partials.bulk-js', [
+    'actionRoute' => route('admin.petitions.bulkAction'),
     'banRoute' => route('admin.petitions.bulkBan'),
     'noun' => 'petitions',
     'emptyMsg' => 'No petitions selected',

@@ -5,14 +5,14 @@
 @section('content')
     @php
         $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
-    <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
-</svg>';
+            <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
+            <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
+        </svg>';
 
         $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
-    <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
-</svg>';
+            <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
+            <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
+        </svg>';
     @endphp
 
     <h1>users ({{ number_format($approxTotal) }})</h1>
@@ -50,10 +50,10 @@
     </x-admin.filter-box>
 
     <x-admin.list-table-box empty-text="no users found, try clearing filters" :p="$users" :bulk="[
-        'banRoute' => route('admin.users.bulkBan'),
-        'banLabel' => 'Banned',
-        'banConfirm' => 'Ban selected users?',
-    ]">
+            'banRoute' => route('admin.users.bulkBan'),
+            'banLabel' => 'Banned',
+            'banConfirm' => 'Ban selected users?',
+        ]">
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
@@ -104,15 +104,14 @@
 
                 <button type="button" id="bulk-banned" class="bulk-action" title="Ban Selected"
                     style="width:52px; height:44px; border:1px solid #bbb; background:#fff;
-                   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer;">
+                       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer;">
                     {!! $icoBan !!}
                     <div style="font-size:10px; color:#666;">Ban</div>
                 </button>
 
-                <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection"
-                    style="display:flex; flex-direction:column; align-items:center; justify-content:center;
-                  gap:2px; width:44px; height:44px; border:1px solid #bbb; background:#fff;
-                  text-decoration:none;">
+                <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection" style="display:flex; flex-direction:column; align-items:center; justify-content:center;
+                      gap:2px; width:44px; height:44px; border:1px solid #bbb; background:#fff;
+                      text-decoration:none;">
                     {!! $icoX !!}
                     <div style="font-size:10px; color:#666;">Clear</div>
                 </a>
@@ -143,8 +142,7 @@
                     <select class="fc-select" name="level" style="max-width:180px;">
                         @foreach ($levels as $k => $label)
                             @if ($k !== '')
-                                <option value="{{ $k }}"
-                                    {{ ($selectedUser->level ?? '') === $k ? 'selected' : '' }}>
+                                <option value="{{ $k }}" {{ ($selectedUser->level ?? '') === $k ? 'selected' : '' }}>
                                     {{ $label }}
                                 </option>
                             @endif
@@ -161,14 +159,12 @@
                 </div>
                 <div class="fc-row">
                     <label>last name</label>
-                    <input class="fc-input" type="text" name="last_name"
-                        value="{{ $selectedUser->last_name ?? '' }}">
+                    <input class="fc-input" type="text" name="last_name" value="{{ $selectedUser->last_name ?? '' }}">
                 </div>
 
                 <div class="fc-row">
                     <label>verified</label>
-                    <input type="checkbox" name="verified" value="1"
-                        {{ $selectedUser->is_verified ?? 0 ? 'checked' : '' }}>
+                    <input type="checkbox" name="verified" value="1" {{ $selectedUser->is_verified ?? 0 ? 'checked' : '' }}>
                 </div>
 
                 <div class="fc-row">
@@ -181,8 +177,7 @@
                     <select class="fc-select" name="locale" style="max-width:180px;">
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
-                                <option value="{{ $k }}"
-                                    {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
+                                <option value="{{ $k }}" {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
                                     {{ $label }}
                                 </option>
                             @endif
@@ -199,6 +194,7 @@
 @endsection
 
 @include('admin.partials.bulk-js', [
+    'actionRoute' => route('admin.users.bulkAction'),
     'banRoute' => route('admin.users.bulkBan'),
     'noun' => 'users',
     'emptyMsg' => 'No users selected',

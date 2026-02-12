@@ -153,4 +153,53 @@ class AdminPetitionsController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function bulkAction(Request $request)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'string'],
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $ids = $data['ids'];
+        if (!$ids) {
+            return response()->json(['ok' => false, 'msg' => 'no ids'], 400);
+        }
+
+        switch ($data['action']) {
+            case 'publish':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'status' => 'published',
+                ]);
+                return response()->json(['ok' => true]);
+
+            case 'unpublish':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'status' => 'draft',
+                ]);
+                return response()->json(['ok' => true]);
+
+            case 'ban':
+            case 'bulkBan':
+            case 'banned':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'status' => 'draft',
+                    'is_active' => 0,
+                    'is_featured' => 0,
+                ]);
+                return response()->json(['ok' => true]);
+
+            case 'activate':
+                DB::table('petitions')->whereIn('id', $ids)->update(['is_active' => 1]);
+                return response()->json(['ok' => true]);
+
+            case 'deactivate':
+                DB::table('petitions')->whereIn('id', $ids)->update(['is_active' => 0]);
+                return response()->json(['ok' => true]);
+
+            default:
+                return response()->json(['ok' => false, 'msg' => 'not implemented'], 400);
+        }
+    }
 }

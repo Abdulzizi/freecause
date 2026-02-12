@@ -203,4 +203,38 @@ class AdminUsersController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function bulkAction(Request $request)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'string'],
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $ids = $data['ids'];
+        if (!$ids) {
+            return response()->json(['ok' => false, 'msg' => 'no ids'], 400);
+        }
+
+        switch ($data['action']) {
+            case 'ban':
+            case 'banned':
+                if (\Schema::hasColumn('users', 'level')) {
+                    DB::table('users')->whereIn('id', $ids)->update(['level' => 'banned']);
+                    return response()->json(['ok' => true]);
+                }
+                return response()->json(['ok' => false, 'msg' => 'no level column'], 400);
+
+            case 'unban':
+                if (\Schema::hasColumn('users', 'level')) {
+                    DB::table('users')->whereIn('id', $ids)->where('level', 'banned')->update(['level' => 'user']);
+                    return response()->json(['ok' => true]);
+                }
+                return response()->json(['ok' => false, 'msg' => 'no level column'], 400);
+
+            default:
+                return response()->json(['ok' => false, 'msg' => 'not implemented'], 400);
+        }
+    }
 }
