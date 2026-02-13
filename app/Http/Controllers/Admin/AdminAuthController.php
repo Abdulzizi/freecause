@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminUser;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminAuthController extends Controller
 {
     public function show()
     {
-        if (session()->has('admin_user_id')) {
-            return redirect()->route('admin.dashboard');
+        if (Auth::check()) {
+            if (Auth::user()->level === 'admin') {
+                return redirect()->route('admin.options.global');
+            }
+
+            Auth::logout();
         }
 
         return view('admin.auth.login');
@@ -21,25 +25,30 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'login' => ['required'],
             'password' => ['required'],
         ]);
 
-        $admin = AdminUser::where('email', $request->email)->first();
+        $login = $request->login;
+        $password = $request->password;
 
-        if (!$admin || !$admin->is_active || !Hash::check($request->password, $admin->password)) {
-            return back()->withErrors(['email' => 'invalid credentials'])->withInput();
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+
+        if (!Auth::attempt([$field => $login, 'password' => $password])) {
+            return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
-        session()->put('admin_user_id', $admin->id);
-        session()->put('admin_username', $admin->username ?? $admin->email);
+        if (Auth::user()->level !== 'admin') {
+            Auth::logout();
+            return back()->withErrors(['login' => 'not authorized'])->withInput();
+        }
 
-        return redirect()->route('admin.dashboard');
+        return redirect()->route('admin.options.global');
     }
 
     public function logout()
     {
-        session()->forget(['admin_user_id', 'admin_username']);
+        Auth::logout();
         return redirect()->route('admin.login');
     }
 }

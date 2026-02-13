@@ -23,9 +23,8 @@
         <form method="POST" action="{{ route('admin.login.post') }}">
             @csrf
 
-            <div class="field-label">Email</div>
-            <input class="field-input" type="email" name="email" value="{{ old('email') }}" autocomplete="username"
-                required>
+            <div class="field-label">Email or Username</div>
+            <input class="field-input" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
 
             <div class="field-label">Password</div>
             <input class="field-input" type="password" name="password" autocomplete="current-password" required>

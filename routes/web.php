@@ -33,10 +33,10 @@ Route::redirect('/', '/en');
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('admin.auth')->group(function () {
-        Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
+        // Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');

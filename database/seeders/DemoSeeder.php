@@ -42,13 +42,27 @@ class DemoSeeder extends Seeder
             throw new \RuntimeException('No categories found. Run CategorySeeder first.');
         }
 
-        $owner = User::firstOrCreate(
-            ['email' => 'demo@freecause.test'],
+        // $owner = User::firstOrCreate(
+        //     ['email' => 'demo@freecause.test'],
+        //     [
+        //         'name' => 'Demo User',
+        //         'first_name' => 'Demo',
+        //         'last_name' => 'User',
+        //         'password' => bcrypt('password'),
+        //         'locale' => 'en_US',
+        //         'level' => 'admin',
+        //         'verified' => true,
+        //         'ip' => '127.0.0.1',
+        //     ]
+        // );
+
+        $admin = User::firstOrCreate(
+            ['email' => 'sadmin@f.test'],
             [
-                'name' => 'Demo User',
-                'first_name' => 'Demo',
-                'last_name' => 'User',
-                'password' => bcrypt('password'),
+                'name' => 'sadmin',
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
+                'password' => bcrypt('a'),
                 'locale' => 'en_US',
                 'level' => 'admin',
                 'verified' => true,
@@ -66,8 +80,12 @@ class DemoSeeder extends Seeder
             ->pluck('id')
             ->toArray();
 
+        // if (empty($petitionOwners)) {
+        //     $petitionOwners = [$owner->id];
+        // }
+
         if (empty($petitionOwners)) {
-            $petitionOwners = [$owner->id];
+            throw new \RuntimeException('No normal users found for petition ownership.');
         }
 
         foreach ($locales as $loc) {
