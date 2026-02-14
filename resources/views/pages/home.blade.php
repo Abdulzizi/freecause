@@ -8,7 +8,7 @@
         : lroute('petitions.index');
 
     $signatures = $featuredPetition?->signature_count ?? 0;
-    $goal = $featuredPetition?->goal_signatures ?? 100;
+    $goal = $featuredPetition?->goal_signatures ?? 0;
     $progress = $goal > 0 ? min(100, ($signatures / $goal) * 100) : 0;
 @endphp
 
@@ -18,13 +18,13 @@
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-8 text-center">
                     <div class="banner-content">
-                        <h1 class="banner-heading mb-4">{{ $content['hero_h1'] ?? 'Change the World' }}</h1>
+                        <h1 class="banner-heading mb-4">{{ $content['hero_h1'] ?? '' }}</h1>
 
                         <h2 class="banner-subtitle">{!! $content['hero_h2'] ?? '' !!}</h2>
 
                         <div class="banner-btn mb-3">
                             <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ $content['btn_create_petition'] ?? 'Create Petition' }}
+                                {{ $content['btn_create_petition'] ?? '' }}
                             </a>
                         </div>
 
@@ -44,7 +44,7 @@
                                 <button class="nav-link active" id="featured-petition-tab" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane" type="button" role="tab">
                                     <i class="fa fa-home" aria-hidden="true"></i>
-                                    {{ $content['tab_featured'] ?? 'Featured Petition' }}
+                                    {{ $content['tab_featured'] ?? '' }}
                                 </button>
                             </li>
 
@@ -52,7 +52,7 @@
                                 <button class="nav-link" id="recent-activities-tab" data-bs-toggle="tab"
                                     data-bs-target="#recent-activities-tab-pane" type="button" role="tab">
                                     <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                    {{ $content['tab_recent'] ?? 'Recent activities' }}
+                                    {{ $content['tab_recent'] ?? '' }}
                                 </button>
                             </li>
                         </ul>
@@ -66,7 +66,7 @@
                                             <div class="card featured-box">
                                                 <div class="card-body">
                                                     <span class="featured-badges">
-                                                        {{ $content['featured_badge'] ?? 'Featured Petition' }}
+                                                        {{ $content['featured_badge'] ?? '' }}
                                                     </span>
 
                                                     <div class="row featured-box-inner">
@@ -80,20 +80,20 @@
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
 
                                                                 <p>
-                                                                    <strong>{{ $content['petition_target_label'] ?? 'Petition target:' }}</strong>
+                                                                    <strong>{{ $content['petition_target_label'] ?? '' }}</strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
                                                                 <p>{{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}</p>
                                                             @else
-                                                                <h5>{{ $content['featured_none_title'] ?? 'no featured petition yet' }}</h5>
+                                                                <h5>{{ $content['featured_none_title'] ?? '' }}</h5>
                                                                 <p class="text-muted mb-0">
-                                                                    {{ $content['featured_none_sub'] ?? 'no petitions yet for this locale' }}
+                                                                    {{ $content['featured_none_sub'] ?? '' }}
                                                                 </p>
                                                             @endif
                                                         </div>
 
-                                                        <a href="{{ $featuredUrl }}">{{ $content['read_more'] ?? 'read more' }}</a>
+                                                        <a href="{{ $featuredUrl }}">{{ $content['read_more'] ?? '' }}</a>
                                                     </div>
 
                                                     <div class="goal-progress mb-3">
@@ -104,17 +104,17 @@
                                                         <div class="d-flex justify-content-between text-muted">
                                                             <span>
                                                                 {{ number_format($signatures) }}
-                                                                {{ $content['signatures_label'] ?? 'signatures' }}
+                                                                {{ $content['signatures_label'] ?? '' }}
                                                             </span>
                                                             <span>
-                                                                {{ $content['goal_label'] ?? 'Goal:' }}
+                                                                {{ $content['goal_label'] ?? '' }}
                                                                 {{ number_format($goal) }}
                                                             </span>
                                                         </div>
                                                     </div>
 
                                                     <a href="{{ $featuredUrl }}" class="btn btn-danger">
-                                                        {{ $content['read_more'] ?? 'read more' }}
+                                                        {{ $content['read_more'] ?? '' }}
                                                     </a>
                                                 </div>
                                             </div>
@@ -141,14 +141,14 @@
                                                                 ])
                                                                 : '#';
 
-                                                            $name = trim((string) ($sig->name ?? 'someone'));
+                                                            $name = trim((string) ($sig->name ?? ''));
                                                             $nameParts = preg_split('/\s+/', $name, -1, PREG_SPLIT_NO_EMPTY);
                                                             $prettyName =
                                                                 count($nameParts) >= 2
                                                                     ? $nameParts[0] . ' ' . strtoupper(mb_substr($nameParts[1], 0, 1)) . '.'
                                                                     : $name;
 
-                                                            $petitionTitle = $sig->petition_title ?? ($content['petition_fallback'] ?? 'petition');
+                                                            $petitionTitle = $sig->petition_title ?? ($content['petition_fallback'] ?? '');
                                                         @endphp
 
                                                         <li>
@@ -156,7 +156,7 @@
                                                                 <div class="d-flex justify-content-between recent-activities-times mb-1">
                                                                     <p class="fs-14">
                                                                         <span class="user-name">{{ $prettyName }}</span>
-                                                                        <strong>{{ $content['recent_has_signed'] ?? 'has signed' }}</strong>
+                                                                        <strong>{{ $content['recent_has_signed'] ?? '' }}</strong>
                                                                     </p>
                                                                     <span class="red fs-14">
                                                                         {{ optional($sig->created_at)->diffForHumans() }}
@@ -169,7 +169,7 @@
                                                     @empty
                                                         <li>
                                                             <div class="text-muted p-2">
-                                                                {{ $content['recent_empty'] ?? 'no recent activity yet' }}
+                                                                {{ $content['recent_empty'] ?? '' }}
                                                             </div>
                                                         </li>
                                                     @endforelse
@@ -192,7 +192,7 @@
             <div class="row">
                 <div class="col-md-6 mb-25">
                     <div class="gray-box">
-                        <h4 class="headings">{{ $content['what_title'] ?? 'What is online petition' }}</h4>
+                        <h4 class="headings">{{ $content['what_title'] ?? '' }}</h4>
 
                         <div class="mb-4">
                             <p>{!! $content['what_p1'] ?? '' !!}</p>
@@ -201,7 +201,7 @@
                             <p>{!! $content['what_p4'] ?? '' !!}</p>
 
                             <p>
-                                <a href="#">{{ $content['what_link'] ?? 'Learn how to start your petition »' }}</a>
+                                <a href="#">{{ $content['what_link'] ?? '' }}</a>
                             </p>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
                             <p>{{ $content['create_box_p2'] ?? '' }}</p>
 
                             <p>
-                                <a href="#">{{ $content['create_box_link'] ?? 'Launch your first petition now »' }}</a>
+                                <a href="#">{{ $content['create_box_link'] ?? '' }}</a>
                             </p>
                         </div>
                     </div>
@@ -239,7 +239,7 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h4 class="headings">{{ $content['categories_title'] ?? 'Browse categories' }}</h4>
+                    <h4 class="headings">{{ $content['categories_title'] ?? '' }}</h4>
                 </div>
             </div>
 
@@ -260,8 +260,8 @@
     <section class="blog-section">
         <div class="container">
             <div class="text-center mb-4">
-                <h2 class="mb-2">{{ $content['blog_title'] ?? 'Latest from Freecause magazine' }}</h2>
-                <p class="text-muted">{{ $content['blog_subtitle'] ?? 'Stay updated with our latest insights and news' }}</p>
+                <h2 class="mb-2">{{ $content['blog_title'] ?? '' }}</h2>
+                <p class="text-muted">{{ $content['blog_subtitle'] ?? '' }}</p>
             </div>
 
             <div class="row g-4">
@@ -280,7 +280,7 @@
                             <div class="blog-content">
                                 <h3 class="blog-title">{{ $post['title'] }}</h3>
                                 <a class="red" href="#">
-                                    {{ $content['blog_read_more'] ?? 'Read More' }}
+                                    {{ $content['blog_read_more'] ?? '' }}
                                     <span style="margin-left:6px;">›</span>
                                 </a>
                             </div>

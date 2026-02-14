@@ -12,8 +12,8 @@ use App\Http\Controllers\Admin\AdminStatsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 
 use App\Http\Controllers\Admin\AdsTxtController;
-use App\Http\Controllers\Admin\CountryOptionsController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
+use App\Http\Controllers\Admin\LanguageOptionsController;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
@@ -41,8 +41,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
 
-        Route::get('/options/country', [CountryOptionsController::class, 'edit'])->name('options.country');
-        Route::post('/options/country', [CountryOptionsController::class, 'update'])->name('options.country.update');
+        Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->name('options.language');
+        Route::post('/options/language', [LanguageOptionsController::class, 'update'])->name('options.language.update');
 
         Route::get('/ads', [AdsTxtController::class, 'edit'])->name('ads');
         Route::post('/ads', [AdsTxtController::class, 'update'])->name('ads.update');

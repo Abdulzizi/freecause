@@ -32,10 +32,21 @@
         </div>
     </div>
 
+    @if(session('success') || $errors->any())
+        <div id="fc-toast" class="fc-toast {{ session('success') ? 'success' : 'error' }}">
+            <span class="fc-toast-icon">
+                {{ session('success') ? '✓' : '⚠' }}
+            </span>
+            <span class="fc-toast-text">
+                {{ session('success') ?? $errors->first() }}
+            </span>
+        </div>
+
+    @endif
+
     @stack('scripts')
 
     <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (document.querySelector('textarea.fc-editor')) {
@@ -52,6 +63,18 @@
                     height: 350
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toast = document.getElementById('fc-toast');
+            if (!toast) return;
+
+            setTimeout(() => toast.classList.add('show'), 50);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
         });
     </script>
 

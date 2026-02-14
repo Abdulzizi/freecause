@@ -1,7 +1,7 @@
 <nav class="fc-menu">
     <div class="group-title">site</div>
     <a href="{{ route('admin.options.global') }}" class="{{ request()->routeIs('admin.options.global') ? 'active' : '' }}">global options</a>
-    <a href="{{ route('admin.options.country') }}" class="{{ request()->routeIs('admin.options.country') ? 'active' : '' }}">country options</a>
+    <a href="{{ route('admin.options.language') }}" class="{{ request()->routeIs('admin.options.language') ? 'active' : '' }}">language options</a>
     <a href="{{ route('admin.ads') }}" class="{{ request()->routeIs('admin.ads') ? 'active' : '' }}">ads.txt</a>
     <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}">users</a>
     <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories') ? 'active' : '' }}">categories</a>
