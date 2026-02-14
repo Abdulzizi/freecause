@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PageContent;
+use App\Services\PageContentService;
 use Illuminate\Http\Request;
 
 class LanguageOptionsController extends Controller
@@ -15,54 +16,40 @@ class LanguageOptionsController extends Controller
     ];
 
     protected array $homepageKeys = [
-        // HERO
-        'hero_h1',
-        'hero_h2',
+
+        // head
+        'meta_keywords',
+        'meta_description',
+        'head_additional_html',
+
+        // hero
+        'h1',
+        'h2',
         'btn_create_petition',
 
-        // TABS
+        // tabs
         'tab_featured',
         'tab_recent',
 
-        // FEATURED
+        // featured
         'featured_badge',
         'featured_none_title',
         'featured_none_sub',
-        'read_more',
         'petition_target_label',
         'signatures_label',
         'goal_label',
+        'read_more',
 
-        // RECENT
+        // recent
         'recent_has_signed',
         'recent_empty',
-        'petition_fallback',
 
-        // WHAT SECTION
-        'what_title',
-        'what_p1',
-        'what_p2',
-        'what_p3',
-        'what_p4',
-        'what_link',
+        // index text
+        'text_index_left',
+        'text_index_right',
 
-        // CREATE BOX
-        'create_box_title',
-        'create_box_p1',
-        'create_box_li1',
-        'create_box_li2',
-        'create_box_li3',
-        'create_box_li4',
-        'create_box_li5',
-        'create_box_li6',
-        'create_box_p2',
-        'create_box_link',
-
-        // CATEGORIES + BLOG
-        'categories_title',
-        'blog_title',
-        'blog_subtitle',
-        'blog_read_more',
+        // extra
+        'exclude_most_read',
     ];
 
     public function edit(Request $request)
@@ -84,7 +71,6 @@ class LanguageOptionsController extends Controller
             'locales' => $this->locales,
             'locale' => $locale,
             'values' => $values,
-            'homepageKeys' => $this->homepageKeys,
             'showForm' => $showForm,
         ]);
     }
@@ -95,7 +81,6 @@ class LanguageOptionsController extends Controller
             'locale' => ['required', 'in:' . implode(',', array_keys($this->locales))],
         ]);
 
-        // $locale = $request->locale;
         $locale = $request->input('locale');
 
         foreach ($this->homepageKeys as $key) {
@@ -110,6 +95,9 @@ class LanguageOptionsController extends Controller
                 ]
             );
         }
+
+        app(PageContentService::class)->clear('home', $locale);
+        // app(PageContentService::class)->clear('global', $locale);
 
         return redirect()
             ->route('admin.options.language', ['locale' => $locale])

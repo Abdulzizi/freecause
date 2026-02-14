@@ -10,15 +10,80 @@ class PageContentSeeder extends Seeder
     public function run(): void
     {
         $rows = [
-            // HERO
-            ['page' => 'home', 'locale' => 'en', 'key' => 'hero_h1', 'value' => 'Change the World'],
-            ['page' => 'home', 'locale' => 'en', 'key' => 'hero_h2', 'value' => 'Welcome to <span class="red">FreeCause - Online Petition</span>, the ultimate spot to kick off your online petition—let’s make some waves!'],
+            // GLOBAL
+            ['page' => 'global', 'locale' => 'en', 'key' => 'meta_title_suffix', 'value' => ' - FreeCause'],
+            ['page' => 'global', 'locale' => 'en', 'key' => 'meta_description', 'value' => 'FreeCause - Online Petition Platform'],
+            ['page' => 'global', 'locale' => 'en', 'key' => 'meta_keywords', 'value' => 'petitions, activism, freecause'],
+            ['page' => 'global', 'locale' => 'en', 'key' => 'head_additional_html', 'value' => ''],
+            ['page' => 'global', 'locale' => 'en', 'key' => 'footer_additional_html', 'value' => ''],
 
-            ['page' => 'home', 'locale' => 'fr', 'key' => 'hero_h1', 'value' => 'Changeons le monde'],
-            ['page' => 'home', 'locale' => 'fr', 'key' => 'hero_h2', 'value' => 'Bienvenue sur <span class="red">FreeCause - Pétition en ligne</span>, la plateforme idéale pour lancer votre pétition et faire bouger les choses.'],
+            // ENGLISH
+            ['page' => 'home', 'locale' => 'en', 'key' => 'h1', 'value' => 'Change the World'],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'h2', 'value' => 'Welcome to <span class="red">FreeCause - Online Petition</span>, the ultimate platform to launch your cause.'],
+            [
+                'page' => 'home',
+                'locale' => 'en',
+                'key' => 'text_index_left',
+                'value' =>
+                '<p>FreeCause allows anyone to create and promote online petitions easily.</p>
+         <p>Stand for your cause and gather support worldwide.</p>'
+            ],
+            [
+                'page' => 'home',
+                'locale' => 'en',
+                'key' => 'text_index_right',
+                'value' =>
+                '<p>Our platform is free, independent and built for change makers.</p>
+         <p>Start your petition today and make your voice heard.</p>'
+            ],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'meta_keywords', 'value' => 'petitions, activism, online petition, freecause'],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'meta_description', 'value' => 'Create and support online petitions easily with FreeCause.'],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'head_additional_html', 'value' => ''],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'exclude_most_read', 'value' => ''],
 
-            ['page' => 'home', 'locale' => 'it', 'key' => 'hero_h1', 'value' => 'Cambiamo il mondo'],
-            ['page' => 'home', 'locale' => 'it', 'key' => 'hero_h2', 'value' => 'Benvenuto su <span class="red">FreeCause - Petizioni Online</span>, il posto giusto per lanciare la tua petizione e fare la differenza.'],
+            // FRENCH
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'h1', 'value' => 'Changeons le monde'],
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'h2', 'value' => 'Bienvenue sur <span class="red">FreeCause</span>, la plateforme de pétitions en ligne.'],
+            [
+                'page' => 'home',
+                'locale' => 'fr',
+                'key' => 'text_index_left',
+                'value' =>
+                '<p>FreeCause vous permet de créer et partager des pétitions en ligne facilement.</p>'
+            ],
+            [
+                'page' => 'home',
+                'locale' => 'fr',
+                'key' => 'text_index_right',
+                'value' =>
+                '<p>Lancez votre pétition et mobilisez du soutien dans le monde entier.</p>'
+            ],
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'meta_keywords', 'value' => 'pétitions, activisme, pétition en ligne'],
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'meta_description', 'value' => 'Créez et soutenez des pétitions en ligne avec FreeCause.'],
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'head_additional_html', 'value' => ''],
+            ['page' => 'home', 'locale' => 'fr', 'key' => 'exclude_most_read', 'value' => ''],
+
+            // ITALIAN
+            ['page' => 'home', 'locale' => 'it', 'key' => 'h1', 'value' => 'Cambiamo il mondo'],
+            ['page' => 'home', 'locale' => 'it', 'key' => 'h2', 'value' => 'Benvenuto su <span class="red">FreeCause</span>, la piattaforma di petizioni online.'],
+            [
+                'page' => 'home',
+                'locale' => 'it',
+                'key' => 'text_index_left',
+                'value' =>
+                '<p>FreeCause ti permette di creare e promuovere petizioni facilmente.</p>'
+            ],
+            [
+                'page' => 'home',
+                'locale' => 'it',
+                'key' => 'text_index_right',
+                'value' =>
+                '<p>Avvia la tua petizione e raccogli firme in tutto il mondo.</p>'
+            ],
+            ['page' => 'home', 'locale' => 'it', 'key' => 'meta_keywords', 'value' => 'petizioni, attivismo, petizione online'],
+            ['page' => 'home', 'locale' => 'it', 'key' => 'meta_description', 'value' => 'Crea e sostieni petizioni online con FreeCause.'],
+            ['page' => 'home', 'locale' => 'it', 'key' => 'head_additional_html', 'value' => ''],
+            ['page' => 'home', 'locale' => 'it', 'key' => 'exclude_most_read', 'value' => ''],
 
             // BUTTONS / TABS
             ['page' => 'home', 'locale' => 'en', 'key' => 'btn_create_petition', 'value' => 'Create Petition'],

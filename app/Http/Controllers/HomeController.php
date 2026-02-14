@@ -14,19 +14,24 @@ class HomeController extends Controller
     {
         $locale = app()->getLocale();
 
-        $content = PageContent::query()
-            ->where('page', 'home')
+        $content = PageContent::where('page', 'home')
             ->where('locale', $locale)
             ->pluck('value', 'key');
 
-        $categories = Category::query()
-            ->select([
-                'categories.id',
-                'categories.sort_order',
-                'categories.is_active',
-                'ct.name as tr_name',
-                'ct.slug as tr_slug',
-            ])
+        $excludedIds = [];
+
+        if (!empty($content['exclude_most_read'])) {
+            $excludedIds = array_filter(
+                array_map('trim', explode(',', $content['exclude_most_read']))
+            );
+        }
+
+        $categories = Category::select([
+            'categories.id',
+            'categories.sort_order',
+            'ct.name as tr_name',
+            'ct.slug as tr_slug',
+        ])
             ->join('category_translations as ct', function ($join) use ($locale) {
                 $join->on('ct.category_id', '=', 'categories.id')
                     ->where('ct.locale', '=', $locale);
@@ -35,13 +40,12 @@ class HomeController extends Controller
             ->orderBy('categories.sort_order')
             ->get();
 
-        $featuredPetition = Petition::query()
-            ->select([
-                'petitions.*',
-                'pt.title as tr_title',
-                'pt.slug as tr_slug',
-                'pt.description as tr_description',
-            ])
+        $featuredPetition = Petition::select([
+            'petitions.*',
+            'pt.title as tr_title',
+            'pt.slug as tr_slug',
+            'pt.description as tr_description',
+        ])
             ->join('petition_translations as pt', function ($join) use ($locale) {
                 $join->on('pt.petition_id', '=', 'petitions.id')
                     ->where('pt.locale', '=', $locale);
@@ -49,20 +53,16 @@ class HomeController extends Controller
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
             ->where('petitions.is_featured', 1)
-            // ->visible()
-            ->whereNotNull('petitions.category_id')
-            ->with('category')
+            ->whereNotIn('petitions.id', $excludedIds)
             ->orderByDesc('petitions.signature_count')
-            ->orderByDesc('petitions.id')
             ->first();
 
-        $recentActivities = Signature::query()
-            ->select([
-                'signatures.*',
-                'petitions.id as petition_id',
-                'pt.title as petition_title',
-                'pt.slug as petition_slug',
-            ])
+        $recentActivities = Signature::select([
+            'signatures.*',
+            'petitions.id as petition_id',
+            'pt.title as petition_title',
+            'pt.slug as petition_slug',
+        ])
             ->join('petitions', function ($join) {
                 $join->on('petitions.id', '=', 'signatures.petition_id')
                     ->where('petitions.status', 'published')
@@ -77,7 +77,6 @@ class HomeController extends Controller
             ->get();
 
         return view('pages.home', compact(
-            'locale',
             'content',
             'categories',
             'featuredPetition',

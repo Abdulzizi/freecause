@@ -4,7 +4,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Freecause')</title>
+
+    @php
+        $locale = app()->getLocale();
+
+        $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
+
+        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - FreeCause';
+        $metaDescription = $globalMeta['meta_description'] ?? 'FreeCause - Online petition platform to launch and support causes worldwide.';
+        $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, freecause';
+        $headExtra = $globalMeta['head_additional_html'] ?? '';
+        $footerExtra = $globalMeta['footer_additional_html'] ?? '';
+    @endphp
+
+    <title>
+        @hasSection('title')
+            @yield('title'){{ $metaSuffix }}
+        @else
+            FreeCause{{ $metaSuffix }}
+        @endif
+    </title>
+
+    <meta name="description" content="{{ strip_tags($metaDescription) }}">
+    <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
+
+    {!! $headExtra !!}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
@@ -17,6 +41,7 @@
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/style.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
     @stack('head')
@@ -30,6 +55,7 @@
     </main>
 
     <div id="wp-remote-footer"></div>
+
     <script>
         (function () {
             var SUPPORTED = ['en', 'fr', 'it'];
@@ -89,6 +115,8 @@
                 .catch(function () { });
         })();
     </script>
+
+    {!! $footerExtra !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('legacy/js-v2/slick.js') }}"></script>
