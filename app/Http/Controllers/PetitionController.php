@@ -493,7 +493,7 @@ class PetitionController extends Controller
                     ->where('pt.locale', '=', $locale);
             })
             ->where('petitions.status', 'published')
-            ->where('petitions.is_actve', 1)
+            ->where('petitions.is_active', 1)
             ->where('petitions.id', '!=', $petition->id)
             ->when($petition->category_id, fn($q) => $q->where('petitions.category_id', $petition->category_id))
             ->orderByDesc('petitions.signature_count')

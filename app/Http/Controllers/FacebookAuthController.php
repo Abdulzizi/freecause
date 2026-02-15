@@ -28,19 +28,29 @@ class FacebookAuthController extends Controller
 
     public function callback(Request $request, string $locale)
     {
-        $ctx = $request->session()->pull('oauth_ctx', [
-            'flow' => 'register',
-            'locale' => $locale,
-        ]);
+    if ($request->has('error')) {
+        return redirect("/{$locale}/login")
+            ->withErrors(['oauth' => 'Facebook login was cancelled.']);
+    }
 
+    $ctx = $request->session()->pull('oauth_ctx', [
+        'flow' => 'register',
+        'locale' => $locale,
+    ]);
+
+    try {
         $facebookUser = Socialite::driver('facebook')->user();
+    } catch (\Exception $e) {
+        return redirect("/{$locale}/login")
+            ->withErrors(['oauth' => 'Facebook authentication failed.']);
+    }
 
-        $email = strtolower(trim($facebookUser->getEmail() ?? ''));
+    $email = strtolower(trim($facebookUser->getEmail() ?? ''));
 
-        if (!$email) {
-            return redirect("/{$locale}/register")
-                ->withErrors(['email' => 'facebook did not provide email.']);
-        }
+    if (!$email) {
+        return redirect("/{$locale}/register")
+            ->withErrors(['email' => 'Facebook did not provide email.']);
+    }
 
         $fullName = trim((string) ($facebookUser->getName() ?: 'Facebook User'));
 
