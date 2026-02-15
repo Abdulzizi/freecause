@@ -54,11 +54,11 @@ class HomeController extends Controller
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
             //
-            ->limit(Settings::get('max_featured_petitions_per_country', 10))
+            // ->limit(Settings::get('max_featured_petitions_per_country', 10))
             ->whereNotIn('petitions.id', $excludedIds)
             ->orderByDesc('petitions.signature_count')
-            // ->first();
-            ->get();
+            ->first();
+            // ->get();
 
         $recentActivities = Signature::select([
             'signatures.*',
