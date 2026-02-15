@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\LanguageOptionsController;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
+use App\Http\Controllers\FacebookAuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -98,6 +99,10 @@ Route::group([
     // centralized google oauth routes
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
     Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
+
+    Route::get('/oauth/facebook', [FacebookAuthController::class, 'redirect'])->name('oauth.facebook');
+    Route::get('/oauth/facebook/callback', [FacebookAuthController::class, 'callback'])->name('oauth.facebook.callback');
+
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');

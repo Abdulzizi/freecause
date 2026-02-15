@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\Signature;
+use App\Support\Settings;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -52,10 +53,12 @@ class HomeController extends Controller
             })
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
-            ->where('petitions.is_featured', 1)
+            //
+            ->limit(Settings::get('max_featured_petitions_per_country', 10))
             ->whereNotIn('petitions.id', $excludedIds)
             ->orderByDesc('petitions.signature_count')
-            ->first();
+            // ->first();
+            ->get();
 
         $recentActivities = Signature::select([
             'signatures.*',

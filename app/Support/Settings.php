@@ -8,12 +8,18 @@ class Settings
 {
     public static function get(string $key, $default = null, string $group = 'global')
     {
-        $row = Setting::query()
-            ->where('group', $group)
-            ->where('key', $key)
-            ->first();
+        return cache()->remember(
+            "settings.$group.$key",
+            3600,
+            function () use ($key, $default, $group) {
+                $row = Setting::query()
+                    ->where('group', $group)
+                    ->where('key', $key)
+                    ->first();
 
-        return $row ? $row->castedValue($default) : $default;
+                return $row ? $row->castedValue($default) : $default;
+            }
+        );
     }
 
     public static function set(string $key, $value, string $type = 'string', string $group = 'global'): void

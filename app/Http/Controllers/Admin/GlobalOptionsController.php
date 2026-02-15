@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Support\Settings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GlobalOptionsController extends Controller
 {
@@ -66,6 +67,8 @@ class GlobalOptionsController extends Controller
         Settings::set('logging_enabled', $request->boolean('logging_enabled') ? '1' : '0', 'bool');
         Settings::set('logging_cookie_name', $request->logging_cookie_name ?? 'dothelog', 'string');
         Settings::set('logging_cookie_value', $request->logging_cookie_value ?? '1', 'string');
+
+        Cache::flush();
 
         return back()->with('success', 'saved');
     }

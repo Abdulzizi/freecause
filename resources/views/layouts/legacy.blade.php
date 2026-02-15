@@ -45,6 +45,8 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
     @stack('head')
+
+    {!! \App\Support\Settings::get('inject_head_html', '') !!}
 </head>
 
 <body class="@yield('body_class', '')">
@@ -123,6 +125,8 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
     @stack('scripts')
+
+    {!! \App\Support\Settings::get('inject_body_html', '') !!}
 </body>
 
 </html>

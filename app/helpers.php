@@ -58,3 +58,8 @@ if (! function_exists('locale_url')) {
             : '');
     }
 }
+
+function base_url()
+{
+    return \App\Support\Settings::get('base_url', config('app.url'));
+}

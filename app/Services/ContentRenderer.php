@@ -13,7 +13,8 @@ class ContentRenderer
         $locale = app()->getLocale();
 
         $tokens = [
-            '{ROOT_URL}' => url('/'),
+            // '{ROOT_URL}' => url('/'),
+            '{ROOT_URL}' => base_url(),
             '{SITE_NAME}' => config('app.name'),
             '{BRAND_NAME}' => config('app.name'),
 
