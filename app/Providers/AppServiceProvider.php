@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (!Schema::hasTable('settings')) {
+            return;
+        }
+
         if ($customBase = Settings::get('base_url')) {
             // URL::forceRootUrl($customBase);
         }
