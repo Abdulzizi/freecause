@@ -14,14 +14,12 @@
 
 @section('content')
 
-    {{-- HERO --}}
     <section id="welcomes" class="main-banner">
         <div class="container">
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-8 text-center">
                     <div class="banner-content">
 
-                        {{-- ONLY CHANGE HERE --}}
                         <h1 class="banner-heading mb-4">
                             {{ $content['h1'] ?? 'Change the World' }}
                         </h1>
@@ -42,7 +40,6 @@
         </div>
     </section>
 
-    {{-- TABS --}}
     <section class="tabs-area">
         <div class="container">
             <div class="row">
@@ -68,7 +65,6 @@
 
                         <div class="tab-content">
 
-                            {{-- FEATURED --}}
                             <div class="tab-pane fade show active" id="featured-petition-tab-pane">
 
                                 <div class="tab-card-content">
@@ -134,9 +130,9 @@
                                                             </div>
                                                         </div>
 
-                                                        <a href="{{ $featuredUrl }}" class="btn btn-danger">
+                                                        <span href="{{ $featuredUrl }}" class="btn btn-danger">
                                                             {{ $content['read_more'] ?? 'read more' }}
-                                                        </a>
+                                                        </span>
 
                                                     </div>
                                                 </div>
@@ -148,7 +144,6 @@
 
                             </div>
 
-                            {{-- RECENT --}}
                             <div class="tab-pane fade" id="recent-activities-tab-pane" role="tabpanel">
 
                                 <div class="tab-card-content">
@@ -223,7 +218,6 @@
         </div>
     </section>
 
-    {{-- INDEX SECTION (CARDS RESTORED) --}}
     <section class="online-petition py-5">
         <div class="container">
             <div class="row">
@@ -232,10 +226,10 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['left_title'] ?? 'What is online petition' }}
+                            {{ $content['what_title'] ?? 'What is online petition' }}
                         </h4>
 
-                        {!! $content['text_index_left'] ?? '' !!}
+                        {!! \App\Services\ContentRenderer::render($content['text_index_left'] ?? '') !!}
 
                     </div>
                 </div>
@@ -244,14 +238,36 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['right_title'] ?? 'CREATE PETITION' }}
+                            {{ $content['create_box_title'] ?? 'CREATE PETITION' }}
                         </h4>
 
-                        {!! $content['text_index_right'] ?? '' !!}
+                        {!! \App\Services\ContentRenderer::render($content['text_index_right'] ?? '') !!}
 
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <section class="browse-categories py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h4 class="headings">{{ $content['categories_title'] ?? 'Browse categories' }}</h4>
+                </div>
+            </div>
+
+            <div class="row category-row">
+                @foreach ($categories as $cat)
+                    <div class="col-lg-3 col-sm-6 mb-3">
+                        <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
+                            class="category-card d-block">
+                            <span class="category-icon"><i class="bi bi-house-check"></i></span>
+                            <h3 class="h5">{{ $cat->tr_name }}</h3>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -301,8 +317,8 @@
     </script>
 @endpush
 
-<style>
+{{-- <style>
     li {
         list-style: none;
     }
-</style>
+</style> --}}

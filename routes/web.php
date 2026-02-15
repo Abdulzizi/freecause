@@ -94,10 +94,6 @@ Route::group([
     'prefix' => '{locale}',
     'middleware' => 'setLocale'
 ], function () {
-    Route::get('/{slug}', [PageController::class, 'show'])
-        ->where('slug', '[a-z0-9\-]+')
-        ->name('page.show');
-
     // Auth + OAuth
     // centralized google oauth routes
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
@@ -187,4 +183,8 @@ Route::group([
         ->middleware('auth')
         ->where(['id' => '[0-9]+'])
         ->name('petition.download.pdf');
+
+    Route::get('/{slug}', [PageController::class, 'show'])
+        ->where('slug', '[a-z0-9\-]+')
+        ->name('page.show');
 });

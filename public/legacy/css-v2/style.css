@@ -1816,6 +1816,11 @@ body {
   padding:10px 0;
 }
 
+/* IMPORTANT */
+li {
+    list-style: none;
+}
+
 
 /* other pages css end */
 
