@@ -17,10 +17,10 @@ class AdminSignaturesController extends Controller
     {
         $filters = [
             'petition_id' => trim((string) $request->query('petition_id', '')),
-            'email'      => trim((string) $request->query('email', '')),
-            'text'       => trim((string) $request->query('text', '')),
+            'email'       => trim((string) $request->query('email', '')),
+            'text'        => trim((string) $request->query('text', '')),
             'category_id' => trim((string) $request->query('category_id', '')),
-            'locale'     => trim((string) $request->query('locale', '')),
+            'locale'      => trim((string) $request->query('locale', '')),
         ];
 
         $hasText = Schema::hasColumn('signatures', 'text');
@@ -28,13 +28,14 @@ class AdminSignaturesController extends Controller
 
         $catLocale = $filters['locale'] !== '' ? $filters['locale'] : 'en';
 
-        $categories = DB::table('categories')
-            ->join('category_translations as ct', function ($j) use ($catLocale) {
-                $j->on('ct.category_id', '=', 'categories.id')
-                    ->where('ct.locale', '=', $catLocale);
-            })
-            ->select(['categories.id', 'ct.name', 'ct.locale'])
-            ->orderBy('categories.id')
+        $categories = DB::table('category_translations as ct')
+            ->join('categories as c', 'c.id', '=', 'ct.category_id')
+            ->where('ct.locale', $catLocale)
+            ->select([
+                'c.id',
+                'ct.name',
+            ])
+            ->orderBy('c.id')
             ->get();
 
         $q = DB::table('signatures as s')
@@ -42,7 +43,7 @@ class AdminSignaturesController extends Controller
             ->leftJoin('users as u', 'u.id', '=', 's.user_id')
             ->leftJoin('petition_translations as pt', function ($j) {
                 $j->on('pt.petition_id', '=', 'p.id')
-                    ->on('pt.locale', '=', 's.locale');
+                  ->on('pt.locale', '=', 's.locale');
             })
             ->select(array_filter([
                 's.id',
@@ -57,7 +58,6 @@ class AdminSignaturesController extends Controller
                 'p.category_id',
                 DB::raw("COALESCE(pt.title, '') as petition_title"),
                 'pt.slug as petition_slug',
-                'u.id as user_id',
                 'u.name as user_name',
                 'u.email as user_email',
                 'u.verified as user_verified',
@@ -105,7 +105,11 @@ class AdminSignaturesController extends Controller
             'ids.*' => ['integer'],
         ]);
 
-        DB::table('signatures')->whereIn('id', $data['ids'])->delete();
+        DB::table('signatures')
+            ->whereIn('id', $data['ids'])
+            ->delete();
+
+        Cache::flush();
 
         return response()->json(['ok' => true]);
     }
