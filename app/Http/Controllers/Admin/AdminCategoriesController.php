@@ -7,6 +7,8 @@ use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AdminCategoriesController extends Controller
 {
@@ -17,22 +19,20 @@ class AdminCategoriesController extends Controller
         $locale = $request->query('locale', 'en');
 
         $filters = [
-            'id' => trim((string) $request->query('id', '')),
+            'id'   => trim((string) $request->query('id', '')),
             'name' => trim((string) $request->query('name', '')),
-            // 'text' => trim((string) $request->query('text', '')),
         ];
 
         $q = DB::table('categories')
-            ->join('category_translations as ct', function ($j) use ($locale) {
+            ->leftJoin('category_translations as ct', function ($j) use ($locale) {
                 $j->on('ct.category_id', '=', 'categories.id')
-                    ->where('ct.locale', '=', $locale);
+                  ->where('ct.locale', '=', $locale);
             })
             ->select([
                 'categories.id',
-                'ct.locale',
+                DB::raw("'" . $locale . "' as locale"),
                 'ct.name',
                 'ct.slug',
-                // 'ct.text',
             ]);
 
         if ($filters['id'] !== '') {
@@ -43,14 +43,9 @@ class AdminCategoriesController extends Controller
             $q->where('ct.name', 'like', '%' . $filters['name'] . '%');
         }
 
-        // if ($filters['text'] !== '') {
-        //     $q->where('ct.text', 'like', '%' . $filters['text'] . '%');
-        // }
-
         $q->orderBy('categories.id');
 
         $categories = $q->paginate(50)->withQueryString();
-
         $approxTotal = $this->approxTableRows('categories');
 
         $selectedId = $request->query('select');
@@ -58,7 +53,10 @@ class AdminCategoriesController extends Controller
         $selectedTranslation = null;
 
         if ($selectedId) {
-            $selectedCategory = DB::table('categories')->where('id', (int) $selectedId)->first();
+            $selectedCategory = DB::table('categories')
+                ->where('id', (int) $selectedId)
+                ->first();
+
             $selectedTranslation = DB::table('category_translations')
                 ->where('category_id', (int) $selectedId)
                 ->where('locale', $locale)
@@ -66,11 +64,9 @@ class AdminCategoriesController extends Controller
         }
 
         $locales = [
-            '' => '(Locale)',
             'en' => 'English',
             'fr' => 'French',
             'it' => 'Italian',
-            // 'es_AR' => 'Spanish (AR)',
         ];
 
         return view('admin.categories.index', compact(
@@ -87,30 +83,41 @@ class AdminCategoriesController extends Controller
     public function save(Request $request)
     {
         $data = $request->validate([
-            'id' => ['required', 'integer'],
+            'id'     => ['required', 'integer'],
             'locale' => ['required', 'string'],
-            'name' => ['nullable', 'string'],
-            'slug' => ['nullable', 'string'],
-            // 'text' => ['nullable', 'string'],
+            'name'   => ['required', 'string', 'max:150'],
+            'slug'   => [
+                'nullable',
+                'string',
+                'max:150',
+                Rule::unique('category_translations')
+                    ->where(fn ($q) => $q->where('locale', $request->locale))
+                    ->ignore($request->id, 'category_id')
+            ],
         ]);
 
-        //* NOTE: category base row exists already (seeded). if you later want "create new category"
-        //* we can implement it, but for now usually edit existing ones.
+        $slug = $data['slug']
+            ? Str::slug($data['slug'])
+            : Str::slug($data['name']);
 
         DB::table('category_translations')->updateOrInsert(
             [
                 'category_id' => $data['id'],
-                'locale' => $data['locale'],
+                'locale'      => $data['locale'],
             ],
             [
-                'name' => $data['name'] ?? '',
-                'slug' => $data['slug'] ?? '',
-                // 'text' => $data['text'] ?? '',
+                'name' => $data['name'],
+                'slug' => $slug,
             ]
         );
 
+        Cache::forget("categories_{$data['locale']}");
+
         return redirect()
-            ->route('admin.categories', ['locale' => $data['locale'], 'select' => $data['id']])
+            ->route('admin.categories', [
+                'locale' => $data['locale'],
+                'select' => $data['id']
+            ])
             ->with('success', 'saved');
     }
 }
