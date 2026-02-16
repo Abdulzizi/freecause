@@ -73,9 +73,12 @@ class AuthController extends Controller
         //     new VerifyAccountMail($user, $locale)
         // );
 
-        Mail::to($user->email)->send(
-            new VerifyAccountMail($user, $locale)
-    );
+        try {
+            Mail::to($user->email)
+            ->send(new VerifyAccountMail($user, app()->getLocale()));
+        } catch (\Exception $e) {
+            \Log::error('Mail send failed: '.$e->getMessage());
+        }
 
         return redirect()->to("/{$locale}/login")->with('success', 'Please check your email to verify your account.');
         // $request->session()->regenerate();

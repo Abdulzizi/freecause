@@ -59,6 +59,10 @@ class VerifyAccountMail extends Mailable
     public function build()
     {
         return $this->subject('Verify your account')
-            ->view('emails.verify-account');
+            ->view('emails.verify-account')
+            ->with([
+                'user'   => $this->user,
+                'locale' => $this->locale,
+            ]);
     }
 }

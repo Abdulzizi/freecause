@@ -1,5 +1,8 @@
 @php
-    $verifyUrl = url("/{$locale}/verify/{$user->verification_token}");
+    $verifyUrl = route('verify.account', [
+        'locale' => $locale,
+        'token'  => $user->verification_token
+    ]);
 @endphp
 
 <!DOCTYPE html>
