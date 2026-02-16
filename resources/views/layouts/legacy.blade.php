@@ -46,6 +46,19 @@
 
     @stack('head')
 
+    @if(session('success'))
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0 shadow" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ session('success') }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
 </head>
 
@@ -53,6 +66,45 @@
     @include('partials.navbar')
 
     <main>
+        {{-- @if(auth()->check() && !auth()->user()->verified)
+            <div class="position-fixed top-0 end-0 p-4" style="z-index: 1080;">
+                <div id="verifyToast"
+                    class="toast align-items-center text-dark bg-warning border-0 shadow-lg"
+                    role="alert"
+                    data-bs-delay="8000">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="toast-body d-flex align-items-center gap-2">
+
+                            <i class="fa fa-exclamation-triangle text-dark"></i>
+
+                            <div>
+                                <div class="fw-semibold">
+                                    Email not verified
+                                </div>
+                                <div style="font-size:13px;">
+                                    Please verify your email to secure your account.
+                                    <a href="{{ lroute('verification.resend') }}"
+                                    class="fw-bold text-dark ms-1 text-decoration-underline">
+                                        Resend
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <button type="button"
+                                class="btn-close me-3"
+                                data-bs-dismiss="toast">
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        @endif --}}
+
         @yield('content')
     </main>
 
@@ -116,7 +168,27 @@
                 })
                 .catch(function () { });
         })();
+
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     var toastEl = document.getElementById('verifyToast');
+        //     if (toastEl) {
+        //         var toast = new bootstrap.Toast(toastEl);
+        //         toast.show();
+        //     }
+        // });
     </script>
+
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var toastEl = document.getElementById('successToast');
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+                toast.show();
+            }
+        });
+    </script>
+    @endif
 
     {!! $footerExtra !!}
 

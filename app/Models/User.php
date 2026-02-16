@@ -18,6 +18,7 @@ class User extends Authenticatable
         'ip',
         'level',
         'verified',
+        'verification_token',
     ];
 
     protected $hidden = [

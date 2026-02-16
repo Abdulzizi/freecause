@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyAccountMail;
 
 class AuthController extends Controller
 {
@@ -51,6 +54,7 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
         }
 
+        $token = Str::random(64);
 
         $user = User::create([
             'name' => $fullName,
@@ -62,12 +66,21 @@ class AuthController extends Controller
             'ip' => $request->ip(),
             'level' => 'user',
             'verified' => false,
+            'verification_token' => $token,
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        // Mail::to($user->email)->queue(
+        //     new VerifyAccountMail($user, $locale)
+        // );
 
-        return redirect()->to("/{$locale}");
+        Mail::to($user->email)->send(
+            new VerifyAccountMail($user, $locale)
+    );
+
+        return redirect()->to("/{$locale}/login")->with('success', 'Please check your email to verify your account.');
+        // $request->session()->regenerate();
+
+        // return redirect()->to("/{$locale}");
     }
 
     public function login(Request $request, string $locale)
@@ -210,5 +223,22 @@ class AuthController extends Controller
         ];
 
         return $map[$locale] ?? 'en_US';
+    }
+
+    public function verify(string $locale, string $token)
+    {
+        $user = User::where('verification_token', $token)->first();
+
+        if (!$user) {
+            return redirect()->to("/{$locale}")
+                ->with('error', 'Invalid or expired verification link.');
+        }
+
+        $user->verified = true;
+        $user->verification_token = null;
+        $user->save();
+
+        return redirect()->to("/{$locale}")
+            ->with('success', 'Your account has been verified.');
     }
 }
