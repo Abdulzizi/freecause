@@ -63,7 +63,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
-        Route::post('/petitions/bulk-banned', [AdminPetitionsController::class, 'bulkBan'])->name('petitions.bulkBan');
+        // Route::post('/petitions/bulk-banned', [AdminPetitionsController::class, 'bulkBan'])->name('petitions.bulkBan');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->name('petitions.bulkAction');
 
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');

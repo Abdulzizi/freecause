@@ -3,159 +3,81 @@
 @endphp
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxSelector = @json($checkboxSelector ?? '.bulk-checkbox');
+document.addEventListener('DOMContentLoaded', function () {
 
-        function getBoxes() {
-            return Array.from(document.querySelectorAll(checkboxSelector));
-        }
+    const route = @json($actionRoute);
+    const checkboxSelector = @json($checkboxSelector ?? '.bulk-checkbox');
 
-        function selectedIds() {
-            return getBoxes().filter(cb => cb.checked).map(cb => cb.value);
-        }
+    function getBoxes() {
+        return Array.from(document.querySelectorAll(checkboxSelector));
+    }
 
-        function setBulkEnabled() {
-            const anyChecked = selectedIds().length > 0;
-            const btn = document.getElementById('bulk-banned');
-            if (!btn) return;
+    function selectedIds() {
+        return getBoxes().filter(cb => cb.checked).map(cb => cb.value);
+    }
 
-            btn.style.opacity = anyChecked ? '1' : '.4';
-            btn.style.pointerEvents = anyChecked ? 'auto' : 'none';
-        }
-
-        document.getElementById('bulk-all')?.addEventListener('click', function () {
-            getBoxes().forEach(cb => cb.checked = true);
-            setBulkEnabled();
-        });
-
-        document.getElementById('bulk-none')?.addEventListener('click', function () {
-            getBoxes().forEach(cb => cb.checked = false);
-            setBulkEnabled();
-        });
-
-        document.getElementById('bulk-invert')?.addEventListener('click', function () {
-            getBoxes().forEach(cb => cb.checked = !cb.checked);
-            setBulkEnabled();
-        });
+    function updateButtons() {
+        const anyChecked = selectedIds().length > 0;
 
         document.querySelectorAll('.bulk-action').forEach(btn => {
             btn.style.opacity = anyChecked ? '1' : '.4';
             btn.style.pointerEvents = anyChecked ? 'auto' : 'none';
         });
+    }
 
-        document.querySelectorAll('.bulk-action').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const ids = selectedIds();
-                if (!ids.length) {
-                    alert(@json($emptyMsg ?? 'No items selected'));
-                    return;
-                }
+    // ALL
+    document.getElementById('bulk-all')?.addEventListener('click', function () {
+        getBoxes().forEach(cb => cb.checked = true);
+        updateButtons();
+    });
 
-                const action = btn.dataset.action || '';
-                if (!action) return;
+    // NONE
+    document.getElementById('bulk-none')?.addEventListener('click', function () {
+        getBoxes().forEach(cb => cb.checked = false);
+        updateButtons();
+    });
 
-                const msg = 'Run "' + action + '" on ' + ids.length + ' selected ' + @json($noun ?? 'items') + '?';
-                if (!confirm(msg)) return;
+    // INVERT
+    document.getElementById('bulk-invert')?.addEventListener('click', function () {
+        getBoxes().forEach(cb => cb.checked = !cb.checked);
+        updateButtons();
+    });
 
-                fetch(@json($actionRoute), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': @json(csrf_token()),
-                    },
-                    body: JSON.stringify({ action, ids })
-                })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res && res.ok) location.reload();
-                        else alert((res && res.msg) ? res.msg : 'Operation failed');
-                    })
-                    .catch(() => alert('Network error'));
-            });
-        });
+    // GENERIC BULK ACTION (publish, activate, feature, ban, etc)
+    document.querySelectorAll('.bulk-action').forEach(btn => {
+        btn.addEventListener('click', function () {
 
-        getBoxes().forEach(cb => cb.addEventListener('change', setBulkEnabled));
-        setBulkEnabled();
-
-        document.getElementById('bulk-banned')?.addEventListener('click', function () {
             const ids = selectedIds();
-
             if (!ids.length) {
                 alert(@json($emptyMsg ?? 'No items selected'));
                 return;
             }
 
-            const noun = @json($noun ?? 'items');
-            const msg = ids.length === 1
-                ? ('Ban 1 selected ' + noun + '?')
-                : ('Ban ' + ids.length + ' selected ' + noun + '?');
+            const action = btn.dataset.action || '';
+            if (!action) return;
 
+            const msg = 'Run "' + action + '" on ' + ids.length + ' selected ' + @json($noun ?? 'items') + '?';
             if (!confirm(msg)) return;
 
-            fetch(@json($banRoute), {
+            fetch(route, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': @json(csrf_token()),
                 },
-                body: JSON.stringify({ ids })
-            })
-                .then(r => r.json())
-                .then(res => {
-                    if (res && res.ok) location.reload();
-                    else alert('Operation failed');
-                })
-                .catch(() => alert('Network error'));
-        });
-
-        document.getElementById('bulk-unban')?.addEventListener('click', function () {
-            const ids = selectedIds();
-
-            if (!ids.length) {
-                alert('No users selected');
-                return;
-            }
-
-            if (!confirm('Unban ' + ids.length + ' selected users?')) return;
-
-            fetch("{{ route('admin.users.bulkUnban') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                },
-                body: JSON.stringify({ ids })
+                body: JSON.stringify({ action, ids })
             })
             .then(r => r.json())
             .then(res => {
                 if (res && res.ok) location.reload();
-                else alert('Operation failed');
-            });
-        });
-
-        document.getElementById('bulk-delete')?.addEventListener('click', function () {
-            const ids = selectedIds();
-
-            if (!ids.length) {
-                alert('No users selected');
-                return;
-            }
-
-            if (!confirm('Permanently delete ' + ids.length + ' users? This cannot be undone.')) return;
-
-            fetch("{{ route('admin.users.bulkDelete') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                },
-                body: JSON.stringify({ ids })
+                else alert((res && res.msg) ? res.msg : 'Operation failed');
             })
-            .then(r => r.json())
-            .then(res => {
-                if (res && res.ok) location.reload();
-                else alert('Operation failed');
-            });
+            .catch(() => alert('Network error'));
         });
     });
+
+    getBoxes().forEach(cb => cb.addEventListener('change', updateButtons));
+    updateButtons();
+
+});
 </script>

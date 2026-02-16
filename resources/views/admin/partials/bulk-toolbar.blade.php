@@ -31,16 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return Array.from(document.querySelectorAll('.bulk-checkbox'));
     }
 
-    // function updateState() {
-    //     const anyChecked = getBoxes().some(cb => cb.checked);
-    //     const banBtn = document.querySelector('[data-bulk="ban"]');
-
-    //     if (banBtn) {
-    //         banBtn.style.opacity = anyChecked ? '1' : '.4';
-    //         banBtn.style.pointerEvents = anyChecked ? 'auto' : 'none';
-    //     }
-    // }
-
     function updateState() {
         const boxes = getBoxes();
         const selected = boxes.filter(cb => cb.checked);
@@ -69,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-bulk]').forEach(el => {
         el.addEventListener('click', function (e) {
 
-            e.preventDefault();      // 🔥 critical
-            e.stopPropagation();     // 🔥 prevents form submission
+            e.preventDefault();
+            e.stopPropagation();
 
             const action = this.dataset.bulk;
             const boxes = getBoxes();

@@ -105,6 +105,16 @@ class AdminPetitionsController extends Controller
                 'is_featured' => $request->boolean('is_featured'),
             ]);
 
+        $exists = DB::table('petition_translations')
+            ->where('slug', $data['slug'])
+            ->where('locale', $data['locale'])
+            ->where('petition_id', '!=', $data['id'])
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['slug' => 'Slug already used']);
+        }
+
         DB::table('petition_translations')
             ->updateOrInsert(
                 [
@@ -123,25 +133,6 @@ class AdminPetitionsController extends Controller
             ->with('success', 'saved');
     }
 
-    public function bulkBan(Request $request)
-    {
-        $ids = $request->input('ids', []);
-
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['ok' => false], 400);
-        }
-
-        DB::table('petitions')
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => 'draft',
-                'is_active' => 0,
-                'is_featured' => 0,
-            ]);
-
-        return response()->json(['ok' => true]);
-    }
-
     public function bulkAction(Request $request)
     {
         $data = $request->validate([
@@ -151,43 +142,63 @@ class AdminPetitionsController extends Controller
         ]);
 
         $ids = $data['ids'];
+
         if (!$ids) {
             return response()->json(['ok' => false, 'msg' => 'no ids'], 400);
         }
 
         switch ($data['action']) {
+
             case 'publish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'published',
                 ]);
-                return response()->json(['ok' => true]);
+                break;
 
             case 'unpublish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
                 ]);
-                return response()->json(['ok' => true]);
+                break;
+
+            case 'activate':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'is_active' => 1,
+                ]);
+                break;
+
+            case 'deactivate':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'is_active' => 0,
+                ]);
+                break;
+
+            case 'feature':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'is_featured' => 1,
+                ]);
+                break;
+
+            case 'unfeature':
+                DB::table('petitions')->whereIn('id', $ids)->update([
+                    'is_featured' => 0,
+                ]);
+                break;
 
             case 'ban':
-            case 'bulkBan':
-            case 'banned':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
                     'is_active' => 0,
                     'is_featured' => 0,
                 ]);
-                return response()->json(['ok' => true]);
-
-            case 'activate':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_active' => 1]);
-                return response()->json(['ok' => true]);
-
-            case 'deactivate':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_active' => 0]);
-                return response()->json(['ok' => true]);
+                break;
 
             default:
                 return response()->json(['ok' => false, 'msg' => 'not implemented'], 400);
         }
+
+        Cache::flush();
+
+        return response()->json(['ok' => true]);
     }
 }

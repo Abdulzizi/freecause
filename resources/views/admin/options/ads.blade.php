@@ -5,9 +5,9 @@
 @section('content')
     <h1>ads.txt</h1>
 
-    @if(session('success'))
+    {{-- @if(session('success'))
         <div class="fc-success">{{ session('success') }}</div>
-    @endif
+    @endif --}}
 
     <form method="post" action="{{ route('admin.ads.update') }}">
         @csrf
