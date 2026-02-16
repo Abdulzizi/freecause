@@ -179,7 +179,7 @@ class AdminUsersController extends Controller
 
         DB::table('users')
             ->whereIn('id', $ids)
-            ->where('level', '!=', 'admin')
+            ->where('level', 'user')
             ->update(['level' => 'banned']);
 
         return response()->json(['ok' => true]);

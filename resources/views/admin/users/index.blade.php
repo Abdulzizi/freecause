@@ -81,7 +81,10 @@
 
         <x-slot:tbody>
             @foreach ($users as $u)
-                <tr style="border-bottom:1px solid #eee;">
+            @php
+                $isBanned = $u->level === 'banned';
+            @endphp
+                <tr style="border-bottom:1px solid #eee;" class="{{ $isBanned ? 'fc-banned-row' : '' }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
                             style="text-decoration:none; color:#000;">
@@ -90,7 +93,11 @@
                     </td>
 
                     <td style="text-align:left;">
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}">
+                        <input type="checkbox"
+                            class="bulk-checkbox"
+                            value="{{ $u->id }}"
+                            data-level="{{ $u->level }}"
+                            {{ $u->level === 'admin' ? 'disabled' : '' }}>
                     </td>
 
                     <td style="text-align:left;">
@@ -101,8 +108,29 @@
                         @endif
                     </td>
 
-                    <td><a href="mailto:{{ $u->email }}">{{ $u->email }}</a></td>
-                    <td>{{ $u->name }}</td>
+                    <td>
+                        <a href="mailto:{{ $u->email }}"
+                        style="{{ $isBanned ? 'color:#c00; font-weight:bold;' : '' }}">
+                            {{ $u->email }}
+                        </a>
+                    </td>
+
+                    <td>
+                        {{ $u->name }}
+
+                        @if($isBanned)
+                            <span style="
+                                margin-left:6px;
+                                font-size:10px;
+                                padding:2px 6px;
+                                background:#c00;
+                                color:#fff;
+                                border-radius:2px;
+                            ">
+                                BANNED
+                            </span>
+                        @endif
+                    </td>
                     <td>{{ $u->first_name }}</td>
                     <td>{{ $u->last_name }}</td>
                     <td>{{ $u->locale }}</td>

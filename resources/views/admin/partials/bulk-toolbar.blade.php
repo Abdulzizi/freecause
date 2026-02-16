@@ -31,13 +31,38 @@ document.addEventListener('DOMContentLoaded', function () {
         return Array.from(document.querySelectorAll('.bulk-checkbox'));
     }
 
-    function updateState() {
-        const anyChecked = getBoxes().some(cb => cb.checked);
-        const banBtn = document.querySelector('[data-bulk="ban"]');
+    // function updateState() {
+    //     const anyChecked = getBoxes().some(cb => cb.checked);
+    //     const banBtn = document.querySelector('[data-bulk="ban"]');
 
-        if (banBtn) {
-            banBtn.style.opacity = anyChecked ? '1' : '.4';
-            banBtn.style.pointerEvents = anyChecked ? 'auto' : 'none';
+    //     if (banBtn) {
+    //         banBtn.style.opacity = anyChecked ? '1' : '.4';
+    //         banBtn.style.pointerEvents = anyChecked ? 'auto' : 'none';
+    //     }
+    // }
+
+    function updateState() {
+        const boxes = getBoxes();
+        const selected = boxes.filter(cb => cb.checked);
+
+        const banBtn = document.querySelector('[data-bulk="ban"]');
+        if (!banBtn) return;
+
+        if (!selected.length) {
+            banBtn.style.opacity = '.4';
+            banBtn.style.pointerEvents = 'none';
+            return;
+        }
+
+        // check if ALL selected are already banned
+        const allBanned = selected.every(cb => cb.dataset.level === 'banned');
+
+        if (allBanned) {
+            banBtn.style.opacity = '.4';
+            banBtn.style.pointerEvents = 'none';
+        } else {
+            banBtn.style.opacity = '1';
+            banBtn.style.pointerEvents = 'auto';
         }
     }
 

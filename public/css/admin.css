@@ -239,3 +239,12 @@ body {
 .fc-icon-btn:active {
     background: #dcdcdc;
 }
+
+.fc-banned-row {
+    background: #fff3f3;
+}
+
+.fc-banned-row td {
+    color: #900;
+}
+
