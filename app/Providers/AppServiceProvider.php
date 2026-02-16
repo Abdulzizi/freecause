@@ -68,12 +68,26 @@ class AppServiceProvider extends ServiceProvider
         });
 
         if (Settings::get('smtp_enabled', false)) {
-            Config::set('mail.mailers.smtp.host', Settings::get('smtp_host'));
-            Config::set('mail.mailers.smtp.port', (int) Settings::get('smtp_port'));
-            Config::set('mail.mailers.smtp.username', Settings::get('smtp_user'));
-            Config::set('mail.mailers.smtp.password', Settings::get('smtp_pass'));
-            Config::set('mail.mailers.smtp.encryption', Settings::get('smtp_encryption'));
-        }
+
+    $encryption = Settings::get('smtp_encryption');
+
+    $port = match ($encryption) {
+        'tls' => 587,
+        'ssl' => 465,
+        default => 25,
+    };
+
+    Config::set('mail.default', 'smtp');
+
+    Config::set('mail.mailers.smtp.host', Settings::get('smtp_host'));
+    Config::set('mail.mailers.smtp.port', $port);
+    Config::set('mail.mailers.smtp.username', Settings::get('smtp_user'));
+    Config::set('mail.mailers.smtp.password', Settings::get('smtp_pass'));
+    Config::set('mail.mailers.smtp.encryption', $encryption);
+
+    Config::set('mail.from.address', Settings::get('email_from') ?: config('mail.from.address'));
+    Config::set('mail.from.name', config('app.name'));
+}
 
         // Google
         Config::set('services.google.client_id', Settings::get('google_client_id'));

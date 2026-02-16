@@ -109,7 +109,7 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-        Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
+    Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
 
     // Account
     Route::get('/profile', [AuthController::class, 'profile'])

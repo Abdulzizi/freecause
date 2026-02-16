@@ -117,18 +117,35 @@
                 <input class="fc-input" type="text" name="smtp_host" value="{{ $smtp_host }}">
             </div>
             <div class="fc-row">
-                <label>smtp port</label>
-                <input class="fc-input" type="number" name="smtp_port" value="{{ $smtp_port }}">
-            </div>
-            <div class="fc-row">
                 <label>smtp user</label>
                 <input class="fc-input" type="text" name="smtp_user" value="{{ $smtp_user }}">
             </div>
             <div class="fc-row">
                 <label>smtp password</label>
-                <input class="fc-input" type="password" name="smtp_pass" value="{{ $smtp_pass }}">
-            </div>
+                <div style="position:relative;">
+                    <input
+                        id="smtp_pass_input"
+                        class="fc-input"
+                        type="password"
+                        name="smtp_pass"
+                        value="{{ $smtp_pass }}"
+                        style="padding-right:36px;"
+                    >
 
+                    <i
+                        id="toggle_smtp_pass"
+                        class="fa fa-eye"
+                        style="
+                            position:absolute;
+                            right:10px;
+                            top:50%;
+                            transform:translateY(-50%);
+                            cursor:pointer;
+                            color:#777;
+                        ">
+                    </i>
+                </div>
+            </div>
             <div class="fc-row">
                 <label>smtp encryption</label>
                 <select class="fc-select" name="smtp_encryption">
@@ -193,3 +210,22 @@
         </div>
     </form>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('smtp_pass_input');
+    var toggle = document.getElementById('toggle_smtp_pass');
+
+    toggle.addEventListener('click', function () {
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggle.classList.remove('fa-eye');
+            toggle.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            toggle.classList.remove('fa-eye-slash');
+            toggle.classList.add('fa-eye');
+        }
+    });
+});
+</script>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 
 class GlobalOptionsController extends Controller
 {
@@ -38,6 +39,14 @@ class GlobalOptionsController extends Controller
 
     public function update(Request $request)
     {
+        $encryption = $request->input('smtp_encryption');
+
+        $port = match ($encryption) {
+            'tls' => 587,
+            'ssl' => 465,
+            default => 25,
+        };
+
         Settings::set('base_url', $request->base_url ?? '', 'string');
         Settings::set('short_base_url', $request->short_base_url ?? '', 'string');
 
@@ -55,10 +64,10 @@ class GlobalOptionsController extends Controller
 
         Settings::set('smtp_enabled', $request->boolean('smtp_enabled') ? '1' : '0', 'bool');
         Settings::set('smtp_host', $request->smtp_host ?? '', 'string');
-        Settings::set('smtp_port', (string)($request->smtp_port ?? 587), 'int');
+        Settings::set('smtp_port', (string)($port ?? 587), 'int');
         Settings::set('smtp_user', $request->smtp_user ?? '', 'string');
         Settings::set('smtp_pass', $request->smtp_pass ?? '', 'string');
-        Settings::set('smtp_encryption', $request->smtp_encryption ?? 'tls', 'string');
+        Settings::set('smtp_encryption', $encryption ?? 'tls', 'string');
 
         Settings::set('max_featured_petitions_per_country', (string)($request->max_featured_petitions_per_country ?? 10), 'int');
 

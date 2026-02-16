@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,12 +10,8 @@ class AdminAuthController extends Controller
 {
     public function show()
     {
-        if (Auth::check()) {
-            if (Auth::user()->level === 'admin') {
-                return redirect()->route('admin.options.global');
-            }
-
-            Auth::logout();
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.options.global');
         }
 
         return view('admin.auth.login');
@@ -34,12 +29,15 @@ class AdminAuthController extends Controller
 
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
-        if (!Auth::attempt([$field => $login, 'password' => $password])) {
+        if (!Auth::guard('admin')->attempt([
+            $field => $login,
+            'password' => $password
+        ])) {
             return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
-        if (Auth::user()->level !== 'admin') {
-            Auth::logout();
+        if (Auth::guard('admin')->user()->level !== 'admin') {
+            Auth::guard('admin')->logout();
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
 
@@ -48,7 +46,7 @@ class AdminAuthController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
     }
 }
