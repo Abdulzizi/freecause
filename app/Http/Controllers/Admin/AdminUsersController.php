@@ -62,6 +62,10 @@ class AdminUsersController extends Controller
             $q->where('level', $filters['level']);
         }
 
+        if ($filters['ip'] !== '') {
+            $q->where('ip', 'like', '%' . $this->escapeLike($filters['ip']) . '%');
+        }
+
         $q->orderByDesc('id');
 
         $users = $q->paginate(25)->withQueryString();
@@ -161,5 +165,61 @@ class AdminUsersController extends Controller
     private function escapeLike(string $value): string
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
+    }
+
+    public function bulkBan(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['ok' => false, 'msg' => 'No users selected']);
+        }
+
+        $ids = array_diff($ids, [auth()->id()]);
+
+        DB::table('users')
+            ->whereIn('id', $ids)
+            ->where('level', '!=', 'admin')
+            ->update(['level' => 'banned']);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function bulkUnban(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['ok' => false, 'msg' => 'No users selected']);
+        }
+
+        DB::table('users')
+            ->whereIn('id', $ids)
+            ->where('level', 'banned')
+            ->update(['level' => 'user']);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['ok' => false, 'msg' => 'No users selected']);
+        }
+
+        $ids = array_diff($ids, [auth()->id()]);
+
+        if (empty($ids)) {
+            return response()->json(['ok' => false, 'msg' => 'Cannot delete yourself']);
+        }
+
+        DB::table('users')
+            ->whereIn('id', $ids)
+            ->where('level', '!=', 'admin')
+            ->delete();
+
+        return response()->json(['ok' => true]);
     }
 }

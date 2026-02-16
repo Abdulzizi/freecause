@@ -107,5 +107,55 @@
                 })
                 .catch(() => alert('Network error'));
         });
+
+        document.getElementById('bulk-unban')?.addEventListener('click', function () {
+            const ids = selectedIds();
+
+            if (!ids.length) {
+                alert('No users selected');
+                return;
+            }
+
+            if (!confirm('Unban ' + ids.length + ' selected users?')) return;
+
+            fetch("{{ route('admin.users.bulkUnban') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                body: JSON.stringify({ ids })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.ok) location.reload();
+                else alert('Operation failed');
+            });
+        });
+
+        document.getElementById('bulk-delete')?.addEventListener('click', function () {
+            const ids = selectedIds();
+
+            if (!ids.length) {
+                alert('No users selected');
+                return;
+            }
+
+            if (!confirm('Permanently delete ' + ids.length + ' users? This cannot be undone.')) return;
+
+            fetch("{{ route('admin.users.bulkDelete') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                },
+                body: JSON.stringify({ ids })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.ok) location.reload();
+                else alert('Operation failed');
+            });
+        });
     });
 </script>

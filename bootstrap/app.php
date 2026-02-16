@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\BlockBannedIp;
+use App\Http\Middleware\BlockBannedUser;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'setLocale' => SetLocale::class,
             'admin.auth' => AdminAuth::class,
+            'block.banned.user' => BlockBannedUser::class,
         ]);
 
         $middleware->append(BlockBannedIp::class);

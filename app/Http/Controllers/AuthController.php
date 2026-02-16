@@ -114,6 +114,12 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
+
+            if ($user->level === 'banned') {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Your account has been suspended.']);
+            }
+
             if ($user && \Schema::hasColumn('users', 'ip')) {
                 $user->ip = $request->ip();
                 $user->save();

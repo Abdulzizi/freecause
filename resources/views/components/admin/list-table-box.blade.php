@@ -32,7 +32,7 @@
 
         @if ($bulk !== null || $hasFooter)
             <div
-                style="margin-top:6px; font-size:11px; color:#555; display:flex; justify-content:space-between; align-items:flex-end;">
+                style="font-size:11px; color:#555; display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
                     @if ($bulk != null)
                         @include('admin.partials.bulk-toolbar', $bulk)

@@ -4,14 +4,26 @@
 
 @section('content')
     @php
-        $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
-            <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
-        </svg>';
+        // $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        //     <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
+        //     <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
+        // </svg>';
 
         $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
             <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
+        </svg>';
+
+        $icoUnban = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="#5c8f3a" stroke-width="2"/>
+            <path d="M8 12h8" stroke="#5c8f3a" stroke-width="2"/>
+        </svg>';
+
+        $icoDelete = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M5 7h14" stroke="#d23b2a" stroke-width="2"/>
+            <path d="M9 7V5h6v2" stroke="#d23b2a" stroke-width="2"/>
+            <path d="M9 10v6M15 10v6" stroke="#d23b2a" stroke-width="2"/>
+            <path d="M6 7l1 12h10l1-12" stroke="#d23b2a" stroke-width="2"/>
         </svg>';
     @endphp
 
@@ -44,7 +56,10 @@
         </select>
     </x-admin.filter-box>
 
-    <x-admin.list-table-box empty-text="no users found, try clearing filters" :p="$users" :bulk="[
+    <x-admin.list-table-box
+        empty-text="no users found, try clearing filters"
+        :p="$users"
+        :bulk="[
             'banRoute' => route('admin.users.bulkBan'),
             'banLabel' => 'Banned',
             'banConfirm' => 'Ban selected users?',
@@ -98,12 +113,19 @@
 
         <x-slot:footer>
             <div style="display:flex; gap:10px; align-items:flex-end;">
+                <button type="button" id="bulk-unban" class="fc-icon-btn">
+                    {!! $icoUnban !!}
+                    <div style="font-size:10px; color:#666;">Unban</div>
+                </button>
 
-                <button type="button" id="bulk-banned" class="bulk-action" title="Ban Selected"
-                    style="width:52px; height:44px; border:1px solid #bbb; background:#fff;
-                       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer;">
+                {{-- <button type="button" id="bulk-banned" class="fc-icon-btn">
                     {!! $icoBan !!}
                     <div style="font-size:10px; color:#666;">Ban</div>
+                </button> --}}
+
+                <button type="button" id="bulk-delete" class="fc-icon-btn">
+                    {!! $icoDelete !!}
+                    <div style="font-size:10px; color:#666;">Delete</div>
                 </button>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection" style="display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -115,7 +137,6 @@
 
             </div>
         </x-slot:footer>
-
 
     </x-admin.list-table-box>
 
@@ -201,7 +222,6 @@
 @endsection
 
 @include('admin.partials.bulk-js', [
-    'actionRoute' => route('admin.users.bulkAction'),
     'banRoute' => route('admin.users.bulkBan'),
     'noun' => 'users',
     'emptyMsg' => 'No users selected',

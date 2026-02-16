@@ -58,6 +58,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
         Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
         Route::post('/users/bulk-action', [AdminUsersController::class, 'bulkAction'])->name('users.bulkAction');
+        Route::post('/users/bulk-unban', [AdminUsersController::class, 'bulkUnban'])->name('users.bulkUnban');
+        Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->name('users.bulkDelete');
 
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
@@ -82,7 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/logs', [AdminLogsController::class, 'index'])->name('logs');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->name('logs.bulkDelete');
 
-        // parity placeholders (build screens next)
+        // TODO: remove these placeholder routes and create real pages for them
         Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
         Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
         Route::view('/system/permissions', 'admin.placeholders.system-permissions')->name('system.permissions');
@@ -93,7 +95,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::group([
     'prefix' => '{locale}',
-    'middleware' => 'setLocale'
+    'middleware' => ['setLocale', 'block.banned.user'],
 ], function () {
     // Auth + OAuth
     // centralized google oauth routes
