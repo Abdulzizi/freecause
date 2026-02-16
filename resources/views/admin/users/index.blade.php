@@ -17,15 +17,10 @@
 
     <h1>users ({{ number_format($approxTotal) }})</h1>
 
-    @if (session('success'))
-        <div class="fc-success">{{ session('success') }}</div>
-    @endif
-
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')">
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
 
-        <input class="fc-input" style="max-width:160px;" name="name" placeholder="First name"
-            value="{{ $filters['name'] }}">
+        <input class="fc-input" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
 
         <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"
             value="{{ $filters['last_name'] }}">
@@ -61,6 +56,7 @@
                 <th style="width:26px;"></th>
                 <th style="width:26px; text-align:left;">v</th>
                 <th style="text-align:left;">email</th>
+                <th style="text-align:left;">username</th>
                 <th style="text-align:left;">first name</th>
                 <th style="text-align:left;">last name</th>
                 <th style="text-align:left; width:90px;">locale</th>
@@ -83,7 +79,7 @@
                     </td>
 
                     <td style="text-align:left;">
-                        @if ($u->is_verified ?? 0)
+                        @if ($u->verified ?? 0)
                             <span style="color:#5c8f3a;">✔</span>
                         @else
                             <span style="color:#c00;">✖</span>
@@ -92,6 +88,7 @@
 
                     <td><a href="mailto:{{ $u->email }}">{{ $u->email }}</a></td>
                     <td>{{ $u->name }}</td>
+                    <td>{{ $u->first_name }}</td>
                     <td>{{ $u->last_name }}</td>
                     <td>{{ $u->locale }}</td>
                     <td>{{ $u->created_at }}</td>
@@ -128,61 +125,71 @@
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
 
             <div class="fc-tab" style="margin-top:0;">Access Data</div>
-            <div class="fc-box">
-                <div class="fc-row">
-                    <label>username</label>
-                    <input class="fc-input" type="text" name="username" value="">
-                </div>
-                <div class="fc-row">
-                    <label>password</label>
-                    <input class="fc-input" type="text" name="password" value="">
-                </div>
-                <div class="fc-row">
-                    <label>level</label>
-                    <select class="fc-select" name="level" style="max-width:180px;">
-                        @foreach ($levels as $k => $label)
-                            @if ($k !== '')
-                                <option value="{{ $k }}" {{ ($selectedUser->level ?? '') === $k ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+                <div class="fc-box">
+                    <div class="fc-row">
+                        <label>username</label>
+                        <input class="fc-input" type="text" name="username"
+                            value="{{ $selectedUser->name ?? '' }}">
+                    </div>
 
-            <div class="fc-tab">other</div>
-            <div class="fc-box">
-                <div class="fc-row">
-                    <label>first name</label>
-                    <input class="fc-input" type="text" name="name" value="{{ $selectedUser->name ?? '' }}">
-                </div>
-                <div class="fc-row">
-                    <label>last name</label>
-                    <input class="fc-input" type="text" name="last_name" value="{{ $selectedUser->last_name ?? '' }}">
+                    <div class="fc-row">
+                        <label>password</label>
+                        <input class="fc-input" type="text" name="password" value="">
+                    </div>
+
+                    <div class="fc-row">
+                        <label>level</label>
+                        <select class="fc-select" name="level">
+                            @foreach ($levels as $k => $label)
+                                @if ($k !== '')
+                                    <option value="{{ $k }}" {{ ($selectedUser->level ?? '') === $k ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <div class="fc-row">
-                    <label>verified</label>
-                    <input type="checkbox" name="verified" value="1" {{ $selectedUser->is_verified ?? 0 ? 'checked' : '' }}>
-                </div>
+                <div class="fc-tab">other</div>
+                <div class="fc-box">
 
-                <div class="fc-row">
-                    <label>email</label>
-                    <input class="fc-input" type="text" name="email" value="{{ $selectedUser->email ?? '' }}">
-                </div>
+                    <div class="fc-row">
+                        <label>first name</label>
+                        <input class="fc-input" type="text" name="first_name"
+                            value="{{ $selectedUser->first_name ?? '' }}">
+                    </div>
 
-                <div class="fc-row">
-                    <label>locale</label>
-                    <select class="fc-select" name="locale" style="max-width:180px;">
-                        @foreach ($locales as $k => $label)
-                            @if ($k !== '')
-                                <option value="{{ $k }}" {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endif
-                        @endforeach
-                    </select>
+                    <div class="fc-row">
+                        <label>last name</label>
+                        <input class="fc-input" type="text" name="last_name"
+                            value="{{ $selectedUser->last_name ?? '' }}">
+                    </div>
+
+                    <div class="fc-row">
+                        <label>verified</label>
+                        <input type="checkbox" name="verified" value="1"
+                            {{ ($selectedUser->verified ?? 0) ? 'checked' : '' }}>
+                    </div>
+
+                    <div class="fc-row">
+                        <label>email</label>
+                        <input class="fc-input" type="text" name="email"
+                            value="{{ $selectedUser->email ?? '' }}">
+                    </div>
+
+                    <div class="fc-row">
+                        <label>locale</label>
+                        <select class="fc-select" name="locale">
+                            @foreach ($locales as $k => $label)
+                                @if ($k !== '')
+                                    <option value="{{ $k }}" {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
 

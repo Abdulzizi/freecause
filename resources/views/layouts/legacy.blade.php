@@ -66,45 +66,6 @@
     @include('partials.navbar')
 
     <main>
-        {{-- @if(auth()->check() && !auth()->user()->verified)
-            <div class="position-fixed top-0 end-0 p-4" style="z-index: 1080;">
-                <div id="verifyToast"
-                    class="toast align-items-center text-dark bg-warning border-0 shadow-lg"
-                    role="alert"
-                    data-bs-delay="8000">
-
-                    <div class="d-flex align-items-center">
-
-                        <div class="toast-body d-flex align-items-center gap-2">
-
-                            <i class="fa fa-exclamation-triangle text-dark"></i>
-
-                            <div>
-                                <div class="fw-semibold">
-                                    Email not verified
-                                </div>
-                                <div style="font-size:13px;">
-                                    Please verify your email to secure your account.
-                                    <a href="{{ lroute('verification.resend') }}"
-                                    class="fw-bold text-dark ms-1 text-decoration-underline">
-                                        Resend
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <button type="button"
-                                class="btn-close me-3"
-                                data-bs-dismiss="toast">
-                        </button>
-
-                    </div>
-
-                </div>
-            </div>
-        @endif --}}
-
         @yield('content')
     </main>
 

@@ -38,7 +38,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:6', 'max:72'],
             'nickname' => ['nullable', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:80'],
-            'agree_terms' => ['accepted'], // checkbox must be checked
+            'agree_terms' => ['accepted'],
         ]);
 
         $fullName = trim($data['name'] . ' ' . $data['surname']);
@@ -54,7 +54,9 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
         }
 
-        $token = Str::random(64);
+        $smtpEnabled = Settings::get('smtp_enabled', false);
+
+        $token = $smtpEnabled ? Str::random(64) : null;
 
         $user = User::create([
             'name' => $fullName,
@@ -65,7 +67,8 @@ class AuthController extends Controller
             'locale' => $this->toLocaleFull($locale),
             'ip' => $request->ip(),
             'level' => 'user',
-            'verified' => false,
+
+            'verified' => $smtpEnabled ? false : true,
             'verification_token' => $token,
         ]);
 
@@ -73,17 +76,24 @@ class AuthController extends Controller
         //     new VerifyAccountMail($user, $locale)
         // );
 
-        try {
-            Mail::to($user->email)
-            ->send(new VerifyAccountMail($user, app()->getLocale()));
-        } catch (\Exception $e) {
-            \Log::error('Mail send failed: '.$e->getMessage());
+        if ($smtpEnabled) {
+            try {
+                Mail::to($user->email)->send(new VerifyAccountMail($user, $locale));
+            } catch (\Exception $e) {
+                \Log::error('Mail failed: ' . $e->getMessage());
+            }
+
+            return redirect()
+                ->to("/{$locale}/login")
+                ->with('success', 'Please check your email to verify your account.');
         }
 
-        return redirect()->to("/{$locale}/login")->with('success', 'Please check your email to verify your account.');
-        // $request->session()->regenerate();
+        auth()->login($user);
+        $request->session()->regenerate();
 
-        // return redirect()->to("/{$locale}");
+        return redirect()
+            ->to("/{$locale}")
+            ->with('success', 'Account created successfully.');
     }
 
     public function login(Request $request, string $locale)
