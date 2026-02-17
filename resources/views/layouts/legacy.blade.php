@@ -69,7 +69,7 @@
         @yield('content')
     </main>
 
-    <div id="wp-remote-footer"></div>
+    {{-- <div id="wp-remote-footer"></div>
 
     <script>
         (function () {
@@ -137,7 +137,7 @@
         //         toast.show();
         //     }
         // });
-    </script>
+    </script> --}}
 
     @if(session('success'))
     <script>
@@ -160,6 +160,8 @@
     @stack('scripts')
 
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
+
+    @include('partials.footer')
 </body>
 
 </html>

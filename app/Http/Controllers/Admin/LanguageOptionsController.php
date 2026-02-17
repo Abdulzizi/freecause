@@ -16,22 +16,14 @@ class LanguageOptionsController extends Controller
     ];
 
     protected array $homepageKeys = [
-
-        // head
         'meta_keywords',
         'meta_description',
         'head_additional_html',
-
-        // hero
         'h1',
         'h2',
         'btn_create_petition',
-
-        // tabs
         'tab_featured',
         'tab_recent',
-
-        // featured
         'featured_badge',
         'featured_none_title',
         'featured_none_sub',
@@ -39,29 +31,34 @@ class LanguageOptionsController extends Controller
         'signatures_label',
         'goal_label',
         'read_more',
-
-        // recent
         'recent_has_signed',
         'recent_empty',
-
-        // index text
         'text_index_left',
         'text_index_right',
-
-        // extra
         'exclude_most_read',
+    ];
+
+    protected array $layoutKeys = [
+        'footer_about',
+        'footer_links',
+        'footer_bottom',
     ];
 
     public function edit(Request $request)
     {
         $locale = $request->query('locale');
-
         $showForm = $locale && isset($this->locales[$locale]);
 
         $values = [];
+        $layoutValues = [];
 
         if ($showForm) {
             $values = PageContent::where('page', 'home')
+                ->where('locale', $locale)
+                ->pluck('value', 'key')
+                ->toArray();
+
+            $layoutValues = PageContent::where('page', 'layout')
                 ->where('locale', $locale)
                 ->pluck('value', 'key')
                 ->toArray();
@@ -71,6 +68,7 @@ class LanguageOptionsController extends Controller
             'locales' => $this->locales,
             'locale' => $locale,
             'values' => $values,
+            'layoutValues' => $layoutValues,
             'showForm' => $showForm,
         ]);
     }
@@ -83,6 +81,7 @@ class LanguageOptionsController extends Controller
 
         $locale = $request->input('locale');
 
+        // save homepage content
         foreach ($this->homepageKeys as $key) {
             PageContent::updateOrCreate(
                 [
@@ -96,8 +95,22 @@ class LanguageOptionsController extends Controller
             );
         }
 
+        // save layout content (footer)
+        foreach ($this->layoutKeys as $key) {
+            PageContent::updateOrCreate(
+                [
+                    'page' => 'layout',
+                    'locale' => $locale,
+                    'key' => $key,
+                ],
+                [
+                    'value' => $request->input($key, ''),
+                ]
+            );
+        }
+
         app(PageContentService::class)->clear('home', $locale);
-        // app(PageContentService::class)->clear('global', $locale);
+        app(PageContentService::class)->clear('layout', $locale);
 
         return redirect()
             ->route('admin.options.language', ['locale' => $locale])

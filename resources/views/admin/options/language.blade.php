@@ -48,7 +48,6 @@
 
             </div>
 
-            {{-- main content --}}
             <div class="fc-tab">main content</div>
             <div class="fc-box">
 
@@ -73,10 +72,31 @@
                     <textarea class="fc-textarea fc-editor"
                         name="text_index_right">{{ $values['text_index_right'] ?? '' }}</textarea>
                 </div>
+            </div>
+
+            <div class="fc-tab">footer</div>
+            <div class="fc-box">
+
+                <div class="fc-row">
+                    <label>footer about (html allowed)</label>
+                    <textarea class="fc-textarea fc-editor"
+                        name="footer_about">{{ $layoutValues['footer_about'] ?? '' }}</textarea>
+                </div>
+
+                <div class="fc-row">
+                    <label>footer links (tokens allowed)</label>
+                    <textarea class="fc-textarea"
+                        name="footer_links">{{ $layoutValues['footer_links'] ?? '' }}</textarea>
+                </div>
+
+                <div class="fc-row">
+                    <label>footer bottom (tokens allowed)</label>
+                    <textarea class="fc-textarea"
+                        name="footer_bottom">{{ $layoutValues['footer_bottom'] ?? '' }}</textarea>
+                </div>
 
             </div>
 
-            {{-- extra --}}
             <div class="fc-tab">extra</div>
             <div class="fc-box">
                 <div class="fc-row">

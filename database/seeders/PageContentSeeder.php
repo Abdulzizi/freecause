@@ -468,6 +468,50 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree3_title', 'value' => 'Accetto il <a class="red" href="#">Trattamento dei dati personali</a>'],
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree_yes', 'value' => 'Accetto'],
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'agree_no', 'value' => 'Non accetto'],
+
+            [
+                'page' => 'layout',
+                'locale' => 'en',
+                'key' => 'footer_about',
+                'value' => '
+                    <div class="footer-logo">
+                        <img src="https://www.freecause.com/magazine/wp-content/uploads/2025/01/19.png" alt="Freecause">
+                    </div>
+
+                    <p>
+                        Freecause Magazine is your go-to resource for stories that inspire action and empower change.
+                        We bring you the latest insights on advocacy, community movements, and global causes,
+                        along with expert advice on how to make a difference through petitions and grassroots campaigns.
+                    </p>
+
+                    <p>
+                        Our content spans a variety of topics, including social justice, environmental advocacy,
+                        civil rights, and emerging technologies shaping modern activism.
+                    </p>
+
+                    <p>
+                        For inquiries, feedback, or to report inaccuracies,
+                        please reach out at <a href="mailto:hello@freecause.com">hello@freecause.com</a>.
+                    </p>'
+            ],
+
+            [
+                'page' => 'layout',
+                'locale' => 'en',
+                'key' => 'footer_links',
+                'value' => '
+                    {PRIVACY_POLICY_ROOT_LINK}
+                    {ETHICAL_CODE_LINK}
+                    {CONTACTS_LINK}
+                    {TOS_LINK}'
+            ],
+
+            [
+                'page' => 'layout',
+                'locale' => 'en',
+                'key' => 'footer_bottom',
+                'value' => '© 2026 Freecause – Freedom in Sharing™ – Freecause LLC, Albuquerque, NM, USA – All rights reserved'
+            ]
         ];
 
         foreach ($rows as $r) {
