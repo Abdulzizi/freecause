@@ -36,6 +36,12 @@ class AdminPagesController extends Controller
         $q->orderByDesc('id');
 
         $pages = $q->paginate(25)->withQueryString();
+
+        $pages->getCollection()->transform(function ($p) {
+            $p->client_url = url($p->locale . '/' . $p->slug);
+            return $p;
+        });
+
         $approxTotal = PageTranslation::count();
 
         $selectedPage = null;
@@ -71,8 +77,9 @@ class AdminPagesController extends Controller
             'title'     => 'required|string',
             'slug'      => 'nullable|string',
             'content'   => 'nullable|string',
-            'published' => 'required|boolean',
         ]);
+
+        $data['published'] = $request->has('published');
 
         if (empty($data['page_id'])) {
             $page = Page::create();
@@ -97,5 +104,33 @@ class AdminPagesController extends Controller
 
         return redirect()->route('admin.pages')
             ->with('success', 'Page saved');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        $action = $request->input('action');
+
+        if (!is_array($ids) || empty($ids)) {
+            return back()->with('error', 'No pages selected');
+        }
+
+        $q = PageTranslation::whereIn('page_id', $ids);
+
+        switch ($action) {
+            case 'publish':
+                $q->update(['published' => 1]);
+                break;
+
+            case 'unpublish':
+                $q->update(['published' => 0]);
+                break;
+
+            case 'delete':
+                $q->delete();
+                break;
+        }
+
+        return back()->with('success', 'Bulk action applied');
     }
 }

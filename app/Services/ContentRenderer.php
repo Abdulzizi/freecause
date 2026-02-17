@@ -24,13 +24,13 @@ class ContentRenderer
             '<a href="' . lroute('contacts') . '">Contacts</a>',
 
             '{ETHICAL_CODE_LINK}' =>
-            '<a href="' . lroute('ethical-code') . '">Ethical Code</a>',
+            '<a href="' . lroute('page.show', ['slug' => 'ethical-code']) . '">Ethical Code</a>',
 
             '{TOS_LINK}' =>
-            '<a href="' . lroute('terms') . '">Terms of Service</a>',
+            '<a href="' . lroute('page.show', ['slug' => 'terms-of-service']) . '">Terms of Service</a>',
 
             '{PRIVACY_POLICY_ROOT_LINK}' =>
-            '<a href="' . lroute('privacy-policy') . '">Privacy Policy</a>',
+            '<a href="' . lroute('page.show', ['slug' => 'privacy-policy']) . '">Privacy Policy</a>',
 
             '{CREATE_PETITION_URL}' => lroute('petition.create'),
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),

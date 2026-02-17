@@ -1,11 +1,11 @@
 @extends('layouts.legacy')
 
 @section('title', $tr->title)
+@section('body_class', $tr->slug)
 
 @section('content')
-    <h1>{{ $tr->title }}</h1>
-
-    <div>
-        {!! $tr->content !!}
-    </div>
+    @include('pages.partials.static-layout', [
+        'title' => $tr->title,
+        'content' => $tr->content
+    ])
 @endsection

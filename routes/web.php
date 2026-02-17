@@ -63,7 +63,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
-        // Route::post('/petitions/bulk-banned', [AdminPetitionsController::class, 'bulkBan'])->name('petitions.bulkBan');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->name('petitions.bulkAction');
 
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');
@@ -76,6 +75,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/pages', [AdminPagesController::class, 'index'])->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->name('pages.save');
+        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->name('spam');
 
@@ -113,26 +113,18 @@ Route::group([
 
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
 
-    // Account
-    Route::get('/profile', [AuthController::class, 'profile'])
-        ->middleware('auth')
-        ->name('profile');
-    Route::post('/profile', [AuthController::class, 'updateProfile'])
-        ->middleware('auth')
-        ->name('account.profile.update');
-    Route::post('/account/delete', [AuthController::class, 'delete'])
-        ->middleware('auth')
-        ->name('account.delete');
-    Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])
-        ->middleware('auth')
-        ->name('account.petitions');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+        Route::post('/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update');
+        Route::post('/account/delete', [AuthController::class, 'delete'])->name('account.delete');
+        Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
+
+        Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store');
+    });
 
     // Static pages
     Route::get('/magazine', fn() => view('pages.magazine'))->name('magazine');
     Route::get('/faqs', fn() => view('pages.faq'))->name('faqs');
-    Route::get('/terms-of-service', fn() => view('pages.terms-of-service'))->name('terms');
-    Route::get('/ethical-code', fn() => view('pages.ethical-code'))->name('ethical-code');
-    Route::get('/privacy-policy', fn() => view('pages.privacy-policy'))->name('privacy-policy');
     Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
 
     Route::post('/contacts', function () {
@@ -146,29 +138,16 @@ Route::group([
         ->where([
             'categorySlug' => '[a-z0-9\-]+',
             'category' => '[0-9]+',
-        ])
-        ->name('petitions.byCategory');
+        ])->name('petitions.byCategory');
 
     // Petition creation
     Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
-    Route::post('/create-petition', [PetitionController::class, 'store'])
-        ->middleware('auth')
-        ->name('petition.store');
 
     // Petition actions (show / sign / thanks)
-    Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.show');
-    Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.sign.page');
-    Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.sign');
-    Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
-        ->where('id', '[0-9]+')
-        ->where('status', '([0-9]+|created)?')
-        ->name('petition.thanks');
+    Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
+    Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
+    Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign');
+    Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
 
     // Petition owner operations
     Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])
@@ -191,7 +170,5 @@ Route::group([
         ->where(['id' => '[0-9]+'])
         ->name('petition.download.pdf');
 
-    Route::get('/{slug}', [PageController::class, 'show'])
-        ->where('slug', '[a-z0-9\-]+')
-        ->name('page.show');
+    Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[a-z0-9\-]+')->name('page.show');
 });

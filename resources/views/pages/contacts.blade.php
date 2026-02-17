@@ -61,12 +61,6 @@
                                                 placeholder="Text"></textarea>
                                         </div>
 
-                                        {{-- reCAPTCHA removed for local UI parity (it will fail without valid keys/domain)
-                                        --}}
-                                        {{-- <div style="padding:10px 0;">
-                                            <div class="g-recaptcha" data-sitekey="..."></div>
-                                        </div> --}}
-
                                         <div class="mb-3">
                                             <input type="submit" class="btn btn-primary" value="Submit">
                                         </div>
