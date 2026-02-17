@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Language;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -9,14 +10,27 @@ use Illuminate\Support\Facades\URL;
 
 class SetLocale
 {
-    protected array $allowedLocales = ['en', 'fr', 'it', 'es', 'de', 'pt', 'nl'];
+    // protected array $allowedLocales = ['en', 'fr', 'it', 'es', 'de', 'pt', 'nl'];
+
 
     public function handle(Request $request, Closure $next)
     {
         $locale = $request->route('locale');
 
-        if (! in_array($locale, $this->allowedLocales)) {
-            abort(404);
+        $allowedLocales = cache()->remember(
+            'active_languages',
+            60,
+            fn() => Language::where('is_active', 1)->pluck('code')->toArray()
+        );
+
+        $defaultLocale = cache()->remember(
+            'default_language',
+            60,
+            fn() => Language::where('is_default', 1)->value('code') ?? 'en'
+        );
+
+        if (! in_array($locale, $allowedLocales)) {
+            $locale = $defaultLocale;
         }
 
         App::setLocale($locale);

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminFanpagesController;
+use App\Http\Controllers\Admin\AdminLanguagesController;
 use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
@@ -27,9 +28,19 @@ use App\Support\Settings;
 
 use Illuminate\Support\Facades\Route;
 
-Route::pattern('locale', 'en|fr|it');
+// Route::pattern('locale', 'en|fr|it');
 
-Route::redirect('/', '/en');
+// Route::redirect('/', '/en');
+
+Route::get('/', function () {
+    $default = cache()->remember(
+        'default_language',
+        60,
+        fn() => \App\Models\Language::where('is_default', 1)->value('code') ?? 'en'
+    );
+
+    return redirect("/{$default}");
+});
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
@@ -83,6 +94,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/logs', [AdminLogsController::class, 'index'])->name('logs');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->name('logs.bulkDelete');
+
+        Route::get('/languages', [AdminLanguagesController::class, 'index'])->name('languages.index');
+        Route::post('/languages', [AdminLanguagesController::class, 'store'])->name('languages.store');
+        Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->name('languages.update');
+        Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->name('languages.default');
+        Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->name('languages.destroy');
 
         // TODO: remove these placeholder routes and create real pages for them
         Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
