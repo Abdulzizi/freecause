@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\URL;
 
 class SetLocale
 {
-    // protected array $allowedLocales = ['en', 'fr', 'it', 'es', 'de', 'pt', 'nl'];
-
-
     public function handle(Request $request, Closure $next)
     {
         $locale = $request->route('locale');
