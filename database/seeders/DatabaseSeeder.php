@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(PageContentSeeder::class);
         $this->call(LanguageSeeder::class);
+        $this->call(SettingsSeeder::class);
         $this->call(StaticPageSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(AdminUserSeeder::class);

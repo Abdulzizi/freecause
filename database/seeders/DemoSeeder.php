@@ -14,6 +14,7 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         $userCount = (int) env('SEED_USERS', 1000);
+        $languageCodes = \App\Models\Language::pluck('code')->toArray();
 
         if (User::count() < $userCount) {
             User::factory()
@@ -21,7 +22,8 @@ class DemoSeeder extends Seeder
                 ->state(fn() => [
                     'level' => 'user',
                     'verified' => rand(0, 1),
-                    'locale' => collect(['en_US', 'fr_FR', 'it_IT'])->random(),
+                    // 'locale' => collect(['en_US', 'fr_FR', 'it_IT'])->random(),
+                    'locale' => fake()->randomElement($languageCodes),
                 ])
                 ->create();
         }
