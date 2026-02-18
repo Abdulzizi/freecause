@@ -70,7 +70,9 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        $locales = ['en', 'fr', 'it'];
+        $locales = \App\Models\Language::where('is_active', 1)
+            ->pluck('code')
+            ->toArray();
         $now = now();
 
         $chunkSize = (int) env('SEED_PETITION_CHUNK', 250);

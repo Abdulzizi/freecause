@@ -8,14 +8,15 @@
     );
 
     $locale = app()->getLocale();
-    $flagBase = asset('legacy/images/country-flags/rounded1');
 
     $current = $languages->firstWhere('code', $locale) ?? $languages->first();
 @endphp
 
 <div class="dropdown fc-locale-dropdown position-static">
     <button class="btn fc-flag-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <img class="fc-flag-img" src="{{ $flagBase . '/' . ($current->flag ?? 'en_US.png') }}" alt="{{ $current->name }}">
+        @if ($current?->flag)
+            <img class="fc-flag-img" src="{{ asset($current->flag) }}" alt="{{ $current->name }}">
+        @endif
     </button>
 
     <div class="dropdown-menu fc-country-panel w-100 shadow-sm border-0">
@@ -24,7 +25,9 @@
                 @foreach ($languages as $lang)
                     <a class="fc-country-pill {{ $lang->code === $locale ? 'active' : '' }}"
                         href="{{ locale_url($lang->code) }}">
-                        <img src="{{ $flagBase . '/' . ($lang->flag ?? 'en_US.png') }}" alt="{{ $lang->name }}">
+                        @if ($lang->flag)
+                            <img src="{{ asset($lang->flag) }}" width="20" alt="{{ $lang->name }}">
+                        @endif
                         <span>{{ $lang->name }}</span>
                     </a>
                 @endforeach

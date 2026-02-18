@@ -21,10 +21,10 @@
                 <input class="fc-input" name="name" placeholder="Spanish" required>
             </div>
 
-            <div class="fc-row">
+            {{-- <div class="fc-row">
                 <label>flag filename</label>
                 <input class="fc-input" name="flag" placeholder="en_US.png">
-            </div>
+            </div> --}}
 
             <div style="text-align:right; margin-top:10px;">
                 <button class="fc-btn">create language</button>
@@ -79,7 +79,7 @@
 
                         <input class="fc-input" name="name" value="{{ $lang->name }}" style="max-width:180px;">
 
-                        <input class="fc-input" name="flag" value="{{ $lang->flag }}" style="max-width:180px;">
+                        {{-- <input class="fc-input" name="flag" value="{{ $lang->flag }}" style="max-width:180px;"> --}}
 
                         <label style="display:flex; align-items:center; gap:5px;">
                             <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>

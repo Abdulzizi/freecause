@@ -11,28 +11,21 @@ class LanguageSeeder extends Seeder
     {
         Language::truncate();
 
-        Language::insert([
-            [
-                'code' => 'en',
-                'name' => 'English',
-                'flag' => 'en_US.png',
+        $languages = [
+            ['code' => 'en', 'name' => 'English'],
+            ['code' => 'fr', 'name' => 'French'],
+            ['code' => 'it', 'name' => 'Italian'],
+            ['code' => 'de', 'name' => 'German'],
+            ['code' => 'es', 'name' => 'Spanish'],
+        ];
+
+        foreach ($languages as $index => $lang) {
+            Language::create([
+                'code' => $lang['code'],
+                'name' => $lang['name'],
                 'is_active' => true,
-                'is_default' => true,
-            ],
-            [
-                'code' => 'fr',
-                'name' => 'French',
-                'flag' => 'fr_FR.png',
-                'is_active' => true,
-                'is_default' => false,
-            ],
-            [
-                'code' => 'it',
-                'name' => 'Italian',
-                'flag' => 'it_IT.png',
-                'is_active' => true,
-                'is_default' => false,
-            ],
-        ]);
+                'is_default' => $index === 0,
+            ]);
+        }
     }
 }

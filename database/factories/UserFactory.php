@@ -17,6 +17,7 @@ class UserFactory extends Factory
     {
         $first = fake()->firstName();
         $last  = fake()->lastName();
+        $languageCodes = \App\Models\Language::pluck('code')->toArray();
 
         return [
             'first_name' => $first,
@@ -26,7 +27,8 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
 
-            'locale' => fake()->randomElement(['en_US', 'fr_FR', 'it_IT']),
+            // 'locale' => fake()->randomElement(['en_US', 'fr_FR', 'it_IT']),
+            'locale' => fake()->randomElement($languageCodes),
             'ip' => fake()->ipv4(),
             'level' => 'user',
             'verified' => fake()->boolean(20),
