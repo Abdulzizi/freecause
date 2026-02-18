@@ -28,9 +28,6 @@ use App\Support\Settings;
 
 use Illuminate\Support\Facades\Route;
 
-// Route::pattern('locale', 'en|fr|it');
-
-// Route::redirect('/', '/en');
 
 Route::get('/', function () {
     $default = cache()->remember(
@@ -47,7 +44,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
     Route::middleware('admin.auth')->group(function () {
-        // Route::get('/', fn() => redirect()->route('admin.options.global'))->name('dashboard');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
@@ -115,7 +111,6 @@ Route::group([
     'middleware' => ['setLocale', 'block.banned.user'],
 ], function () {
     // Auth + OAuth
-    // centralized google oauth routes
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
     Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 

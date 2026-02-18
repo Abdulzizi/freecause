@@ -49,11 +49,14 @@ class PetitionController extends Controller
 
     public function index(string $locale)
     {
-        $page = (int) request('page', 1);
+        $locale = normalize_locale($locale);
+        $defaultLocale = default_locale();
 
+        $page = (int) request('page', 1);
         $cacheKey = "petitions:index:{$locale}:page:{$page}";
 
-        $petitions = cache()->remember($cacheKey, now()->addSeconds(60), function () use ($locale) {
+        $petitions = cache()->remember($cacheKey, now()->addSeconds(60), function () use ($locale, $defaultLocale) {
+
             return Petition::query()
                 ->select([
                     'petitions.id',
@@ -61,14 +64,23 @@ class PetitionController extends Controller
                     'petitions.goal_signatures',
                     'petitions.category_id',
                     'petitions.cover_image',
-                    'pt.title as tr_title',
-                    'pt.slug as tr_slug',
+                    DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+                    DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
                 ])
-                ->join('petition_translations as pt', function ($join) use ($locale) {
-                    $join->on('pt.petition_id', '=', 'petitions.id')
-                        ->where('pt.locale', '=', $locale);
+                ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                    $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                        ->where('pt_locale.locale', '=', $locale);
+                })
+                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                    $join->on('pt_default.petition_id', '=', 'petitions.id')
+                        ->where('pt_default.locale', '=', $defaultLocale);
+                })
+                ->where(function ($q) {
+                    $q->whereNotNull('pt_locale.title')
+                        ->orWhereNotNull('pt_default.title');
                 })
                 ->where('petitions.status', 'published')
+                ->where('petitions.is_active', 1)
                 ->orderByDesc('petitions.id')
                 ->paginate(15);
         });
@@ -80,14 +92,17 @@ class PetitionController extends Controller
             'heading' => 'Petitions',
             'petitions' => $petitions,
             'petitionTitle' => fn($row) => $row->tr_title,
-            'petitionUrl' => fn($row) => url("/{$locale}/petition/{$row->tr_slug}/{$row->id}"),
+            'petitionUrl' => fn($row) => lroute('petition.show', [
+                'slug' => $row->tr_slug,
+                'id'   => $row->id,
+            ]),
         ]);
     }
 
     public function show(Request $request, string $locale, string $slug, int $id)
     {
-        $hasSigned = false;
-        $oauthLoggedIn = session('oauth_logged_in', false);
+        $locale = normalize_locale($locale);
+        $defaultLocale = default_locale();
 
         $petition = Petition::query()
             ->with('category')
@@ -99,16 +114,15 @@ class PetitionController extends Controller
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
             ->where('locale', $locale)
+            ->first()
+            ?? PetitionTranslation::query()
+            ->where('petition_id', $petition->id)
+            ->where('locale', $defaultLocale)
             ->first();
 
-        if (! $tr) {
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        abort_if(! $tr, 404);
 
-            abort_if(! $tr, 404);
-
+        if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
                 'slug'   => $tr->slug,
@@ -116,39 +130,32 @@ class PetitionController extends Controller
             ]);
         }
 
-        if (auth()->check()) {
-            $hasSigned = Signature::query()
-                ->where('petition_id', $petition->id)
-                ->where('email', auth()->user()->email)
-                ->exists();
-        }
-
-        if ($tr->slug !== $slug) {
-            return redirect()->route('petition.show', [
-                'locale' => $locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
-            ]);
-        }
+        $hasSigned = auth()->check()
+            ? Signature::where('petition_id', $petition->id)
+            ->where('email', auth()->user()->email)
+            ->exists()
+            : false;
 
         $goalTotal = (int) ($petition->goal_signatures ?? 100);
         $goalCurrent = (int) ($petition->signature_count ?? 0);
         $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
 
-        $latest = Signature::query()
-            ->where('petition_id', $petition->id)
+        $latest = Signature::where('petition_id', $petition->id)
             ->latest('created_at')
             ->limit(25)
             ->get();
 
-        $directLink = url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
+        $directLink = lroute('petition.show', [
+            'slug' => $tr->slug,
+            'id'   => $petition->id,
+        ]);
 
         $content = PageContent::where('page', 'petition_show')
-            ->where('locale', $locale)
+            ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
         $formContent = PageContent::where('page', 'petition_sign_form')
-            ->where('locale', $locale)
+            ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
         return view('petition.show', compact(
@@ -161,7 +168,6 @@ class PetitionController extends Controller
             'pct',
             'directLink',
             'hasSigned',
-            'oauthLoggedIn',
             'content',
             'formContent'
         ));
@@ -454,27 +460,26 @@ class PetitionController extends Controller
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
     {
-        $petition = Petition::query()
-            ->with('category')
-            ->findOrFail($id);
+        $locale = normalize_locale($locale);
+        $defaultLocale = default_locale();
 
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
+        $petition = Petition::with('category')->findOrFail($id);
+
+        $tr = PetitionTranslation::where('petition_id', $petition->id)
             ->where('locale', $locale)
             ->first()
-            ?? PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->orderBy('id')
+            ?? PetitionTranslation::where('petition_id', $petition->id)
+            ->where('locale', $defaultLocale)
             ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.thanks', [
-                'locale'  => $tr->locale,
-                'slug'    => $tr->slug,
-                'id'      => $petition->id,
-                'status'  => $status,
+                'locale' => $tr->locale,
+                'slug'   => $tr->slug,
+                'id'     => $petition->id,
+                'status' => $status,
             ]);
         }
 
@@ -483,31 +488,43 @@ class PetitionController extends Controller
         $suggestions = Petition::query()
             ->select([
                 'petitions.id',
-                'petitions.category_id',
                 'petitions.signature_count',
-                'pt.title as tr_title',
-                'pt.slug as tr_slug',
+                DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+                DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
             ])
-            ->join('petition_translations as pt', function ($join) use ($locale) {
-                $join->on('pt.petition_id', '=', 'petitions.id')
-                    ->where('pt.locale', '=', $locale);
+            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('pt_locale.title')
+                    ->orWhereNotNull('pt_default.title');
             })
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
             ->where('petitions.id', '!=', $petition->id)
-            ->when($petition->category_id, fn($q) => $q->where('petitions.category_id', $petition->category_id))
             ->orderByDesc('petitions.signature_count')
-            ->orderByDesc('petitions.id')
             ->limit(5)
             ->get();
 
-        $content = PageContent::query()
-            ->where('page', 'petition_thanks')
-            ->where('locale', $locale)
+        $content = PageContent::where('page', 'petition_thanks')
+            ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
-        return view('petition.thanks', compact('petition', 'suggestions', 'locale', 'status', 'mode', 'tr', 'content'));
+        return view('petition.thanks', compact(
+            'petition',
+            'suggestions',
+            'locale',
+            'mode',
+            'tr',
+            'content'
+        ));
     }
+
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
@@ -556,17 +573,29 @@ class PetitionController extends Controller
 
     public function myPetitions(Request $request, string $locale)
     {
+        $locale = normalize_locale($locale);
+        $defaultLocale = default_locale();
+
         $u = auth()->user();
         $tab = $request->query('tab');
 
-        $withTr = function ($q) use ($locale) {
-            $q->join('petition_translations as pt', function ($join) use ($locale) {
-                $join->on('pt.petition_id', '=', 'petitions.id')
-                    ->where('pt.locale', '=', $locale);
-            })->addSelect([
-                'pt.title as tr_title',
-                'pt.slug as tr_slug',
-            ]);
+        $withTr = function ($q) use ($locale, $defaultLocale) {
+            $q->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                    $join->on('pt_default.petition_id', '=', 'petitions.id')
+                        ->where('pt_default.locale', '=', $defaultLocale);
+                })
+                ->addSelect([
+                    DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+                    DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+                ])
+                ->where(function ($q) {
+                    $q->whereNotNull('pt_locale.title')
+                        ->orWhereNotNull('pt_default.title');
+                });
         };
 
         $signedBase = Petition::query()

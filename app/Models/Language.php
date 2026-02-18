@@ -11,5 +11,6 @@ class Language extends Model
         'name',
         'is_active',
         'is_default',
+        'flag',
     ];
 }

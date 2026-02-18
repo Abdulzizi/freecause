@@ -4,19 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Petition;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryPetitionController extends Controller
 {
     public function index(string $locale, string $categorySlug, Category $category)
     {
-        $tr = $category->translations()->where('locale', $locale)->first();
-        abort_if(!$tr, 404);
+        $locale = normalize_locale($locale);
+        $defaultLocale = default_locale();
 
-        if ($tr->slug !== $categorySlug) {
-            return redirect()->to(
-                url("/{$locale}/petitions/category-{$tr->slug}-{$category->id}")
-            );
+        $tr = $category->translations()
+            ->where('locale', $locale)
+            ->first()
+            ?? $category->translations()
+            ->where('locale', $defaultLocale)
+            ->first();
+
+        abort_if(! $tr, 404);
+
+        if ($tr->slug !== $categorySlug || $tr->locale !== $locale) {
+            return redirect()->route('category.petitions', [
+                'locale' => $tr->locale,
+                'categorySlug' => $tr->slug,
+                'category' => $category->id,
+            ]);
         }
 
         $petitions = Petition::query()
@@ -26,12 +37,20 @@ class CategoryPetitionController extends Controller
                 'petitions.goal_signatures',
                 'petitions.category_id',
                 'petitions.cover_image',
-                'pt.title as tr_title',
-                'pt.slug as tr_slug',
+                DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+                DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
             ])
-            ->join('petition_translations as pt', function ($join) use ($locale) {
-                $join->on('pt.petition_id', '=', 'petitions.id')
-                    ->where('pt.locale', '=', $locale);
+            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('pt_locale.title')
+                    ->orWhereNotNull('pt_default.title');
             })
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
@@ -42,7 +61,7 @@ class CategoryPetitionController extends Controller
 
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,
-            'heading' => "{$tr->name} Petitions",
+            'heading' => $tr->name . ' Petitions',
             'category' => $category,
             'categoryTr' => $tr,
             'petitions' => $petitions,

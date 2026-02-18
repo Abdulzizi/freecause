@@ -22,11 +22,13 @@ class AdminLanguagesController extends Controller
         $request->validate([
             'code' => ['required', 'max:8', 'unique:languages,code'],
             'name' => ['required', 'max:255'],
+            'flag' => ['nullable', 'max:100'],
         ]);
 
         Language::create([
             'code' => strtolower($request->code),
             'name' => $request->name,
+            'flag' => $request->flag ?? null,
             'is_active' => true,
             'is_default' => false,
         ]);
