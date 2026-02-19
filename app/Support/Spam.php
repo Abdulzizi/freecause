@@ -11,8 +11,11 @@ class Spam
         'casino',
         'loan',
         'bitcoin',
-        'call girl',
+        'crypto',
+        'porn',
+        'escort',
         'seo service',
+        'cheap pills',
     ];
 
     public static function isSpam(string $text): bool
@@ -25,6 +28,10 @@ class Spam
             }
         }
 
+        if (substr_count($text, 'http') >= 2) {
+            return true;
+        }
+
         return false;
     }
 
@@ -33,7 +40,7 @@ class Spam
         DB::table('spam_logs')->insert([
             'type' => $type,
             'ip' => request()->ip(),
-            'payload' => $payload,
+            'payload' => substr($payload, 0, 2000),
             'created_at' => now(),
         ]);
     }
@@ -46,16 +53,23 @@ class Spam
             ->where('created_at', '>=', now()->subMinutes(5))
             ->count();
 
-        return $count >= $limit;
+        if ($count >= $limit) {
+            self::banCurrentIp('Auto ban: too many ' . $type . ' attempts');
+            return true;
+        }
+
+        return false;
     }
 
     public static function banCurrentIp(string $reason = null): void
     {
-        DB::table('banned_ips')->insert([
-            'ip' => request()->ip(),
-            'reason' => $reason,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::table('banned_ips')->updateOrInsert(
+            ['ip' => request()->ip()],
+            [
+                'reason' => $reason,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
     }
 }

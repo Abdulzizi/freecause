@@ -11,7 +11,9 @@
         $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
 
         $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - FreeCause';
-        $metaDescription = $globalMeta['meta_description'] ?? 'FreeCause - Online petition platform to launch and support causes worldwide.';
+        $metaDescription =
+            $globalMeta['meta_description'] ??
+            'FreeCause - Online petition platform to launch and support causes worldwide.';
         $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, freecause';
         $headExtra = $globalMeta['head_additional_html'] ?? '';
         $footerExtra = $globalMeta['footer_additional_html'] ?? '';
@@ -46,17 +48,19 @@
 
     @stack('head')
 
-    @if(session('success'))
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0 shadow" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    {{ session('success') }}
+    @if (session('success'))
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+            <div id="successToast" class="toast align-items-center text-white bg-success border-0 shadow"
+                role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"></button>
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         </div>
-    </div>
     @endif
 
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
@@ -69,16 +73,18 @@
         @yield('content')
     </main>
 
-    @if(session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var toastEl = document.getElementById('successToast');
-            if (toastEl) {
-                var toast = new bootstrap.Toast(toastEl, { delay: 5000 });
-                toast.show();
-            }
-        });
-    </script>
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('successToast');
+                if (toastEl) {
+                    var toast = new bootstrap.Toast(toastEl, {
+                        delay: 5000
+                    });
+                    toast.show();
+                }
+            });
+        </script>
     @endif
 
     {!! $footerExtra !!}
@@ -92,6 +98,69 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
+
+    @if (session('toast'))
+        @php
+            $toast = session('toast');
+            $type = $toast['type'] ?? 'info';
+
+            $bg = match ($type) {
+                'success' => '#28a745',
+                'error' => '#dc3545',
+                'warning' => '#ffc107',
+                default => '#343a40',
+            };
+        @endphp
+
+        <div id="fc-toast"
+            style="position:fixed;top:20px;right:20px;z-index:9999;
+                background:{{ $bg }};
+                color:#fff;
+                padding:14px 18px;
+                border-radius:6px;
+                box-shadow:0 5px 15px rgba(0,0,0,0.2);
+                min-width:250px;
+                font-size:14px;
+                opacity:0;
+                transform:translateY(-10px);
+                transition:all .3s ease;">
+            {{ $toast['message'] }}
+        </div>
+
+        <script>
+            const toast = document.getElementById('fc-toast');
+            setTimeout(() => {
+                toast.style.opacity = 1;
+                toast.style.transform = 'translateY(0)';
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.opacity = 0;
+                toast.style.transform = 'translateY(-10px)';
+            }, 4000);
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <div id="fc-toast-error"
+            style="position:fixed;top:20px;right:20px;z-index:9999;
+                background:#dc3545;
+                color:#fff;
+                padding:14px 18px;
+                border-radius:6px;
+                box-shadow:0 5px 15px rgba(0,0,0,0.2);
+                min-width:250px;
+                font-size:14px;">
+            {{ $errors->first() }}
+        </div>
+
+        <script>
+            const toastError = document.getElementById('fc-toast-error');
+            setTimeout(() => {
+                toastError.style.opacity = 0;
+            }, 4000);
+        </script>
+    @endif
 </body>
 
 </html>

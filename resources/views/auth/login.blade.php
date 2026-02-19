@@ -53,7 +53,6 @@
                             <form method="POST" action="{{ lroute('login.post') }}">
                                 @csrf
 
-                                {{-- keep redirect if present --}}
                                 @if(!empty($redirect))
                                     <input type="hidden" name="redirect" value="{{ $redirect }}">
                                 @endif

@@ -85,6 +85,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->name('spam');
+        Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->name('spam.ban');
+        Route::post('/spam/unban', [AdminSpamController::class, 'unban'])->name('spam.unban');
+        Route::post('/spam/clear', [AdminSpamController::class, 'clear'])->name('spam.clear');
 
         Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats');
 

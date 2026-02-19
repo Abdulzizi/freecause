@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccountMail;
+use App\Support\Settings;
 
 class AuthController extends Controller
 {
@@ -43,15 +44,29 @@ class AuthController extends Controller
 
         $fullName = trim($data['name'] . ' ' . $data['surname']);
 
+        // if (Spam::isSpam($data['email'])) {
+        //     Spam::log('register', $data['email']);
+        //     return back()
+        //         ->with('toast', [
+        //             'type' => 'error',
+        //             'message' => 'Spam detected.'
+        //         ])
+        //         ->withInput();
+        // }
+
         if (Spam::isSpam($data['email'])) {
             Spam::log('register', $data['email']);
-            return back()->withErrors(['email' => 'Spam detected.'])->withInput();
+            toast('Spam detected.', 'error');
+            return back()->withInput();
         }
 
         if (Spam::rateLimit('register')) {
             Spam::log('register', 'Rate limit exceeded');
             Spam::banCurrentIp('Too many registrations');
-            return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
+            toast('Too many attempts. Please try again later.', 'error');
+
+            // return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
+            return back()->withInput();
         }
 
         $smtpEnabled = Settings::get('smtp_enabled', false);
@@ -91,9 +106,10 @@ class AuthController extends Controller
         auth()->login($user);
         $request->session()->regenerate();
 
-        return redirect()
-            ->to("/{$locale}")
-            ->with('success', 'Account created successfully.');
+        toast('Account created successfully.', 'success');
+
+        return redirect()->to("/{$locale}");
+            // ->with('success', 'Account created successfully.');
     }
 
     public function login(Request $request, string $locale)
@@ -117,7 +133,10 @@ class AuthController extends Controller
 
             if ($user->level === 'banned') {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Your account has been suspended.']);
+                toast('Your account has been suspended.', 'error');
+                return back()->withInput();
+
+                // return back()->withErrors(['email' => 'Your account has been suspended.']);
             }
 
             if ($user && \Schema::hasColumn('users', 'ip')) {
@@ -128,9 +147,7 @@ class AuthController extends Controller
             return redirect()->intended("/{$locale}");
         }
 
-        return back()
-            ->withErrors(['email' => 'invalid credentials'])
-            ->onlyInput('email');
+        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -212,7 +229,10 @@ class AuthController extends Controller
 
         $u->save();
 
-        return back()->with('success', 'profile updated');
+        toast('Profile updated successfully.', 'success');
+        return back();
+
+        // return back()->with('success', 'profile updated');
     }
 
     public function delete(Request $request, string $locale)
@@ -249,8 +269,9 @@ class AuthController extends Controller
         $user = User::where('verification_token', $token)->first();
 
         if (!$user) {
-            return redirect()->to("/{$locale}")
-                ->with('error', 'Invalid or expired verification link.');
+            toast('Invalid or expired verification link.', 'error');
+            return redirect()->to("/{$locale}");
+                // ->with('error', 'Invalid or expired verification link.');
         }
 
         $user->verified = true;

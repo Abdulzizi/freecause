@@ -200,17 +200,26 @@ class PetitionController extends Controller
             'agree3' => ['required', 'in:agree'],
         ]);
 
-        // spam detection
-        if (Spam::isSpam($data['title'] . ' ' . $data['description'])) {
-            Spam::log('petition', $data['title']);
-            return back()->withErrors(['title' => 'Spam detected.'])->withInput();
+        $spamText = implode(' ', [
+            $data['name'] ?? '',
+            $data['surname'] ?? '',
+            $data['comment'] ?? '',
+            $data['city'] ?? '',
+        ]);
+
+        if (Spam::isSpam($spamText)) {
+            Spam::log('signature', json_encode($data));
+
+            toast('Suspicious activity detected.', 'error');
+            return back()->withInput();
         }
 
-        // rate limiting
         if (Spam::rateLimit('petition')) {
             Spam::log('petition', 'Rate limit exceeded');
             Spam::banCurrentIp('Too many petition attempts');
-            return back()->withErrors(['title' => 'Too many attempts.'])->withInput();
+
+            toast('Too many petition attempts.', 'error');
+            return back()->withInput();
         }
 
         $email = strtolower(trim($data['email']));
@@ -218,10 +227,11 @@ class PetitionController extends Controller
         if (User::where('email', $email)->exists()) {
             $loginUrl = url("/{$locale}/login?email=" . urlencode($email) . "&redirect=" . urlencode(url()->previous()));
 
+            toast('This email is already registered. Please sign in first.', 'warning');
+
             return back()
                 ->withInput($request->except('password'))
-                ->with('login_url', $loginUrl)
-                ->withErrors(['email' => 'this email is already registered. please sign in first.']);
+                ->with('login_url', $loginUrl);
         }
 
         $user = User::create([
@@ -248,9 +258,6 @@ class PetitionController extends Controller
         if ($sig->wasRecentlyCreated) {
             $petition->increment('signature_count');
         }
-
-        // later: send verification mail here (optional for phase 1)
-        // $user->sendEmailVerificationNotification();
 
         return redirect()->route('petition.thanks', [
             'locale' => $locale,
@@ -334,11 +341,13 @@ class PetitionController extends Controller
         ]);
 
         if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
+            toast('Please choose either upload or external image (not both).', 'error');
+
             return back()
-                ->withErrors([
-                    'image' => 'Please choose either upload an image OR use an external image link (not both).',
-                    'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
-                ])
+                // ->withErrors([
+                //     'image' => 'Please choose either upload an image OR use an external image link (not both).',
+                //     'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
+                // ])
                 ->withInput();
         }
 
@@ -408,6 +417,8 @@ class PetitionController extends Controller
                 $petition->increment('signature_count');
             }
 
+            toast('Petition created successfully.', 'success');
+
             return redirect()->route('petition.thanks', [
                 'locale' => $locale,
                 'slug'   => $slug,
@@ -438,6 +449,10 @@ class PetitionController extends Controller
             ]
         );
 
+        if (! $sig->wasRecentlyCreated) {
+            toast('You already signed this petition.', 'info');
+        }
+
         if ($sig->wasRecentlyCreated) {
             $petition->increment('signature_count');
         }
@@ -449,6 +464,8 @@ class PetitionController extends Controller
             ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
 
         abort_if(! $tr, 404);
+
+        toast('Thank you for signing!', 'success');
 
         return redirect()->route('petition.thanks', [
             'locale' => $tr->locale,
@@ -708,11 +725,13 @@ class PetitionController extends Controller
         ]);
 
         if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
+            toast('Please choose either upload or external image (not both).', 'error');
+
             return back()
-                ->withErrors([
-                    'image' => 'Please choose either upload an image OR use an external image link (not both).',
-                    'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
-                ])
+                // ->withErrors([
+                //     'image' => 'Please choose either upload an image OR use an external image link (not both).',
+                //     'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
+                // ])
                 ->withInput();
         }
 
@@ -756,11 +775,13 @@ class PetitionController extends Controller
             $tr->description = $this->sanitizePetitionHtml($data['description']);
             $tr->save();
 
+            toast('Petition updated successfully.', 'success');
+
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
                 'slug'   => $tr->slug,
                 'id'     => $petition->id,
-            ])->with('success', 'Petition updated');
+            ]);
         });
     }
 

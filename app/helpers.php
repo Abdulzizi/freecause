@@ -104,3 +104,10 @@ function base_url()
 {
     return \App\Support\Settings::get('base_url', config('app.url'));
 }
+
+function toast($message, $type = 'info') {
+    session()->flash('toast', [
+        'type' => $type,
+        'message' => $message,
+    ]);
+}
