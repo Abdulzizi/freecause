@@ -7,7 +7,6 @@
             <a class="fc-page" href="{{ $paginator->previousPageUrl() }}">«</a>
         @endif
 
-        {{-- pages --}}
         @php
             $start = max(1, $paginator->currentPage() - 2);
             $end = min($paginator->lastPage(), $paginator->currentPage() + 2);

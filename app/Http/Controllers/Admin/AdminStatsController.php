@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,8 +19,10 @@ class AdminStatsController extends Controller
 
         $from = $this->resolveRange($filters['range']);
 
-        $results = collect();
+        $summary = $this->summaryStats($filters['locale'], $from);
+
         $columns = [];
+        $results = null;
 
         if ($filters['type']) {
             [$columns, $results] = $this->resolveStat(
@@ -29,10 +32,16 @@ class AdminStatsController extends Controller
             );
         }
 
+        $languages = Language::where('is_active', 1)
+            ->orderByDesc('is_default')
+            ->get();
+
         return view('admin.stats.index', compact(
             'filters',
+            'summary',
+            'columns',
             'results',
-            'columns'
+            'languages'
         ));
     }
 
@@ -43,6 +52,50 @@ class AdminStatsController extends Controller
             '7d'  => now()->subDays(7),
             default => now()->subDays(30),
         };
+    }
+
+    private function summaryStats($locale, $from)
+    {
+        $usersTotal = DB::table('users')->count();
+        $usersVerified = DB::table('users')->where('verified', 1)->count();
+
+        $petitionsTotal = DB::table('petitions')->count();
+        $petitionsPublished = DB::table('petitions')
+            ->where('status', 'published')
+            ->count();
+
+        $signaturesTotal = DB::table('signatures')->count();
+
+        $usersNew = DB::table('users')
+            ->where('created_at', '>=', $from)
+            ->count();
+
+        $petitionsNew = DB::table('petitions')
+            ->where('created_at', '>=', $from)
+            ->count();
+
+        $signaturesNew = DB::table('signatures')
+            ->where('created_at', '>=', $from)
+            ->when($locale, fn($q) => $q->where('locale', $locale))
+            ->count();
+
+        return [
+            'users_total' => $usersTotal,
+            'users_verified_percent' => $usersTotal > 0
+                ? round(($usersVerified / $usersTotal) * 100, 1)
+                : 0,
+
+            'petitions_total' => $petitionsTotal,
+            'petitions_publish_percent' => $petitionsTotal > 0
+                ? round(($petitionsPublished / $petitionsTotal) * 100, 1)
+                : 0,
+
+            'signatures_total' => $signaturesTotal,
+
+            'users_new' => $usersNew,
+            'petitions_new' => $petitionsNew,
+            'signatures_new' => $signaturesNew,
+        ];
     }
 
     private function resolveStat(string $type, string $locale, $from)
@@ -58,17 +111,11 @@ class AdminStatsController extends Controller
             case 'petitions_all':
                 return $this->petitionsAll($locale, $from);
 
-            case 'petitions_verified':
-                return $this->petitionsVerified($locale, $from);
-
-            case 'emails_all':
-                return $this->emailsAll($locale, $from);
-
             case 'emails_verified':
                 return $this->emailsVerified($locale, $from);
 
             default:
-                return [[], collect()];
+                return [[], null];
         }
     }
 
@@ -81,17 +128,13 @@ class AdminStatsController extends Controller
                 DB::raw('COUNT(*) as total')
             )
             ->where('s.created_at', '>=', $from)
+            ->when($locale, fn($q) => $q->where('s.locale', $locale))
             ->groupBy('email')
-            ->orderByDesc('total')
-            ->limit(20);
-
-        if ($locale) {
-            $q->where('s.locale', $locale);
-        }
+            ->orderByDesc('total');
 
         return [
-            ['Email', 'Total'],
-            $q->get()
+            ['Email', 'Total Signatures'],
+            $q->paginate(25)->withQueryString()
         ];
     }
 
@@ -105,56 +148,24 @@ class AdminStatsController extends Controller
             )
             ->where('p.created_at', '>=', $from)
             ->groupBy('u.email')
-            ->orderByDesc('total')
-            ->limit(20);
+            ->orderByDesc('total');
 
         return [
-            ['Email', 'Total'],
-            $q->get()
+            ['Email', 'Total Petitions'],
+            $q->paginate(25)->withQueryString()
         ];
     }
 
     private function petitionsAll($locale, $from)
     {
         $q = DB::table('petitions')
-            ->select('id', 'created_at', 'status')
+            ->select('id', 'status', 'created_at')
             ->where('created_at', '>=', $from)
             ->orderByDesc('created_at');
 
         return [
-            ['ID', 'Created At', 'Status'],
-            $q->limit(200)->get()
-        ];
-    }
-
-    private function petitionsVerified($locale, $from)
-    {
-        $q = DB::table('petitions')
-            ->where('status', 'published')
-            ->where('created_at', '>=', $from)
-            ->orderByDesc('created_at');
-
-        return [
-            ['ID', 'Created At'],
-            $q->select('id', 'created_at')->limit(200)->get()
-        ];
-    }
-
-    private function emailsAll($locale, $from)
-    {
-        $q = DB::table('signatures')
-            ->select('email')
-            ->whereNotNull('email')
-            ->where('created_at', '>=', $from)
-            ->distinct();
-
-        if ($locale) {
-            $q->where('locale', $locale);
-        }
-
-        return [
-            ['Email'],
-            $q->limit(500)->get()
+            ['ID', 'Status', 'Created At'],
+            $q->paginate(25)->withQueryString()
         ];
     }
 
@@ -166,8 +177,8 @@ class AdminStatsController extends Controller
             ->select('email');
 
         return [
-            ['Email'],
-            $q->limit(500)->get()
+            ['Verified Emails'],
+            $q->paginate(25)->withQueryString()
         ];
     }
 }
