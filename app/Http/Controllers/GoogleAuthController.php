@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Support\AppLog;
+use App\Support\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -87,7 +88,8 @@ class GoogleAuthController extends Controller
                 'last_name' => $last,
                 'email' => $email,
                 'password' => bcrypt(Str::random(32)),
-                'locale' => $this->toLocaleFull($destLocale),
+                // 'locale' => $this->toLocaleFull($destLocale),
+                'locale' => Locale::toFull($destLocale),
                 'ip' => $request->ip(),
                 'level' => 'user',
                 'verified' => true,
@@ -101,7 +103,8 @@ class GoogleAuthController extends Controller
         }
 
         $user->ip = $request->ip();
-        $user->locale = $this->toLocaleFull($destLocale);
+        // $user->locale = $this->toLocaleFull($destLocale);
+        $user->locale = Locale::toFull($destLocale);
 
         if (!$user->first_name) $user->first_name = $first;
         if (!$user->last_name)  $user->last_name = $last;
@@ -132,17 +135,5 @@ class GoogleAuthController extends Controller
         }
 
         return redirect("/{$locale}");
-    }
-
-    private function toLocaleFull(string $locale): string
-    {
-        $map = [
-            'en' => 'en_US',
-            'fr' => 'fr_FR',
-            'it' => 'it_IT',
-            'da' => 'da_DK',
-        ];
-
-        return $map[$locale] ?? 'en_US';
     }
 }

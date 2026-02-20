@@ -13,6 +13,7 @@ class AdminLogsController extends Controller
         $filters = [
             'q' => trim($request->query('q', '')),
             'level' => $request->query('level'),
+            'context' => trim($request->query('context', '')),
         ];
 
         $q = Log::query()->orderByDesc('id');
@@ -26,6 +27,10 @@ class AdminLogsController extends Controller
 
         if ($filters['level']) {
             $q->where('level', $filters['level']);
+        }
+
+        if ($filters['context']) {
+            $q->where('context', $filters['context']);
         }
 
         $logs = $q->paginate(25)->withQueryString();

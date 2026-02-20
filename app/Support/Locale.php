@@ -2,31 +2,34 @@
 
 namespace App\Support;
 
+use App\Models\Language;
+
 class Locale
 {
     public static function toFull(string $locale): string
     {
-        $supported = config('locales.supported', []);
-        $default   = config('locales.default', 'en');
-        $map       = config('language_flags', []);
-
         $locale = strtolower(trim($locale));
 
-        // if not supported → fallback
-        if (!in_array($locale, $supported)) {
-            $locale = $default;
+        $language = Language::where('code', $locale)->where('is_active', true)->first();
+
+        if ($language) {
+            return config('language_flags')[$locale]
+                ?? config('language_flags')[config('locales.default')]
+                ?? 'en_US';
         }
 
-        return $map[$locale] ?? ($map[$default] ?? 'en_US');
-    }
+        $default = config('locales.default', 'en');
 
-    public static function default(): string
-    {
-        return config('locales.default', 'en');
+        return config('language_flags')[$default] ?? 'en_US';
     }
 
     public static function supported(): array
     {
-        return config('locales.supported', []);
+        return Language::where('is_active', true)->pluck('code')->toArray();
+    }
+
+    public static function default(): string
+    {
+        return Language::where('is_default', true) ->value('code') ?? config('locales.default', 'en');
     }
 }

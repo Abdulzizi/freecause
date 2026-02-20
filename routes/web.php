@@ -113,7 +113,7 @@ Route::group([
     'prefix' => '{locale}',
     'middleware' => ['setLocale', 'block.banned.user'],
 ], function () {
-    // Auth + OAuth
+    // auth + oauth
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
     Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 
@@ -135,18 +135,24 @@ Route::group([
         Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
 
         Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store');
+
+        // petition owner operations
+        Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->where(['id' => '[0-9]+'])->name('petition.edit');
+        Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->where(['id' => '[0-9]+'])->name('petition.update');
+        Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])->where(['id' => '[0-9]+'])->name('petition.download.txt');
+        Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->where(['id' => '[0-9]+'])->name('petition.download.pdf');
     });
 
-    // Static pages
+    // static pages
     Route::get('/magazine', fn() => view('pages.magazine'))->name('magazine');
     Route::get('/faqs', fn() => view('pages.faq'))->name('faqs');
-    Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
 
+    Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
     Route::post('/contacts', function () {
         return back()->with('success', 'Thanks! (UI only for now)');
     })->name('contacts.submit');
 
-    // Home + Petitions
+    // home + petitions
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
     Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])
@@ -155,35 +161,14 @@ Route::group([
             'category' => '[0-9]+',
         ])->name('petitions.byCategory');
 
-    // Petition creation
+    // petition creation
     Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
 
-    // Petition actions (show / sign / thanks)
+    // petition actions (show / sign / thanks)
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
     Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
     Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
-
-    // Petition owner operations
-    Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])
-        ->middleware('auth')
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.edit');
-
-    Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])
-        ->middleware('auth')
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.update');
-
-    Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])
-        ->middleware('auth')
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.download.txt');
-
-    Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])
-        ->middleware('auth')
-        ->where(['id' => '[0-9]+'])
-        ->name('petition.download.pdf');
 
     Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[a-z0-9\-]+')->name('page.show');
 });

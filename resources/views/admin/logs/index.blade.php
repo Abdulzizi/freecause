@@ -16,13 +16,21 @@
             <option value="warning" {{ request('level')=='warning'?'selected':'' }}>Warning</option>
             <option value="error" {{ request('level')=='error'?'selected':'' }}>Error</option>
         </select>
+
+        <select name="context" class="fc-input" style="max-width:150px;">
+            <option value="">All context</option>
+            <option value="auth.register">Auth Register</option>
+            <option value="auth.login">Auth Login</option>
+            <option value="auth.google">Google OAuth</option>
+            <option value="auth.facebook">Facebook OAuth</option>
+        </select>
     </x-admin.filter-box>
 
     <x-admin.list-table-box :p="$logs" :bulk="[
-            'banRoute' => route('admin.logs.bulkDelete'),
-            'banLabel' => 'Delete',
-            'banConfirm' => 'Delete selected logs?',
-        ]">
+            // 'banRoute' => route('admin.logs.bulkDelete'),
+            // 'banLabel' => 'Delete',
+            // 'banConfirm' => 'Delete selected logs?',
+]">
 
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;">
@@ -61,7 +69,8 @@
                     </td>
 
                     <td>
-                        {{ Str::limit($log->title, 80) }}
+                        {{-- {{ Str::limit($log->title, 80) }} --}}
+                        {{ Str::limit($log->title . ' - ' . $log->content, 80) }}
                     </td>
 
                     <td style="white-space:nowrap;">

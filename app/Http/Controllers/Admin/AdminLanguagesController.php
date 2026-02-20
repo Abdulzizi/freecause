@@ -35,6 +35,7 @@ class AdminLanguagesController extends Controller
 
         cache()->forget('active_languages');
         cache()->forget('default_language');
+        cache()->forget('active_languages_full');
 
         return back()->with('success', 'language created');
     }
@@ -51,6 +52,8 @@ class AdminLanguagesController extends Controller
         ]);
 
         cache()->forget('active_languages');
+        cache()->forget('default_language');
+        cache()->forget('active_languages_full');
 
         return back()->with('success', 'language updated');
     }
@@ -61,7 +64,9 @@ class AdminLanguagesController extends Controller
 
         $language->update(['is_default' => 1]);
 
+        cache()->forget('active_languages');
         cache()->forget('default_language');
+        cache()->forget('active_languages_full');
 
         return back()->with('success', 'default language updated');
     }
@@ -76,6 +81,7 @@ class AdminLanguagesController extends Controller
 
         cache()->forget('active_languages');
         cache()->forget('default_language');
+        cache()->forget('active_languages_full');
 
         return back()->with('success', 'language deleted');
     }

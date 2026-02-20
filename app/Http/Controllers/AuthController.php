@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccountMail;
 use App\Support\AppLog;
 use App\Support\Settings;
+use App\Support\Locale;
 
 class AuthController extends Controller
 {
@@ -95,7 +96,8 @@ class AuthController extends Controller
             'last_name' => $data['surname'],
             'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
-            'locale' => $this->toLocaleFull($locale),
+            // 'locale' => $this->toLocaleFull($locale),
+            'locale' => Locale::toFull($locale),
             'ip' => $request->ip(),
             'level' => 'user',
 
@@ -290,18 +292,6 @@ class AuthController extends Controller
         return redirect()->to("/{$locale}")->with('success', 'account deleted');
     }
 
-    private function toLocaleFull(string $locale): string
-    {
-        $map = [
-            'en' => 'en_US',
-            'fr' => 'fr_FR',
-            'it' => 'it_IT',
-            'da' => 'da_DK',
-        ];
-
-        return $map[$locale] ?? 'en_US';
-    }
-
     public function verify(string $locale, string $token)
     {
         $user = User::where('verification_token', $token)->first();
@@ -309,7 +299,6 @@ class AuthController extends Controller
         if (!$user) {
             toast('Invalid or expired verification link.', 'error');
             return redirect()->to("/{$locale}");
-                // ->with('error', 'Invalid or expired verification link.');
         }
 
         $user->verified = true;

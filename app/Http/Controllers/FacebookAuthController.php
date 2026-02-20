@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Support\AppLog;
+use App\Support\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -101,7 +102,8 @@ class FacebookAuthController extends Controller
                 'last_name' => $last,
                 'email' => $email,
                 'password' => bcrypt(Str::random(32)),
-                'locale' => $this->toLocaleFull($locale),
+                // 'locale' => $this->toLocaleFull($locale),
+                'locale' => Locale::toFull($locale),
                 'ip' => $request->ip(),
                 'level' => 'user',
                 'verified' => true,
@@ -114,7 +116,7 @@ class FacebookAuthController extends Controller
         }
 
         $user->ip = $request->ip();
-        $user->locale = $this->toLocaleFull($locale);
+        $user->locale = Locale::toFull($locale);
         $user->verified = true;
         $user->save();
 
@@ -131,14 +133,5 @@ class FacebookAuthController extends Controller
         $request->session()->regenerate();
 
         return redirect("/{$locale}");
-    }
-
-    private function toLocaleFull(string $locale): string
-    {
-        return [
-            'en' => 'en_US',
-            'fr' => 'fr_FR',
-            'it' => 'it_IT',
-        ][$locale] ?? 'en_US';
     }
 }

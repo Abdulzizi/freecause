@@ -12,11 +12,22 @@ class LanguageSeeder extends Seeder
         Language::truncate();
 
         $languages = [
+
+            ['code' => 'da', 'name' => 'Danish'],
+            ['code' => 'de', 'name' => 'German'],
+            ['code' => 'el', 'name' => 'Greek'],
             ['code' => 'en', 'name' => 'English'],
+            ['code' => 'es', 'name' => 'Spanish'],
             ['code' => 'fr', 'name' => 'French'],
             ['code' => 'it', 'name' => 'Italian'],
-            ['code' => 'de', 'name' => 'German'],
-            ['code' => 'es', 'name' => 'Spanish'],
+            ['code' => 'nl', 'name' => 'Dutch'],
+            ['code' => 'pl', 'name' => 'Polish'],
+            ['code' => 'pt', 'name' => 'Portuguese'],
+            ['code' => 'ro', 'name' => 'Romanian'],
+            ['code' => 'ru', 'name' => 'Russian'],
+            ['code' => 'sv', 'name' => 'Swedish'],
+            ['code' => 'tr', 'name' => 'Turkish'],
+
         ];
 
         foreach ($languages as $index => $lang) {
@@ -24,7 +35,7 @@ class LanguageSeeder extends Seeder
                 'code' => $lang['code'],
                 'name' => $lang['name'],
                 'is_active' => true,
-                'is_default' => $index === 0,
+                'is_default' => $lang['code'] === 'en',
             ]);
         }
     }

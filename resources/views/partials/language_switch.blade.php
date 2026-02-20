@@ -1,14 +1,8 @@
 @php
     use App\Models\Language;
 
-    $languages = cache()->remember(
-        'active_languages_full',
-        60,
-        fn() => Language::where('is_active', 1)->orderByDesc('is_default')->get(),
-    );
-
+    $languages = cache()->remember('active_languages_full', 60, fn() => Language::where('is_active', 1)->orderByDesc('is_default')->get(),);
     $locale = app()->getLocale();
-
     $current = $languages->firstWhere('code', $locale) ?? $languages->first();
 @endphp
 
