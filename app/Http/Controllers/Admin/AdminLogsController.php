@@ -12,6 +12,7 @@ class AdminLogsController extends Controller
     {
         $filters = [
             'q' => trim($request->query('q', '')),
+            'level' => $request->query('level'),
         ];
 
         $q = Log::query()->orderByDesc('id');
@@ -21,6 +22,10 @@ class AdminLogsController extends Controller
                 $sub->where('title', 'like', "%{$filters['q']}%")
                     ->orWhere('content', 'like', "%{$filters['q']}%");
             });
+        }
+
+        if ($filters['level']) {
+            $q->where('level', $filters['level']);
         }
 
         $logs = $q->paginate(25)->withQueryString();

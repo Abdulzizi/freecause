@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\AppLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -50,23 +51,54 @@ class GoogleAuthController extends Controller
         $destLocale = $ctx['locale'] ?? $locale;
 
         if (!$email) {
-            return redirect("/{$destLocale}/register")
-                ->withErrors(['email' => 'google did not provide email.']);
+            AppLog::warning(
+                'Google OAuth missing email',
+                'Google ID: '.$google->getId(),
+                'auth.google'
+            );
+
+            return redirect("/{$destLocale}/register")->withErrors(['email' => 'google did not provide email.']);
         }
 
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
+        // $user = User::firstOrCreate(
+        //     ['email' => $email],
+        //     [
+        //         'name' => $fullName,
+        //         'first_name' => $first,
+        //         'last_name' => $last,
+        //         'password' => bcrypt(Str::random(32)),
+        //         'locale' => $this->toLocaleFull($destLocale),
+        //         'ip' => $request->ip(),
+        //         'level' => 'user',
+        //         'verified' => true,
+        //     ]
+        // );
+
+        $user = User::where('email', $email)->first();
+
+        $newUser = false;
+
+        if (!$user) {
+            $newUser = true;
+
+            $user = User::create([
                 'name' => $fullName,
                 'first_name' => $first,
                 'last_name' => $last,
+                'email' => $email,
                 'password' => bcrypt(Str::random(32)),
                 'locale' => $this->toLocaleFull($destLocale),
                 'ip' => $request->ip(),
                 'level' => 'user',
                 'verified' => true,
-            ]
-        );
+            ]);
+
+            AppLog::info(
+                'User registered via Google',
+                'User ID: '.$user->id.' | Email: '.$email,
+                'auth.google'
+            );
+        }
 
         $user->ip = $request->ip();
         $user->locale = $this->toLocaleFull($destLocale);
@@ -79,8 +111,16 @@ class GoogleAuthController extends Controller
         }
 
         $user->save();
-
         Auth::login($user);
+
+        if (!$newUser) {
+            AppLog::info(
+                'User login via Google',
+                'User ID: '.$user->id .' | Email: '.$email,
+                'auth.google'
+            );
+        }
+
         $request->session()->regenerate();
 
         if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {

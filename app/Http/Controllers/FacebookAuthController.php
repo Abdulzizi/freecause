@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\AppLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -29,8 +30,13 @@ class FacebookAuthController extends Controller
     public function callback(Request $request, string $locale)
     {
     if ($request->has('error')) {
-        return redirect("/{$locale}/login")
-            ->withErrors(['oauth' => 'Facebook login was cancelled.']);
+        AppLog::warning(
+            'Facebook OAuth cancelled',
+            'IP: '.$request->ip(),
+            'auth.facebook'
+        );
+
+        return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook login was cancelled.']);
     }
 
     $ctx = $request->session()->pull('oauth_ctx', [
@@ -41,15 +47,25 @@ class FacebookAuthController extends Controller
     try {
         $facebookUser = Socialite::driver('facebook')->user();
     } catch (\Exception $e) {
-        return redirect("/{$locale}/login")
-            ->withErrors(['oauth' => 'Facebook authentication failed.']);
+        AppLog::error(
+            'Facebook OAuth failed',
+            $e->getMessage().' | IP: '.$request->ip(),
+            'auth.facebook'
+        );
+
+        return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook authentication failed.']);
     }
 
     $email = strtolower(trim($facebookUser->getEmail() ?? ''));
 
     if (!$email) {
-        return redirect("/{$locale}/register")
-            ->withErrors(['email' => 'Facebook did not provide email.']);
+        AppLog::warning(
+            'Facebook OAuth missing email',
+            'Facebook ID: '.$facebookUser->getId(),
+            'auth.facebook'
+        );
+
+        return redirect("/{$locale}/register")->withErrors(['email' => 'Facebook did not provide email.']);
     }
 
         $fullName = trim((string) ($facebookUser->getName() ?: 'Facebook User'));
@@ -58,19 +74,44 @@ class FacebookAuthController extends Controller
         $first = $parts[0] ?? $fullName;
         $last  = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
 
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
+        // $user = User::firstOrCreate(
+        //     ['email' => $email],
+        //     [
+        //         'name' => $fullName,
+        //         'first_name' => $first,
+        //         'last_name' => $last,
+        //         'password' => bcrypt(Str::random(32)),
+        //         'locale' => $this->toLocaleFull($locale),
+        //         'ip' => $request->ip(),
+        //         'level' => 'user',
+        //         'verified' => true,
+        //     ]
+        // );
+
+        $user = User::where('email', $email)->first();
+
+        $newUser = false;
+
+        if (!$user) {
+            $newUser = true;
+
+            $user = User::create([
                 'name' => $fullName,
                 'first_name' => $first,
                 'last_name' => $last,
+                'email' => $email,
                 'password' => bcrypt(Str::random(32)),
                 'locale' => $this->toLocaleFull($locale),
                 'ip' => $request->ip(),
                 'level' => 'user',
                 'verified' => true,
-            ]
-        );
+            ]);
+            AppLog::info(
+                'User registered via Facebook',
+                'User ID: '.$user->id.' | Email: '.$email,
+                'auth.facebook'
+            );
+        }
 
         $user->ip = $request->ip();
         $user->locale = $this->toLocaleFull($locale);
@@ -78,6 +119,15 @@ class FacebookAuthController extends Controller
         $user->save();
 
         Auth::login($user);
+
+        if (!$newUser) {
+            AppLog::info(
+                'User login via Facebook',
+                'User ID: '.$user->id,
+                'auth.facebook'
+            );
+        }
+
         $request->session()->regenerate();
 
         return redirect("/{$locale}");

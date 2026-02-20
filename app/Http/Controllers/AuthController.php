@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccountMail;
+use App\Support\AppLog;
 use App\Support\Settings;
 
 class AuthController extends Controller
@@ -44,28 +45,43 @@ class AuthController extends Controller
 
         $fullName = trim($data['name'] . ' ' . $data['surname']);
 
+
         // if (Spam::isSpam($data['email'])) {
         //     Spam::log('register', $data['email']);
-        //     return back()
-        //         ->with('toast', [
-        //             'type' => 'error',
-        //             'message' => 'Spam detected.'
-        //         ])
-        //         ->withInput();
+        //     toast('Spam detected.', 'error');
+        //     return back()->withInput();
         // }
 
         if (Spam::isSpam($data['email'])) {
             Spam::log('register', $data['email']);
+
+            AppLog::warning(
+                'Spam registration attempt',
+                'Email: '.$data['email'],
+                'auth.register'
+            );
+
             toast('Spam detected.', 'error');
             return back()->withInput();
         }
 
-        if (Spam::rateLimit('register')) {
-            Spam::log('register', 'Rate limit exceeded');
-            Spam::banCurrentIp('Too many registrations');
-            toast('Too many attempts. Please try again later.', 'error');
+        // if (Spam::rateLimit('register')) {
+        //     Spam::log('register', 'Rate limit exceeded');
+        //     Spam::banCurrentIp('Too many registrations');
+        //     toast('Too many attempts. Please try again later.', 'error');
 
-            // return back()->withErrors(['email' => 'Too many attempts.'])->withInput();
+        //     return back()->withInput();
+        // }
+
+        if (Spam::rateLimit('register')) {
+
+            AppLog::warning(
+                'Registration rate limit exceeded',
+                'IP: '.$request->ip(),
+                'auth.register'
+            );
+
+            toast('Too many attempts. Please try again later.', 'error');
             return back()->withInput();
         }
 
@@ -87,6 +103,12 @@ class AuthController extends Controller
             'verification_token' => $token,
         ]);
 
+        AppLog::info(
+            'User registered',
+            'User ID: '.$user->id.' | Email: '.$user->email,
+            'auth.register'
+        );
+
         // Mail::to($user->email)->queue(
         //     new VerifyAccountMail($user, $locale)
         // );
@@ -95,7 +117,11 @@ class AuthController extends Controller
             try {
                 Mail::to($user->email)->send(new VerifyAccountMail($user, $locale));
             } catch (\Exception $e) {
-                \Log::error('Mail failed: ' . $e->getMessage());
+                AppLog::error(
+                    'Mail sending failed',
+                    $e->getMessage(),
+                    'auth.register'
+                );
             }
 
             return redirect()
@@ -132,6 +158,12 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user->level === 'banned') {
+                AppLog::warning(
+                    'Banned user attempted login',
+                    'User ID: '.$user->id.' | IP: '.$request->ip(),
+                    'auth.login'
+                );
+
                 Auth::logout();
                 toast('Your account has been suspended.', 'error');
                 return back()->withInput();
@@ -246,6 +278,12 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        AppLog::warning(
+            'User account deleted',
+            'User ID: '.$u->id.' | Email: '.$u->email,
+            'auth.delete'
+        );
 
         $u->delete();
 
