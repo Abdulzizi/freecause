@@ -16,4 +16,9 @@ class UserLevel extends Model
     {
         return $this->hasMany(User::class, 'level_id');
     }
+
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class, 'level_id');
+    }
 }

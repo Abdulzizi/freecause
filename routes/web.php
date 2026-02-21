@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
-
+use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\FacebookAuthController;
@@ -42,77 +42,83 @@ Route::get('/', function () {
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
     Route::middleware('admin.auth')->group(function () {
+
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-        Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->name('options.global');
-        Route::post('/options/global', [GlobalOptionsController::class, 'update'])->name('options.global.update');
-
-        Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->name('options.language');
-        Route::post('/options/language', [LanguageOptionsController::class, 'update'])->name('options.language.update');
-
-        Route::get('/ads', [AdsTxtController::class, 'edit'])->name('ads');
-        Route::post('/ads', [AdsTxtController::class, 'update'])->name('ads.update');
+        //* OPTIONS
+        Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.global');
+        Route::post('/options/global', [GlobalOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.global.update');
+        Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.language');
+        Route::post('/options/language', [LanguageOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.language.update');
+        Route::get('/ads', [AdsTxtController::class, 'edit'])->middleware('permission:options,view')->name('ads');
+        Route::post('/ads', [AdsTxtController::class, 'update'])->middleware('permission:options,edit')->name('ads.update');
         Route::get('/ads.txt', function () {
             $content = Settings::get('ads_txt', '', 'global');
-
-            return response($content, 200)
-                ->header('Content-Type', 'text/plain; charset=UTF-8');
+            return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
         });
 
-        Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
-        Route::post('/users/save', [AdminUsersController::class, 'save'])->name('users.save');
-        Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->name('users.bulkBan');
-        Route::post('/users/bulk-action', [AdminUsersController::class, 'bulkAction'])->name('users.bulkAction');
-        Route::post('/users/bulk-unban', [AdminUsersController::class, 'bulkUnban'])->name('users.bulkUnban');
-        Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->name('users.bulkDelete');
+        //* USERS
+        Route::get('/users', [AdminUsersController::class, 'index'])->middleware('permission:users,view')->name('users');
+        Route::post('/users/save', [AdminUsersController::class, 'save'])->middleware('permission:users,edit')->name('users.save');
+        Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->middleware('permission:users,edit')->name('users.bulkBan');
+        Route::post('/users/bulk-action', [AdminUsersController::class, 'bulkAction'])->middleware('permission:users,edit')->name('users.bulkAction');
+        Route::post('/users/bulk-unban', [AdminUsersController::class, 'bulkUnban'])->middleware('permission:users,edit')->name('users.bulkUnban');
+        Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->middleware('permission:users,delete')->name('users.bulkDelete');
 
-        Route::get('/petitions', [AdminPetitionsController::class, 'index'])->name('petitions');
-        Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->name('petitions.save');
-        Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->name('petitions.bulkAction');
+        //* PETITIONS
+        Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
+        Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
+        Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->middleware('permission:petitions,edit')->name('petitions.bulkAction');
 
-        Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');
-        Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->name('categories.save');
+        //* CATEGORIES
+        Route::get('/categories', [AdminCategoriesController::class, 'index'])->middleware('permission:categories,view')->name('categories');
+        Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->middleware('permission:categories,edit')->name('categories.save');
 
-        Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->name('fanpages');
+        //* FANPAGES
+        Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
 
-        Route::get('/signatures', [AdminSignaturesController::class, 'index'])->name('signatures');
-        Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->name('signatures.bulkDelete');
+        //* SIGNATURES
+        Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
+        Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
 
-        Route::get('/pages', [AdminPagesController::class, 'index'])->name('pages');
-        Route::post('/pages/save', [AdminPagesController::class, 'save'])->name('pages.save');
-        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
+        //* PAGES
+        Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
+        Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
+        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->middleware('permission:pages,edit')->name('pages.bulkAction');
 
-        Route::get('/spam', [AdminSpamController::class, 'index'])->name('spam');
-        Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->name('spam.ban');
-        Route::post('/spam/unban', [AdminSpamController::class, 'unban'])->name('spam.unban');
-        Route::post('/spam/clear', [AdminSpamController::class, 'clear'])->name('spam.clear');
+        //* SPAM
+        Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
+        Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');
+        Route::post('/spam/unban', [AdminSpamController::class, 'unban'])->middleware('permission:spam,edit')->name('spam.unban');
+        Route::post('/spam/clear', [AdminSpamController::class, 'clear'])->middleware('permission:spam,delete')->name('spam.clear');
 
-        Route::get('/stats', [AdminStatsController::class, 'index'])->name('stats');
+        //* STATS
+        Route::get('/stats', [AdminStatsController::class, 'index'])->middleware('permission:stats,view')->name('stats');
 
-        Route::get('/logs', [AdminLogsController::class, 'index'])->name('logs');
-        Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->name('logs.bulkDelete');
+        //* LOGS
+        Route::get('/logs', [AdminLogsController::class, 'index'])->middleware('permission:logs,view')->name('logs');
+        Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->middleware('permission:logs,delete')->name('logs.bulkDelete');
 
-        Route::get('/languages', [AdminLanguagesController::class, 'index'])->name('languages.index');
-        Route::post('/languages', [AdminLanguagesController::class, 'store'])->name('languages.store');
-        Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->name('languages.update');
-        Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->name('languages.default');
-        Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->name('languages.destroy');
+        //* LANGUAGES
+        Route::get('/languages', [AdminLanguagesController::class, 'index'])->middleware('permission:languages,view')->name('languages.index');
+        Route::post('/languages', [AdminLanguagesController::class, 'store'])->middleware('permission:languages,edit')->name('languages.store');
+        Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->middleware('permission:languages,edit')->name('languages.update');
+        Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
+        Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
+        //* SYSTEM (no permission to avoid lockout)
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->name('system.user_info.update');
-
         Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->name('system.user_levels');
         Route::post('/system/user-levels', [AdminUserLevelsController::class, 'store'])->name('system.user_levels.store');
         Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->name('system.user_levels.delete');
-
-        // TODO: remove these placeholder routes and create real pages for them
-        // Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
-        // Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
-        Route::view('/system/permissions', 'admin.placeholders.system-permissions')->name('system.permissions');
+        Route::get('/system/permissions', [PermissionController::class, 'index'])->name('system.permissions');
+        Route::post('/system/permissions', [PermissionController::class, 'store'])->name('system.permissions.store');
 
         Route::view('/utils/import', 'admin.placeholders.import')->name('utils.import');
     });
