@@ -149,7 +149,8 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
+        // if (Auth::attempt($credentials, $remember)) {
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             $redirect = $request->input('redirect');
@@ -184,13 +185,24 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
     }
 
+    // public function logout(Request $request)
+    // {
+    //     Auth::logout();
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
+
+    //     $locale = $request->input('locale', 'en');
+    //     return redirect()->to("/{$locale}");
+    // }
+
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
+        Auth::guard('web')->logout();
+
         $request->session()->regenerateToken();
 
         $locale = $request->input('locale', 'en');
+
         return redirect()->to("/{$locale}");
     }
 
@@ -269,16 +281,38 @@ class AuthController extends Controller
         // return back()->with('success', 'profile updated');
     }
 
+    // public function delete(Request $request, string $locale)
+    // {
+    //     $data = $request->validate([
+    //         'confirm_delete' => ['required', 'in:1'],
+    //     ]);
+
+    //     $u = Auth::user();
+
+    //     Auth::logout();
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
+
+    //     AppLog::warning(
+    //         'User account deleted',
+    //         'User ID: '.$u->id.' | Email: '.$u->email,
+    //         'auth.delete'
+    //     );
+
+    //     $u->delete();
+
+    //     return redirect()->to("/{$locale}")->with('success', 'account deleted');
+    // }
+
     public function delete(Request $request, string $locale)
     {
         $data = $request->validate([
             'confirm_delete' => ['required', 'in:1'],
         ]);
 
-        $u = Auth::user();
+        $u = Auth::guard('web')->user();
 
-        Auth::logout();
-        $request->session()->invalidate();
+        Auth::guard('web')->logout();
         $request->session()->regenerateToken();
 
         AppLog::warning(
@@ -289,7 +323,8 @@ class AuthController extends Controller
 
         $u->delete();
 
-        return redirect()->to("/{$locale}")->with('success', 'account deleted');
+        return redirect()->to("/{$locale}")
+            ->with('success', 'account deleted');
     }
 
     public function verify(string $locale, string $token)
