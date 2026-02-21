@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(PageContentSeeder::class);
+        $this->call(UserLevelSeeder::class);
         $this->call(LanguageSeeder::class);
         $this->call(SettingsSeeder::class);
         $this->call(StaticPageSeeder::class);

@@ -35,4 +35,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Signature::class);
     }
+
+    public function level()
+    {
+        return $this->belongsTo(UserLevel::class, 'level_id');
+    }
+
+    public function hasLevel(string $name): bool
+    {
+        return $this->level?->name === $name;
+    }
 }

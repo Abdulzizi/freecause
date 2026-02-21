@@ -160,7 +160,7 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            if ($user->level === 'banned') {
+            if ($user->hasLevel('banned')) {
                 AppLog::warning(
                     'Banned user attempted login',
                     'User ID: '.$user->id.' | IP: '.$request->ip(),

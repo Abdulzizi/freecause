@@ -36,7 +36,12 @@ class AdminAuthController extends Controller
             return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
-        if (Auth::guard('admin')->user()->level !== 'admin') {
+        // if (Auth::guard('admin')->user()->level !== 'admin') {
+        //     Auth::guard('admin')->logout();
+        //     return back()->withErrors(['login' => 'not authorized'])->withInput();
+        // }
+
+        if (Auth::guard('admin')->user()->level()->name !== 'admin') {
             Auth::guard('admin')->logout();
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }

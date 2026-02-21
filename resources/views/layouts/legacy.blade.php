@@ -141,7 +141,7 @@
         </script>
     @endif
 
-    @if ($errors->any())
+    @if (isset($errors) && $errors->any())
         <div id="fc-toast-error"
             style="position:fixed;top:20px;right:20px;z-index:9999;
                 background:#dc3545;

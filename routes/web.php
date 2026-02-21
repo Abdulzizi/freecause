@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminSpamController;
 use App\Http\Controllers\Admin\AdminStatsController;
 use App\Http\Controllers\Admin\AdminSystemController;
+use App\Http\Controllers\Admin\AdminUserLevelsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 
 use App\Http\Controllers\Admin\AdsTxtController;
@@ -104,9 +105,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->name('system.user_info.update');
 
+        Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->name('system.user_levels');
+        Route::post('/system/user-levels', [AdminUserLevelsController::class, 'store'])->name('system.user_levels.store');
+        Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->name('system.user_levels.delete');
+
         // TODO: remove these placeholder routes and create real pages for them
         // Route::view('/system/user-info', 'admin.placeholders.system-user-info')->name('system.user_info');
-        Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
+        // Route::view('/system/user-levels', 'admin.placeholders.system-user-levels')->name('system.user_levels');
         Route::view('/system/permissions', 'admin.placeholders.system-permissions')->name('system.permissions');
 
         Route::view('/utils/import', 'admin.placeholders.import')->name('utils.import');
