@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UserLevel;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUsersController extends Controller
@@ -25,58 +25,43 @@ class AdminUsersController extends Controller
             'locale'     => trim((string) $request->query('locale', '')),
         ];
 
-        $q = DB::table('users')
-            ->select(
-                'id',
-                'name',
-                'first_name',
-                'last_name',
-                'email',
-                'locale',
-                'level',
-                'verified',
-                'created_at'
-            );
+        $q = User::with('level');
 
         if ($filters['id'] !== '') {
             $q->where('id', (int) $filters['id']);
         }
 
         if ($filters['first_name'] !== '') {
-            $q->where('first_name', 'like', '%' . $this->escapeLike($filters['first_name']) . '%');
+            $q->where('first_name', 'like', "%{$filters['first_name']}%");
         }
 
         if ($filters['last_name'] !== '') {
-            $q->where('last_name', 'like', '%' . $this->escapeLike($filters['last_name']) . '%');
+            $q->where('last_name', 'like', "%{$filters['last_name']}%");
         }
 
         if ($filters['email'] !== '') {
-            $q->where('email', 'like', '%' . $this->escapeLike($filters['email']) . '%');
+            $q->where('email', 'like', "%{$filters['email']}%");
         }
 
         if ($filters['locale'] !== '') {
             $q->where('locale', $filters['locale']);
         }
 
-        if ($filters['level'] !== '') {
-            $q->where('level', $filters['level']);
-        }
-
         if ($filters['ip'] !== '') {
-            $q->where('ip', 'like', '%' . $this->escapeLike($filters['ip']) . '%');
+            $q->where('ip', 'like', "%{$filters['ip']}%");
         }
 
-        $q->orderByDesc('id');
+        if ($filters['level'] !== '') {
+            $q->whereHas('level', function ($query) use ($filters) {
+                $query->where('name', $filters['level']);
+            });
+        }
 
-        $users = $q->paginate(25)->withQueryString();
+        $users = $q->orderByDesc('id')->paginate(25)->withQueryString();
         $approxTotal = $this->approxTableRows('users');
 
-        $levels = [
-            '' => '(Level)',
-            'admin' => 'admin',
-            'user' => 'user',
-            'banned' => 'banned',
-        ];
+        $levels = UserLevel::pluck('name', 'name')->toArray();
+        $levels = ['' => '(Level)'] + $levels;
 
         $locales = [
             '' => '(Local)',
@@ -89,9 +74,8 @@ class AdminUsersController extends Controller
         $selectedUser = null;
 
         if ($request->query('select')) {
-            $selectedUser = DB::table('users')
-                ->where('id', (int) $request->query('select'))
-                ->first();
+            $selectedUser = User::with('level')
+                ->find((int) $request->query('select'));
         }
 
         return view('admin.users.index', compact(
@@ -118,69 +102,51 @@ class AdminUsersController extends Controller
             'verified'   => ['nullable'],
         ]);
 
-        $user = DB::table('users')->where('id', $data['id'])->first();
+        $user = User::find($data['id']);
+
         if (!$user) {
             return back()->withErrors(['id' => 'User not found']);
         }
 
-        if (auth()->id() == $user->id && ($data['level'] ?? '') === 'banned') {
-            return back()->withErrors(['level' => 'You cannot ban yourself.']);
-        }
-
-        if (!empty($data['email'])) {
-            $exists = DB::table('users')
-                ->where('email', $data['email'])
-                ->where('id', '!=', $data['id'])
-                ->exists();
-
-            if ($exists) {
-                return back()->withErrors(['email' => 'Email already used.']);
+        if ($request->filled('level')) {
+            $level = UserLevel::where('name', $data['level'])->first();
+            if ($level) {
+                $user->level_id = $level->id;
             }
         }
 
-        $update = [
-            'name'       => $data['username'] ?? $user->name,
-            'first_name' => $data['first_name'] ?? $user->first_name,
-            'last_name'  => $data['last_name'] ?? $user->last_name,
-            'email'      => $data['email'] ?? $user->email,
-            'locale'     => $data['locale'] ?? $user->locale,
-            'verified'   => $request->boolean('verified') ? 1 : 0,
-        ];
-
-        if (isset($data['level'])) {
-            $update['level'] = $data['level'];
+        if (auth()->id() == $user->id && $user->hasLevel('banned')) {
+            return back()->withErrors(['level' => 'You cannot ban yourself.']);
         }
 
         if (!empty($data['password'])) {
-            $update['password'] = Hash::make($data['password']);
+            $user->password = Hash::make($data['password']);
         }
 
-        DB::table('users')->where('id', $data['id'])->update($update);
+        $user->name       = $data['username'] ?? $user->name;
+        $user->first_name = $data['first_name'] ?? $user->first_name;
+        $user->last_name  = $data['last_name'] ?? $user->last_name;
+        $user->email      = $data['email'] ?? $user->email;
+        $user->locale     = $data['locale'] ?? $user->locale;
+        $user->verified   = $request->boolean('verified');
+
+        $user->save();
 
         return redirect()
-            ->route('admin.users', ['select' => $data['id']])
+            ->route('admin.users', ['select' => $user->id])
             ->with('success', 'saved');
-    }
-
-    private function escapeLike(string $value): string
-    {
-        return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
     }
 
     public function bulkBan(Request $request)
     {
         $ids = $request->input('ids', []);
+        if (empty($ids)) return response()->json(['ok' => false]);
 
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['ok' => false, 'msg' => 'No users selected']);
-        }
+        $bannedLevel = UserLevel::where('name', 'banned')->first();
 
-        $ids = array_diff($ids, [auth()->id()]);
-
-        DB::table('users')
-            ->whereIn('id', $ids)
-            ->where('level', 'user')
-            ->update(['level' => 'banned']);
+        User::whereIn('id', $ids)
+            ->where('id', '!=', auth()->id())
+            ->update(['level_id' => $bannedLevel->id]);
 
         return response()->json(['ok' => true]);
     }
@@ -188,15 +154,12 @@ class AdminUsersController extends Controller
     public function bulkUnban(Request $request)
     {
         $ids = $request->input('ids', []);
+        if (empty($ids)) return response()->json(['ok' => false]);
 
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['ok' => false, 'msg' => 'No users selected']);
-        }
+        $userLevel = UserLevel::where('name', 'user')->first();
 
-        DB::table('users')
-            ->whereIn('id', $ids)
-            ->where('level', 'banned')
-            ->update(['level' => 'user']);
+        User::whereIn('id', $ids)
+            ->update(['level_id' => $userLevel->id]);
 
         return response()->json(['ok' => true]);
     }
@@ -204,20 +167,11 @@ class AdminUsersController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->input('ids', []);
+        if (empty($ids)) return response()->json(['ok' => false]);
 
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['ok' => false, 'msg' => 'No users selected']);
-        }
-
-        $ids = array_diff($ids, [auth()->id()]);
-
-        if (empty($ids)) {
-            return response()->json(['ok' => false, 'msg' => 'Cannot delete yourself']);
-        }
-
-        DB::table('users')
-            ->whereIn('id', $ids)
-            ->where('level', '!=', 'admin')
+        User::whereIn('id', $ids)
+            ->where('id', '!=', auth()->id())
+            ->whereHas('level', fn($q) => $q->where('name', '!=', 'admin'))
             ->delete();
 
         return response()->json(['ok' => true]);

@@ -37,8 +37,9 @@ class AdminAuthController extends Controller
         }
 
         $user = Auth::guard('admin')->user();
+        $user->load('level');
 
-        if (!$user->level || $user->level->name !== 'admin') {
+        if (!$user->hasLevel('admin')) {
             Auth::guard('admin')->logout();
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }

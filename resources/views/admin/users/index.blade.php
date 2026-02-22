@@ -4,11 +4,6 @@
 
 @section('content')
     @php
-        // $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        //     <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
-        //     <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
-        // </svg>';
-
         $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
             <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
@@ -56,14 +51,11 @@
         </select>
     </x-admin.filter-box>
 
-    <x-admin.list-table-box
-        empty-text="no users found, try clearing filters"
-        :p="$users"
-        :bulk="[
-            'banRoute' => route('admin.users.bulkBan'),
-            'banLabel' => 'Banned',
-            'banConfirm' => 'Ban selected users?',
-        ]">
+    <x-admin.list-table-box empty-text="no users found, try clearing filters" :p="$users" :bulk="[
+        'banRoute' => route('admin.users.bulkBan'),
+        'banLabel' => 'Banned',
+        'banConfirm' => 'Ban selected users?',
+    ]">
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
@@ -81,9 +73,9 @@
 
         <x-slot:tbody>
             @foreach ($users as $u)
-            @php
-                $isBanned = $u->level === 'banned';
-            @endphp
+                @php
+                    $isBanned = $u->level?->name === 'banned';
+                @endphp
                 <tr style="border-bottom:1px solid #eee;" class="{{ $isBanned ? 'fc-banned-row' : '' }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
@@ -93,11 +85,8 @@
                     </td>
 
                     <td style="text-align:left;">
-                        <input type="checkbox"
-                            class="bulk-checkbox"
-                            value="{{ $u->id }}"
-                            data-level="{{ $u->level }}"
-                            {{ $u->level === 'admin' ? 'disabled' : '' }}>
+                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
+                            data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}>
                     </td>
 
                     <td style="text-align:left;">
@@ -110,7 +99,7 @@
 
                     <td>
                         <a href="mailto:{{ $u->email }}"
-                        style="{{ $isBanned ? 'color:#c00; font-weight:bold;' : '' }}">
+                            style="{{ $isBanned ? 'color:#c00; font-weight:bold;' : '' }}">
                             {{ $u->email }}
                         </a>
                     </td>
@@ -118,8 +107,9 @@
                     <td>
                         {{ $u->name }}
 
-                        @if($isBanned)
-                            <span style="
+                        @if ($isBanned)
+                            <span
+                                style="
                                 margin-left:6px;
                                 font-size:10px;
                                 padding:2px 6px;
@@ -146,17 +136,13 @@
                     <div style="font-size:10px; color:#666;">Unban</div>
                 </button>
 
-                {{-- <button type="button" id="bulk-banned" class="fc-icon-btn">
-                    {!! $icoBan !!}
-                    <div style="font-size:10px; color:#666;">Ban</div>
-                </button> --}}
-
                 <button type="button" id="bulk-delete" class="fc-icon-btn">
                     {!! $icoDelete !!}
                     <div style="font-size:10px; color:#666;">Delete</div>
                 </button>
 
-                <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection" style="display:flex; flex-direction:column; align-items:center; justify-content:center;
+                <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection"
+                    style="display:flex; flex-direction:column; align-items:center; justify-content:center;
                       gap:2px; width:44px; height:44px; border:1px solid #bbb; background:#fff;
                       text-decoration:none;">
                     {!! $icoX !!}
@@ -174,72 +160,72 @@
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
 
             <div class="fc-tab" style="margin-top:0;">Access Data</div>
-                <div class="fc-box">
-                    <div class="fc-row">
-                        <label>username</label>
-                        <input class="fc-input" type="text" name="username"
-                            value="{{ $selectedUser->name ?? '' }}">
-                    </div>
-
-                    <div class="fc-row">
-                        <label>password</label>
-                        <input class="fc-input" type="text" name="password" value="">
-                    </div>
-
-                    <div class="fc-row">
-                        <label>level</label>
-                        <select class="fc-select" name="level">
-                            @foreach ($levels as $k => $label)
-                                @if ($k !== '')
-                                    <option value="{{ $k }}" {{ ($selectedUser->level ?? '') === $k ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
+            <div class="fc-box">
+                <div class="fc-row">
+                    <label>username</label>
+                    <input class="fc-input" type="text" name="username" value="{{ $selectedUser->name ?? '' }}">
                 </div>
 
-                <div class="fc-tab">other</div>
-                <div class="fc-box">
-
-                    <div class="fc-row">
-                        <label>first name</label>
-                        <input class="fc-input" type="text" name="first_name"
-                            value="{{ $selectedUser->first_name ?? '' }}">
-                    </div>
-
-                    <div class="fc-row">
-                        <label>last name</label>
-                        <input class="fc-input" type="text" name="last_name"
-                            value="{{ $selectedUser->last_name ?? '' }}">
-                    </div>
-
-                    <div class="fc-row">
-                        <label>verified</label>
-                        <input type="checkbox" name="verified" value="1"
-                            {{ ($selectedUser->verified ?? 0) ? 'checked' : '' }}>
-                    </div>
-
-                    <div class="fc-row">
-                        <label>email</label>
-                        <input class="fc-input" type="text" name="email"
-                            value="{{ $selectedUser->email ?? '' }}">
-                    </div>
-
-                    <div class="fc-row">
-                        <label>locale</label>
-                        <select class="fc-select" name="locale">
-                            @foreach ($locales as $k => $label)
-                                @if ($k !== '')
-                                    <option value="{{ $k }}" {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="fc-row">
+                    <label>password</label>
+                    <input class="fc-input" type="text" name="password" value="">
                 </div>
+
+                <div class="fc-row">
+                    <label>level</label>
+                    <select class="fc-select" name="level">
+                        @foreach ($levels as $k => $label)
+                            @if ($k !== '')
+                                <option value="{{ $k }}"
+                                    {{ ($selectedUser?->level?->name ?? '') === $k ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="fc-tab">other</div>
+            <div class="fc-box">
+
+                <div class="fc-row">
+                    <label>first name</label>
+                    <input class="fc-input" type="text" name="first_name"
+                        value="{{ $selectedUser->first_name ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>last name</label>
+                    <input class="fc-input" type="text" name="last_name"
+                        value="{{ $selectedUser->last_name ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>verified</label>
+                    <input type="checkbox" name="verified" value="1"
+                        {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
+                </div>
+
+                <div class="fc-row">
+                    <label>email</label>
+                    <input class="fc-input" type="text" name="email" value="{{ $selectedUser->email ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>locale</label>
+                    <select class="fc-select" name="locale">
+                        @foreach ($locales as $k => $label)
+                            @if ($k !== '')
+                                <option value="{{ $k }}"
+                                    {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             </div>
 
             <div style="display:flex; justify-content:flex-end; margin-top:6px;">

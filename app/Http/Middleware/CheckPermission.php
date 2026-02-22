@@ -17,7 +17,9 @@ class CheckPermission
             abort(403);
         }
 
-        if ($user->is_system ?? false) {
+        $user->load('level');
+
+        if ($user->level && $user->level->is_system) {
             return $next($request);
         }
 

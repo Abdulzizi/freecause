@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // check if ALL selected are already banned
         const allBanned = selected.every(cb => cb.dataset.level === 'banned');
 
         if (allBanned) {

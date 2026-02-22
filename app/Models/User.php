@@ -16,7 +16,7 @@ class User extends Authenticatable
         'password',
         'locale',
         'ip',
-        'level',
+        // 'level',
         'verified',
         'verification_token',
         'level_id',

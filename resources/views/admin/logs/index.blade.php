@@ -52,13 +52,6 @@
                     </td>
 
                     <td style="text-align:left;">
-                        {{-- @if($log->level === 'warning')
-                            <span class="fc-no">warning</span>
-                        @elseif($log->level === 'error')
-                            <span class="fc-no">error</span>
-                        @else
-                            <span class="fc-ok">info</span>
-                        @endif --}}
                         @if($log->level === 'error')
                             <span style="color:#b00020;font-weight:bold;">ERROR</span>
                         @elseif($log->level === 'warning')
