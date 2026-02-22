@@ -4,26 +4,20 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Permission;
 
 class CheckPermission
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle($request, Closure $next, $module, $action)
     {
-        $user = auth()->user();
-        logger("Checking permission: {$module} / {$action} for level {$user->level_id}");
+        $user = Auth::guard('admin')->user();
 
         if (!$user) {
             abort(403);
         }
 
-        if ($user->level->is_system ?? false) {
+        if ($user->is_system ?? false) {
             return $next($request);
         }
 

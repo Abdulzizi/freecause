@@ -19,6 +19,7 @@ class User extends Authenticatable
         'level',
         'verified',
         'verification_token',
+        'level_id',
     ];
 
     protected $hidden = [
