@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StaticPageSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(AdminUserSeeder::class);
+        $this->call(PermissionSeeder::class);
         $this->call(SettingsSeeder::class);
         $this->call(DemoSeeder::class);
     }
