@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminUsersController;
 
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
+use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AuthController;
@@ -120,7 +121,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/system/permissions', [PermissionController::class, 'index'])->name('system.permissions');
         Route::post('/system/permissions', [PermissionController::class, 'store'])->name('system.permissions.store');
 
-        Route::view('/utils/import', 'admin.placeholders.import')->name('utils.import');
+        Route::get('/utils/import', [ImportController::class, 'index'])->middleware('permission:options,edit')->name('utils.import');
+        Route::post('/utils/import', [ImportController::class, 'store'])->middleware('permission:options,edit')->name('utils.import.store');
     });
 });
 

@@ -12,8 +12,8 @@ class AdminUserLevelsController extends Controller
     {
         // $levels = UserLevel::orderBy('id')->get();
         $levels = UserLevel::withCount('users')
-    ->orderBy('id')
-    ->paginate(20);
+            ->orderBy('id')
+            ->paginate(20);
 
         return view('admin.system.user-level', compact('levels'));
     }

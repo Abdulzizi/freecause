@@ -13,9 +13,14 @@ class PermissionController extends Controller
         'users' => ['view', 'create', 'edit', 'delete'],
         'petitions' => ['view', 'create', 'edit', 'delete', 'feature'],
         'categories' => ['view', 'create', 'edit', 'delete'],
-        'logs' => ['view', 'filter', 'cancel', 'delete', 'empty'],
         'pages' => ['view', 'edit'],
-        'spam' => ['view', 'delete'],
+        'fanpages' => ['view'],
+        'signatures' => ['view', 'delete'],
+        'spam' => ['view', 'edit', 'delete'],
+        'logs' => ['view', 'delete'],
+        'stats' => ['view'],
+        'languages' => ['view', 'edit', 'delete'],
+        'options' => ['view', 'edit'],
     ];
 
     public function index(Request $request)
