@@ -235,8 +235,16 @@
     </x-admin.detail-panel>
 @endsection
 
+{{-- @include('admin.partials.bulk-js', [
+    'banRoute' => route('admin.users.bulkBan'),
+    'noun' => 'users',
+    'emptyMsg' => 'No users selected',
+]) --}}
+
 @include('admin.partials.bulk-js', [
     'banRoute' => route('admin.users.bulkBan'),
+    'deleteRoute' => route('admin.users.bulkDelete'),
+    'unbanRoute' => route('admin.users.bulkUnban'),
     'noun' => 'users',
     'emptyMsg' => 'No users selected',
 ])

@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccountMail;
+use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Settings;
 use App\Support\Locale;
@@ -46,6 +47,7 @@ class AuthController extends Controller
 
         $fullName = trim($data['name'] . ' ' . $data['surname']);
 
+        $userLevel = UserLevel::where('name', 'user')->first();
 
         // if (Spam::isSpam($data['email'])) {
         //     Spam::log('register', $data['email']);
@@ -58,7 +60,7 @@ class AuthController extends Controller
 
             AppLog::warning(
                 'Spam registration attempt',
-                'Email: '.$data['email'],
+                'Email: ' . $data['email'],
                 'auth.register'
             );
 
@@ -78,7 +80,7 @@ class AuthController extends Controller
 
             AppLog::warning(
                 'Registration rate limit exceeded',
-                'IP: '.$request->ip(),
+                'IP: ' . $request->ip(),
                 'auth.register'
             );
 
@@ -96,10 +98,11 @@ class AuthController extends Controller
             'last_name' => $data['surname'],
             'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
-            // 'locale' => $this->toLocaleFull($locale),
             'locale' => Locale::toFull($locale),
             'ip' => $request->ip(),
-            'level' => 'user',
+            'level_id' => $userLevel?->id,
+            'nickname' => $data['nickname'] ?? null,
+            'city' => $data['city'] ?? null,
 
             'verified' => $smtpEnabled ? false : true,
             'verification_token' => $token,
@@ -107,7 +110,7 @@ class AuthController extends Controller
 
         AppLog::info(
             'User registered',
-            'User ID: '.$user->id.' | Email: '.$user->email,
+            'User ID: ' . $user->id . ' | Email: ' . $user->email,
             'auth.register'
         );
 
@@ -137,7 +140,7 @@ class AuthController extends Controller
         toast('Account created successfully.', 'success');
 
         return redirect()->to("/{$locale}");
-            // ->with('success', 'Account created successfully.');
+        // ->with('success', 'Account created successfully.');
     }
 
     public function login(Request $request, string $locale)
@@ -163,7 +166,7 @@ class AuthController extends Controller
             if ($user->hasLevel('banned')) {
                 AppLog::warning(
                     'Banned user attempted login',
-                    'User ID: '.$user->id.' | IP: '.$request->ip(),
+                    'User ID: ' . $user->id . ' | IP: ' . $request->ip(),
                     'auth.login'
                 );
 
@@ -208,11 +211,11 @@ class AuthController extends Controller
 
     public function updateProfile(Request $request, string $locale)
     {
-        $u = Auth::user();
+        $u = Auth::guard('web')->user();
 
         $data = $request->validate([
-            'first_name' => ['nullable', 'string', 'max:60'],
-            'last_name' => ['nullable', 'string', 'max:60'],
+            'first_name' => ['required', 'string', 'max:60'],
+            'last_name' => ['required', 'string', 'max:60'],
             'nickname' => ['nullable', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:80'],
             'identify_mode' => ['nullable', Rule::in(['full', 'name', 'nick'])],
@@ -220,37 +223,20 @@ class AuthController extends Controller
             'new_email' => ['nullable', 'email', 'max:190'],
             'new_email_confirmation' => ['nullable', 'same:new_email'],
 
-            'new_password' => ['nullable', 'string', 'min:6', 'max:72'],
-            'new_password_confirmation' => ['nullable', 'same:new_password'],
+            'current_password' => ['required_with:new_password'],
+            'new_password' => ['nullable', 'string', 'min:6', 'max:72', 'confirmed'],
         ]);
 
+        $first = trim($data['first_name']);
+        $last  = trim($data['last_name']);
 
-        $first = trim($data['first_name'] ?? '');
-        $last  = trim($data['last_name'] ?? '');
+        $u->first_name = $first;
+        $u->last_name  = $last;
+        $u->name       = trim($first . ' ' . $last);
 
-        if ($first !== '' || $last !== '') {
-            $u->name = trim($first . ' ' . $last);
-        }
-
-        try {
-            if (\Schema::hasColumn('users', 'nickname')) {
-                $u->nickname = $data['nickname'] ?? null;
-            }
-            if (\Schema::hasColumn('users', 'city')) {
-                $u->city = $data['city'] ?? null;
-            }
-            if (\Schema::hasColumn('users', 'identify_mode')) {
-                $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
-            }
-            if (\Schema::hasColumn('users', 'first_name')) {
-                $u->first_name = $first ?: null;
-            }
-            if (\Schema::hasColumn('users', 'last_name')) {
-                $u->last_name = $last ?: null;
-            }
-        } catch (\Throwable $e) {
-            // ignore schema errors
-        }
+        $u->nickname = $data['nickname'] ?? null;
+        $u->city     = $data['city'] ?? null;
+        $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
         $newEmail = strtolower(trim($data['new_email'] ?? ''));
 
@@ -262,69 +248,66 @@ class AuthController extends Controller
             if ($exists) {
                 return back()
                     ->withInput()
-                    ->withErrors(['new_email' => 'this email is already taken.']);
+                    ->withErrors(['new_email' => 'This email is already taken.']);
             }
 
             $u->email = $newEmail;
+
+            if (Settings::get('smtp_enabled', false)) {
+                $u->verified = false;
+                $u->verification_token = Str::random(64);
+
+                try {
+                    Mail::to($u->email)->send(new VerifyAccountMail($u, $locale));
+                } catch (\Exception $e) {
+                    AppLog::error(
+                        'Mail sending failed (profile update)',
+                        $e->getMessage(),
+                        'auth.profile'
+                    );
+                }
+            }
         }
 
-        $newPass = $data['new_password'] ?? null;
-        if ($newPass) {
-            $u->password = Hash::make($newPass);
+        if (!empty($data['new_password'])) {
+
+            if (!Hash::check($data['current_password'], $u->password)) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['current_password' => 'Current password is incorrect.']);
+            }
+
+            $u->password = Hash::make($data['new_password']);
         }
 
         $u->save();
 
         toast('Profile updated successfully.', 'success');
+
         return back();
-
-        // return back()->with('success', 'profile updated');
     }
-
-    // public function delete(Request $request, string $locale)
-    // {
-    //     $data = $request->validate([
-    //         'confirm_delete' => ['required', 'in:1'],
-    //     ]);
-
-    //     $u = Auth::user();
-
-    //     Auth::logout();
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
-
-    //     AppLog::warning(
-    //         'User account deleted',
-    //         'User ID: '.$u->id.' | Email: '.$u->email,
-    //         'auth.delete'
-    //     );
-
-    //     $u->delete();
-
-    //     return redirect()->to("/{$locale}")->with('success', 'account deleted');
-    // }
 
     public function delete(Request $request, string $locale)
     {
-        $data = $request->validate([
+        $request->validate([
             'confirm_delete' => ['required', 'in:1'],
         ]);
 
         $u = Auth::guard('web')->user();
 
         Auth::guard('web')->logout();
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         AppLog::warning(
             'User account deleted',
-            'User ID: '.$u->id.' | Email: '.$u->email,
+            'User ID: ' . $u->id . ' | Email: ' . $u->email,
             'auth.delete'
         );
 
         $u->delete();
 
-        return redirect()->to("/{$locale}")
-            ->with('success', 'account deleted');
+        return redirect()->to("/{$locale}")->with('success', 'Account deleted successfully.');
     }
 
     public function verify(string $locale, string $token)

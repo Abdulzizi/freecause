@@ -16,10 +16,12 @@ class User extends Authenticatable
         'password',
         'locale',
         'ip',
-        // 'level',
         'verified',
         'verification_token',
         'level_id',
+        'identify_mode',
+        'city',
+        'nickname',
     ];
 
     protected $hidden = [

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,7 +20,8 @@ class UserFactory extends Factory
         $first = fake()->firstName();
         $last  = fake()->lastName();
 
-        $languageCodes = \App\Models\Language::pluck('code')->toArray();
+        $languageCodes = Language::pluck('code')->toArray();
+        $localeMap = config('locales');
 
         $userLevel = UserLevel::where('name', 'user')->first();
 
@@ -32,10 +34,14 @@ class UserFactory extends Factory
             'last_name'  => $last,
             'name'       => trim($first . ' ' . $last),
 
+            'nickname' => fake()->optional(50)->userName(),
+            'city'     => fake()->optional(70)->city(),
+            'identify_mode' => fake()->randomElement(['full', 'name', 'nick']),
+
             'email'    => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
 
-            'locale' => fake()->randomElement($languageCodes),
+            'locale' => $localeMap[fake()->randomElement($languageCodes)] ?? 'en_US',
             'ip'     => fake()->ipv4(),
 
             'level_id' => $userLevel->id,

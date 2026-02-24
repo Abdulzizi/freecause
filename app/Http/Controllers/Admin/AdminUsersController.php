@@ -167,13 +167,24 @@ class AdminUsersController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->input('ids', []);
-        if (empty($ids)) return response()->json(['ok' => false]);
 
-        User::whereIn('id', $ids)
+        if (empty($ids)) {
+            return response()->json(['ok' => false]);
+        }
+
+        $adminLevelId = UserLevel::where('name', 'admin')->value('id');
+
+        $deleted = User::whereIn('id', $ids)
             ->where('id', '!=', auth()->id())
-            ->whereHas('level', fn($q) => $q->where('name', '!=', 'admin'))
+            ->where(function ($q) use ($adminLevelId) {
+                $q->whereNull('level_id')
+                    ->orWhere('level_id', '!=', $adminLevelId);
+            })
             ->delete();
 
-        return response()->json(['ok' => true]);
+        return response()->json([
+            'ok' => $deleted > 0,
+            'deleted' => $deleted
+        ]);
     }
 }
