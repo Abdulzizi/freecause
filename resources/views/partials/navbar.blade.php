@@ -42,7 +42,7 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->name }}</a>
+                        <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->display_name }}</a>
                     </li>
 
                     <li class="nav-item ms-lg-2 me-lg-3">

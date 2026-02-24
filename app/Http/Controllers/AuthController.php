@@ -188,16 +188,6 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
     }
 
-    // public function logout(Request $request)
-    // {
-    //     Auth::logout();
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
-
-    //     $locale = $request->input('locale', 'en');
-    //     return redirect()->to("/{$locale}");
-    // }
-
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();
@@ -325,5 +315,33 @@ class AuthController extends Controller
 
         return redirect()->to("/{$locale}")
             ->with('success', 'Your account has been verified.');
+    }
+
+    public function unlinkGoogle(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->password) {
+            return back()->withErrors(['error' => 'Set a password before unlinking Google.']);
+        }
+
+        $user->google_id = null;
+        $user->save();
+
+        return back()->with('success', 'Google account unlinked.');
+    }
+
+    public function unlinkFacebook(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->password) {
+            return back()->withErrors(['error' => 'Set a password before unlinking Facebook.']);
+        }
+
+        $user->facebook_id = null;
+        $user->save();
+
+        return back()->with('success', 'Facebook account unlinked.');
     }
 }

@@ -151,6 +151,9 @@ Route::group([
         Route::post('/account/delete', [AuthController::class, 'delete'])->name('account.delete');
         Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
 
+        Route::post('/account/unlink/google', [AuthController::class, 'unlinkGoogle'])->name('account.unlink.google');
+        Route::post('/account/unlink/facebook', [AuthController::class, 'unlinkFacebook'])->name('account.unlink.facebook');
+
         Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store');
 
         // petition owner operations

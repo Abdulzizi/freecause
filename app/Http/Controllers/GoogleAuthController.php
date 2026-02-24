@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Locale;
 use Illuminate\Http\Request;
@@ -54,28 +55,15 @@ class GoogleAuthController extends Controller
         if (!$email) {
             AppLog::warning(
                 'Google OAuth missing email',
-                'Google ID: '.$google->getId(),
+                'Google ID: ' . $google->getId(),
                 'auth.google'
             );
 
             return redirect("/{$destLocale}/register")->withErrors(['email' => 'google did not provide email.']);
         }
 
-        // $user = User::firstOrCreate(
-        //     ['email' => $email],
-        //     [
-        //         'name' => $fullName,
-        //         'first_name' => $first,
-        //         'last_name' => $last,
-        //         'password' => bcrypt(Str::random(32)),
-        //         'locale' => $this->toLocaleFull($destLocale),
-        //         'ip' => $request->ip(),
-        //         'level' => 'user',
-        //         'verified' => true,
-        //     ]
-        // );
-
         $user = User::where('email', $email)->first();
+        $userLevel = UserLevel::where('name', 'user')->first();
 
         $newUser = false;
 
@@ -88,22 +76,20 @@ class GoogleAuthController extends Controller
                 'last_name' => $last,
                 'email' => $email,
                 'password' => bcrypt(Str::random(32)),
-                // 'locale' => $this->toLocaleFull($destLocale),
                 'locale' => Locale::toFull($destLocale),
                 'ip' => $request->ip(),
-                'level' => 'user',
+                'level_id' => $userLevel?->id,
                 'verified' => true,
             ]);
 
             AppLog::info(
                 'User registered via Google',
-                'User ID: '.$user->id.' | Email: '.$email,
+                'User ID: ' . $user->id . ' | Email: ' . $email,
                 'auth.google'
             );
         }
 
         $user->ip = $request->ip();
-        // $user->locale = $this->toLocaleFull($destLocale);
         $user->locale = Locale::toFull($destLocale);
 
         if (!$user->first_name) $user->first_name = $first;
@@ -113,13 +99,15 @@ class GoogleAuthController extends Controller
             $user->verified = true;
         }
 
+        $user->google_id = $google->getId();
+
         $user->save();
         Auth::login($user);
 
         if (!$newUser) {
             AppLog::info(
                 'User login via Google',
-                'User ID: '.$user->id .' | Email: '.$email,
+                'User ID: ' . $user->id . ' | Email: ' . $email,
                 'auth.google'
             );
         }
@@ -134,6 +122,6 @@ class GoogleAuthController extends Controller
             ])->with('oauth_logged_in', true);
         }
 
-        return redirect("/{$locale}");
+        return redirect("/{$destLocale}");
     }
 }

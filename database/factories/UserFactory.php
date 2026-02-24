@@ -46,6 +46,9 @@ class UserFactory extends Factory
 
             'level_id' => $userLevel->id,
 
+            'google_id'   => fake()->optional(20)->uuid(),
+            'facebook_id' => fake()->optional(15)->uuid(),
+
             'verified' => fake()->boolean(20),
             'remember_token' => Str::random(10),
         ];

@@ -124,7 +124,6 @@
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
                             </div>
-                            {{-- shoutbox later --}}
                         </div>
                     </div>
 

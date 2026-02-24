@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Locale;
 use Illuminate\Http\Request;
@@ -75,22 +76,9 @@ class FacebookAuthController extends Controller
         $first = $parts[0] ?? $fullName;
         $last  = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
 
-        // $user = User::firstOrCreate(
-        //     ['email' => $email],
-        //     [
-        //         'name' => $fullName,
-        //         'first_name' => $first,
-        //         'last_name' => $last,
-        //         'password' => bcrypt(Str::random(32)),
-        //         'locale' => $this->toLocaleFull($locale),
-        //         'ip' => $request->ip(),
-        //         'level' => 'user',
-        //         'verified' => true,
-        //     ]
-        // );
-
         $user = User::where('email', $email)->first();
 
+        $userLevel = UserLevel::where('name', 'user')->first();
         $newUser = false;
 
         if (!$user) {
@@ -102,12 +90,12 @@ class FacebookAuthController extends Controller
                 'last_name' => $last,
                 'email' => $email,
                 'password' => bcrypt(Str::random(32)),
-                // 'locale' => $this->toLocaleFull($locale),
                 'locale' => Locale::toFull($locale),
                 'ip' => $request->ip(),
-                'level' => 'user',
+                'level_id' => $userLevel?->id,
                 'verified' => true,
             ]);
+
             AppLog::info(
                 'User registered via Facebook',
                 'User ID: '.$user->id.' | Email: '.$email,
@@ -118,6 +106,9 @@ class FacebookAuthController extends Controller
         $user->ip = $request->ip();
         $user->locale = Locale::toFull($locale);
         $user->verified = true;
+
+        $user->facebook_id = $facebookUser->getId();
+
         $user->save();
 
         Auth::login($user);

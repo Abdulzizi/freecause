@@ -22,6 +22,8 @@ class User extends Authenticatable
         'identify_mode',
         'city',
         'nickname',
+        'google_id',
+        'facebook_id',
     ];
 
     protected $hidden = [
@@ -47,5 +49,14 @@ class User extends Authenticatable
     public function hasLevel(string $name): bool
     {
         return $this->level?->name === $name;
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return match ($this->identify_mode) {
+            'name' => $this->first_name ?: $this->name,
+            'nick' => $this->nickname ?: $this->name,
+            default => $this->name,
+        };
     }
 }
