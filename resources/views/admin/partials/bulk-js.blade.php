@@ -108,6 +108,34 @@
                 .then(() => window.location.reload());
         });
 
+        document.getElementById('bulk-unban')?.addEventListener('click', function() {
+
+            const ids = Array.from(document.querySelectorAll('.bulk-checkbox:checked'))
+                .map(cb => cb.value);
+
+            if (!ids.length) {
+                alert("{{ $emptyMsg }}");
+                return;
+            }
+
+            if (!confirm("Unban selected {{ $noun }}?")) {
+                return;
+            }
+
+            fetch("{{ $unbanRoute ?? '' }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        ids: ids
+                    })
+                })
+                .then(res => res.json())
+                .then(() => window.location.reload());
+        });
+
         getBoxes().forEach(cb => cb.addEventListener('change', updateButtons));
         updateButtons();
 

@@ -147,8 +147,15 @@ class AdminUsersController extends Controller
 
         $bannedLevel = UserLevel::where('name', 'banned')->first();
 
+        // User::whereIn('id', $ids)
+        //     ->where('id', '!=', auth()->id())
+        //     ->update(['level_id' => $bannedLevel->id]);
+
         User::whereIn('id', $ids)
             ->where('id', '!=', auth()->id())
+            ->whereHas('level', function ($q) {
+                $q->where('name', '!=', 'admin');
+            })
             ->update(['level_id' => $bannedLevel->id]);
 
         return response()->json(['ok' => true]);

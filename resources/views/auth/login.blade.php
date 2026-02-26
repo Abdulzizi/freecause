@@ -42,11 +42,11 @@
                                 <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
                             </div>
 
-                            @if ($errors->any())
+                            {{-- @if ($errors->any())
                                 <div class="alert alert-danger">
                                     {{ $errors->first() }}
                                 </div>
-                            @endif
+                            @endif --}}
 
                             <form method="POST" action="{{ lroute('login.post') }}">
                                 @csrf

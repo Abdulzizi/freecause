@@ -51,12 +51,6 @@ class AuthController extends Controller
 
         $userLevel = UserLevel::where('name', 'user')->first();
 
-        // if (Spam::isSpam($data['email'])) {
-        //     Spam::log('register', $data['email']);
-        //     toast('Spam detected.', 'error');
-        //     return back()->withInput();
-        // }
-
         if (Spam::isSpam($data['email'])) {
             Spam::log('register', $data['email']);
 
@@ -69,14 +63,6 @@ class AuthController extends Controller
             toast('Spam detected.', 'error');
             return back()->withInput();
         }
-
-        // if (Spam::rateLimit('register')) {
-        //     Spam::log('register', 'Rate limit exceeded');
-        //     Spam::banCurrentIp('Too many registrations');
-        //     toast('Too many attempts. Please try again later.', 'error');
-
-        //     return back()->withInput();
-        // }
 
         if (Spam::rateLimit('register')) {
 
@@ -162,6 +148,13 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
+
+            if (!$user->verified) {
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Please verify your email first.'
+            ]);
+        }
 
             if ($user->hasLevel('banned')) {
                 AppLog::warning(
@@ -311,8 +304,11 @@ class AuthController extends Controller
         $user->verification_token = null;
         $user->save();
 
-        return redirect()->to("/{$locale}")
-            ->with('success', 'Your account has been verified.');
+        //* AUTO LOGIN AFTER VERIFY
+        // Auth::login($user);
+        // request()->session()->regenerate();
+
+        return redirect()->to("/{$locale}")->with('success', 'Your account has been verified.');
     }
 
     public function unlinkGoogle(Request $request)

@@ -85,8 +85,8 @@
                     </td>
 
                     <td style="text-align:left;">
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
-                            data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}>
+                        {{-- <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}> --}}
+                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
                     </td>
 
                     <td style="text-align:left;">
@@ -240,12 +240,6 @@
         </form>
     </x-admin.detail-panel>
 @endsection
-
-{{-- @include('admin.partials.bulk-js', [
-    'banRoute' => route('admin.users.bulkBan'),
-    'noun' => 'users',
-    'emptyMsg' => 'No users selected',
-]) --}}
 
 @include('admin.partials.bulk-js', [
     'banRoute' => route('admin.users.bulkBan'),

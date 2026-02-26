@@ -10,7 +10,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,11 +29,24 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(BlockBannedIp::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => $e->getMessage()], 401);
             }
 
             return redirect()->guest(lroute('login'));
+        });
+
+        $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Too many attempts. Please try again later.'
+                ], 429);
+            }
+
+            return back()->withErrors([
+                'email' => 'Too many attempts. Please try again in a minute.'
+            ]);
         });
     })->create();

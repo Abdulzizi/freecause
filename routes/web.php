@@ -43,12 +43,10 @@ Route::get('/', function () {
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
-
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
 
     Route::middleware('admin.auth')->group(function () {
-
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
         //* OPTIONS
@@ -138,7 +136,7 @@ Route::group([
     Route::get('/oauth/facebook/callback', [FacebookAuthController::class, 'callback'])->name('oauth.facebook.callback');
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:6,1');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -146,11 +144,11 @@ Route::group([
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     Route::get('/resend-verification', [AuthController::class, 'showResendVerification'])->name('verification.resend.form');
-    Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
+    Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:6,1');
 
     Route::group(['middleware' => 'auth'], function () {
         Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
