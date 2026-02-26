@@ -14,8 +14,8 @@
                             <h3 class="text-center mb-4">Sign In Using Your Account With</h3>
 
                             <div class="text-center mb-4">
-                                <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}"
-                                    class="btn btn-light border px-3" style="border-radius:8px;">
+                                <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}" class="btn btn-light border px-3"
+                                    style="border-radius:8px;">
                                     <img src="{{ asset('legacy/images-v2/google.png') }}" alt=""
                                         style="width:18px;margin-right:8px;">
                                     Continue with Google
@@ -24,10 +24,8 @@
 
                             <div class="text-center mb-3">
                                 <a href="{{ lroute('oauth.facebook', ['flow' => 'login']) }}"
-                                    class="btn btn-light border px-3"
-                                    style="border-radius:8px;">
-                                    <img src="{{ asset('legacy/images-v2/facebook.png') }}"
-                                        alt=""
+                                    class="btn btn-light border px-3" style="border-radius:8px;">
+                                    <img src="{{ asset('legacy/images-v2/facebook.png') }}" alt=""
                                         style="width:18px;margin-right:8px;">
                                     Continue with Facebook
                                 </a>
@@ -53,7 +51,7 @@
                             <form method="POST" action="{{ lroute('login.post') }}">
                                 @csrf
 
-                                @if(!empty($redirect))
+                                @if (!empty($redirect))
                                     <input type="hidden" name="redirect" value="{{ $redirect }}">
                                 @endif
 
@@ -74,9 +72,11 @@
                                 </button>
 
                                 <div class="text-center mt-3">
-                                    <a href="#" class="red">Forgot password ?</a>
+                                    <a href="{{ lroute('password.request') }}" class="red">Forgot password ?</a>
                                     <span class="text-muted px-2">|</span>
-                                    <a href="#" class="red">Resend activation email</a>
+                                    <a href="{{ lroute('verification.resend.form') }}" class="red">
+                                        Resend activation email
+                                    </a>
                                 </div>
 
                                 <div class="text-center mt-3">

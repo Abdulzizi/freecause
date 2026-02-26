@@ -145,6 +145,13 @@ Route::group([
 
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
 
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::get('/resend-verification', [AuthController::class, 'showResendVerification'])->name('verification.resend.form');
+    Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
+
     Route::group(['middleware' => 'auth'], function () {
         Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
         Route::post('/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update');

@@ -123,7 +123,13 @@
                     </td>
                     <td>{{ $u->first_name }}</td>
                     <td>{{ $u->last_name }}</td>
-                    <td>{{ $u->locale }}</td>
+                    <td>
+                        @php
+                            $short = \App\Support\Locale::toShort($u->locale);
+                            $label = $locales[$short] ?? $short;
+                        @endphp
+                        {{ $label }}
+                    </td>
                     <td>{{ $u->created_at }}</td>
                 </tr>
             @endforeach

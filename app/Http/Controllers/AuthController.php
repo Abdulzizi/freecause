@@ -15,6 +15,8 @@ use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Settings;
 use App\Support\Locale;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
 
 class AuthController extends Controller
 {
@@ -140,7 +142,6 @@ class AuthController extends Controller
         toast('Account created successfully.', 'success');
 
         return redirect()->to("/{$locale}");
-        // ->with('success', 'Account created successfully.');
     }
 
     public function login(Request $request, string $locale)
@@ -152,7 +153,6 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        // if (Auth::attempt($credentials, $remember)) {
         if (Auth::guard('web')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
@@ -173,8 +173,6 @@ class AuthController extends Controller
                 Auth::logout();
                 toast('Your account has been suspended.', 'error');
                 return back()->withInput();
-
-                // return back()->withErrors(['email' => 'Your account has been suspended.']);
             }
 
             if ($user && \Schema::hasColumn('users', 'ip')) {
@@ -343,5 +341,115 @@ class AuthController extends Controller
         $user->save();
 
         return back()->with('success', 'Facebook account unlinked.');
+    }
+
+    public function showForgotPassword(string $locale)
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetLink(Request $request, string $locale)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('success', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function showResetForm(string $locale, string $token)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+        ]);
+    }
+
+    public function resetPassword(Request $request, string $locale)
+    {
+        $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', 'min:6'],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect("/{$locale}/login")->with('success', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function showResendVerification(string $locale)
+    {
+        return view('auth.resend-verification', compact('locale'));
+    }
+
+    public function resendVerification(Request $request, string $locale)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        if (!Settings::get('smtp_enabled', false)) {
+            return back()->withErrors([
+                'email' => 'Email verification is not enabled.'
+            ]);
+        }
+
+        $user = User::where('email', strtolower(trim($request->email)))->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'User not found.'
+            ]);
+        }
+
+        if ($user->verified) {
+            return back()->withErrors([
+                'email' => 'This account is already verified.'
+            ]);
+        }
+
+        $user->verification_token = Str::random(64);
+        $user->save();
+
+        try {
+            Mail::to($user->email)->send(
+                new VerifyAccountMail($user, $locale)
+            );
+
+            AppLog::info(
+                'Verification email resent',
+                'User ID: ' . $user->id . ' | Email: ' . $user->email,
+                'auth.verification'
+            );
+        } catch (\Exception $e) {
+
+            AppLog::error(
+                'Verification resend failed',
+                $e->getMessage(),
+                'auth.verification'
+            );
+
+            return back()->withErrors([
+                'email' => 'Failed to send email. Please try again later.'
+            ]);
+        }
+
+        return back()->with('success', 'Verification email has been resent.');
     }
 }

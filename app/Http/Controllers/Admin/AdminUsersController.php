@@ -8,6 +8,8 @@ use App\Models\UserLevel;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Language;
+use App\Support\Locale;
 
 class AdminUsersController extends Controller
 {
@@ -44,7 +46,8 @@ class AdminUsersController extends Controller
         }
 
         if ($filters['locale'] !== '') {
-            $q->where('locale', $filters['locale']);
+            $fullLocale = Locale::toFull($filters['locale']);
+            $q->where('locale', $fullLocale);
         }
 
         if ($filters['ip'] !== '') {
@@ -63,13 +66,13 @@ class AdminUsersController extends Controller
         $levels = UserLevel::pluck('name', 'name')->toArray();
         $levels = ['' => '(Level)'] + $levels;
 
-        $locales = [
-            '' => '(Local)',
-            'en_US' => 'en_US',
-            'fr_FR' => 'fr_FR',
-            'it_IT' => 'it_IT',
-            'da_DK' => 'da_DK',
-        ];
+        $languages = Language::where('is_active', true)->get();
+
+        $locales = ['' => '(Language)'];
+
+        foreach ($languages as $lang) {
+            $locales[$lang->code] = $lang->name;
+        }
 
         $selectedUser = null;
 
