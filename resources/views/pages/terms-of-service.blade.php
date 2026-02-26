@@ -1,8 +1,8 @@
-@extends('layouts.legacy')
+{{-- @extends('layouts.legacy') --}}
 
-@section('title', 'Terms of Service - FreeCause - Online Petition')
+{{-- @section('title', 'Terms of Service - FreeCause - Online Petition') --}}
 
-@section('content')
+{{-- @section('content') --}}
     <section class="breadcrumb-section">
         <div class="container">
             <div class="row">
@@ -350,4 +350,4 @@
             </div>
         </div>
     </section>
-@endsection
+{{-- @endsection --}}

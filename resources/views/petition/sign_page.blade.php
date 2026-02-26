@@ -4,15 +4,13 @@
     $content = $content ?? collect();
 
     $pageTitle = $content['title'] ?? 'Sign - :title';
-    $pageTitle = str_replace(':title', ($tr->title ?? 'Petition'), $pageTitle);
+    $pageTitle = str_replace(':title', $tr->title ?? 'Petition', $pageTitle);
 
     $h2Line1 = $content['h2_line1'] ?? 'Support and share your cause.';
     $h2Line2 = $content['h2_line2'] ?? 'Please click "like" button and sign the petition';
     $btnText = $content['btn_sign'] ?? 'Sign';
 
-    $signUrl = isset($tr) && $tr
-        ? lroute('petition.sign', ['slug' => $tr->slug, 'id' => $petition->id])
-        : '#';
+    $signUrl = isset($tr) && $tr ? lroute('petition.sign', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp
 
 @section('title', $pageTitle)
@@ -31,11 +29,11 @@
                 <form action="{{ $signUrl }}" method="POST" class="d-inline-block">
                     @csrf
 
-                    <input type="hidden" name="agree1" value="agree">
-                    <input type="hidden" name="agree2" value="agree">
-                    <input type="hidden" name="agree3" value="agree">
+                    <input type="hidden" name="agree1" value="{{ session('sign.agree1', 'agree') }}">
+                    <input type="hidden" name="agree2" value="{{ session('sign.agree2', 'agree') }}">
+                    <input type="hidden" name="agree3" value="{{ session('sign.agree3', 'agree') }}">
 
-                    <input type="hidden" name="comment" value="I support this petition">
+                    <input type="hidden" name="comment" value="{{ session('sign.comment', 'I support this petition') }}">
 
                     <button class="btn btn-danger px-5 py-3" type="submit" style="font-size:22px;">
                         {{ $btnText }} <span style="margin-left:16px;">»</span>

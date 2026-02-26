@@ -1,9 +1,9 @@
-@extends('layouts.legacy')
+{{-- @extends('layouts.legacy') --}}
 
-@section('title', 'Ethical code - FreeCause - Online Petition')
-@section('body_class', 'ethical-code')
+{{-- @section('title', 'Ethical code - FreeCause - Online Petition') --}}
+{{-- @section('body_class', 'ethical-code') --}}
 
-@section('content')
+{{-- @section('content') --}}
     <section class="breadcrumb-section">
         <div class="container">
             <div class="row">
@@ -216,4 +216,4 @@
             </div>
         </div>
     </section>
-@endsection
+{{-- @endsection --}}

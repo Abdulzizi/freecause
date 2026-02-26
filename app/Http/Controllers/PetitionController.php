@@ -251,13 +251,15 @@ class PetitionController extends Controller
                 'name' => $data['nickname'] ?: $user->name,
                 'locale' => $locale,
                 'city' => $data['city'] ?? null,
-                'comment' => $data['comment'] ?? 'I support this petition',
+                'text' => $data['comment'] ?? 'I support this petition',
             ]
         );
 
         if ($sig->wasRecentlyCreated) {
             $petition->increment('signature_count');
         }
+
+        session()->forget('sign');
 
         return redirect()->route('petition.thanks', [
             'locale' => $locale,
@@ -445,7 +447,7 @@ class PetitionController extends Controller
                 'user_id' => $u->id,
                 'name' => $u->name,
                 'locale' => $locale,
-                'comment' => $data['comment'] ?? 'I support this petition',
+                'text' => $data['comment'] ?? 'I support this petition',
             ]
         );
 
@@ -456,6 +458,8 @@ class PetitionController extends Controller
         if ($sig->wasRecentlyCreated) {
             $petition->increment('signature_count');
         }
+
+        session()->forget('sign');
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
@@ -542,6 +546,50 @@ class PetitionController extends Controller
         ));
     }
 
+    // public function signPage(Request $request, string $locale, string $slug, int $id)
+    // {
+    //     if (! auth()->check()) {
+    //         return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
+    //     }
+
+    //     $petition = Petition::query()->findOrFail($id);
+
+    //     $tr = PetitionTranslation::query()
+    //         ->where('petition_id', $petition->id)
+    //         ->where('locale', $locale)
+    //         ->first()
+    //         ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+
+    //     abort_if(! $tr, 404);
+
+    //     if ($tr->slug !== $slug || $tr->locale !== $locale) {
+    //         return redirect()->route('petition.sign.page', [
+    //             'locale' => $tr->locale,
+    //             'slug' => $tr->slug,
+    //             'id' => $petition->id,
+    //         ]);
+    //     }
+
+    //     $hasSigned = Signature::query()
+    //         ->where('petition_id', $petition->id)
+    //         ->where('email', auth()->user()->email)
+    //         ->exists();
+
+    //     if ($hasSigned) {
+    //         return redirect()->route('petition.show', [
+    //             'locale' => $tr->locale,
+    //             'slug' => $tr->slug,
+    //             'id' => $petition->id,
+    //         ]);
+    //     }
+
+    //     $content = PageContent::query()
+    //         ->where('page', 'petition_sign')
+    //         ->where('locale', $locale)
+    //         ->pluck('value', 'key');
+
+    //     return view('petition.sign_page', compact('petition', 'locale', 'tr', 'content'));
+    // }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
@@ -549,43 +597,49 @@ class PetitionController extends Controller
             return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
-        $petition = Petition::query()->findOrFail($id);
+        $petition = Petition::findOrFail($id);
 
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
+        $tr = PetitionTranslation::where('petition_id', $petition->id)
             ->where('locale', $locale)
             ->first()
-            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+            ?? PetitionTranslation::where('petition_id', $petition->id)
+            ->orderBy('id')
+            ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.sign.page', [
                 'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
+                'slug'   => $tr->slug,
+                'id'     => $petition->id,
             ]);
         }
 
-        $hasSigned = Signature::query()
-            ->where('petition_id', $petition->id)
+        $alreadySigned = Signature::where('petition_id', $petition->id)
             ->where('email', auth()->user()->email)
             ->exists();
 
-        if ($hasSigned) {
+        if ($alreadySigned) {
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
+                'slug'   => $tr->slug,
+                'id'     => $petition->id,
             ]);
         }
 
-        $content = PageContent::query()
-            ->where('page', 'petition_sign')
+        session([
+            'sign.comment' => $request->input('comment'),
+            'sign.agree1'  => $request->input('agree1', 'agree'),
+            'sign.agree2'  => $request->input('agree2', 'agree'),
+            'sign.agree3'  => $request->input('agree3', 'agree'),
+        ]);
+
+        $content = PageContent::where('page', 'petition_sign')
             ->where('locale', $locale)
             ->pluck('value', 'key');
 
-        return view('petition.sign_page', compact('petition', 'locale', 'tr', 'content'));
+        return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
     }
 
     public function myPetitions(Request $request, string $locale)
