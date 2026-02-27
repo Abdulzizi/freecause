@@ -78,11 +78,12 @@ class DemoSeeder extends Seeder
         }
 
         //* Petition & Signature Config
-        $locales = Language::where('is_active', 1)->pluck('code')->toArray();
+        // $locales = Language::where('is_active', 1)->pluck('code')->toArray();
+        $locales = ['en'];
 
-        $petitionsPerLocale = (int) env('SEED_PETITIONS', 2000);
+        $petitionsPerLocale = (int) env('SEED_PETITIONS', 50);
         $minSign            = (int) env('SEED_SIG_MIN', 5);
-        $maxSign            = (int) env('SEED_SIG_MAX', 200);
+        $maxSign            = (int) env('SEED_SIG_MAX', 50);
         $signatureBatchSize = (int) env('SEED_SIG_BATCH', 5000);
         $chunkSize          = (int) env('SEED_PETITION_CHUNK', 250);
 
