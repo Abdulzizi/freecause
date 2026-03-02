@@ -62,7 +62,7 @@ class AdminSystemController extends Controller
 
         AppLog::info(
             'Admin account updated',
-            'Admin ID: '.$admin->id.' | Email: '.$admin->email,
+            'Admin ID: ' . $admin->id . ' | Email: ' . $admin->email,
             'admin.system'
         );
 
@@ -71,6 +71,6 @@ class AdminSystemController extends Controller
             return redirect()->route('admin.login')->with('success', 'Password changed. Please login again.');
         }
 
-        // return back()->with('success', 'Account updated successfully.');
+        return back()->with('success', 'Account updated successfully.');
     }
 }
