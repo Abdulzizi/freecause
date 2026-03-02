@@ -110,7 +110,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
-        //* SYSTEM (no permission to avoid lockout)
+        //* SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->name('system.user_info.update');
         Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->name('system.user_levels');
