@@ -25,15 +25,11 @@
     <h1>users ({{ number_format($approxTotal) }})</h1>
 
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')">
+
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
-
         <input class="fc-input" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
-
-        <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"
-            value="{{ $filters['last_name'] }}">
-
+        <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
         <input class="fc-input" style="max-width:220px;" name="email" placeholder="Email" value="{{ $filters['email'] }}">
-
         <input class="fc-input" style="max-width:130px;" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
 
         <select class="fc-select" name="level" style="max-width:140px;">
@@ -224,14 +220,13 @@
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"
-                                    {{ ($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
+                                    {{ (\App\Support\Locale::toShort($selectedUser->locale ?? '') === $k) ? 'selected' : '' }}>
                                     {{ $label }}
                                 </option>
                             @endif
                         @endforeach
                     </select>
                 </div>
-            </div>
             </div>
 
             <div style="display:flex; justify-content:flex-end; margin-top:6px;">
