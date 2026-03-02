@@ -3,18 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Models\PageContent;
 use App\Services\PageContentService;
 use Illuminate\Http\Request;
 
 class LanguageOptionsController extends Controller
 {
-    protected array $locales = [
-        'en' => 'English',
-        'fr' => 'French',
-        'it' => 'Italian',
-    ];
-
     protected array $homepageKeys = [
         'meta_keywords',
         'meta_description',
@@ -44,10 +39,23 @@ class LanguageOptionsController extends Controller
         'footer_bottom',
     ];
 
+    // BUG 4 FIX: removed hardcoded $locales property — now loaded dynamically from DB
+
+    private function getLocales(): array
+    {
+        return Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->pluck('name', 'code')
+            ->toArray();
+    }
+
     public function edit(Request $request)
     {
+        $locales = $this->getLocales();
+
         $locale = $request->query('locale');
-        $showForm = $locale && isset($this->locales[$locale]);
+        $showForm = $locale && isset($locales[$locale]);
 
         $values = [];
         $layoutValues = [];
@@ -65,29 +73,30 @@ class LanguageOptionsController extends Controller
         }
 
         return view('admin.options.language', [
-            'locales' => $this->locales,
-            'locale' => $locale,
-            'values' => $values,
+            'locales'      => $locales,
+            'locale'       => $locale,
+            'values'       => $values,
             'layoutValues' => $layoutValues,
-            'showForm' => $showForm,
+            'showForm'     => $showForm,
         ]);
     }
 
     public function update(Request $request)
     {
+        $locales = $this->getLocales();
+
         $request->validate([
-            'locale' => ['required', 'in:' . implode(',', array_keys($this->locales))],
+            'locale' => ['required', 'in:' . implode(',', array_keys($locales))],
         ]);
 
         $locale = $request->input('locale');
 
-        // save homepage content
         foreach ($this->homepageKeys as $key) {
             PageContent::updateOrCreate(
                 [
-                    'page' => 'home',
+                    'page'   => 'home',
                     'locale' => $locale,
-                    'key' => $key,
+                    'key'    => $key,
                 ],
                 [
                     'value' => $request->input($key, ''),
@@ -95,13 +104,12 @@ class LanguageOptionsController extends Controller
             );
         }
 
-        // save layout content (footer)
         foreach ($this->layoutKeys as $key) {
             PageContent::updateOrCreate(
                 [
-                    'page' => 'layout',
+                    'page'   => 'layout',
                     'locale' => $locale,
-                    'key' => $key,
+                    'key'    => $key,
                 ],
                 [
                     'value' => $request->input($key, ''),

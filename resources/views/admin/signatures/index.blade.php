@@ -31,18 +31,19 @@
                 style="max-width:220px;">
         @endif
 
+        {{-- BUG 3 FIX: locale options now come from $locales passed by controller --}}
         <select class="fc-select" name="locale" style="max-width:140px;">
-            <option value="">(Locale)</option>
-            <option value="en" {{ ($filters['locale'] ?? '') == 'en' ? 'selected' : '' }}>English</option>
-            <option value="fr" {{ ($filters['locale'] ?? '') == 'fr' ? 'selected' : '' }}>French</option>
-            <option value="it" {{ ($filters['locale'] ?? '') == 'it' ? 'selected' : '' }}>Italian</option>
+            @foreach ($locales as $k => $label)
+                <option value="{{ $k }}" {{ ($filters['locale'] ?? '') == $k ? 'selected' : '' }}>
+                    {{ $label }}
+                </option>
+            @endforeach
         </select>
 
         <select class="fc-select" name="category_id" style="max-width:320px;">
             <option value="">(Category)</option>
             @foreach ($categories as $c)
-                <option value="{{ $c->id }}"
-                    {{ ($filters['category_id'] ?? '') == $c->id ? 'selected' : '' }}>
+                <option value="{{ $c->id }}" {{ ($filters['category_id'] ?? '') == $c->id ? 'selected' : '' }}>
                     {{ $c->name }}
                 </option>
             @endforeach
@@ -137,9 +138,8 @@
         <x-slot:footer>
             <div style="display:flex; gap:10px; align-items:flex-end;">
 
-                <a href="{{ route('admin.signatures', request()->except('select')) }}"
-                title="Clear Selection"
-                style="display:flex;
+                <a href="{{ route('admin.signatures', request()->except('select')) }}" title="Clear Selection"
+                    style="display:flex;
                         flex-direction:column;
                         align-items:center;
                         justify-content:center;

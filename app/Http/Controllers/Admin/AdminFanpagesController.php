@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -50,12 +51,16 @@ class AdminFanpagesController extends Controller
 
         $approxTotal = DB::table('petitions')->count();
 
-        $locales = [
-            '' => '(Locale)',
-            'en' => 'English',
-            'fr' => 'French',
-            'it' => 'Italian',
-        ];
+        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded
+        $languages = Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get();
+
+        $locales = ['' => '(Locale)'];
+        foreach ($languages as $lang) {
+            $locales[$lang->code] = $lang->name;
+        }
 
         return view('admin.fanpages.index', compact(
             'fanpages',

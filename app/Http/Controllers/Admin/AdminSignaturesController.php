@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -43,7 +44,7 @@ class AdminSignaturesController extends Controller
             ->leftJoin('users as u', 'u.id', '=', 's.user_id')
             ->leftJoin('petition_translations as pt', function ($j) {
                 $j->on('pt.petition_id', '=', 'p.id')
-                  ->on('pt.locale', '=', 's.locale');
+                    ->on('pt.locale', '=', 's.locale');
             })
             ->select(array_filter([
                 's.id',
@@ -88,13 +89,25 @@ class AdminSignaturesController extends Controller
         $signatures = $q->paginate(25)->withQueryString();
         $approxTotal = $this->approxTableRows('signatures');
 
+        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded in blade
+        $languages = Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get();
+
+        $locales = ['' => '(Locale)'];
+        foreach ($languages as $lang) {
+            $locales[$lang->code] = $lang->name;
+        }
+
         return view('admin.signatures.index', compact(
             'signatures',
             'filters',
             'categories',
             'approxTotal',
             'hasText',
-            'hasConfirmed'
+            'hasConfirmed',
+            'locales'
         ));
     }
 
