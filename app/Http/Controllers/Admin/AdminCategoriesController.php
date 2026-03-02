@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class AdminCategoriesController extends Controller
         $q = DB::table('categories')
             ->leftJoin('category_translations as ct', function ($j) use ($locale) {
                 $j->on('ct.category_id', '=', 'categories.id')
-                  ->where('ct.locale', '=', $locale);
+                    ->where('ct.locale', '=', $locale);
             })
             ->select([
                 'categories.id',
@@ -63,11 +64,12 @@ class AdminCategoriesController extends Controller
                 ->first();
         }
 
-        $locales = [
-            'en' => 'English',
-            'fr' => 'French',
-            'it' => 'Italian',
-        ];
+        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded
+        $locales = Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->pluck('name', 'code')
+            ->toArray();
 
         return view('admin.categories.index', compact(
             'categories',
@@ -91,7 +93,7 @@ class AdminCategoriesController extends Controller
                 'string',
                 'max:150',
                 Rule::unique('category_translations')
-                    ->where(fn ($q) => $q->where('locale', $request->locale))
+                    ->where(fn($q) => $q->where('locale', $request->locale))
                     ->ignore($request->id, 'category_id')
             ],
         ]);

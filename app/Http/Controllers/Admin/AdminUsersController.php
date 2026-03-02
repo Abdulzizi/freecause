@@ -130,7 +130,8 @@ class AdminUsersController extends Controller
         $user->first_name = $data['first_name'] ?? $user->first_name;
         $user->last_name  = $data['last_name'] ?? $user->last_name;
         $user->email      = $data['email'] ?? $user->email;
-        $user->locale     = $data['locale'] ?? $user->locale;
+        // $user->locale     = $data['locale'] ?? $user->locale;
+        $user->locale     = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
         $user->verified   = $request->boolean('verified');
 
         $user->save();

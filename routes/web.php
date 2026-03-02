@@ -26,7 +26,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
-
+use App\Http\Controllers\UserProfileController;
 use App\Support\Settings;
 
 use Illuminate\Support\Facades\Route;
@@ -110,7 +110,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
-        //* SYSTEM (no permission to avoid lockout)
+        //* SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->name('system.user_info.update');
         Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->name('system.user_levels');
@@ -142,6 +142,12 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
+
+    // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
+
+    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
+    ->where(['slug' => '[a-z0-9\-]+', 'id' => '[0-9]+'])
+    ->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');

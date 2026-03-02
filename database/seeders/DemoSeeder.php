@@ -24,9 +24,8 @@ class DemoSeeder extends Seeder
             throw new \RuntimeException('User levels not seeded. Run UserLevelSeeder first.');
         }
 
-        //* Locales
-        $languageCodes = Language::pluck('code')->toArray();
-        $localeMap     = config('locales'); // ['en' => 'en_US']
+        $languageCodes = Language::where('is_active', true)->pluck('code')->toArray();
+        $localeMap     = config('locales');
 
         if (empty($languageCodes)) {
             throw new \RuntimeException('No languages found.');
@@ -57,7 +56,6 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        //* Categories
         $categories = Category::where('is_active', true)->pluck('id');
 
         if ($categories->isEmpty()) {
@@ -68,7 +66,6 @@ class DemoSeeder extends Seeder
             throw new \RuntimeException('No categories found. Run CategorySeeder first.');
         }
 
-        //* Petition Owners
         $petitionOwners = User::where('level_id', $userLevel->id)
             ->pluck('id')
             ->toArray();
@@ -77,10 +74,7 @@ class DemoSeeder extends Seeder
             throw new \RuntimeException('No normal users found for petition ownership.');
         }
 
-        //* Petition & Signature Config
-        // $locales = Language::where('is_active', 1)->pluck('code')->toArray();
-        $locales = ['en'];
-
+        $locales            = $languageCodes;
         $petitionsPerLocale = (int) env('SEED_PETITIONS', 50);
         $minSign            = (int) env('SEED_SIG_MIN', 5);
         $maxSign            = (int) env('SEED_SIG_MAX', 50);
@@ -88,12 +82,11 @@ class DemoSeeder extends Seeder
         $chunkSize          = (int) env('SEED_PETITION_CHUNK', 250);
 
         $users = User::where('level_id', $userLevel->id)->get(['id', 'name', 'first_name', 'last_name', 'email']);
-        $now = now();
+        $now   = now();
 
-
-        //* Generate petitions
         foreach ($locales as $loc) {
             $remaining = $petitionsPerLocale;
+
             while ($remaining > 0) {
                 $take = min($chunkSize, $remaining);
                 $remaining -= $take;
@@ -106,7 +99,6 @@ class DemoSeeder extends Seeder
                     ])
                     ->create();
 
-                //* Translations
                 foreach ($createdPetitions as $petition) {
                     foreach ($locales as $trLoc) {
                         $title = fake()->sentence(6);
@@ -119,8 +111,6 @@ class DemoSeeder extends Seeder
                     }
                 }
 
-                //* Signatures
-
                 $signatureRows = [];
 
                 foreach ($createdPetitions as $petition) {
@@ -129,14 +119,14 @@ class DemoSeeder extends Seeder
                     $usedUserIds = [];
 
                     for ($i = 0; $i < $count; $i++) {
-                        $email = $petition->id . '-' . $i . '@seed.test';
+                        $email       = $petition->id . '-' . $i . '@seed.test';
                         $useRealUser = rand(0, 1);
 
                         if ($useRealUser && $users->isNotEmpty()) {
                             $availableUsers = $users->whereNotIn('id', $usedUserIds);
-                            if ($availableUsers->isNotEmpty()) {
 
-                                $user = $availableUsers->random();
+                            if ($availableUsers->isNotEmpty()) {
+                                $user          = $availableUsers->random();
                                 $usedUserIds[] = $user->id;
 
                                 $signatureRows[] = [
@@ -159,11 +149,10 @@ class DemoSeeder extends Seeder
                             }
                         }
 
-                        // anonyanus signature fallback
                         $signatureRows[] = [
                             'petition_id' => $petition->id,
                             'user_id'     => null,
-                            'name'        => "Seeder " . Str::title(Str::random(6)),
+                            'name'        => 'Seeder ' . Str::title(Str::random(6)),
                             'email'       => $email,
                             'locale'      => $loc,
                             'text'        => fake()->optional()->sentence(),
