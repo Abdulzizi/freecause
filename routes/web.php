@@ -26,7 +26,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
-
+use App\Http\Controllers\UserProfileController;
 use App\Support\Settings;
 
 use Illuminate\Support\Facades\Route;
@@ -142,6 +142,12 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
+
+    // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
+
+    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
+    ->where(['slug' => '[a-z0-9\-]+', 'id' => '[0-9]+'])
+    ->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');
