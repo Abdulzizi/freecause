@@ -4,7 +4,7 @@ pipeline {
     environment {
         DEPLOY_HOST = '76.13.22.222'
         DEPLOY_USER = 'root'
-        DEPLOY_PATH = '/var/www/freecause'
+        DEPLOY_PATH = '/var/www/freecause/backend'
     }
 
     stages {
