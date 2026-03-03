@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\Signature;
+use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,6 +103,56 @@ class HomeController extends Controller
             ->orderByDesc('signatures.created_at')
             ->limit(10)
             ->get();
+
+        $maxFeatured = (int) Settings::get('max_featured_petitions_per_country', 5, 'global');
+        if ($maxFeatured < 1) $maxFeatured = 5;
+
+        $pool = Petition::select([
+            'petitions.*',
+            DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+            DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+            DB::raw("COALESCE(pt_locale.description, pt_default.description) as tr_description"),
+        ])
+            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('pt_locale.title')
+                    ->orWhereNotNull('pt_default.title');
+            })
+            ->where('petitions.status', 'published')
+            ->where('petitions.is_active', 1)
+            ->whereNotIn('petitions.id', $excludedIds)
+            ->orderByDesc('petitions.signature_count')
+            ->limit($maxFeatured)
+            ->pluck('petitions.id')
+            ->toArray();
+
+        $slot        = (int) floor(time() / 60);
+        $index       = $slot % count($pool);
+        $featuredId  = $pool[$index];
+
+        $featuredPetition = Petition::select([
+            'petitions.*',
+            DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
+            DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+            DB::raw("COALESCE(pt_locale.description, pt_default.description) as tr_description"),
+        ])
+            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
+            })
+            ->where('petitions.id', $featuredId)
+            ->first();
 
         return view('pages.home', compact(
             'content',
