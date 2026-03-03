@@ -20,10 +20,7 @@
 
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
 
-                <div class="mb-2" style="font-weight:700;">{{ $user->display_name }}</div>
-                <div style="height:2px; background:#e9ecef; position:relative; margin-bottom:22px;">
-                    <div style="height:2px; width:72%; background:#cc1f1f; position:absolute; left:0; top:0;"></div>
-                </div>
+                <div class="mb-4 headings" style="font-weight:700;">{{ $user->display_name }}</div>
 
                 <div class="row g-4">
 
@@ -59,12 +56,7 @@
 
                             @forelse ($recentPetitions as $p)
                                 <div style="padding:6px 0; border-bottom:1px solid #f2f2f2; font-size:14px;">
-                                    <a class="red"
-                                        href="{{ route('petition.show', [
-                                            'locale' => app()->getLocale(),
-                                            'slug' => $p->slug,
-                                            'id' => $p->id,
-                                        ]) }}">
+                                    <a class="red" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
                                         {{ $p->title }}
                                     </a>
                                 </div>
@@ -80,12 +72,7 @@
 
                             @forelse ($recentSignatures as $s)
                                 <div style="padding:6px 0; border-bottom:1px solid #f2f2f2; font-size:14px;">
-                                    <a class="red"
-                                        href="{{ route('petition.show', [
-                                            'locale' => app()->getLocale(),
-                                            'slug' => $s->slug,
-                                            'id' => $s->petition_id,
-                                        ]) }}">
+                                    <a class="red" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
                                         {{ $s->title }}
                                     </a>
                                 </div>

@@ -39,8 +39,6 @@ class LanguageOptionsController extends Controller
         'footer_bottom',
     ];
 
-    // BUG 4 FIX: removed hardcoded $locales property — now loaded dynamically from DB
-
     private function getLocales(): array
     {
         return Language::where('is_active', true)

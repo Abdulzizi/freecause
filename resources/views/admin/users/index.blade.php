@@ -27,7 +27,7 @@
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')">
 
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
-        <input class="fc-input" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
+        <input class="fc-input" name="first_name"style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
         <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
         <input class="fc-input" style="max-width:220px;" name="email" placeholder="Email" value="{{ $filters['email'] }}">
         <input class="fc-input" style="max-width:130px;" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
@@ -82,7 +82,9 @@
 
                     <td style="text-align:left;">
                         {{-- <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}> --}}
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
+                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
+                            data-level="{{ $u->level?->name }}"
+                            {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
                     </td>
 
                     <td style="text-align:left;">
@@ -101,7 +103,18 @@
                     </td>
 
                     <td>
-                        {{ $u->name }}
+                        @php
+                            $isAdmin = $u->hasLevel('admin');
+                        @endphp
+
+                        @if (!$isAdmin)
+                            <a target="blank" href="{{ route('user.profile', ['locale' => app()->getLocale(), 'slug' => $u->username ?? \Str::slug($u->name), 'id' => $u->id]) }}"
+                                style="color:#000;">
+                                {{ $u->name }}
+                            </a>
+                        @else
+                            <span>{{ $u->name }}</span>
+                        @endif
 
                         @if ($isBanned)
                             <span
@@ -220,7 +233,7 @@
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"
-                                    {{ (\App\Support\Locale::toShort($selectedUser->locale ?? '') === $k) ? 'selected' : '' }}>
+                                    {{ \App\Support\Locale::toShort($selectedUser->locale ?? '') === $k ? 'selected' : '' }}>
                                     {{ $label }}
                                 </option>
                             @endif
