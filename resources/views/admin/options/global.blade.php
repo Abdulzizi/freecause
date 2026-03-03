@@ -16,21 +16,12 @@
                 <input class="fc-input" type="text" name="base_url" value="{{ $base_url }}">
             </div>
 
-            @if($base_url)
-                <div style="
-                                                            background:#fff8e5;
-                                                            border:1px solid #e6c26e;
-                                                            padding:10px 12px;
-                                                            margin:8px 0 12px 0;
-                                                            font-size:12px;
-                                                            line-height:1.5;
-                                                        ">
-                    <strong style="color:#b7791f;">⚠️ advanced configuration</strong><br>
-                    changing the base url may break assets, routing, and internal links
-                    unless the server is configured to serve the application under
-                    this exact root path.<br><br>
-                    this option is currently <strong>disabled at framework level</strong>.
-                    review infrastructure before enabling.
+            @if ($base_url)
+                <div class="fc-row">
+                    <label></label>
+                    <span style="font-size:11px; color:#b7791f;">
+                        active -- all urls forced to <strong>{{ $base_url }}</strong>. clear to disable.
+                    </span>
                 </div>
             @endif
 
@@ -38,6 +29,15 @@
                 <label>short base url</label>
                 <input class="fc-input" type="text" name="short_base_url" value="{{ $short_base_url }}">
             </div>
+
+            @if ($short_base_url)
+                <div class="fc-row">
+                    <label></label>
+                    <span style="font-size:11px; color:#666;">
+                        used for share links — e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
+                    </span>
+                </div>
+            @endif
 
         </div>
 
@@ -123,18 +123,10 @@
             <div class="fc-row">
                 <label>smtp password</label>
                 <div style="position:relative;">
-                    <input
-                        id="smtp_pass_input"
-                        class="fc-input"
-                        type="password"
-                        name="smtp_pass"
-                        value="{{ $smtp_pass }}"
-                        style="padding-right:36px;"
-                    >
+                    <input id="smtp_pass_input" class="fc-input" type="password" name="smtp_pass"
+                        value="{{ $smtp_pass }}" style="padding-right:36px;">
 
-                    <i
-                        id="toggle_smtp_pass"
-                        class="fa fa-eye"
+                    <i id="toggle_smtp_pass" class="fa fa-eye"
                         style="
                             position:absolute;
                             right:10px;
@@ -189,7 +181,8 @@
             <div class="fc-row">
                 <label></label>
                 <label style="font-weight:normal">
-                    <input type="checkbox" name="logging_enabled" value="1" {{ $logging_enabled ? 'checked' : '' }}>
+                    <input type="checkbox" name="logging_enabled" value="1"
+                        {{ $logging_enabled ? 'checked' : '' }}>
                     enable logging
                 </label>
             </div>
@@ -212,20 +205,20 @@
 @endsection
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var input = document.getElementById('smtp_pass_input');
-    var toggle = document.getElementById('toggle_smtp_pass');
+    document.addEventListener('DOMContentLoaded', function() {
+        var input = document.getElementById('smtp_pass_input');
+        var toggle = document.getElementById('toggle_smtp_pass');
 
-    toggle.addEventListener('click', function () {
-        if (input.type === 'password') {
-            input.type = 'text';
-            toggle.classList.remove('fa-eye');
-            toggle.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            toggle.classList.remove('fa-eye-slash');
-            toggle.classList.add('fa-eye');
-        }
+        toggle.addEventListener('click', function() {
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        });
     });
-});
 </script>

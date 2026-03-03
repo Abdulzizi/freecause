@@ -3,34 +3,47 @@
 namespace App\Support;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
 
 class Settings
 {
-    public static function get(string $key, $default = null, string $group = 'global')
+    public static function get(string $key, mixed $default = null, string $group = 'global'): mixed
     {
-        return cache()->remember(
-            "settings.$group.$key",
-            3600,
-            function () use ($key, $default, $group) {
-                $row = Setting::query()
-                    ->where('group', $group)
-                    ->where('key', $key)
-                    ->first();
+        try {
+            $cacheKey = "setting:{$group}:{$key}";
 
-                return $row ? $row->castedValue($default) : $default;
+            $value = Cache::remember($cacheKey, 300, function () use ($key, $group) {
+                return Setting::where('key', $key)
+                    ->where('group', $group)
+                    ->value('value');
+            });
+
+            if ($value === null) {
+                return $default;
             }
-        );
+
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && !is_string($decoded)) {
+                return $decoded;
+            }
+
+            return $value;
+        } catch (\Throwable $e) {
+            return $default;
+        }
     }
 
-    public static function set(string $key, $value, string $type = 'string', string $group = 'global'): void
+    public static function set(string $key, mixed $value, string $group = 'global'): void
     {
-        if (in_array($type, ['json', 'array'], true)) {
+        if (is_bool($value) || is_array($value)) {
             $value = json_encode($value);
         }
 
-        Setting::query()->updateOrCreate(
-            ['group' => $group, 'key' => $key],
-            ['value' => (string) $value, 'type' => $type]
+        Setting::updateOrCreate(
+            ['key' => $key, 'group' => $group],
+            ['value' => $value]
         );
+
+        Cache::forget("setting:{$group}:{$key}");
     }
 }

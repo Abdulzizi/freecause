@@ -6,79 +6,84 @@ use App\Http\Controllers\Controller;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
 
 class GlobalOptionsController extends Controller
 {
+    private array $defaults = [
+        'base_url'                           => '',
+        'short_base_url'                     => '',
+        'email_to_staff'                     => '',
+        'email_from'                         => '',
+        'inject_head_html'                   => '',
+        'inject_body_html'                   => '',
+        'google_client_id'                   => '',
+        'google_client_secret'               => '',
+        'facebook_app_id'                    => '',
+        'facebook_secret'                    => '',
+        'smtp_enabled'                       => false,
+        'smtp_host'                          => '',
+        'smtp_user'                          => '',
+        'smtp_pass'                          => '',
+        'smtp_encryption'                    => 'tls',
+        'max_featured_petitions_per_country' => 5,
+        'special_debug_ip'                   => '',
+        'logging_enabled'                    => false,
+        'logging_cookie_name'                => '',
+        'logging_cookie_value'               => '',
+    ];
+
     public function edit()
     {
-        return view('admin.options.global', [
-            'base_url' => Settings::get('base_url', ''),
-            'short_base_url' => Settings::get('short_base_url', ''),
-            'email_to_staff' => Settings::get('email_to_staff', ''),
-            'email_from' => Settings::get('email_from', ''),
-            'inject_head_html' => Settings::get('inject_head_html', ''),
-            'inject_body_html' => Settings::get('inject_body_html', ''),
-            'facebook_app_id' => Settings::get('facebook_app_id', ''),
-            'facebook_secret' => Settings::get('facebook_secret', ''),
-            'google_client_id' => Settings::get('google_client_id', ''),
-            'google_client_secret' => Settings::get('google_client_secret', ''),
-            'smtp_enabled' => Settings::get('smtp_enabled', false),
-            'smtp_host' => Settings::get('smtp_host', ''),
-            'smtp_port' => Settings::get('smtp_port', 587),
-            'smtp_user' => Settings::get('smtp_user', ''),
-            'smtp_pass' => Settings::get('smtp_pass', ''),
-            'smtp_encryption' => Settings::get('smtp_encryption', 'tls'),
-            'max_featured_petitions_per_country' => Settings::get('max_featured_petitions_per_country', 10),
-            'special_debug_ip' => Settings::get('special_debug_ip', ''),
-            'logging_enabled' => Settings::get('logging_enabled', false),
-            'logging_cookie_name' => Settings::get('logging_cookie_name', 'dothelog'),
-            'logging_cookie_value' => Settings::get('logging_cookie_value', '1'),
-        ]);
+        $data = [];
+
+        foreach ($this->defaults as $key => $default) {
+            try {
+                $data[$key] = Settings::get($key, $default, 'global');
+            } catch (\Throwable $e) {
+                $data[$key] = $default;
+            }
+        }
+
+        return view('admin.options.global', $data);
     }
 
     public function update(Request $request)
     {
-        $encryption = $request->input('smtp_encryption');
+        $errors = [];
 
-        $port = match ($encryption) {
-            'tls' => 587,
-            'ssl' => 465,
-            default => 25,
-        };
+        foreach ($this->defaults as $key => $default) {
+            try {
+                if (is_bool($default)) {
+                    $value = (bool) $request->input($key, 0);
+                }
+                elseif (is_int($default)) {
+                    $value = (int) $request->input($key, $default);
+                    if ($value <= 0) {
+                        $value = $default;
+                    }
+                }
+                else {
+                    $value = $request->input($key, $default);
+                }
 
-        Settings::set('base_url', $request->base_url ?? '', 'string');
-        Settings::set('short_base_url', $request->short_base_url ?? '', 'string');
+                Settings::set($key, $value, 'global');
+            } catch (\Throwable $e) {
+                $errors[] = "Could not save [{$key}]: " . $e->getMessage();
+            }
+        }
 
-        Settings::set('email_to_staff', $request->email_to_staff ?? '', 'string');
-        Settings::set('email_from', $request->email_from ?? '', 'string');
+        try {
+            Cache::forget('default_language');
+            Cache::forget('languages:codes');
+        } catch (\Throwable) {
+        }
 
-        Settings::set('inject_head_html', $request->inject_head_html ?? '', 'text');
-        Settings::set('inject_body_html', $request->inject_body_html ?? '', 'text');
+        if (!empty($errors)) {
+            return back()
+                ->withInput()
+                ->with('warning', 'Saved with some errors: ' . implode('; ', $errors));
+        }
 
-        Settings::set('facebook_app_id', $request->facebook_app_id ?? '', 'string');
-        Settings::set('facebook_secret', $request->facebook_secret ?? '', 'string');
-
-        Settings::set('google_client_id', $request->google_client_id ?? '', 'string');
-        Settings::set('google_client_secret', $request->google_client_secret ?? '', 'string');
-
-        Settings::set('smtp_enabled', $request->boolean('smtp_enabled') ? '1' : '0', 'bool');
-        Settings::set('smtp_host', $request->smtp_host ?? '', 'string');
-        Settings::set('smtp_port', (string)($port ?? 587), 'int');
-        Settings::set('smtp_user', $request->smtp_user ?? '', 'string');
-        Settings::set('smtp_pass', $request->smtp_pass ?? '', 'string');
-        Settings::set('smtp_encryption', $encryption ?? 'tls', 'string');
-
-        Settings::set('max_featured_petitions_per_country', (string)($request->max_featured_petitions_per_country ?? 10), 'int');
-
-        Settings::set('special_debug_ip', $request->special_debug_ip ?? '', 'string');
-
-        Settings::set('logging_enabled', $request->boolean('logging_enabled') ? '1' : '0', 'bool');
-        Settings::set('logging_cookie_name', $request->logging_cookie_name ?? 'dothelog', 'string');
-        Settings::set('logging_cookie_value', $request->logging_cookie_value ?? '1', 'string');
-
-        Cache::flush();
-
-        return back()->with('success', 'saved');
+        return back()->with('success', 'Settings saved.');
     }
 }

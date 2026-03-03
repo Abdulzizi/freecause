@@ -51,7 +51,6 @@ class AdminFanpagesController extends Controller
 
         $approxTotal = DB::table('petitions')->count();
 
-        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded
         $languages = Language::where('is_active', true)
             ->orderByDesc('is_default')
             ->orderBy('name')
