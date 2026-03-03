@@ -17,8 +17,8 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
-        $first = fake()->firstName();
-        $last  = fake()->lastName();
+        $first = $this->faker->firstName();
+        $last  = $this->faker->lastName();
 
         $languageCodes = Language::pluck('code')->toArray();
         $localeMap = config('locales');
@@ -34,22 +34,22 @@ class UserFactory extends Factory
             'last_name'  => $last,
             'name'       => trim($first . ' ' . $last),
 
-            'nickname' => fake()->optional(50)->userName(),
-            'city'     => fake()->optional(70)->city(),
-            'identify_mode' => fake()->randomElement(['full', 'name', 'nick']),
+            'nickname' => $this->faker->optional(50)->userName(),
+            'city'     => $this->faker->optional(70)->city(),
+            'identify_mode' => $this->faker->randomElement(['full', 'name', 'nick']),
 
-            'email'    => fake()->unique()->safeEmail(),
+            'email'    => $this->faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
 
-            'locale' => $localeMap[fake()->randomElement($languageCodes)] ?? 'en_US',
-            'ip'     => fake()->ipv4(),
+            'locale' => $localeMap[$this->faker->randomElement($languageCodes)] ?? 'en_US',
+            'ip'     => $this->faker->ipv4(),
 
             'level_id' => $userLevel->id,
 
-            'google_id'   => fake()->optional(20)->uuid(),
-            'facebook_id' => fake()->optional(15)->uuid(),
+            'google_id'   => $this->faker->optional(20)->uuid(),
+            'facebook_id' => $this->faker->optional(15)->uuid(),
 
-            'verified' => fake()->boolean(20),
+            'verified' => $this->faker->boolean(20),
             'remember_token' => Str::random(10),
         ];
     }
