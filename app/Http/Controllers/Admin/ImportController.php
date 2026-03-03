@@ -23,8 +23,6 @@ class ImportController extends Controller
             ]);
         }
 
-        // EXISTING CODE BELOW (DO NOT TOUCH)
-
         $request->validate([
             'type' => ['required', 'in:users,petitions,categories,signatures'],
             'file' => ['required', 'file', 'mimes:csv,txt'],
