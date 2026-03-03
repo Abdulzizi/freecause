@@ -79,7 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->middleware('permission:categories,edit')->name('categories.save');
 
         //* FANPAGES
-        Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
+        // Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
 
         //* SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');

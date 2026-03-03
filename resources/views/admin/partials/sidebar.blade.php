@@ -7,7 +7,7 @@
     <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}">users</a>
     <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories') ? 'active' : '' }}">categories</a>
     <a href="{{ route('admin.petitions') }}" class="{{ request()->routeIs('admin.petitions') ? 'active' : '' }}">petitions</a>
-    <a href="{{ route('admin.fanpages') }}" class="{{ request()->routeIs('admin.fanpages') ? 'active' : '' }}">fanpages</a>
+    {{-- <a href="{{ route('admin.fanpages') }}" class="{{ request()->routeIs('admin.fanpages') ? 'active' : '' }}">fanpages</a> --}}
     <a href="{{ route('admin.signatures') }}" class="{{ request()->routeIs('admin.signatures') ? 'active' : '' }}">signatures</a>
     <a href="{{ route('admin.pages') }}" class="{{ request()->routeIs('admin.pages') ? 'active' : '' }}">pages</a>
     <a href="{{ route('admin.spam') }}" class="{{ request()->routeIs('admin.spam') ? 'active' : '' }}">spam</a>
