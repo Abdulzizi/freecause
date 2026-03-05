@@ -54,7 +54,7 @@
             {{ $tSignedAlready }}
         </p>
     @else
-        <form action="{{ $signPostUrl }}" method="GET" class="fc-sign-form fc-sign-form--{{ $variant }}">
+        <form action="{{ $signPageUrl }}" method="GET" class="fc-sign-form fc-sign-form--{{ $variant }}">
 
             <div class="row g-2">
 

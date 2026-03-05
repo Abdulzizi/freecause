@@ -7,6 +7,7 @@ use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Language;
 
 class AdminPetitionsController extends Controller
 {
@@ -22,10 +23,20 @@ class AdminPetitionsController extends Controller
             'featured' => $request->query('featured', ''),
         ];
 
+        $defaultLocale = cache()->remember(
+            'default_language',
+            60,
+            fn() => Language::where('is_default', 1)->value('code') ?? 'en'
+        );
+
         $q = DB::table('petitions')
-            ->join('petition_translations as pt', function ($j) use ($locale) {
+            ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
                 $j->on('pt.petition_id', '=', 'petitions.id')
                     ->where('pt.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($j) use ($defaultLocale) {
+                $j->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
             })
             ->select([
                 'petitions.id',
@@ -35,8 +46,8 @@ class AdminPetitionsController extends Controller
                 'petitions.is_active',
                 'petitions.is_featured',
                 'petitions.created_at',
-                'pt.title',
-                'pt.slug',
+                DB::raw('COALESCE(pt.title, pt_default.title) as title'),
+                DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
             ]);
 
         if ($filters['id'] !== '') {
@@ -44,7 +55,10 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            $q->where('pt.title', 'like', '%' . $filters['title'] . '%');
+            $q->where(function ($q) use ($filters) {
+                $q->where('pt.title', 'like', '%' . $filters['title'] . '%')
+                    ->orWhere('pt_default.title', 'like', '%' . $filters['title'] . '%');
+            });
         }
 
         if ($filters['featured'] !== '') {
@@ -124,7 +138,7 @@ class AdminPetitionsController extends Controller
                 [
                     'title' => $data['title'] ?? '',
                     'slug' => $data['slug'] ?? '',
-                    'description' => $data['text'] ?? '',
+                    'description' => sanitizePetitionHtml($data['text'] ?? ''),
                 ]
             );
 
