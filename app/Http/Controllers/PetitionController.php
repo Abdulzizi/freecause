@@ -8,6 +8,8 @@ use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
+use App\Models\UserLevel;
+use App\Support\AppLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -235,46 +237,21 @@ class PetitionController extends Controller
                 ->with('login_url', $loginUrl);
         }
 
-        // $user = User::create([
-        //     'name' => trim($data['name'] . ' ' . $data['surname']),
-        //     'email' => $email,
-        //     'password' => Hash::make($data['password']),
-        //     'locale' => $locale,
-        // ]);
-
-        // $sig = Signature::firstOrCreate(
-        //     [
-        //         'petition_id' => $petition->id,
-        //         'email' => $email,
-        //     ],
-        //     [
-        //         'user_id' => $user->id,
-        //         'name' => $data['nickname'] ?: $user->name,
-        //         'locale' => $locale,
-        //         'city' => $data['city'] ?? null,
-        //         'text' => $data['comment'] ?? 'I support this petition',
-        //     ]
-        // );
-
-        // if ($sig->wasRecentlyCreated) {
-        //     $petition->increment('signature_count');
-        // }
-
-        // session()->forget('sign');
-
-        // return redirect()->route('petition.thanks', [
-        //     'locale' => $locale,
-        //     'slug' => $tr->slug,
-        //     'id' => $petition->id,
-        //     'status' => 0,
-        // ]);
-
         return DB::transaction(function () use ($data, $email, $locale, $petition, $tr) {
+            $userLevel = UserLevel::where('name', 'user')->first();
+
             $user = User::create([
-                'name'     => trim($data['name'] . ' ' . $data['surname']),
-                'email'    => $email,
-                'password' => Hash::make($data['password']),
-                'locale'   => $locale,
+                'name'       => trim($data['name'] . ' ' . $data['surname']),
+                'first_name' => $data['name'],
+                'last_name'  => $data['surname'],
+                'email'      => $email,
+                'password'   => Hash::make($data['password']),
+                'locale'     => $locale,
+                'ip'         => request()->ip(),
+                'level_id'   => $userLevel?->id,
+                'verified'   => true,
+                'nickname'   => $data['nickname'] ?? null,
+                'city'       => $data['city'] ?? null,
             ]);
 
             $sig = Signature::firstOrCreate(
@@ -283,7 +260,7 @@ class PetitionController extends Controller
                     'user_id' => $user->id,
                     'name'    => $data['nickname'] ?: $user->name,
                     'locale'  => $locale,
-                    'city'    => $data['city'] ?? null,
+                    // 'city'    => $data['city'] ?? null,
                     'text'    => $data['comment'] ?? 'I support this petition',
                     'ip_address' => request()->ip(),
                 ]
@@ -292,6 +269,12 @@ class PetitionController extends Controller
             if ($sig->wasRecentlyCreated) {
                 $petition->increment('signature_count');
             }
+
+            AppLog::info(
+                'Petition signed',
+                'Petition ID: ' . $petition->id . ' | User: ' . $email . ' | IP: ' . request()->ip(),
+                'petition.sign'
+            );
 
             session()->forget('sign');
 
@@ -504,6 +487,12 @@ class PetitionController extends Controller
             ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
 
         abort_if(! $tr, 404);
+
+        AppLog::info(
+            'Petition signed',
+            'Petition ID: ' . $petition->id . ' | User: ' . $u->email . ' | IP: ' . request()->ip(),
+            'petition.sign'
+        );
 
         toast('Thank you for signing!', 'success');
 

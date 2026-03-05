@@ -213,7 +213,7 @@
                             <div class="mt-3" style="font-size:14px;line-height:1.8;">
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoBy }}</strong>
-                                    <a href="#" class="red">{{ $petition->user?->name ?? 'Demo User' }}</a>
+                                    <a href="{{ lroute('user.profile', ['slug' => Str::slug($petition->user?->name ?? 'user'), 'id' => $petition->user_id]) }}" class="red">{{ $petition->user?->name ?? 'Demo User' }}</a>
                                 </div>
 
                                 <div class="d-flex justify-content-between gap-2">
@@ -235,9 +235,15 @@
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
                             </div>
-                            <div class="mt-3 text-muted" style="font-size:14px;">
-                                {{ $tagsEmpty }}
-                            </div>
+                            @if($petition->tags)
+                                <div class="mt-3">
+                                    @foreach(explode(',', $petition->tags) as $tag)
+                                        <span class="badge bg-secondary me-1">{{ trim($tag) }}</span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="mt-3 text-muted" style="font-size:14px;">{{ $tagsEmpty }}</div>
+                            @endif
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">

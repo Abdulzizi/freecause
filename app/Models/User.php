@@ -18,6 +18,7 @@ class User extends Authenticatable
         'ip',
         'verified',
         'verification_token',
+        'verification_token_sent_at',
         'level_id',
         'identify_mode',
         'city',
@@ -29,6 +30,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'verification_token_sent_at' => 'datetime',
+        'verified' => 'boolean',
     ];
 
     public function petitions()

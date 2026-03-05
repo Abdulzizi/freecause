@@ -49,18 +49,7 @@
     @stack('head')
 
     @if (session('success'))
-        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
-            <div id="successToast" class="toast align-items-center text-white bg-success border-0 shadow"
-                role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        {{ session('success') }}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                        data-bs-dismiss="toast"></button>
-                </div>
-            </div>
-        </div>
+
     @endif
 
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
@@ -72,20 +61,6 @@
     <main>
         @yield('content')
     </main>
-
-    @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var toastEl = document.getElementById('successToast');
-                if (toastEl) {
-                    var toast = new bootstrap.Toast(toastEl, {
-                        delay: 5000
-                    });
-                    toast.show();
-                }
-            });
-        </script>
-    @endif
 
     {!! $footerExtra !!}
 
@@ -99,66 +74,68 @@
 
     @include('partials.footer')
 
-    @if (session('toast'))
-        @php
-            $toast = session('toast');
-            $type = $toast['type'] ?? 'info';
+    @php
+        $fcToasts = [];
 
-            $bg = match ($type) {
-                'success' => '#28a745',
-                'error' => '#dc3545',
-                'warning' => '#ffc107',
-                default => '#343a40',
-            };
-        @endphp
+        if (session('toast')) {
+            $t = session('toast');
+            $fcToasts[] = ['type' => $t['type'] ?? 'info', 'message' => $t['message']];
+        }
 
-        <div id="fc-toast"
-            style="position:fixed;top:20px;right:20px;z-index:9999;
-                background:{{ $bg }};
-                color:#fff;
-                padding:14px 18px;
-                border-radius:6px;
-                box-shadow:0 5px 15px rgba(0,0,0,0.2);
-                min-width:250px;
-                font-size:14px;
-                opacity:0;
-                transform:translateY(-10px);
-                transition:all .3s ease;">
-            {{ $toast['message'] }}
+        if (session('success')) {
+            $fcToasts[] = ['type' => 'success', 'message' => session('success')];
+        }
+
+        if (isset($errors) && $errors->any() && !session('toast')) {
+            $fcToasts[] = ['type' => 'error', 'message' => $errors->first()];
+        }
+    @endphp
+
+    @if(!empty($fcToasts))
+        <div id="fc-toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:320px;">
+            @foreach($fcToasts as $i => $t)
+                @php
+                    $bg = match($t['type']) {
+                        'success' => '#28a745',
+                        'error'   => '#dc3545',
+                        'warning' => '#e0a800',
+                        default   => '#343a40',
+                    };
+                @endphp
+                <div class="fc-toast-item"
+                    data-index="{{ $i }}"
+                    style="background:{{ $bg }};
+                        color:#fff;
+                        padding:14px 18px;
+                        border-radius:6px;
+                        box-shadow:0 5px 15px rgba(0,0,0,0.2);
+                        font-size:14px;
+                        line-height:1.4;
+                        opacity:0;
+                        transform:translateY(-10px);
+                        transition:all .3s ease;
+                        cursor:pointer;"
+                    onclick="this.style.opacity=0;this.style.transform='translateY(-10px)';setTimeout(()=>this.remove(),300);">
+                    {{ $t['message'] }}
+                </div>
+            @endforeach
         </div>
 
         <script>
-            const toast = document.getElementById('fc-toast');
-            setTimeout(() => {
-                toast.style.opacity = 1;
-                toast.style.transform = 'translateY(0)';
-            }, 100);
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.fc-toast-item').forEach(function (el, i) {
+                    setTimeout(function () {
+                        el.style.opacity = 1;
+                        el.style.transform = 'translateY(0)';
+                    }, 100 + i * 150);
 
-            setTimeout(() => {
-                toast.style.opacity = 0;
-                toast.style.transform = 'translateY(-10px)';
-            }, 4000);
-        </script>
-    @endif
-
-    @if (isset($errors) && $errors->any())
-        <div id="fc-toast-error"
-            style="position:fixed;top:20px;right:20px;z-index:9999;
-                background:#dc3545;
-                color:#fff;
-                padding:14px 18px;
-                border-radius:6px;
-                box-shadow:0 5px 15px rgba(0,0,0,0.2);
-                min-width:250px;
-                font-size:14px;">
-            {{ $errors->first() }}
-        </div>
-
-        <script>
-            const toastError = document.getElementById('fc-toast-error');
-            setTimeout(() => {
-                toastError.style.opacity = 0;
-            }, 4000);
+                    setTimeout(function () {
+                        el.style.opacity = 0;
+                        el.style.transform = 'translateY(-10px)';
+                        setTimeout(function () { el.remove(); }, 300);
+                    }, 5000 + i * 150);
+                });
+            });
         </script>
     @endif
 </body>

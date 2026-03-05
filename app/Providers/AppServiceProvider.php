@@ -193,18 +193,20 @@ class AppServiceProvider extends ServiceProvider
         try {
             $locale = app()->getLocale();
 
-            Config::set('services.google.client_id',     Settings::get('google_client_id', ''));
+            Config::set('services.google.client_id', Settings::get('google_client_id', ''));
             Config::set('services.google.client_secret', Settings::get('google_client_secret', ''));
-            Config::set('services.google.redirect',      url("{$locale}/oauth/google/callback"));
+            // Config::set('services.google.redirect', url("{$locale}/oauth/google/callback"));
+            Config::set('services.google.redirect', url("/{$locale}/oauth/google/callback"));
         } catch (\Throwable $e) {
         }
 
         try {
             $locale = app()->getLocale();
 
-            Config::set('services.facebook.client_id',     Settings::get('facebook_app_id', ''));
+            Config::set('services.facebook.client_id',Settings::get('facebook_app_id', ''));
             Config::set('services.facebook.client_secret', Settings::get('facebook_secret', ''));
-            Config::set('services.facebook.redirect',      url("{$locale}/oauth/facebook/callback"));
+            // Config::set('services.facebook.redirect', url("{$locale}/oauth/facebook/callback"));
+            Config::set('services.facebook.redirect', url("/{$locale}/oauth/facebook/callback"));
         } catch (\Throwable $e) {
         }
     }

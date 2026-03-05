@@ -33,7 +33,7 @@ class ConditionalLogging
                 }
             }
         } catch (\Throwable $e) {
-            
+            \Log::warning('ConditionalLogging middleware failed: ' . $e->getMessage());
         }
 
         return $next($request);
