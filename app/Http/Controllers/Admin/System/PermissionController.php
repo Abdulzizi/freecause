@@ -14,7 +14,7 @@ class PermissionController extends Controller
         'petitions' => ['view', 'create', 'edit', 'delete', 'feature'],
         'categories' => ['view', 'create', 'edit', 'delete'],
         'pages' => ['view', 'edit'],
-        'fanpages' => ['view'],
+        // 'fanpages' => ['view'],
         'signatures' => ['view', 'delete'],
         'spam' => ['view', 'edit', 'delete'],
         'logs' => ['view', 'delete'],

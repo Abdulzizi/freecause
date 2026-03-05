@@ -135,6 +135,8 @@ class AdminPetitionsController extends Controller
 
     public function bulkAction(Request $request)
     {
+        $locale = $request->input('locale', 'en');
+
         $data = $request->validate([
             'action' => ['required', 'string'],
             'ids' => ['required', 'array'],
@@ -197,7 +199,11 @@ class AdminPetitionsController extends Controller
                 return response()->json(['ok' => false, 'msg' => 'not implemented'], 400);
         }
 
-        Cache::flush();
+        Cache::forget("petitions:index:{$locale}:page:1");
+
+        for ($i = 1; $i <= 5; $i++) {
+            Cache::forget("petitions:index:{$locale}:page:{$i}");
+        }
 
         return response()->json(['ok' => true]);
     }

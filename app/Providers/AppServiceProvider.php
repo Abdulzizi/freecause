@@ -135,11 +135,17 @@ class AppServiceProvider extends ServiceProvider
                     }
                 );
 
-                $view->with(compact('pageContent', 'categories'));
+                // $view->with(compact('pageContent', 'categories'));
+                $view->with([
+                    'pageContent'   => $pageContent,
+                    'navbarContent' => $pageContent,
+                    'categories'    => $categories,
+                ]);
             } catch (\Throwable $e) {
                 $view->with([
                     'pageContent' => collect(),
                     'categories'  => collect(),
+                    'navbarContent' => collect(),
                 ]);
             }
         });
