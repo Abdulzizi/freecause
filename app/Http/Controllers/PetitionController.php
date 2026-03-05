@@ -285,6 +285,7 @@ class PetitionController extends Controller
                     'locale'  => $locale,
                     'city'    => $data['city'] ?? null,
                     'text'    => $data['comment'] ?? 'I support this petition',
+                    'ip_address' => request()->ip(),
                 ]
             );
 
@@ -482,6 +483,7 @@ class PetitionController extends Controller
                 'name' => $u->name,
                 'locale' => $locale,
                 'text' => $data['comment'] ?? 'I support this petition',
+                'ip_address' => request()->ip(),
             ]
         );
 

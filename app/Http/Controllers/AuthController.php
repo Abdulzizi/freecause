@@ -142,8 +142,13 @@ class AuthController extends Controller
         if (Auth::guard('web')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            // $redirect = $request->input('redirect');
+            // if ($redirect) {
+            //     return redirect()->to($redirect);
+            // }
+
             $redirect = $request->input('redirect');
-            if ($redirect) {
+            if ($redirect && str_starts_with($redirect, '/') && !str_starts_with($redirect, '//')) {
                 return redirect()->to($redirect);
             }
 
@@ -168,10 +173,13 @@ class AuthController extends Controller
                 return back()->withInput();
             }
 
-            if ($user && \Schema::hasColumn('users', 'ip')) {
-                $user->ip = $request->ip();
-                $user->save();
-            }
+            // if ($user && \Schema::hasColumn('users', 'ip')) {
+            //     $user->ip = $request->ip();
+            //     $user->save();
+            // }
+
+            $user->ip = $request->ip();
+            $user->save();
 
             return redirect()->intended("/{$locale}");
         }

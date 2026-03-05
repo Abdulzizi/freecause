@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
-use App\Http\Controllers\Admin\AdminFanpagesController;
+// use App\Http\Controllers\Admin\AdminFanpagesController;
 use App\Http\Controllers\Admin\AdminLanguagesController;
 use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;

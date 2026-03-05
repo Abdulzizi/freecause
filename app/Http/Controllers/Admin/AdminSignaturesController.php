@@ -132,8 +132,6 @@ class AdminSignaturesController extends Controller
             ->whereIn('id', $data['ids'])
             ->delete();
 
-        Cache::flush();
-
         return response()->json(['ok' => true]);
     }
 }
