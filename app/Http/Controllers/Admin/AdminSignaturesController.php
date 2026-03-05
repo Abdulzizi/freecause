@@ -24,8 +24,19 @@ class AdminSignaturesController extends Controller
             'locale'      => trim((string) $request->query('locale', '')),
         ];
 
-        $hasText = Schema::hasColumn('signatures', 'text');
-        $hasConfirmed = Schema::hasColumn('signatures', 'confirmed');
+        // $hasText = Schema::hasColumn('signatures', 'text');
+        // $hasConfirmed = Schema::hasColumn('signatures', 'confirmed');
+
+        $hasText = cache()->remember(
+            'schema:signatures:has_text',
+            3600,
+            fn() => Schema::hasColumn('signatures', 'text')
+        );
+        $hasConfirmed = cache()->remember(
+            'schema:signatures:has_confirmed',
+            3600,
+            fn() => Schema::hasColumn('signatures', 'confirmed')
+        );
 
         $catLocale = $filters['locale'] !== '' ? $filters['locale'] : 'en';
 
@@ -89,7 +100,6 @@ class AdminSignaturesController extends Controller
         $signatures = $q->paginate(25)->withQueryString();
         $approxTotal = $this->approxTableRows('signatures');
 
-        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded in blade
         $languages = Language::where('is_active', true)
             ->orderByDesc('is_default')
             ->orderBy('name')

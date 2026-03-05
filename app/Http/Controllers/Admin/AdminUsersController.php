@@ -198,4 +198,21 @@ class AdminUsersController extends Controller
             'deleted' => $deleted
         ]);
     }
+
+    public function bulkAction(Request $request)
+    {
+        $action = $request->input('action');
+        $ids    = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return response()->json(['ok' => false, 'msg' => 'no ids'], 400);
+        }
+
+        return match ($action) {
+            'ban'    => $this->bulkBan($request),
+            'unban'  => $this->bulkUnban($request),
+            'delete' => $this->bulkDelete($request),
+            default  => response()->json(['ok' => false, 'msg' => 'unknown action'], 400),
+        };
+    }
 }

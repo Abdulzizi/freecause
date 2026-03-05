@@ -13,9 +13,7 @@ class Locale
         $language = Language::where('code', $locale)->where('is_active', true)->first();
 
         if ($language) {
-            return config('language_flags')[$locale]
-                ?? config('language_flags')[config('locales.default')]
-                ?? 'en_US';
+            return config('language_flags')[$locale] ?? config('language_flags')[config('locales.default')] ?? 'en_US';
         }
 
         $default = config('locales.default', 'en');

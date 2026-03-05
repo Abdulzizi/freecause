@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Support\Spam;
+use Illuminate\Support\Str;
 
 class PetitionController extends Controller
 {
@@ -234,39 +235,72 @@ class PetitionController extends Controller
                 ->with('login_url', $loginUrl);
         }
 
-        $user = User::create([
-            'name' => trim($data['name'] . ' ' . $data['surname']),
-            'email' => $email,
-            'password' => Hash::make($data['password']),
-            'locale' => $locale,
-        ]);
+        // $user = User::create([
+        //     'name' => trim($data['name'] . ' ' . $data['surname']),
+        //     'email' => $email,
+        //     'password' => Hash::make($data['password']),
+        //     'locale' => $locale,
+        // ]);
 
-        $sig = Signature::firstOrCreate(
-            [
-                'petition_id' => $petition->id,
-                'email' => $email,
-            ],
-            [
-                'user_id' => $user->id,
-                'name' => $data['nickname'] ?: $user->name,
+        // $sig = Signature::firstOrCreate(
+        //     [
+        //         'petition_id' => $petition->id,
+        //         'email' => $email,
+        //     ],
+        //     [
+        //         'user_id' => $user->id,
+        //         'name' => $data['nickname'] ?: $user->name,
+        //         'locale' => $locale,
+        //         'city' => $data['city'] ?? null,
+        //         'text' => $data['comment'] ?? 'I support this petition',
+        //     ]
+        // );
+
+        // if ($sig->wasRecentlyCreated) {
+        //     $petition->increment('signature_count');
+        // }
+
+        // session()->forget('sign');
+
+        // return redirect()->route('petition.thanks', [
+        //     'locale' => $locale,
+        //     'slug' => $tr->slug,
+        //     'id' => $petition->id,
+        //     'status' => 0,
+        // ]);
+
+        return DB::transaction(function () use ($data, $email, $locale, $petition, $tr) {
+            $user = User::create([
+                'name'     => trim($data['name'] . ' ' . $data['surname']),
+                'email'    => $email,
+                'password' => Hash::make($data['password']),
+                'locale'   => $locale,
+            ]);
+
+            $sig = Signature::firstOrCreate(
+                ['petition_id' => $petition->id, 'email' => $email],
+                [
+                    'user_id' => $user->id,
+                    'name'    => $data['nickname'] ?: $user->name,
+                    'locale'  => $locale,
+                    'city'    => $data['city'] ?? null,
+                    'text'    => $data['comment'] ?? 'I support this petition',
+                ]
+            );
+
+            if ($sig->wasRecentlyCreated) {
+                $petition->increment('signature_count');
+            }
+
+            session()->forget('sign');
+
+            return redirect()->route('petition.thanks', [
                 'locale' => $locale,
-                'city' => $data['city'] ?? null,
-                'text' => $data['comment'] ?? 'I support this petition',
-            ]
-        );
-
-        if ($sig->wasRecentlyCreated) {
-            $petition->increment('signature_count');
-        }
-
-        session()->forget('sign');
-
-        return redirect()->route('petition.thanks', [
-            'locale' => $locale,
-            'slug' => $tr->slug,
-            'id' => $petition->id,
-            'status' => 0,
-        ]);
+                'slug'   => $tr->slug,
+                'id'     => $petition->id,
+                'status' => 0,
+            ]);
+        });
     }
 
     public function create(string $locale)
