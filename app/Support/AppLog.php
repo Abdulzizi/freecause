@@ -24,12 +24,16 @@ class AppLog
 
     protected static function store(string $level, string $title, string $content = '', ?string $context = null): void
     {
-        Log::create([
-            'level'   => $level,
-            'title'   => $title,
-            'content' => $content,
-            'context' => $context,
-            'ip'      => request()->ip(),
-        ]);
+        try {
+            Log::create([
+                'level'   => $level,
+                'title'   => $title,
+                'content' => $content,
+                'context' => $context,
+                'ip'      => request()->ip(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('AppLog write failed: ' . $e->getMessage());
+        }
     }
 }

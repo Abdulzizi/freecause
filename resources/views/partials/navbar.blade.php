@@ -57,7 +57,7 @@
                 @endif
 
                 <li class="nav-item ms-lg-3">
-                    <a class="btn btn-primary fc-startfree" href="#">
+                    <a class="btn btn-primary fc-startfree" href="{{ lroute('petition.create') }}">
                         {{ $c['nav_startfree'] ?? 'Start Free' }}
                     </a>
                 </li>

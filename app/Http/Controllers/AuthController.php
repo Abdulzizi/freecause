@@ -155,11 +155,11 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if (!$user->verified) {
-            Auth::logout();
-            return back()->withErrors([
-                'email' => 'Please verify your email first.'
-            ]);
-        }
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Please verify your email first.'
+                ]);
+            }
 
             if ($user->hasLevel('banned')) {
                 AppLog::warning(
@@ -245,6 +245,7 @@ class AuthController extends Controller
             if (Settings::get('smtp_enabled', false)) {
                 $u->verified = false;
                 $u->verification_token = Str::random(64);
+                $u->verification_token_sent_at = now();
 
                 try {
                     Mail::to($u->email)->send(new VerifyAccountMail($u, $locale));
@@ -306,6 +307,11 @@ class AuthController extends Controller
         if (!$user) {
             toast('Invalid or expired verification link.', 'error');
             return redirect()->to("/{$locale}");
+        }
+
+        if ($user->verification_token_sent_at && $user->verification_token_sent_at->lt(now()->subHours(48))) {
+            toast('Verification link expired. Please request a new one.', 'error');
+            return redirect()->to("/{$locale}/resend-verification");
         }
 
         $user->verified = true;
@@ -429,6 +435,7 @@ class AuthController extends Controller
         }
 
         $user->verification_token = Str::random(64);
+        $user->verification_token_sent_at = now();
         $user->save();
 
         try {

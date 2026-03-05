@@ -31,44 +31,44 @@ class FacebookAuthController extends Controller
 
     public function callback(Request $request, string $locale)
     {
-    if ($request->has('error')) {
-        AppLog::warning(
-            'Facebook OAuth cancelled',
-            'IP: '.$request->ip(),
-            'auth.facebook'
-        );
+        if ($request->has('error')) {
+            AppLog::warning(
+                'Facebook OAuth cancelled',
+                'IP: ' . $request->ip(),
+                'auth.facebook'
+            );
 
-        return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook login was cancelled.']);
-    }
+            return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook login was cancelled.']);
+        }
 
-    $ctx = $request->session()->pull('oauth_ctx', [
-        'flow' => 'register',
-        'locale' => $locale,
-    ]);
+        $ctx = $request->session()->pull('oauth_ctx', [
+            'flow' => 'register',
+            'locale' => $locale,
+        ]);
 
-    try {
-        $facebookUser = Socialite::driver('facebook')->user();
-    } catch (\Exception $e) {
-        AppLog::error(
-            'Facebook OAuth failed',
-            $e->getMessage().' | IP: '.$request->ip(),
-            'auth.facebook'
-        );
+        try {
+            $facebookUser = Socialite::driver('facebook')->user();
+        } catch (\Exception $e) {
+            AppLog::error(
+                'Facebook OAuth failed',
+                $e->getMessage() . ' | IP: ' . $request->ip(),
+                'auth.facebook'
+            );
 
-        return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook authentication failed.']);
-    }
+            return redirect("/{$locale}/login")->withErrors(['oauth' => 'Facebook authentication failed.']);
+        }
 
-    $email = strtolower(trim($facebookUser->getEmail() ?? ''));
+        $email = strtolower(trim($facebookUser->getEmail() ?? ''));
 
-    if (!$email) {
-        AppLog::warning(
-            'Facebook OAuth missing email',
-            'Facebook ID: '.$facebookUser->getId(),
-            'auth.facebook'
-        );
+        if (!$email) {
+            AppLog::warning(
+                'Facebook OAuth missing email',
+                'Facebook ID: ' . $facebookUser->getId(),
+                'auth.facebook'
+            );
 
-        return redirect("/{$locale}/register")->withErrors(['email' => 'Facebook did not provide email.']);
-    }
+            return redirect("/{$locale}/register")->withErrors(['email' => 'Facebook did not provide email.']);
+        }
 
         $fullName = trim((string) ($facebookUser->getName() ?: 'Facebook User'));
 
@@ -98,7 +98,7 @@ class FacebookAuthController extends Controller
 
             AppLog::info(
                 'User registered via Facebook',
-                'User ID: '.$user->id.' | Email: '.$email,
+                'User ID: ' . $user->id . ' | Email: ' . $email,
                 'auth.facebook'
             );
         }
@@ -116,12 +116,20 @@ class FacebookAuthController extends Controller
         if (!$newUser) {
             AppLog::info(
                 'User login via Facebook',
-                'User ID: '.$user->id,
+                'User ID: ' . $user->id,
                 'auth.facebook'
             );
         }
 
         $request->session()->regenerate();
+
+        if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
+            return redirect()->route('petition.sign.page', [
+                'locale' => $ctx['locale'],
+                'slug'   => $ctx['slug'],
+                'id'     => $ctx['petition_id'],
+            ]);
+        }
 
         return redirect("/{$locale}");
     }
