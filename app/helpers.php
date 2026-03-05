@@ -105,9 +105,64 @@ function base_url()
     return \App\Support\Settings::get('base_url', config('app.url'));
 }
 
-function toast($message, $type = 'info') {
+function toast($message, $type = 'info')
+{
     session()->flash('toast', [
         'type' => $type,
         'message' => $message,
     ]);
+}
+
+function sanitizePetitionHtml(string $html): string
+{
+    $allowedTags = ['br', 'p', 'strong', 'em', 'u', 'ul', 'ol', 'li'];
+
+    libxml_use_internal_errors(true);
+
+    $doc = new \DOMDocument('1.0', 'UTF-8');
+    $doc->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $container = $doc->getElementsByTagName('div')->item(0);
+
+    domSanitizeNode($container, $allowedTags, $doc);
+
+    $out = '';
+    foreach ($container->childNodes as $child) {
+        $out .= $doc->saveHTML($child);
+    }
+
+    $out = str_ireplace(['<b>', '</b>', '<i>', '</i>'], ['<strong>', '</strong>', '<em>', '</em>'], $out);
+
+    return trim($out);
+}
+
+function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc): void
+{
+    if (!$node->hasChildNodes()) return;
+
+    for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
+        $child = $node->childNodes->item($i);
+
+        if ($child->nodeType === XML_ELEMENT_NODE) {
+            $tag = strtolower($child->nodeName);
+
+            if ($child->hasAttributes()) {
+                while ($child->attributes->length) {
+                    $child->removeAttributeNode($child->attributes->item(0));
+                }
+            }
+
+            if (!in_array($tag, $allowedTags, true)) {
+                while ($child->firstChild) {
+                    $node->insertBefore($child->firstChild, $child);
+                }
+                $node->removeChild($child);
+                continue;
+            }
+
+            domSanitizeNode($child, $allowedTags, $doc);
+        } elseif ($child->nodeType === XML_COMMENT_NODE) {
+            $node->removeChild($child);
+        }
+    }
 }
