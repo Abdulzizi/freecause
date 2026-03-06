@@ -14,6 +14,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "
                             cd $DEPLOY_PATH &&
+                            git checkout -- . &&
                             git pull origin main &&
                             composer install --no-dev --optimize-autoloader &&
                             php artisan migrate --force &&

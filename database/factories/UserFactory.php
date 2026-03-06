@@ -22,7 +22,6 @@ class UserFactory extends Factory
     {
         if (!static::$userLevelId) {
             static::$userLevelId = UserLevel::where('name', 'user')->value('id');
-
             if (!static::$userLevelId) {
                 throw new \RuntimeException('User levels not seeded.');
             }
@@ -36,33 +35,27 @@ class UserFactory extends Factory
             static::$localeMap = config('locales') ?? [];
         }
 
-        $first = fake()->firstName();
-        $last  = fake()->lastName();
+        $first = $this->faker->firstName();
+        $last  = $this->faker->lastName();
 
-        $randomCode = fake()->randomElement(static::$languageCodes ?? ['en']);
+        $randomCode = $this->faker->randomElement(static::$languageCodes ?? ['en']);
         $locale     = static::$localeMap[$randomCode] ?? 'en_US';
 
         return [
-            'first_name' => $first,
-            'last_name'  => $last,
-            'name'       => trim($first . ' ' . $last),
-
-            'nickname' => fake()->optional(50)->userName(),
-            'city'     => fake()->optional(70)->city(),
-            'identify_mode' => fake()->randomElement(['full', 'name', 'nick']),
-
-            'email'    => fake()->unique()->safeEmail(),
-            'password' => static::$password ??= Hash::make('password'),
-
-            'locale' => $locale,
-            'ip'     => fake()->ipv4(),
-
-            'level_id' => static::$userLevelId,
-
-            'google_id'   => fake()->optional(20)->uuid(),
-            'facebook_id' => fake()->optional(15)->uuid(),
-
-            'verified' => fake()->boolean(20),
+            'first_name'    => $first,
+            'last_name'     => $last,
+            'name'          => trim($first . ' ' . $last),
+            'nickname'      => $this->faker->optional(0.5)->userName(),
+            'city'          => $this->faker->optional(0.7)->city(),
+            'identify_mode' => $this->faker->randomElement(['full', 'name', 'nick']),
+            'email'         => $this->faker->unique()->safeEmail(),
+            'password'      => static::$password ??= Hash::make('password'),
+            'locale'        => $locale,
+            'ip'            => $this->faker->ipv4(),
+            'level_id'      => static::$userLevelId,
+            'google_id'     => $this->faker->optional(0.2)->uuid(),
+            'facebook_id'   => $this->faker->optional(0.15)->uuid(),
+            'verified'      => $this->faker->boolean(20),
             'remember_token' => Str::random(10),
         ];
     }
