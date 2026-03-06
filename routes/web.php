@@ -44,7 +44,7 @@ Route::get('/', function () {
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
 
     Route::middleware('admin.auth')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
@@ -126,7 +126,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::group([
     'prefix' => '{locale}',
-    'middleware' => ['setLocale', 'block.banned.user'],
+    'middleware' => ['setLocale', 'block.banned.ip', 'block.banned.user'],
 ], function () {
     // auth + oauth
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');

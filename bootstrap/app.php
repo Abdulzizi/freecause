@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminAuth;
+use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\BlockBannedUser;
 use App\Http\Middleware\CheckPermission;
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->append(DebugForIp::class);
         $middleware->append(BlockBannedIp::class);
+        $middleware->append(AddSecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 

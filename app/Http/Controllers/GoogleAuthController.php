@@ -67,6 +67,17 @@ class GoogleAuthController extends Controller
 
         $newUser = false;
 
+        if ($user && empty($user->google_id)) {
+            AppLog::warning(
+                'Google OAuth email conflict — existing account not linked',
+                'Email: ' . $email . ' | Google ID: ' . $google->getId(),
+                'auth.google'
+            );
+            return redirect("/{$destLocale}/login")
+                ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.'])
+                ->withInput(['email' => $email]);
+        }
+
         if (!$user) {
             $newUser = true;
 
