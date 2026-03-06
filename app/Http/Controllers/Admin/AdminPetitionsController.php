@@ -213,10 +213,24 @@ class AdminPetitionsController extends Controller
                 return response()->json(['ok' => false, 'msg' => 'not implemented'], 400);
         }
 
-        Cache::forget("petitions:index:{$locale}:page:1");
+        try {
+            $locales = active_locales() ?: ['en'];
 
-        for ($i = 1; $i <= 5; $i++) {
-            Cache::forget("petitions:index:{$locale}:page:{$i}");
+            foreach ($locales as $l) {
+                for ($i = 1; $i <= 50; $i++) {
+                    Cache::forget("petitions:index:{$l}:page:{$i}");
+                }
+
+                Cache::forget("home:pool:{$l}");
+                Cache::forget("home:recent:{$l}");
+
+                $slot = (int) floor(time() / 60);
+                for ($s = 0; $s <= 5; $s++) {
+                    Cache::forget("home:featured:{$l}:" . ($slot + $s));
+                }
+            }
+        } catch (\Throwable $e) {
+            
         }
 
         return response()->json(['ok' => true]);

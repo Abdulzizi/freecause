@@ -41,7 +41,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:60'],
             'surname' => ['required', 'string', 'max:60'],
             'email' => ['required', 'email', 'max:190', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6', 'max:72'],
+            'password' => ['required', 'string', 'min:8', 'max:72'],
             'nickname' => ['nullable', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:80'],
             'agree_terms' => ['accepted'],
@@ -139,26 +139,11 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        if (Auth::guard('web')->attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        $user = User::where('email', $credentials['email'])->first();
 
-            // $redirect = $request->input('redirect');
-            // if ($redirect) {
-            //     return redirect()->to($redirect);
-            // }
-
-            $redirect = $request->input('redirect');
-            if ($redirect && str_starts_with($redirect, '/') && !str_starts_with($redirect, '//')) {
-                return redirect()->to($redirect);
-            }
-
-            $user = Auth::user();
-
+        if ($user) {
             if (!$user->verified) {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Please verify your email first.'
-                ]);
+                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email');
             }
 
             if ($user->hasLevel('banned')) {
@@ -167,17 +152,20 @@ class AuthController extends Controller
                     'User ID: ' . $user->id . ' | IP: ' . $request->ip(),
                     'auth.login'
                 );
-
-                Auth::logout();
                 toast('Your account has been suspended.', 'error');
                 return back()->withInput();
             }
+        }
 
-            // if ($user && \Schema::hasColumn('users', 'ip')) {
-            //     $user->ip = $request->ip();
-            //     $user->save();
-            // }
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
+            $request->session()->regenerate();
 
+            $redirect = $request->input('redirect');
+            if ($redirect && str_starts_with($redirect, '/') && !str_starts_with($redirect, '//')) {
+                return redirect()->to($redirect);
+            }
+
+            $user = Auth::user();
             $user->ip = $request->ip();
             $user->save();
 

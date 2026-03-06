@@ -193,7 +193,7 @@ class PetitionController extends Controller
             'name' => ['required', 'string', 'max:60'],
             'surname' => ['required', 'string', 'max:60'],
             'email' => ['required', 'email', 'max:190'],
-            'password' => ['required', 'string', 'min:6', 'max:72'],
+            'password' => ['required', 'string', 'min:8', 'max:72'],
             'comment' => ['nullable', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:80'],
             'nickname' => ['nullable', 'string', 'max:80'],
@@ -347,7 +347,19 @@ class PetitionController extends Controller
             ],
 
             'image' => ['nullable', 'image', 'max:4096'],
-            'image_url' => ['nullable', 'url', 'max:500'],
+            'image_url' => [
+                'nullable',
+                'url',
+                'max:500',
+                function ($attr, $value, $fail) {
+                    $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
+                    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
+                    $ext = pathinfo($path, PATHINFO_EXTENSION);
+                    if (!$ext || !in_array($ext, $allowed, true)) {
+                        $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
+                    }
+                },
+            ],
 
             'youtube' => ['nullable', 'url', 'max:200'],
 
@@ -806,7 +818,7 @@ class PetitionController extends Controller
             $petition->save();
 
             $tr->title = $data['title'];
-            $tr->description = $this->sanitizePetitionHtml($data['description']);
+            $tr->description = sanitizePetitionHtml($data['description']);
             $tr->save();
 
             toast('Petition updated successfully.', 'success');
