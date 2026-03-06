@@ -146,8 +146,8 @@ Route::group([
     // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
 
     Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
-    ->where(['slug' => '[a-z0-9\-]+', 'id' => '[0-9]+'])
-    ->name('user.profile');
+        ->where(['slug' => '[a-z0-9\-]+', 'id' => '[0-9]+'])
+        ->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');
@@ -197,6 +197,7 @@ Route::group([
 
     // petition actions (show / sign / thanks)
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
+    Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->where(['id' => '[0-9]+'])->name('petition.signatures');
     Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
     Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
