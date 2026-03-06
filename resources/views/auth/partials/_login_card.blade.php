@@ -29,9 +29,9 @@
         </button>
 
         <div class="mt-3">
-            <a href="#" class="red d-block fw-bold">Not a member yet? Sign up now</a>
-            <a href="#" class="red d-block mt-2">Forgot password ?</a>
-            <a href="#" class="red d-block">Resend activation email</a>
+            <a href="{{ lroute('register') }}" class="red d-block fw-bold">Not a member yet? Sign up now</a>
+            <a href="{{ lroute('password.request') }}" class="red d-block mt-2">Forgot password?</a>
+            <a href="{{ lroute('verification.resend.form') }}" class="red d-block">Resend activation email</a>
         </div>
     </form>
 </div>

@@ -571,51 +571,6 @@ class PetitionController extends Controller
         ));
     }
 
-    // public function signPage(Request $request, string $locale, string $slug, int $id)
-    // {
-    //     if (! auth()->check()) {
-    //         return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
-    //     }
-
-    //     $petition = Petition::query()->findOrFail($id);
-
-    //     $tr = PetitionTranslation::query()
-    //         ->where('petition_id', $petition->id)
-    //         ->where('locale', $locale)
-    //         ->first()
-    //         ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
-
-    //     abort_if(! $tr, 404);
-
-    //     if ($tr->slug !== $slug || $tr->locale !== $locale) {
-    //         return redirect()->route('petition.sign.page', [
-    //             'locale' => $tr->locale,
-    //             'slug' => $tr->slug,
-    //             'id' => $petition->id,
-    //         ]);
-    //     }
-
-    //     $hasSigned = Signature::query()
-    //         ->where('petition_id', $petition->id)
-    //         ->where('email', auth()->user()->email)
-    //         ->exists();
-
-    //     if ($hasSigned) {
-    //         return redirect()->route('petition.show', [
-    //             'locale' => $tr->locale,
-    //             'slug' => $tr->slug,
-    //             'id' => $petition->id,
-    //         ]);
-    //     }
-
-    //     $content = PageContent::query()
-    //         ->where('page', 'petition_sign')
-    //         ->where('locale', $locale)
-    //         ->pluck('value', 'key');
-
-    //     return view('petition.sign_page', compact('petition', 'locale', 'tr', 'content'));
-    // }
-
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
         if (! auth()->check()) {
@@ -951,5 +906,55 @@ class PetitionController extends Controller
         }
 
         return $slug;
+    }
+
+    public function signatures(Request $request, string $locale, string $slug, int $id)
+    {
+        $locale        = normalize_locale($locale);
+        $defaultLocale = default_locale();
+
+        $petition = Petition::with('category', 'user')
+            ->where('id', $id)
+            ->where('status', 'published')
+            ->where('is_active', 1)
+            ->firstOrFail();
+
+        $tr = PetitionTranslation::where('petition_id', $petition->id)
+            ->where('locale', $locale)
+            ->first()
+            ?? PetitionTranslation::where('petition_id', $petition->id)
+            ->where('locale', $defaultLocale)
+            ->first();
+
+        abort_if(! $tr, 404);
+
+        if ($tr->slug !== $slug || $tr->locale !== $locale) {
+            return redirect()->route('petition.signatures', [
+                'locale' => $tr->locale,
+                'slug'   => $tr->slug,
+                'id'     => $petition->id,
+            ]);
+        }
+
+        $signatures = Signature::with('user')
+            ->where('petition_id', $petition->id)
+            ->where('is_spam', false)
+            ->orderByDesc('created_at')
+            ->paginate(25)
+            ->withQueryString();
+
+        $goalTotal   = (int) ($petition->goal_signatures ?? 100);
+        $goalCurrent = (int) ($petition->signature_count ?? 0);
+        $pct         = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+
+        return view('petition.signatures', compact(
+            'petition',
+            'tr',
+            'locale',
+            'signatures',
+            'goalTotal',
+            'goalCurrent',
+            'pct'
+        ));
     }
 }

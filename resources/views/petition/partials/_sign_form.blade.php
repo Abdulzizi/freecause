@@ -36,10 +36,19 @@
 
     $agree1Title =
         $content['agree1_title'] ??
-        'I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>';
+        'I confirm registration and I agree to <a class="red" href="' .
+            lroute('page.show', ['slug' => 'terms-of-service']) .
+            '">Usage and Limitations of Services</a>';
     $agree2Title =
-        $content['agree2_title'] ?? 'I confirm that I have read the <a class="red" href="#">Privacy Policy</a>';
-    $agree3Title = $content['agree3_title'] ?? 'I agree to the <a class="red" href="#">Personal Data Processing</a>';
+        $content['agree2_title'] ??
+        'I confirm that I have read the <a class="red" href="' .
+            lroute('page.show', ['slug' => 'privacy-policy']) .
+            '">Privacy Policy</a>';
+    $agree3Title =
+        $content['agree3_title'] ??
+        'I agree to the <a class="red" href="' .
+            lroute('page.show', ['slug' => 'privacy-policy']) .
+            '">Personal Data Processing</a>';
     $agreeYes = $content['agree_yes'] ?? 'I agree';
     $agreeNo = $content['agree_no'] ?? 'I do not agree';
 

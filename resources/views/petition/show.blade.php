@@ -12,17 +12,19 @@
     $petitionImg = $petition->coverUrl();
     $petitionCredit = $petition->image_credit ?? '';
 
-    $btnSignNow     = $content['btn_sign_now'] ?? 'Sign Now';
-    $boxSignTitle   = $content['box_sign_title'] ?? 'Sign The Petition';
+    $btnSignNow = $content['btn_sign_now'] ?? 'Sign Now';
+    $boxSignTitle = $content['box_sign_title'] ?? 'Sign The Petition';
     $googleContinue = $content['google_continue'] ?? 'Continue with Google';
-    $orText         = $content['or'] ?? 'OR';
+    $orText = $content['or'] ?? 'OR';
 
     $loginUrl = lroute('login');
 
-    $authHintSplit = $content['auth_hint_split']
-        ?? 'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.';
-    $authHintStack = $content['auth_hint_stack']
-        ?? 'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>';
+    $authHintSplit =
+        $content['auth_hint_split'] ??
+        'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.';
+    $authHintStack =
+        $content['auth_hint_stack'] ??
+        'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>';
 
     $authHintSplit = str_replace(':login_url', $loginUrl, $authHintSplit);
     $authHintStack = str_replace(':login_url', $loginUrl, $authHintStack);
@@ -31,9 +33,9 @@
 
     $boxGoal = $content['box_goal'] ?? 'Goal';
     $goalSignaturesTmpl = $content['goal_signatures'] ?? ':count signatures';
-    $goalLabelTmpl      = $content['goal_label'] ?? 'Goal: :count';
+    $goalLabelTmpl = $content['goal_label'] ?? 'Goal: :count';
     $goalSignaturesText = str_replace(':count', number_format($goalCurrent), $goalSignaturesTmpl);
-    $goalLabelText      = str_replace(':count', number_format($goalTotal), $goalLabelTmpl);
+    $goalLabelText = str_replace(':count', number_format($goalTotal), $goalLabelTmpl);
 
     $boxLatest = $content['box_latest'] ?? 'Latest Signatures';
     $latestEmpty = $content['latest_empty'] ?? 'no signatures yet';
@@ -75,7 +77,7 @@
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
                             <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img">
-                            @if($petitionCredit)
+                            @if ($petitionCredit)
                                 <span class="fc-img-credit">{{ $petitionCredit }}</span>
                             @endif
                         </a>
@@ -92,13 +94,15 @@
                             <div class="fc-box-title">{{ $boxSignTitle }}</div>
 
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
-                            @if(!$isAuthed)
+                            @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                       href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         {{ $googleContinue }}
                                     </a>
@@ -122,7 +126,9 @@
                         <div class="mt-4">
                             <div class="fc-box-title">{{ $boxShoutbox }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -131,13 +137,15 @@
                         <div id="signFormTop" class="bg-light rounded-3 p-4 mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">{{ $boxSignTitle }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
-                            @if(!$isAuthed)
+                            @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
-                                       href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
+                                        href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
                                         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
                                         {{ $googleContinue }}
                                     </a>
@@ -161,7 +169,9 @@
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">{{ $boxGoal }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
                             <div class="fc-progress mt-3">
@@ -179,7 +189,9 @@
                                 <span>{{ $boxLatest }}</span>
                             </div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
                             <div class="fc-latest mt-3">
@@ -190,35 +202,47 @@
                                         </div>
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
-                                            <a href="#" class="red">{{ $sig->name ?? 'Anonymous' }}</a>
+                                            <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
+                                                class="red">{{ $sig->name ?? 'Anonymous' }}</a>
                                             <span class="text-muted">|</span>
                                             {{-- <span>{{ $sig->comment ?? ($formContent['default_comment'] ?? 'I support this petition') }}</span> --}}
-                                            <span>{{ $sig->text}}</span>
+                                            <span>{{ $sig->text }}</span>
                                         </div>
                                     </div>
                                 @empty
                                     <div class="text-muted" style="font-size:14px;">{{ $latestEmpty }}</div>
                                 @endforelse
 
-                                <a href="#" class="btn btn-sm btn-danger mt-2">{{ $latestBrowseAll }}</a>
+                                <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
+                                    class="btn btn-sm btn-danger mt-2">{{ $latestBrowseAll }}</a>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">{{ $boxInformation }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
                             <div class="mt-3" style="font-size:14px;line-height:1.8;">
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoBy }}</strong>
-                                    <a href="{{ lroute('user.profile', ['slug' => Str::slug($petition->user?->name ?? 'user'), 'id' => $petition->user_id]) }}" class="red">{{ $petition->user?->name ?? 'Demo User' }}</a>
+                                    @if ($petition->user)
+                                        <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($petition->user->name ?? 'user'), 'id' => $petition->user_id]) }}"
+                                            class="red">
+                                            {{ $petition->user->name }}
+                                        </a>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
                                 </div>
 
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoIn }}</strong>
-                                    <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}" class="red">
+                                    <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}"
+                                        class="red">
                                         {{ $petition->category?->name ?? '-' }}
                                     </a>
                                 </div>
@@ -233,23 +257,30 @@
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">{{ $boxTags }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
-                            </div>
-                            @if($petition->tags)
-                                <div class="mt-3">
-                                    @foreach(explode(',', $petition->tags) as $tag)
-                                        <span class="badge bg-secondary me-1">{{ trim($tag) }}</span>
-                                    @endforeach
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
                                 </div>
-                            @else
-                                <div class="mt-3 text-muted" style="font-size:14px;">{{ $tagsEmpty }}</div>
-                            @endif
+                            </div>
+                            <div class="mt-3" style="font-size:14px;">
+                                @if ($petition->tags)
+                                    @foreach (explode(',', $petition->tags) as $tag)
+                                        @if (trim($tag))
+                                            <span class="badge bg-secondary me-1 mb-1"
+                                                style="font-weight:400;font-size:13px;">{{ trim($tag) }}</span>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">{{ $tagsEmpty }}</span>
+                                @endif
+                            </div>
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
                             <div class="fc-box-title">{{ $boxEmbed }}</div>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
                             <div class="mt-3" style="font-size:13px;">
@@ -257,7 +288,8 @@
                                 <input class="form-control mb-3" value="{{ $directLink }}" readonly>
 
                                 <div class="mb-2"><strong>{{ $embedHtml }}</strong></div>
-                                <input class="form-control mb-3" value='<a href="{{ $directLink }}">{{ $petitionTitle }}</a>' readonly>
+                                <input class="form-control mb-3"
+                                    value='<a href="{{ $directLink }}">{{ $petitionTitle }}</a>' readonly>
 
                                 <div class="mb-2"><strong>{{ $embedForumNoTitle }}</strong></div>
                                 <input class="form-control mb-3" value='[URL="{{ $directLink }}"][/URL]' readonly>
@@ -268,8 +300,9 @@
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm fc-widgets-box" style="border:1px solid #eee;">
-                            <button id="widgetsToggle" class="fc-widgets-toggle" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#widgetsBody" aria-expanded="false" aria-controls="widgetsBody">
+                            <button id="widgetsToggle" class="fc-widgets-toggle" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#widgetsBody" aria-expanded="false"
+                                aria-controls="widgetsBody">
                                 <span class="fc-box-title mb-0 d-flex align-items-center gap-2">
                                     {{ $boxWidgets }}
                                     <i class="fa fa-angle-down fc-widgets-arrow cursor-pointer" aria-hidden="true"></i>
@@ -277,7 +310,9 @@
                             </button>
 
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                <div
+                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                </div>
                             </div>
 
                             <div id="widgetsBody" class="collapse">
@@ -298,23 +333,28 @@
                         </div>
 
                         @auth
-                            @if((int) auth()->id() === (int) $petition->user_id)
+                            @if ((int) auth()->id() === (int) $petition->user_id)
                                 <div class="bg-white rounded-3 p-4 shadow-sm my-4" style="border:1px solid #eee;">
                                     <div class="fc-box-title">Operations</div>
                                     <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                        <div style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;"></div>
+                                        <div
+                                            style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                                        </div>
                                     </div>
 
                                     <div style="font-size:14px;line-height:1.9;">
                                         <div>
-                                            <a class="red" href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">Edit</a>
+                                            <a class="red"
+                                                href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">Edit</a>
                                         </div>
 
                                         <div class="mt-2">
                                             Download signatures :
-                                            <a class="red" href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
+                                            <a class="red"
+                                                href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
                                             <span class="text-muted"> </span>
-                                            <a class="red" href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
+                                            <a class="red"
+                                                href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
                                     </div>
                                 </div>
@@ -333,7 +373,7 @@
             <div class="modal-content p-2">
                 <div class="modal-body p-0 position-relative">
                     <button type="button" class="btn-close position-absolute" style="right:10px;top:10px;z-index:2;"
-                            data-bs-dismiss="modal" aria-label="Close"></button>
+                        data-bs-dismiss="modal" aria-label="Close"></button>
                     <img src="{{ $petitionImg }}" class="img-fluid w-100" alt="petition image large">
                 </div>
             </div>
@@ -342,30 +382,79 @@
 @endsection
 
 <style>
-    .fc-petition-description ul { list-style: disc !important; padding-left: 22px !important; margin: 0 0 14px 0 !important; }
-    .fc-petition-description ol { list-style: decimal !important; padding-left: 22px !important; margin: 0 0 14px 0 !important; }
-    .fc-petition-description p { margin: 0 0 12px; }
-    .fc-petition-description { font-size: 16px; line-height: 1.75; color: #222; }
-    .fc-petition-description li { margin: 0 0 6px 0; }
-    .fc-petition-description li>ul, .fc-petition-description li>ol { margin-top: 8px !important; }
-    .fc-petition-img { width: 100%; height: 380px; object-fit: cover; border-radius: 8px; display: block; }
-    .fc-img-wrap { position: relative; overflow: hidden; border-radius: 10px; background: #f3f3f3; }
-    .fc-img-credit { position: absolute; right: 10px; bottom: 10px; background: rgba(0, 0, 0, .55); color: #fff; padding: 4px 8px; font-size: 12px; border-radius: 6px; }
+    .fc-petition-description ul {
+        list-style: disc !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .fc-petition-description ol {
+        list-style: decimal !important;
+        padding-left: 22px !important;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .fc-petition-description p {
+        margin: 0 0 12px;
+    }
+
+    .fc-petition-description {
+        font-size: 16px;
+        line-height: 1.75;
+        color: #222;
+    }
+
+    .fc-petition-description li {
+        margin: 0 0 6px 0;
+    }
+
+    .fc-petition-description li>ul,
+    .fc-petition-description li>ol {
+        margin-top: 8px !important;
+    }
+
+    .fc-petition-img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+    }
+
+    .fc-img-wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #f3f3f3;
+    }
+
+    .fc-img-credit {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        background: rgba(0, 0, 0, .55);
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 6px;
+    }
 </style>
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('widgetsToggle');
-    const body = document.getElementById('widgetsBody');
-    if (!toggle || !body || !window.bootstrap) return;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('widgetsToggle');
+            const body = document.getElementById('widgetsBody');
+            if (!toggle || !body || !window.bootstrap) return;
 
-    body.addEventListener('shown.bs.collapse', () => {
-        toggle.removeAttribute('data-bs-toggle');
-        toggle.removeAttribute('data-bs-target');
-        toggle.removeAttribute('aria-controls');
-        toggle.style.cursor = 'default';
-    }, { once: true });
-});
-</script>
+            body.addEventListener('shown.bs.collapse', () => {
+                toggle.removeAttribute('data-bs-toggle');
+                toggle.removeAttribute('data-bs-target');
+                toggle.removeAttribute('aria-controls');
+                toggle.style.cursor = 'default';
+            }, {
+                once: true
+            });
+        });
+    </script>
 @endpush

@@ -3,27 +3,27 @@
 @php
     $content = $content ?? collect();
 
-    $isCreated = (($mode ?? 'signed') === 'created');
+    $isCreated = ($mode ?? 'signed') === 'created';
 
     $pageTitle = $isCreated
-        ? ($content['title_created'] ?? 'Thanks! - FreeCause')
-        : ($content['title_signed'] ?? 'Thank you for having signed - FreeCause');
+        ? $content['title_created'] ?? 'Thanks! - FreeCause'
+        : $content['title_signed'] ?? 'Thank you for having signed - FreeCause';
 
     $h1Text = $isCreated
-        ? ($content['h1_created'] ?? 'Thanks!')
-        : ($content['h1_signed'] ?? 'Thank you for having signed:');
+        ? $content['h1_created'] ?? 'Thanks!'
+        : $content['h1_signed'] ?? 'Thank you for having signed:';
 
     $pText = $isCreated
-        ? ($content['p_created'] ?? 'Your petition has been created successfully. You can open it now using the link above.')
-        : ($content['p_signed'] ?? 'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.');
+        ? $content['p_created'] ??
+            'Your petition has been created successfully. You can open it now using the link above.'
+        : $content['p_signed'] ??
+            'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.';
 
     $suggestionsTitle = $content['suggestions_h2'] ?? 'Petitions you might like';
     $suggestionsEmpty = $content['suggestions_empty'] ?? 'No suggestions yet.';
     $inviteBtnText = $content['invite_btn'] ?? 'Invite friends from your address book »';
 
-    $petitionUrl = isset($tr) && $tr
-        ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id])
-        : '#';
+    $petitionUrl = isset($tr) && $tr ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp
 
 @section('title', $pageTitle)
@@ -72,7 +72,8 @@
                     @endforelse
                 </div>
 
-                <a class="btn btn-danger" href="#">
+                <a class="btn btn-danger"
+                    href="{{ lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) }}">
                     {{ $inviteBtnText }}
                 </a>
             </div>
