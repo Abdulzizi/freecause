@@ -27,7 +27,6 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 py-3">
                     <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
-                        <span style="font-size:18px;">🚧</span>
                         <div>
                             <strong>Not implemented yet.</strong>
                             This section is under development and will be available soon.
