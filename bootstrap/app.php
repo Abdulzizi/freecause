@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'setLocale' => SetLocale::class,
             'admin.auth' => AdminAuth::class,
+            'block.banned.ip' => BlockBannedIp::class,
             'block.banned.user' => BlockBannedUser::class,
             'permission' => CheckPermission::class,
         ]);
