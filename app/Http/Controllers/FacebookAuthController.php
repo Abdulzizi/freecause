@@ -81,6 +81,12 @@ class FacebookAuthController extends Controller
         $userLevel = UserLevel::where('name', 'user')->first();
         $newUser = false;
 
+        if ($user && empty($user->facebook_id)) {
+            return redirect("/{$locale}/login")
+                ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Facebook from your profile.'])
+                ->withInput(['email' => $email]);
+        }
+
         if (!$user) {
             $newUser = true;
 

@@ -46,4 +46,7 @@ return [
         'client_secret' => env('FACEBOOK_SECRET'),
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
+
+    'emergency_email'    => env('ADMIN_EMERGENCY_EMAIL'),
+    'emergency_password' => env('ADMIN_EMERGENCY_PASSWORD'),
 ];

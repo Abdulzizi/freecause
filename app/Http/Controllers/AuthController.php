@@ -166,8 +166,13 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
-            $user->ip = $request->ip();
-            $user->save();
+
+            try {
+    $user->ip = $request->ip();
+    $user->save();
+} catch (\Throwable $e) {
+    Log::warning('Failed to update user IP on login: ' . $e->getMessage());
+}
 
             return redirect()->intended("/{$locale}");
         }
@@ -178,11 +183,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();
-
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         $locale = $request->input('locale', 'en');
-
         return redirect()->to("/{$locale}");
     }
 
@@ -304,6 +307,7 @@ class AuthController extends Controller
 
         $user->verified = true;
         $user->verification_token = null;
+        $user->verification_token_sent_at = null;
         $user->save();
 
         //* AUTO LOGIN AFTER VERIFY

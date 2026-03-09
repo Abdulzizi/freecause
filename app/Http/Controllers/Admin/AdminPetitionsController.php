@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Language;
+use Illuminate\Support\Facades\Log;
 
 class AdminPetitionsController extends Controller
 {
@@ -230,7 +231,7 @@ class AdminPetitionsController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            
+            Log::warning('bulkAction cache clear failed: ' . $e->getMessage());
         }
 
         return response()->json(['ok' => true]);
