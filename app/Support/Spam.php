@@ -48,10 +48,10 @@ class Spam
     public static function rateLimit(string $type, int $limit = 5): bool
     {
         $count = DB::table('spam_logs')
-            ->where('ip', request()->ip())
-            ->where('type', $type)
-            ->where('created_at', '>=', now()->subMinutes(5))
-            ->count();
+    ->where('ip', request()->ip())
+    ->where('type', $type)
+    ->where('created_at', '>=', now()->subMinutes(5))
+    ->count();
 
         if ($count >= $limit) {
             self::banCurrentIp('Auto ban: too many ' . $type . ' attempts');

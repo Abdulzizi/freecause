@@ -88,7 +88,7 @@ class PetitionController extends Controller
                 ->paginate(15);
         });
 
-        $petitions->withQueryString();
+        $petitions = $petitions->withQueryString();
 
         return view('pages.petitions-list', [
             'pageTitle' => 'All the petitions',
@@ -437,7 +437,7 @@ class PetitionController extends Controller
                 })
                 ->exists();
 
-            if (! $alreadySigned) {
+            if ($user->email && !$alreadySigned) {
                 Signature::create([
                     'petition_id' => $petition->id,
                     'user_id' => $user->id,
@@ -907,9 +907,7 @@ class PetitionController extends Controller
 
     private function makeUniqueSlug(string $title, string $locale): string
     {
-        $base = Str::slug($title);
-        $base = $base ?: 'petition';
-
+        $base = Str::slug($title) ?: 'petition';
         $slug = $base;
         $i = 1;
 
@@ -917,7 +915,7 @@ class PetitionController extends Controller
             $slug = $base . '-' . $i++;
         }
 
-        return $slug;
+        return $slug . ($i > 1 ? '' : '-' . Str::lower(Str::random(4)));
     }
 
     public function signatures(Request $request, string $locale, string $slug, int $id)
