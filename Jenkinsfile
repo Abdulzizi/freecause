@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_HOST = sh(script: "[ \${GIT_BRANCH} = 'origin/main' ] && echo 'CONTABO_IP' || echo '76.13.22.222'", returnStdout: true).trim()
+        DEPLOY_HOST = sh(script: "[ \${GIT_BRANCH} = 'origin/main' ] && echo '76.13.22.222' || echo '76.13.22.222'", returnStdout: true).trim()
+        // DEPLOY_HOST = sh(script: "[ \${GIT_BRANCH} = 'origin/main' ] && echo 'CONTABO_IP' || echo '76.13.22.222'", returnStdout: true).trim()
         DEPLOY_USER = 'root'
         DEPLOY_PATH = '/var/www/freecause/backend'
     }
