@@ -28,8 +28,8 @@ class AdminAuthController extends Controller
         $login    = $request->login;
         $password = $request->password;
 
-        $emergencyEmail    = env('ADMIN_EMERGENCY_EMAIL');
-        $emergencyPassword = env('ADMIN_EMERGENCY_PASSWORD');
+        $emergencyEmail    = config('services.emergency_email');
+        $emergencyPassword = config('services.emergency_password');
 
         if (
             $emergencyEmail &&
@@ -65,6 +65,8 @@ class AdminAuthController extends Controller
             Auth::guard('admin')->logout();
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
+
+        $request->session()->regenerate();
 
         return redirect()->route('admin.options.global');
     }
