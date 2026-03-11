@@ -2,17 +2,20 @@
     $isAuthed = auth()->check();
     $c = $navbarContent ?? [];
 @endphp
-
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" alt="logo">
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fcNav"
-            aria-controls="fcNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        {{-- Mobile: language + hamburger in top-right --}}
+        <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
+            @include('partials.language_switch')
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#fcNav"
+                aria-controls="fcNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
         <div class="collapse navbar-collapse" id="fcNav">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
@@ -21,19 +24,16 @@
                         {{ $c['nav_explore'] ?? 'Explore petitions' }}
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('magazine') }}">
                         {{ $c['nav_magazine'] ?? 'Magazine' }}
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('faqs') }}">
                         {{ $c['nav_help'] ?? 'Help' }}
                     </a>
                 </li>
-
                 @if (!$isAuthed)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('login') }}">
@@ -44,7 +44,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->display_name }}</a>
                     </li>
-
                     <li class="nav-item ms-lg-2 me-lg-3">
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
@@ -56,13 +55,15 @@
                     </li>
                 @endif
 
-                <li class="nav-item ms-lg-3">
-                    <a class="btn btn-primary fc-startfree" href="{{ lroute('petition.create') }}">
+                {{-- Start Free: full-width on mobile, normal on desktop --}}
+                <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
+                    <a class="btn btn-primary fc-startfree w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
                         {{ $c['nav_startfree'] ?? 'Start Free' }}
                     </a>
                 </li>
 
-                <li class="nav-item ms-lg-4">
+                {{-- Language switcher: hidden on mobile (shown above hamburger instead) --}}
+                <li class="nav-item ms-lg-4 d-none d-lg-block">
                     @include('partials.language_switch')
                 </li>
             </ul>

@@ -110,8 +110,15 @@ class PetitionController extends Controller
         $petition = Petition::query()
             ->with('category')
             ->where('id', $id)
-            ->where('status', 'published')
-            ->where('is_active', 1)
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('status', 'published')->where('is_active', 1);
+                })
+                    ->orWhere(function ($q2) {
+                        $q2->where('status', 'draft')
+                            ->where('user_id', auth()->id() ?? 0);
+                    });
+            })
             ->firstOrFail();
 
         $tr = PetitionTranslation::query()
