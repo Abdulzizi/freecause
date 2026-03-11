@@ -143,9 +143,26 @@ class AdminPetitionsController extends Controller
                 ]
             );
 
+        try {
+            $locales = active_locales() ?: ["en"];
+            foreach ($locales as $l) {
+                for ($i = 1; $i <= 50; $i++) {
+                    Cache::forget("petitions:index:{$l}:page:{$i}");
+                }
+                Cache::forget("home:pool:{$l}");
+                Cache::forget("home:recent:{$l}");
+                $slot = (int) floor(time() / 60);
+                for ($s = 0; $s <= 5; $s++) {
+                    Cache::forget("home:featured:{$l}:" . ($slot + $s));
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Cache clear failed after petition save: " . $e->getMessage());
+        }
+
         return redirect()
-            ->route('admin.petitions', ['select' => $data['id'], 'locale' => $data['locale']])
-            ->with('success', 'saved');
+            ->route("admin.petitions", ["select" => $data["id"], "locale" => $data["locale"]])
+            ->with("success", "saved");
     }
 
     public function bulkAction(Request $request)
@@ -231,7 +248,7 @@ class AdminPetitionsController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            Log::warning('bulkAction cache clear failed: ' . $e->getMessage());
+            Log::warning("Cache clear failed after petition bulk action: " . $e->getMessage());
         }
 
         return response()->json(['ok' => true]);

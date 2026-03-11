@@ -80,7 +80,6 @@
 
                 {{-- @include('petition.partials._agreements') --}}
 
-                {{-- agreements --}}
                 <div class="mb-3">
                     <div style="font-weight:700;">
                         {!! $agree1Title !!}
