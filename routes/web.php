@@ -42,7 +42,7 @@ Route::get('/', function () {
     return redirect("/{$default}");
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
 
