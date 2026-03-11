@@ -70,7 +70,9 @@
                         {{ $petitionTitle }}
                     </h1>
 
-                    <a href="#signFormTop" class="btn btn-danger fc-sign-now">{{ $btnSignNow }}</a>
+                    @if (!$hasSigned)
+                        <a href="#signFormTop" class="btn btn-danger fc-sign-now">{{ $btnSignNow }}</a>
+                    @endif
                 </div>
 
                 <div class="row g-4">

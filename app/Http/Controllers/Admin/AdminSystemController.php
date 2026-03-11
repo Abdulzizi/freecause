@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Support\AppLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -13,21 +12,14 @@ class AdminSystemController extends Controller
 {
     public function userInfo()
     {
-        $admin = Auth::guard('admin')->user();
+        $admin = admin_user();
 
         return view('admin.system.user-info', compact('admin'));
     }
 
     public function updateUserInfo(Request $request)
     {
-        $admin = Auth::guard('admin')->user();
-
-        // $data = $request->validate([
-        //     'current_password' => ['nullable', 'required_with:new_password', 'string'],
-        //     'new_password' => ['nullable', 'confirmed', 'min:6', 'max:72'],
-        //     'new_password' => ['nullable', 'confirmed', 'max:72'],
-        //     'email' => ['required', 'email', 'max:190'],
-        // ]);
+        $admin = admin_user();
 
         $data = $request->validate([
             'email' => ['required', 'email', 'max:190'],
@@ -47,7 +39,6 @@ class AdminSystemController extends Controller
         ]);
 
         if (!empty($data['new_password'])) {
-
             if (!Hash::check($data['current_password'], $admin->password)) {
                 return back()->withErrors([
                     'current_password' => 'Current password is incorrect.',
@@ -67,7 +58,8 @@ class AdminSystemController extends Controller
         );
 
         if (!empty($data['new_password'])) {
-            Auth::guard('admin')->logout();
+            $request->session()->forget('admin_user_id');
+            $request->session()->regenerateToken();
             return redirect()->route('admin.login')->with('success', 'Password changed. Please login again.');
         }
 

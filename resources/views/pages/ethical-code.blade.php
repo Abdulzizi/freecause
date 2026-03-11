@@ -4,7 +4,7 @@
 {{-- @section('body_class', 'ethical-code') --}}
 
 {{-- @section('content') --}}
-    <section class="breadcrumb-section">
+    {{-- <section class="breadcrumb-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <section class="petitions-list py-5">
         <div class="container">
@@ -29,9 +29,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h4 class="headings">Ethical code</h4>
+                                {{-- <h4 class="headings">Ethical code</h4>
 
-                                <div class="privacy-inner">
+                                <div class="privacy-inner"> --}}
 
                                     <h2 class="title">Our code of ethics</h2>
 
@@ -208,7 +208,7 @@
                                         our employees and fostering a safe work environment.
                                     </p>
 
-                                </div><!-- /.privacy-inner -->
+                                {{-- </div><!-- /.privacy-inner --> --}}
                             </div>
                         </div>
                     </div>

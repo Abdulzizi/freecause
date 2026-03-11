@@ -4,7 +4,7 @@
 {{-- @section('body_class', 'privacy-policy') --}}
 
 {{-- @section('content') --}}
-    <section class="breadcrumb-section">
+    {{-- <section class="breadcrumb-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <section class="petitions-list py-5">
         <div class="container">
@@ -29,9 +29,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h4 class="headings">Privacy Policy</h4>
+                                {{-- <h4 class="headings">Privacy Policy</h4>
 
-                                <div class="privacy-inner">
+                                <div class="privacy-inner"> --}}
                                     <p><strong>Privacy Statement</strong></p>
 
                                     <p>
@@ -265,7 +265,7 @@
                                         at
                                         <a href="{{ lroute('contacts') }}">Contacts</a>.
                                     </p>
-                                </div>
+                                {{-- </div> --}}
                             </div>
                         </div>
                     </div>

@@ -166,3 +166,11 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
         }
     }
 }
+if (!function_exists('admin_user')) {
+    function admin_user(): ?\App\Models\User
+    {
+        $id = session('admin_user_id');
+        if (!$id) return null;
+        return \App\Models\User::find($id);
+    }
+}

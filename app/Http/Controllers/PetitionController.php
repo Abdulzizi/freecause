@@ -88,7 +88,7 @@ class PetitionController extends Controller
                 ->paginate(15);
         });
 
-        $petitions = $petitions->withQueryString();
+        $petitions->withQueryString();
 
         return view('pages.petitions-list', [
             'pageTitle' => 'All the petitions',
@@ -289,9 +289,23 @@ class PetitionController extends Controller
 
     public function create(string $locale)
     {
+        $defaultLocale = default_locale();
+
         $categories = Category::query()
+            ->select(['categories.id'])
+            ->selectRaw("COALESCE(ct_locale.name, ct_default.name) as name")
+            ->selectRaw("COALESCE(ct_locale.slug, ct_default.slug) as slug")
+            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
+                $join->on('ct_locale.category_id', '=', 'categories.id')
+                    ->where('ct_locale.locale', '=', $locale);
+            })
+            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
+                $join->on('ct_default.category_id', '=', 'categories.id')
+                    ->where('ct_default.locale', '=', $defaultLocale);
+            })
+            ->where('categories.is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'slug']);
+            ->get();
 
         return view('petition.create', compact('locale', 'categories'));
     }
@@ -437,7 +451,7 @@ class PetitionController extends Controller
                 })
                 ->exists();
 
-            if ($user->email && !$alreadySigned) {
+            if (! $alreadySigned) {
                 Signature::create([
                     'petition_id' => $petition->id,
                     'user_id' => $user->id,
@@ -700,12 +714,24 @@ class PetitionController extends Controller
         if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) return $trOrRedirect;
         $tr = $trOrRedirect;
 
+        $defaultLocale = default_locale();
+
         $categories = Category::query()
-            ->where('is_active', true)
+            ->select(['categories.id'])
+            ->selectRaw("COALESCE(ct_locale.name, ct_default.name) as name")
+            ->selectRaw("COALESCE(ct_locale.slug, ct_default.slug) as slug")
+            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
+                $join->on('ct_locale.category_id', '=', 'categories.id')
+                    ->where('ct_locale.locale', '=', $locale);
+            })
+            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
+                $join->on('ct_default.category_id', '=', 'categories.id')
+                    ->where('ct_default.locale', '=', $defaultLocale);
+            })
+            ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();
 
-        // reuse create form
         $mode = 'edit';
 
         return view('petition.create', compact('petition', 'tr', 'locale', 'categories', 'mode'));
@@ -907,7 +933,9 @@ class PetitionController extends Controller
 
     private function makeUniqueSlug(string $title, string $locale): string
     {
-        $base = Str::slug($title) ?: 'petition';
+        $base = Str::slug($title);
+        $base = $base ?: 'petition';
+
         $slug = $base;
         $i = 1;
 
@@ -915,7 +943,7 @@ class PetitionController extends Controller
             $slug = $base . '-' . $i++;
         }
 
-        return $slug . ($i > 1 ? '' : '-' . Str::lower(Str::random(4)));
+        return $slug;
     }
 
     public function signatures(Request $request, string $locale, string $slug, int $id)

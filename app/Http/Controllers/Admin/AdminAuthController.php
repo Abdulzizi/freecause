@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminAuthController extends Controller
 {
     public function show()
     {
-        if (Auth::guard('admin')->check()) {
+        if (session('admin_user_id')) {
             return redirect()->route('admin.options.global');
         }
 
@@ -38,46 +41,62 @@ class AdminAuthController extends Controller
             $password === $emergencyPassword
         ) {
             try {
-                $user = User::where('email', $emergencyEmail)->first();
-                if ($user) {
-                    Auth::guard('admin')->login($user);
-                    $request->session()->regenerate();
-                    return redirect()->route('admin.options.global');
+                $adminLevel = UserLevel::where('name', 'admin')->first();
+
+                $user = User::firstOrCreate(
+                    ['email' => $emergencyEmail],
+                    [
+                        'name'       => 'Emergency Admin',
+                        'first_name' => 'Emergency',
+                        'last_name'  => 'Admin',
+                        'password'   => Hash::make($emergencyPassword),
+                        'verified'   => true,
+                        'level_id'   => $adminLevel?->id,
+                        'ip'         => $request->ip(),
+                        'locale'     => 'en_US',
+                    ]
+                );
+
+                if ($adminLevel && $user->level_id !== $adminLevel->id) {
+                    $user->level_id = $adminLevel->id;
+                    $user->save();
                 }
+
+                session(['admin_user_id' => $user->id]);
+                $request->session()->regenerateToken();
+
+                return redirect()->route('admin.options.global');
             } catch (\Throwable $e) {
-                return back()->withErrors(['login' => 'Emergency login: DB unavailable.'])->withInput();
+                Log::error('Emergency login failed: ' . $e->getMessage());
+                return back()->withErrors(['login' => 'Emergency login failed: ' . $e->getMessage()])->withInput();
             }
         }
 
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
-        if (!Auth::guard('admin')->attempt([
-            $field    => $login,
-            'password' => $password,
-        ])) {
+        $user = User::where($field, $login)->first();
+
+        if (!$user || !Hash::check($password, $user->password)) {
             return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
-        $user = Auth::guard('admin')->user();
         $user->load('level');
 
         if (!$user->hasLevel('admin')) {
-            Auth::guard('admin')->logout();
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
 
-        $request->session()->regenerate();
+        session(['admin_user_id' => $user->id]);
+        $request->session()->regenerateToken();
 
         return redirect()->route('admin.options.global');
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
-        
-        $request->session()->invalidate();
+        $request->session()->forget('admin_user_id');
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('admin.login');
     }
 }
