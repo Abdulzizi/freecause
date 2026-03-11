@@ -56,8 +56,18 @@ class Petition extends Model
             return Storage::disk('public')->url($this->cover_image);
         }
 
-        $n = $this->id ? ($this->id % 14) : 0; // 0..13
-        return asset("legacy/images/petitions/covers/pic{$n}.jpg");
+        if ($this->image_url) {
+            return $this->image_url;
+        }
+
+        $n = ($this->id ? ($this->id % 14) : 0) + 1; // 1..14
+        $path = public_path("legacy/images/petitions/covers/pic{$n}.jpg");
+
+        if (file_exists($path)) {
+            return asset("legacy/images/petitions/covers/pic{$n}.jpg");
+        }
+
+        return asset('legacy/images/demo-featured.jpg');
     }
 
     public function translation(?string $locale = null): ?PetitionTranslation
