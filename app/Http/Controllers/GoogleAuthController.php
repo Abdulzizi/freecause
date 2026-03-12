@@ -68,14 +68,28 @@ class GoogleAuthController extends Controller
         $newUser = false;
 
         if ($user && empty($user->google_id)) {
-            AppLog::warning(
-                'Google OAuth email conflict — existing account not linked',
-                'Email: ' . $email . ' | Google ID: ' . $google->getId(),
-                'auth.google'
-            );
-            return redirect("/{$destLocale}/login")
-                ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.'])
-                ->withInput(['email' => $email]);
+            // If user has no real password (never set one, no facebook either)
+            // they registered via Google and then unlinked — re-link automatically
+            $hasNoRealPassword = empty($user->facebook_id)
+                && is_null($user->password_changed_at);
+
+            if ($hasNoRealPassword) {
+                AppLog::info(
+                    'Google OAuth re-linked (no password account)',
+                    'User ID: ' . $user->id . ' | Email: ' . $email,
+                    'auth.google'
+                );
+                // fall through — google_id will be set below
+            } else {
+                AppLog::warning(
+                    'Google OAuth email conflict — existing account not linked',
+                    'Email: ' . $email . ' | Google ID: ' . $google->getId(),
+                    'auth.google'
+                );
+                return redirect("/{$destLocale}/login")
+                    ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.'])
+                    ->withInput(['email' => $email]);
+            }
         }
 
         if (!$user) {

@@ -1,13 +1,15 @@
 <div class="mb-3">
-    <div class="fw-semibold">Sign In Using Your Account With</div>
+    <div class="fw-semibold">Sign Up Using Your Account With</div>
     <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
 </div>
 
 <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
-    {{-- facebook later --}}
-    <button type="button" class="btn btn-primary px-3" style="border-radius:6px;" disabled>
+
+
+    <a href="{{ lroute('oauth.facebook', ['redirect' => $redirect]) }}" class="btn btn-light border px-3">
+        <img src="{{ asset('legacy/images-v2/facebook.png') }}" alt="" style="width:18px;margin-right:8px;">
         Continue with Facebook
-    </button>
+    </a>
 
     <a href="{{ lroute('oauth.google', ['redirect' => $redirect]) }}" class="btn btn-light border px-3"
         style="border-radius:6px;">

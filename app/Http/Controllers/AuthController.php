@@ -17,7 +17,6 @@ use App\Support\Settings;
 use App\Support\Locale;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -167,13 +166,8 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
-
-            try {
-    $user->ip = $request->ip();
-    $user->save();
-} catch (\Throwable $e) {
-    Log::warning('Failed to update user IP on login: ' . $e->getMessage());
-}
+            $user->ip = $request->ip();
+            $user->save();
 
             return redirect()->intended("/{$locale}");
         }
@@ -181,19 +175,14 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
     }
 
-public function logout(Request $request)
+    public function logout(Request $request)
     {
-        $adminUserId = session('admin_user_id');
-
         Auth::guard('web')->logout();
-        $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        if ($adminUserId) {
-            session(['admin_user_id' => $adminUserId]);
-        }
-
         $locale = $request->input('locale', 'en');
+
         return redirect()->to("/{$locale}");
     }
 
@@ -267,6 +256,7 @@ public function logout(Request $request)
             }
 
             $u->password = Hash::make($data['new_password']);
+            $u->password_changed_at = now();
         }
 
         $u->save();
@@ -276,7 +266,7 @@ public function logout(Request $request)
         return back();
     }
 
-public function delete(Request $request, string $locale)
+    public function delete(Request $request, string $locale)
     {
         $request->validate([
             'confirm_delete' => ['required', 'in:1'],
@@ -284,15 +274,9 @@ public function delete(Request $request, string $locale)
 
         $u = Auth::guard('web')->user();
 
-        $adminUserId = session('admin_user_id');
-
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        if ($adminUserId) {
-            session(['admin_user_id' => $adminUserId]);
-        }
 
         AppLog::warning(
             'User account deleted',
@@ -304,6 +288,7 @@ public function delete(Request $request, string $locale)
 
         return redirect()->to("/{$locale}")->with('success', 'Account deleted successfully.');
     }
+
     public function verify(string $locale, string $token)
     {
         $user = User::where('verification_token', $token)->first();
@@ -320,7 +305,6 @@ public function delete(Request $request, string $locale)
 
         $user->verified = true;
         $user->verification_token = null;
-        $user->verification_token_sent_at = null;
         $user->save();
 
         //* AUTO LOGIN AFTER VERIFY
