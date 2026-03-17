@@ -59,32 +59,18 @@ class HomeController extends Controller
         });
 
         $recentActivities = cache()->remember("home:recent:{$locale}", 60, function () use ($locale, $defaultLocale) {
-            return Signature::select([
-                'signatures.*',
-                'petitions.id as petition_id',
-                DB::raw("COALESCE(pt_locale.title, pt_default.title) as petition_title"),
-                DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as petition_slug"),
-            ])
-                ->join('petitions', function ($join) {
-                    $join->on('petitions.id', '=', 'signatures.petition_id')
-                        ->where('petitions.status', 'published')
-                        ->where('petitions.is_active', 1);
-                })
-                ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                    $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                        ->where('pt_locale.locale', '=', $locale);
-                })
-                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                    $join->on('pt_default.petition_id', '=', 'petitions.id')
-                        ->where('pt_default.locale', '=', $defaultLocale);
-                })
-                ->where(function ($q) {
-                    $q->whereNotNull('pt_locale.title')
-                        ->orWhereNotNull('pt_default.title');
-                })
-                ->orderByDesc('signatures.created_at')
-                ->limit(10)
-                ->get();
+            return DB::select("
+                SELECT s.*, p.id as petition_id,
+                    COALESCE(pt_locale.title, pt_default.title) as petition_title,
+                    COALESCE(pt_locale.slug, pt_default.slug) as petition_slug
+                FROM signatures s FORCE INDEX (signatures_created_at_index)
+                JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
+                LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
+                LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
+                WHERE pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL
+                ORDER BY s.created_at DESC
+                LIMIT 10
+            ", [$locale, $defaultLocale]);
         });
 
         $maxFeatured = (int) Settings::get('max_featured_petitions_per_country', 5, 'global');

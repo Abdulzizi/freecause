@@ -87,10 +87,8 @@
                                                             </div>
 
                                                             <div class="col-sm-6 mb-4">
-
                                                                 @if ($featuredPetition)
                                                                     <h5>{{ $featuredPetition->tr_title }}</h5>
-
                                                                     <p>
                                                                         <strong>
                                                                             {{ $content['petition_target_label'] ?? 'Petition target:' }}
@@ -101,6 +99,27 @@
                                                                     <p>
                                                                         {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                     </p>
+
+                                                                    <div class="goal-progress mb-3">
+                                                                        <div class="progress mb-2">
+                                                                            <div class="progress-bar"
+                                                                                style="width: {{ $progress }}%;"></div>
+                                                                        </div>
+                                                                        <div class="d-flex justify-content-between text-muted">
+                                                                            <span>
+                                                                                {{ number_format($signatures) }}
+                                                                                {{ $content['signatures_label'] ?? 'signatures' }}
+                                                                            </span>
+                                                                            <span>
+                                                                                {{ $content['goal_label'] ?? 'Goal:' }}
+                                                                                {{ number_format($goal) }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <span href="{{ $featuredUrl }}" class="btn btn-danger">
+                                                                        {{ $content['read_more'] ?? 'read more' }}
+                                                                    </span>
                                                                 @else
                                                                     <h5>{{ $content['featured_none_title'] ?? 'no featured petition yet' }}
                                                                     </h5>
@@ -108,31 +127,8 @@
                                                                         {{ $content['featured_none_sub'] ?? '' }}
                                                                     </p>
                                                                 @endif
-
                                                             </div>
                                                         </div>
-
-                                                        <div class="goal-progress mb-3">
-                                                            <div class="progress mb-2">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $progress }}%;"></div>
-                                                            </div>
-
-                                                            <div class="d-flex justify-content-between text-muted">
-                                                                <span>
-                                                                    {{ number_format($signatures) }}
-                                                                    {{ $content['signatures_label'] ?? 'signatures' }}
-                                                                </span>
-                                                                <span>
-                                                                    {{ $content['goal_label'] ?? 'Goal:' }}
-                                                                    {{ number_format($goal) }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        <span href="{{ $featuredUrl }}" class="btn btn-danger">
-                                                            {{ $content['read_more'] ?? 'read more' }}
-                                                        </span>
 
                                                     </div>
                                                 </div>
