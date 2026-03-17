@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Support\ApproxRows;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AdminStatsController extends Controller
 {
+    use ApproxRows;
     public function index(Request $request)
     {
         $filters = [
@@ -56,28 +59,33 @@ class AdminStatsController extends Controller
 
     private function summaryStats($locale, $from)
     {
-        $usersTotal = DB::table('users')->count();
-        $usersVerified = DB::table('users')->where('verified', 1)->count();
+        // Totals: use approximate row counts (fast, cached 1h) for display
+        $usersTotal      = $this->approxTableRows('users');
+        $petitionsTotal  = $this->approxTableRows('petitions');
+        $signaturesTotal = $this->approxTableRows('signatures');
 
-        $petitionsTotal = DB::table('petitions')->count();
-        $petitionsPublished = DB::table('petitions')
-            ->where('status', 'published')
-            ->count();
+        // Verified/published ratios: cache for 10 minutes
+        $usersVerified = Cache::remember('admin:stats:users_verified', 600, fn() =>
+            DB::table('users')->where('verified', 1)->count()
+        );
+        $petitionsPublished = Cache::remember('admin:stats:petitions_published', 600, fn() =>
+            DB::table('petitions')->where('status', 'published')->count()
+        );
 
-        $signaturesTotal = DB::table('signatures')->count();
-
-        $usersNew = DB::table('users')
-            ->where('created_at', '>=', $from)
-            ->count();
-
-        $petitionsNew = DB::table('petitions')
-            ->where('created_at', '>=', $from)
-            ->count();
-
-        $signaturesNew = DB::table('signatures')
-            ->where('created_at', '>=', $from)
-            ->when($locale, fn($q) => $q->where('locale', $locale))
-            ->count();
+        // Recent counts: cache 5 min keyed by range + locale
+        $rangeKey = $from->toDateString() . ':' . ($locale ?: 'all');
+        $usersNew = Cache::remember("admin:stats:users_new:{$rangeKey}", 300, fn() =>
+            DB::table('users')->where('created_at', '>=', $from)->count()
+        );
+        $petitionsNew = Cache::remember("admin:stats:petitions_new:{$rangeKey}", 300, fn() =>
+            DB::table('petitions')->where('created_at', '>=', $from)->count()
+        );
+        $signaturesNew = Cache::remember("admin:stats:sigs_new:{$rangeKey}", 300, fn() =>
+            DB::table('signatures')
+                ->where('created_at', '>=', $from)
+                ->when($locale, fn($q) => $q->where('locale', $locale))
+                ->count()
+        );
 
         return [
             'users_total' => $usersTotal,
@@ -92,8 +100,8 @@ class AdminStatsController extends Controller
 
             'signatures_total' => $signaturesTotal,
 
-            'users_new' => $usersNew,
-            'petitions_new' => $petitionsNew,
+            'users_new'      => $usersNew,
+            'petitions_new'  => $petitionsNew,
             'signatures_new' => $signaturesNew,
         ];
     }
@@ -134,7 +142,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Email', 'Total Signatures'],
-            $q->paginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString()
         ];
     }
 
@@ -152,7 +160,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Email', 'Total Petitions'],
-            $q->paginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString()
         ];
     }
 
@@ -165,7 +173,7 @@ class AdminStatsController extends Controller
 
         return [
             ['ID', 'Status', 'Created At'],
-            $q->paginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString()
         ];
     }
 
@@ -178,7 +186,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Verified Emails'],
-            $q->paginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString()
         ];
     }
 }

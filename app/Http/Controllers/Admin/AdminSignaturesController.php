@@ -80,11 +80,11 @@ class AdminSignaturesController extends Controller
         }
 
         if ($filters['email'] !== '') {
-            $q->where('s.email', 'like', '%' . $filters['email'] . '%');
+            $q->where('s.email', 'like', $filters['email'] . '%');
         }
 
         if ($hasText && $filters['text'] !== '') {
-            $q->where('s.text', 'like', '%' . $filters['text'] . '%');
+            $q->where('s.text', 'like', $filters['text'] . '%');
         }
 
         if ($filters['category_id'] !== '') {
@@ -97,7 +97,7 @@ class AdminSignaturesController extends Controller
 
         $q->orderByDesc('s.id');
 
-        $signatures = $q->paginate(25)->withQueryString();
+        $signatures = $q->simplePaginate(25)->withQueryString();
         $approxTotal = $this->approxTableRows('signatures');
 
         $languages = Language::where('is_active', true)

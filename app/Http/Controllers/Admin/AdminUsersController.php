@@ -34,15 +34,15 @@ class AdminUsersController extends Controller
         }
 
         if ($filters['first_name'] !== '') {
-            $q->where('first_name', 'like', "%{$filters['first_name']}%");
+            $q->where('first_name', 'like', "{$filters['first_name']}%");
         }
 
         if ($filters['last_name'] !== '') {
-            $q->where('last_name', 'like', "%{$filters['last_name']}%");
+            $q->where('last_name', 'like', "{$filters['last_name']}%");
         }
 
         if ($filters['email'] !== '') {
-            $q->where('email', 'like', "%{$filters['email']}%");
+            $q->where('email', 'like', "{$filters['email']}%");
         }
 
         if ($filters['locale'] !== '') {
@@ -51,7 +51,7 @@ class AdminUsersController extends Controller
         }
 
         if ($filters['ip'] !== '') {
-            $q->where('ip', 'like', "%{$filters['ip']}%");
+            $q->where('ip', 'like', "{$filters['ip']}%");
         }
 
         if ($filters['level'] !== '') {
@@ -60,7 +60,7 @@ class AdminUsersController extends Controller
             });
         }
 
-        $users = $q->orderByDesc('id')->paginate(25)->withQueryString();
+        $users = $q->orderByDesc('id')->simplePaginate(25)->withQueryString();
         $approxTotal = $this->approxTableRows('users');
 
         $levels = UserLevel::pluck('name', 'name')->toArray();

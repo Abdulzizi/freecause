@@ -56,10 +56,10 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            $q->where(function ($q) use ($filters) {
-                $q->where('pt.title', 'like', '%' . $filters['title'] . '%')
-                    ->orWhere('pt_default.title', 'like', '%' . $filters['title'] . '%');
-            });
+            $q->whereRaw(
+                "MATCH(pt.title) AGAINST(? IN BOOLEAN MODE) OR MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)",
+                ['+' . $filters['title'] . '*', '+' . $filters['title'] . '*']
+            );
         }
 
         if ($filters['featured'] !== '') {
@@ -68,7 +68,7 @@ class AdminPetitionsController extends Controller
 
         $q->orderByDesc('petitions.id');
 
-        $petitions = $q->paginate(25)->withQueryString();
+        $petitions = $q->simplePaginate(25)->withQueryString();
 
         $approxTotal = $this->approxTableRows('petitions');
 
