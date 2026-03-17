@@ -157,7 +157,22 @@ class AuthController extends Controller
             }
         }
 
-        if (Auth::guard('web')->attempt($credentials, $remember)) {
+        // Try standard bcrypt login first
+        $loggedIn = Auth::guard('web')->attempt($credentials, $remember);
+
+        // Fallback: legacy md5(md5(password).salt):salt hash for migrated old users
+        if (!$loggedIn && $user && str_contains($user->password, ':')) {
+            [$hash, $salt] = explode(':', $user->password, 2);
+            if (md5(md5($credentials['password']) . $salt) === $hash) {
+                // Rehash to bcrypt and save
+                $user->password = Hash::make($credentials['password']);
+                $user->save();
+                Auth::guard('web')->login($user, $remember);
+                $loggedIn = true;
+            }
+        }
+
+        if ($loggedIn) {
             $request->session()->regenerate();
 
             $redirect = $request->input('redirect');
