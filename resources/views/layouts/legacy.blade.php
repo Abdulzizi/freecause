@@ -30,6 +30,19 @@
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
+    <meta property="og:site_name" content="FreeCause">
+    <meta property="og:type" content="website">
+    @hasSection('og_title')
+        <meta property="og:title" content="@yield('og_title')">
+        <meta property="og:description" content="@yield('og_description')">
+        <meta property="og:image" content="@yield('og_image')">
+        <meta property="og:url" content="@yield('og_url', request()->url())">
+    @else
+        <meta property="og:title" content="@yield('title', 'FreeCause')">
+        <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
+        <meta property="og:url" content="{{ request()->url() }}">
+    @endif
+
     {!! $headExtra !!}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>

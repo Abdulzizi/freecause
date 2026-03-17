@@ -11,7 +11,7 @@
                     <div class="card shadow-lg border-0" style="border-radius:12px;">
                         <div class="card-body p-4 p-md-5">
 
-                            <h3 class="text-center mb-4">Sign In Using Your Account With</h3>
+                            <h3 class="text-center mb-4">Create Your Account</h3>
 
                             <div class="text-center mb-4">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}" class="btn btn-light border px-3" style="border-radius:8px;">

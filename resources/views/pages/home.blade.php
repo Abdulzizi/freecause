@@ -71,68 +71,66 @@
                                     <div class="row featured-row">
                                         <div class="col-lg-12 mb-25">
 
-                                            <a href="{{ $featuredUrl }}" class="d-block text-decoration-none">
-                                                <div class="card featured-box">
-                                                    <div class="card-body">
+                                            <div class="card featured-box position-relative">
+                                                <div class="card-body">
 
-                                                        <span class="featured-badges">
-                                                            {{ $content['featured_badge'] ?? 'Featured Petition' }}
-                                                        </span>
+                                                    <span class="featured-badges">
+                                                        {{ $content['featured_badge'] ?? 'Featured Petition' }}
+                                                    </span>
 
-                                                        <div class="row featured-box-inner">
+                                                    <div class="row featured-box-inner">
 
-                                                            <div class="col-sm-6 mb-4">
-                                                                <img src="{{ $featuredPetition?->coverUrl() }}"
-                                                                    class="img-fluid" />
-                                                            </div>
-
-                                                            <div class="col-sm-6 mb-4">
-                                                                @if ($featuredPetition)
-                                                                    <h5>{{ $featuredPetition->tr_title }}</h5>
-                                                                    <p>
-                                                                        <strong>
-                                                                            {{ $content['petition_target_label'] ?? 'Petition target:' }}
-                                                                        </strong>
-                                                                        {{ $featuredPetition->target ?? '-' }}
-                                                                    </p>
-
-                                                                    <p>
-                                                                        {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
-                                                                    </p>
-
-                                                                    <div class="goal-progress mb-3">
-                                                                        <div class="progress mb-2">
-                                                                            <div class="progress-bar"
-                                                                                style="width: {{ $progress }}%;"></div>
-                                                                        </div>
-                                                                        <div class="d-flex justify-content-between text-muted">
-                                                                            <span>
-                                                                                {{ number_format($signatures) }}
-                                                                                {{ $content['signatures_label'] ?? 'signatures' }}
-                                                                            </span>
-                                                                            <span>
-                                                                                {{ $content['goal_label'] ?? 'Goal:' }}
-                                                                                {{ number_format($goal) }}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <span href="{{ $featuredUrl }}" class="btn btn-danger">
-                                                                        {{ $content['read_more'] ?? 'read more' }}
-                                                                    </span>
-                                                                @else
-                                                                    <h5>{{ $content['featured_none_title'] ?? 'no featured petition yet' }}
-                                                                    </h5>
-                                                                    <p class="text-muted">
-                                                                        {{ $content['featured_none_sub'] ?? '' }}
-                                                                    </p>
-                                                                @endif
-                                                            </div>
+                                                        <div class="col-sm-6 mb-4">
+                                                            <img src="{{ $featuredPetition?->coverUrl() }}"
+                                                                class="img-fluid w-100"
+                                                                style="max-height:320px;object-fit:cover;border-radius:6px;" />
                                                         </div>
 
+                                                        <div class="col-sm-6 mb-4">
+                                                            @if ($featuredPetition)
+                                                                <h5>{{ $featuredPetition->tr_title }}</h5>
+                                                                <p>
+                                                                    <strong>
+                                                                        {{ $content['petition_target_label'] ?? 'Petition target:' }}
+                                                                    </strong>
+                                                                    {{ $featuredPetition->target ?? '-' }}
+                                                                </p>
+
+                                                                <p>
+                                                                    {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
+                                                                </p>
+
+                                                                <div class="goal-progress mb-3">
+                                                                    <div class="progress mb-2">
+                                                                        <div class="progress-bar"
+                                                                            style="width: {{ $progress }}%;"></div>
+                                                                    </div>
+                                                                    <div class="d-flex justify-content-between text-muted">
+                                                                        <span>
+                                                                            {{ number_format($signatures) }}
+                                                                            {{ $content['signatures_label'] ?? 'signatures' }}
+                                                                        </span>
+                                                                        <span>
+                                                                            {{ $content['goal_label'] ?? 'Goal:' }}
+                                                                            {{ number_format($goal) }}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <a href="{{ $featuredUrl }}" class="btn btn-danger stretched-link">
+                                                                    {{ $content['read_more'] ?? 'read more' }}
+                                                                </a>
+                                                            @else
+                                                                <h5>{{ $content['featured_none_title'] ?? 'no featured petition yet' }}</h5>
+                                                                <p class="text-muted">
+                                                                    {{ $content['featured_none_sub'] ?? '' }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
                                                     </div>
+
                                                 </div>
-                                            </a>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -179,7 +177,7 @@
                                                                     </p>
 
                                                                     <span class="red fs-14">
-                                                                        {{ optional($sig->created_at)->diffForHumans() }}
+                                                                        {{ $sig->created_at ? \Carbon\Carbon::parse($sig->created_at)->diffForHumans() : '' }}
                                                                     </span>
                                                                 </div>
 
@@ -254,12 +252,32 @@
                 </div>
             </div>
 
+            @php
+                $categoryIcons = [
+                    1  => 'bi-hearts',
+                    2  => 'bi-briefcase',
+                    3  => 'bi-building',
+                    4  => 'bi-palette',
+                    5  => 'bi-book',
+                    6  => 'bi-tree',
+                    7  => 'bi-heart-pulse',
+                    8  => 'bi-person-check',
+                    9  => 'bi-flag',
+                    10 => 'bi-cpu',
+                    11 => 'bi-trophy',
+                    12 => 'bi-airplane',
+                    13 => 'bi-car-front',
+                    14 => 'bi-people',
+                    15 => 'bi-house-heart',
+                ];
+            @endphp
+
             <div class="row category-row">
                 @foreach ($categories as $cat)
                     <div class="col-lg-3 col-sm-6 mb-3">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="category-card d-block">
-                            <span class="category-icon"><i class="bi bi-house-check"></i></span>
+                            <span class="category-icon"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
                             <h3 class="h5">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
@@ -312,9 +330,3 @@
         });
     </script>
 @endpush
-
-{{-- <style>
-    li {
-        list-style: none;
-    }
-</style> --}}
