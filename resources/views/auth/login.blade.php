@@ -67,8 +67,13 @@
                                         placeholder="Enter your password" required>
                                 </div>
 
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="remember">Remember me</label>
+                                </div>
+
                                 <button type="submit" class="btn btn-danger w-100 py-2" style="border-radius:8px;">
-                                    Submit
+                                    Sign In
                                 </button>
 
                                 <div class="text-center mt-3">

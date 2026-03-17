@@ -20,12 +20,15 @@
 
                 <div class="fc-petitions-list">
                     @forelse($petitions as $petition)
-                                    <a href="{{ lroute('petition.show', [
+                        <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" class="fc-petition-row">
-                                        {{ $petition->tr_title }}
-                                    </a>
+                        ]) }}" class="fc-petition-row d-flex justify-content-between align-items-center">
+                            <span>{{ $petition->tr_title }}</span>
+                            <span class="text-muted ms-3 text-nowrap" style="font-size:13px;">
+                                {{ number_format($petition->signature_count ?? 0) }} signatures
+                            </span>
+                        </a>
                     @empty
                         <div class="text-muted">
                             {{ __('No petitions found.') }}

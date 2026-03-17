@@ -59,6 +59,10 @@
 @endphp
 
 @section('title', $pageTitle)
+@section('og_title', $petitionTitle)
+@section('og_description', \Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200))
+@section('og_image', $petitionImg)
+@section('og_url', request()->url())
 
 @section('content')
     <section class="py-5">
