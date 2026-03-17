@@ -6,7 +6,7 @@
 
 @php
     $hasFooter = isset($footer) && trim((string) $footer) !== '';
-    $isEmpty = empty($p) ? true : $p->total() === 0;
+    $isEmpty = empty($p) ? true : $p->isEmpty();
 @endphp
 
 <div class="fc-box" style="margin-top:10px; padding:10px 10px;">
