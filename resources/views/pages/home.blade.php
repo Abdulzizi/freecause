@@ -295,15 +295,17 @@
             </div>
 
             <div class="row g-4">
-                @foreach ([['img' => asset('legacy/images/demo-mag-1.avif'), 'title' => 'Mongolia Death Penalty Ban: How Amnesty International Changed Law'], ['img' => asset('legacy/images/demo-mag-2.jpg'), 'title' => 'Overcoming Apathy Inspiring People to Take the First Step'], ['img' => asset('legacy/images/demo-mag-3.jpeg'), 'title' => 'Why Authenticity Is Key To Petition Success']] as $post)
+                @foreach ($magazinePosts as $post)
                     <div class="col-md-4">
                         <div class="blog-grid">
                             <div class="blog-images">
-                                <img src="{{ $post['img'] }}" alt="">
+                                @if ($post->thumbnail_path)
+                                    <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
+                                @endif
                             </div>
                             <div class="blog-content">
-                                <h3 class="blog-title">{{ $post['title'] }}</h3>
-                                <a class="red" href="#">
+                                <h3 class="blog-title">{{ $post->post_title }}</h3>
+                                <a class="red" href="/magazine/{{ $post->post_name }}">
                                     {{ $content['blog_read_more'] ?? 'Read More' }}
                                     <span style="margin-left:6px;">›</span>
                                 </a>

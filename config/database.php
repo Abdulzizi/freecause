@@ -43,6 +43,19 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        'magazine' => [
+            'driver'    => 'mysql',
+            'host'      => env('MAGAZINE_DB_HOST', '127.0.0.1'),
+            'port'      => env('MAGAZINE_DB_PORT', '3306'),
+            'database'  => env('MAGAZINE_DB_DATABASE', 'magazine'),
+            'username'  => env('MAGAZINE_DB_USERNAME', 'freecause'),
+            'password'  => env('MAGAZINE_DB_PASSWORD', 'secret'),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => 'abi_',
+            'strict'    => false,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

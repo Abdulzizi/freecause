@@ -1,0 +1,1357 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Pubnews\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-15 05:17+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.10; wp-6.4.5\n"
+"X-Domain: pubnews"
+
+#: inc/admin/admin.php:375
+msgid " to activate one click demo importer plugin"
+msgstr ""
+
+#: inc/admin/admin.php:375
+msgid " to install and activate one click demo importer plugin"
+msgstr ""
+
+#. used between list items, there is a space after the comma
+#: inc/template-tags.php:120
+msgid ", "
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:180
+msgid "1st Tab"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:198
+msgid "2nd Tab"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:216
+msgid "3rd Tab"
+msgstr ""
+
+#: inc/theme-starter.php:1517 inc/breadcrumb-trail/breadcrumbs.php:314
+msgid "404 Not Found"
+msgstr ""
+
+#: inc/customizer/customizer.php:498
+msgid "A - Z"
+msgstr ""
+
+#: inc/widgets/popular-posts.php:16
+msgid "A collection of popular posts from specific category."
+msgstr ""
+
+#: inc/widgets/category-collection.php:16
+msgid "A collection of post categories."
+msgstr ""
+
+#: inc/widgets/posts-grid.php:16
+msgid "A collection of posts from specific category displayed in grid layout."
+msgstr ""
+
+#: inc/widgets/posts-grid-two-column.php:16
+msgid ""
+"A collection of posts from specific category displayed in grid two column "
+"layout."
+msgstr ""
+
+#: inc/widgets/posts-list.php:16
+msgid "A collection of posts from specific category displayed in list layout."
+msgstr ""
+
+#: inc/widgets/carousel.php:16
+msgid "A collection of posts from specific category for carousel slide."
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:16
+msgid "A collection of tabbed news from specific time frame."
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:16
+msgid "A collection of tabbed posts from specific category."
+msgstr ""
+
+#: inc/admin/admin.php:587
+msgid "Activate"
+msgstr ""
+
+#: inc/admin/admin.php:587
+msgid "activate"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:79
+msgid "Ad Image"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:93 inc/widgets/banner-ads.php:71
+msgid "Ad link open in"
+msgstr ""
+
+#: inc/widgets/banner-ads.php:66
+msgid "Ad URL"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:84
+msgid "Ad Url"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:99
+msgid "Add image"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:209
+msgid "Add item"
+msgstr ""
+
+#: inc/widgets/category-collection.php:131
+msgid "Add the News Text here"
+msgstr ""
+
+#: inc/widgets/author-info.php:74 inc/widgets/carousel.php:111
+#: inc/widgets/category-collection.php:117 inc/widgets/popular-posts.php:108
+#: inc/widgets/posts-grid-two-column.php:123 inc/widgets/posts-grid.php:94
+#: inc/widgets/posts-list.php:128 inc/widgets/social-icons.php:57
+msgid "Add the widget title here"
+msgstr ""
+
+#: inc/widgets/widget-title.php:51
+msgid "Add the widget title here."
+msgstr ""
+
+#: inc/widgets/widget-fields.php:70
+msgid "Add url here . ."
+msgstr ""
+
+#: inc/widgets/widgets.php:19 inc/widgets/widgets.php:32
+#: inc/widgets/widgets.php:45 inc/widgets/widgets.php:97
+#: inc/widgets/widgets.php:110 inc/widgets/widgets.php:123
+#: inc/widgets/widgets.php:136
+msgid "Add widgets here."
+msgstr ""
+
+#: inc/widgets/widgets.php:58
+msgid "Add widgets suitable for displaying ads here."
+msgstr ""
+
+#: inc/widgets/widgets.php:84
+msgid "Add widgets suitable for middle left here."
+msgstr ""
+
+#: inc/widgets/widgets.php:71
+msgid "Add widgets suitable for middle right here."
+msgstr ""
+
+#: inc/widgets/widgets.php:56
+msgid "Ads Banner Sidebar"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:68
+msgid "Ads Images"
+msgstr ""
+
+#: inc/template-tags.php:227 inc/template-tags.php:238
+msgid "ago"
+msgstr ""
+
+#: inc/template-functions.php:383 inc/admin/admin.php:444
+#: inc/widgets/news-filter-tabbed.php:163
+msgid "All"
+msgstr ""
+
+#: inc/admin/admin.php:677
+msgid "All in one migration"
+msgstr ""
+
+#: inc/admin/admin.php:327
+msgid "All starter sites"
+msgstr ""
+
+#: inc/admin/admin.php:902
+msgid "Already did"
+msgstr ""
+
+#: inc/customizer/customizer.php:458
+msgid "Animation 1"
+msgstr ""
+
+#: inc/customizer/customizer.php:471
+msgid "Animation object color"
+msgstr ""
+
+#: inc/customizer/customizer.php:439
+msgid "Animation Settings"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:315
+msgid "Archives"
+msgstr ""
+
+#: inc/widgets/author-info.php:86
+msgid "Author Image"
+msgstr ""
+
+#: inc/widgets/author-info.php:75
+msgid "Author Info"
+msgstr ""
+
+#: inc/widgets/author-info.php:80 inc/widgets/author-info.php:81
+msgid "Author Name"
+msgstr ""
+
+#: inc/widgets/author-info.php:91
+msgid "Author Tag"
+msgstr ""
+
+#: inc/widgets/author-info.php:97
+msgid "Author URL"
+msgstr ""
+
+#: inc/theme-starter.php:1619
+msgid "Back To Top"
+msgstr ""
+
+#: inc/customizer/customizer.php:17
+msgid "Background"
+msgstr ""
+
+#: inc/customizer/customizer.php:452
+msgid "Background animation"
+msgstr ""
+
+#: inc/customizer/customizer.php:426
+msgid "Background Color"
+msgstr ""
+
+#: inc/widgets/banner-ads.php:61
+msgid "Banner Image"
+msgstr ""
+
+#. Author of the theme
+msgid "BlazeThemes"
+msgstr ""
+
+#: inc/admin/admin.php:248 inc/admin/assets/demos.php:24
+#: inc/admin/assets/demos.php:56 inc/admin/assets/demos.php:75
+#: inc/admin/assets/demos.php:93 inc/admin/assets/demos.php:112
+#: inc/admin/assets/demos.php:131 inc/admin/assets/demos.php:149
+#: inc/admin/assets/demos.php:167 inc/admin/assets/demos.php:185
+msgid "Blog"
+msgstr ""
+
+#: inc/extras/extras.php:255
+msgid "Both Sidebar"
+msgstr ""
+
+#: functions.php:68
+msgid "Bottom Footer"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:312
+msgctxt "breadcrumbs aria label"
+msgid "Breadcrumbs"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:311
+msgid "Browse:"
+msgstr ""
+
+#: inc/admin/admin.php:427
+msgid "Buy Pro"
+msgstr ""
+
+#: inc/admin/admin.php:749
+msgid "Cancel"
+msgstr ""
+
+#: inc/widgets/carousel.php:133
+msgid "Carousel Layout"
+msgstr ""
+
+#: inc/widgets/carousel.php:117 inc/widgets/popular-posts.php:114
+#: inc/widgets/posts-grid-two-column.php:129 inc/widgets/posts-grid.php:100
+#: inc/widgets/posts-list.php:134 inc/widgets/tabbed-posts.php:197
+msgid "Categories"
+msgstr ""
+
+#: inc/widgets/category-collection.php:118
+msgid "Category Collection"
+msgstr ""
+
+#: inc/widgets/widget-title.php:61
+msgid "Center"
+msgstr ""
+
+#: inc/widgets/widget-title.php:58
+msgid "change the alignment of the wiget title text."
+msgstr ""
+
+#: inc/widgets/carousel.php:134
+msgid "Change the layout of the widget."
+msgstr ""
+
+#: inc/widgets/category-collection.php:124
+msgid "Choose the categories to display"
+msgstr ""
+
+#: inc/widgets/carousel.php:118
+msgid "Choose the category to display for carousel posts"
+msgstr ""
+
+#: inc/widgets/popular-posts.php:115
+msgid "Choose the category to display for popular posts"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:198
+msgid "Choose the category to display for popular tab"
+msgstr ""
+
+#: inc/widgets/posts-grid-two-column.php:130 inc/widgets/posts-grid.php:101
+#: inc/widgets/posts-list.php:135
+msgid "Choose the category to display list of posts"
+msgstr ""
+
+#: inc/admin/admin.php:376
+msgid "Click"
+msgstr ""
+
+#: inc/customizer/customizer.php:29
+msgid "Colors"
+msgstr ""
+
+#. %s is the page number.
+#: inc/breadcrumb-trail/breadcrumbs.php:321
+#, php-format
+msgid "Comment Page %s"
+msgstr ""
+
+#: inc/theme-starter.php:568 inc/widgets/tabbed-posts.php:41
+#: inc/widgets/tabbed-posts.php:205
+msgid "Comments"
+msgstr ""
+
+#: comments.php:67
+msgid "Comments are closed."
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:204
+msgid "Comments Tab"
+msgstr ""
+
+#. 1: comment count number, 2: title.
+#: comments.php:41
+#, php-format
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: Name of current post. Only visible to screen readers
+#: template-parts/content-single.php:24
+#, php-format
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr ""
+
+#: inc/admin/admin.php:946
+msgid "Coupon code: PUBNEWS10"
+msgstr ""
+
+#: inc/widgets/author-info.php:68
+msgid "Custom"
+msgstr ""
+
+#: inc/widgets/widget-title.php:50
+msgid "Custom Widget Title"
+msgstr ""
+
+#: inc/admin/admin.php:179 inc/admin/admin.php:853
+msgid "Customize Site"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:837
+#: inc/breadcrumb-trail/breadcrumbs.php:1272
+#: inc/breadcrumb-trail/breadcrumbs.php:1274
+msgctxt "daily archives date format"
+msgid "j"
+msgstr ""
+
+#: inc/admin/admin.php:485
+msgid "Default"
+msgstr ""
+
+#: inc/admin/admin.php:758
+msgid "Demo Import Progress"
+msgstr ""
+
+#: inc/admin/admin.php:769
+msgid "Demo import success"
+msgstr ""
+
+#: inc/admin/admin.php:624 inc/admin/admin.php:637
+msgid "Demo importer plugin activated"
+msgstr ""
+
+#: inc/widgets/author-info.php:102
+msgid "Description"
+msgstr ""
+
+#: inc/admin/admin.php:858
+msgid "Dismiss this notice"
+msgstr ""
+
+#: inc/admin/admin.php:236 inc/admin/admin.php:854
+msgid "Documentation"
+msgstr ""
+
+#. %s: Name of current post. Only visible to screen readers
+#: inc/template-tags.php:97 template-parts/content-page.php:41
+#: template-parts/content.php:74
+#, php-format
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr ""
+
+#: inc/admin/admin.php:202
+msgid "Edit Archive"
+msgstr ""
+
+#: inc/admin/admin.php:208
+msgid "Edit Footer"
+msgstr ""
+
+#: inc/admin/admin.php:184
+msgid "Edit Header"
+msgstr ""
+
+#: inc/admin/admin.php:196
+msgid "Edit Single Page"
+msgstr ""
+
+#: inc/admin/admin.php:190
+msgid "Edit Single Post"
+msgstr ""
+
+#: inc/admin/assets/demos.php:57
+msgid "Elementor"
+msgstr ""
+
+#: inc/admin/admin.php:641
+msgid "Error while trying to install or active the plugin."
+msgstr ""
+
+#: inc/admin/admin.php:723
+msgid "Files"
+msgstr ""
+
+#: inc/widgets/social-icons.php:58
+msgid "Find Me On"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:175
+msgid "First Tab"
+msgstr ""
+
+#: inc/admin/assets/demos.php:94
+msgid "Food"
+msgstr ""
+
+#: inc/widgets/widgets.php:95
+msgid "Footer Sidebar - Column 1"
+msgstr ""
+
+#: inc/widgets/widgets.php:108
+msgid "Footer Sidebar - Column 2"
+msgstr ""
+
+#: inc/widgets/widgets.php:121
+msgid "Footer Sidebar - Column 3"
+msgstr ""
+
+#: inc/widgets/widgets.php:134
+msgid "Footer Sidebar - Column 4"
+msgstr ""
+
+#: inc/admin/admin.php:683
+msgid ""
+"For your website to look exactly like the demo,the import process will "
+"install and activate the following plugin if they are not installed or "
+"activated."
+msgstr ""
+
+#: inc/admin/admin.php:479
+msgid "Free"
+msgstr ""
+
+#: inc/widgets/widgets.php:82
+msgid "Frontpage - Middle Left Sidebar"
+msgstr ""
+
+#: inc/widgets/widgets.php:69
+msgid "Frontpage - Middle Right Sidebar"
+msgstr ""
+
+#: inc/admin/assets/demos.php:113
+msgid "Gadgets"
+msgstr ""
+
+#: inc/admin/admin.php:850
+msgid ""
+"Get started with multipurpose news theme and give your site a new look. We "
+"recommend you to please go through the documentation to get started with "
+"theme and setup homepage quicky."
+msgstr ""
+
+#: inc/admin/admin.php:933
+msgid "Get the best out of Pubnews Theme"
+msgstr ""
+
+#: inc/theme-starter.php:1519
+msgid "Go back to home"
+msgstr ""
+
+#: inc/widgets/social-icons.php:86
+msgid "go to manage social icons"
+msgstr ""
+
+#: inc/theme-starter.php:1646 inc/theme-starter.php:1671
+msgid "H2"
+msgstr ""
+
+#: inc/theme-starter.php:1647 inc/theme-starter.php:1672
+msgid "H3"
+msgstr ""
+
+#: inc/theme-starter.php:1648 inc/theme-starter.php:1673
+msgid "H4"
+msgstr ""
+
+#: inc/theme-starter.php:524
+msgid "Headlines"
+msgstr ""
+
+#: inc/admin/admin.php:573
+msgid "Here"
+msgstr ""
+
+#: inc/admin/admin.php:891
+msgid ""
+"Hi, Admin. You have been using Pubnews for a while. I hope you enjoy using "
+"it. Please leave a review. It would be greateful and significant."
+msgstr ""
+
+#: inc/widgets/carousel.php:112
+msgid "Highlights"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:313
+msgid "Home"
+msgstr ""
+
+#: inc/widgets/carousel.php:127 inc/widgets/popular-posts.php:124
+msgid "Horizontal"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:819
+msgctxt "hour archives time format"
+msgid "g a"
+msgstr ""
+
+#. Author URI of the theme
+msgid "https://blazethemes.com/"
+msgstr ""
+
+#. URI of the theme
+msgid "https://blazethemes.com/theme/pubnews-free/"
+msgstr ""
+
+#: inc/admin/admin.php:583
+msgid "Import"
+msgstr ""
+
+#: inc/admin/admin.php:750
+msgid "Import Demo"
+msgstr ""
+
+#: inc/theme-starter.php:1740
+msgid "Instagram"
+msgstr ""
+
+#: inc/admin/admin.php:421
+msgid "Install"
+msgstr ""
+
+#: inc/admin/admin.php:573
+msgid "Install and Activate"
+msgstr ""
+
+#: inc/admin/admin.php:852
+msgid "Install Demos"
+msgstr ""
+
+#: inc/admin/admin.php:579
+msgid "Installed & Activated"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:196
+msgid "Invalid field"
+msgstr ""
+
+#: inc/theme-starter.php:1518
+msgid ""
+"It looks like nothing was found at this location. Maybe try another search?"
+msgstr ""
+
+#: template-parts/content-none.php:46
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: inc/widgets/widget-fields.php:159
+msgid "Item"
+msgstr ""
+
+#: inc/customizer/custom-controls/repeater/repeater.php:122
+msgid "Item Label"
+msgstr ""
+
+#: inc/template-functions.php:384 inc/widgets/news-filter-tabbed.php:164
+msgid "Last 7 days"
+msgstr ""
+
+#: inc/template-functions.php:389 inc/widgets/news-filter-tabbed.php:169
+#: inc/widgets/news-filter-tabbed.php:217
+msgid "Last Month"
+msgstr ""
+
+#: inc/template-functions.php:387 inc/widgets/news-filter-tabbed.php:167
+#: inc/widgets/news-filter-tabbed.php:199
+msgid "Last Week"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:32 inc/widgets/tabbed-posts.php:186
+msgid "Latest"
+msgstr ""
+
+#: inc/theme-starter.php:556
+msgid "latest"
+msgstr ""
+
+#: inc/theme-starter.php:575 inc/widgets/posts-grid-two-column.php:124
+#: inc/widgets/widget-title.php:52
+msgid "Latest News"
+msgstr ""
+
+#: inc/theme-starter.php:624 inc/theme-starter.php:695
+#: inc/theme-starter.php:765 inc/theme-starter.php:939
+#: inc/theme-starter.php:970 inc/theme-starter.php:1001
+#: inc/theme-starter.php:1058 inc/theme-starter.php:1089
+msgid "Latest posts"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:185
+msgid "Latest Tab"
+msgstr ""
+
+#: inc/widgets/author-info.php:110 inc/widgets/carousel.php:136
+#: inc/widgets/category-collection.php:139
+#: inc/widgets/posts-grid-two-column.php:138 inc/widgets/posts-grid.php:109
+#: inc/widgets/posts-list.php:143
+msgid "Layout One"
+msgstr ""
+
+#: inc/widgets/posts-list.php:145
+msgid "Layout Three"
+msgstr ""
+
+#: inc/widgets/author-info.php:111 inc/widgets/carousel.php:137
+#: inc/widgets/category-collection.php:140
+#: inc/widgets/posts-grid-two-column.php:139 inc/widgets/posts-grid.php:110
+#: inc/widgets/posts-list.php:144
+msgid "Layout Two"
+msgstr ""
+
+#: inc/widgets/author-info.php:108 inc/widgets/category-collection.php:137
+#: inc/widgets/posts-grid-two-column.php:136 inc/widgets/posts-grid.php:107
+#: inc/widgets/posts-list.php:141
+msgid "Layouts"
+msgstr ""
+
+#. %s: post title
+#: inc/template-tags.php:80
+#, php-format
+msgid "Leave a Comment<span class=\"screen-reader-text\"> on %s</span>"
+msgstr ""
+
+#: inc/admin/admin.php:232
+msgid "Leave a review"
+msgstr ""
+
+#: inc/widgets/widget-title.php:60
+msgid "Left"
+msgstr ""
+
+#: inc/extras/extras.php:259
+msgid "Left Both Sidebar"
+msgstr ""
+
+#: inc/extras/extras.php:247 inc/widgets/widgets.php:30
+msgid "Left Sidebar"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:103 inc/widgets/banner-ads.php:81
+msgid "Link rel attribute value"
+msgstr ""
+
+#. used between list items, there is a space after the comma
+#: inc/template-tags.php:137
+msgctxt "list item separator"
+msgid " "
+msgstr ""
+
+#: inc/theme-starter.php:247
+msgid "Live Now"
+msgstr ""
+
+#: inc/widgets/author-info.php:103
+msgid "Lorem ipsum is simply dummy text"
+msgstr ""
+
+#: inc/admin/admin.php:328
+msgid ""
+"Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+msgstr ""
+
+#: functions.php:67
+msgid "Main Header"
+msgstr ""
+
+#: inc/widgets/social-icons.php:85
+msgid "Manage social icons from customizer "
+msgstr ""
+
+#: inc/admin/admin.php:899 inc/admin/admin.php:942
+msgid "May be later"
+msgstr ""
+
+#: inc/hooks/header-hooks.php:218
+msgid "Menu"
+msgstr ""
+
+#: template-parts/content.php:46 template-parts/content.php:48
+#: inc/extras/helpers.php:590 inc/extras/helpers.php:592
+msgid "mins"
+msgstr ""
+
+#. Minute archive title. %s is the minute time format.
+#: inc/breadcrumb-trail/breadcrumbs.php:323
+#, php-format
+msgid "Minute %s"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:785
+msgctxt "minute and hour archives time format"
+msgid "g:i a"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:802
+msgctxt "minute archives time format"
+msgid "i"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:836
+#: inc/breadcrumb-trail/breadcrumbs.php:892
+#: inc/breadcrumb-trail/breadcrumbs.php:1265
+#: inc/breadcrumb-trail/breadcrumbs.php:1267
+msgctxt "monthly archives date format"
+msgid "F"
+msgstr ""
+
+#: inc/theme-starter.php:487
+msgid "More"
+msgstr ""
+
+#: inc/admin/admin.php:901
+msgid "Never"
+msgstr ""
+
+#: inc/customizer/customizer.php:496
+msgid "Newest - Oldest"
+msgstr ""
+
+#: inc/widgets/category-collection.php:132
+msgid "News"
+msgstr ""
+
+#: inc/widgets/category-collection.php:130
+msgid "News Text"
+msgstr ""
+
+#: template-parts/content-single.php:52
+msgid "Next:"
+msgstr ""
+
+#: inc/template-functions.php:605
+msgid "No posts found"
+msgstr ""
+
+#: inc/admin/admin.php:715
+msgid "No Required Plugins Found."
+msgstr ""
+
+#: inc/extras/extras.php:243
+msgid "No Sidebar"
+msgstr ""
+
+#: inc/customizer/customizer.php:457
+#: inc/customizer/custom-controls/icon-picker/icon-picker.php:52
+msgid "None"
+msgstr ""
+
+#: template-parts/content-none.php:18
+msgid "Nothing Found"
+msgstr ""
+
+#: inc/theme-starter.php:1523
+#, php-format
+msgid "Nothing Found for - %1s"
+msgstr ""
+
+#: inc/widgets/widgets.php:43
+msgid "Off Canvas Sidebar"
+msgstr ""
+
+#: inc/admin/admin.php:244 inc/admin/admin.php:304
+msgid "Official site"
+msgstr ""
+
+#: inc/customizer/customizer.php:497
+msgid "Oldest - Newest"
+msgstr ""
+
+#. 1: title.
+#: comments.php:35
+#, php-format
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:96 inc/widgets/banner-ads.php:74
+msgid "Open link in new tab"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:97 inc/widgets/banner-ads.php:75
+msgid "Open link in same tab"
+msgstr ""
+
+#. %s is the page number.
+#: inc/breadcrumb-trail/breadcrumbs.php:319
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: template-parts/content-page.php:27 template-parts/content-single.php:37
+msgid "Pages:"
+msgstr ""
+
+#: inc/admin/admin.php:624 inc/admin/admin.php:637
+msgid "Plugin activated"
+msgstr ""
+
+#: inc/theme-starter.php:562 inc/widgets/tabbed-posts.php:36
+#: inc/widgets/tabbed-posts.php:192
+msgid "Popular"
+msgstr ""
+
+#: inc/theme-starter.php:530 inc/widgets/popular-posts.php:109
+msgid "Popular News"
+msgstr ""
+
+#: inc/theme-starter.php:569
+msgid "Popular Posts"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:191
+msgid "Popular Tab"
+msgstr ""
+
+#: inc/widgets/category-collection.php:123
+msgid "Post Categories"
+msgstr ""
+
+#. 1: list of categories.
+#: inc/template-tags.php:123
+#, php-format
+msgid "Posted in %1$s"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:186
+#: inc/widgets/news-filter-tabbed.php:204
+#: inc/widgets/news-filter-tabbed.php:222
+msgid "Posts to display"
+msgstr ""
+
+#: inc/customizer/customizer.php:18
+msgid "Presets Colors"
+msgstr ""
+
+#: inc/admin/admin.php:416
+msgid "Preview"
+msgstr ""
+
+#: template-parts/content-single.php:51
+msgid "Previous:"
+msgstr ""
+
+#: inc/admin/admin.php:482 inc/admin/assets/demos.php:23
+#: inc/admin/assets/demos.php:55 inc/admin/assets/demos.php:74
+#: inc/admin/assets/demos.php:92 inc/admin/assets/demos.php:111
+#: inc/admin/assets/demos.php:130 inc/admin/assets/demos.php:148
+#: inc/admin/assets/demos.php:166 inc/admin/assets/demos.php:184
+msgid "Pro"
+msgstr ""
+
+#. Name of the theme
+msgid "Pubnews"
+msgstr ""
+
+#: inc/theme-starter.php:1223
+msgid "Pubnews - Modern WordPress Theme %year%."
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:15
+msgid "Pubnews : Ads Slider"
+msgstr ""
+
+#: inc/widgets/author-info.php:15
+msgid "Pubnews : Author Info"
+msgstr ""
+
+#: inc/widgets/banner-ads.php:15
+msgid "Pubnews : Banner Ads"
+msgstr ""
+
+#: inc/widgets/carousel.php:15
+msgid "Pubnews : Carousel Posts"
+msgstr ""
+
+#: inc/widgets/category-collection.php:15
+msgid "Pubnews : Category Collection"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:15
+msgid "Pubnews : News Filter - Tabbed"
+msgstr ""
+
+#: inc/widgets/popular-posts.php:15
+msgid "Pubnews : Popular Posts Slider"
+msgstr ""
+
+#: inc/widgets/posts-grid.php:15
+msgid "Pubnews : Posts Grid"
+msgstr ""
+
+#: inc/widgets/posts-grid-two-column.php:15
+msgid "Pubnews : Posts Grid 2 Column"
+msgstr ""
+
+#: inc/widgets/posts-list.php:15
+msgid "Pubnews : Posts List"
+msgstr ""
+
+#: inc/widgets/social-icons.php:16
+msgid "Pubnews : Social Icons"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:15
+msgid "Pubnews : Tabbed Posts"
+msgstr ""
+
+#: inc/widgets/widget-title.php:15
+msgid "Pubnews : Widget Title"
+msgstr ""
+
+#: inc/admin/admin.php:119 inc/admin/admin.php:120
+msgid "Pubnews Info"
+msgstr ""
+
+#. Description of the theme
+msgid ""
+"Pubnews is now here to captivate WordPress website owners with unprecedented "
+"features you shall only find here first. The main banner has a professional "
+"3 columns design that’s best suitable for news sites. It comes with 7 front "
+"sections with 7 different news block layouts and 9 custom Pubnews widgets. "
+"You will get to choose separate colors and designs for all main elements of "
+"the page at both the initial and hover states. There are typography controls "
+"(5 font families, and font-weight) for Site title, Navigation Menu, Block "
+"Title, Post Title, Post Meta, Post Content, Archive, and Single Post. The "
+"theme provides custom breadcrumb trail options for popular plugins - "
+"Breadcrumb NavXT, Yoast SEO, and Rank Math SEO plugin. You will get a "
+"welcome dilemma in having to choose between 5 front page sidebar layouts, 5 "
+"archive sidebar layouts, 5 post sidebar layouts, 5 page sidebar layouts with "
+"sticky option in each layout, and 2 basic archive layouts. Also, the header "
+"section can be made sticky upon scrolling up and the theme has a scroll-to-"
+"top button. Enjoy the preference to select between boxed and full-width "
+"layouts in all sections. Available with 4+ pre-built starter websites, that "
+"you will get to install in one click. Demo link: https://doc.blazethemes."
+"com/pubnews/ Video tutorial: https://youtu.be/lZqdrwVyVR8"
+msgstr ""
+
+#: inc/customizer/customizer.php:500
+msgid "Random"
+msgstr ""
+
+#: inc/theme-starter.php:352
+msgid "Random News"
+msgstr ""
+
+#: inc/theme-starter.php:61
+msgid "Read More"
+msgstr ""
+
+#. 1: link to WP admin new post page.
+#: template-parts/content-none.php:28
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: inc/admin/admin.php:259
+msgid "Recommended Plugins"
+msgstr ""
+
+#: inc/theme-starter.php:1240
+msgid "Related News"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:190
+msgid "Remove Image"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:103
+msgid "Remove image"
+msgstr ""
+
+#: inc/widgets/widget-fields.php:200
+msgid "Remove item"
+msgstr ""
+
+#: inc/admin/admin.php:682
+msgid "Required Plugins"
+msgstr ""
+
+#: inc/admin/admin.php:895
+msgid "Review Now"
+msgstr ""
+
+#: inc/widgets/widget-title.php:62
+msgid "Right"
+msgstr ""
+
+#: inc/extras/extras.php:263
+msgid "Right Both Sidebar"
+msgstr ""
+
+#: inc/extras/extras.php:251
+msgid "Right Sidebar"
+msgstr ""
+
+#: inc/admin/assets/demos.php:186
+msgid "RTL"
+msgstr ""
+
+#: inc/theme-starter.php:1522
+msgid "Search Results for"
+msgstr ""
+
+#. %s is the search query.
+#: inc/breadcrumb-trail/breadcrumbs.php:317
+#, php-format
+msgid "Search results for: %s"
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:193
+msgid "Second Tab"
+msgstr ""
+
+#: inc/widgets/carousel.php:102 inc/widgets/category-collection.php:108
+#: inc/widgets/popular-posts.php:99 inc/widgets/posts-grid-two-column.php:114
+#: inc/widgets/posts-grid.php:85 inc/widgets/posts-list.php:119
+#: inc/widgets/tabbed-posts.php:177
+msgid "Select category"
+msgstr ""
+
+#: inc/customizer/selective-refresh.php:304
+#: inc/hooks/bottom-footer-hooks.php:49
+msgid "Setup Bottom Footer Menu"
+msgstr ""
+
+#: inc/admin/admin.php:226
+msgid "Several outside resources to help you fully understand the theme."
+msgstr ""
+
+#: inc/widgets/widgets.php:17
+msgid "Sidebar"
+msgstr ""
+
+#: header.php:29
+msgid "Skip to content"
+msgstr ""
+
+#: inc/widgets/carousel.php:124 inc/widgets/popular-posts.php:121
+msgid "Slide Direction"
+msgstr ""
+
+#: inc/theme-starter.php:1524
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: inc/theme-starter.php:318
+msgid "Subscribe"
+msgstr ""
+
+#: inc/widgets/tabbed-posts.php:210
+msgid "Tab Order"
+msgstr ""
+
+#: inc/theme-starter.php:1644 inc/theme-starter.php:1669
+msgid "Table of content"
+msgstr ""
+
+#: inc/theme-starter.php:1158
+msgid "Tafi Mhaka"
+msgstr ""
+
+#. 1: list of tags.
+#: inc/template-tags.php:140
+#, php-format
+msgid "Tagged: %1$s"
+msgstr ""
+
+#: inc/widgets/widget-title.php:57
+msgid "Text Align"
+msgstr ""
+
+#: inc/admin/admin.php:848
+msgid "Thank you for activating Pubnews Premium Version!!"
+msgstr ""
+
+#: inc/widgets/banner-ads.php:16
+msgid "The details of advertisement."
+msgstr ""
+
+#: inc/widgets/author-info.php:16
+msgid "The information of  in detail author."
+msgstr ""
+
+#: inc/widgets/social-icons.php:17
+msgid "The list of social icons."
+msgstr ""
+
+#: inc/theme-starter.php:1155
+msgid "The power of social media is it forces necessary changes"
+msgstr ""
+
+#: inc/widgets/banner-ads-slider.php:16
+msgid "The slider for ads banners."
+msgstr ""
+
+#: inc/customizer/customizer.php:398 inc/customizer/customizer.php:412
+msgid "Theme Color"
+msgstr ""
+
+#: inc/widgets/widget-title.php:16
+msgid "Theme custom widget title."
+msgstr ""
+
+#: inc/admin/admin.php:174
+msgid ""
+"Theme provides handy customizer that allows you to modify the site looks. "
+"You can click on the below links to navigate to the particular sections."
+msgstr ""
+
+#: inc/widgets/news-filter-tabbed.php:211
+msgid "Third Tab"
+msgstr ""
+
+#: inc/template-functions.php:388 inc/widgets/news-filter-tabbed.php:168
+msgid "This Month"
+msgstr ""
+
+#: inc/admin/admin.php:679
+msgid ""
+"This process will install all the required plugins, import contents and "
+"setup customizer and theme options."
+msgstr ""
+
+#: inc/template-functions.php:386 inc/widgets/news-filter-tabbed.php:166
+#: inc/widgets/news-filter-tabbed.php:181
+msgid "This Week"
+msgstr ""
+
+#: inc/template-functions.php:390
+msgid "This Year"
+msgstr ""
+
+#: inc/template-functions.php:385 inc/widgets/news-filter-tabbed.php:165
+msgid "Today"
+msgstr ""
+
+#: functions.php:66
+msgid "Top Header"
+msgstr ""
+
+#: inc/widgets/posts-grid.php:95 inc/widgets/posts-list.php:129
+msgid "Trending News"
+msgstr ""
+
+#: inc/customizer/custom-controls/repeater/repeater.php:175
+msgid "Type to search"
+msgstr ""
+
+#: inc/customizer/custom-controls/icon-picker/icon-picker.php:71
+msgid "Type to search . ."
+msgstr ""
+
+#: inc/admin/admin.php:938
+msgid "Upgrade to pro"
+msgstr ""
+
+#: inc/admin/admin.php:935
+msgid ""
+"Upgrade to Pubnews Pro today and experience a whole new level of Pubnews "
+"Theme. With exclusive features tailored to power up your experience, the Pro "
+"subscription is your ticket to unlocking limitless possibilities."
+msgstr ""
+
+#: inc/widgets/widget-fields.php:189
+#: inc/customizer/custom-controls/repeater/repeater.php:157
+msgid "Upload Image"
+msgstr ""
+
+#: inc/admin/admin.php:280
+msgid "Version: "
+msgstr ""
+
+#: inc/widgets/carousel.php:126 inc/widgets/popular-posts.php:123
+msgid "Vertical"
+msgstr ""
+
+#: inc/theme-starter.php:644 inc/theme-starter.php:714
+#: inc/theme-starter.php:785 inc/theme-starter.php:884
+#: inc/theme-starter.php:956 inc/theme-starter.php:987
+#: inc/theme-starter.php:1018 inc/theme-starter.php:1075
+#: inc/theme-starter.php:1106 inc/admin/admin.php:400
+#: template-parts/news-alter/template-four.php:27
+#: template-parts/news-carousel/template-one.php:24
+#: template-parts/news-filter/template-one.php:27
+#: template-parts/news-grid/template-one.php:19
+#: template-parts/news-list/template-one.php:19
+#: template-parts/news-list-2/template-one.php:17
+#: template-parts/news-list-2/template-two.php:17
+msgid "View all"
+msgstr ""
+
+#: inc/theme-starter.php:310
+msgid "View all results"
+msgstr ""
+
+#: inc/admin/admin.php:240
+msgid "View demo"
+msgstr ""
+
+#: inc/admin/admin.php:301
+msgid "View on Wordpress.org"
+msgstr ""
+
+#: inc/admin/admin.php:227
+msgid ""
+"We offer blogs, demos, documentation, and support forums for quick "
+"assistance. We hope this makes it easier for you."
+msgstr ""
+
+#: inc/admin/admin.php:260
+msgid ""
+"We recommend different useful plugins that can boost functionality, security,"
+" and user experience on your site."
+msgstr ""
+
+#: inc/admin/admin.php:677
+#, php-format
+msgid ""
+"We recommend you backup your website content before attempting to import the "
+"demo so that you can recover your website if something goes wrong. You can "
+"use %s plugin for it."
+msgstr ""
+
+#: inc/admin/admin.php:889
+msgid "We value your feedback"
+msgstr ""
+
+#. Weekly archive title. %s is the week date format.
+#: inc/breadcrumb-trail/breadcrumbs.php:325
+#, php-format
+msgid "Week %s"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:865
+msgctxt "weekly archives date format"
+msgid "W"
+msgstr ""
+
+#: inc/admin/admin.php:1012
+msgid "Welcome notice hidden"
+msgstr ""
+
+#: inc/widgets/author-info.php:73 inc/widgets/carousel.php:110
+#: inc/widgets/category-collection.php:116 inc/widgets/popular-posts.php:107
+#: inc/widgets/posts-grid-two-column.php:122 inc/widgets/posts-grid.php:93
+#: inc/widgets/posts-list.php:127 inc/widgets/social-icons.php:56
+msgid "Widget Title"
+msgstr ""
+
+#: inc/widgets/author-info.php:92
+msgid "Writer"
+msgstr ""
+
+#: inc/breadcrumb-trail/breadcrumbs.php:835
+#: inc/breadcrumb-trail/breadcrumbs.php:864
+#: inc/breadcrumb-trail/breadcrumbs.php:891
+#: inc/breadcrumb-trail/breadcrumbs.php:918
+#: inc/breadcrumb-trail/breadcrumbs.php:1257
+#: inc/breadcrumb-trail/breadcrumbs.php:1259
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr ""
+
+#: inc/admin/admin.php:385
+msgid "You are all set to install the demo."
+msgstr ""
+
+#: inc/admin/admin.php:820
+msgid "You dont have permission to perform this action"
+msgstr ""
+
+#: inc/theme-starter.php:864
+msgid "You May Have Missed"
+msgstr ""
+
+#: inc/theme-starter.php:1152
+msgid "Your Opinions"
+msgstr ""
+
+#: inc/customizer/customizer.php:499
+msgid "Z - A"
+msgstr ""

@@ -1,0 +1,542 @@
+0000.000 (0) Opened log file at time: Fri, 02 Jan 2026 04:02:20 +0000 on https://www.freecause.com/magazine
+0000.006 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.25.9 WP: 6.9 PHP: 8.3.28 (fpm-fcgi, Linux 1366246.cloudwaysapps.com 6.1.0-0.deb11.21-cloud-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.90-1~bpo11+1 (2024-05-06) x86_64) MySQL: 10.6.24-MariaDB-deb11-log (max packet size=134217728) WPLANG: en_US Server: Apache/2.4.63 (Debian) safe_mode: 0 max_execution_time: 900 memory_limit: 8000M (used: 82.2M | 84M) multisite: N openssl: OpenSSL 1.1.1w  11 Sep 2023 mcrypt: N LANG:  WP Proxy: disabled ZipArchive::addFile: Y
+0000.011 (0) Free space on disk containing Updraft's temporary directory: 59116.6 MB
+0000.019 (0) Tasks: Backup files: 1 (schedule: unset) Backup DB: 1 (schedule: unset)
+0000.024 (0) Semaphore (fd, abi_options) being initialised
+0000.032 (0) Requesting semaphore lock (fd) (apparently not via scheduler)
+0000.038 (0) Set semaphore last lock (fd) time to 2026-01-02 04:02:20
+0000.040 (0) Semaphore lock (fd) complete
+0000.049 (0) Backup run: resumption=0, nonce=0e701805d202, file_nonce=0e701805d202 begun at=1767326540 (0s ago), job type=backup
+0000.053 (0) Scheduling a resumption (1) after 300 seconds (1767326840) in case this run gets aborted
+0000.071 (0) Checking if we have a zip executable available
+0000.076 (0) Creation of backups of directories: beginning
+0000.085 (0) Beginning creation of dump of plugins (split every: 400 MB)
+0001.258 (0) Total entities for the zip file: 1785 directories, 10924 files (0 skipped as non-modified), 149.3 MB
+0001.270 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 100 files added (on-disk size: 0 KB)
+0001.277 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 200 files added (on-disk size: 0 KB)
+0001.284 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 300 files added (on-disk size: 0 KB)
+0001.291 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 400 files added (on-disk size: 0 KB)
+0001.307 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 500 files added (on-disk size: 0 KB)
+0001.315 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 600 files added (on-disk size: 0 KB)
+0001.322 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 700 files added (on-disk size: 0 KB)
+0001.328 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 800 files added (on-disk size: 0 KB)
+0001.334 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 900 files added (on-disk size: 0 KB)
+0001.341 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1000 files added (on-disk size: 0 KB)
+0001.344 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (11.9 MB, 10924 files batched, 1001 (1001) added so far); re-opening (prior size: 0 KB)
+0002.885 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1100 files added (on-disk size: 4531.4 KB)
+0002.892 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1200 files added (on-disk size: 4531.4 KB)
+0002.898 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1300 files added (on-disk size: 4531.4 KB)
+0002.903 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1400 files added (on-disk size: 4531.4 KB)
+0002.910 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1500 files added (on-disk size: 4531.4 KB)
+0002.917 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1600 files added (on-disk size: 4531.4 KB)
+0002.927 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1700 files added (on-disk size: 4531.4 KB)
+0002.932 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1800 files added (on-disk size: 4531.4 KB)
+0002.939 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 1900 files added (on-disk size: 4531.4 KB)
+0002.945 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2000 files added (on-disk size: 4531.4 KB)
+0002.948 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (12 MB, 10924 files batched, 1001 (2002) added so far); re-opening (prior size: 4531.4 KB)
+0004.414 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2100 files added (on-disk size: 8373.9 KB)
+0004.421 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2200 files added (on-disk size: 8373.9 KB)
+0004.427 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2300 files added (on-disk size: 8373.9 KB)
+0004.434 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2400 files added (on-disk size: 8373.9 KB)
+0004.443 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2500 files added (on-disk size: 8373.9 KB)
+0004.449 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2600 files added (on-disk size: 8373.9 KB)
+0004.455 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2700 files added (on-disk size: 8373.9 KB)
+0004.460 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2800 files added (on-disk size: 8373.9 KB)
+0004.465 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 2900 files added (on-disk size: 8373.9 KB)
+0004.470 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3000 files added (on-disk size: 8373.9 KB)
+0004.472 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (5.7 MB, 10924 files batched, 1001 (3003) added so far); re-opening (prior size: 8373.9 KB)
+0005.907 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3100 files added (on-disk size: 10644.8 KB)
+0005.913 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3200 files added (on-disk size: 10644.8 KB)
+0005.919 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3300 files added (on-disk size: 10644.8 KB)
+0005.926 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3400 files added (on-disk size: 10644.8 KB)
+0005.933 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3500 files added (on-disk size: 10644.8 KB)
+0005.939 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3600 files added (on-disk size: 10644.8 KB)
+0005.945 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3700 files added (on-disk size: 10644.8 KB)
+0005.952 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3800 files added (on-disk size: 10644.8 KB)
+0005.959 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 3900 files added (on-disk size: 10644.8 KB)
+0005.966 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4000 files added (on-disk size: 10644.8 KB)
+0005.969 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (3.1 MB, 10924 files batched, 1001 (4004) added so far); re-opening (prior size: 10644.8 KB)
+0007.124 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4100 files added (on-disk size: 11752.8 KB)
+0007.139 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4200 files added (on-disk size: 11752.8 KB)
+0007.148 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4300 files added (on-disk size: 11752.8 KB)
+0007.156 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4400 files added (on-disk size: 11752.8 KB)
+0007.161 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4500 files added (on-disk size: 11752.8 KB)
+0007.168 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4600 files added (on-disk size: 11752.8 KB)
+0007.175 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4700 files added (on-disk size: 11752.8 KB)
+0007.183 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4800 files added (on-disk size: 11752.8 KB)
+0007.189 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 4900 files added (on-disk size: 11752.8 KB)
+0007.196 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5000 files added (on-disk size: 11752.8 KB)
+0007.199 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (3.4 MB, 10924 files batched, 1001 (5005) added so far); re-opening (prior size: 11752.8 KB)
+0008.492 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5100 files added (on-disk size: 12833.7 KB)
+0008.500 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5200 files added (on-disk size: 12833.7 KB)
+0008.507 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5300 files added (on-disk size: 12833.7 KB)
+0008.514 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5400 files added (on-disk size: 12833.7 KB)
+0008.523 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5500 files added (on-disk size: 12833.7 KB)
+0008.530 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5600 files added (on-disk size: 12833.7 KB)
+0008.537 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5700 files added (on-disk size: 12833.7 KB)
+0008.544 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5800 files added (on-disk size: 12833.7 KB)
+0008.550 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 5900 files added (on-disk size: 12833.7 KB)
+0008.556 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6000 files added (on-disk size: 12833.7 KB)
+0008.559 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (13.9 MB, 10924 files batched, 1001 (6006) added so far); re-opening (prior size: 12833.7 KB)
+0011.493 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6100 files added (on-disk size: 17862.9 KB)
+0011.499 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6200 files added (on-disk size: 17862.9 KB)
+0011.505 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6300 files added (on-disk size: 17862.9 KB)
+0011.511 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6400 files added (on-disk size: 17862.9 KB)
+0011.516 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6500 files added (on-disk size: 17862.9 KB)
+0011.522 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6600 files added (on-disk size: 17862.9 KB)
+0011.529 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6700 files added (on-disk size: 17862.9 KB)
+0011.535 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6800 files added (on-disk size: 17862.9 KB)
+0011.541 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 6900 files added (on-disk size: 17862.9 KB)
+0011.547 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7000 files added (on-disk size: 17862.9 KB)
+0011.549 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (14.5 MB, 10924 files batched, 1001 (7007) added so far); re-opening (prior size: 17862.9 KB)
+0013.463 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7100 files added (on-disk size: 24390.4 KB)
+0013.469 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7200 files added (on-disk size: 24390.4 KB)
+0013.473 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (25.1 MB, 10924 files batched, 283 (7290) added so far); re-opening (prior size: 24390.4 KB)
+0015.219 (0) A useful amount of data was added after this amount of zip processing: 1.9 s (normalised: 1.9 s, rate: 13186.2 KB/s)
+0015.225 (0) Performance is good - will increase the amount of data we attempt to batch (time=1.9471879005432, normalised_time=1.9414178730808, max_time=15.222462892532, data points known=1, old_max_bytes=26214400, new_max_bytes=123326689)
+0015.274 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7300 files added (on-disk size: 40873.5 KB)
+0015.281 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7400 files added (on-disk size: 40873.5 KB)
+0015.289 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7500 files added (on-disk size: 40873.5 KB)
+0015.296 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7600 files added (on-disk size: 40873.5 KB)
+0015.305 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7700 files added (on-disk size: 40873.5 KB)
+0015.311 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7800 files added (on-disk size: 40873.5 KB)
+0015.318 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 7900 files added (on-disk size: 40873.5 KB)
+0015.325 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8000 files added (on-disk size: 40873.5 KB)
+0015.333 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8100 files added (on-disk size: 40873.5 KB)
+0015.341 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8200 files added (on-disk size: 40873.5 KB)
+0015.349 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (15.4 MB, 10924 files batched, 1001 (8291) added so far); re-opening (prior size: 40873.5 KB)
+0017.527 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8300 files added (on-disk size: 46755 KB)
+0017.534 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8400 files added (on-disk size: 46755 KB)
+0017.543 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8500 files added (on-disk size: 46755 KB)
+0017.550 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8600 files added (on-disk size: 46755 KB)
+0017.557 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8700 files added (on-disk size: 46755 KB)
+0017.564 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8800 files added (on-disk size: 46755 KB)
+0017.572 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 8900 files added (on-disk size: 46755 KB)
+0017.579 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9000 files added (on-disk size: 46755 KB)
+0017.588 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9100 files added (on-disk size: 46755 KB)
+0017.595 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9200 files added (on-disk size: 46755 KB)
+0017.601 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (14 MB, 10924 files batched, 1001 (9292) added so far); re-opening (prior size: 46755 KB)
+0020.114 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9300 files added (on-disk size: 51121.5 KB)
+0020.119 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9400 files added (on-disk size: 51121.5 KB)
+0020.124 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9500 files added (on-disk size: 51121.5 KB)
+0020.129 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9600 files added (on-disk size: 51121.5 KB)
+0020.135 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9700 files added (on-disk size: 51121.5 KB)
+0020.140 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9800 files added (on-disk size: 51121.5 KB)
+0020.145 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 9900 files added (on-disk size: 51121.5 KB)
+0020.150 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10000 files added (on-disk size: 51121.5 KB)
+0020.158 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10100 files added (on-disk size: 51121.5 KB)
+0020.164 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10200 files added (on-disk size: 51121.5 KB)
+0020.169 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (12.3 MB, 10924 files batched, 1001 (10293) added so far); re-opening (prior size: 51121.5 KB)
+0021.589 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10300 files added (on-disk size: 55707.9 KB)
+0021.596 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10400 files added (on-disk size: 55707.9 KB)
+0021.602 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10500 files added (on-disk size: 55707.9 KB)
+0021.610 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10600 files added (on-disk size: 55707.9 KB)
+0021.616 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10700 files added (on-disk size: 55707.9 KB)
+0021.622 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10800 files added (on-disk size: 55707.9 KB)
+0021.628 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.tmp: 10900 files added (on-disk size: 55707.9 KB)
+0023.708 (0) Creating zip file manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.list-temp.tmp)
+0023.745 (0) Successfully created zip file manifest (size: 1027677)
+0024.398 (0) Created plugins zip (0) - 60458.4 KB in 24.3 s (2487.3 KB/s) (sha1: cfb5fd65b755229bed42c98327866c552e1e4972, sha256: 604f2cacaf7a3c8594a6e18611a5917f2b7761482d7e169d8ff1f2dbedf8521d)
+0024.414 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0024.416 (0) No remote despatch: user chose no remote backup service
+0024.418 (0) Recording as successfully uploaded: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip
+0024.422 (0) Deleting zip manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip.list.tmp)
+0024.428 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0024.430 (0) Number of backup sets in history: 0; groups (db): 1
+0024.432 (0) Number of backup sets in history: 0; groups (files): 1
+0024.433 (0) Retain: saving new backup history (sets now: 0) and finishing retain operation
+0024.444 (0) Beginning creation of dump of themes (split every: 400 MB)
+0024.613 (0) Total entities for the zip file: 217 directories, 1361 files (0 skipped as non-modified), 34.9 MB
+0024.622 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 100 files added (on-disk size: 0 KB)
+0024.629 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 200 files added (on-disk size: 0 KB)
+0024.635 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 300 files added (on-disk size: 0 KB)
+0024.641 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 400 files added (on-disk size: 0 KB)
+0024.648 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 500 files added (on-disk size: 0 KB)
+0024.654 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 600 files added (on-disk size: 0 KB)
+0024.660 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 700 files added (on-disk size: 0 KB)
+0024.665 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 800 files added (on-disk size: 0 KB)
+0024.671 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 900 files added (on-disk size: 0 KB)
+0024.677 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 1000 files added (on-disk size: 0 KB)
+0024.679 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (29.7 MB, 1361 files batched, 1001 (1001) added so far); re-opening (prior size: 0 KB)
+0027.539 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 1100 files added (on-disk size: 22922.3 KB)
+0027.545 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 1200 files added (on-disk size: 22922.3 KB)
+0027.552 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.tmp: 1300 files added (on-disk size: 22922.3 KB)
+0028.349 (0) Creating zip file manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.list-temp.tmp)
+0028.382 (0) Successfully created zip file manifest (size: 93316)
+0028.699 (0) Created themes zip (0) - 25938.8 KB in 4.2 s (6103.3 KB/s) (sha1: 8cce756bb6338359ef75d91e77890fbceda2133b, sha256: 7d94ab99d8a954eb160a98cbd3e2c4f88c95edf7c946619cadbc6a7ad19bb791)
+0028.708 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0028.710 (0) No remote despatch: user chose no remote backup service
+0028.712 (0) Recording as successfully uploaded: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip
+0028.716 (0) Deleting zip manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip.list.tmp)
+0028.721 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0028.725 (0) Number of backup sets in history: 0; groups (db): 1
+0028.727 (0) Number of backup sets in history: 0; groups (files): 1
+0028.732 (0) Retain: saving new backup history (sets now: 0) and finishing retain operation
+0028.742 (0) Exclusion option setting (uploads): backup*,*backups,backwpup*,wp-clone,snapshots,wp-staging
+0028.745 (0) Looking for candidates to backup in: /mnt/BLOCKSTORAGE/home/1366246.cloudwaysapps.com/bpdefxwugd/public_html/magazine/wp-content/uploads
+0028.746 (0) finding files: 2024: adding to list (1)
+0028.748 (0) finding files: 2025: adding to list (2)
+0028.750 (0) finding files: 2021: adding to list (3)
+0028.752 (0) finding files: rank-math: adding to list (4)
+0028.753 (0) finding files: 2026: adding to list (5)
+0028.755 (0) finding files: iwc-logs: adding to list (6)
+0028.757 (0) finding files: siteground-optimizer-assets: adding to list (7)
+0028.758 (0) finding files: 2019: adding to list (8)
+0028.760 (0) finding files: themeisle-gutenberg: adding to list (9)
+0028.761 (0) finding files: generateblocks: adding to list (10)
+0028.763 (0) finding files: 2020: adding to list (11)
+0028.765 (0) finding files: elementor: adding to list (12)
+0028.766 (0) finding files: 2023: adding to list (13)
+0028.768 (0) finding files: iwclog.dat: adding to list (14)
+0028.770 (0) finding files: .htaccess: adding to list (15)
+0028.772 (0) finding files: wpforms: adding to list (16)
+0028.773 (0) Beginning creation of dump of uploads (split every: 400 MB)
+0028.821 (0) Total entities for the zip file: 38 directories, 658 files (0 skipped as non-modified), 46.5 MB
+0028.828 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 100 files added (on-disk size: 0 KB)
+0028.833 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 200 files added (on-disk size: 0 KB)
+0028.839 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 300 files added (on-disk size: 0 KB)
+0028.845 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 400 files added (on-disk size: 0 KB)
+0028.850 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 500 files added (on-disk size: 0 KB)
+0028.856 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.tmp: 600 files added (on-disk size: 0 KB)
+0031.801 (0) Creating zip file manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.list-temp.tmp)
+0031.807 (0) Successfully created zip file manifest (size: 49256)
+0032.229 (0) Created uploads zip (0) - 37356.4 KB in 3.5 s (10824.1 KB/s) (sha1: 8963bef5bf2bdb945dc7d99ba97459530cdd76e0, sha256: dcbb53dbee6268a1395b12c99ffff933ba062bb55ee711d03835133083bd1f7f)
+0032.237 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0032.239 (0) No remote despatch: user chose no remote backup service
+0032.241 (0) Recording as successfully uploaded: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip
+0032.246 (0) Deleting zip manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip.list.tmp)
+0032.251 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0032.254 (0) Number of backup sets in history: 0; groups (db): 1
+0032.256 (0) Number of backup sets in history: 0; groups (files): 1
+0032.258 (0) Retain: saving new backup history (sets now: 0) and finishing retain operation
+0032.265 (0) No backup of mu-plugins: excluded by user's options
+0032.269 (0) Beginning backup of other directories found in the content directory (index: 0)
+0032.272 (0) Exclusion option setting (others): upgrade,cache,updraft,backup*,*backups,mysql.sql,debug.log
+0032.274 (0) Looking for candidates to backup in: /mnt/BLOCKSTORAGE/home/1366246.cloudwaysapps.com/bpdefxwugd/public_html/magazine/wp-content
+0032.277 (0) finding files: fonts: adding to list (1)
+0032.279 (0) finding files: object-cache-socket-missing.php: adding to list (2)
+0032.281 (0) finding files: sgo-config.php: adding to list (3)
+0032.284 (0) finding files: plugins: skipping: this is the plugins directory
+0032.286 (0) finding files: uploads: skipping: this is the uploads directory
+0032.289 (0) finding files: advanced-cache.php: adding to list (4)
+0032.291 (0) finding files: index.php: adding to list (5)
+0032.293 (0) finding files: sgs_encrypt_key.php: adding to list (6)
+0032.296 (0) finding files: upgrade: skipping: excluded by options
+0032.298 (0) finding files: cache: skipping: excluded by options
+0032.300 (0) finding files: themes: skipping: this is the themes directory
+0032.302 (0) finding files: updraft: skipping: this is the updraft directory
+0032.304 (0) finding files: upgrade-temp-backup: adding to list (7)
+0032.306 (0) finding files: .htaccess: adding to list (8)
+0032.322 (0) Total entities for the zip file: 6 directories, 140 files (0 skipped as non-modified), 8.1 MB
+0032.329 (0) Zip: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-others.zip.tmp: 100 files added (on-disk size: 0 KB)
+0033.616 (0) Creating zip file manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-others.zip.list-temp.tmp)
+0033.630 (0) Successfully created zip file manifest (size: 12626)
+0033.705 (0) Created others zip (0) - 6302.6 KB in 1.4 s (4521.2 KB/s) (sha1: 77cccd3d73ee121e8c3eee8d9e66fc2a178d7aff, sha256: 8674dbc8153551a4719e89357288a6d58daaa4410aca78bc0a031562e5aa1a8a)
+0033.712 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0033.714 (0) No remote despatch: user chose no remote backup service
+0033.716 (0) Recording as successfully uploaded: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-others.zip
+0033.720 (0) Deleting zip manifest (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-others.zip.list.tmp)
+0033.724 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0033.727 (0) Number of backup sets in history: 0; groups (db): 1
+0033.729 (0) Number of backup sets in history: 0; groups (files): 1
+0033.732 (0) Retain: saving new backup history (sets now: 0) and finishing retain operation
+0033.747 (0) Saving backup status to database (elements: 8)
+0033.751 (0) Beginning creation of database dump (WordPress DB)
+0033.753 (0) SQL compatibility mode is: ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0033.772 (0) Table abi_options: Total expected rows (via COUNT): 524
+0033.855 (0) Table abi_options: Rows added in this batch (next record: 22303): 520 (uncompressed bytes in this segment=1629375) in 0.09 seconds
+0033.866 (0) Table abi_options: finishing file(s) (2, 354.4 KB)
+0033.874 (0) Table abi_users: Total expected rows (via COUNT): 1
+0033.876 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0033.881 (0) Table abi_users: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1229) in 0.01 seconds
+0033.888 (0) Table abi_users: finishing file(s) (2, 0.6 KB)
+0033.899 (0) Table abi_usermeta: Total expected rows (via COUNT): 36
+0033.902 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0033.908 (0) Table abi_usermeta: Rows added in this batch (next record: 37): 36 (uncompressed bytes in this segment=3445) in 0.01 seconds
+0033.918 (0) Table abi_usermeta: finishing file(s) (2, 1.6 KB)
+0033.936 (0) Table abi_actionscheduler_actions: Total expected rows (via COUNT): 239
+0033.939 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0033.955 (0) Table abi_actionscheduler_actions: Rows added in this batch (next record: 2407): 239 (uncompressed bytes in this segment=100490) in 0.03 seconds
+0033.966 (0) Table abi_actionscheduler_actions: finishing file(s) (2, 7.4 KB)
+0033.973 (0) Table abi_actionscheduler_claims: Total expected rows (via COUNT): 0
+0033.977 (0) Table abi_actionscheduler_claims: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=633) in 0.01 seconds
+0033.984 (0) Table abi_actionscheduler_claims: finishing file(s) (2, 0.4 KB)
+0033.990 (0) Table abi_actionscheduler_groups: Total expected rows (via COUNT): 5
+0033.992 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0033.997 (0) Table abi_actionscheduler_groups: Rows added in this batch (next record: 5): 5 (uncompressed bytes in this segment=742) in 0.01 seconds
+0034.004 (0) Table abi_actionscheduler_groups: finishing file(s) (2, 0.4 KB)
+0034.011 (0) Table abi_actionscheduler_logs: Total expected rows (via COUNT): 710
+0034.029 (0) Table abi_actionscheduler_logs: Rows added in this batch (next record: 7155): 710 (uncompressed bytes in this segment=64236) in 0.02 seconds
+0034.038 (0) Table abi_actionscheduler_logs: finishing file(s) (2, 6.1 KB)
+0034.052 (0) Table abi_commentmeta: Total expected rows (via COUNT): 0
+0034.056 (0) Table abi_commentmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=640) in 0.01 seconds
+0034.065 (0) Table abi_commentmeta: finishing file(s) (2, 0.4 KB)
+0034.073 (0) Table abi_comments: Total expected rows (via COUNT): 0
+0034.079 (0) Table abi_comments: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1455) in 0.01 seconds
+0034.088 (0) Table abi_comments: finishing file(s) (2, 0.5 KB)
+0034.098 (0) Table abi_links: Total expected rows (via COUNT): 0
+0034.102 (0) Table abi_links: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1033) in 0.01 seconds
+0034.111 (0) Table abi_links: finishing file(s) (2, 0.5 KB)
+0034.126 (0) Table abi_postmeta: Total expected rows (approximate): 2013
+0034.163 (0) Table abi_postmeta: Rows added in this batch (next record: 3011): 2033 (uncompressed bytes in this segment=255238) in 0.05 seconds
+0034.179 (0) Table abi_postmeta: finishing file(s) (2, 32.6 KB)
+0034.258 (0) Table abi_posts: Total expected rows (via COUNT): 406
+0034.261 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.330 (0) Table abi_posts: Rows added in this batch (next record: 3134): 406 (uncompressed bytes in this segment=1627467) in 0.15 seconds
+0034.353 (0) Table abi_posts: finishing file(s) (2, 168.5 KB)
+0034.360 (0) Table abi_term_relationships: Total expected rows (approximate): 135
+0034.367 (0) Table abi_term_relationships: Rows added in this batch (next record: 100000): 135 (uncompressed bytes in this segment=2669) in 0.01 seconds
+0034.376 (0) Table abi_term_relationships: finishing file(s) (2, 0.8 KB)
+0034.386 (0) Table abi_term_taxonomy: Total expected rows (via COUNT): 13
+0034.389 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.395 (0) Table abi_term_taxonomy: Rows added in this batch (next record: 22): 13 (uncompressed bytes in this segment=1335) in 0.01 seconds
+0034.415 (0) Table abi_term_taxonomy: finishing file(s) (2, 0.6 KB)
+0034.442 (0) Table abi_termmeta: Total expected rows (via COUNT): 4
+0034.446 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.450 (0) Table abi_termmeta: Rows added in this batch (next record: 11): 4 (uncompressed bytes in this segment=879) in 0.03 seconds
+0034.461 (0) Table abi_termmeta: finishing file(s) (2, 0.5 KB)
+0034.469 (0) Table abi_terms: Total expected rows (via COUNT): 13
+0034.471 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.474 (0) Table abi_terms: Rows added in this batch (next record: 22): 13 (uncompressed bytes in this segment=1192) in 0.01 seconds
+0034.489 (0) Table abi_terms: finishing file(s) (2, 0.6 KB)
+0034.491 (0) Skipping table (lacks our prefix (abi_)): posts
+0034.494 (0) Skipping table (lacks our prefix (abi_)): users
+0034.504 (0) Skipping table (lacks our prefix (abi_)): _banned_ips
+0034.506 (0) Skipping table (lacks our prefix (abi_)): _blocked_spam
+0034.518 (0) Table abi_aioseo_cache: Total expected rows (via COUNT): 4
+0034.520 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.523 (0) Table abi_aioseo_cache: Rows added in this batch (next record: 21): 4 (uncompressed bytes in this segment=14191) in 0.01 seconds
+0034.532 (0) Table abi_aioseo_cache: finishing file(s) (2, 5.1 KB)
+0034.542 (0) Table abi_aioseo_crawl_cleanup_blocked_args: Total expected rows (via COUNT): 0
+0034.549 (0) Table abi_aioseo_crawl_cleanup_blocked_args: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=953) in 0.01 seconds
+0034.555 (0) Table abi_aioseo_crawl_cleanup_blocked_args: finishing file(s) (2, 0.4 KB)
+0034.563 (0) Table abi_aioseo_crawl_cleanup_logs: Total expected rows (via COUNT): 0
+0034.567 (0) Table abi_aioseo_crawl_cleanup_logs: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=776) in 0.01 seconds
+0034.575 (0) Table abi_aioseo_crawl_cleanup_logs: finishing file(s) (2, 0.4 KB)
+0034.586 (0) Table abi_aioseo_notifications: Total expected rows (via COUNT): 2
+0034.588 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.593 (0) Table abi_aioseo_notifications: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=3172) in 0.01 seconds
+0034.601 (0) Table abi_aioseo_notifications: finishing file(s) (2, 1.4 KB)
+0034.618 (0) Table abi_aioseo_posts: Total expected rows (via COUNT): 42
+0034.620 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.630 (0) Table abi_aioseo_posts: Rows added in this batch (next record: 42): 42 (uncompressed bytes in this segment=46527) in 0.02 seconds
+0034.642 (0) Table abi_aioseo_posts: finishing file(s) (2, 2.8 KB)
+0034.650 (0) Table abi_aioseo_writing_assistant_keywords: Total expected rows (via COUNT): 0
+0034.656 (0) Table abi_aioseo_writing_assistant_keywords: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1088) in 0.01 seconds
+0034.663 (0) Table abi_aioseo_writing_assistant_keywords: finishing file(s) (2, 0.5 KB)
+0034.671 (0) Table abi_aioseo_writing_assistant_posts: Total expected rows (via COUNT): 0
+0034.675 (0) Table abi_aioseo_writing_assistant_posts: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=988) in 0.01 seconds
+0034.682 (0) Table abi_aioseo_writing_assistant_posts: finishing file(s) (2, 0.4 KB)
+0034.690 (0) Table abi_e_events: Total expected rows (via COUNT): 0
+0034.693 (0) Table abi_e_events: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=517) in 0.01 seconds
+0034.701 (0) Table abi_e_events: finishing file(s) (2, 0.4 KB)
+0034.711 (0) Table abi_monsterinsights_cache: Total expected rows (via COUNT): 2
+0034.713 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.719 (0) Table abi_monsterinsights_cache: Rows added in this batch (next record: 4): 2 (uncompressed bytes in this segment=34673) in 0.01 seconds
+0034.729 (0) Table abi_monsterinsights_cache: finishing file(s) (2, 6.8 KB)
+0034.735 (0) Table abi_rank_math_404_logs: Total expected rows (via COUNT): 23
+0034.737 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.740 (0) Table abi_rank_math_404_logs: Rows added in this batch (next record: 23): 23 (uncompressed bytes in this segment=3511) in 0.01 seconds
+0034.748 (0) Table abi_rank_math_404_logs: finishing file(s) (2, 1.4 KB)
+0034.754 (0) Table abi_rank_math_analytics_ga: Total expected rows (via COUNT): 0
+0034.758 (0) Table abi_rank_math_analytics_ga: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=773) in 0.01 seconds
+0034.765 (0) Table abi_rank_math_analytics_ga: finishing file(s) (2, 0.4 KB)
+0034.771 (0) Table abi_rank_math_analytics_gsc: Total expected rows (via COUNT): 0
+0034.774 (0) Table abi_rank_math_analytics_gsc: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=923) in 0.00 seconds
+0034.781 (0) Table abi_rank_math_analytics_gsc: finishing file(s) (2, 0.5 KB)
+0034.794 (0) Table abi_rank_math_analytics_inspections: Total expected rows (via COUNT): 11
+0034.797 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.803 (0) Table abi_rank_math_analytics_inspections: Rows added in this batch (next record: 11): 11 (uncompressed bytes in this segment=9995) in 0.02 seconds
+0034.814 (0) Table abi_rank_math_analytics_inspections: finishing file(s) (2, 1.6 KB)
+0034.821 (0) Table abi_rank_math_analytics_keyword_manager: Total expected rows (via COUNT): 0
+0034.826 (0) Table abi_rank_math_analytics_keyword_manager: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=693) in 0.01 seconds
+0034.833 (0) Table abi_rank_math_analytics_keyword_manager: finishing file(s) (2, 0.4 KB)
+0034.839 (0) Table abi_rank_math_analytics_objects: Total expected rows (via COUNT): 51
+0034.842 (0) Table is relatively small; fetch_rows will thus be: 100 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.850 (0) Table abi_rank_math_analytics_objects: Rows added in this batch (next record: 52): 51 (uncompressed bytes in this segment=13804) in 0.01 seconds
+0034.858 (0) Table abi_rank_math_analytics_objects: finishing file(s) (2, 4 KB)
+0034.866 (0) Table abi_rank_math_internal_links: Total expected rows (via COUNT): 20
+0034.868 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.880 (0) Table abi_rank_math_internal_links: Rows added in this batch (next record: 98): 20 (uncompressed bytes in this segment=3256) in 0.02 seconds
+0034.887 (0) Table abi_rank_math_internal_links: finishing file(s) (2, 0.8 KB)
+0034.894 (0) Table abi_rank_math_internal_meta: Total expected rows (via COUNT): 125
+0034.896 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.902 (0) Table abi_rank_math_internal_meta: Rows added in this batch (next record: 3130): 125 (uncompressed bytes in this segment=2892) in 0.01 seconds
+0034.909 (0) Table abi_rank_math_internal_meta: finishing file(s) (2, 0.7 KB)
+0034.916 (0) Table abi_sgs_log_events: Total expected rows (via COUNT): 280
+0034.919 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.933 (0) Table abi_sgs_log_events: Rows added in this batch (next record: 13138): 280 (uncompressed bytes in this segment=63275) in 0.02 seconds
+0034.942 (0) Table abi_sgs_log_events: finishing file(s) (2, 8.7 KB)
+0034.952 (0) Table abi_sgs_log_visitors: Total expected rows (via COUNT): 135
+0034.954 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0034.960 (0) Table abi_sgs_log_visitors: Rows added in this batch (next record: 4664): 135 (uncompressed bytes in this segment=5585) in 0.01 seconds
+0034.966 (0) Table abi_sgs_log_visitors: finishing file(s) (2, 1.7 KB)
+0034.979 (0) Table abi_userfeedback_survey_responses: Total expected rows (via COUNT): 0
+0034.984 (0) Table abi_userfeedback_survey_responses: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1133) in 0.01 seconds
+0034.993 (0) Table abi_userfeedback_survey_responses: finishing file(s) (2, 0.5 KB)
+0035.017 (0) Table abi_userfeedback_surveys: Total expected rows (via COUNT): 0
+0035.019 (0) Table abi_userfeedback_surveys: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=866) in 0.02 seconds
+0035.029 (0) Table abi_userfeedback_surveys: finishing file(s) (2, 0.5 KB)
+0035.041 (0) Table abi_wpforms_logs: Total expected rows (via COUNT): 10
+0035.043 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0035.051 (0) Table abi_wpforms_logs: Rows added in this batch (next record: 10): 10 (uncompressed bytes in this segment=1829) in 0.02 seconds
+0035.062 (0) Table abi_wpforms_logs: finishing file(s) (2, 0.6 KB)
+0035.074 (0) Table abi_wpforms_payment_meta: Total expected rows (via COUNT): 0
+0035.079 (0) Table abi_wpforms_payment_meta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=696) in 0.01 seconds
+0035.088 (0) Table abi_wpforms_payment_meta: finishing file(s) (2, 0.4 KB)
+0035.098 (0) Table abi_wpforms_payments: Total expected rows (via COUNT): 0
+0035.103 (0) Table abi_wpforms_payments: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1656) in 0.01 seconds
+0035.111 (0) Table abi_wpforms_payments: finishing file(s) (2, 0.6 KB)
+0035.121 (0) Table abi_wpforms_tasks_meta: Total expected rows (via COUNT): 2
+0035.123 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0035.127 (0) Table abi_wpforms_tasks_meta: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=754) in 0.01 seconds
+0035.137 (0) Table abi_wpforms_tasks_meta: finishing file(s) (2, 0.4 KB)
+0035.139 (0) Skipping table (lacks our prefix (abi_)): alinks_keyphrases
+0035.141 (0) Skipping table (lacks our prefix (abi_)): cfgs
+0035.143 (0) Skipping table (lacks our prefix (abi_)): dsq_comments
+0035.145 (0) Skipping table (lacks our prefix (abi_)): g_cities
+0035.147 (0) Skipping table (lacks our prefix (abi_)): g_countries
+0035.148 (0) Skipping table (lacks our prefix (abi_)): g_geoip_city
+0035.150 (0) Skipping table (lacks our prefix (abi_)): g_geoip_city_blocks
+0035.152 (0) Skipping table (lacks our prefix (abi_)): g_map_petitions_data
+0035.154 (0) Skipping table (lacks our prefix (abi_)): languages
+0035.156 (0) Skipping table (lacks our prefix (abi_)): logs
+0035.158 (0) Skipping table (lacks our prefix (abi_)): opengraph_petitions
+0035.160 (0) Skipping table (lacks our prefix (abi_)): pages
+0035.161 (0) Skipping table (lacks our prefix (abi_)): petition_categories
+0035.163 (0) Skipping table (lacks our prefix (abi_)): petition_categorymeta
+0035.165 (0) Skipping table (lacks our prefix (abi_)): petition_comments
+0035.167 (0) Skipping table (lacks our prefix (abi_)): petition_likes
+0035.169 (0) Skipping table (lacks our prefix (abi_)): petition_shortslugs
+0035.170 (0) Skipping table (lacks our prefix (abi_)): petitions
+0035.172 (0) Skipping table (lacks our prefix (abi_)): petitions_tags
+0035.174 (0) Skipping table (lacks our prefix (abi_)): petitions_views
+0035.176 (0) Skipping table (lacks our prefix (abi_)): petitions_views_history
+0035.178 (0) Skipping table (lacks our prefix (abi_)): post_pics
+0035.180 (0) Skipping table (lacks our prefix (abi_)): post_tags
+0035.181 (0) Skipping table (lacks our prefix (abi_)): posts_tags
+0035.184 (0) Skipping table (lacks our prefix (abi_)): posts_views
+0035.186 (0) Skipping table (lacks our prefix (abi_)): privileges
+0035.192 (0) Skipping table (lacks our prefix (abi_)): referers
+0035.194 (0) Skipping table (lacks our prefix (abi_)): short_urls
+0035.196 (0) Skipping table (lacks our prefix (abi_)): signatures
+0035.198 (0) Skipping table (lacks our prefix (abi_)): tags
+0035.200 (0) Skipping table (lacks our prefix (abi_)): user_levels
+0035.202 (0) Skipping table (lacks our prefix (abi_)): usercfgs
+0035.204 (0) Skipping table (lacks our prefix (abi_)): users_old
+0035.206 (0) Skipping table (lacks our prefix (abi_)): users_socials
+0035.208 (0) Skipping table (lacks our prefix (abi_)): users_socials_old
+0035.210 (0) Skipping table (lacks our prefix (abi_)): webpetitions
+0035.213 (0) PHP event: code E_WARNING: filemtime(): stat failed for /mnt/BLOCKSTORAGE/home/1366246.cloudwaysapps.com/bpdefxwugd/public_html/magazine/wp-content/updraft/backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db.gz (line 1923, wp-content/plugins/updraftplus/backup.php)
+0035.216 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_options.table.tmpr22304.gz (1/81/fopen): adding to final database dump
+0035.222 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_options.table.gz (2/81/fopen): adding to final database dump
+0035.225 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_users.table.tmpr2.gz (3/81/fopen): adding to final database dump
+0035.227 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_users.table.gz (4/81/fopen): adding to final database dump
+0035.229 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_usermeta.table.tmpr38.gz (5/81/fopen): adding to final database dump
+0035.232 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_usermeta.table.gz (6/81/fopen): adding to final database dump
+0035.234 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_actions.table.tmpr2408.gz (7/81/fopen): adding to final database dump
+0035.236 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_actions.table.gz (8/81/fopen): adding to final database dump
+0035.239 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_claims.table.tmpr0.gz (9/81/fopen): adding to final database dump
+0035.241 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_claims.table.gz (10/81/fopen): adding to final database dump
+0035.243 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_groups.table.tmpr6.gz (11/81/fopen): adding to final database dump
+0035.247 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_groups.table.gz (12/81/fopen): adding to final database dump
+0035.249 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_logs.table.tmpr7156.gz (13/81/fopen): adding to final database dump
+0035.252 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_actionscheduler_logs.table.gz (14/81/fopen): adding to final database dump
+0035.254 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_commentmeta.table.tmpr0.gz (15/81/fopen): adding to final database dump
+0035.256 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_commentmeta.table.gz (16/81/fopen): adding to final database dump
+0035.258 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_comments.table.tmpr0.gz (17/81/fopen): adding to final database dump
+0035.259 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_comments.table.gz (18/81/fopen): adding to final database dump
+0035.261 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_links.table.tmpr0.gz (19/81/fopen): adding to final database dump
+0035.263 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_links.table.gz (20/81/fopen): adding to final database dump
+0035.265 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_postmeta.table.tmpr3012.gz (21/81/fopen): adding to final database dump
+0035.268 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_postmeta.table.gz (22/81/fopen): adding to final database dump
+0035.270 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_posts.table.tmpr3135.gz (23/81/fopen): adding to final database dump
+0035.274 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_posts.table.gz (24/81/fopen): adding to final database dump
+0035.276 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_term_relationships.table.tmpr100001.gz (25/81/fopen): adding to final database dump
+0035.278 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_term_relationships.table.gz (26/81/fopen): adding to final database dump
+0035.280 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_term_taxonomy.table.tmpr23.gz (27/81/fopen): adding to final database dump
+0035.282 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_term_taxonomy.table.gz (28/81/fopen): adding to final database dump
+0035.285 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_termmeta.table.tmpr12.gz (29/81/fopen): adding to final database dump
+0035.288 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_termmeta.table.gz (30/81/fopen): adding to final database dump
+0035.289 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_terms.table.tmpr23.gz (31/81/fopen): adding to final database dump
+0035.291 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_terms.table.gz (32/81/fopen): adding to final database dump
+0035.293 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_cache.table.tmpr22.gz (33/81/fopen): adding to final database dump
+0035.295 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_cache.table.gz (34/81/fopen): adding to final database dump
+0035.296 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_crawl_cleanup_blocked_args.table.tmpr0.gz (35/81/fopen): adding to final database dump
+0035.298 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_crawl_cleanup_blocked_args.table.gz (36/81/fopen): adding to final database dump
+0035.300 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_crawl_cleanup_logs.table.tmpr0.gz (37/81/fopen): adding to final database dump
+0035.302 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_crawl_cleanup_logs.table.gz (38/81/fopen): adding to final database dump
+0035.304 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_notifications.table.tmpr3.gz (39/81/fopen): adding to final database dump
+0035.306 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_notifications.table.gz (40/81/fopen): adding to final database dump
+0035.307 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_posts.table.tmpr43.gz (41/81/fopen): adding to final database dump
+0035.310 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_posts.table.gz (42/81/fopen): adding to final database dump
+0035.312 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_writing_assistant_keywords.table.tmpr0.gz (43/81/fopen): adding to final database dump
+0035.314 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_writing_assistant_keywords.table.gz (44/81/fopen): adding to final database dump
+0035.316 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_writing_assistant_posts.table.tmpr0.gz (45/81/fopen): adding to final database dump
+0035.319 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_aioseo_writing_assistant_posts.table.gz (46/81/fopen): adding to final database dump
+0035.321 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_e_events.table.tmpr0.gz (47/81/fopen): adding to final database dump
+0035.323 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_e_events.table.gz (48/81/fopen): adding to final database dump
+0035.325 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_monsterinsights_cache.table.tmpr5.gz (49/81/fopen): adding to final database dump
+0035.327 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_monsterinsights_cache.table.gz (50/81/fopen): adding to final database dump
+0035.330 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_404_logs.table.tmpr24.gz (51/81/fopen): adding to final database dump
+0035.332 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_404_logs.table.gz (52/81/fopen): adding to final database dump
+0035.334 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_ga.table.tmpr0.gz (53/81/fopen): adding to final database dump
+0035.337 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_ga.table.gz (54/81/fopen): adding to final database dump
+0035.339 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_gsc.table.tmpr0.gz (55/81/fopen): adding to final database dump
+0035.341 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_gsc.table.gz (56/81/fopen): adding to final database dump
+0035.344 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_inspections.table.tmpr12.gz (57/81/fopen): adding to final database dump
+0035.346 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_inspections.table.gz (58/81/fopen): adding to final database dump
+0035.349 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_keyword_manager.table.tmpr0.gz (59/81/fopen): adding to final database dump
+0035.351 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_keyword_manager.table.gz (60/81/fopen): adding to final database dump
+0035.353 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_objects.table.tmpr53.gz (61/81/fopen): adding to final database dump
+0035.356 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_analytics_objects.table.gz (62/81/fopen): adding to final database dump
+0035.358 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_internal_links.table.tmpr99.gz (63/81/fopen): adding to final database dump
+0035.361 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_internal_links.table.gz (64/81/fopen): adding to final database dump
+0035.364 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_internal_meta.table.tmpr3131.gz (65/81/fopen): adding to final database dump
+0035.366 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_rank_math_internal_meta.table.gz (66/81/fopen): adding to final database dump
+0035.369 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_sgs_log_events.table.tmpr13139.gz (67/81/fopen): adding to final database dump
+0035.372 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_sgs_log_events.table.gz (68/81/fopen): adding to final database dump
+0035.374 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_sgs_log_visitors.table.tmpr4665.gz (69/81/fopen): adding to final database dump
+0035.377 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_sgs_log_visitors.table.gz (70/81/fopen): adding to final database dump
+0035.380 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_userfeedback_survey_responses.table.tmpr0.gz (71/81/fopen): adding to final database dump
+0035.383 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_userfeedback_survey_responses.table.gz (72/81/fopen): adding to final database dump
+0035.385 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_userfeedback_surveys.table.tmpr0.gz (73/81/fopen): adding to final database dump
+0035.388 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_userfeedback_surveys.table.gz (74/81/fopen): adding to final database dump
+0035.390 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_logs.table.tmpr11.gz (75/81/fopen): adding to final database dump
+0035.393 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_logs.table.gz (76/81/fopen): adding to final database dump
+0035.396 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_payment_meta.table.tmpr0.gz (77/81/fopen): adding to final database dump
+0035.399 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_payment_meta.table.gz (78/81/fopen): adding to final database dump
+0035.401 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_payments.table.tmpr0.gz (79/81/fopen): adding to final database dump
+0035.404 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_payments.table.gz (80/81/fopen): adding to final database dump
+0035.406 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_tasks_meta.table.tmpr3.gz (81/81/fopen): adding to final database dump
+0035.409 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db-table-abi_wpforms_tasks_meta.table.gz (82/81/fopen): adding to final database dump
+0035.419 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db.gz: finished writing out complete database file (617.2 KB)
+0035.448 (0) Total database tables backed up: 41 (backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db.gz, size: 632104, sha1: ad897b4c09d92803ec1bb1edc66ad8b05b564ee1, sha256: 9001b8427afcd11fc24226476bda9f3f277d02e0da72e9aa34b701efc54e0d34)
+0035.464 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-plugins.zip: plugins: This file has already been successfully processed
+0035.466 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-themes.zip: themes: This file has already been successfully processed
+0035.469 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-uploads.zip: uploads: This file has already been successfully processed
+0035.471 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-others.zip: others: This file has already been successfully processed
+0035.473 (0) backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db.gz: db: This file has not yet been successfully uploaded: will queue
+0035.476 (0) Saving backup history. Total backup size: 127.6 MB
+0035.483 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0035.493 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0035.495 (0) No remote despatch: user chose no remote backup service
+0035.500 (0) Recording as successfully uploaded: backup_2026-01-02-0402_Freecause_Magazine_0e701805d202-db.gz
+0035.508 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0035.512 (0) Number of backup sets in history: 1; groups (db): 1
+0035.514 (0) Examining (for databases) backup set with group_id=0, nonce=0e701805d202, datestamp=1767326540 (Jan 02 2026 04:02:20)
+0035.517 (0) This backup set is the backup set just made, so will not be deleted.
+0035.517 (0) Number of backup sets in history: 1; groups (files): 1
+0035.519 (0) Examining (for files) backup set with nonce=0e701805d202, datestamp=1767326540 (Jan 02 2026 04:02:20)
+0035.519 (0) This backup set is the backup set just made, so will not be deleted.
+0035.521 (0) This backup set is the backup set just made, so will not be deleted.
+0035.521 (0) This backup set is the backup set just made, so will not be deleted.
+0035.521 (0) This backup set is the backup set just made, so will not be deleted.
+0035.521 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0035.523 (0) Retain: saving new backup history (sets now: 1) and finishing retain operation
+0035.529 (0) Resume backup (0e701805d202, 0): finish run
+0035.548 (0) Decremented the semaphore (fd) by 1
+0035.559 (0) Semaphore (fd) unlocked
+0035.561 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0035.572 (0) No email will/can be sent - the user has not configured an email address.
+0035.577 (0) The backup succeeded and is now complete

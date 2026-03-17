@@ -1,0 +1,60 @@
+.customize-control-radio-image .ui-button,
+.block-content .layouts-wrapper .layout {
+	margin:0;
+	border-radius:0;
+	border:none;
+	background:transparent;
+}
+
+.customize-control-radio-image .ui-button-text { 
+    padding: 0; 
+}
+
+.customize-control-radio-image img,
+.layouts-wrapper .layout img {
+	box-sizing: border-box;
+	max-width:100%;
+	height:auto;
+	padding:1px;
+	border:3px solid transparent;
+}
+
+.customize-control-radio-image img:hover, .customize-control-radio-image img:focus,
+.layouts-wrapper .layout img:hover, .layouts-wrapper .layout img:focus {
+    border-color: #ddd;
+    cursor: pointer;
+}
+
+.customize-control-radio-image img,
+.layouts-wrapper .layout img {
+	border-width: 8px;
+    border-color: #c5c8cb;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+}
+
+.customize-control-radio-image .ui-state-active img,
+.layouts-wrapper .layout.active img {
+    border-color: #2271b1;
+}
+
+.customize-control-radio-image .buttonset,
+.block-content .layouts-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.customize-control-radio-image .buttonset label.ui-button,
+.block-content .layouts-wrapper .layout {
+    flex: 0 1 45%;
+    margin-right: 5px;
+}
+
+.blocks-wrap .block-item .block-content .control-heading {
+    font-size: 12px;
+    font-weight: 500;
+    padding-bottom: 7px;
+    display: block;
+    margin-top: -7px;
+}

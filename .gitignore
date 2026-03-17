@@ -1,5 +1,16 @@
 *.log
 .DS_Store
+
+# Magazine (WordPress) - uploads, cache, local config, large binary files
+/magazine.zip
+/database/magazine.sql
+/public/magazine/wp-config.php
+/public/magazine/.htaccess
+/public/magazine/php_errorlog
+/public/magazine/wp-content/uploads/
+/public/magazine/wp-content/cache/
+/public/magazine/wp-content/upgrade/
+/public/magazine/wp-content/upgrade-temp-backup/
 .env
 .env.backup
 .env.production

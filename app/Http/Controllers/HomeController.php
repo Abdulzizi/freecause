@@ -126,11 +126,29 @@ class HomeController extends Controller
             });
         }
 
+        $magazinePosts = cache()->remember('home:magazine_posts', 1800, function () {
+            return DB::connection('magazine')->select("
+                SELECT
+                    p.ID,
+                    p.post_title,
+                    p.post_name,
+                    p.post_date,
+                    pm_thumb.meta_value AS thumbnail_path
+                FROM abi_posts p
+                LEFT JOIN abi_postmeta pm_tid  ON pm_tid.post_id  = p.ID AND pm_tid.meta_key  = '_thumbnail_id'
+                LEFT JOIN abi_postmeta pm_thumb ON pm_thumb.post_id = pm_tid.meta_value AND pm_thumb.meta_key = '_wp_attached_file'
+                WHERE p.post_status = 'publish' AND p.post_type = 'post'
+                ORDER BY p.post_date DESC
+                LIMIT 3
+            ");
+        });
+
         return view('pages.home', compact(
             'content',
             'categories',
             'featuredPetition',
-            'recentActivities'
+            'recentActivities',
+            'magazinePosts'
         ));
     }
 }

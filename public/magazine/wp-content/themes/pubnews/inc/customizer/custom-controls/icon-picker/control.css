@@ -1,0 +1,56 @@
+.customize-control.customize-control-icon-picker .icon-picker-modal {
+    height: 190px;
+    overflow: auto;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 0 4px 3px rgba(174 174 174 / 50%);
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.customize-control.customize-control-icon-picker .icon-picker-modal .icon-picker-list .icon-item i {
+    cursor: pointer;
+    font-size: 16px;
+    padding: 9px;
+    width: 16px;
+}
+
+.customize-control.customize-control-icon-picker .icon-picker-modal .icon-picker-list .icon-item.selected:hover i{
+  color: #fff;
+}
+
+.customize-control.customize-control-icon-picker .icon-picker-modal .icon-picker-list  .icon-item.selected {
+  color: #fff;
+  background-color: #007cba;
+  padding: 5px 0;
+  border: 2px;
+}
+
+.customize-control.customize-control-icon-picker .icon-picker-modal .icon-picker-list .icon-item i:hover {
+  color: #007cba;
+}
+
+.picker-buttons-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.picker-buttons-wrap .button-action {
+    flex: 1 1 33%;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.picker-buttons-wrap .button-action:hover {
+    cursor: pointer;
+}
+
+.picker-buttons-wrap .button-action:not(.active) {
+    box-shadow: inset 0 0 0 1px #b2b2b2;
+}
+
+.picker-buttons-wrap .button-action.active {
+    background: var(--wp-components-color-accent,var(--wp-admin-theme-color,#007cba));
+    color: #fff;
+}
