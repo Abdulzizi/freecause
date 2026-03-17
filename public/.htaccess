@@ -13,6 +13,11 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # Route /magazine/* non-file requests to WordPress
+    RewriteCond %{REQUEST_URI} ^/magazine
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^magazine(/.*)?$ magazine/index.php [L,QSA]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
