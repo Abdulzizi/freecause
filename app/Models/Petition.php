@@ -57,7 +57,7 @@ class Petition extends Model
         }
 
         if ($this->image_url) {
-            return $this->image_url;
+            return Storage::disk('public')->url("petitions/{$this->image_url}");
         }
 
         $n = ($this->id ? ($this->id % 14) : 0) + 1; // 1..14

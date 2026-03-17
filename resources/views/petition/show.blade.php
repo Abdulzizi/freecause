@@ -232,7 +232,7 @@
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoBy }}</strong>
                                     @if ($petition->user)
-                                        <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($petition->user->name ?? 'user'), 'id' => $petition->user_id]) }}"
+                                        <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($petition->user->name ?? 'user') ?: 'user', 'id' => $petition->user_id]) }}"
                                             class="red">
                                             {{ $petition->user->name }}
                                         </a>
