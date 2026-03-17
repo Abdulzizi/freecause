@@ -108,7 +108,7 @@ class AuthController extends Controller
 
         if ($smtpEnabled) {
             try {
-                Mail::to($user->email)->send(new VerifyAccountMail($user, $locale));
+                Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
             } catch (\Exception $e) {
                 AppLog::error(
                     'Mail sending failed',
@@ -251,7 +251,7 @@ class AuthController extends Controller
                 $u->verification_token_sent_at = now();
 
                 try {
-                    Mail::to($u->email)->send(new VerifyAccountMail($u, $locale));
+                    Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
                 } catch (\Exception $e) {
                     AppLog::error(
                         'Mail sending failed (profile update)',
@@ -443,7 +443,7 @@ class AuthController extends Controller
         $user->save();
 
         try {
-            Mail::to($user->email)->send(
+            Mail::to($user->email)->queue(
                 new VerifyAccountMail($user, $locale)
             );
 
