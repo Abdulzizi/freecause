@@ -165,7 +165,7 @@ Route::group([
         Route::post('/account/unlink/google', [AuthController::class, 'unlinkGoogle'])->name('account.unlink.google');
         Route::post('/account/unlink/facebook', [AuthController::class, 'unlinkFacebook'])->name('account.unlink.facebook');
 
-        Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store');
+        Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware('throttle:5,1');
 
         // petition owner operations
         Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->where(['id' => '[0-9]+'])->name('petition.edit');
@@ -199,7 +199,7 @@ Route::group([
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
     Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->where(['id' => '[0-9]+'])->name('petition.signatures');
     Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
-    Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign');
+    Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign')->middleware('throttle:10,1');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
 
     Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[a-z0-9\-]+')->name('page.show');

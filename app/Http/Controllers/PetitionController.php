@@ -367,7 +367,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'image' => ['nullable', 'image', 'max:4096'],
+            'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
             'image_url' => [
                 'nullable',
                 'url',
@@ -792,7 +792,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'image' => ['nullable', 'image', 'max:4096'],
+            'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
             'image_url' => ['nullable', 'url', 'max:500'],
 
             'youtube' => ['nullable', 'url', 'max:200'],
