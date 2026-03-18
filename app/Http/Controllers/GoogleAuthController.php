@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Locale;
+use App\Support\WpSso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -140,13 +141,16 @@ class GoogleAuthController extends Controller
         $request->session()->regenerate();
 
         if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
-            return redirect()->route('petition.sign.page', [
+            $dest = route('petition.sign.page', [
                 'locale' => $ctx['locale'],
                 'slug' => $ctx['slug'],
                 'id' => $ctx['petition_id'],
-            ])->with('oauth_logged_in', true);
+            ]);
+            // route() returns absolute URL; extract path for the SSO redirect
+            $dest = parse_url($dest, PHP_URL_PATH) . '?' . http_build_query(['oauth_logged_in' => 1]);
+            return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return redirect("/{$destLocale}");
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$destLocale}"));
     }
 }

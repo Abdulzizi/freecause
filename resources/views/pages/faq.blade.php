@@ -152,6 +152,7 @@
         '{RECOVER_URL}' => url('/' . app()->getLocale() . '/login'),
         '{HOW_TO_CREATE_LINK}' => url('/' . app()->getLocale() . '/help'),
         '{DONATIONS_LINK}' => url('/' . app()->getLocale() . '/donate'),
+        'https://www.test.freecause.com/ethical-code' => url('/' . app()->getLocale() . '/contacts'),
     ];
 
     foreach ($faq as $section => $items) {

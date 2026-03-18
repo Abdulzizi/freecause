@@ -27,8 +27,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\UserProfileController;
+use App\Mail\ContactMail;
+use App\Support\AppLog;
 use App\Support\Settings;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -175,12 +178,25 @@ Route::group([
     });
 
     // static pages
-    Route::get('/magazine', fn() => view('pages.magazine'))->name('magazine');
     Route::get('/faqs', fn() => view('pages.faq'))->name('faqs');
 
     Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
-    Route::post('/contacts', function () {
-        return back()->with('success', 'Thanks! (UI only for now)');
+    Route::post('/contacts', function (\Illuminate\Http\Request $request) {
+        $data = $request->validate([
+            'name'  => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:190'],
+            'text'  => ['required', 'string', 'max:5000'],
+        ]);
+
+        $adminEmail = config('mail.from.address');
+
+        try {
+            Mail::to($adminEmail)->send(new ContactMail($data['name'], $data['email'], $data['text']));
+        } catch (\Exception $e) {
+            AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
+        }
+
+        return back()->with('success', 'Your message has been sent. We will get back to you soon.');
     })->name('contacts.submit');
 
     // home + petitions
