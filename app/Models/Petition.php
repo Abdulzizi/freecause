@@ -53,17 +53,23 @@ class Petition extends Model
                 return $this->cover_image;
             }
 
-            return Storage::disk('public')->url($this->cover_image);
+            $path = Storage::disk('public')->path($this->cover_image);
+            if (file_exists($path)) {
+                return Storage::disk('public')->url($this->cover_image);
+            }
         }
 
         if ($this->image_url) {
-            return Storage::disk('public')->url("petitions/{$this->image_url}");
+            $path = Storage::disk('public')->path("petitions/{$this->image_url}");
+            if (file_exists($path)) {
+                return Storage::disk('public')->url("petitions/{$this->image_url}");
+            }
         }
 
         $n = ($this->id ? ($this->id % 14) : 0) + 1; // 1..14
-        $path = public_path("legacy/images/petitions/covers/pic{$n}.jpg");
+        $legacyPath = public_path("legacy/images/petitions/covers/pic{$n}.jpg");
 
-        if (file_exists($path)) {
+        if (file_exists($legacyPath)) {
             return asset("legacy/images/petitions/covers/pic{$n}.jpg");
         }
 
