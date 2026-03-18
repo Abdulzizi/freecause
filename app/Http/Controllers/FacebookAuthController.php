@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Locale;
+use App\Support\WpSso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -130,13 +131,15 @@ class FacebookAuthController extends Controller
         $request->session()->regenerate();
 
         if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
-            return redirect()->route('petition.sign.page', [
+            $dest = route('petition.sign.page', [
                 'locale' => $ctx['locale'],
                 'slug'   => $ctx['slug'],
                 'id'     => $ctx['petition_id'],
             ]);
+            $dest = parse_url($dest, PHP_URL_PATH);
+            return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return redirect("/{$locale}");
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$locale}"));
     }
 }

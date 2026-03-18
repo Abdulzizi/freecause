@@ -14,6 +14,7 @@ use App\Mail\VerifyAccountMail;
 use App\Models\UserLevel;
 use App\Support\AppLog;
 use App\Support\Settings;
+use App\Support\WpSso;
 use App\Support\Locale;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
@@ -127,7 +128,7 @@ class AuthController extends Controller
 
         toast('Account created successfully.', 'success');
 
-        return redirect()->to("/{$locale}");
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$locale}"));
     }
 
     public function login(Request $request, string $locale)
@@ -175,16 +176,16 @@ class AuthController extends Controller
         if ($loggedIn) {
             $request->session()->regenerate();
 
-            $redirect = $request->input('redirect');
-            if ($redirect && str_starts_with($redirect, '/') && !str_starts_with($redirect, '//')) {
-                return redirect()->to($redirect);
-            }
-
             $user = Auth::user();
             $user->ip = $request->ip();
             $user->save();
 
-            return redirect()->intended("/{$locale}");
+            $dest = $request->input('redirect');
+            if (!$dest || !str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
+                $dest = $request->session()->pull('url.intended', "/{$locale}");
+            }
+
+            return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
         return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
@@ -198,7 +199,7 @@ class AuthController extends Controller
 
         $locale = $request->input('locale', 'en');
 
-        return redirect()->to("/{$locale}");
+        return redirect()->to(WpSso::logoutUrl("/{$locale}"));
     }
 
     public function updateProfile(Request $request, string $locale)
