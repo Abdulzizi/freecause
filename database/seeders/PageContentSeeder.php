@@ -475,7 +475,7 @@ class PageContentSeeder extends Seeder
                 'key' => 'footer_about',
                 'value' => '
                     <div class="footer-logo">
-                        <img src="https://www.freecause.com/magazine/wp-content/uploads/2025/01/19.png" alt="Freecause">
+                        <img src="/legacy/images/logo7footer.png" alt="Freecause">
                     </div>
 
                     <p>
