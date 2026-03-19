@@ -27,6 +27,8 @@
         @endif
     </title>
 
+    <link rel="icon" type="image/png" href="{{ asset('legacy/images/logo7.png') }}">
+
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
