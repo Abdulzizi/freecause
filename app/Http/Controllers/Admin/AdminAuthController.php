@@ -71,40 +71,16 @@ class AdminAuthController extends Controller
             }
         }
 
-        // Admin username shortcut (defined in .env)
+        // Admin username shortcut (defined in .env) — password validated against admin user's actual DB password
         $adminUsername = config('services.admin_username');
-        $adminPassword = config('services.admin_username_password');
-        if ($adminUsername && $adminPassword && $login === $adminUsername && $password === $adminPassword) {
+        if ($adminUsername && $login === $adminUsername) {
             $user = User::whereHas('level', fn($q) => $q->where('name', 'admin'))->first();
-            if (!$user) {
-                // No admin user in DB yet — create one via the emergency path
-                try {
-                    $adminLevel = UserLevel::where('name', 'admin')->first();
-                    $user = User::firstOrCreate(
-                        ['email' => 'sadmin@freecause.local'],
-                        [
-                            'name'       => 'sadmin',
-                            'first_name' => 'Super',
-                            'last_name'  => 'Admin',
-                            'password'   => Hash::make($adminPassword),
-                            'verified'   => true,
-                            'level_id'   => $adminLevel?->id,
-                            'ip'         => $request->ip(),
-                            'locale'     => 'en_US',
-                        ]
-                    );
-                    if ($adminLevel && $user->level_id !== $adminLevel->id) {
-                        $user->level_id = $adminLevel->id;
-                        $user->save();
-                    }
-                } catch (\Throwable $e) {
-                    Log::error('Sadmin bootstrap failed: ' . $e->getMessage());
-                    return back()->withErrors(['login' => 'Login failed: ' . $e->getMessage()])->withInput();
-                }
+            if ($user && Hash::check($password, $user->password)) {
+                session(['admin_user_id' => $user->id]);
+                $request->session()->regenerateToken();
+                return redirect()->route('admin.options.global');
             }
-            session(['admin_user_id' => $user->id]);
-            $request->session()->regenerateToken();
-            return redirect()->route('admin.options.global');
+            return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
