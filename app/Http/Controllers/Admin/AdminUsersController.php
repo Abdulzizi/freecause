@@ -98,7 +98,7 @@ class AdminUsersController extends Controller
             'username'   => ['nullable', 'string', 'max:120'],
             'first_name' => ['nullable', 'string', 'max:120'],
             'last_name'  => ['nullable', 'string', 'max:120'],
-            'password'   => ['nullable', 'string', 'min:6'],
+            'password'   => ['nullable', 'string', 'min:8'],
             'level'      => ['nullable', 'string'],
             'email'      => ['nullable', 'email'],
             'locale'     => ['nullable', 'string'],

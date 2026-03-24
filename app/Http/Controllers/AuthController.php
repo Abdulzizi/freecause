@@ -217,7 +217,7 @@ class AuthController extends Controller
             'new_email_confirmation' => ['nullable', 'same:new_email'],
 
             'current_password' => ['required_with:new_password'],
-            'new_password' => ['nullable', 'string', 'min:6', 'max:72', 'confirmed'],
+            'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
         ]);
 
         $first = trim($data['first_name']);
@@ -390,7 +390,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:6'],
+            'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
         $status = Password::reset(
