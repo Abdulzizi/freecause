@@ -69,6 +69,14 @@ $updated = 0;
 $skipped = 0;
 
 while ($row = $result->fetch_assoc()) {
+    // Skip external URLs — they were never local files and would produce
+    // corrupt paths like "es_AR/http://...". run fix_corrupt_image_urls.php
+    // to clean up any that were stored in a previous run.
+    if (str_starts_with($row['pic'], 'http://') || str_starts_with($row['pic'], 'https://')) {
+        $skipped++;
+        continue;
+    }
+
     $folder = $prefixToFolder[$row['prefix']] ?? 'en_US';
     $imageUrl = $folder . '/' . $row['pic'];
 
@@ -81,7 +89,7 @@ while ($row = $result->fetch_assoc()) {
     if ($updated % 1000 === 0) echo "  Updated {$updated}...\r";
 }
 
-echo "\nDone. Updated {$updated} petitions.\n";
+echo "\nDone. Updated {$updated} petitions, skipped {$skipped} external URLs.\n";
 
 $old->close();
 $new->close();
