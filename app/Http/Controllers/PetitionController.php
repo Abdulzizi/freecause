@@ -55,7 +55,7 @@ class PetitionController extends Controller
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $page = (int) request('page', 1);
+        $page = min((int) request('page', 1), 500);
         $cacheKey = "petitions:index:{$locale}:page:{$page}";
 
         $petitions = cache()->remember($cacheKey, now()->addSeconds(60), function () use ($locale, $defaultLocale) {
