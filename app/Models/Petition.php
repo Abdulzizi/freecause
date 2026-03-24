@@ -66,11 +66,11 @@ class Petition extends Model
             }
         }
 
-        $n = ($this->id ? ($this->id % 14) : 0) + 1; // 1..14
-        $legacyPath = public_path("legacy/images/petitions/covers/pic{$n}.jpg");
+        $n = ($this->id ? ($this->id % 7) : 0) + 1; // 1..7
+        $legacyPath = public_path("legacy/images/pic{$n}.jpg");
 
         if (file_exists($legacyPath)) {
-            return asset("legacy/images/petitions/covers/pic{$n}.jpg");
+            return asset("legacy/images/pic{$n}.jpg");
         }
 
         return asset('legacy/images/demo-featured.jpg');
