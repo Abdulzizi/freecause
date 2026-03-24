@@ -12,6 +12,9 @@ class AddSecurityHeaders
     {
         $response = $next($request);
 
+        // Enforce HTTPS for 1 year
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
         // Prevent clickjacking
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
