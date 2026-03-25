@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    // protected $with = ['translations'];
+    protected $with = ['translations'];
     protected $fillable = ['is_active', 'sort_order'];
 
     public function translations()

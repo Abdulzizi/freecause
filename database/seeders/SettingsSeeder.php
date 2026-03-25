@@ -24,8 +24,6 @@ class SettingsSeeder extends Seeder
             ['group' => 'global', 'key' => 'inject_body_html', 'type' => 'text', 'value' => ''],
 
             // OAuth (auto from .env)
-            ['group' => 'global', 'key' => 'facebook_app_id', 'type' => 'string', 'value' => env('FACEBOOK_APP_ID')],
-            ['group' => 'global', 'key' => 'facebook_secret', 'type' => 'string', 'value' => env('FACEBOOK_SECRET')],
             ['group' => 'global', 'key' => 'google_client_id', 'type' => 'string', 'value' => env('GOOGLE_CLIENT_ID')],
             ['group' => 'global', 'key' => 'google_client_secret', 'type' => 'string', 'value' => env('GOOGLE_CLIENT_SECRET')],
 

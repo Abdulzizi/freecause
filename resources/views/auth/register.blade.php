@@ -20,17 +20,6 @@
                                 </a>
                             </div>
 
-                            <div class="text-center mb-3">
-                                <a href="{{ lroute('oauth.facebook', ['flow' => 'register']) }}"
-                                    class="btn btn-light border px-3"
-                                    style="border-radius:8px;">
-                                    <img src="{{ asset('legacy/images-v2/facebook.png') }}"
-                                        alt=""
-                                        style="width:18px;margin-right:8px;">
-                                    Continue with Facebook
-                                </a>
-                            </div>
-
                             <div class="d-flex align-items-center gap-3 mb-4">
                                 <div style="height:1px;background:#ddd;flex:1;"></div>
                                 <div class="fw-semibold">OR</div>

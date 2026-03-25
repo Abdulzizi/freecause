@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\BannedIp;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,7 @@ class BlockBannedIp
     {
         $ip = $request->ip();
 
-        $isBanned = cache()->remember("banned_ip:{$ip}", 300, fn() => DB::table('banned_ips')->where('ip', $ip)->exists());
+        $isBanned = cache()->remember("banned_ip:{$ip}", 300, fn() => BannedIp::where('ip', $ip)->exists());
 
         if ($isBanned) {
             DB::table('spam_logs')->insert([

@@ -24,7 +24,6 @@ class User extends Authenticatable
         'city',
         'nickname',
         'google_id',
-        'facebook_id',
         'password_changed_at',
     ];
 

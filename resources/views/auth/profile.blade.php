@@ -34,26 +34,6 @@
 
                         <div class="mt-4">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="fc-social fb">Facebook</div>
-
-                                @if ($u->facebook_id)
-                                    <form method="POST" action="{{ lroute('account.unlink.facebook') }}">
-                                        @csrf
-                                        <button type="submit" class="fc-toggle on">
-                                            <span class="knob"></span>
-                                            <span class="label">ON</span>
-                                        </button>
-                                    </form>
-                                @else
-                                    <a href="{{ lroute('oauth.facebook') }}" class="fc-toggle">
-                                        <span class="knob"></span>
-                                        <span class="label">OFF</span>
-                                    </a>
-                                @endif
-                            </div>
-
-
-                            <div class="d-flex align-items-center gap-3 mb-3">
                                 <div class="fc-social fb">Google</div>
 
                                 @if ($u->google_id)

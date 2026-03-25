@@ -31,7 +31,7 @@
                 <div class="mb-4">
                     <h1 class="mb-2" style="font-size:24px; font-weight:600;">Access Forbidden</h1>
                     <div style="font-size:14px;">
-                        <a class="red" href="/{{ $locale }}">Home</a>
+                        <a class="red" href="{{ url('/'.$locale) }}">Home</a>
                         <span class="text-muted"> / </span>
                         <span class="text-muted">403</span>
                     </div>
@@ -45,7 +45,7 @@
                     <p style="font-size:15px; color:#555; margin-bottom:20px;">
                         If you believe this is a mistake, please contact support.
                     </p>
-                    <a class="btn btn-danger" href="/{{ $locale }}">Back to Home</a>
+                    <a class="btn btn-danger" href="{{ url('/'.$locale) }}">Back to Home</a>
                 </div>
 
             </div>

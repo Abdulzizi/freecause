@@ -5,12 +5,6 @@
 
 <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
 
-
-    <a href="{{ lroute('oauth.facebook', ['redirect' => $redirect]) }}" class="btn btn-light border px-3">
-        <img src="{{ asset('legacy/images-v2/facebook.png') }}" alt="" style="width:18px;margin-right:8px;">
-        Continue with Facebook
-    </a>
-
     <a href="{{ lroute('oauth.google', ['redirect' => $redirect]) }}" class="btn btn-light border px-3"
         style="border-radius:6px;">
         <img src="{{ asset('legacy/images-v2/google.png') }}" alt="" style="width:18px;margin-right:8px;">

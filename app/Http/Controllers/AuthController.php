@@ -344,20 +344,6 @@ class AuthController extends Controller
         return back()->with('success', 'Google account unlinked.');
     }
 
-    public function unlinkFacebook(Request $request)
-    {
-        $user = auth()->user();
-
-        if (!$user->password) {
-            return back()->withErrors(['error' => 'Set a password before unlinking Facebook.']);
-        }
-
-        $user->facebook_id = null;
-        $user->save();
-
-        return back()->with('success', 'Facebook account unlinked.');
-    }
-
     public function showForgotPassword(string $locale)
     {
         return view('auth.forgot-password');

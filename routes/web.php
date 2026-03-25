@@ -21,7 +21,6 @@ use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
-use App\Http\Controllers\FacebookAuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -135,9 +134,6 @@ Route::group([
     Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
     Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 
-    Route::get('/oauth/facebook', [FacebookAuthController::class, 'redirect'])->name('oauth.facebook');
-    Route::get('/oauth/facebook/callback', [FacebookAuthController::class, 'callback'])->name('oauth.facebook.callback');
-
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:6,1');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -166,7 +162,6 @@ Route::group([
         Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
 
         Route::post('/account/unlink/google', [AuthController::class, 'unlinkGoogle'])->name('account.unlink.google');
-        Route::post('/account/unlink/facebook', [AuthController::class, 'unlinkFacebook'])->name('account.unlink.facebook');
 
         Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware('throttle:5,1');
 
