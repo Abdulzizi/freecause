@@ -793,7 +793,19 @@ class PetitionController extends Controller
             ],
 
             'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => ['nullable', 'url', 'max:500'],
+            'image_url' => [
+                'nullable',
+                'url',
+                'max:500',
+                function ($attr, $value, $fail) {
+                    $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
+                    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
+                    $ext = pathinfo($path, PATHINFO_EXTENSION);
+                    if (!$ext || !in_array($ext, $allowed, true)) {
+                        $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
+                    }
+                },
+            ],
 
             'youtube' => ['nullable', 'url', 'max:200'],
 
@@ -899,7 +911,7 @@ class PetitionController extends Controller
                 $num  = $i + 1;
                 $name = $sig->name ?: 'Anonymous';
                 $date = optional($sig->created_at)->format('Y-m-d');
-                $comment = trim($sig->comment ?? 'I support this petition');
+                $comment = trim($sig->text ?? 'I support this petition');
 
                 $lines[] = "{$num}. {$name} ({$date})";
                 $lines[] = "   {$comment}";
