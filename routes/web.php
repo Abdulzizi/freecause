@@ -197,7 +197,7 @@ Route::group([
         }
 
         return back()->with('success', 'Your message has been sent. We will get back to you soon.');
-    })->name('contacts.submit');
+    })->name('contacts.submit')->middleware('throttle:6,1');
 
     // home + petitions
     Route::get('/', [HomeController::class, 'index'])->name('home');
