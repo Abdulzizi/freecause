@@ -211,7 +211,6 @@
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
                                                 class="red">{{ $sig->name ?? 'Anonymous' }}</a>
                                             <span class="text-muted">|</span>
-                                            {{-- <span>{{ $sig->comment ?? ($formContent['default_comment'] ?? 'I support this petition') }}</span> --}}
                                             <span>{{ $sig->text }}</span>
                                         </div>
                                     </div>

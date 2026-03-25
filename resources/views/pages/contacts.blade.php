@@ -51,7 +51,7 @@
 
                                         <div class="mb-3">
                                             <p class="mb-1 fs-14">Email (mandatory)</p>
-                                            <input type="text" name="email" class="form-control" placeholder="Email"
+                                            <input type="email" name="email" class="form-control" placeholder="Email"
                                                 value="" />
                                         </div>
 

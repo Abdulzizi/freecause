@@ -13,7 +13,7 @@
             <div class="mb-4">
                 <h1 class="mb-2" style="font-size:24px; font-weight:600;">Server Error</h1>
                 <div style="font-size:14px;">
-                    <a class="red" href="/{{ $locale }}">Home</a>
+                    <a class="red" href="{{ url('/'.$locale) }}">Home</a>
                     <span class="text-muted"> / </span>
                     <span class="text-muted">500</span>
                 </div>
@@ -27,7 +27,7 @@
                 <p style="font-size:15px; color:#555; margin-bottom:20px;">
                     We are working to fix the issue. Please try again in a few moments.
                 </p>
-                <a class="btn btn-danger" href="/{{ $locale }}">Back to Home</a>
+                <a class="btn btn-danger" href="{{ url('/'.$locale) }}">Back to Home</a>
             </div>
 
         </div>

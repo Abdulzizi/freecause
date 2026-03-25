@@ -200,14 +200,5 @@ class AppServiceProvider extends ServiceProvider
             Log::warning('bootOAuth Google failed: ' . $e->getMessage());
         }
 
-        try {
-            $locale = app()->getLocale();
-
-            Config::set('services.facebook.client_id',     Settings::get('facebook_app_id', ''));
-            Config::set('services.facebook.client_secret', Settings::get('facebook_secret', ''));
-            Config::set('services.facebook.redirect',      url("/{$locale}/oauth/facebook/callback"));
-        } catch (\Throwable $e) {
-            Log::warning('bootOAuth Facebook failed: ' . $e->getMessage());
-        }
     }
 }

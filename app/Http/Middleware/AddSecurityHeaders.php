@@ -32,13 +32,12 @@ class AddSecurityHeaders
             "default-src 'self'; " .
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
                 "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
-                "https://ajax.googleapis.com https://connect.facebook.net " .
-                "https://accounts.google.com; " .
+                "https://ajax.googleapis.com https://accounts.google.com; " .
             "style-src 'self' 'unsafe-inline' " .
                 "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
             "img-src 'self' data: blob: https:; " .
             "font-src 'self' https://cdnjs.cloudflare.com; " .
-            "frame-src 'self' https://accounts.google.com https://www.facebook.com; " .
+            "frame-src 'self' https://accounts.google.com; " .
             "connect-src 'self'; " .
             "object-src 'none';"
         );
