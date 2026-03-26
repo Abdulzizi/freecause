@@ -74,20 +74,19 @@
                                             <div class="card featured-box position-relative">
                                                 <div class="card-body">
 
-                                                    <span class="featured-badges">
-                                                        {{ $content['featured_badge'] ?? 'Featured Petition' }}
-                                                    </span>
-
                                                     <div class="row featured-box-inner">
 
+                                                        @if ($featuredPetition)
                                                         <div class="col-sm-6 mb-4">
-                                                            <img src="{{ $featuredPetition?->coverUrl() }}"
+                                                            <span class="featured-badges">
+                                                                {{ $content['featured_badge'] ?? 'Featured Petition' }}
+                                                            </span>
+                                                            <img src="{{ $featuredPetition->coverUrl() }}"
                                                                 class="img-fluid w-100"
                                                                 style="max-height:320px;object-fit:cover;border-radius:6px;" />
                                                         </div>
 
                                                         <div class="col-sm-6 mb-4">
-                                                            @if ($featuredPetition)
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>

@@ -18,8 +18,6 @@ class GlobalOptionsController extends Controller
         'inject_body_html'                   => '',
         'google_client_id'                   => '',
         'google_client_secret'               => '',
-        'facebook_app_id'                    => '',
-        'facebook_secret'                    => '',
         'smtp_enabled'                       => false,
         'smtp_host'                          => '',
         'smtp_user'                          => '',
