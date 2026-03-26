@@ -83,21 +83,6 @@
                 <input class="fc-input" type="text" name="google_client_secret" value="{{ $google_client_secret }}">
             </div>
 
-            <div class="fc-row">
-                <a href="https://developers.facebook.com/apps/" target="_blank"
-                    style="text-decoration:none; cursor:pointer;">
-                    <label style="cursor:pointer; color:#1a0dab;">
-                        facebook app id
-                    </label>
-                </a>
-                <input class="fc-input" type="text" name="facebook_app_id" value="{{ $facebook_app_id }}">
-            </div>
-
-            <div class="fc-row">
-                <label>facebook secret</label>
-                <input class="fc-input" type="text" name="facebook_secret" value="{{ $facebook_secret }}">
-            </div>
-
         </div>
 
         <div class="fc-tab">smtp</div>
