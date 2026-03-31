@@ -49,7 +49,15 @@ class GlobalOptionsController extends Controller
     {
         $errors = [];
 
+        // inject_head_html and inject_body_html can execute arbitrary JavaScript on
+        // every page view. Restrict saving these to system-level admins only.
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+
         foreach ($this->defaults as $key => $default) {
+            if (in_array($key, ['inject_head_html', 'inject_body_html'], true) && !$isSystemAdmin) {
+                continue;
+            }
+
             try {
                 if (is_bool($default)) {
                     $value = (bool) $request->input($key, 0);
