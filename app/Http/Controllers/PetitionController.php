@@ -372,6 +372,7 @@ class PetitionController extends Controller
                 'nullable',
                 'url',
                 'max:500',
+                'regex:/^https?:\/\//i',
                 function ($attr, $value, $fail) {
                     $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
                     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
@@ -382,11 +383,11 @@ class PetitionController extends Controller
                 },
             ],
 
-            'youtube' => ['nullable', 'url', 'max:200'],
+            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//i'],
 
             'target' => ['nullable', 'string', 'max:190'],
             'community' => ['nullable', 'string', 'max:190'],
-            'community_url' => ['nullable', 'url', 'max:500'],
+            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ], [
             'image.prohibited_with' => 'Please choose either upload an image OR use an external image link (not both).',
@@ -799,6 +800,7 @@ class PetitionController extends Controller
                 'nullable',
                 'url',
                 'max:500',
+                'regex:/^https?:\/\//i',
                 function ($attr, $value, $fail) {
                     $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
                     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
@@ -809,11 +811,11 @@ class PetitionController extends Controller
                 },
             ],
 
-            'youtube' => ['nullable', 'url', 'max:200'],
+            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//i'],
 
             'target' => ['nullable', 'string', 'max:190'],
             'community' => ['nullable', 'string', 'max:190'],
-            'community_url' => ['nullable', 'url', 'max:500'],
+            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ]);
 

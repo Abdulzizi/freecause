@@ -12,8 +12,6 @@ class Petition extends Model
 
     protected $fillable = [
         'signature_count',
-        'user_id',
-        'status',
         'goal_signatures',
         'category_id',
         'target',
