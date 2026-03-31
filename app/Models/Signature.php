@@ -18,7 +18,6 @@ class Signature extends Model
         'text',
         'confirmed',
         'ip_address',
-        'is_spam',
     ];
 
     public function petition()
