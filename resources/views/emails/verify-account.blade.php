@@ -15,7 +15,7 @@
 
 <body style="font-family: Arial, sans-serif; background:#f4f4f4; padding:30px;">
     <div style="max-width:600px;margin:auto;background:#ffffff;padding:30px;border-radius:6px;">
-        <h2 style="margin-top:0;">Welcome to FreeCause</h2>
+        <h2 style="margin-top:0;">{{ $greeting ?? 'Welcome to FreeCause' }}</h2>
 
         <p>
             Hi {{ $user->first_name }},
@@ -32,7 +32,7 @@
         <p style="text-align:center;margin:30px 0;">
             <a href="{{ $verifyUrl }}"
                 style="background:#d61f26;color:#ffffff;padding:12px 25px;text-decoration:none;border-radius:4px;display:inline-block;">
-                Verify My Account
+                {{ $buttonText ?? 'Verify My Account' }}
             </a>
         </p>
 
@@ -41,7 +41,7 @@
         </p>
 
         <p style="margin-top:30px;font-size:13px;color:#777;">
-            FreeCause – Online Petition Platform
+            {{ $footer ?? 'FreeCause – Online Petition Platform' }}
         </p>
     </div>
 </body>
