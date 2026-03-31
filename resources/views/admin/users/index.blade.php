@@ -185,7 +185,10 @@
 
                 <div class="fc-row">
                     <label>password</label>
-                    <input class="fc-input" type="text" name="password" value="">
+                    <div>
+                        <input class="fc-input" type="text" name="password" value="">
+                        @error('password') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">

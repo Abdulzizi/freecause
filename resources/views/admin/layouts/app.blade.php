@@ -35,16 +35,23 @@
         </div>
     </div>
 
-    @if(session('success') || $errors->any())
+    @if(session('success') || session('warning') || $errors->any())
         <div id="fc-toast" class="fc-toast {{ session('success') ? 'success' : 'error' }}">
             <span class="fc-toast-icon">
                 {{ session('success') ? '✓' : '⚠' }}
             </span>
             <span class="fc-toast-text">
-                {{ session('success') ?? $errors->first() }}
+                @if(session('success'))
+                    {{ session('success') }}
+                @elseif(session('warning'))
+                    {{ session('warning') }}
+                @else
+                    @foreach($errors->all() as $err)
+                        <div>{{ $err }}</div>
+                    @endforeach
+                @endif
             </span>
         </div>
-
     @endif
 
     @stack('scripts')
