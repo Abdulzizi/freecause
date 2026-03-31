@@ -17,14 +17,33 @@
             <option value="error" {{ request('level')=='error'?'selected':'' }}>Error</option>
         </select>
 
-        <select name="context" class="fc-input" style="max-width:150px;">
+        <select name="context" class="fc-input" style="max-width:160px;">
             <option value="">All context</option>
-            <option value="auth.register">Auth Register</option>
-            <option value="auth.login">Auth Login</option>
-            <option value="auth.google">Google OAuth</option>
-            <option value="auth.facebook">Facebook OAuth</option>
+            <option value="admin.audit" {{ request('context')=='admin.audit'?'selected':'' }}>Admin Audit</option>
+            <option value="auth.register" {{ request('context')=='auth.register'?'selected':'' }}>Auth Register</option>
+            <option value="auth.login" {{ request('context')=='auth.login'?'selected':'' }}>Auth Login</option>
+            <option value="auth.google" {{ request('context')=='auth.google'?'selected':'' }}>Google OAuth</option>
+            <option value="petition.sign" {{ request('context')=='petition.sign'?'selected':'' }}>Petition Signed</option>
         </select>
     </x-admin.filter-box>
+
+    <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
+        <a class="fc-btn" style="text-decoration:none;" href="{{ route('admin.logs.export', request()->query()) }}">
+            export CSV
+        </a>
+
+        <form method="post" action="{{ route('admin.logs.prune') }}" style="display:flex; gap:6px; align-items:center;"
+            onsubmit="return confirm('Delete all logs older than the selected number of days?')">
+            @csrf
+            <select name="days" class="fc-input" style="max-width:140px;">
+                <option value="30">30 days</option>
+                <option value="60">60 days</option>
+                <option value="90" selected>90 days</option>
+                <option value="180">180 days</option>
+            </select>
+            <button class="fc-btn" type="submit" style="background:#c00; color:#fff;">prune old logs</button>
+        </form>
+    </div>
 
     <x-admin.list-table-box :p="$logs" :bulk="[
             // 'banRoute' => route('admin.logs.bulkDelete'),

@@ -49,6 +49,14 @@
             @endforeach
         </select>
 
+        @if ($hasConfirmed)
+            <select class="fc-select" name="confirmed" style="max-width:160px;">
+                <option value="">all signatures</option>
+                <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
+                <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
+            </select>
+        @endif
+
     </x-admin.filter-box>
 
     <x-admin.list-table-box emptyText="no signatures found" :p="$signatures" :bulk="[
@@ -62,6 +70,9 @@
                 <th width="70">ID</th>
                 <th width="26"></th>
                 <th width="26"></th>
+                @if ($hasConfirmed)
+                    <th width="26" title="Confirmed">C</th>
+                @endif
                 <th>User</th>
                 <th width="26"></th>
                 <th>Title</th>
@@ -89,6 +100,16 @@
                             <span class="fc-no">✖</span>
                         @endif
                     </td>
+
+                    @if ($hasConfirmed)
+                        <td style="text-align:center;">
+                            @if ($s->confirmed)
+                                <span class="fc-ok" title="Confirmed">✔</span>
+                            @else
+                                <span class="fc-no" title="Unconfirmed">✖</span>
+                            @endif
+                        </td>
+                    @endif
 
                     <td>
                         @if ($s->user_id)
@@ -138,6 +159,28 @@
         <x-slot:footer>
             <div style="display:flex; gap:10px; align-items:flex-end;">
 
+                @if ($hasConfirmed)
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="approve">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div style="font-size:10px; color:#666;">Approve</div>
+                    </button>
+
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="reject">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <div style="font-size:10px; color:#666;">Reject</div>
+                    </button>
+                @endif
+
+                <button type="button" class="fc-icon-btn bulk-action" data-action="delete">
+                    {!! $icoX !!}
+                    <div style="font-size:10px; color:#666;">Delete</div>
+                </button>
+
                 <a href="{{ route('admin.signatures', request()->except('select')) }}" title="Clear Selection"
                     style="display:flex;
                         flex-direction:column;
@@ -159,7 +202,7 @@
     </x-admin.list-table-box>
 
     @include('admin.partials.bulk-js', [
-        'banRoute' => route('admin.signatures.bulkDelete'),
+        'actionRoute' => route('admin.signatures.bulkAction'),
         'noun' => 'signatures',
         'emptyMsg' => 'No signatures selected',
     ])

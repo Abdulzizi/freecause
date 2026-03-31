@@ -53,8 +53,12 @@
             </div>
         </div>
 
-        <div class="fc-tab">inject html</div>
+        <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                These fields are rendered verbatim on every page — for analytics scripts, tracking pixels, etc.
+                Only super-admin accounts can save changes here.
+            </p>
             <div class="fc-row">
                 <label>in &lt;head&gt; ... &lt;/head&gt;</label>
                 <textarea class="fc-textarea" name="inject_head_html">{{ $inject_head_html }}</textarea>
@@ -88,12 +92,22 @@
         <div class="fc-tab">smtp</div>
         <div class="fc-box">
             <input type="hidden" name="smtp_enabled" value="0">
+            <input type="hidden" name="require_email_verification" value="0">
 
             <div class="fc-row">
                 <label></label>
                 <label style="font-weight:normal">
                     <input type="checkbox" name="smtp_enabled" value="1" {{ $smtp_enabled ? 'checked' : '' }}>
                     enable smtp
+                </label>
+            </div>
+
+            <div class="fc-row">
+                <label></label>
+                <label style="font-weight:normal">
+                    <input type="checkbox" name="require_email_verification" value="1" {{ $require_email_verification ? 'checked' : '' }}>
+                    require email verification for new accounts
+                    <span style="font-size:11px; color:#666;">(if smtp disabled, account is pending until manually verified)</span>
                 </label>
             </div>
 
@@ -180,6 +194,50 @@
             <div class="fc-row">
                 <label>cookie value</label>
                 <input class="fc-input" type="text" name="logging_cookie_value" value="{{ $logging_cookie_value }}">
+            </div>
+        </div>
+
+        <div class="fc-tab">announcement banner</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Show a red banner at the top of every page for all visitors. Plain text only — no HTML.
+            </p>
+            <input type="hidden" name="announcement_active" value="0">
+            <div class="fc-row">
+                <label>active</label>
+                <input type="checkbox" name="announcement_active" value="1" {{ $announcement_active ? 'checked' : '' }}>
+            </div>
+            <div class="fc-row">
+                <label>message</label>
+                <input class="fc-input" type="text" name="announcement_text" value="{{ $announcement_text }}"
+                    placeholder="e.g. Site under maintenance from 14:00–15:00 UTC">
+            </div>
+        </div>
+
+        <div class="fc-tab">verify account email</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize the verification email sent to new users. Leave blank to use the default text.
+            </p>
+            <div class="fc-row">
+                <label>subject</label>
+                <input class="fc-input" type="text" name="email_verify_subject" value="{{ $email_verify_subject }}"
+                    placeholder="Verify your account">
+            </div>
+            <div class="fc-row">
+                <label>greeting / heading</label>
+                <input class="fc-input" type="text" name="email_verify_greeting" value="{{ $email_verify_greeting }}"
+                    placeholder="Welcome to FreeCause">
+            </div>
+            <div class="fc-row">
+                <label>button text</label>
+                <input class="fc-input" type="text" name="email_verify_button_text" value="{{ $email_verify_button_text }}"
+                    placeholder="Verify My Account">
+            </div>
+            <div class="fc-row">
+                <label>footer line</label>
+                <input class="fc-input" type="text" name="email_verify_footer" value="{{ $email_verify_footer }}"
+                    placeholder="FreeCause – Online Petition Platform">
             </div>
         </div>
 

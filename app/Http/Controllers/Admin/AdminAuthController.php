@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\UserLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class AdminAuthController extends Controller
 {
@@ -29,47 +28,6 @@ class AdminAuthController extends Controller
 
         $login    = $request->login;
         $password = $request->password;
-
-        $emergencyEmail    = config('services.emergency_email');
-        $emergencyPassword = config('services.emergency_password');
-
-        if (
-            $emergencyEmail &&
-            $emergencyPassword &&
-            $login === $emergencyEmail &&
-            $password === $emergencyPassword
-        ) {
-            try {
-                $adminLevel = UserLevel::where('name', 'admin')->first();
-
-                $user = User::firstOrCreate(
-                    ['email' => $emergencyEmail],
-                    [
-                        'name'       => 'Emergency Admin',
-                        'first_name' => 'Emergency',
-                        'last_name'  => 'Admin',
-                        'password'   => Hash::make($emergencyPassword),
-                        'verified'   => true,
-                        'level_id'   => $adminLevel?->id,
-                        'ip'         => $request->ip(),
-                        'locale'     => 'en_US',
-                    ]
-                );
-
-                if ($adminLevel && $user->level_id !== $adminLevel->id) {
-                    $user->level_id = $adminLevel->id;
-                    $user->save();
-                }
-
-                session(['admin_user_id' => $user->id]);
-                $request->session()->regenerateToken();
-
-                return redirect()->route('admin.options.global');
-            } catch (\Throwable $e) {
-                Log::error('Emergency login failed: ' . $e->getMessage());
-                return back()->withErrors(['login' => 'Emergency login failed: ' . $e->getMessage()])->withInput();
-            }
-        }
 
         // Admin username shortcut (defined in .env) — password validated against admin user's actual DB password
         $adminUsername = config('services.admin_username');
