@@ -48,9 +48,10 @@
     </x-admin.filter-box>
 
     <x-admin.list-table-box empty-text="no users found, try clearing filters" :p="$users" :bulk="[
-        'banRoute' => route('admin.users.bulkBan'),
-        'banLabel' => 'Banned',
-        'banConfirm' => 'Ban selected users?',
+        'banRoute'        => route('admin.users.bulkBan'),
+        'banLabel'        => 'Banned',
+        'banConfirm'      => 'Ban selected users?',
+        'banWithDetails'  => true,
     ]">
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
@@ -125,7 +126,8 @@
                                 background:#c00;
                                 color:#fff;
                                 border-radius:2px;
-                            ">
+                            "
+                            title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
                                 BANNED
                             </span>
                         @endif
@@ -183,7 +185,10 @@
 
                 <div class="fc-row">
                     <label>password</label>
-                    <input class="fc-input" type="text" name="password" value="">
+                    <div>
+                        <input class="fc-input" type="text" name="password" value="">
+                        @error('password') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">

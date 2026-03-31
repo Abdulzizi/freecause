@@ -92,12 +92,22 @@
         <div class="fc-tab">smtp</div>
         <div class="fc-box">
             <input type="hidden" name="smtp_enabled" value="0">
+            <input type="hidden" name="require_email_verification" value="0">
 
             <div class="fc-row">
                 <label></label>
                 <label style="font-weight:normal">
                     <input type="checkbox" name="smtp_enabled" value="1" {{ $smtp_enabled ? 'checked' : '' }}>
                     enable smtp
+                </label>
+            </div>
+
+            <div class="fc-row">
+                <label></label>
+                <label style="font-weight:normal">
+                    <input type="checkbox" name="require_email_verification" value="1" {{ $require_email_verification ? 'checked' : '' }}>
+                    require email verification for new accounts
+                    <span style="font-size:11px; color:#666;">(if smtp disabled, account is pending until manually verified)</span>
                 </label>
             </div>
 

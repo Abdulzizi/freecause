@@ -221,24 +221,36 @@
 
                 <div class="fc-row">
                     <label>owner (user id)</label>
-                    <input class="fc-input" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
-                        placeholder="user ID" style="max-width:100px;">
+                    <div>
+                        <input class="fc-input" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
+                            placeholder="user ID" style="max-width:100px;">
+                        @error('user_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>title</label>
-                    <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
+                    <div>
+                        <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
+                        @error('title') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>slug</label>
-                    <input class="fc-input" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
+                    <div>
+                        <input class="fc-input" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
+                        @error('slug') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>signature goal</label>
-                    <input class="fc-input" type="number" name="goal_signatures"
-                        value="{{ $selectedPetition->goal_signatures }}">
+                    <div>
+                        <input class="fc-input" type="number" name="goal_signatures"
+                            value="{{ $selectedPetition->goal_signatures }}">
+                        @error('goal_signatures') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">

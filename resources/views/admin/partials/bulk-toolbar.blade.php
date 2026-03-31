@@ -17,6 +17,7 @@
     @isset($banRoute)
         <a href="#" data-bulk="ban"
            data-confirm="{{ $banConfirm ?? 'Apply action to selected items?' }}"
+           data-ban-details="{{ ($banWithDetails ?? false) ? '1' : '0' }}"
            style="text-decoration:none; color:#900;">
             <span style="display:inline-block; width:14px; text-align:center;">✖</span>
             <span>{{ $banLabel ?? 'Banned' }}</span>
@@ -89,13 +90,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
+                const withDetails = this.dataset.banDetails === '1';
+                let reason = null;
+                let days = 0;
+
+                if (withDetails) {
+                    reason = prompt('Ban reason (optional):') || null;
+                    const daysInput = prompt('Ban duration in days (0 = permanent):');
+                    days = daysInput !== null ? parseInt(daysInput, 10) || 0 : 0;
+                }
+
                 fetch(@json($banRoute ?? ''), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ ids })
+                    body: JSON.stringify({ ids, reason, days })
                 })
                 .then(r => r.json())
                 .then(res => {
