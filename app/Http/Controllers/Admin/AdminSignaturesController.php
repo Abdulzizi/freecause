@@ -22,6 +22,7 @@ class AdminSignaturesController extends Controller
             'text'        => trim((string) $request->query('text', '')),
             'category_id' => trim((string) $request->query('category_id', '')),
             'locale'      => trim((string) $request->query('locale', '')),
+            'confirmed'   => $request->query('confirmed', ''),
         ];
 
         // $hasText = Schema::hasColumn('signatures', 'text');
@@ -95,6 +96,10 @@ class AdminSignaturesController extends Controller
             $q->where('s.locale', $filters['locale']);
         }
 
+        if ($hasConfirmed && $filters['confirmed'] !== '') {
+            $q->where('s.confirmed', (int) $filters['confirmed']);
+        }
+
         $q->orderByDesc('s.id');
 
         $signatures = $q->simplePaginate(25)->withQueryString();
@@ -119,6 +124,25 @@ class AdminSignaturesController extends Controller
             'hasConfirmed',
             'locales'
         ));
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $data = $request->validate([
+            'ids'    => ['required', 'array'],
+            'ids.*'  => ['integer'],
+            'action' => ['required', 'string', 'in:approve,reject,delete'],
+        ]);
+
+        $ids = $data['ids'];
+
+        match ($data['action']) {
+            'approve' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 1]),
+            'reject'  => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 0]),
+            'delete'  => DB::table('signatures')->whereIn('id', $ids)->delete(),
+        };
+
+        return response()->json(['ok' => true]);
     }
 
     public function bulkDelete(Request $request)
