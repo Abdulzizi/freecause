@@ -103,6 +103,9 @@ class LanguageOptionsController extends Controller
         }
 
         foreach ($this->layoutKeys as $key) {
+            $value = $request->input($key, '');
+            // Footer keys contain HTML rendered to all users — strip dangerous elements
+            $value = sanitizeAdminHtml($value);
             PageContent::updateOrCreate(
                 [
                     'page'   => 'layout',
@@ -110,7 +113,7 @@ class LanguageOptionsController extends Controller
                     'key'    => $key,
                 ],
                 [
-                    'value' => $request->input($key, ''),
+                    'value' => $value,
                 ]
             );
         }

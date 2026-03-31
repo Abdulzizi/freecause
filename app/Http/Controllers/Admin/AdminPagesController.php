@@ -102,7 +102,7 @@ class AdminPagesController extends Controller
             [
                 'title'     => $data['title'],
                 'slug'      => $slug,
-                'content'   => $data['content'],
+                'content'   => sanitizeAdminHtml($data['content'] ?? ''),
                 'published' => $data['published'],
             ]
         );

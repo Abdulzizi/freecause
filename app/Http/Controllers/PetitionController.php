@@ -492,49 +492,51 @@ class PetitionController extends Controller
 
         $u = auth()->user();
 
-        $sig = Signature::firstOrCreate(
-            ['petition_id' => $petition->id, 'email' => $u->email],
-            [
-                'user_id' => $u->id,
-                'name' => $u->name,
-                'locale' => $locale,
-                'text' => $data['comment'] ?? 'I support this petition',
-                'ip_address' => request()->ip(),
-            ]
-        );
+        return DB::transaction(function () use ($data, $locale, $petition, $u) {
+            $sig = Signature::firstOrCreate(
+                ['petition_id' => $petition->id, 'email' => $u->email],
+                [
+                    'user_id' => $u->id,
+                    'name' => $u->name,
+                    'locale' => $locale,
+                    'text' => $data['comment'] ?? 'I support this petition',
+                    'ip_address' => request()->ip(),
+                ]
+            );
 
-        if (! $sig->wasRecentlyCreated) {
-            toast('You already signed this petition.', 'info');
-        }
+            if (! $sig->wasRecentlyCreated) {
+                toast('You already signed this petition.', 'info');
+            }
 
-        if ($sig->wasRecentlyCreated) {
-            $petition->increment('signature_count');
-        }
+            if ($sig->wasRecentlyCreated) {
+                $petition->increment('signature_count');
+            }
 
-        session()->forget('sign');
+            session()->forget('sign');
 
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+            $tr = PetitionTranslation::query()
+                ->where('petition_id', $petition->id)
+                ->where('locale', $locale)
+                ->first()
+                ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
 
-        abort_if(! $tr, 404);
+            abort_if(! $tr, 404);
 
-        AppLog::info(
-            'Petition signed',
-            'Petition ID: ' . $petition->id . ' | User: ' . $u->email . ' | IP: ' . request()->ip(),
-            'petition.sign'
-        );
+            AppLog::info(
+                'Petition signed',
+                'Petition ID: ' . $petition->id . ' | User: ' . $u->email . ' | IP: ' . request()->ip(),
+                'petition.sign'
+            );
 
-        toast('Thank you for signing!', 'success');
+            toast('Thank you for signing!', 'success');
 
-        return redirect()->route('petition.thanks', [
-            'locale' => $tr->locale,
-            'slug' => $tr->slug,
-            'id' => $petition->id,
-            'status' => 0,
-        ]);
+            return redirect()->route('petition.thanks', [
+                'locale' => $tr->locale,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
+                'status' => 0,
+            ]);
+        });
     }
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
