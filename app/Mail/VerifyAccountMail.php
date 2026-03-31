@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Support\Settings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -58,11 +59,19 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('Verify your account')
+        $subject     = Settings::get('email_verify_subject', '', 'global') ?: 'Verify your account';
+        $greeting    = Settings::get('email_verify_greeting', '', 'global') ?: 'Welcome to FreeCause';
+        $buttonText  = Settings::get('email_verify_button_text', '', 'global') ?: 'Verify My Account';
+        $footer      = Settings::get('email_verify_footer', '', 'global') ?: 'FreeCause – Online Petition Platform';
+
+        return $this->subject($subject)
             ->view('emails.verify-account')
             ->with([
-                'user'   => $this->user,
-                'locale' => $this->locale,
+                'user'       => $this->user,
+                'locale'     => $this->locale,
+                'greeting'   => $greeting,
+                'buttonText' => $buttonText,
+                'footer'     => $footer,
             ]);
     }
 }

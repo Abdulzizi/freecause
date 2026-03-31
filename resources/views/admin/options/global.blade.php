@@ -204,6 +204,33 @@
             </div>
         </div>
 
+        <div class="fc-tab">verify account email</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize the verification email sent to new users. Leave blank to use the default text.
+            </p>
+            <div class="fc-row">
+                <label>subject</label>
+                <input class="fc-input" type="text" name="email_verify_subject" value="{{ $email_verify_subject }}"
+                    placeholder="Verify your account">
+            </div>
+            <div class="fc-row">
+                <label>greeting / heading</label>
+                <input class="fc-input" type="text" name="email_verify_greeting" value="{{ $email_verify_greeting }}"
+                    placeholder="Welcome to FreeCause">
+            </div>
+            <div class="fc-row">
+                <label>button text</label>
+                <input class="fc-input" type="text" name="email_verify_button_text" value="{{ $email_verify_button_text }}"
+                    placeholder="Verify My Account">
+            </div>
+            <div class="fc-row">
+                <label>footer line</label>
+                <input class="fc-input" type="text" name="email_verify_footer" value="{{ $email_verify_footer }}"
+                    placeholder="FreeCause – Online Petition Platform">
+            </div>
+        </div>
+
         <div style="margin-top:6px; text-align: end;">
             <button class="fc-btn" type="submit">save</button>
         </div>
