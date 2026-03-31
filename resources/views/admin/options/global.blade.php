@@ -53,8 +53,12 @@
             </div>
         </div>
 
-        <div class="fc-tab">inject html</div>
+        <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                These fields are rendered verbatim on every page — for analytics scripts, tracking pixels, etc.
+                Only super-admin accounts can save changes here.
+            </p>
             <div class="fc-row">
                 <label>in &lt;head&gt; ... &lt;/head&gt;</label>
                 <textarea class="fc-textarea" name="inject_head_html">{{ $inject_head_html }}</textarea>
