@@ -28,6 +28,8 @@ class GlobalOptionsController extends Controller
         'logging_enabled'                    => false,
         'logging_cookie_name'                => '',
         'logging_cookie_value'               => '',
+        'announcement_active'                => false,
+        'announcement_text'                  => '',
     ];
 
     public function edit()

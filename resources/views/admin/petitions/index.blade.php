@@ -167,7 +167,7 @@
 
     <x-admin.detail-panel title="petition">
         @if ($selectedPetition)
-            <form method="post" action="{{ route('admin.petitions.save') }}">
+            <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" name="id" value="{{ $selectedPetition->id }}">
@@ -196,6 +196,12 @@
                 </div>
 
                 <div class="fc-row">
+                    <label>owner (user id)</label>
+                    <input class="fc-input" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
+                        placeholder="user ID" style="max-width:100px;">
+                </div>
+
+                <div class="fc-row">
                     <label>title</label>
                     <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
                 </div>
@@ -213,9 +219,32 @@
 
                 <div class="fc-row">
                     <label>text</label>
-                    <textarea class="fc-input" name="text" rows="8">
-                        {{ $selectedTranslation->description ?? '' }}
-                    </textarea>
+                    <textarea class="fc-input" name="text" rows="8">{{ $selectedTranslation->description ?? '' }}</textarea>
+                </div>
+
+                {{-- Image management --}}
+                <div class="fc-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <label>cover image</label>
+                    @php
+                        $imgSrc = null;
+                        if (!empty($selectedPetition->cover_image)) {
+                            $imgSrc = str_starts_with($selectedPetition->cover_image, 'http')
+                                ? $selectedPetition->cover_image
+                                : asset('storage/' . $selectedPetition->cover_image);
+                        } elseif (!empty($selectedPetition->image_url)) {
+                            $imgSrc = $selectedPetition->image_url;
+                        }
+                    @endphp
+                    @if ($imgSrc)
+                        <img src="{{ $imgSrc }}" alt="cover" style="max-width:220px; max-height:120px; border-radius:4px; object-fit:cover;">
+                        <label style="font-size:0.85em;">
+                            <input type="checkbox" name="remove_image" value="1"> remove image
+                        </label>
+                    @else
+                        <span style="color:#999; font-size:0.85em;">no image</span>
+                    @endif
+                    <input class="fc-input" type="file" name="cover_image" accept="image/*" style="margin-top:4px;">
+                    <span style="color:#888; font-size:0.8em;">upload new image to replace current (max 4 MB)</span>
                 </div>
 
                 <div style="display:flex; justify-content:flex-end;">

@@ -73,6 +73,16 @@
 <body class="@yield('body_class', '')">
     @include('partials.navbar')
 
+    @php
+        $announcementActive = \App\Support\Settings::get('announcement_active', false, 'global');
+        $announcementText   = \App\Support\Settings::get('announcement_text', '', 'global');
+    @endphp
+    @if ($announcementActive && $announcementText)
+        <div style="background:#c00;color:#fff;text-align:center;padding:8px 16px;font-size:0.95em;font-weight:600;">
+            {!! e($announcementText) !!}
+        </div>
+    @endif
+
     <main>
         @yield('content')
     </main>
