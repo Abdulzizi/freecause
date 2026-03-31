@@ -21,9 +21,10 @@ class AdminPetitionsController extends Controller
         $locale = $request->query('locale', 'en');
 
         $filters = [
-            'id' => trim((string) $request->query('id', '')),
-            'title' => trim((string) $request->query('title', '')),
-            'featured' => $request->query('featured', ''),
+            'id'             => trim((string) $request->query('id', '')),
+            'title'          => trim((string) $request->query('title', '')),
+            'featured'       => $request->query('featured', ''),
+            'missing_locale' => trim((string) $request->query('missing_locale', '')),
         ];
 
         $defaultLocale = cache()->remember(
@@ -51,6 +52,7 @@ class AdminPetitionsController extends Controller
                 'petitions.created_at',
                 DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                 DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
+                DB::raw('(SELECT GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",") FROM petition_translations WHERE petition_id = petitions.id) as translation_locales'),
             ]);
 
         if ($filters['id'] !== '') {
@@ -66,6 +68,16 @@ class AdminPetitionsController extends Controller
 
         if ($filters['featured'] !== '') {
             $q->where('petitions.is_featured', 1);
+        }
+
+        if ($filters['missing_locale'] !== '') {
+            $ml = $filters['missing_locale'];
+            $q->whereNotExists(function ($sub) use ($ml) {
+                $sub->select(DB::raw(1))
+                    ->from('petition_translations')
+                    ->whereColumn('petition_id', 'petitions.id')
+                    ->where('locale', $ml);
+            });
         }
 
         $q->orderByDesc('petitions.id');
@@ -89,13 +101,16 @@ class AdminPetitionsController extends Controller
                 ->first();
         }
 
+        $activeLanguages = Language::where('is_active', 1)->orderBy('code')->pluck('code')->toArray();
+
         return view('admin.petitions.index', compact(
             'petitions',
             'filters',
             'approxTotal',
             'selectedPetition',
             'selectedTranslation',
-            'locale'
+            'locale',
+            'activeLanguages'
         ));
     }
 
