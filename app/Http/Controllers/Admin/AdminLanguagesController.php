@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AdminLanguagesController extends Controller
 {
@@ -33,9 +34,10 @@ class AdminLanguagesController extends Controller
             'is_default' => false,
         ]);
 
-        cache()->forget('active_languages');
-        cache()->forget('default_language');
-        cache()->forget('active_languages_full');
+        Cache::forget('active_languages');
+        Cache::forget('default_language');
+        Cache::forget('active_languages_full');
+        Cache::forget('languages:codes');
 
         return back()->with('success', 'language created');
     }
@@ -51,9 +53,10 @@ class AdminLanguagesController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        cache()->forget('active_languages');
-        cache()->forget('default_language');
-        cache()->forget('active_languages_full');
+        Cache::forget('active_languages');
+        Cache::forget('default_language');
+        Cache::forget('active_languages_full');
+        Cache::forget('languages:codes');
 
         return back()->with('success', 'language updated');
     }
@@ -64,9 +67,10 @@ class AdminLanguagesController extends Controller
 
         $language->update(['is_default' => 1]);
 
-        cache()->forget('active_languages');
-        cache()->forget('default_language');
-        cache()->forget('active_languages_full');
+        Cache::forget('active_languages');
+        Cache::forget('default_language');
+        Cache::forget('active_languages_full');
+        Cache::forget('languages:codes');
 
         return back()->with('success', 'default language updated');
     }
@@ -79,9 +83,10 @@ class AdminLanguagesController extends Controller
 
         $language->delete();
 
-        cache()->forget('active_languages');
-        cache()->forget('default_language');
-        cache()->forget('active_languages_full');
+        Cache::forget('active_languages');
+        Cache::forget('default_language');
+        Cache::forget('active_languages_full');
+        Cache::forget('languages:codes');
 
         return back()->with('success', 'language deleted');
     }
