@@ -48,6 +48,17 @@
                 {{ ($filters['featured'] ?? '') !== '' ? 'checked' : '' }}>
             featured only
         </label>
+
+        @if (!empty($activeLanguages))
+            <select class="fc-select" name="missing_locale" style="max-width:160px;">
+                <option value="">missing locale...</option>
+                @foreach ($activeLanguages as $lang)
+                    <option value="{{ $lang }}" {{ ($filters['missing_locale'] ?? '') === $lang ? 'selected' : '' }}>
+                        missing: {{ $lang }}
+                    </option>
+                @endforeach
+            </select>
+        @endif
     </x-admin.filter-box>
 
 
@@ -67,6 +78,7 @@
                 <th width="26">F</th>
                 <th>Signatures</th>
                 <th>Title</th>
+                <th>Locales</th>
                 <th width="150">Date</th>
             </tr>
         </x-slot:thead>
@@ -108,6 +120,18 @@
 
                     <td>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
                     <td>{{ $p->title }}</td>
+                    <td>
+                        @php
+                            $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
+                        @endphp
+                        @foreach ($activeLanguages as $lang)
+                            @if (in_array($lang, $petitionLocales))
+                                <span style="display:inline-block;background:#d4edda;color:#155724;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                            @else
+                                <span style="display:inline-block;background:#f8d7da;color:#721c24;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                            @endif
+                        @endforeach
+                    </td>
                     <td>{{ $p->created_at }}</td>
 
                 </tr>
