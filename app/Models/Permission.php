@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-    protected $fillable = [
-        'level_id',
-        'module',
-        'action',
-    ];
+    protected $fillable = ['level_id', 'module', 'action'];
 
     public function level()
     {
