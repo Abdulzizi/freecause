@@ -78,7 +78,7 @@ class HomeController extends Controller
 
         $slot = (int) floor(time() / 60);
 
-        $pool = cache()->remember("home:pool:{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember("home:pool:{$locale}", 60, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                     $join->on('pt_locale.petition_id', '=', 'petitions.id')
