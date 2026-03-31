@@ -48,6 +48,17 @@
                 {{ ($filters['featured'] ?? '') !== '' ? 'checked' : '' }}>
             featured only
         </label>
+
+        @if (!empty($activeLanguages))
+            <select class="fc-select" name="missing_locale" style="max-width:160px;">
+                <option value="">missing locale...</option>
+                @foreach ($activeLanguages as $lang)
+                    <option value="{{ $lang }}" {{ ($filters['missing_locale'] ?? '') === $lang ? 'selected' : '' }}>
+                        missing: {{ $lang }}
+                    </option>
+                @endforeach
+            </select>
+        @endif
     </x-admin.filter-box>
 
 
@@ -67,6 +78,7 @@
                 <th width="26">F</th>
                 <th>Signatures</th>
                 <th>Title</th>
+                <th>Locales</th>
                 <th width="150">Date</th>
             </tr>
         </x-slot:thead>
@@ -108,6 +120,18 @@
 
                     <td>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
                     <td>{{ $p->title }}</td>
+                    <td>
+                        @php
+                            $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
+                        @endphp
+                        @foreach ($activeLanguages as $lang)
+                            @if (in_array($lang, $petitionLocales))
+                                <span style="display:inline-block;background:#d4edda;color:#155724;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                            @else
+                                <span style="display:inline-block;background:#f8d7da;color:#721c24;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                            @endif
+                        @endforeach
+                    </td>
                     <td>{{ $p->created_at }}</td>
 
                 </tr>
@@ -167,7 +191,7 @@
 
     <x-admin.detail-panel title="petition">
         @if ($selectedPetition)
-            <form method="post" action="{{ route('admin.petitions.save') }}">
+            <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" name="id" value="{{ $selectedPetition->id }}">
@@ -196,26 +220,67 @@
                 </div>
 
                 <div class="fc-row">
+                    <label>owner (user id)</label>
+                    <div>
+                        <input class="fc-input" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
+                            placeholder="user ID" style="max-width:100px;">
+                        @error('user_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
                     <label>title</label>
-                    <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
+                    <div>
+                        <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
+                        @error('title') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>slug</label>
-                    <input class="fc-input" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
+                    <div>
+                        <input class="fc-input" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
+                        @error('slug') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>signature goal</label>
-                    <input class="fc-input" type="number" name="goal_signatures"
-                        value="{{ $selectedPetition->goal_signatures }}">
+                    <div>
+                        <input class="fc-input" type="number" name="goal_signatures"
+                            value="{{ $selectedPetition->goal_signatures }}">
+                        @error('goal_signatures') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="fc-row">
                     <label>text</label>
-                    <textarea class="fc-input" name="text" rows="8">
-                        {{ $selectedTranslation->description ?? '' }}
-                    </textarea>
+                    <textarea class="fc-input" name="text" rows="8">{{ $selectedTranslation->description ?? '' }}</textarea>
+                </div>
+
+                {{-- Image management --}}
+                <div class="fc-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                    <label>cover image</label>
+                    @php
+                        $imgSrc = null;
+                        if (!empty($selectedPetition->cover_image)) {
+                            $imgSrc = str_starts_with($selectedPetition->cover_image, 'http')
+                                ? $selectedPetition->cover_image
+                                : asset('storage/' . $selectedPetition->cover_image);
+                        } elseif (!empty($selectedPetition->image_url)) {
+                            $imgSrc = $selectedPetition->image_url;
+                        }
+                    @endphp
+                    @if ($imgSrc)
+                        <img src="{{ $imgSrc }}" alt="cover" style="max-width:220px; max-height:120px; border-radius:4px; object-fit:cover;">
+                        <label style="font-size:0.85em;">
+                            <input type="checkbox" name="remove_image" value="1"> remove image
+                        </label>
+                    @else
+                        <span style="color:#999; font-size:0.85em;">no image</span>
+                    @endif
+                    <input class="fc-input" type="file" name="cover_image" accept="image/*" style="margin-top:4px;">
+                    <span style="color:#888; font-size:0.8em;">upload new image to replace current (max 4 MB)</span>
                 </div>
 
                 <div style="display:flex; justify-content:flex-end;">

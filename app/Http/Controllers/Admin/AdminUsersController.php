@@ -148,16 +148,21 @@ class AdminUsersController extends Controller
 
         $bannedLevel = UserLevel::where('name', 'banned')->first();
 
-        // User::whereIn('id', $ids)
-        //     ->where('id', '!=', auth()->id())
-        //     ->update(['level_id' => $bannedLevel->id]);
+        // Optional ban metadata sent as JSON body (from future UI)
+        $reason = $request->input('reason') ?: null;
+        $days   = (int) $request->input('days', 0);
+        $until  = $days > 0 ? now()->addDays($days) : null;
 
         User::whereIn('id', $ids)
-            ->where('id', '!=', auth()->id())
+            ->where('id', '!=', admin_user()?->id)
             ->whereHas('level', function ($q) {
                 $q->where('name', '!=', 'admin');
             })
-            ->update(['level_id' => $bannedLevel->id]);
+            ->update([
+                'level_id'      => $bannedLevel->id,
+                'banned_reason' => $reason,
+                'banned_until'  => $until,
+            ]);
 
         return response()->json(['ok' => true]);
     }

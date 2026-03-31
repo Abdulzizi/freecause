@@ -77,9 +77,11 @@ class AuthController extends Controller
             return back()->withInput();
         }
 
-        $smtpEnabled = Settings::get('smtp_enabled', false);
+        $smtpEnabled   = Settings::get('smtp_enabled', false);
+        $requireVerif  = Settings::get('require_email_verification', false, 'global');
 
-        $token = $smtpEnabled ? Str::random(64) : null;
+        $needsVerif = (bool) $requireVerif;
+        $token = $needsVerif ? Str::random(64) : null;
 
         $user = User::create([
             'name' => $fullName,
@@ -93,7 +95,7 @@ class AuthController extends Controller
             'nickname' => $data['nickname'] ?? null,
             'city' => $data['city'] ?? null,
 
-            'verified' => $smtpEnabled ? false : true,
+            'verified' => $needsVerif ? false : true,
             'verification_token' => $token,
         ]);
 
@@ -103,11 +105,7 @@ class AuthController extends Controller
             'auth.register'
         );
 
-        // Mail::to($user->email)->queue(
-        //     new VerifyAccountMail($user, $locale)
-        // );
-
-        if ($smtpEnabled) {
+        if ($needsVerif && $smtpEnabled) {
             try {
                 Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
             } catch (\Exception $e) {
@@ -121,6 +119,12 @@ class AuthController extends Controller
             return redirect()
                 ->to("/{$locale}/login")
                 ->with('success', 'Please check your email to verify your account.');
+        }
+
+        if ($needsVerif && !$smtpEnabled) {
+            return redirect()
+                ->to("/{$locale}/login")
+                ->with('success', 'Your account is pending verification. Please contact support.');
         }
 
         auth()->login($user);

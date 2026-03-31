@@ -7,8 +7,10 @@ use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
 {
@@ -19,9 +21,10 @@ class AdminPetitionsController extends Controller
         $locale = $request->query('locale', 'en');
 
         $filters = [
-            'id' => trim((string) $request->query('id', '')),
-            'title' => trim((string) $request->query('title', '')),
-            'featured' => $request->query('featured', ''),
+            'id'             => trim((string) $request->query('id', '')),
+            'title'          => trim((string) $request->query('title', '')),
+            'featured'       => $request->query('featured', ''),
+            'missing_locale' => trim((string) $request->query('missing_locale', '')),
         ];
 
         $defaultLocale = cache()->remember(
@@ -49,6 +52,7 @@ class AdminPetitionsController extends Controller
                 'petitions.created_at',
                 DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                 DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
+                DB::raw('(SELECT GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",") FROM petition_translations WHERE petition_id = petitions.id) as translation_locales'),
             ]);
 
         if ($filters['id'] !== '') {
@@ -64,6 +68,16 @@ class AdminPetitionsController extends Controller
 
         if ($filters['featured'] !== '') {
             $q->where('petitions.is_featured', 1);
+        }
+
+        if ($filters['missing_locale'] !== '') {
+            $ml = $filters['missing_locale'];
+            $q->whereNotExists(function ($sub) use ($ml) {
+                $sub->select(DB::raw(1))
+                    ->from('petition_translations')
+                    ->whereColumn('petition_id', 'petitions.id')
+                    ->where('locale', $ml);
+            });
         }
 
         $q->orderByDesc('petitions.id');
@@ -87,38 +101,71 @@ class AdminPetitionsController extends Controller
                 ->first();
         }
 
+        $activeLanguages = Language::where('is_active', 1)->orderBy('code')->pluck('code')->toArray();
+
         return view('admin.petitions.index', compact(
             'petitions',
             'filters',
             'approxTotal',
             'selectedPetition',
             'selectedTranslation',
-            'locale'
+            'locale',
+            'activeLanguages'
         ));
     }
 
     public function save(Request $request)
     {
         $data = $request->validate([
-            'id' => ['required', 'integer'],
-            'locale' => ['required', 'string'],
-            'title' => ['nullable', 'string'],
-            'slug' => ['nullable', 'string'],
-            'text' => ['nullable', 'string'],
+            'id'              => ['required', 'integer'],
+            'locale'          => ['required', 'string'],
+            'title'           => ['nullable', 'string'],
+            'slug'            => ['nullable', 'string'],
+            'text'            => ['nullable', 'string'],
             'goal_signatures' => ['nullable', 'integer'],
-            'is_active' => ['nullable'],
-            'status' => ['required', 'string'],
-            'is_featured' => ['nullable'],
+            'is_active'       => ['nullable'],
+            'status'          => ['required', 'string'],
+            'is_featured'     => ['nullable'],
+            'user_id'         => ['nullable', 'integer', 'exists:users,id'],
+            'cover_image'     => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
+            'remove_image'    => ['nullable'],
         ]);
+
+        $petitionUpdate = [
+            'goal_signatures' => $data['goal_signatures'] ?? 100,
+            'status'          => $data['status'],
+            'is_active'       => $request->boolean('is_active'),
+            'is_featured'     => $request->boolean('is_featured'),
+        ];
+
+        // Transfer petition ownership if a valid new user_id was provided
+        if (!empty($data['user_id'])) {
+            $petitionUpdate['user_id'] = (int) $data['user_id'];
+        }
+
+        // Handle cover image replacement
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('petitions', 'public');
+            $abs  = Storage::disk('public')->path($path);
+            Image::read($abs)->cover(1200, 630)->toJpeg(82)->save($abs);
+            // Delete old image if it was a stored file
+            $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
+            if ($old && !str_starts_with($old, 'http')) {
+                Storage::disk('public')->delete($old);
+            }
+            $petitionUpdate['cover_image'] = $path;
+        } elseif ($request->boolean('remove_image')) {
+            $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
+            if ($old && !str_starts_with($old, 'http')) {
+                Storage::disk('public')->delete($old);
+            }
+            $petitionUpdate['cover_image'] = null;
+            $petitionUpdate['image_url']   = null;
+        }
 
         DB::table('petitions')
             ->where('id', $data['id'])
-            ->update([
-                'goal_signatures' => $data['goal_signatures'] ?? 100,
-                'status' => $data['status'],
-                'is_active' => $request->boolean('is_active'),
-                'is_featured' => $request->boolean('is_featured'),
-            ]);
+            ->update($petitionUpdate);
 
         $exists = DB::table('petition_translations')
             ->where('slug', $data['slug'])
@@ -146,13 +193,13 @@ class AdminPetitionsController extends Controller
         try {
             $locales = active_locales() ?: ["en"];
             foreach ($locales as $l) {
-                for ($i = 1; $i <= 50; $i++) {
+                for ($i = 1; $i <= 10; $i++) {
                     Cache::forget("petitions:index:{$l}:page:{$i}");
                 }
                 Cache::forget("home:pool:{$l}");
                 Cache::forget("home:recent:{$l}");
                 $slot = (int) floor(time() / 60);
-                for ($s = 0; $s <= 5; $s++) {
+                for ($s = 0; $s <= 2; $s++) {
                     Cache::forget("home:featured:{$l}:" . ($slot + $s));
                 }
             }
@@ -235,7 +282,7 @@ class AdminPetitionsController extends Controller
             $locales = active_locales() ?: ['en'];
 
             foreach ($locales as $l) {
-                for ($i = 1; $i <= 50; $i++) {
+                for ($i = 1; $i <= 10; $i++) {
                     Cache::forget("petitions:index:{$l}:page:{$i}");
                 }
 
@@ -243,7 +290,7 @@ class AdminPetitionsController extends Controller
                 Cache::forget("home:recent:{$l}");
 
                 $slot = (int) floor(time() / 60);
-                for ($s = 0; $s <= 5; $s++) {
+                for ($s = 0; $s <= 2; $s++) {
                     Cache::forget("home:featured:{$l}:" . ($slot + $s));
                 }
             }

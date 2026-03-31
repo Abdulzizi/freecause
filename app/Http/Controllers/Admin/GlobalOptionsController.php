@@ -19,6 +19,7 @@ class GlobalOptionsController extends Controller
         'google_client_id'                   => '',
         'google_client_secret'               => '',
         'smtp_enabled'                       => false,
+        'require_email_verification'         => false,
         'smtp_host'                          => '',
         'smtp_user'                          => '',
         'smtp_pass'                          => '',
@@ -28,6 +29,12 @@ class GlobalOptionsController extends Controller
         'logging_enabled'                    => false,
         'logging_cookie_name'                => '',
         'logging_cookie_value'               => '',
+        'announcement_active'                => false,
+        'announcement_text'                  => '',
+        'email_verify_subject'               => '',
+        'email_verify_greeting'              => '',
+        'email_verify_button_text'           => '',
+        'email_verify_footer'                => '',
     ];
 
     public function edit()
@@ -49,7 +56,15 @@ class GlobalOptionsController extends Controller
     {
         $errors = [];
 
+        // inject_head_html and inject_body_html can execute arbitrary JavaScript on
+        // every page view. Restrict saving these to system-level admins only.
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+
         foreach ($this->defaults as $key => $default) {
+            if (in_array($key, ['inject_head_html', 'inject_body_html'], true) && !$isSystemAdmin) {
+                continue;
+            }
+
             try {
                 if (is_bool($default)) {
                     $value = (bool) $request->input($key, 0);

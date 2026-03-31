@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminAuditLog;
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\BlockBannedIp;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'setLocale' => SetLocale::class,
             'admin.auth' => AdminAuth::class,
+            'admin.audit' => AdminAuditLog::class,
             'block.banned.ip' => BlockBannedIp::class,
             'block.banned.user' => BlockBannedUser::class,
             'permission' => CheckPermission::class,

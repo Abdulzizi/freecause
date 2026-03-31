@@ -48,7 +48,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
 
-    Route::middleware('admin.auth')->group(function () {
+    Route::middleware(['admin.auth', 'admin.audit'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
         //* OPTIONS
@@ -86,6 +86,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         //* SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
+        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
 
         //* PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
@@ -103,6 +104,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
         //* LOGS
         Route::get('/logs', [AdminLogsController::class, 'index'])->middleware('permission:logs,view')->name('logs');
+        Route::get('/logs/export', [AdminLogsController::class, 'export'])->middleware('permission:logs,view')->name('logs.export');
+        Route::post('/logs/prune', [AdminLogsController::class, 'prune'])->middleware('permission:logs,delete')->name('logs.prune');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->middleware('permission:logs,delete')->name('logs.bulkDelete');
 
         //* LANGUAGES

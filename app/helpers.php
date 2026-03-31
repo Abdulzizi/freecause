@@ -78,14 +78,26 @@ if (! function_exists('locale_url')) {
         if (isset($params['id']) && (isset($params['slug']) || str_contains($routeName, 'petition.'))) {
             $id = (int) $params['id'];
 
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $id)
-                ->where('locale', $newLocale)
-                ->first()
-                ?? PetitionTranslation::query()
-                ->where('petition_id', $id)
-                ->where('locale', default_locale())
-                ->first();
+            static $translationCache = [];
+
+            $cacheKey = "{$id}:{$newLocale}";
+            if (!array_key_exists($cacheKey, $translationCache)) {
+                // Load all translations for this petition in one query and cache every locale
+                $allForPetition = PetitionTranslation::query()
+                    ->where('petition_id', $id)
+                    ->get(['locale', 'slug'])
+                    ->keyBy('locale');
+
+                foreach ($allForPetition as $loc => $t) {
+                    $translationCache["{$id}:{$loc}"] = $t;
+                }
+
+                if (!array_key_exists($cacheKey, $translationCache)) {
+                    $translationCache[$cacheKey] = $allForPetition->first() ?? null;
+                }
+            }
+
+            $tr = $translationCache[$cacheKey];
 
             if ($tr) {
                 $params['slug'] = $tr->slug;
@@ -169,8 +181,83 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
 if (!function_exists('admin_user')) {
     function admin_user(): ?\App\Models\User
     {
+        static $cache = [];
         $id = session('admin_user_id');
         if (!$id) return null;
-        return \App\Models\User::find($id);
+        if (!isset($cache[$id])) {
+            $cache[$id] = \App\Models\User::find($id);
+        }
+        return $cache[$id];
+    }
+}
+
+/**
+ * Sanitize HTML for admin-managed rich content (pages, footer).
+ * Strips <script>, <iframe>, <object>, <embed>, <form> elements and all
+ * on* event handler attributes and javascript: hrefs/srcs.
+ * Unlike sanitizePetitionHtml(), allows a wide range of formatting tags.
+ */
+if (!function_exists('sanitizeAdminHtml')) {
+    function sanitizeAdminHtml(?string $html): string
+    {
+        if (!$html || trim($html) === '') return '';
+
+        $dangerous = ['script', 'iframe', 'object', 'embed', 'form', 'base'];
+
+        libxml_use_internal_errors(true);
+        $doc = new \DOMDocument('1.0', 'UTF-8');
+        $doc->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        $container = $doc->getElementsByTagName('div')->item(0);
+        if (!$container) return $html;
+
+        adminHtmlSanitizeNode($container, $dangerous, $doc);
+
+        $out = '';
+        foreach ($container->childNodes as $child) {
+            $out .= $doc->saveHTML($child);
+        }
+
+        return trim($out);
+    }
+}
+
+if (!function_exists('adminHtmlSanitizeNode')) {
+    function adminHtmlSanitizeNode(\DOMNode $node, array $dangerous, \DOMDocument $doc): void
+    {
+        if (!$node->hasChildNodes()) return;
+
+        for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
+            $child = $node->childNodes->item($i);
+
+            if ($child->nodeType === XML_ELEMENT_NODE) {
+                $tag = strtolower($child->nodeName);
+
+                // Remove dangerous elements entirely (including their children)
+                if (in_array($tag, $dangerous, true)) {
+                    $node->removeChild($child);
+                    continue;
+                }
+
+                // Strip on* event handlers and javascript: urls from attributes
+                if ($child->hasAttributes()) {
+                    for ($j = $child->attributes->length - 1; $j >= 0; $j--) {
+                        $attr = $child->attributes->item($j);
+                        $name = strtolower($attr->nodeName);
+                        $value = strtolower(trim($attr->nodeValue));
+
+                        if (str_starts_with($name, 'on')) {
+                            $child->removeAttributeNode($attr);
+                        } elseif (in_array($name, ['href', 'src', 'action'], true) && str_starts_with(preg_replace('/\s/', '', $value), 'javascript:')) {
+                            $child->removeAttributeNode($attr);
+                        }
+                    }
+                }
+
+                adminHtmlSanitizeNode($child, $dangerous, $doc);
+            } elseif ($child->nodeType === XML_COMMENT_NODE) {
+                $node->removeChild($child);
+            }
+        }
     }
 }
