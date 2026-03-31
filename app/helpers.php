@@ -78,14 +78,26 @@ if (! function_exists('locale_url')) {
         if (isset($params['id']) && (isset($params['slug']) || str_contains($routeName, 'petition.'))) {
             $id = (int) $params['id'];
 
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $id)
-                ->where('locale', $newLocale)
-                ->first()
-                ?? PetitionTranslation::query()
-                ->where('petition_id', $id)
-                ->where('locale', default_locale())
-                ->first();
+            static $translationCache = [];
+
+            $cacheKey = "{$id}:{$newLocale}";
+            if (!array_key_exists($cacheKey, $translationCache)) {
+                // Load all translations for this petition in one query and cache every locale
+                $allForPetition = PetitionTranslation::query()
+                    ->where('petition_id', $id)
+                    ->get(['locale', 'slug'])
+                    ->keyBy('locale');
+
+                foreach ($allForPetition as $loc => $t) {
+                    $translationCache["{$id}:{$loc}"] = $t;
+                }
+
+                if (!array_key_exists($cacheKey, $translationCache)) {
+                    $translationCache[$cacheKey] = $allForPetition->first() ?? null;
+                }
+            }
+
+            $tr = $translationCache[$cacheKey];
 
             if ($tr) {
                 $params['slug'] = $tr->slug;
