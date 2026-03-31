@@ -187,6 +187,23 @@
             </div>
         </div>
 
+        <div class="fc-tab">announcement banner</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Show a red banner at the top of every page for all visitors. Plain text only — no HTML.
+            </p>
+            <input type="hidden" name="announcement_active" value="0">
+            <div class="fc-row">
+                <label>active</label>
+                <input type="checkbox" name="announcement_active" value="1" {{ $announcement_active ? 'checked' : '' }}>
+            </div>
+            <div class="fc-row">
+                <label>message</label>
+                <input class="fc-input" type="text" name="announcement_text" value="{{ $announcement_text }}"
+                    placeholder="e.g. Site under maintenance from 14:00–15:00 UTC">
+            </div>
+        </div>
+
         <div style="margin-top:6px; text-align: end;">
             <button class="fc-btn" type="submit">save</button>
         </div>
