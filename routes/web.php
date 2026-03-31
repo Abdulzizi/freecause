@@ -86,6 +86,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         //* SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
+        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
 
         //* PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');

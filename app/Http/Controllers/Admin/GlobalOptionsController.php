@@ -19,6 +19,7 @@ class GlobalOptionsController extends Controller
         'google_client_id'                   => '',
         'google_client_secret'               => '',
         'smtp_enabled'                       => false,
+        'require_email_verification'         => false,
         'smtp_host'                          => '',
         'smtp_user'                          => '',
         'smtp_pass'                          => '',
@@ -30,6 +31,10 @@ class GlobalOptionsController extends Controller
         'logging_cookie_value'               => '',
         'announcement_active'                => false,
         'announcement_text'                  => '',
+        'email_verify_subject'               => '',
+        'email_verify_greeting'              => '',
+        'email_verify_button_text'           => '',
+        'email_verify_footer'                => '',
     ];
 
     public function edit()
