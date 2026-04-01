@@ -11,7 +11,6 @@ class Petition extends Model
     use HasFactory;
 
     protected $fillable = [
-        'signature_count',
         'goal_signatures',
         'category_id',
         'target',
