@@ -181,13 +181,7 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
 if (!function_exists('admin_user')) {
     function admin_user(): ?\App\Models\User
     {
-        static $cache = [];
-        $id = session('admin_user_id');
-        if (!$id) return null;
-        if (!isset($cache[$id])) {
-            $cache[$id] = \App\Models\User::find($id);
-        }
-        return $cache[$id];
+        return \Illuminate\Support\Facades\Auth::guard('admin')->user();
     }
 }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Support\AppLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -58,7 +59,7 @@ class AdminSystemController extends Controller
         );
 
         if (!empty($data['new_password'])) {
-            $request->session()->forget('admin_user_id');
+            Auth::guard('admin')->logout();
             $request->session()->regenerateToken();
             return redirect()->route('admin.login')->with('success', 'Password changed. Please login again.');
         }
