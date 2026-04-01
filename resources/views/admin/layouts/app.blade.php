@@ -18,7 +18,7 @@
         <a href="https://www.freecause.com" target="_blank">https://www.freecause.com</a>
         <span class="sep">|</span> v 1.2.1
         <span class="sep">|</span> support
-        <span class="sep">|</span> <strong>{{ session('admin_username', 'admin') }}</strong>
+        <span class="sep">|</span> <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
         <span class="sep">|</span>
 
         <form method="POST" action="{{ route('admin.logout') }}" style="display:inline">
