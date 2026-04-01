@@ -1,7 +1,7 @@
 @php
     $verifyUrl = route('verify.account', [
         'locale' => $locale,
-        'token'  => $user->verification_token
+        'token'  => $token,
     ]);
 @endphp
 
@@ -18,7 +18,7 @@
         <h2 style="margin-top:0;">{{ $greeting ?? 'Welcome to FreeCause' }}</h2>
 
         <p>
-            Hi {{ $user->first_name }},
+            Hi {{ $firstName }},
         </p>
 
         <p>
