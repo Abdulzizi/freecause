@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserLevel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AdminAuthController extends Controller
 {
     public function show()
     {
-        if (session('admin_user_id')) {
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.options.global');
         }
 
@@ -34,7 +35,7 @@ class AdminAuthController extends Controller
         if ($adminUsername && $login === $adminUsername) {
             $user = User::whereHas('level', fn($q) => $q->where('name', 'admin'))->first();
             if ($user && Hash::check($password, $user->password)) {
-                session(['admin_user_id' => $user->id]);
+                Auth::guard('admin')->login($user);
                 $request->session()->regenerateToken();
                 return redirect()->route('admin.options.global');
             }
@@ -70,7 +71,7 @@ class AdminAuthController extends Controller
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
 
-        session(['admin_user_id' => $user->id]);
+        Auth::guard('admin')->login($user);
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.options.global');
@@ -78,7 +79,7 @@ class AdminAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget('admin_user_id');
+        Auth::guard('admin')->logout();
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
