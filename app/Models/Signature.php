@@ -16,7 +16,6 @@ class Signature extends Model
         'email',
         'locale',
         'text',
-        'confirmed',
         'ip_address',
     ];
 
