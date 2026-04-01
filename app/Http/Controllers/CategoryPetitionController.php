@@ -23,7 +23,7 @@ class CategoryPetitionController extends Controller
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $categorySlug || $tr->locale !== $locale) {
-            return redirect()->route('category.petitions', [
+            return redirect()->route('petitions.byCategory', [
                 'locale' => $tr->locale,
                 'categorySlug' => $tr->slug,
                 'category' => $category->id,
