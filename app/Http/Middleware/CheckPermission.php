@@ -18,6 +18,10 @@ class CheckPermission
 
         $user->load('level');
 
+        if (!$user->level_id) {
+            abort(403, 'Your account has no role assigned. Contact a system administrator.');
+        }
+
         if ($user->level && $user->level->is_system) {
             return $next($request);
         }

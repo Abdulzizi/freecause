@@ -60,10 +60,14 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            $q->whereRaw(
-                "MATCH(pt.title) AGAINST(? IN BOOLEAN MODE) OR MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)",
-                ['+' . $filters['title'] . '*', '+' . $filters['title'] . '*']
-            );
+            $safeTitle = preg_replace('/[+\-<>~*()"@]+/', ' ', $filters['title']);
+            $safeTitle = trim($safeTitle);
+            if ($safeTitle !== '') {
+                $q->whereRaw(
+                    "MATCH(pt.title) AGAINST(? IN BOOLEAN MODE) OR MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)",
+                    ['+' . $safeTitle . '*', '+' . $safeTitle . '*']
+                );
+            }
         }
 
         if ($filters['featured'] !== '') {
