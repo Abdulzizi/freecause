@@ -69,10 +69,9 @@ class GoogleAuthController extends Controller
         $newUser = false;
 
         if ($user && empty($user->google_id)) {
-            // If user has no real password (never set one, no facebook either)
+            // If user has no real password (never set one via form)
             // they registered via Google and then unlinked — re-link automatically
-            $hasNoRealPassword = empty($user->facebook_id)
-                && is_null($user->password_changed_at);
+            $hasNoRealPassword = is_null($user->password_changed_at);
 
             if ($hasNoRealPassword) {
                 AppLog::info(
