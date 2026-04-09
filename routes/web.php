@@ -116,13 +116,13 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
         //* SYSTEM
-        Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->name('system.user_info');
-        Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->name('system.user_info.update');
-        Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->name('system.user_levels');
-        Route::post('/system/user-levels', [AdminUserLevelsController::class, 'store'])->name('system.user_levels.store');
-        Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->name('system.user_levels.delete');
-        Route::get('/system/permissions', [PermissionController::class, 'index'])->name('system.permissions');
-        Route::post('/system/permissions', [PermissionController::class, 'store'])->name('system.permissions.store');
+        Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
+        Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->middleware('permission:system,manage')->name('system.user_info.update');
+        Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->middleware('permission:system,manage')->name('system.user_levels');
+        Route::post('/system/user-levels', [AdminUserLevelsController::class, 'store'])->middleware('permission:system,manage')->name('system.user_levels.store');
+        Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->middleware('permission:system,manage')->name('system.user_levels.delete');
+        Route::get('/system/permissions', [PermissionController::class, 'index'])->middleware('permission:system,manage')->name('system.permissions');
+        Route::post('/system/permissions', [PermissionController::class, 'store'])->middleware('permission:system,manage')->name('system.permissions.store');
 
         Route::get('/utils/import', [ImportController::class, 'index'])->middleware('permission:options,edit')->name('utils.import');
         Route::post('/utils/import', [ImportController::class, 'store'])->middleware('permission:options,edit')->name('utils.import.store');
