@@ -60,9 +60,11 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
+            $safeTitle = preg_replace('/[+\-<>~*()"@]+/', ' ', $filters['title']);
+            $safeTitle = trim($safeTitle);
             $q->whereRaw(
                 "MATCH(pt.title) AGAINST(? IN BOOLEAN MODE) OR MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)",
-                ['+' . $filters['title'] . '*', '+' . $filters['title'] . '*']
+                ['+' . $safeTitle . '*', '+' . $safeTitle . '*']
             );
         }
 

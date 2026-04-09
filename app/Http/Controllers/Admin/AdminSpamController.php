@@ -33,6 +33,10 @@ class AdminSpamController extends Controller
 
         if (!$ip) return back();
 
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+            return back()->with('error', 'Invalid IP address format.');
+        }
+
         if ($ip === request()->ip()) {
             return back()->with('error', 'You cannot ban your own IP.');
         }
