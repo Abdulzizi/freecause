@@ -39,22 +39,22 @@
             @endif
 
             @if(!$isEdit)
-                <h2 class="text-center mb-4">Start a free petition In Just 3 Easy Steps</h2>
+                <h2 class="text-center mb-4">{{ __('petition.create_title') }}</h2>
 
                 <div class="fc-steps mb-5">
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-1 is-active"></span>
-                        <div class="fc-step-text">Create your petition</div>
+                        <div class="fc-step-text">{{ __('petition.step_create') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-2"></span>
-                        <div class="fc-step-text">Share with friends</div>
+                        <div class="fc-step-text">{{ __('petition.step_share') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-3"></span>
-                        <div class="fc-step-text">Change the world!</div>
+                        <div class="fc-step-text">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
 
@@ -84,12 +84,12 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label">Title (mandatory)</label>
+                            <label class="form-label">{{ __('form.title') }}</label>
                             <input class="form-control" name="title" value="{{ $oldTitle }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Text (mandatory)</label>
+                            <label class="form-label">{{ __('form.description') }}</label>
 
                             <div class="fc-markup">
                                 <div id="fc-quill-toolbar" class="fc-markup-bar">
@@ -116,7 +116,7 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Goal (mandatory)</label>
+                                <label class="form-label">{{ __('form.goal_signatures') }}</label>
 
                                 <select class="form-select" name="goal_signatures" required>
                                     <option value="">(select one)</option>
@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Category (mandatory)</label>
+                                <label class="form-label">{{ __('form.category') }}</label>
                                 <select class="form-select" name="category_id" required>
                                     <option value="">(select one)</option>
                                     @foreach ($categories as $c)
@@ -148,43 +148,43 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tags</label>
+                            <label class="form-label">{{ __('form.tags') }}</label>
                             <input class="form-control" name="tags" value="{{ $oldTags }}">
                             <small class="text-muted">10 keywords max, separated by comma</small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Image (Max 4MB, JPG/PNG)</label>
+                            <label class="form-label">{{ __('form.image') }}</label>
                             <input type="file" class="form-control" name="image" accept="image/jpeg,image/png">
                             <div class="mt-2">
-                                <label class="form-label">Or supply an external link :</label>
+                                <label class="form-label">{{ __('form.image_external') }}</label>
                                 <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
                                     placeholder="https://">
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">URL Youtube video</label>
+                            <label class="form-label">{{ __('form.youtube') }}</label>
                             <input class="form-control" name="youtube" value="{{ $oldYoutube }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition target</label>
+                            <label class="form-label">{{ __('form.target') }}</label>
                             <input class="form-control" name="target" value="{{ $oldTarget }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition community</label>
+                            <label class="form-label">{{ __('form.community') }}</label>
                             <input class="form-control" name="community" value="{{ $oldCommunity }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition community url</label>
+                            <label class="form-label">{{ __('form.community_url') }}</label>
                             <input class="form-control" name="community_url" value="{{ $oldCommunityUrl }}">
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">City</label>
+                            <label class="form-label">{{ __('form.city') }}</label>
                             <input class="form-control" name="city" value="{{ $oldCity }}">
                         </div>
 
