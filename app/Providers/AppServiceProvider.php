@@ -2,17 +2,20 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use App\Models\PageContent;
 use App\Models\Language;
+use App\Models\PageContent;
 use App\Support\Settings;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,13 +27,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         try {
-            if (!Schema::hasTable('settings')) {
+            if (! Schema::hasTable('settings')) {
                 $this->bootLocale();
                 $this->bootViewComposers();
+
                 return;
             }
         } catch (\Throwable $e) {
-            Log::error('AppServiceProvider boot failed: ' . $e->getMessage());
+            Log::error('AppServiceProvider boot failed: '.$e->getMessage());
+
             return;
         }
 
@@ -38,6 +43,26 @@ class AppServiceProvider extends ServiceProvider
         $this->bootViewComposers();
         $this->bootMail();
         $this->bootOAuth();
+        $this->bootRateLimiting();
+    }
+
+    private function bootRateLimiting(): void
+    {
+        try {
+            RateLimiter::for('petitions', function (Request $request) {
+                return Limit::perMinute(10)->by($request->ip());
+            });
+
+            RateLimiter::for('signatures', function (Request $request) {
+                return Limit::perMinute(20)->by($request->ip());
+            });
+
+            RateLimiter::for('api', function (Request $request) {
+                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            });
+        } catch (\Throwable $e) {
+            Log::warning('bootRateLimiting failed: '.$e->getMessage());
+        }
     }
 
     private function bootLocale(): void
@@ -48,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
             $availableLocales = Cache::remember(
                 'languages:codes',
                 60,
-                fn() => Schema::hasTable('languages')
+                fn () => Schema::hasTable('languages')
                     ? Language::where('is_active', 1)->pluck('code')->toArray()
                     : []
             );
@@ -56,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
             $defaultLocale = Cache::remember(
                 'default_language',
                 60,
-                fn() => Schema::hasTable('languages')
+                fn () => Schema::hasTable('languages')
                     ? Language::where('is_default', 1)->value('code') ?? 'en'
                     : 'en'
             );
@@ -71,17 +96,17 @@ class AppServiceProvider extends ServiceProvider
 
             try {
                 $baseUrl = Settings::get('base_url', '', 'global');
-                if (!empty($baseUrl)) {
+                if (! empty($baseUrl)) {
                     URL::forceRootUrl(rtrim($baseUrl, '/'));
                     if (str_starts_with($baseUrl, 'https://')) {
                         URL::forceScheme('https');
                     }
                 }
             } catch (\Throwable $e) {
-                Log::warning('bootLocale: could not apply base_url: ' . $e->getMessage());
+                Log::warning('bootLocale: could not apply base_url: '.$e->getMessage());
             }
         } catch (\Throwable $e) {
-            Log::error('bootLocale failed, falling back to en: ' . $e->getMessage());
+            Log::error('bootLocale failed, falling back to en: '.$e->getMessage());
             App::setLocale('en');
             URL::defaults(['locale' => 'en']);
         }
@@ -93,7 +118,7 @@ class AppServiceProvider extends ServiceProvider
             $shortBaseUrl = Settings::get('short_base_url', '', 'global');
             View::share('shortBaseUrl', $shortBaseUrl ?: config('app.url'));
         } catch (\Throwable $e) {
-            Log::warning('bootViewComposers: could not load short_base_url: ' . $e->getMessage());
+            Log::warning('bootViewComposers: could not load short_base_url: '.$e->getMessage());
             View::share('shortBaseUrl', config('app.url'));
         }
 
@@ -104,13 +129,13 @@ class AppServiceProvider extends ServiceProvider
                 $defaultLocale = Cache::remember(
                     'default_language',
                     60,
-                    fn() => Language::where('is_default', 1)->value('code') ?? 'en'
+                    fn () => Language::where('is_default', 1)->value('code') ?? 'en'
                 );
 
                 $pageContent = Cache::remember(
                     "page_contents:$locale",
                     now()->addHours(6),
-                    fn() => PageContent::where('locale', $locale)->pluck('value', 'key')
+                    fn () => PageContent::where('locale', $locale)->pluck('value', 'key')
                 );
 
                 $categories = Cache::remember(
@@ -130,22 +155,22 @@ class AppServiceProvider extends ServiceProvider
                             ->orderBy('categories.id')
                             ->get([
                                 'categories.id',
-                                \DB::raw("COALESCE(ct_locale.name, ct_default.name) as name"),
-                                \DB::raw("COALESCE(ct_locale.slug, ct_default.slug) as slug"),
+                                \DB::raw('COALESCE(ct_locale.name, ct_default.name) as name'),
+                                \DB::raw('COALESCE(ct_locale.slug, ct_default.slug) as slug'),
                             ]);
                     }
                 );
 
                 $view->with([
-                    'pageContent'   => $pageContent,
+                    'pageContent' => $pageContent,
                     'navbarContent' => $pageContent,
-                    'categories'    => $categories,
+                    'categories' => $categories,
                 ]);
             } catch (\Throwable $e) {
-                Log::warning('navbar composer failed: ' . $e->getMessage());
+                Log::warning('navbar composer failed: '.$e->getMessage());
                 $view->with([
-                    'pageContent'   => collect(),
-                    'categories'    => collect(),
+                    'pageContent' => collect(),
+                    'categories' => collect(),
                     'navbarContent' => collect(),
                 ]);
             }
@@ -155,23 +180,23 @@ class AppServiceProvider extends ServiceProvider
     private function bootMail(): void
     {
         try {
-            if (!Settings::get('smtp_enabled', false)) {
+            if (! Settings::get('smtp_enabled', false)) {
                 return;
             }
 
             $encryption = Settings::get('smtp_encryption', 'tls');
-            $host       = Settings::get('smtp_host', '');
-            $user       = Settings::get('smtp_user', '');
-            $pass       = Settings::get('smtp_pass', '');
-            $fromEmail  = Settings::get('email_from', config('mail.from.address'));
+            $host = Settings::get('smtp_host', '');
+            $user = Settings::get('smtp_user', '');
+            $pass = Settings::get('smtp_pass', '');
+            $fromEmail = Settings::get('email_from', config('mail.from.address'));
 
             if (empty($host)) {
                 return;
             }
 
             $port = match ($encryption) {
-                'tls'   => 587,
-                'ssl'   => 465,
+                'tls' => 587,
+                'ssl' => 465,
                 default => 25,
             };
 
@@ -184,7 +209,7 @@ class AppServiceProvider extends ServiceProvider
             Config::set('mail.from.address', $fromEmail ?: config('mail.from.address'));
             Config::set('mail.from.name', config('app.name'));
         } catch (\Throwable $e) {
-            Log::warning('bootMail failed: ' . $e->getMessage());
+            Log::warning('bootMail failed: '.$e->getMessage());
         }
     }
 
@@ -193,11 +218,11 @@ class AppServiceProvider extends ServiceProvider
         try {
             $locale = app()->getLocale();
 
-            Config::set('services.google.client_id',     Settings::get('google_client_id', ''));
+            Config::set('services.google.client_id', Settings::get('google_client_id', ''));
             Config::set('services.google.client_secret', Settings::get('google_client_secret', ''));
-            Config::set('services.google.redirect',      url("/{$locale}/oauth/google/callback"));
+            Config::set('services.google.redirect', url("/{$locale}/oauth/google/callback"));
         } catch (\Throwable $e) {
-            Log::warning('bootOAuth Google failed: ' . $e->getMessage());
+            Log::warning('bootOAuth Google failed: '.$e->getMessage());
         }
 
     }
