@@ -51,6 +51,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         // * OPTIONS
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.global.update');
+        Route::post('/options/clear-cache', [GlobalOptionsController::class, 'clearCache'])->middleware('permission:options,edit')->name('options.clearCache');
         Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.language');
         Route::post('/options/language', [LanguageOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.language.update');
         Route::get('/ads', [AdsTxtController::class, 'edit'])->middleware('permission:options,view')->name('ads');
@@ -73,6 +74,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->middleware('permission:petitions,edit')->name('petitions.bulkAction');
+        Route::post('/petitions/reconcile', [AdminPetitionsController::class, 'reconcile'])->middleware('permission:petitions,edit')->name('petitions.reconcile');
+        Route::post('/petitions/reconcile-all', [AdminPetitionsController::class, 'reconcileAll'])->middleware('permission:petitions,edit')->name('petitions.reconcileAll');
 
         // * CATEGORIES
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->middleware('permission:categories,view')->name('categories');
