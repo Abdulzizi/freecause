@@ -8,6 +8,46 @@
     <form method="post" action="{{ route('admin.options.global.update') }}">
         @csrf
 
+        <div class="fc-tab">branding</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize your site's branding. These values are used across the site.
+            </p>
+
+            <div class="fc-row">
+                <label>site name</label>
+                <input class="fc-input" type="text" name="site_name" value="{{ $site_name }}">
+            </div>
+
+            <div class="fc-row">
+                <label>short name</label>
+                <input class="fc-input" type="text" name="site_name_short" value="{{ $site_name_short }}">
+                <span style="font-size:11px; color:#666; display:block; margin-top:4px;">Used in share links and short displays</span>
+            </div>
+
+            <div class="fc-row">
+                <label>logo url</label>
+                <input class="fc-input" type="text" name="site_logo" value="{{ $site_logo }}" placeholder="https://...">
+            </div>
+
+            <div class="fc-row">
+                <label>favicon url</label>
+                <input class="fc-input" type="text" name="site_favicon" value="{{ $site_favicon }}" placeholder="https://...">
+            </div>
+
+            <div class="fc-row">
+                <label>primary color</label>
+                <input class="fc-input" type="color" name="primary_color" value="{{ $primary_color }}" style="width:80px; height:40px; padding:2px;">
+                <span style="font-size:11px; color:#666; margin-left:10px;">{{ $primary_color }}</span>
+            </div>
+
+            <div class="fc-row">
+                <label>secondary color</label>
+                <input class="fc-input" type="color" name="secondary_color" value="{{ $secondary_color }}" style="width:80px; height:40px; padding:2px;">
+                <span style="font-size:11px; color:#666; margin-left:10px;">{{ $secondary_color }}</span>
+            </div>
+        </div>
+
         <div class="fc-tab">general</div>
         <div class="fc-box">
 
