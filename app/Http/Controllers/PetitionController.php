@@ -192,6 +192,12 @@ class PetitionController extends Controller
             ->firstOrFail();
 
         if (auth()->check()) {
+            if (! auth()->user()->verified) {
+                toast('Please verify your email before signing petitions.', 'warning');
+
+                return back()->withInput();
+            }
+
             return $this->signAsAuthed($request, $locale, $petition);
         }
 
