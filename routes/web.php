@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
+use App\Http\Controllers\Admin\TranslationsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
@@ -118,6 +119,10 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->middleware('permission:languages,edit')->name('languages.update');
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
+
+        // * TRANSLATIONS
+        Route::get('/translations', [TranslationsController::class, 'index'])->middleware('permission:languages,view')->name('translations.index');
+        Route::post('/translations', [TranslationsController::class, 'update'])->middleware('permission:languages,edit')->name('translations.update');
 
         // * SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
