@@ -20,6 +20,54 @@ body {
     color: #111;
 }
 
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .fc-frame {
+        flex-direction: column;
+        padding: 8px;
+    }
+    
+    .fc-menu {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .fc-panel {
+        width: 100%;
+    }
+    
+    .fc-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .fc-row label {
+        font-size: 12px;
+    }
+    
+    .fc-topbar {
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .fc-topbar .sep {
+        display: none;
+    }
+    
+    /* Table scroll wrapper */
+    .fc-box table,
+    .table-responsive {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .fc-box table th,
+    .fc-box table td {
+        white-space: nowrap;
+    }
+}
+
 /* top right utility bar */
 .fc-topbar {
     padding: 10px 14px;

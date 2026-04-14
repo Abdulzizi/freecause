@@ -61,18 +61,6 @@
 
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
-    <style>
-        body.dark-mode { background: #1a1a1a; color: #e0e0e0; }
-        body.dark-mode .bg-white { background: #2d2d2d !important; }
-        body.dark-mode .card { background: #2d2d2d; color: #e0e0e0; }
-        body.dark-mode .navbar { background: #2d2d2d !important; }
-        body.dark-mode .text-dark { color: #e0e0e0 !important; }
-        body.dark-mode .text-muted { color: #aaa !important; }
-        body.dark-mode .border { border-color: #444 !important; }
-        body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background: #333; color: #e0e0e0; border-color: #555; }
-        .theme-toggle { cursor: pointer; padding: 8px; }
-    </style>
-
     @stack('head')
 
     @if (session('success'))
@@ -83,11 +71,6 @@
 </head>
 
 <body class="@yield('body_class', '')">
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
     @include('partials.navbar')
 
     @php
@@ -115,14 +98,6 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
-
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-    </script>
 </body>
 
 </html>
