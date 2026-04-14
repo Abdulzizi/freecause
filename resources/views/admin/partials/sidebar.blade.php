@@ -24,4 +24,5 @@
 
     <div class="group-title">utilities</div>
     <a href="{{ route('admin.utils.import') }}" class="{{ request()->routeIs('admin.utils.import') ? 'active' : '' }}">import</a>
+    <a href="{{ route('admin.backup.index') }}" class="{{ request()->routeIs('admin.backup.index') ? 'active' : '' }}">backup</a>
 </nav>
