@@ -61,6 +61,18 @@
 
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
+    <style>
+        body.dark-mode { background: #1a1a1a; color: #e0e0e0; }
+        body.dark-mode .bg-white { background: #2d2d2d !important; }
+        body.dark-mode .card { background: #2d2d2d; color: #e0e0e0; }
+        body.dark-mode .navbar { background: #2d2d2d !important; }
+        body.dark-mode .text-dark { color: #e0e0e0 !important; }
+        body.dark-mode .text-muted { color: #aaa !important; }
+        body.dark-mode .border { border-color: #444 !important; }
+        body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background: #333; color: #e0e0e0; border-color: #555; }
+        .theme-toggle { cursor: pointer; padding: 8px; }
+    </style>
+
     @stack('head')
 
     @if (session('success'))
@@ -71,6 +83,11 @@
 </head>
 
 <body class="@yield('body_class', '')">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     @include('partials.navbar')
 
     @php
@@ -99,70 +116,13 @@
 
     @include('partials.footer')
 
-    @php
-        $fcToasts = [];
-
-        if (session('toast')) {
-            $t = session('toast');
-            $fcToasts[] = ['type' => $t['type'] ?? 'info', 'message' => $t['message']];
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
-
-        if (session('success')) {
-            $fcToasts[] = ['type' => 'success', 'message' => session('success')];
-        }
-
-        if (isset($errors) && $errors->any() && !session('toast')) {
-            $fcToasts[] = ['type' => 'error', 'message' => $errors->first()];
-        }
-    @endphp
-
-    @if(!empty($fcToasts))
-        <div id="fc-toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:320px;">
-            @foreach($fcToasts as $i => $t)
-                @php
-                    $bg = match($t['type']) {
-                        'success' => '#28a745',
-                        'error'   => '#dc3545',
-                        'warning' => '#e0a800',
-                        default   => '#343a40',
-                    };
-                @endphp
-                <div class="fc-toast-item"
-                    data-index="{{ $i }}"
-                    style="background:{{ $bg }};
-                        color:#fff;
-                        padding:14px 18px;
-                        border-radius:6px;
-                        box-shadow:0 5px 15px rgba(0,0,0,0.2);
-                        font-size:14px;
-                        line-height:1.4;
-                        opacity:0;
-                        transform:translateY(-10px);
-                        transition:all .3s ease;
-                        cursor:pointer;"
-                    onclick="this.style.opacity=0;this.style.transform='translateY(-10px)';setTimeout(()=>this.remove(),300);">
-                    {{ $t['message'] }}
-                </div>
-            @endforeach
-        </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.fc-toast-item').forEach(function (el, i) {
-                    setTimeout(function () {
-                        el.style.opacity = 1;
-                        el.style.transform = 'translateY(0)';
-                    }, 100 + i * 150);
-
-                    setTimeout(function () {
-                        el.style.opacity = 0;
-                        el.style.transform = 'translateY(-10px)';
-                        setTimeout(function () { el.remove(); }, 300);
-                    }, 5000 + i * 150);
-                });
-            });
-        </script>
-    @endif
+    </script>
 </body>
 
 </html>
