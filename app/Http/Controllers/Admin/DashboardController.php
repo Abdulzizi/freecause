@@ -93,7 +93,7 @@ class DashboardController extends Controller
         return Petition::where('status', 'published')
             ->orderByDesc('signature_count')
             ->limit(5)
-            ->get(['id', 'signature_count', 'goal', 'created_at']);
+            ->get(['id', 'signature_count', 'goal_signatures', 'created_at']);
     }
 
     private function getSystemHealth(): array
