@@ -82,7 +82,7 @@
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
-                            <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img">
+                            <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img" loading="lazy">
                             @if ($petitionCredit)
                                 <span class="fc-img-credit">{{ $petitionCredit }}</span>
                             @endif
@@ -379,7 +379,7 @@
                 <div class="modal-body p-0 position-relative">
                     <button type="button" class="btn-close position-absolute" style="right:10px;top:10px;z-index:2;"
                         data-bs-dismiss="modal" aria-label="Close"></button>
-                    <img src="{{ $petitionImg }}" class="img-fluid w-100" alt="petition image large">
+                    <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" alt="petition image large">
                 </div>
             </div>
         </div>

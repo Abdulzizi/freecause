@@ -83,6 +83,7 @@
                                                             </span>
                                                             <img src="{{ $featuredPetition->coverUrl() }}"
                                                                 class="img-fluid w-100"
+                                                                loading="lazy"
                                                                 style="max-height:320px;object-fit:cover;border-radius:6px;" />
                                                         </div>
 
