@@ -209,7 +209,7 @@
                 <tr>
                     <td>#{{ $petition->id }}</td>
                     <td>{{ number_format($petition->signature_count) }}</td>
-                    <td>{{ number_format($petition->goal) }}</td>
+                    <td>{{ number_format($petition->goal_signatures) }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="3">No petitions yet</td></tr>
