@@ -64,6 +64,11 @@
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
 
+                            <div class="mb-3">
+                                <label class="form-label">Enter your password to confirm</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+
                             <label class="d-flex align-items-center gap-2 mb-3" style="font-size:14px;">
                                 <input type="checkbox" name="confirm_delete" value="1" required>
                                 <span>I agree with the account permanent deletion</span>

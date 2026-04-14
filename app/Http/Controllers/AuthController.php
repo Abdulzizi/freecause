@@ -297,6 +297,7 @@ class AuthController extends Controller
     public function delete(Request $request, string $locale)
     {
         $request->validate([
+            'password' => ['required', 'current_password:web'],
             'confirm_delete' => ['required', 'in:1'],
         ]);
 
