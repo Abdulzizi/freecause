@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\AdminStatsController;
 use App\Http\Controllers\Admin\AdminSystemController;
 use App\Http\Controllers\Admin\AdminUserLevelsController;
 use App\Http\Controllers\Admin\AdminUsersController;
-
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\ImportController;
@@ -29,16 +28,14 @@ use App\Http\Controllers\UserProfileController;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
-
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     $default = cache()->remember(
         'default_language',
         60,
-        fn() => \App\Models\Language::where('is_default', 1)->value('code') ?? 'en'
+        fn () => \App\Models\Language::where('is_default', 1)->value('code') ?? 'en'
     );
 
     return redirect("/{$default}");
@@ -51,7 +48,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
     Route::middleware(['admin.auth', 'admin.audit'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-        //* OPTIONS
+        // * OPTIONS
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.global.update');
         Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.language');
@@ -60,10 +57,11 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/ads', [AdsTxtController::class, 'update'])->middleware('permission:options,edit')->name('ads.update');
         Route::get('/ads.txt', function () {
             $content = Settings::get('ads_txt', '', 'global');
+
             return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
         });
 
-        //* USERS
+        // * USERS
         Route::get('/users', [AdminUsersController::class, 'index'])->middleware('permission:users,view')->name('users');
         Route::post('/users/save', [AdminUsersController::class, 'save'])->middleware('permission:users,edit')->name('users.save');
         Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->middleware('permission:users,edit')->name('users.bulkBan');
@@ -71,51 +69,51 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/users/bulk-unban', [AdminUsersController::class, 'bulkUnban'])->middleware('permission:users,edit')->name('users.bulkUnban');
         Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->middleware('permission:users,delete')->name('users.bulkDelete');
 
-        //* PETITIONS
+        // * PETITIONS
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->middleware('permission:petitions,edit')->name('petitions.bulkAction');
 
-        //* CATEGORIES
+        // * CATEGORIES
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->middleware('permission:categories,view')->name('categories');
         Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->middleware('permission:categories,edit')->name('categories.save');
 
-        //* FANPAGES
+        // * FANPAGES
         // Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
 
-        //* SIGNATURES
+        // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
         Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
 
-        //* PAGES
+        // * PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
         Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->middleware('permission:pages,edit')->name('pages.bulkAction');
 
-        //* SPAM
+        // * SPAM
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
         Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');
         Route::post('/spam/unban', [AdminSpamController::class, 'unban'])->middleware('permission:spam,edit')->name('spam.unban');
         Route::post('/spam/clear', [AdminSpamController::class, 'clear'])->middleware('permission:spam,delete')->name('spam.clear');
 
-        //* STATS
+        // * STATS
         Route::get('/stats', [AdminStatsController::class, 'index'])->middleware('permission:stats,view')->name('stats');
 
-        //* LOGS
+        // * LOGS
         Route::get('/logs', [AdminLogsController::class, 'index'])->middleware('permission:logs,view')->name('logs');
         Route::get('/logs/export', [AdminLogsController::class, 'export'])->middleware('permission:logs,view')->name('logs.export');
         Route::post('/logs/prune', [AdminLogsController::class, 'prune'])->middleware('permission:logs,delete')->name('logs.prune');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->middleware('permission:logs,delete')->name('logs.bulkDelete');
 
-        //* LANGUAGES
+        // * LANGUAGES
         Route::get('/languages', [AdminLanguagesController::class, 'index'])->middleware('permission:languages,view')->name('languages.index');
         Route::post('/languages', [AdminLanguagesController::class, 'store'])->middleware('permission:languages,edit')->name('languages.store');
         Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->middleware('permission:languages,edit')->name('languages.update');
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
-        //* SYSTEM
+        // * SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->middleware('permission:system,manage')->name('system.user_info.update');
         Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->middleware('permission:system,manage')->name('system.user_levels');
@@ -160,7 +158,7 @@ Route::group([
 
     Route::group(['middleware' => 'auth'], function () {
         Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
-        Route::post('/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update');
+        Route::post('/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update')->middleware('throttle:10,1');
         Route::post('/account/delete', [AuthController::class, 'delete'])->name('account.delete');
         Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
 
@@ -176,14 +174,14 @@ Route::group([
     });
 
     // static pages
-    Route::get('/faqs', fn() => view('pages.faq'))->name('faqs');
+    Route::get('/faqs', fn () => view('pages.faq'))->name('faqs');
 
-    Route::get('/contacts', fn() => view('pages.contacts'))->name('contacts');
+    Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
     Route::post('/contacts', function (\Illuminate\Http\Request $request) {
         $data = $request->validate([
-            'name'  => ['required', 'string', 'max:120'],
+            'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
-            'text'  => ['required', 'string', 'max:5000'],
+            'text' => ['required', 'string', 'max:5000'],
         ]);
 
         $adminEmail = config('mail.from.address');
