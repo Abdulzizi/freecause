@@ -59,7 +59,7 @@ class DashboardController extends Controller
         });
     }
 
-    private function getQuickStats(): array
+    private function getQuickStats()
     {
         return Cache::remember('admin:dashboard:quick', 300, function () {
             return [
@@ -88,7 +88,7 @@ class DashboardController extends Controller
         ];
     }
 
-    private function getTopPetitions(): array
+    private function getTopPetitions()
     {
         return Petition::where('status', 'published')
             ->orderByDesc('signature_count')
