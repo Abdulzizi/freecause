@@ -15,7 +15,7 @@
 
 <body>
     <div class="fc-topbar">
-        <a href="https://www.freecause.com" target="_blank">https://www.freecause.com</a>
+        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
         <span class="sep">|</span> v 1.2.1
         <span class="sep">|</span> support
         <span class="sep">|</span> <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
