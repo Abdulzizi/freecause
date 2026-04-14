@@ -199,7 +199,7 @@
         <table class="table-list">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>ID</th>
                     <th>Signatures</th>
                     <th>Goal</th>
                 </tr>
@@ -207,7 +207,7 @@
             <tbody>
                 @forelse($topPetitions as $petition)
                 <tr>
-                    <td>{{ Str::limit($petition->title, 40) }}</td>
+                    <td>#{{ $petition->id }}</td>
                     <td>{{ number_format($petition->signature_count) }}</td>
                     <td>{{ number_format($petition->goal) }}</td>
                 </tr>
@@ -289,7 +289,7 @@
         <table class="table-list">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>ID</th>
                     <th>Status</th>
                     <th>Created</th>
                 </tr>
@@ -297,7 +297,7 @@
             <tbody>
                 @forelse($recentActivity['petitions'] as $petition)
                 <tr>
-                    <td>{{ Str::limit($petition->title, 35) }}</td>
+                    <td>#{{ $petition->id }}</td>
                     <td>
                         <span class="status-badge status-{{ $petition->status }}">{{ $petition->status }}</span>
                     </td>
