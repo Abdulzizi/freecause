@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Support\Spam;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyAccountMail;
+use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\AppLog;
-use App\Support\Settings;
-use App\Support\WpSso;
 use App\Support\Locale;
-use Illuminate\Support\Facades\Password;
+use App\Support\Settings;
+use App\Support\Spam;
+use App\Support\WpSso;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -48,7 +49,7 @@ class AuthController extends Controller
             'agree_terms' => ['accepted'],
         ]);
 
-        $fullName = trim($data['name'] . ' ' . $data['surname']);
+        $fullName = trim($data['name'].' '.$data['surname']);
 
         $userLevel = UserLevel::where('name', 'user')->first();
 
@@ -57,11 +58,12 @@ class AuthController extends Controller
 
             AppLog::warning(
                 'Spam registration attempt',
-                'Email: ' . $data['email'],
+                'Email: '.$data['email'],
                 'auth.register'
             );
 
             toast('Spam detected.', 'error');
+
             return back()->withInput();
         }
 
@@ -69,16 +71,17 @@ class AuthController extends Controller
 
             AppLog::warning(
                 'Registration rate limit exceeded',
-                'IP: ' . $request->ip(),
+                'IP: '.$request->ip(),
                 'auth.register'
             );
 
             toast('Too many attempts. Please try again later.', 'error');
+
             return back()->withInput();
         }
 
-        $smtpEnabled   = Settings::get('smtp_enabled', false);
-        $requireVerif  = Settings::get('require_email_verification', false, 'global');
+        $smtpEnabled = Settings::get('smtp_enabled', false);
+        $requireVerif = Settings::get('require_email_verification', false, 'global');
 
         $needsVerif = (bool) $requireVerif;
         $token = $needsVerif ? Str::random(64) : null;
@@ -101,7 +104,7 @@ class AuthController extends Controller
 
         AppLog::info(
             'User registered',
-            'User ID: ' . $user->id . ' | Email: ' . $user->email,
+            'User ID: '.$user->id.' | Email: '.$user->email,
             'auth.register'
         );
 
@@ -121,7 +124,7 @@ class AuthController extends Controller
                 ->with('success', 'Please check your email to verify your account.');
         }
 
-        if ($needsVerif && !$smtpEnabled) {
+        if ($needsVerif && ! $smtpEnabled) {
             return redirect()
                 ->to("/{$locale}/login")
                 ->with('success', 'Your account is pending verification. Please contact support.');
@@ -147,17 +150,18 @@ class AuthController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
-            if (!$user->verified) {
+            if (! $user->verified) {
                 return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email');
             }
 
             if ($user->hasLevel('banned')) {
                 AppLog::warning(
                     'Banned user attempted login',
-                    'User ID: ' . $user->id . ' | IP: ' . $request->ip(),
+                    'User ID: '.$user->id.' | IP: '.$request->ip(),
                     'auth.login'
                 );
                 toast('Your account has been suspended.', 'error');
+
                 return back()->withInput();
             }
         }
@@ -166,9 +170,9 @@ class AuthController extends Controller
         $loggedIn = Auth::guard('web')->attempt($credentials, $remember);
 
         // Fallback: legacy md5(md5(password).salt):salt hash for migrated old users
-        if (!$loggedIn && $user && str_contains($user->password, ':')) {
+        if (! $loggedIn && $user && str_contains($user->password, ':')) {
             [$hash, $salt] = explode(':', $user->password, 2);
-            if (md5(md5($credentials['password']) . $salt) === $hash) {
+            if (md5(md5($credentials['password']).$salt) === $hash) {
                 // Rehash to bcrypt and save
                 $user->password = Hash::make($credentials['password']);
                 $user->save();
@@ -185,7 +189,7 @@ class AuthController extends Controller
             $user->save();
 
             $dest = $request->input('redirect');
-            if (!$dest || !str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
+            if (! $dest || ! str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
                 $dest = $request->session()->pull('url.intended', "/{$locale}");
             }
 
@@ -225,14 +229,14 @@ class AuthController extends Controller
         ]);
 
         $first = trim($data['first_name']);
-        $last  = trim($data['last_name']);
+        $last = trim($data['last_name']);
 
         $u->first_name = $first;
-        $u->last_name  = $last;
-        $u->name       = trim($first . ' ' . $last);
+        $u->last_name = $last;
+        $u->name = trim($first.' '.$last);
 
         $u->nickname = $data['nickname'] ?? null;
-        $u->city     = $data['city'] ?? null;
+        $u->city = $data['city'] ?? null;
         $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
         $newEmail = strtolower(trim($data['new_email'] ?? ''));
@@ -267,9 +271,9 @@ class AuthController extends Controller
             }
         }
 
-        if (!empty($data['new_password'])) {
+        if (! empty($data['new_password'])) {
 
-            if (!Hash::check($data['current_password'], $u->password)) {
+            if (! Hash::check($data['current_password'], $u->password)) {
                 return back()
                     ->withInput()
                     ->withErrors(['current_password' => 'Current password is incorrect.']);
@@ -300,9 +304,15 @@ class AuthController extends Controller
 
         AppLog::warning(
             'User account deleted',
-            'User ID: ' . $u->id . ' | Email: ' . $u->email,
+            'User ID: '.$u->id.' | Email: '.$u->email,
             'auth.delete'
         );
+
+        $wpUserId = DB::table('users')->where('user_login', $u->email)->value('ID');
+        if ($wpUserId) {
+            require_once base_path('public/magazine/wp-load.php');
+            wp_delete_user($wpUserId);
+        }
 
         $u->delete();
 
@@ -313,13 +323,15 @@ class AuthController extends Controller
     {
         $user = User::where('verification_token', $token)->first();
 
-        if (!$user) {
+        if (! $user) {
             toast('Invalid or expired verification link.', 'error');
+
             return redirect()->to("/{$locale}");
         }
 
         if ($user->verification_token_sent_at && $user->verification_token_sent_at->lt(now()->subHours(48))) {
             toast('Verification link expired. Please request a new one.', 'error');
+
             return redirect()->to("/{$locale}/resend-verification");
         }
 
@@ -327,7 +339,7 @@ class AuthController extends Controller
         $user->verification_token = null;
         $user->save();
 
-        //* AUTO LOGIN AFTER VERIFY
+        // * AUTO LOGIN AFTER VERIFY
         // Auth::login($user);
         // request()->session()->regenerate();
 
@@ -338,7 +350,7 @@ class AuthController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->password) {
+        if (! $user->password) {
             return back()->withErrors(['error' => 'Set a password before unlinking Google.']);
         }
 
@@ -409,23 +421,23 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        if (!Settings::get('smtp_enabled', false)) {
+        if (! Settings::get('smtp_enabled', false)) {
             return back()->withErrors([
-                'email' => 'Email verification is not enabled.'
+                'email' => 'Email verification is not enabled.',
             ]);
         }
 
         $user = User::where('email', strtolower(trim($request->email)))->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors([
-                'email' => 'User not found.'
+                'email' => 'User not found.',
             ]);
         }
 
         if ($user->verified) {
             return back()->withErrors([
-                'email' => 'This account is already verified.'
+                'email' => 'This account is already verified.',
             ]);
         }
 
@@ -440,7 +452,7 @@ class AuthController extends Controller
 
             AppLog::info(
                 'Verification email resent',
-                'User ID: ' . $user->id . ' | Email: ' . $user->email,
+                'User ID: '.$user->id.' | Email: '.$user->email,
                 'auth.verification'
             );
         } catch (\Exception $e) {
@@ -452,7 +464,7 @@ class AuthController extends Controller
             );
 
             return back()->withErrors([
-                'email' => 'Failed to send email. Please try again later.'
+                'email' => 'Failed to send email. Please try again later.',
             ]);
         }
 

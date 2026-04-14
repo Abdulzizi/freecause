@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\ApproxRows;
+use App\Support\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Language;
-use App\Support\Locale;
 
 class AdminUsersController extends Controller
 {
@@ -18,13 +18,13 @@ class AdminUsersController extends Controller
     public function index(Request $request)
     {
         $filters = [
-            'id'         => trim((string) $request->query('id', '')),
+            'id' => trim((string) $request->query('id', '')),
             'first_name' => trim((string) $request->query('first_name', '')),
-            'last_name'  => trim((string) $request->query('last_name', '')),
-            'email'      => trim((string) $request->query('email', '')),
-            'ip'         => trim((string) $request->query('ip', '')),
-            'level'      => trim((string) $request->query('level', '')),
-            'locale'     => trim((string) $request->query('locale', '')),
+            'last_name' => trim((string) $request->query('last_name', '')),
+            'email' => trim((string) $request->query('email', '')),
+            'ip' => trim((string) $request->query('ip', '')),
+            'level' => trim((string) $request->query('level', '')),
+            'locale' => trim((string) $request->query('locale', '')),
         ];
 
         $q = User::with('level');
@@ -94,21 +94,25 @@ class AdminUsersController extends Controller
     public function save(Request $request)
     {
         $data = $request->validate([
-            'id'         => ['required', 'integer'],
-            'username'   => ['nullable', 'string', 'max:120'],
+            'id' => ['required', 'integer'],
+            'username' => ['nullable', 'string', 'max:120'],
             'first_name' => ['nullable', 'string', 'max:120'],
-            'last_name'  => ['nullable', 'string', 'max:120'],
-            'password'   => ['nullable', 'string', 'min:8'],
-            'level'      => ['nullable', 'string'],
-            'email'      => ['nullable', 'email'],
-            'locale'     => ['nullable', 'string'],
-            'verified'   => ['nullable'],
+            'last_name' => ['nullable', 'string', 'max:120'],
+            'password' => ['nullable', 'string', 'min:8'],
+            'level' => ['nullable', 'string'],
+            'email' => ['nullable', 'email'],
+            'locale' => ['nullable', 'string'],
+            'verified' => ['nullable'],
         ]);
 
         $user = User::find($data['id']);
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['id' => 'User not found']);
+        }
+
+        if (auth()->id() == $user->id && $request->filled('level') && $data['level'] === 'banned') {
+            return back()->withErrors(['level' => 'You cannot ban yourself.']);
         }
 
         if ($request->filled('level')) {
@@ -118,21 +122,17 @@ class AdminUsersController extends Controller
             }
         }
 
-        if (auth()->id() == $user->id && $user->hasLevel('banned')) {
-            return back()->withErrors(['level' => 'You cannot ban yourself.']);
-        }
-
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
 
-        $user->name       = $data['username'] ?? $user->name;
+        $user->name = $data['username'] ?? $user->name;
         $user->first_name = $data['first_name'] ?? $user->first_name;
-        $user->last_name  = $data['last_name'] ?? $user->last_name;
-        $user->email      = $data['email'] ?? $user->email;
+        $user->last_name = $data['last_name'] ?? $user->last_name;
+        $user->email = $data['email'] ?? $user->email;
         // $user->locale     = $data['locale'] ?? $user->locale;
-        $user->locale     = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
-        $user->verified   = $request->boolean('verified');
+        $user->locale = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
+        $user->verified = $request->boolean('verified');
 
         $user->save();
 
@@ -144,14 +144,16 @@ class AdminUsersController extends Controller
     public function bulkBan(Request $request)
     {
         $ids = $request->input('ids', []);
-        if (empty($ids)) return response()->json(['ok' => false]);
+        if (empty($ids)) {
+            return response()->json(['ok' => false]);
+        }
 
         $bannedLevel = UserLevel::where('name', 'banned')->first();
 
         // Optional ban metadata sent as JSON body (from future UI)
         $reason = $request->input('reason') ?: null;
-        $days   = (int) $request->input('days', 0);
-        $until  = $days > 0 ? now()->addDays($days) : null;
+        $days = (int) $request->input('days', 0);
+        $until = $days > 0 ? now()->addDays($days) : null;
 
         User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
@@ -159,9 +161,9 @@ class AdminUsersController extends Controller
                 $q->where('name', '!=', 'admin');
             })
             ->update([
-                'level_id'      => $bannedLevel->id,
+                'level_id' => $bannedLevel->id,
                 'banned_reason' => $reason,
-                'banned_until'  => $until,
+                'banned_until' => $until,
             ]);
 
         return response()->json(['ok' => true]);
@@ -170,7 +172,9 @@ class AdminUsersController extends Controller
     public function bulkUnban(Request $request)
     {
         $ids = $request->input('ids', []);
-        if (empty($ids)) return response()->json(['ok' => false]);
+        if (empty($ids)) {
+            return response()->json(['ok' => false]);
+        }
 
         $userLevel = UserLevel::where('name', 'user')->first();
 
@@ -191,7 +195,7 @@ class AdminUsersController extends Controller
         $adminLevelId = UserLevel::where('name', 'admin')->value('id');
 
         $deleted = User::whereIn('id', $ids)
-            ->where('id', '!=', auth()->id())
+            ->where('id', '!=', admin_user()?->id)
             ->where(function ($q) use ($adminLevelId) {
                 $q->whereNull('level_id')
                     ->orWhere('level_id', '!=', $adminLevelId);
@@ -200,24 +204,24 @@ class AdminUsersController extends Controller
 
         return response()->json([
             'ok' => $deleted > 0,
-            'deleted' => $deleted
+            'deleted' => $deleted,
         ]);
     }
 
     public function bulkAction(Request $request)
     {
         $action = $request->input('action');
-        $ids    = $request->input('ids', []);
+        $ids = $request->input('ids', []);
 
         if (empty($ids)) {
             return response()->json(['ok' => false, 'msg' => 'no ids'], 400);
         }
 
         return match ($action) {
-            'ban'    => $this->bulkBan($request),
-            'unban'  => $this->bulkUnban($request),
+            'ban' => $this->bulkBan($request),
+            'unban' => $this->bulkUnban($request),
             'delete' => $this->bulkDelete($request),
-            default  => response()->json(['ok' => false, 'msg' => 'unknown action'], 400),
+            default => response()->json(['ok' => false, 'msg' => 'unknown action'], 400),
         };
     }
 }
