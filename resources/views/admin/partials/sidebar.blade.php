@@ -1,4 +1,7 @@
 <nav class="fc-menu">
+    <div class="group-title">overview</div>
+    <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">dashboard</a>
+
     <div class="group-title">site</div>
     <a href="{{ route('admin.options.global') }}" class="{{ request()->routeIs('admin.options.global') ? 'active' : '' }}">global options</a>
     <a href="{{ route('admin.options.language') }}" class="{{ request()->routeIs('admin.options.language') ? 'active' : '' }}">language options</a>

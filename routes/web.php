@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
-// use App\Http\Controllers\Admin\AdminFanpagesController;
 use App\Http\Controllers\Admin\AdminLanguagesController;
 use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
@@ -14,6 +13,7 @@ use App\Http\Controllers\Admin\AdminSystemController;
 use App\Http\Controllers\Admin\AdminUserLevelsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
@@ -47,6 +47,9 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
     Route::middleware(['admin.auth', 'admin.audit'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+        // * DASHBOARD
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // * OPTIONS
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.global');
