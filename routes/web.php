@@ -135,6 +135,12 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
         Route::get('/utils/import', [ImportController::class, 'index'])->middleware('permission:options,edit')->name('utils.import');
         Route::post('/utils/import', [ImportController::class, 'store'])->middleware('permission:options,edit')->name('utils.import.store');
+
+        // * BACKUP
+        Route::get('/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->middleware('permission:options,view')->name('backup.index');
+        Route::post('/backup/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->middleware('permission:options,edit')->name('backup.create');
+        Route::get('/backup/download/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->middleware('permission:options,view')->name('backup.download');
+        Route::post('/backup/delete/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'delete'])->middleware('permission:options,edit')->name('backup.delete');
     });
 });
 
