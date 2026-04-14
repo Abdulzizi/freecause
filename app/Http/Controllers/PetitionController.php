@@ -972,13 +972,20 @@ class PetitionController extends Controller
             ->limit(100)
             ->get();
 
-        return Pdf::loadView('petition.pdf', compact(
-            'petition',
-            'tr',
-            'locale',
-            'signatures'
-        ))
-            ->download("petition-{$petition->id}.pdf");
+        try {
+            return Pdf::loadView('petition.pdf', compact(
+                'petition',
+                'tr',
+                'locale',
+                'signatures'
+            ))
+                ->download("petition-{$petition->id}.pdf");
+        } catch (\Exception $e) {
+            AppLog::error('PDF generation failed', $e->getMessage(), 'petition.pdf');
+            toast('PDF generation failed. Downloading as text instead.', 'warning');
+
+            return $this->downloadTxt($request, $locale, $slug, $id);
+        }
     }
 
     private function makeUniqueSlug(string $title, string $locale): string
