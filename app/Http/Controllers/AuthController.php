@@ -117,6 +117,10 @@ class AuthController extends Controller
                     $e->getMessage(),
                     'auth.register'
                 );
+
+                return redirect()
+                    ->to("/{$locale}/login")
+                    ->with('error', 'Registration failed. Please contact support or try again later.');
             }
 
             return redirect()
@@ -308,10 +312,14 @@ class AuthController extends Controller
             'auth.delete'
         );
 
-        $wpUserId = DB::table('users')->where('user_login', $u->email)->value('ID');
-        if ($wpUserId) {
-            require_once base_path('public/magazine/wp-load.php');
-            wp_delete_user($wpUserId);
+        try {
+            $wpUserId = DB::table('users')->where('user_login', $u->email)->value('ID');
+            if ($wpUserId) {
+                require_once base_path('public/magazine/wp-load.php');
+                wp_delete_user($wpUserId);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('WP user deletion failed: '.$e->getMessage());
         }
 
         $u->delete();
