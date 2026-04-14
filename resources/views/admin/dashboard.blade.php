@@ -160,6 +160,29 @@
     </div>
 </div>
 
+<div class="dash-grid">
+    <div class="stat-card" style="border-left: 4px solid #34495e;">
+        <h3>Logs</h3>
+        <div class="value">{{ number_format($quickStats['logs_count'] ?? 0) }}</div>
+        <div class="sub">entries</div>
+    </div>
+    <div class="stat-card" style="border-left: 4px solid #e67e22;">
+        <h3>Banned IPs</h3>
+        <div class="value">{{ number_format($quickStats['banned_ips'] ?? 0) }}</div>
+        <div class="sub">blocked</div>
+    </div>
+    <div class="stat-card" style="border-left: 4px solid #16a085;">
+        <h3>Categories</h3>
+        <div class="value">{{ number_format($quickStats['categories'] ?? 0) }}</div>
+        <div class="sub">active</div>
+    </div>
+    <div class="stat-card" style="border-left: 4px solid #8e44ad;">
+        <h3>Pages</h3>
+        <div class="value">{{ number_format($quickStats['pages'] ?? 0) }}</div>
+        <div class="sub">static</div>
+    </div>
+</div>
+
 <div class="dash-section">
     <h2>Quick Actions</h2>
     <div class="quick-actions">
@@ -217,6 +240,10 @@
             <div class="health-item">
                 <span class="label">Database</span>
                 <span class="val">{{ $systemHealth['database_type'] }}</span>
+            </div>
+            <div class="health-item">
+                <span class="label">Database Size</span>
+                <span class="val">{{ $systemHealth['database_size'] }}</span>
             </div>
             <div class="health-item">
                 <span class="label">Disk Free</span>
