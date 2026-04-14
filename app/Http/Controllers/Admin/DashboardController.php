@@ -20,12 +20,14 @@ class DashboardController extends Controller
         $recentActivity = $this->getRecentActivity();
         $topPetitions = $this->getTopPetitions();
         $systemHealth = $this->getSystemHealth();
+        $quickStats = $this->getQuickStats();
 
         return view('admin.dashboard', compact(
             'stats',
             'recentActivity',
             'topPetitions',
-            'systemHealth'
+            'systemHealth',
+            'quickStats'
         ));
     }
 
@@ -57,6 +59,18 @@ class DashboardController extends Controller
         });
     }
 
+    private function getQuickStats(): array
+    {
+        return Cache::remember('admin:dashboard:quick', 300, function () {
+            return [
+                'logs_count' => $this->approxTableRows('logs'),
+                'banned_ips' => $this->approxTableRows('banned_ips'),
+                'categories' => $this->approxTableRows('categories'),
+                'pages' => $this->approxTableRows('pages'),
+            ];
+        });
+    }
+
     private function getRecentActivity(): array
     {
         $recentUsers = User::orderByDesc('created_at')
@@ -84,12 +98,24 @@ class DashboardController extends Controller
 
     private function getSystemHealth(): array
     {
+        $dbSize = 0;
+        try {
+            if (config('database.default') === 'sqlite') {
+                $dbPath = database_path('database.sqlite');
+                if (file_exists($dbPath)) {
+                    $dbSize = round(filesize($dbPath) / 1024 / 1024, 2);
+                }
+            }
+        } catch (\Throwable) {
+        }
+
         return [
             'php_version' => PHP_VERSION,
             'laravel_version' => app()->version(),
             'cache_driver' => config('cache.default'),
             'queue_driver' => config('queue.default'),
             'database_type' => config('database.default'),
+            'database_size' => $dbSize ? "{$dbSize} MB" : 'N/A',
             'disk_free_space' => round(disk_free_space('.') / 1024 / 1024 / 1024, 2).' GB',
         ];
     }
