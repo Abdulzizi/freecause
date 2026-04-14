@@ -5,7 +5,7 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
-            <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" alt="logo">
+            <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="logo">
         </a>
 
         {{-- Mobile: language + hamburger in top-right --}}
