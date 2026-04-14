@@ -37,10 +37,14 @@ class GlobalOptionsController extends Controller
         'logging_cookie_value' => '',
         'announcement_active' => false,
         'announcement_text' => '',
+
+        // Email Templates
         'email_verify_subject' => '',
         'email_verify_greeting' => '',
         'email_verify_button_text' => '',
         'email_verify_footer' => '',
+        'email_contact_subject' => 'New contact form submission',
+        'email_contact_enabled' => true,
     ];
 
     public function edit()

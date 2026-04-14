@@ -281,6 +281,26 @@
             </div>
         </div>
 
+        <div class="fc-tab">contact email</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize the contact form notification email sent to staff.
+            </p>
+            <input type="hidden" name="email_contact_enabled" value="0">
+            <div class="fc-row">
+                <label></label>
+                <label style="font-weight:normal">
+                    <input type="checkbox" name="email_contact_enabled" value="1" {{ $email_contact_enabled ? 'checked' : '' }}>
+                    enable contact form notifications
+                </label>
+            </div>
+            <div class="fc-row">
+                <label>subject</label>
+                <input class="fc-input" type="text" name="email_contact_subject" value="{{ $email_contact_subject }}"
+                    placeholder="New contact form submission">
+            </div>
+        </div>
+
         <div style="margin-top:6px; text-align: end;">
             <button class="fc-btn" type="submit">save</button>
         </div>
