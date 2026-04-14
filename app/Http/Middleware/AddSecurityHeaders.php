@@ -23,28 +23,24 @@ class AddSecurityHeaders
 
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // CSP — tightened to block inline scripts, allows specific external CDNs
-        // Admin inject HTML uses nonce-based allowances (see below)
-        // Quill editor and Google OAuth require specific allowances
-        $nonce = base64_encode(random_bytes(16));
-
+        // CSP — relaxed for legacy support
+        // Uses unsafe-inline for jQuery, Quill, and legacy scripts
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; ".
-            "script-src 'self' 'nonce-{$nonce}' 'strict-dynamic' ".
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".
                 'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                 'https://ajax.googleapis.com https://accounts.google.com; '.
-            "style-src 'self' 'nonce-{$nonce}' ".
-                'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; '.
+            "style-src 'self' 'unsafe-inline' ".
+                'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
+                'https://ajax.googleapis.com; '.
             "img-src 'self' data: blob: https:; ".
             "font-src 'self' https://cdnjs.cloudflare.com; ".
             "frame-src 'self' https://accounts.google.com; ".
-            "connect-src 'self' https://www.googleapis.com; ".
+            "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
             "object-src 'none'; ".
-            "base-uri 'self';"
+            "base-uri 'self';".
+            'upgrade-insecure-requests;'
         );
-
-        // Pass nonce to views for admin-injected content
-        view()->share('csp_nonce', $nonce);
 
         return $response;
     }
