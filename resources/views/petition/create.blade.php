@@ -154,8 +154,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Image</label>
-                            <input type="file" class="form-control" name="image">
+                            <label class="form-label">Image (Max 4MB, JPG/PNG)</label>
+                            <input type="file" class="form-control" name="image" accept="image/jpeg,image/png">
                             <div class="mt-2">
                                 <label class="form-label">Or supply an external link :</label>
                                 <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
