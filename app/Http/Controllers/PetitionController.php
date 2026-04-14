@@ -10,21 +10,20 @@ use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\AppLog;
+use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
-use App\Support\Spam;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 
 class PetitionController extends Controller
 {
-
     private function requireOwner(Petition $petition): void
     {
-        abort_unless(auth()->check() && (int)$petition->user_id === (int)auth()->id(), 403);
+        abort_unless(auth()->check() && (int) $petition->user_id === (int) auth()->id(), 403);
     }
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
@@ -42,8 +41,8 @@ class PetitionController extends Controller
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route($routeName, array_merge([
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ], $extra));
         }
 
@@ -67,8 +66,8 @@ class PetitionController extends Controller
                     'petitions.goal_signatures',
                     'petitions.category_id',
                     'petitions.cover_image',
-                    DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
-                    DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+                    DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
+                    DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
                 ])
                 ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                     $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -94,10 +93,10 @@ class PetitionController extends Controller
             'pageTitle' => 'All the petitions',
             'heading' => 'Petitions',
             'petitions' => $petitions,
-            'petitionTitle' => fn($row) => $row->tr_title,
-            'petitionUrl' => fn($row) => lroute('petition.show', [
+            'petitionTitle' => fn ($row) => $row->tr_title,
+            'petitionUrl' => fn ($row) => lroute('petition.show', [
                 'slug' => $row->tr_slug,
-                'id'   => $row->id,
+                'id' => $row->id,
             ]),
         ]);
     }
@@ -126,24 +125,24 @@ class PetitionController extends Controller
             ->where('locale', $locale)
             ->first()
             ?? PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', $defaultLocale)
-            ->first();
+                ->where('petition_id', $petition->id)
+                ->where('locale', $defaultLocale)
+                ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ]);
         }
 
         $hasSigned = auth()->check()
             ? Signature::where('petition_id', $petition->id)
-            ->where('email', auth()->user()->email)
-            ->exists()
+                ->where('email', auth()->user()->email)
+                ->exists()
             : false;
 
         $goalTotal = (int) ($petition->goal_signatures ?? 100);
@@ -157,7 +156,7 @@ class PetitionController extends Controller
 
         $directLink = lroute('petition.show', [
             'slug' => $tr->slug,
-            'id'   => $petition->id,
+            'id' => $petition->id,
         ]);
 
         $content = PageContent::where('page', 'petition_show')
@@ -221,6 +220,7 @@ class PetitionController extends Controller
             Spam::log('signature', json_encode($data));
 
             toast('Suspicious activity detected.', 'error');
+
             return back()->withInput();
         }
 
@@ -229,13 +229,14 @@ class PetitionController extends Controller
             Spam::banCurrentIp('Too many petition attempts');
 
             toast('Too many petition attempts.', 'error');
+
             return back()->withInput();
         }
 
         $email = strtolower(trim($data['email']));
 
         if (User::where('email', $email)->exists()) {
-            $loginUrl = url("/{$locale}/login?email=" . urlencode($email) . "&redirect=" . urlencode(url()->previous()));
+            $loginUrl = url("/{$locale}/login?email=".urlencode($email).'&redirect='.urlencode(url()->previous()));
 
             toast('This email is already registered. Please sign in first.', 'warning');
 
@@ -248,38 +249,40 @@ class PetitionController extends Controller
             $userLevel = UserLevel::where('name', 'user')->first();
 
             $user = User::create([
-                'name'       => trim($data['name'] . ' ' . $data['surname']),
+                'name' => trim($data['name'].' '.$data['surname']),
                 'first_name' => $data['name'],
-                'last_name'  => $data['surname'],
-                'email'      => $email,
-                'password'   => Hash::make($data['password']),
-                'locale'     => $locale,
-                'ip'         => request()->ip(),
-                'level_id'   => $userLevel?->id,
-                'verified'   => true,
-                'nickname'   => $data['nickname'] ?? null,
-                'city'       => $data['city'] ?? null,
+                'last_name' => $data['surname'],
+                'email' => $email,
+                'password' => Hash::make($data['password']),
+                'locale' => $locale,
+                'ip' => request()->ip(),
+                'level_id' => $userLevel?->id,
+                'verified' => true,
+                'nickname' => $data['nickname'] ?? null,
+                'city' => $data['city'] ?? null,
             ]);
 
             $sig = Signature::firstOrCreate(
                 ['petition_id' => $petition->id, 'email' => $email],
                 [
                     'user_id' => $user->id,
-                    'name'    => $data['nickname'] ?: $user->name,
-                    'locale'  => $locale,
+                    'name' => $data['nickname'] ?: $user->name,
+                    'locale' => $locale,
                     // 'city'    => $data['city'] ?? null,
-                    'text'    => $data['comment'] ?? 'I support this petition',
+                    'text' => $data['comment'] ?? 'I support this petition',
                     'ip_address' => request()->ip(),
                 ]
             );
 
             if ($sig->wasRecentlyCreated) {
-                $petition->increment('signature_count');
+                DB::transaction(function () use ($petition) {
+                    $petition->increment('signature_count');
+                });
             }
 
             AppLog::info(
                 'Petition signed',
-                'Petition ID: ' . $petition->id . ' | User: ' . $email . ' | IP: ' . request()->ip(),
+                'Petition ID: '.$petition->id.' | User: '.$email.' | IP: '.request()->ip(),
                 'petition.sign'
             );
 
@@ -287,8 +290,8 @@ class PetitionController extends Controller
 
             return redirect()->route('petition.thanks', [
                 'locale' => $locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
                 'status' => 0,
             ]);
         });
@@ -300,8 +303,8 @@ class PetitionController extends Controller
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->selectRaw("COALESCE(ct_locale.name, ct_default.name) as name")
-            ->selectRaw("COALESCE(ct_locale.slug, ct_default.slug) as slug")
+            ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
+            ->selectRaw('COALESCE(ct_locale.slug, ct_default.slug) as slug')
             ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
                 $join->on('ct_locale.category_id', '=', 'categories.id')
                     ->where('ct_locale.locale', '=', $locale);
@@ -326,7 +329,7 @@ class PetitionController extends Controller
                 'max:190',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
-                    $words = array_values(array_filter($words, fn($w) => $w !== ''));
+                    $words = array_values(array_filter($words, fn ($w) => $w !== ''));
                     if (count($words) < 3) {
                         $fail('Title must contain at least 3 words.');
                     }
@@ -337,7 +340,7 @@ class PetitionController extends Controller
                 'required',
                 'string',
                 function ($attr, $value, $fail) {
-                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string)$value)));
+                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
                     if (mb_strlen($text) < 30) {
                         $fail('Text must contain at least 30 characters of meaningful content.');
                     }
@@ -353,7 +356,7 @@ class PetitionController extends Controller
                 'max:255',
                 function ($attr, $value, $fail) {
                     $tags = collect(explode(',', (string) $value))
-                        ->map(fn($t) => trim($t))
+                        ->map(fn ($t) => trim($t))
                         ->filter()
                         ->values();
 
@@ -361,7 +364,7 @@ class PetitionController extends Controller
                         $fail('Tags: maximum 10 keywords.');
                     }
 
-                    if ($tags->contains(fn($t) => mb_strlen($t) > 30)) {
+                    if ($tags->contains(fn ($t) => mb_strlen($t) > 30)) {
                         $fail('Tags: each keyword must be 30 characters or less.');
                     }
                 },
@@ -377,7 +380,7 @@ class PetitionController extends Controller
                     $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
                     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
                     $ext = pathinfo($path, PATHINFO_EXTENSION);
-                    if (!$ext || !in_array($ext, $allowed, true)) {
+                    if (! $ext || ! in_array($ext, $allowed, true)) {
                         $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
                     }
                 },
@@ -408,12 +411,12 @@ class PetitionController extends Controller
         return DB::transaction(function () use ($request, $data, $locale) {
 
             $tags = collect(explode(',', $data['tags'] ?? ''))
-                ->map(fn($t) => trim($t))
+                ->map(fn ($t) => trim($t))
                 ->filter()
                 ->take(10)
                 ->implode(',');
 
-            $petition = new Petition();
+            $petition = new Petition;
             $petition->user_id = auth()->id();
             $petition->status = 'draft';
             $petition->goal_signatures = $data['goal_signatures'];
@@ -428,7 +431,7 @@ class PetitionController extends Controller
 
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('petitions', 'public');
-                $abs  = Storage::disk('public')->path($path);
+                $abs = Storage::disk('public')->path($path);
 
                 Image::read($abs)
                     ->cover(1200, 630)
@@ -475,9 +478,9 @@ class PetitionController extends Controller
 
             return redirect()->route('petition.thanks', [
                 'locale' => $locale,
-                'slug'   => $slug,
-                'id'     => $petition->id,
-                'status'   => 'created',
+                'slug' => $slug,
+                'id' => $petition->id,
+                'status' => 'created',
             ]);
         });
     }
@@ -510,7 +513,9 @@ class PetitionController extends Controller
             }
 
             if ($sig->wasRecentlyCreated) {
-                $petition->increment('signature_count');
+                DB::transaction(function () use ($petition) {
+                    $petition->increment('signature_count');
+                });
             }
 
             session()->forget('sign');
@@ -525,7 +530,7 @@ class PetitionController extends Controller
 
             AppLog::info(
                 'Petition signed',
-                'Petition ID: ' . $petition->id . ' | User: ' . $u->email . ' | IP: ' . request()->ip(),
+                'Petition ID: '.$petition->id.' | User: '.$u->email.' | IP: '.request()->ip(),
                 'petition.sign'
             );
 
@@ -551,16 +556,16 @@ class PetitionController extends Controller
             ->where('locale', $locale)
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $defaultLocale)
-            ->first();
+                ->where('locale', $defaultLocale)
+                ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
                 'status' => $status,
             ]);
         }
@@ -571,8 +576,8 @@ class PetitionController extends Controller
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
-                DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
-                DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
+                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
             ])
             ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                 $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -619,16 +624,16 @@ class PetitionController extends Controller
             ->where('locale', $locale)
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
-            ->orderBy('id')
-            ->first();
+                ->orderBy('id')
+                ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.sign.page', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ]);
         }
 
@@ -639,16 +644,16 @@ class PetitionController extends Controller
         if ($alreadySigned) {
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ]);
         }
 
         session([
             'sign.comment' => $request->input('comment'),
-            'sign.agree1'  => $request->input('agree1', 'agree'),
-            'sign.agree2'  => $request->input('agree2', 'agree'),
-            'sign.agree3'  => $request->input('agree3', 'agree'),
+            'sign.agree1' => $request->input('agree1', 'agree'),
+            'sign.agree2' => $request->input('agree2', 'agree'),
+            'sign.agree3' => $request->input('agree3', 'agree'),
         ]);
 
         $content = PageContent::where('page', 'petition_sign')
@@ -676,8 +681,8 @@ class PetitionController extends Controller
                         ->where('pt_default.locale', '=', $defaultLocale);
                 })
                 ->addSelect([
-                    DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
-                    DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+                    DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
+                    DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
                 ])
                 ->where(function ($q) {
                     $q->whereNotNull('pt_locale.title')
@@ -721,15 +726,17 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) return $trOrRedirect;
+        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+            return $trOrRedirect;
+        }
         $tr = $trOrRedirect;
 
         $defaultLocale = default_locale();
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->selectRaw("COALESCE(ct_locale.name, ct_default.name) as name")
-            ->selectRaw("COALESCE(ct_locale.slug, ct_default.slug) as slug")
+            ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
+            ->selectRaw('COALESCE(ct_locale.slug, ct_default.slug) as slug')
             ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
                 $join->on('ct_locale.category_id', '=', 'categories.id')
                     ->where('ct_locale.locale', '=', $locale);
@@ -753,7 +760,9 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) return $trOrRedirect;
+        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+            return $trOrRedirect;
+        }
         $tr = $trOrRedirect;
 
         $data = $request->validate([
@@ -763,8 +772,10 @@ class PetitionController extends Controller
                 'max:190',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
-                    $words = array_values(array_filter($words, fn($w) => $w !== ''));
-                    if (count($words) < 3) $fail('Title must contain at least 3 words.');
+                    $words = array_values(array_filter($words, fn ($w) => $w !== ''));
+                    if (count($words) < 3) {
+                        $fail('Title must contain at least 3 words.');
+                    }
                 },
             ],
 
@@ -772,8 +783,10 @@ class PetitionController extends Controller
                 'required',
                 'string',
                 function ($attr, $value, $fail) {
-                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string)$value)));
-                    if (mb_strlen($text) < 30) $fail('Text must contain at least 30 characters of meaningful content.');
+                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
+                    if (mb_strlen($text) < 30) {
+                        $fail('Text must contain at least 30 characters of meaningful content.');
+                    }
                 },
             ],
 
@@ -786,12 +799,16 @@ class PetitionController extends Controller
                 'max:255',
                 function ($attr, $value, $fail) {
                     $tags = collect(explode(',', (string) $value))
-                        ->map(fn($t) => trim($t))
+                        ->map(fn ($t) => trim($t))
                         ->filter()
                         ->values();
 
-                    if ($tags->count() > 10) $fail('Tags: maximum 10 keywords.');
-                    if ($tags->contains(fn($t) => mb_strlen($t) > 30)) $fail('Tags: each keyword must be 30 characters or less.');
+                    if ($tags->count() > 10) {
+                        $fail('Tags: maximum 10 keywords.');
+                    }
+                    if ($tags->contains(fn ($t) => mb_strlen($t) > 30)) {
+                        $fail('Tags: each keyword must be 30 characters or less.');
+                    }
                 },
             ],
 
@@ -805,7 +822,7 @@ class PetitionController extends Controller
                     $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
                     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
                     $ext = pathinfo($path, PATHINFO_EXTENSION);
-                    if (!$ext || !in_array($ext, $allowed, true)) {
+                    if (! $ext || ! in_array($ext, $allowed, true)) {
                         $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
                     }
                 },
@@ -830,10 +847,10 @@ class PetitionController extends Controller
                 ->withInput();
         }
 
-        return DB::transaction(function () use ($request, $data, $locale, $petition, $tr) {
+        return DB::transaction(function () use ($request, $data, $petition, $tr) {
 
             $tags = collect(explode(',', $data['tags'] ?? ''))
-                ->map(fn($t) => trim($t))
+                ->map(fn ($t) => trim($t))
                 ->filter()
                 ->take(10)
                 ->implode(',');
@@ -852,7 +869,7 @@ class PetitionController extends Controller
 
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('petitions', 'public');
-                $abs  = Storage::disk('public')->path($path);
+                $abs = Storage::disk('public')->path($path);
 
                 Image::read($abs)
                     ->cover(1200, 630)
@@ -874,8 +891,8 @@ class PetitionController extends Controller
 
             return redirect()->route('petition.show', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ]);
         });
     }
@@ -886,7 +903,9 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) return $trOrRedirect;
+        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+            return $trOrRedirect;
+        }
         $tr = $trOrRedirect;
 
         $signatures = Signature::query()
@@ -898,21 +917,21 @@ class PetitionController extends Controller
         $lines = [];
 
         $lines[] = strtoupper($tr->title ?? 'Petition');
-        $lines[] = 'URL: ' . url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
+        $lines[] = 'URL: '.url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
         $lines[] = '';
         $lines[] = '--- DESCRIPTION ---';
         $lines[] = trim(strip_tags($tr->description ?? ''));
         $lines[] = '';
-        $lines[] = 'Total signatures: ' . (int) ($petition->signature_count ?? 0);
+        $lines[] = 'Total signatures: '.(int) ($petition->signature_count ?? 0);
         $lines[] = '';
 
-        $lines[] = '--- SIGNATURES (latest ' . $signatures->count() . ') ---';
+        $lines[] = '--- SIGNATURES (latest '.$signatures->count().') ---';
 
         if ($signatures->isEmpty()) {
             $lines[] = 'No signatures yet.';
         } else {
             foreach ($signatures as $i => $sig) {
-                $num  = $i + 1;
+                $num = $i + 1;
                 $name = $sig->name ?: 'Anonymous';
                 $date = optional($sig->created_at)->format('Y-m-d');
                 $comment = trim($sig->text ?? 'I support this petition');
@@ -923,11 +942,11 @@ class PetitionController extends Controller
         }
 
         $txt = implode("\n", $lines);
-        $filename = 'petition-' . $petition->id . '.txt';
+        $filename = 'petition-'.$petition->id.'.txt';
 
         return response($txt)
             ->header('Content-Type', 'text/plain; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 
     public function downloadPdf(Request $request, string $locale, string $slug, int $id)
@@ -936,7 +955,9 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) return $trOrRedirect;
+        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+            return $trOrRedirect;
+        }
         $tr = $trOrRedirect;
 
         $signatures = Signature::query()
@@ -963,7 +984,7 @@ class PetitionController extends Controller
         $i = 1;
 
         while (PetitionTranslation::where('locale', $locale)->where('slug', $slug)->exists()) {
-            $slug = $base . '-' . $i++;
+            $slug = $base.'-'.$i++;
         }
 
         return $slug;
@@ -971,7 +992,7 @@ class PetitionController extends Controller
 
     public function signatures(Request $request, string $locale, string $slug, int $id)
     {
-        $locale        = normalize_locale($locale);
+        $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
         $petition = Petition::with('category', 'user')
@@ -984,16 +1005,16 @@ class PetitionController extends Controller
             ->where('locale', $locale)
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $defaultLocale)
-            ->first();
+                ->where('locale', $defaultLocale)
+                ->first();
 
         abort_if(! $tr, 404);
 
         if ($tr->slug !== $slug || $tr->locale !== $locale) {
             return redirect()->route('petition.signatures', [
                 'locale' => $tr->locale,
-                'slug'   => $tr->slug,
-                'id'     => $petition->id,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
             ]);
         }
 
@@ -1004,9 +1025,9 @@ class PetitionController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        $goalTotal   = (int) ($petition->goal_signatures ?? 100);
+        $goalTotal = (int) ($petition->goal_signatures ?? 100);
         $goalCurrent = (int) ($petition->signature_count ?? 0);
-        $pct         = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+        $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
 
         return view('petition.signatures', compact(
             'petition',

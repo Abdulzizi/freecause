@@ -12,7 +12,9 @@ class WpSso
     {
         $secret = config('app.sso_secret');
 
-        if (!$secret) {
+        if (! $secret) {
+            \Illuminate\Support\Facades\Log::warning('SSO: sso_secret not configured, skipping WordPress login');
+
             return $redirect;
         }
 
@@ -24,7 +26,7 @@ class WpSso
 
         $sig = hash_hmac('sha256', $payload, $secret);
 
-        return '/magazine/sso.php?' . http_build_query([
+        return '/magazine/sso.php?'.http_build_query([
             'p' => $payload,
             's' => $sig,
             'r' => $redirect,
@@ -36,9 +38,9 @@ class WpSso
      */
     public static function logoutUrl(string $redirect): string
     {
-        return '/magazine/sso.php?' . http_build_query([
+        return '/magazine/sso.php?'.http_build_query([
             'action' => 'logout',
-            'r'      => $redirect,
+            'r' => $redirect,
         ]);
     }
 }
