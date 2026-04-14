@@ -55,12 +55,35 @@
     .table-list {
         width: 100%;
         border-collapse: collapse;
+        overflow-x: auto;
+        display: block;
     }
     .table-list th, .table-list td {
         padding: 10px 12px;
         text-align: left;
         border-bottom: 1px solid #eee;
+        white-space: nowrap;
     }
+    
+    @media (max-width: 576px) {
+        .dash-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .stat-card {
+            padding: 15px;
+        }
+        .stat-card .value {
+            font-size: 22px;
+        }
+        .quick-actions {
+            flex-direction: column;
+        }
+        .quick-btn {
+            text-align: center;
+        }
+    }
+    
     .table-list th {
         background: #f9f9f9;
         font-weight: 600;
