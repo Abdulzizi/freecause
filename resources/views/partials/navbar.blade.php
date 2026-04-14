@@ -10,6 +10,9 @@
 
         {{-- Mobile: language + hamburger in top-right --}}
         <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
+            <a class="nav-link theme-toggle" onclick="toggleTheme()">
+                <i class="fa fa-moon-o"></i>
+            </a>
             @include('partials.language_switch')
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#fcNav"
                 aria-controls="fcNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +22,11 @@
 
         <div class="collapse navbar-collapse" id="fcNav">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link theme-toggle" onclick="toggleTheme()">
+                        <i class="fa fa-moon-o"></i>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('petitions.index') }}">
                         {{ $c['nav_explore'] ?? 'Explore petitions' }}
