@@ -193,12 +193,13 @@ class AdminUsersController extends Controller
         }
 
         $adminLevelId = UserLevel::where('name', 'admin')->value('id');
+        $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
 
         $deleted = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
-            ->where(function ($q) use ($adminLevelId) {
+            ->where(function ($q) use ($adminLevelId, $bannedLevelId) {
                 $q->whereNull('level_id')
-                    ->orWhere('level_id', '!=', $adminLevelId);
+                    ->orWhereNotIn('level_id', [$adminLevelId, $bannedLevelId]);
             })
             ->delete();
 

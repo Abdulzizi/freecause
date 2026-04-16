@@ -27,6 +27,10 @@
         </form>
     </div>
 
+    <button class="fc-menu-toggle" onclick="document.querySelector('.fc-menu').classList.toggle('show')">
+        <i class="fa fa-bars"></i> Menu
+    </button>
+
     <div class="fc-frame">
         @include('admin.partials.sidebar')
 
@@ -81,10 +85,13 @@
 
             setTimeout(() => toast.classList.add('show'), 50);
 
+            const isError = toast.classList.contains('error');
+            const timeout = isError ? 5000 : 2000;
+
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, 2000);
+            }, timeout);
         });
     </script>
 

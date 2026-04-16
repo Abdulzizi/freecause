@@ -1,7 +1,7 @@
 @extends('layouts.legacy')
 
 @php
-    $petitionTitle = $tr->title ?? 'Petition';
+    $petitionTitle = e($tr->title ?? 'Petition');
     $shortDesc = \Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200);
     $petitionUrl = lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]);
     $signUrl = lroute('petition.sign.page', ['slug' => $tr->slug, 'id' => $petition->id]);

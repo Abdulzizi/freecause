@@ -23,14 +23,14 @@ class AddSecurityHeaders
 
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // CSP — relaxed for legacy support
-        // Uses unsafe-inline for jQuery, Quill, and legacy scripts
+        // CSP — restrictive policy for production security
+        // Note: If scripts fail after removing unsafe-inline/eval, consider implementing nonce-based script loading
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; ".
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".
+            "script-src 'self' ".
                 'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                 'https://ajax.googleapis.com https://accounts.google.com; '.
-            "style-src 'self' 'unsafe-inline' ".
+            "style-src 'self' ".
                 'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                 'https://ajax.googleapis.com; '.
             "img-src 'self' data: blob: https:; ".

@@ -181,6 +181,13 @@ class AdminPetitionsController extends Controller
             return back()->withErrors(['slug' => 'Slug already used']);
         }
 
+        $slug = $data['slug'] ?? '';
+        $title = $data['title'] ?? '';
+
+        if (empty($title) && empty($slug)) {
+            return back()->withErrors(['title' => 'Title or slug is required.']);
+        }
+
         DB::table('petition_translations')
             ->updateOrInsert(
                 [
@@ -188,8 +195,8 @@ class AdminPetitionsController extends Controller
                     'locale' => $data['locale'],
                 ],
                 [
-                    'title' => $data['title'] ?? '',
-                    'slug' => $data['slug'] ?? '',
+                    'title' => $title,
+                    'slug' => $slug,
                     'description' => sanitizePetitionHtml($data['text'] ?? ''),
                 ]
             );

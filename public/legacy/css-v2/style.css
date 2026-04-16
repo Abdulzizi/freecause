@@ -11,6 +11,53 @@
     --text-muted: #6c757d;
 }
 
+/* Mobile typography */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    h1, .h1 { font-size: 1.5rem !important; }
+    h2, .h2 { font-size: 1.3rem !important; }
+    h3, .h3 { font-size: 1.1rem !important; }
+    h4, .h4 { font-size: 1rem !important; }
+    h5, .h5 { font-size: 0.9rem !important; }
+    
+    .banner-heading {
+        font-size: 1.5rem !important;
+    }
+    
+    .banner-subtitle {
+        font-size: 0.95rem !important;
+    }
+    
+    .fc-box-title {
+        font-size: 1rem !important;
+    }
+    
+    p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    .btn {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+    
+    .card-body {
+        padding: 12px !important;
+    }
+    
+    .navbar {
+        padding: 8px 0;
+    }
+    
+    .navbar-brand img {
+        max-height: 30px;
+    }
+}
+
 body {
     font-family: "Inter", serif !important;
     color: var(--text-dark);
@@ -20,11 +67,10 @@ body {
     font-style: normal;
 
     margin: auto;
-    font-size: 16px;
+    font-size: 15px;
     background-color: #fff;
 
     color: #191a1a;
-    /* Dark text color */
 }
 
 body p {

@@ -338,6 +338,12 @@ class AuthController extends Controller
             return redirect()->to("/{$locale}");
         }
 
+        if ($user->verified) {
+            toast('Account is already verified.', 'info');
+
+            return redirect()->to("/{$locale}");
+        }
+
         if ($user->verification_token_sent_at && $user->verification_token_sent_at->lt(now()->subHours(48))) {
             toast('Verification link expired. Please request a new one.', 'error');
 
@@ -404,15 +410,19 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = Hash::make($password);
-                $user->save();
+        try {
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->password = Hash::make($password);
+                    $user->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+                    event(new PasswordReset($user));
+                }
+            );
+        } catch (\Throwable $e) {
+            $status = Password::INVALID_TOKEN;
+        }
 
         return $status === Password::PASSWORD_RESET
             ? redirect("/{$locale}/login")->with('success', __($status))

@@ -16,19 +16,45 @@ class HomeController extends Controller
         $locale = app()->getLocale();
         $defaultLocale = default_locale();
 
-        $content = cache()->remember("home:content:{$locale}", 1800, function () use ($locale, $defaultLocale) {
-            $c = PageContent::where('page', 'home')
-                ->where('locale', $locale)
-                ->pluck('value', 'key');
+        $cacheKey = "home:content:{$locale}";
+        $content = cache()->get($cacheKey);
 
-            if ($c->isEmpty()) {
-                $c = PageContent::where('page', 'home')
-                    ->where('locale', $defaultLocale)
-                    ->pluck('value', 'key');
+        if ($content === null) {
+            $lockKey = "lock:{$cacheKey}";
+            $lock = cache()->lock($lockKey, 10);
+
+            try {
+                $lock->block(2);
+                $content = cache()->remember($cacheKey, 1800, function () use ($locale, $defaultLocale) {
+                    $c = PageContent::where('page', 'home')
+                        ->where('locale', $locale)
+                        ->pluck('value', 'key');
+
+                    if ($c->isEmpty()) {
+                        $c = PageContent::where('page', 'home')
+                            ->where('locale', $defaultLocale)
+                            ->pluck('value', 'key');
+                    }
+
+                    return $c;
+                });
+                $lock->release();
+            } catch (\Exception $e) {
+                $content = cache()->remember($cacheKey, 1800, function () use ($locale, $defaultLocale) {
+                    $c = PageContent::where('page', 'home')
+                        ->where('locale', $locale)
+                        ->pluck('value', 'key');
+
+                    if ($c->isEmpty()) {
+                        $c = PageContent::where('page', 'home')
+                            ->where('locale', $defaultLocale)
+                            ->pluck('value', 'key');
+                    }
+
+                    return $c;
+                });
             }
-
-            return $c;
-        });
+        }
 
         $excludedIds = [];
         if (! empty($content['exclude_most_read'])) {
