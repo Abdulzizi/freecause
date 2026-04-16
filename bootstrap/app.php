@@ -20,10 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
-        health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        $trustedProxies = config('app.trusted_proxies');
+        if ($trustedProxies) {
+            $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
+        } else {
+            $middleware->trustProxies(at: []);
+        }
 
         $middleware->alias([
             'setLocale' => SetLocale::class,

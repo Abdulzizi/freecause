@@ -126,7 +126,7 @@ class AdminPetitionsController extends Controller
             'title' => ['nullable', 'string'],
             'slug' => ['nullable', 'string'],
             'text' => ['nullable', 'string'],
-            'goal_signatures' => ['nullable', 'integer'],
+            'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
             'is_active' => ['nullable'],
             'status' => ['required', 'string'],
             'is_featured' => ['nullable'],

@@ -125,4 +125,17 @@ return [
 
     'sso_secret' => env('SSO_SECRET'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | This configuration determines the proxy IPs that should be trusted.
+    | In production, set this to your load balancer or reverse proxy IPs.
+    | Set to null to trust all proxies (not recommended for production).
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
 ];
