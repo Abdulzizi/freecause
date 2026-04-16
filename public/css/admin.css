@@ -22,39 +22,98 @@ body {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-    .fc-frame {
-        flex-direction: column;
-        padding: 8px;
-    }
-    
-    .fc-menu {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    
-    .fc-panel {
-        width: 100%;
-    }
-    
-    .fc-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .fc-row label {
-        font-size: 12px;
+    body {
+        font-size: 13px;
     }
     
     .fc-topbar {
-        text-align: center;
-        padding: 8px;
+        padding: 8px 10px;
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .fc-topbar a, .fc-topbar button {
+        font-size: 12px;
+        padding: 4px 8px;
     }
     
     .fc-topbar .sep {
         display: none;
     }
     
-    /* Table scroll wrapper */
+    /* Mobile menu toggle */
+    .fc-menu-toggle {
+        display: block !important;
+        width: 100%;
+        padding: 10px;
+        background: #e6e6e6;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    
+    .fc-menu {
+        width: 100%;
+        display: none;
+    }
+    
+    .fc-menu.show {
+        display: block;
+    }
+    
+    .fc-menu a {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+    
+    .fc-panel {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .fc-panel h1 {
+        font-size: 16px;
+    }
+    
+    .fc-panel h2 {
+        font-size: 15px;
+    }
+    
+    .fc-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    
+    .fc-row label {
+        font-size: 12px;
+    }
+    
+    .fc-input, .fc-select, .fc-textarea {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+    
+    .fc-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .fc-tab {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    .fc-box {
+        padding: 8px;
+    }
+    
+    /* Table scroll */
     .fc-box table,
     .table-responsive {
         display: block;
@@ -64,8 +123,15 @@ body {
     
     .fc-box table th,
     .fc-box table td {
+        font-size: 12px;
+        padding: 6px 8px;
         white-space: nowrap;
     }
+}
+
+/* Default: hide toggle on desktop */
+.fc-menu-toggle {
+    display: none;
 }
 
 /* top right utility bar */

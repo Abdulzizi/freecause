@@ -207,6 +207,10 @@ Route::group([
             Mail::to($adminEmail)->send(new ContactMail($data['name'], $data['email'], $data['text']));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
+
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'Failed to send message. Please try again later.']);
         }
 
         return back()->with('success', 'Your message has been sent. We will get back to you soon.');

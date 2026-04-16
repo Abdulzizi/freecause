@@ -54,7 +54,7 @@ class PetitionController extends Controller
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $page = min((int) request('page', 1), 500);
+        $page = max(1, min((int) request('page', 1), 500));
         $cacheKey = "petitions:index:{$locale}:page:{$page}";
 
         $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($locale, $defaultLocale) {
@@ -184,7 +184,11 @@ class PetitionController extends Controller
 
     public function sign(Request $request, string $locale, string $slug, int $id)
     {
-        $petition = Petition::query()->findOrFail($id);
+        $petition = Petition::query()
+            ->where('id', $id)
+            ->where('status', 'published')
+            ->where('is_active', 1)
+            ->firstOrFail();
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
@@ -281,9 +285,7 @@ class PetitionController extends Controller
             );
 
             if ($sig->wasRecentlyCreated) {
-                DB::transaction(function () use ($petition) {
-                    $petition->increment('signature_count');
-                });
+                DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
             }
 
             AppLog::info(
@@ -392,7 +394,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//i'],
+            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/i'],
 
             'target' => ['nullable', 'string', 'max:190'],
             'community' => ['nullable', 'string', 'max:190'],
@@ -477,7 +479,7 @@ class PetitionController extends Controller
                     'locale' => $locale,
                 ]);
 
-                $petition->increment('signature_count');
+                DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
             }
 
             toast('Petition created successfully.', 'success');
@@ -519,9 +521,7 @@ class PetitionController extends Controller
             }
 
             if ($sig->wasRecentlyCreated) {
-                DB::transaction(function () use ($petition) {
-                    $petition->increment('signature_count');
-                });
+                DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
             }
 
             session()->forget('sign');
@@ -834,7 +834,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\//i'],
+            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/i'],
 
             'target' => ['nullable', 'string', 'max:190'],
             'community' => ['nullable', 'string', 'max:190'],

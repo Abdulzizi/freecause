@@ -5,7 +5,7 @@
 
     $content = $content ?? collect();
 
-    $petitionTitle = $tr->title ?? ($petition->title ?? 'Petition');
+    $petitionTitle = e($tr->title ?? ($petition->title ?? 'Petition'));
     $pageTitleTmpl = $content['title'] ?? ':title - FreeCause';
     $pageTitle = str_replace(':title', $petitionTitle, $pageTitleTmpl);
 
