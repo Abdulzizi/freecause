@@ -22,10 +22,12 @@ use App\Http\Controllers\Admin\TranslationsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Middleware\BlockBannedIp;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
@@ -41,6 +43,8 @@ Route::get('/', function () {
 
     return redirect("/{$default}");
 });
+
+Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 
 Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');

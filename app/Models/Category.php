@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    protected $with = ['translations'];
     protected $fillable = ['is_active', 'sort_order'];
 
     public function translations()
@@ -16,9 +15,17 @@ class Category extends Model
 
     public function translation(string $locale)
     {
-        return $this->translations->firstWhere('locale', $locale)
-            ?? $this->translations->firstWhere('locale', 'en')
-            ?? $this->translations->first();
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale)
+                ?? $this->translations->firstWhere('locale', default_locale())
+                ?? $this->translations->first();
+        }
+
+        return $this->translations()
+            ->where('locale', $locale)
+            ->first()
+            ?? $this->translations()->where('locale', default_locale())->first()
+            ?? $this->translations()->first();
     }
 
     public function petitions()

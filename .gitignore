@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+*.sql.gz
+*.zip
 
 # Magazine (WordPress) - uploads, cache, local config, large binary files
 /magazine.zip
@@ -11,6 +13,8 @@
 /public/magazine/wp-content/cache/
 /public/magazine/wp-content/upgrade/
 /public/magazine/wp-content/upgrade-temp-backup/
+/public/magazine/wp-content/updraft/
+/public/magazine/wp-content/updraft_backup/
 .env
 .env.backup
 .env.production
@@ -34,3 +38,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 bootstrap/cache/*.php
+/opencode.json
