@@ -2051,3 +2051,109 @@ span.featured-badges {
     .footer-inner { text-align: center; }
     .footer-links { flex-direction: column; align-items: center; }
 }
+
+/* ── Petition create: steps ─────────────────────────────────────── */
+.fc-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+}
+
+.fc-step {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 240px;
+}
+
+.fc-step-text {
+    font-size: 20px;
+    font-weight: 500;
+    color: #111;
+    white-space: nowrap;
+}
+
+.fc-step-icon {
+    width: 64px;
+    height: 64px;
+    display: inline-block;
+    background-image: url('/legacy/images/startpetition-icons.png');
+    background-repeat: no-repeat;
+    background-size: 200% 300%;
+}
+
+.fc-step-1 { background-position: 0% 0%; }
+.fc-step-2 { background-position: 0% 50%; }
+.fc-step-3 { background-position: 0% 100%; }
+
+.fc-step-icon.is-active.fc-step-1 { background-position: 100% 0%; }
+.fc-step-icon.is-active.fc-step-2 { background-position: 100% 50%; }
+.fc-step-icon.is-active.fc-step-3 { background-position: 100% 100%; }
+
+/* ── Petition create: quill editor ──────────────────────────────── */
+.fc-markup {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.fc-markup-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    background: #f3f3f3;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.fc-mbtn {
+    width: 28px;
+    height: 26px;
+    border: 1px solid #cfcfcf;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fc-mbtn:hover { background: #f8f8f8; }
+
+.fc-markup-spacer { flex: 1; }
+
+.fc-markup textarea {
+    border: 0;
+    border-radius: 0;
+}
+
+.fc-markup-hint {
+    padding: 8px 2px 0;
+    font-size: 13px;
+    color: #555;
+}
+
+.fc-markup-divider {
+    width: 1px;
+    height: 20px;
+    background: #cfcfcf;
+    margin: 0 6px;
+}
+
+.fc-editor {
+    min-height: 260px;
+    padding: 12px;
+    background: #fff;
+    font-size: 14px;
+    line-height: 1.45;
+    outline: none;
+}
+
+.fc-quill .ql-container { font-size: 14px; line-height: 1.45; }
+.fc-quill .ql-editor { min-height: 260px; }
+.fc-quill .ql-editor ul { list-style: disc !important; padding-left: 22px !important; }
+.fc-quill .ql-editor ol { list-style: decimal !important; padding-left: 22px !important; }
+.fc-quill .ql-editor li { display: list-item !important; }

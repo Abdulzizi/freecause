@@ -44,20 +44,20 @@
                                         <input type="hidden" name="__contacts" value="1" />
 
                                         <div class="mb-3">
-                                            <p class="mb-1 fs-14">Name (mandatory)</p>
-                                            <input type="text" name="name" class="form-control" placeholder="Name"
+                                            <label for="contact_name" class="form-label">Name (mandatory)</label>
+                                            <input id="contact_name" type="text" name="name" class="form-control" placeholder="Name"
                                                 value="" />
                                         </div>
 
                                         <div class="mb-3">
-                                            <p class="mb-1 fs-14">Email (mandatory)</p>
-                                            <input type="email" name="email" class="form-control" placeholder="Email"
+                                            <label for="contact_email" class="form-label">Email (mandatory)</label>
+                                            <input id="contact_email" type="email" name="email" class="form-control" placeholder="Email"
                                                 value="" />
                                         </div>
 
                                         <div class="mb-3">
-                                            <p class="mb-1 fs-14">Text (mandatory)</p>
-                                            <textarea name="text" class="form-control" rows="5"
+                                            <label for="contact_text" class="form-label">Text (mandatory)</label>
+                                            <textarea id="contact_text" name="text" class="form-control" rows="5"
                                                 placeholder="Text"></textarea>
                                         </div>
 
