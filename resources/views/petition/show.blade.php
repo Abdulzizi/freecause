@@ -240,7 +240,7 @@
                                             {{ $petition->user->name }}
                                         </a>
                                     @else
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted">Unknown</span>
                                     @endif
                                 </div>
 

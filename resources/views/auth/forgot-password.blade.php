@@ -5,18 +5,36 @@
 @section('content')
     <section class="py-5">
         <div class="container">
-            <h3>Forgot Password</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="fc-auth-card shadow-sm">
+                        <h4 class="mb-4 text-center">Forgot Password</h4>
 
-            <form method="POST" action="{{ lroute('password.email') }}">
-                @csrf
+                        @if (session('status'))
+                            <div class="alert alert-success">{{ session('status') }}</div>
+                        @endif
 
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email" name="email" class="form-control" required>
+                        <form method="POST" action="{{ lroute('password.email') }}">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                    value="{{ old('email') }}" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button class="btn btn-danger w-100">Send Reset Link</button>
+
+                            <div class="text-center mt-3">
+                                <a href="{{ lroute('login') }}" class="text-muted" style="font-size:14px;">Back to Login</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <button class="btn btn-danger">Send Reset Link</button>
-            </form>
+            </div>
         </div>
     </section>
 @endsection

@@ -66,12 +66,12 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('form.optional') }} Nickname</label>
+                                        <label class="form-label mb-1">Nickname <span class="text-muted">(optional)</span></label>
                                         <input type="text" name="nickname" value="{{ old('nickname') }}" class="form-control">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('form.optional') }} City</label>
+                                        <label class="form-label mb-1">City <span class="text-muted">(optional)</span></label>
                                         <input type="text" name="city" value="{{ old('city') }}" class="form-control">
                                     </div>
                                 </div>

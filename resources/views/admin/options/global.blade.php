@@ -35,17 +35,6 @@
                 <input class="fc-input" type="text" name="site_favicon" value="{{ $site_favicon }}" placeholder="https://...">
             </div>
 
-            <div class="fc-row">
-                <label>primary color</label>
-                <input class="fc-input" type="color" name="primary_color" value="{{ $primary_color }}" style="width:80px; height:40px; padding:2px;">
-                <span style="font-size:11px; color:#666; margin-left:10px;">{{ $primary_color }}</span>
-            </div>
-
-            <div class="fc-row">
-                <label>secondary color</label>
-                <input class="fc-input" type="color" name="secondary_color" value="{{ $secondary_color }}" style="width:80px; height:40px; padding:2px;">
-                <span style="font-size:11px; color:#666; margin-left:10px;">{{ $secondary_color }}</span>
-            </div>
         </div>
 
         <div class="fc-tab">general</div>
@@ -60,7 +49,7 @@
                 <div class="fc-row">
                     <label></label>
                     <span style="font-size:11px; color:#b7791f;">
-                        active -- all urls forced to <strong>{{ $base_url }}</strong>. clear to disable.
+                        Active: all urls forced to <strong>{{ $base_url }}</strong>. Clear to disable.
                     </span>
                 </div>
             @endif
@@ -74,7 +63,7 @@
                 <div class="fc-row">
                     <label></label>
                     <span style="font-size:11px; color:#666;">
-                        used for share links — e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
+                        Used for share links, e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
                     </span>
                 </div>
             @endif
@@ -96,7 +85,7 @@
         <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
-                These fields are rendered verbatim on every page — for analytics scripts, tracking pixels, etc.
+                These fields are rendered verbatim on every page, for analytics scripts, tracking pixels, etc.
                 Only super-admin accounts can save changes here.
             </p>
             <div class="fc-row">
@@ -240,7 +229,7 @@
         <div class="fc-tab">announcement banner</div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
-                Show a red banner at the top of every page for all visitors. Plain text only — no HTML.
+                Show a red banner at the top of every page for all visitors. Plain text only, no HTML.
             </p>
             <input type="hidden" name="announcement_active" value="0">
             <div class="fc-row">
@@ -307,6 +296,7 @@
     </form>
 @endsection
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var input = document.getElementById('smtp_pass_input');
@@ -325,3 +315,4 @@
         });
     });
 </script>
+@endpush

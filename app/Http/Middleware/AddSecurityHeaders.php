@@ -23,24 +23,42 @@ class AddSecurityHeaders
 
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // CSP — restrictive policy for production security
-        // Note: If scripts fail after removing unsafe-inline/eval, consider implementing nonce-based script loading
-        $response->headers->set('Content-Security-Policy',
-            "default-src 'self'; ".
-            "script-src 'self' ".
-                'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                'https://ajax.googleapis.com https://accounts.google.com; '.
-            "style-src 'self' ".
-                'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                'https://ajax.googleapis.com; '.
-            "img-src 'self' data: blob: https:; ".
-            "font-src 'self' https://cdnjs.cloudflare.com; ".
-            "frame-src 'self' https://accounts.google.com; ".
-            "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
-            "object-src 'none'; ".
-            "base-uri 'self';".
-            'upgrade-insecure-requests;'
-        );
+        // Admin routes get a permissive CSP (inline scripts/styles needed for the panel).
+        // Public routes get a strict CSP — no unsafe-inline on scripts.
+        if ($request->is('admin') || $request->is('admin/*')) {
+            $csp =
+                "default-src 'self'; ".
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".
+                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
+                    'https://ajax.googleapis.com https://accounts.google.com '.
+                    'https://cdn.ckeditor.com; '.
+                "style-src 'self' 'unsafe-inline' ".
+                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
+                    'https://ajax.googleapis.com; '.
+                "img-src 'self' data: blob: https:; ".
+                "font-src 'self' https://cdnjs.cloudflare.com; ".
+                "frame-src 'self' https://accounts.google.com; ".
+                "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
+                "object-src 'none'; ".
+                "base-uri 'self';";
+        } else {
+            $csp =
+                "default-src 'self'; ".
+                "script-src 'self' ".
+                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
+                    'https://ajax.googleapis.com https://accounts.google.com; '.
+                "style-src 'self' 'unsafe-inline' ".
+                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
+                    'https://ajax.googleapis.com; '.
+                "img-src 'self' data: blob: https:; ".
+                "font-src 'self' https://cdnjs.cloudflare.com; ".
+                "frame-src 'self' https://accounts.google.com; ".
+                "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
+                "object-src 'none'; ".
+                "base-uri 'self';".
+                'upgrade-insecure-requests;';
+        }
+        $response->headers->set('Content-Security-Policy', $csp);
 
         return $response;
     }

@@ -27,7 +27,7 @@
         @endif
     </title>
 
-    <link rel="icon" type="image/png" href="{{ asset('legacy/images/logo7.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
 
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
@@ -62,10 +62,6 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
     @stack('head')
-
-    @if (session('success'))
-
-    @endif
 
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
 </head>

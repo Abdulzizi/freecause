@@ -14,8 +14,6 @@ class GlobalOptionsController extends Controller
         'site_name_short' => 'FreeCause',
         'site_logo' => '',
         'site_favicon' => '',
-        'primary_color' => '#3498db',
-        'secondary_color' => '#2ecc71',
         'base_url' => '',
         'short_base_url' => '',
         'email_to_staff' => '',
