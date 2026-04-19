@@ -77,7 +77,7 @@
                     @if($c->slug)
                         {{ $c->slug }}
                     @else
-                        <span style="color:#999;">—</span>
+                        <span style="color:#999;">none</span>
                     @endif
                 </td>
             </tr>

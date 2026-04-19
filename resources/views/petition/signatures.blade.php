@@ -8,7 +8,7 @@
     $coverImg = $petition->coverUrl();
 @endphp
 
-@section('title', 'Signatures — ' . $petitionTitle)
+@section('title', 'Signatures: ' . $petitionTitle)
 
 @section('content')
     <section class="py-5">

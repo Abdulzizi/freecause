@@ -48,7 +48,7 @@
                 {{-- LEFT INFO --}}
                 <div style="min-width:200px;">
                     <div style="font-size:16px; font-weight:bold;">
-                        {{ strtoupper($lang->code) }} — {{ $lang->name }}
+                        {{ strtoupper($lang->code) }}: {{ $lang->name }}
 
                         @if ($lang->is_default)
                             <span

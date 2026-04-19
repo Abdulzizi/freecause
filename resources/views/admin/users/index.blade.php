@@ -27,7 +27,7 @@
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')">
 
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
-        <input class="fc-input" name="first_name"style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
+        <input class="fc-input" name="first_name" style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
         <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
         <input class="fc-input" style="max-width:220px;" name="email" placeholder="Email" value="{{ $filters['email'] }}">
         <input class="fc-input" style="max-width:130px;" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
@@ -109,7 +109,7 @@
                         @endphp
 
                         @if (!$isAdmin)
-                            <a target="blank" href="{{ route('user.profile', ['locale' => app()->getLocale(), 'slug' => $u->username ?? \Str::slug($u->name), 'id' => $u->id]) }}"
+                            <a target="_blank" rel="noopener" href="{{ route('user.profile', ['locale' => app()->getLocale(), 'slug' => $u->username ?? \Str::slug($u->name), 'id' => $u->id]) }}"
                                 style="color:#000;">
                                 {{ $u->name }}
                             </a>

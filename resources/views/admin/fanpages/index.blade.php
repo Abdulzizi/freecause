@@ -45,7 +45,7 @@
                 <tr>
                     <td>{{ $row->id }}</td>
                     <td>{{ $row->email }}</td>
-                    <td>—</td>
+                    <td></td>
                     <td>{{ $row->title }}</td>
                     <td>{{ $row->locale }}</td>
                     <td>{{ $row->created_at }}</td>

@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $trustedProxies = config('app.trusted_proxies');
+        $trustedProxies = env('TRUSTED_PROXIES');
         if ($trustedProxies) {
             $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
         } else {
