@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Language;
+use Illuminate\Support\Facades\Lang;
 
 class Locale
 {
@@ -26,7 +27,7 @@ class Locale
      */
     public static function toShort(?string $fullLocale): string
     {
-        if (!$fullLocale) {
+        if (! $fullLocale) {
             return self::default();
         }
 
@@ -46,5 +47,19 @@ class Locale
     public static function default(): string
     {
         return Language::where('is_default', true)->value('code') ?? config('locales.default', 'en');
+    }
+
+    public static function trans(string $key, array $params = [], ?string $locale = null): string
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $defaultLocale = config('locales.default', 'en');
+
+        $translation = Lang::get("messages.{$key}", $params, $currentLocale);
+
+        if ($translation === "messages.{$key}") {
+            $translation = Lang::get("messages.{$key}", $params, $defaultLocale);
+        }
+
+        return $translation;
     }
 }

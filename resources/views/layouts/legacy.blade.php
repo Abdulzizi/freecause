@@ -27,7 +27,7 @@
         @endif
     </title>
 
-    <link rel="icon" type="image/png" href="{{ asset('legacy/images/logo7.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
 
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
@@ -63,10 +63,6 @@
 
     @stack('head')
 
-    @if (session('success'))
-
-    @endif
-
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
 </head>
 
@@ -98,71 +94,6 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
-
-    @php
-        $fcToasts = [];
-
-        if (session('toast')) {
-            $t = session('toast');
-            $fcToasts[] = ['type' => $t['type'] ?? 'info', 'message' => $t['message']];
-        }
-
-        if (session('success')) {
-            $fcToasts[] = ['type' => 'success', 'message' => session('success')];
-        }
-
-        if (isset($errors) && $errors->any() && !session('toast')) {
-            $fcToasts[] = ['type' => 'error', 'message' => $errors->first()];
-        }
-    @endphp
-
-    @if(!empty($fcToasts))
-        <div id="fc-toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:320px;">
-            @foreach($fcToasts as $i => $t)
-                @php
-                    $bg = match($t['type']) {
-                        'success' => '#28a745',
-                        'error'   => '#dc3545',
-                        'warning' => '#e0a800',
-                        default   => '#343a40',
-                    };
-                @endphp
-                <div class="fc-toast-item"
-                    data-index="{{ $i }}"
-                    style="background:{{ $bg }};
-                        color:#fff;
-                        padding:14px 18px;
-                        border-radius:6px;
-                        box-shadow:0 5px 15px rgba(0,0,0,0.2);
-                        font-size:14px;
-                        line-height:1.4;
-                        opacity:0;
-                        transform:translateY(-10px);
-                        transition:all .3s ease;
-                        cursor:pointer;"
-                    onclick="this.style.opacity=0;this.style.transform='translateY(-10px)';setTimeout(()=>this.remove(),300);">
-                    {{ $t['message'] }}
-                </div>
-            @endforeach
-        </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.fc-toast-item').forEach(function (el, i) {
-                    setTimeout(function () {
-                        el.style.opacity = 1;
-                        el.style.transform = 'translateY(0)';
-                    }, 100 + i * 150);
-
-                    setTimeout(function () {
-                        el.style.opacity = 0;
-                        el.style.transform = 'translateY(-10px)';
-                        setTimeout(function () { el.remove(); }, 300);
-                    }, 5000 + i * 150);
-                });
-            });
-        </script>
-    @endif
 </body>
 
 </html>

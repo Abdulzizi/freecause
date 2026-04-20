@@ -60,6 +60,9 @@
                     @json($noun ?? 'items') + '?';
                 if (!confirm(msg)) return;
 
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+
                 fetch(route, {
                         method: 'POST',
                         headers: {
@@ -74,9 +77,17 @@
                     .then(r => r.json())
                     .then(res => {
                         if (res && res.ok) location.reload();
-                        else alert((res && res.msg) ? res.msg : 'Operation failed');
+                        else {
+                            alert((res && res.msg) ? res.msg : 'Operation failed');
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                        }
                     })
-                    .catch(() => alert('Network error'));
+                    .catch(() => {
+                        alert('Network error');
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    });
             });
         });
 

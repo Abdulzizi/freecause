@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
 use App\Models\Permission;
+use Closure;
+use Illuminate\Support\Facades\Cache;
 
 class CheckPermission
 {
@@ -12,13 +12,13 @@ class CheckPermission
     {
         $user = admin_user();
 
-        if (!$user) {
+        if (! $user) {
             abort(403);
         }
 
         $user->load('level');
 
-        if (!$user->level_id) {
+        if (! $user->level_id) {
             abort(403, 'Your account has no role assigned. Contact a system administrator.');
         }
 
@@ -26,12 +26,16 @@ class CheckPermission
             return $next($request);
         }
 
-        $hasPermission = Permission::where('level_id', $user->level_id)
-            ->where('module', $module)
-            ->where('action', $action)
-            ->exists();
+        $cacheKey = "permissions:{$user->level_id}:{$module}:{$action}";
 
-        if (!$hasPermission) {
+        $hasPermission = Cache::remember($cacheKey, 300, function () use ($user, $module, $action) {
+            return Permission::where('level_id', $user->level_id)
+                ->where('module', $module)
+                ->where('action', $action)
+                ->exists();
+        });
+
+        if (! $hasPermission) {
             abort(403);
         }
 

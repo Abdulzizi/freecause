@@ -1,9 +1,13 @@
 <nav class="fc-menu">
+    <div class="group-title">overview</div>
+    <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">dashboard</a>
+
     <div class="group-title">site</div>
     <a href="{{ route('admin.options.global') }}" class="{{ request()->routeIs('admin.options.global') ? 'active' : '' }}">global options</a>
     <a href="{{ route('admin.options.language') }}" class="{{ request()->routeIs('admin.options.language') ? 'active' : '' }}">language options</a>
     <a href="{{ route('admin.ads') }}" class="{{ request()->routeIs('admin.ads') ? 'active' : '' }}">ads.txt</a>
     <a href="{{ route('admin.languages.index') }}" class="{{ request()->routeIs('admin.languages.index') ? 'active' : '' }}">languages</a>
+    <a href="{{ route('admin.translations.index') }}" class="{{ request()->routeIs('admin.translations.index') ? 'active' : '' }}">translations</a>
     <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'active' : '' }}">users</a>
     <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories') ? 'active' : '' }}">categories</a>
     <a href="{{ route('admin.petitions') }}" class="{{ request()->routeIs('admin.petitions') ? 'active' : '' }}">petitions</a>
@@ -20,4 +24,5 @@
 
     <div class="group-title">utilities</div>
     <a href="{{ route('admin.utils.import') }}" class="{{ request()->routeIs('admin.utils.import') ? 'active' : '' }}">import</a>
+    <a href="{{ route('admin.backup.index') }}" class="{{ request()->routeIs('admin.backup.index') ? 'active' : '' }}">backup</a>
 </nav>

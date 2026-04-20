@@ -47,13 +47,13 @@
                                 @endif
 
                                 <div class="mb-3">
-                                    <label class="form-label mb-1">Email</label>
+                                    <label class="form-label mb-1">{{ __('auth.email') }}</label>
                                     <input type="email" name="email" value="{{ old('email') }}" class="form-control"
                                         placeholder="Enter your email" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label mb-1">Password</label>
+                                    <label class="form-label mb-1">{{ __('auth.password') }}</label>
                                     <input type="password" name="password" class="form-control"
                                         placeholder="Enter your password" required>
                                 </div>
@@ -64,7 +64,7 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-danger w-100 py-2" style="border-radius:8px;">
-                                    Sign In
+                                    {{ __('auth.login') }}
                                 </button>
 
                                 <div class="text-center mt-3">

@@ -12,23 +12,31 @@ class WpSso
     {
         $secret = config('app.sso_secret');
 
-        if (!$secret) {
+        if (! $secret) {
+            \Illuminate\Support\Facades\Log::warning('SSO: sso_secret not configured, skipping WordPress login');
+
             return $redirect;
         }
 
-        $payload = base64_encode(json_encode([
-            'e' => $email,
-            'n' => $displayName,
-            'x' => time() + 120, // 2-minute TTL
-        ]));
+        try {
+            $payload = base64_encode(json_encode([
+                'e' => $email,
+                'n' => $displayName,
+                'x' => time() + 120, // 2-minute TTL
+            ]));
 
-        $sig = hash_hmac('sha256', $payload, $secret);
+            $sig = hash_hmac('sha256', $payload, $secret);
 
-        return '/magazine/sso.php?' . http_build_query([
-            'p' => $payload,
-            's' => $sig,
-            'r' => $redirect,
-        ]);
+            return '/magazine/sso.php?'.http_build_query([
+                'p' => $payload,
+                's' => $sig,
+                'r' => $redirect,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('SSO: failed to generate login URL - '.$e->getMessage());
+
+            return $redirect;
+        }
     }
 
     /**
@@ -36,9 +44,9 @@ class WpSso
      */
     public static function logoutUrl(string $redirect): string
     {
-        return '/magazine/sso.php?' . http_build_query([
+        return '/magazine/sso.php?'.http_build_query([
             'action' => 'logout',
-            'r'      => $redirect,
+            'r' => $redirect,
         ]);
     }
 }

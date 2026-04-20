@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="{{ asset('legacy/images/logo7.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -15,7 +15,7 @@
 
 <body>
     <div class="fc-topbar">
-        <a href="https://www.freecause.com" target="_blank">https://www.freecause.com</a>
+        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
         <span class="sep">|</span> v 1.2.1
         <span class="sep">|</span> support
         <span class="sep">|</span> <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
@@ -26,6 +26,10 @@
             <button type="submit" class="fc-btn">exit</button>
         </form>
     </div>
+
+    <button class="fc-menu-toggle" onclick="document.querySelector('.fc-menu').classList.toggle('show')">
+        <i class="fa fa-bars"></i> Menu
+    </button>
 
     <div class="fc-frame">
         @include('admin.partials.sidebar')
@@ -81,10 +85,13 @@
 
             setTimeout(() => toast.classList.add('show'), 50);
 
+            const isError = toast.classList.contains('error');
+            const timeout = isError ? 5000 : 2000;
+
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, 2000);
+            }, timeout);
         });
     </script>
 

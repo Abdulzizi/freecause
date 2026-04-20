@@ -45,23 +45,24 @@ class Spam
         ]);
     }
 
-    public static function rateLimit(string $type, int $limit = 5): bool
+    public static function rateLimit(string $type, int $limit = 20): bool
     {
         $count = DB::table('spam_logs')
-    ->where('ip', request()->ip())
-    ->where('type', $type)
-    ->where('created_at', '>=', now()->subMinutes(5))
-    ->count();
+            ->where('ip', request()->ip())
+            ->where('type', $type)
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->count();
 
         if ($count >= $limit) {
-            self::banCurrentIp('Auto ban: too many ' . $type . ' attempts');
+            self::banCurrentIp('Auto ban: too many '.$type.' attempts');
+
             return true;
         }
 
         return false;
     }
 
-    public static function banCurrentIp(string $reason = null): void
+    public static function banCurrentIp(?string $reason = null): void
     {
         DB::table('banned_ips')->updateOrInsert(
             ['ip' => request()->ip()],
