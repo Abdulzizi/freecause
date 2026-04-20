@@ -46,32 +46,32 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">Name (mandatory)</label>
+                                        <label class="form-label mb-1">{{ __('auth.name') }}</label>
                                         <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">Surname (mandatory)</label>
+                                        <label class="form-label mb-1">{{ __('auth.surname') }}</label>
                                         <input type="text" name="surname" value="{{ old('surname') }}" class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">Email (mandatory)</label>
+                                        <label class="form-label mb-1">{{ __('auth.email') }}</label>
                                         <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">Password (mandatory)</label>
+                                        <label class="form-label mb-1">{{ __('auth.password') }}</label>
                                         <input type="password" name="password" class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">Nickname (optional)</label>
+                                        <label class="form-label mb-1">Nickname <span class="text-muted">(optional)</span></label>
                                         <input type="text" name="nickname" value="{{ old('nickname') }}" class="form-control">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">City (optional)</label>
+                                        <label class="form-label mb-1">City <span class="text-muted">(optional)</span></label>
                                         <input type="text" name="city" value="{{ old('city') }}" class="form-control">
                                     </div>
                                 </div>

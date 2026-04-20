@@ -5,10 +5,9 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
-            <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" alt="logo">
+            <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" style="max-height:40px;" loading="lazy" alt="logo">
         </a>
 
-        {{-- Mobile: language + hamburger in top-right --}}
         <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
             @include('partials.language_switch')
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#fcNav"
@@ -55,14 +54,12 @@
                     </li>
                 @endif
 
-                {{-- Start Free: full-width on mobile, normal on desktop --}}
                 <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
                     <a class="btn btn-primary fc-startfree w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
                         {{ $c['nav_startfree'] ?? 'Start Free' }}
                     </a>
                 </li>
 
-                {{-- Language switcher: hidden on mobile (shown above hamburger instead) --}}
                 <li class="nav-item ms-lg-4 d-none d-lg-block">
                     @include('partials.language_switch')
                 </li>

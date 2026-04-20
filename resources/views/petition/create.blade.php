@@ -39,22 +39,22 @@
             @endif
 
             @if(!$isEdit)
-                <h2 class="text-center mb-4">Start a free petition In Just 3 Easy Steps</h2>
+                <h2 class="text-center mb-4">{{ __('petition.create_title') }}</h2>
 
                 <div class="fc-steps mb-5">
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-1 is-active"></span>
-                        <div class="fc-step-text">Create your petition</div>
+                        <div class="fc-step-text">{{ __('petition.step_create') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-2"></span>
-                        <div class="fc-step-text">Share with friends</div>
+                        <div class="fc-step-text">{{ __('petition.step_share') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-3"></span>
-                        <div class="fc-step-text">Change the world!</div>
+                        <div class="fc-step-text">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
 
@@ -84,12 +84,12 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label">Title (mandatory)</label>
+                            <label class="form-label">{{ __('form.title') }}</label>
                             <input class="form-control" name="title" value="{{ $oldTitle }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Text (mandatory)</label>
+                            <label class="form-label">{{ __('form.description') }}</label>
 
                             <div class="fc-markup">
                                 <div id="fc-quill-toolbar" class="fc-markup-bar">
@@ -116,7 +116,7 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Goal (mandatory)</label>
+                                <label class="form-label">{{ __('form.goal_signatures') }}</label>
 
                                 <select class="form-select" name="goal_signatures" required>
                                     <option value="">(select one)</option>
@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Category (mandatory)</label>
+                                <label class="form-label">{{ __('form.category') }}</label>
                                 <select class="form-select" name="category_id" required>
                                     <option value="">(select one)</option>
                                     @foreach ($categories as $c)
@@ -148,43 +148,43 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tags</label>
+                            <label class="form-label">{{ __('form.tags') }}</label>
                             <input class="form-control" name="tags" value="{{ $oldTags }}">
                             <small class="text-muted">10 keywords max, separated by comma</small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Image</label>
-                            <input type="file" class="form-control" name="image">
+                            <label class="form-label">{{ __('form.image') }}</label>
+                            <input type="file" class="form-control" name="image" accept="image/jpeg,image/png">
                             <div class="mt-2">
-                                <label class="form-label">Or supply an external link :</label>
+                                <label class="form-label">{{ __('form.image_external') }}</label>
                                 <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
                                     placeholder="https://">
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">URL Youtube video</label>
+                            <label class="form-label">{{ __('form.youtube') }}</label>
                             <input class="form-control" name="youtube" value="{{ $oldYoutube }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition target</label>
+                            <label class="form-label">{{ __('form.target') }}</label>
                             <input class="form-control" name="target" value="{{ $oldTarget }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition community</label>
+                            <label class="form-label">{{ __('form.community') }}</label>
                             <input class="form-control" name="community" value="{{ $oldCommunity }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Petition community url</label>
+                            <label class="form-label">{{ __('form.community_url') }}</label>
                             <input class="form-control" name="community_url" value="{{ $oldCommunityUrl }}">
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">City</label>
+                            <label class="form-label">{{ __('form.city') }}</label>
                             <input class="form-control" name="city" value="{{ $oldCity }}">
                         </div>
 
@@ -207,182 +207,6 @@
     </section>
 @endsection
 
-@if(!$isEdit)
-    <style>
-        .fc-steps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 60px;
-            flex-wrap: wrap;
-            margin-bottom: 2.5rem;
-        }
-
-        .fc-step {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            min-width: 240px;
-        }
-
-        .fc-step-text {
-            font-size: 20px;
-            font-weight: 500;
-            color: #111;
-            white-space: nowrap;
-        }
-
-        .fc-step-icon {
-            width: 64px;
-            height: 64px;
-            display: inline-block;
-            background-image: url('{{ asset("legacy/images/startpetition-icons.png") }}');
-            background-repeat: no-repeat;
-            background-size: 200% 300%;
-        }
-
-        .fc-step-1 {
-            background-position: 0% 0%;
-        }
-
-        .fc-step-2 {
-            background-position: 0% 50%;
-        }
-
-        .fc-step-3 {
-            background-position: 0% 100%;
-        }
-
-        .fc-step-icon.is-active.fc-step-1 {
-            background-position: 100% 0%;
-        }
-
-        .fc-step-icon.is-active.fc-step-2 {
-            background-position: 100% 50%;
-        }
-
-        .fc-step-icon.is-active.fc-step-3 {
-            background-position: 100% 100%;
-        }
-    </style>
-@endif
-
-<style>
-    .fc-markup {
-        border: 1px solid #d9d9d9;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .fc-markup-bar {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px;
-        background: #f3f3f3;
-        border-bottom: 1px solid #d9d9d9;
-    }
-
-    .fc-mbtn {
-        width: 28px;
-        height: 26px;
-        border: 1px solid #cfcfcf;
-        background: #fff;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .fc-mbtn:hover {
-        background: #f8f8f8;
-    }
-
-    .fc-markup-spacer {
-        flex: 1;
-    }
-
-    .fc-markup textarea {
-        border: 0;
-        border-radius: 0;
-    }
-
-    .fc-markup-hint {
-        padding: 8px 2px 0;
-        font-size: 13px;
-        color: #555;
-    }
-
-    .fc-markup-divider {
-        width: 1px;
-        height: 20px;
-        background: #cfcfcf;
-        margin: 0 6px;
-    }
-
-    .fc-editor {
-        min-height: 260px;
-        padding: 12px;
-        background: #fff;
-        font-size: 14px;
-        line-height: 1.45;
-        outline: none;
-    }
-
-    .fc-quill .ql-container {
-        font-size: 14px;
-        line-height: 1.45;
-    }
-
-    .fc-quill .ql-editor {
-        min-height: 260px;
-    }
-
-    .fc-quill .ql-editor ul {
-        list-style: disc !important;
-        padding-left: 22px !important;
-    }
-
-    .fc-quill .ql-editor ol {
-        list-style: decimal !important;
-        padding-left: 22px !important;
-    }
-
-    .fc-quill .ql-editor li {
-        display: list-item !important;
-    }
-</style>
-
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const editorEl = document.getElementById('petition_editor');
-            const hidden = document.getElementById('petition_description');
-            if (!editorEl || !hidden || typeof Quill === 'undefined') return;
-
-            const quill = new Quill(editorEl, {
-                theme: 'snow',
-                modules: {
-                    toolbar: '#fc-quill-toolbar',
-                    clipboard: { matchVisual: false }
-                }
-            });
-
-            const initialHtml = (hidden.value || '').trim();
-            if (initialHtml) {
-                quill.clipboard.dangerouslyPasteHTML(initialHtml);
-            }
-
-            function syncHidden() {
-                hidden.value = quill.root.innerHTML;
-            }
-
-            quill.on('text-change', syncHidden);
-            syncHidden();
-
-            const form = editorEl.closest('form');
-            if (form) form.addEventListener('submit', syncHidden);
-        });
-    </script>
+    <script src="{{ asset('legacy/js-v2/petition-create.js') }}"></script>
 @endpush

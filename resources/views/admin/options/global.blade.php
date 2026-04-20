@@ -8,6 +8,35 @@
     <form method="post" action="{{ route('admin.options.global.update') }}">
         @csrf
 
+        <div class="fc-tab">branding</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize your site's branding. These values are used across the site.
+            </p>
+
+            <div class="fc-row">
+                <label>site name</label>
+                <input class="fc-input" type="text" name="site_name" value="{{ $site_name }}">
+            </div>
+
+            <div class="fc-row">
+                <label>short name</label>
+                <input class="fc-input" type="text" name="site_name_short" value="{{ $site_name_short }}">
+                <span style="font-size:11px; color:#666; display:block; margin-top:4px;">Used in share links and short displays</span>
+            </div>
+
+            <div class="fc-row">
+                <label>logo url</label>
+                <input class="fc-input" type="text" name="site_logo" value="{{ $site_logo }}" placeholder="https://...">
+            </div>
+
+            <div class="fc-row">
+                <label>favicon url</label>
+                <input class="fc-input" type="text" name="site_favicon" value="{{ $site_favicon }}" placeholder="https://...">
+            </div>
+
+        </div>
+
         <div class="fc-tab">general</div>
         <div class="fc-box">
 
@@ -20,7 +49,7 @@
                 <div class="fc-row">
                     <label></label>
                     <span style="font-size:11px; color:#b7791f;">
-                        active -- all urls forced to <strong>{{ $base_url }}</strong>. clear to disable.
+                        Active: all urls forced to <strong>{{ $base_url }}</strong>. Clear to disable.
                     </span>
                 </div>
             @endif
@@ -34,7 +63,7 @@
                 <div class="fc-row">
                     <label></label>
                     <span style="font-size:11px; color:#666;">
-                        used for share links — e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
+                        Used for share links, e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
                     </span>
                 </div>
             @endif
@@ -56,7 +85,7 @@
         <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
-                These fields are rendered verbatim on every page — for analytics scripts, tracking pixels, etc.
+                These fields are rendered verbatim on every page, for analytics scripts, tracking pixels, etc.
                 Only super-admin accounts can save changes here.
             </p>
             <div class="fc-row">
@@ -200,7 +229,7 @@
         <div class="fc-tab">announcement banner</div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
-                Show a red banner at the top of every page for all visitors. Plain text only — no HTML.
+                Show a red banner at the top of every page for all visitors. Plain text only, no HTML.
             </p>
             <input type="hidden" name="announcement_active" value="0">
             <div class="fc-row">
@@ -241,12 +270,33 @@
             </div>
         </div>
 
+        <div class="fc-tab">contact email</div>
+        <div class="fc-box">
+            <p style="font-size:12px; color:#666; margin-bottom:8px;">
+                Customize the contact form notification email sent to staff.
+            </p>
+            <input type="hidden" name="email_contact_enabled" value="0">
+            <div class="fc-row">
+                <label></label>
+                <label style="font-weight:normal">
+                    <input type="checkbox" name="email_contact_enabled" value="1" {{ $email_contact_enabled ? 'checked' : '' }}>
+                    enable contact form notifications
+                </label>
+            </div>
+            <div class="fc-row">
+                <label>subject</label>
+                <input class="fc-input" type="text" name="email_contact_subject" value="{{ $email_contact_subject }}"
+                    placeholder="New contact form submission">
+            </div>
+        </div>
+
         <div style="margin-top:6px; text-align: end;">
             <button class="fc-btn" type="submit">save</button>
         </div>
     </form>
 @endsection
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var input = document.getElementById('smtp_pass_input');
@@ -265,3 +315,4 @@
         });
     });
 </script>
+@endpush
