@@ -39,3 +39,4 @@ Homestead.yaml
 Thumbs.db
 bootstrap/cache/*.php
 /opencode.json
+.playwright-mcp/
