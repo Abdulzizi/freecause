@@ -81,10 +81,14 @@
                                                             <span class="featured-badges">
                                                                 {{ $content['featured_badge'] ?? 'Featured Petition' }}
                                                             </span>
-                                                            <img src="{{ $featuredPetition->coverUrl() }}"
-                                                                class="img-fluid w-100"
-                                                                loading="lazy"
-                                                                style="max-height:320px;object-fit:cover;border-radius:6px;" />
+                                                            <div style="position:relative;overflow:hidden;border-radius:6px;height:320px;background:#1a1a1a;">
+                                                                <img src="{{ $featuredPetition->coverUrl() }}"
+                                                                    loading="lazy" aria-hidden="true"
+                                                                    style="position:absolute;inset:-15px;width:calc(100% + 30px);height:calc(100% + 30px);object-fit:cover;filter:blur(18px);opacity:0.55;">
+                                                                <img src="{{ $featuredPetition->coverUrl() }}"
+                                                                    loading="lazy"
+                                                                    style="position:relative;z-index:1;width:100%;height:320px;object-fit:contain;">
+                                                            </div>
                                                         </div>
 
                                                         <div class="col-sm-6 mb-4">

@@ -18,9 +18,11 @@
                 <div class="row align-items-center g-4">
 
                     <div class="col-md-3 col-sm-4">
-                        <a href="{{ $petitionUrl }}" class="d-block">
-                            <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}" class="img-fluid rounded-2"
-                                style="width:100%;height:160px;object-fit:cover;">
+                        <a href="{{ $petitionUrl }}" class="d-block" style="border-radius:8px;overflow:hidden;display:block;height:160px;background:#1a1a1a;position:relative;">
+                            <img src="{{ $coverImg }}" alt="" aria-hidden="true"
+                                style="position:absolute;inset:-10px;width:calc(100% + 20px);height:calc(100% + 20px);object-fit:cover;filter:blur(14px);opacity:0.55;">
+                            <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
+                                style="position:relative;z-index:1;width:100%;height:160px;object-fit:contain;">
                         </a>
                     </div>
 
