@@ -10,11 +10,11 @@
 
         $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
 
-        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - FreeCause';
+        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - xPetition';
         $metaDescription =
             $globalMeta['meta_description'] ??
-            'FreeCause - Online petition platform to launch and support causes worldwide.';
-        $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, freecause';
+            'xPetition - Online petition platform to launch and support causes worldwide.';
+        $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, xpetition';
         $headExtra = $globalMeta['head_additional_html'] ?? '';
         $footerExtra = $globalMeta['footer_additional_html'] ?? '';
     @endphp
@@ -23,7 +23,7 @@
         @hasSection('title')
             @yield('title'){{ $metaSuffix }}
         @else
-            FreeCause{{ $metaSuffix }}
+            xPetition{{ $metaSuffix }}
         @endif
     </title>
 
@@ -32,7 +32,7 @@
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
-    <meta property="og:site_name" content="FreeCause">
+    <meta property="og:site_name" content="xPetition">
     <meta property="og:type" content="website">
     @hasSection('og_title')
         <meta property="og:title" content="@yield('og_title')">
@@ -40,7 +40,7 @@
         <meta property="og:image" content="@yield('og_image')">
         <meta property="og:url" content="@yield('og_url', request()->url())">
     @else
-        <meta property="og:title" content="@yield('title', 'FreeCause')">
+        <meta property="og:title" content="@yield('title', 'xPetition')">
         <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
         <meta property="og:url" content="{{ request()->url() }}">
     @endif

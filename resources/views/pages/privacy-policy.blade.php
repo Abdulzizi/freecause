@@ -35,7 +35,7 @@
                                     <p><strong>Privacy Statement</strong></p>
 
                                     <p>
-                                        Freecause recognizes the importance of your privacy and your right to control your
+                                        xPetition recognizes the importance of your privacy and your right to control your
                                         personal information.
                                         We understand that providing personal information is an act of trust, and we take
                                         this responsibility
@@ -49,7 +49,7 @@
                                     </p>
                                     <ul>
                                         <li>
-                                            <p>We will not send you emails unrelated to Freecause.</p>
+                                            <p>We will not send you emails unrelated to xPetition.</p>
                                         </li>
                                         <li>
                                             <p>If provided, your email address will be stored securely.</p>
@@ -72,7 +72,7 @@
 
                                     <h3>Use of Your Information</h3>
                                     <p>
-                                        Freecause will not sell or share your personal information with any third party,
+                                        xPetition will not sell or share your personal information with any third party,
                                         except as described in
                                         this policy.
                                     </p>
@@ -137,7 +137,7 @@
                                     <p>
                                         If you use the Facebook comment feature on a petition, your name and profile photo
                                         may appear on the
-                                        Freecause site. This feature is powered by a Facebook plugin. Freecause does not
+                                        xPetition site. This feature is powered by a Facebook plugin. xPetition does not
                                         guarantee that
                                         attempts to edit Facebook comments will achieve the desired results. Using this
                                         feature is at your
@@ -146,7 +146,7 @@
 
                                     <h3>Advertising and Cookies</h3>
                                     <p>
-                                        Freecause uses cookies to enhance user experience and support site functions.
+                                        xPetition uses cookies to enhance user experience and support site functions.
                                         Additionally, we work
                                         with advertising partners like Google and Simply Advertising:
                                     </p>
@@ -173,14 +173,14 @@
                                     <h3>Signature Details and Personal Information</h3>
                                     <p>
                                         Signatures include the signer’s IP address, which is accessible to the petition’s
-                                        author and Freecause
+                                        author and xPetition
                                         administrators for security purposes. Other personal information collected during
                                         the signing process
                                         will be treated in compliance with international data protection standards.
                                     </p>
 
                                     <h3>Data Access and User Rights</h3>
-                                    <p>Freecause respects your rights to access, edit, or delete your personal information.
+                                    <p>xPetition respects your rights to access, edit, or delete your personal information.
                                         You can:</p>
                                     <ul>
                                         <li>
@@ -210,7 +210,7 @@
 
                                     <h3>Security</h3>
                                     <p>
-                                        Freecause takes appropriate measures to secure personal information, including
+                                        xPetition takes appropriate measures to secure personal information, including
                                         encryption and regular
                                         security assessments. However, no system is completely secure, and users should
                                         exercise caution when
@@ -219,7 +219,7 @@
 
                                     <h3>Business Transfers</h3>
                                     <p>
-                                        If Freecause or substantially all of its assets are acquired, or in the event of
+                                        If xPetition or substantially all of its assets are acquired, or in the event of
                                         bankruptcy, user
                                         information may be transferred as part of the transaction. Any acquiring party will
                                         continue to use
@@ -227,7 +227,7 @@
                                         significant changes.
                                     </p>
 
-                                    <h3>Communication from Freecause</h3>
+                                    <h3>Communication from xPetition</h3>
                                     <ul>
                                         <li>
                                             <p><strong>Petition Updates:</strong> If you sign a petition, you may receive
@@ -246,7 +246,7 @@
 
                                     <h3>Children’s Privacy</h3>
                                     <p>
-                                        Freecause does not knowingly collect personal information from individuals under the
+                                        xPetition does not knowingly collect personal information from individuals under the
                                         age of 18. If we
                                         become aware that a child’s personal information has been collected, we will take
                                         steps to delete it

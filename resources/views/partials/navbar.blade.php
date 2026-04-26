@@ -5,7 +5,7 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
-            <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" style="max-height:40px;" loading="lazy" alt="logo">
+            <img src="{{ asset('legacy/images/xpetition-logo.png') }}" class="img-fluid" style="max-height:40px;" loading="lazy" alt="xPetition">
         </a>
 
         <div class="d-flex align-items-center gap-2 d-lg-none ms-auto">
