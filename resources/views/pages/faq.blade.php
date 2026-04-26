@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'FAQs - FreeCause - Online Petition')
+@section('title', 'FAQs - xPetition')
 
 @php
     $faq = [
@@ -11,14 +11,14 @@
             ],
             [
                 'q' => 'Why you should prefer an online petition to a paper instead?',
-                'a' => 'First, because an online petition can be accessed in seconds by hundreds of millions of people through the internet and around the world. Just give to your friends the address FreeCause - Online Petition and from that moment your petition will be spread across the globe. From that moment you\'ll be an activist in the globalized world.<br />Do you have th intention to make a paper petition? Do you prefer to stay on a street corner to collect signatures? At most you will be able to collect several hundred signatures and have sore legs.<br />Secondly, you can use online marketing to get more users willing to sign. Each visitor to your petition may invite a friend to sign the petition.<br />The great mass of people on the internet will make your voice heard around the world!'
+                'a' => 'First, because an online petition can be accessed in seconds by hundreds of millions of people through the internet and around the world. Just give to your friends the address xPetition and from that moment your petition will be spread across the globe. From that moment you\'ll be an activist in the globalized world.<br />Do you have th intention to make a paper petition? Do you prefer to stay on a street corner to collect signatures? At most you will be able to collect several hundred signatures and have sore legs.<br />Secondly, you can use online marketing to get more users willing to sign. Each visitor to your petition may invite a friend to sign the petition.<br />The great mass of people on the internet will make your voice heard around the world!'
             ],
             [
-                'q' => 'Can FreeCause - Online Petition be used for referendum proposals?',
-                'a' => 'Yes, if accompanied by documentation of the signatories. In addition, a campaign on FreeCause - Online Petition can also have an effect on governments and politicians. Many of our demands are addressed to individuals or institutions and governments. Although not legally bound, they have an impact on public opinion in an important way.<br /><br />We give voice to an idea, many campaigns started from FreeCause - Online Petition have moved governments.'
+                'q' => 'Can xPetition be used for referendum proposals?',
+                'a' => 'Yes, if accompanied by documentation of the signatories. In addition, a campaign on xPetition can also have an effect on governments and politicians. Many of our demands are addressed to individuals or institutions and governments. Although not legally bound, they have an impact on public opinion in an important way.<br /><br />We give voice to an idea, many campaigns started from xPetition have moved governments.'
             ],
             [
-                'q' => 'How do I get more information about FreeCause - Online Petition?',
+                'q' => 'How do I get more information about xPetition?',
                 'a' => 'To learn more, go to our website and visit the Information page and our <a href="https://www.test.freecause.com/ethical-code">Ethical Code</a>.'
             ],
             [
@@ -29,12 +29,12 @@
 
         'For signatories of a petition' => [
             [
-                'q' => 'FreeCause - Online Petition apparently sent me an email, but I have not received it. Why?',
-                'a' => 'It may happen that your mail provider has marked an email as Spam. We suggest you change the settings or your spam filter and insert FreeCause - Online Petition into the list of trusted addresses. We do not send emails that are not required and this is a guarantee for you, because we only contact you to communicate information of particular relevance.'
+                'q' => 'xPetition apparently sent me an email, but I have not received it. Why?',
+                'a' => 'It may happen that your mail provider has marked an email as Spam. We suggest you change the settings or your spam filter and insert xPetition into the list of trusted addresses. We do not send emails that are not required and this is a guarantee for you, because we only contact you to communicate information of particular relevance.'
             ],
             [
                 'q' => 'Is it guaranteed the confidentiality of my personal data?',
-                'a' => 'FreeCause - Online Petition will treat your personal data very seriously. After signing a petition, you will receive an email confirmation stating that your signature has been recorded. FreeCause - Online Petition will not use your information and your email for other petitions or for other purposes, unless you authorize us to do it. In any case, we pledge to not disclose to third parties your personal information. The only person who will be aware that you have signed the petition is the host or the person who made the petition that you have decided to sign. Read also our <a href="https://www.test.freecause.com/ethical-code">Ethical Code</a>.'
+                'a' => 'xPetition will treat your personal data very seriously. After signing a petition, you will receive an email confirmation stating that your signature has been recorded. xPetition will not use your information and your email for other petitions or for other purposes, unless you authorize us to do it. In any case, we pledge to not disclose to third parties your personal information. The only person who will be aware that you have signed the petition is the host or the person who made the petition that you have decided to sign. Read also our <a href="https://www.test.freecause.com/ethical-code">Ethical Code</a>.'
             ],
             [
                 'q' => 'How do I know if the petition I\'ve signed has been successful?',
@@ -42,7 +42,7 @@
             ],
             [
                 'q' => 'How do I report when a petition violates the respect of the law for its content?',
-                'a' => 'FreeCause - Online Petition accept any complaints very seriously, and if is found that a petition contains content that violates the law, please contact us immediately. Before proceeding, you must ensure that the content is really illegal and that simply does not respond to our ideas about the subject matter of the petition itself. Our business ethics requires us also accept that there are different ideas from those proposed by the petition, in that case, please express your opposition to creating a counter-petition or commenting on the special space in the same comments.'
+                'a' => 'xPetition accept any complaints very seriously, and if is found that a petition contains content that violates the law, please contact us immediately. Before proceeding, you must ensure that the content is really illegal and that simply does not respond to our ideas about the subject matter of the petition itself. Our business ethics requires us also accept that there are different ideas from those proposed by the petition, in that case, please express your opposition to creating a counter-petition or commenting on the special space in the same comments.'
             ],
             [
                 'q' => 'How do I create a petition?',
@@ -58,7 +58,7 @@
             ],
             [
                 'q' => 'My name has appeared on your site or Google. How can I remove it?',
-                'a' => 'Please contact the Staff of FreeCause - Online Petition and ask them to remove your name from the petition. If someone has entered your name in a list or forum without your permission, please contact the sponsor of the petition and ask him to immediately remove you. FreeCause - Online Petition can\'t absolutely exercise any control over the use of your name by third parties, however we will activate immediately in case of we recieve complaints. Please read the Terms of Use of FreeCause - Online Petition. When your name has been removed of FreeCause - Online Petition,  please visit the list with the signatures to verify that indeed has been done. Although has been removed, however, Google will continue to index it. In fact, the process of updating the new data will require a few days. Your name will appear on Google for a few days until the search engine will not have completed the upgrade.'
+                'a' => 'Please contact the Staff of xPetition and ask them to remove your name from the petition. If someone has entered your name in a list or forum without your permission, please contact the sponsor of the petition and ask him to immediately remove you. xPetition can\'t absolutely exercise any control over the use of your name by third parties, however we will activate immediately in case of we recieve complaints. Please read the Terms of Use of xPetition. When your name has been removed of xPetition,  please visit the list with the signatures to verify that indeed has been done. Although has been removed, however, Google will continue to index it. In fact, the process of updating the new data will require a few days. Your name will appear on Google for a few days until the search engine will not have completed the upgrade.'
             ],
             [
                 'q' => 'Facebook and Twitter statistics. Why Facebook users prefer to click "like" and not sign? What happened to the "like" of facebook?',
@@ -70,10 +70,10 @@
             ],
             [
                 'q' => 'Time zone. What time zone is used for dating the signatures?',
-                'a' => 'FreeCause - Online Petition uses the Time Zone UTC-5'
+                'a' => 'xPetition uses the Time Zone UTC-5'
             ],
             [
-                'q' => 'How can I close my account FreeCause - Online Petition? Closing the account.',
+                'q' => 'How can I close my account xPetition? Closing the account.',
                 'a' => 'You can cancel your account at any time, once you have the access, go to your profile, there you will find a button to delete your account and all data accompanying it from our database.<br />If you have questions or concerns please contact us, maybe we can help you.<br />Our community is based on trust between users and those who run the service for users.'
             ],
         ],
@@ -81,7 +81,7 @@
         'For promoters of petitions' => [
             [
                 'q' => 'How do I activate my membership once I decided to start a campaign?',
-                'a' => 'When you subscribe to FreeCause - Online Petition, we send a message to your email address to confirm your account.<br />If you have not received the activation email, you can request it by clicking the link on the login screen, it is <a href="{RECOVER_URL}">questo</a>. If you have problems with the activation process, contact us.'
+                'a' => 'When you subscribe to xPetition, we send a message to your email address to confirm your account.<br />If you have not received the activation email, you can request it by clicking the link on the login screen, it is <a href="{RECOVER_URL}">questo</a>. If you have problems with the activation process, contact us.'
             ],
             [
                 'q' => 'Is it free the creation of a petition?',
@@ -89,7 +89,7 @@
             ],
             [
                 'q' => 'Do I need technical knowledge to create a petition?',
-                'a' => 'You do not need any technical knowledge to create an online petition.<br />All is already provided by FreeCause - Online Petition, you will only express your ideas.'
+                'a' => 'You do not need any technical knowledge to create an online petition.<br />All is already provided by xPetition, you will only express your ideas.'
             ],
             [
                 'q' => 'Can I import a petition on your site that was opened on another site?',
@@ -104,11 +104,11 @@
                 'a' => 'Yes, of course, personal freedom has no limits.'
             ],
             [
-                'q' => 'FreeCause - Online Petition will use the information and signatures I gathered, for other purposes?',
-                'a' => 'FreeCause - Online Petition treats privacy very seriously. The list of signatures will not be used under any circumstances, except to send the confirmation email to the signatory of a petition or if  the petitioner authorize us to contact others for petitions or other related events. Only in this case we can contact the complainant. In no cases we shall sell, trade or share signatory information with third parties. To learn more about privacy read also our code of ethics.<br /><br />Enter to read our <a href="https://www.test.freecause.com/ethical-code">Ethical Code</a>.'
+                'q' => 'xPetition will use the information and signatures I gathered, for other purposes?',
+                'a' => 'xPetition treats privacy very seriously. The list of signatures will not be used under any circumstances, except to send the confirmation email to the signatory of a petition or if  the petitioner authorize us to contact others for petitions or other related events. Only in this case we can contact the complainant. In no cases we shall sell, trade or share signatory information with third parties. To learn more about privacy read also our code of ethics.<br /><br />Enter to read our <a href="https://www.test.freecause.com/ethical-code">Ethical Code</a>.'
             ],
             [
-                'q' => 'Can my petition be put in the "Featured Petition" or in evidence on the home page of FreeCause - Online Petition?',
+                'q' => 'Can my petition be put in the "Featured Petition" or in evidence on the home page of xPetition?',
                 'a' => 'The petition highlighted in the window is more visible and this increases the number of signatures received. If you want your petition to be placed in the window, <a href="{CONTACTS_URL}">contattaci</a>.'
             ],
             [
@@ -135,12 +135,12 @@
     You should be looking for sites that have similar aspects to the subject of your petition. You will agree once you\'ve identified them to send emails to their webmaster and probabily they will insert the link of your petition. You can also click on the Bookmark link found at the top of each petition and refer to other social networks, where you can promote your petition.'
             ],
             [
-                'q' => 'How do I put a link that points to FreeCause - Online Petition?',
+                'q' => 'How do I put a link that points to xPetition?',
                 'a' => 'As with any other links, copy the address bar of your browser and paste it wherever you want.<br /><br />Or grab the embedding code on every page you will find petitions and paste it into the html code of your site.'
             ],
             [
-                'q' => 'Donations to FreeCause - Online Petition. How can I do a donation?',
-                'a' => 'Go to the donations page link at the top menu, there you will find all necessary information in order to send a donation.<br /><br />Pages {DONATIONS_LINK}<br /><br />FreeCause - Online Petition it is an independent site that holds only thanks to donations from users.'
+                'q' => 'Donations to xPetition. How can I do a donation?',
+                'a' => 'Go to the donations page link at the top menu, there you will find all necessary information in order to send a donation.<br /><br />Pages {DONATIONS_LINK}<br /><br />xPetition it is an independent site that holds only thanks to donations from users.'
             ],
         ],
     ];

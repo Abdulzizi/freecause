@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Freecause - Online Petition')
+@section('title', 'xPetition - Online Petition')
 
 @php
     $featuredUrl = $featuredPetition
@@ -289,7 +289,7 @@
     <section class="blog-section">
         <div class="container">
             <div class="text-center mb-4">
-                <h2 class="mb-2">{{ $content['blog_title'] ?? 'Latest from Freecause magazine' }}</h2>
+                <h2 class="mb-2">{{ $content['blog_title'] ?? 'Latest from xPetition magazine' }}</h2>
                 <p class="text-muted">{{ $content['blog_subtitle'] ?? 'Stay updated with our latest insights and news' }}
                 </p>
             </div>
