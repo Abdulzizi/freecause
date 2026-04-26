@@ -82,7 +82,8 @@
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
-                            <img src="{{ $petitionImg }}" alt="petition image" class="img-fluid fc-petition-img" loading="lazy">
+                            <img src="{{ $petitionImg }}" alt="" class="fc-petition-img-blur" aria-hidden="true">
+                            <img src="{{ $petitionImg }}" alt="petition image" class="fc-petition-img" loading="lazy">
                             @if ($petitionCredit)
                                 <span class="fc-img-credit">{{ $petitionCredit }}</span>
                             @endif
@@ -418,19 +419,32 @@
         margin-top: 8px !important;
     }
 
-    .fc-petition-img {
-        width: 100%;
-        height: 380px;
-        object-fit: cover;
-        border-radius: 8px;
-        display: block;
-    }
-
     .fc-img-wrap {
         position: relative;
         overflow: hidden;
         border-radius: 10px;
-        background: #f3f3f3;
+        background: #1a1a1a;
+        height: 380px;
+    }
+
+    .fc-petition-img-blur {
+        position: absolute;
+        inset: -15px;
+        width: calc(100% + 30px);
+        height: calc(100% + 30px);
+        object-fit: cover;
+        filter: blur(18px);
+        opacity: 0.55;
+        border-radius: 0;
+    }
+
+    .fc-petition-img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 380px;
+        object-fit: contain;
+        display: block;
     }
 
     .fc-img-credit {
