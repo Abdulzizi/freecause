@@ -6,8 +6,8 @@
     $isCreated = ($mode ?? 'signed') === 'created';
 
     $pageTitle = $isCreated
-        ? $content['title_created'] ?? 'Thanks! - FreeCause'
-        : $content['title_signed'] ?? 'Thank you for having signed - FreeCause';
+        ? $content['title_created'] ?? 'Thanks! - xPetition'
+        : $content['title_signed'] ?? 'Thank you for having signed - xPetition';
 
     $h1Text = $isCreated
         ? $content['h1_created'] ?? 'Thanks!'

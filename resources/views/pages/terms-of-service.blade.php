@@ -1,6 +1,6 @@
 {{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Terms of Service - FreeCause - Online Petition') --}}
+{{-- @section('title', 'Terms of Service - xPetition - Online Petition') --}}
 
 {{-- @section('content') --}}
     {{-- <section class="breadcrumb-section">
@@ -33,29 +33,29 @@
                                 {{-- <h4 class="headings">Terms of Service</h4>
 
                                 <div class="privacy-inner"> --}}
-                                    <h3>FreeCause User Agreement</h3>
+                                    <h3>xPetition User Agreement</h3>
 
                                     <p>"User" refers to any individual who loads any material to or from the
-                                        <strong>FreeCause</strong> server. A "user" includes, but is not limited to,
+                                        <strong>xPetition</strong> server. A "user" includes, but is not limited to,
                                         petition authors, 3rd party forum participants (anyone who has posted on a forum
                                         who is not a Member), individuals who make facebook comments on any of the
-                                        <strong>FreeCause</strong> website properties, and petition signers.
+                                        <strong>xPetition</strong> website properties, and petition signers.
                                     </p>
 
-                                    <p>"Member" means any person who authors a petition on the <strong>FreeCause</strong>
-                                        site or any person who joins the <strong>FreeCause</strong> community by opening
+                                    <p>"Member" means any person who authors a petition on the <strong>xPetition</strong>
+                                        site or any person who joins the <strong>xPetition</strong> community by opening
                                         an account.
                                     </p>
 
                                     <p>"Moderate", "moderated content", "moderation" refers to a process by
-                                        <strong>FreeCause</strong> where content is reviewed on a random sampling basis
-                                        or due to comments or feedback by 3rd parties. <strong>FreeCause</strong> uses a
+                                        <strong>xPetition</strong> where content is reviewed on a random sampling basis
+                                        or due to comments or feedback by 3rd parties. <strong>xPetition</strong> uses a
                                         part active, part passive moderation regime. Active moderation is conducted
                                         primarily on a random sampling basis. Passive moderation results from feedback
                                         by 3rd parties. Due to the massive volume of content posted to
-                                        <strong>FreeCause</strong>, not all content can be reviewed actively, and
+                                        <strong>xPetition</strong>, not all content can be reviewed actively, and
                                         therefore a large amount of content is automatically posted.
-                                        <strong>FreeCause</strong> does not warrant that any specific petition(s) or
+                                        <strong>xPetition</strong> does not warrant that any specific petition(s) or
                                         forum comment(s) has been actively moderated, reviewed or even seen by a human
                                         being.
                                     </p>
@@ -68,7 +68,7 @@
                                     <p>TOS:</p>
 
                                     <p>(1). User/Member Agreement: In consideration of being allowed to use the website
-                                        facilities provided by <strong>FreeCause</strong>, Users/Members agrees that
+                                        facilities provided by <strong>xPetition</strong>, Users/Members agrees that
                                         Users/Members will not:
                                     </p>
 
@@ -95,26 +95,26 @@
                                     <p>H. Impersonate another person.</p>
 
                                     <p>I. Submit false User/Member information when opening an account or signing a
-                                        petition. <strong>FreeCause</strong> reserves the right to edit, change or remove
+                                        petition. <strong>xPetition</strong> reserves the right to edit, change or remove
                                         an account, petitions or signatures or any other information when untruthful or
                                         inaccurate User/Member information is supplied. This includes but is not limited
                                         to Name, Address, City, State, zip (post) code and e-mail address. Members may
                                         post petitions or comments anonymously or by using a username (nickname) to
                                         protect identity as long as such usage does not conflict with the terms of use
-                                        herein. <strong>FreeCause</strong> reserves the right to ask a petition author to
+                                        herein. <strong>xPetition</strong> reserves the right to ask a petition author to
                                         confirm their identity and provide their residential or business address.
                                         Failure to furnish this inforamtion upon request may result in account closure.
                                     </p>
 
-                                    <p><strong>FreeCause</strong> also reserves the right to ask a petition author
+                                    <p><strong>xPetition</strong> also reserves the right to ask a petition author
                                         (whether an individual or organization) to publish a contact person (real name)
                                         on the relevant petition. Such a request can be made at the absolute discretion
-                                        of <strong>FreeCause</strong>. A request may be made, for example, because
-                                        <strong>FreeCause</strong> believes that legal issues exist beteween the parties
-                                        of a nature that demands identity transparency. <strong>FreeCause</strong>
+                                        of <strong>xPetition</strong>. A request may be made, for example, because
+                                        <strong>xPetition</strong> believes that legal issues exist beteween the parties
+                                        of a nature that demands identity transparency. <strong>xPetition</strong>
                                         encourages ADR (Alternative Dispute Resolution) procedures and this is often best
                                         served with a transparency policy. Failure to comply with a request from
-                                        <strong>FreeCause</strong> for identity transparency may result in account
+                                        <strong>xPetition</strong> for identity transparency may result in account
                                         closure.
                                     </p>
 
@@ -131,7 +131,7 @@
                                         of signatures is in breach of our terms, our intellectual property rights (see
                                         Term (4) below), and our privacy undertaking to signers.</p>
 
-                                    <p>L. Will not hold <strong>FreeCause</strong> responsible for the consequences of
+                                    <p>L. Will not hold <strong>xPetition</strong> responsible for the consequences of
                                         any search engine access to public signature list details.</p>
 
                                     <p>M. Upload a petition about any issue that is currently before the courts, or will
@@ -147,14 +147,14 @@
                                         regardless of whether such allegations may be true or not.</p>
 
                                     <p>O. Petition authors may not use bots or automated scripts to upload signatures or
-                                        other data to the <strong>FreeCause</strong> server, unless express permission is
-                                        supplied by <strong>FreeCause</strong>. A breach of this term may result in a
+                                        other data to the <strong>xPetition</strong> server, unless express permission is
+                                        supplied by <strong>xPetition</strong>. A breach of this term may result in a
                                         petition or account being disabled or closed.</p>
 
-                                    <p>P. Hold <strong>FreeCause</strong> liable in relation to third party search engine
-                                        activity. Listings of <strong>FreeCause</strong> content by search engines are
-                                        possible because <strong>FreeCause</strong> has a general data transparency
-                                        policy. To balance this policy, <strong>FreeCause</strong> has a rigorous Privacy
+                                    <p>P. Hold <strong>xPetition</strong> liable in relation to third party search engine
+                                        activity. Listings of <strong>xPetition</strong> content by search engines are
+                                        possible because <strong>xPetition</strong> has a general data transparency
+                                        policy. To balance this policy, <strong>xPetition</strong> has a rigorous Privacy
                                         Policy which enables data control and data protection. Urgent requests to search
                                         engines for content removal can be made by users to those search engines through
                                         the various request channels of those search engines.</p>
@@ -172,34 +172,34 @@
 
                                     <p>R. Petitions against neighbors, or petitions that involve disputes with neighbors
                                         who are individuals (not business or government entities) are generally not
-                                        permitted at <strong>FreeCause</strong>. Petitions against local school teachers,
+                                        permitted at <strong>xPetition</strong>. Petitions against local school teachers,
                                         school principals, school superintendents, school directors or administrators
-                                        are generally not permitted at <strong>FreeCause</strong>. Please use local
+                                        are generally not permitted at <strong>xPetition</strong>. Please use local
                                         neighborhood mediation services to resolve these types of disputes. In addition,
                                         petitions against local police officers or law enforcement personnel are not
                                         permitted. Internet petitions are often not appropriate in these cases.
-                                        <strong>FreeCause</strong> does not warrant that petitions on these subject
-                                        matters will not appear on the <strong>FreeCause</strong> website. This clause is
+                                        <strong>xPetition</strong> does not warrant that petitions on these subject
+                                        matters will not appear on the <strong>xPetition</strong> website. This clause is
                                         primarily for campaign guidance.
                                     </p>
 
                                     <p>(2). Regarding a Member's email address:</p>
 
                                     <p>A. A Member's email address will never be displayed publicly by
-                                        <strong>FreeCause</strong>. <strong>FreeCause</strong> has a strict privacy
+                                        <strong>xPetition</strong>. <strong>xPetition</strong> has a strict privacy
                                         policy that can be viewed on this website.
                                     </p>
 
                                     <p>B. Members will normally receive email alerts regarding mail sent to their
-                                        <strong>FreeCause</strong> mailbox. This alert feature may be switched off at any
+                                        <strong>xPetition</strong> mailbox. This alert feature may be switched off at any
                                         time by a member.
                                     </p>
 
-                                    <p>C. Members may receive periodic emails from <strong>FreeCause</strong> which relate
+                                    <p>C. Members may receive periodic emails from <strong>xPetition</strong> which relate
                                         to site functions.</p>
 
                                     <p>(3) (a) Members agree that their petition(s) and member profile(s) may be stored in
-                                        perpetuity in the <strong>FreeCause</strong> database. Members agree that if a
+                                        perpetuity in the <strong>xPetition</strong> database. Members agree that if a
                                         petition is closed it will be publicly archived for signers to see the results.
                                         A closed version of all petitions will remain live on the site. Archived petitions
                                         allow for data access by signers and targets. Members are not be permitted to
@@ -217,115 +217,115 @@
                                         <p>(c) Members acknowledge that they are responsible for their own content and any
                                             associated comments or fourm comments related to their petition(s). Members
                                             with petitions shall moderate comments associated with their petition(s) and
-                                            shall report abuse to <strong>FreeCause</strong> if they become aware of it.</p>
+                                            shall report abuse to <strong>xPetition</strong> if they become aware of it.</p>
                                     </div>
 
                                     <p>(4). License and copyright: By posting petitions and other communications,
-                                        User/Member grants to <strong>FreeCause</strong> a royalty-free, perpetual,
+                                        User/Member grants to <strong>xPetition</strong> a royalty-free, perpetual,
                                         irrevocable exclusive license to use, reproduce, modify, moderate, publish,
                                         translate, distribute, perform and display those communications, inclusive of
                                         signatures, alone or as part of other works in any form, media, or technology
-                                        whether now known or hereafter developed. <strong>FreeCause</strong> reserves any
+                                        whether now known or hereafter developed. <strong>xPetition</strong> reserves any
                                         and all intellectual property rights, including copyright or otherwise, attached
                                         to the publication of petitions, authored by members, on the
-                                        <strong>FreeCause</strong> website. Publication of a petition at
-                                        <strong>FreeCause</strong> does not automatically confer copyright to the owner.
+                                        <strong>xPetition</strong> website. Publication of a petition at
+                                        <strong>xPetition</strong> does not automatically confer copyright to the owner.
                                         Copyright of a petition text, if required, should be stated specifically in the
-                                        petition where copyright is required. <strong>FreeCause</strong> shall retain
-                                        copyright over all signature lists generated on the <strong>FreeCause</strong>
+                                        petition where copyright is required. <strong>xPetition</strong> shall retain
+                                        copyright over all signature lists generated on the <strong>xPetition</strong>
                                         website.
                                     </p>
 
-                                    <p>(5). Indemnity: Every User/Member agrees to hold harmless <strong>FreeCause</strong>
+                                    <p>(5). Indemnity: Every User/Member agrees to hold harmless <strong>xPetition</strong>
                                         and its officers and directors from any and all claims, actions or demands,
                                         resulting from User/Member material or personal information posted to any
-                                        facilities provided by <strong>FreeCause</strong>. Members, including petition
-                                        authors, agree to indemnify <strong>FreeCause</strong> for any legal claims
-                                        against <strong>FreeCause</strong> resulting from member content posted on the
-                                        <strong>FreeCause</strong> website, or any content endorsed by a member on the
+                                        facilities provided by <strong>xPetition</strong>. Members, including petition
+                                        authors, agree to indemnify <strong>xPetition</strong> for any legal claims
+                                        against <strong>xPetition</strong> resulting from member content posted on the
+                                        <strong>xPetition</strong> website, or any content endorsed by a member on the
                                         member's petition. The indemnity shall include all legals costs pre, during and
                                         post litigation resulting from any action by an agrieved party. The indemnity
                                         operates regarldless of whether the legal action is successfully defended by
-                                        <strong>FreeCause</strong> or not. All and any court costs orders, regardless of a
+                                        <strong>xPetition</strong> or not. All and any court costs orders, regardless of a
                                         case's outcome, are included in this indemnity.
                                     </p>
 
-                                    <p>Listings of <strong>FreeCause</strong> content by search engines such as Google are
-                                        the responsibility of those engines as <strong>FreeCause</strong> has a general
-                                        data transparency policy. <strong>FreeCause</strong>, however, allows and
-                                        encourages Members to control their own data. <strong>FreeCause</strong> seeks to
+                                    <p>Listings of <strong>xPetition</strong> content by search engines such as Google are
+                                        the responsibility of those engines as <strong>xPetition</strong> has a general
+                                        data transparency policy. <strong>xPetition</strong>, however, allows and
+                                        encourages Members to control their own data. <strong>xPetition</strong> seeks to
                                         balance the interests of data transparency, data control, Privacy, data access
                                         and search engine exposure for the benefit of our members and the general public.
-                                        <strong>FreeCause</strong>'s Privacy Policy forms part of this TOU.
+                                        <strong>xPetition</strong>'s Privacy Policy forms part of this TOU.
                                     </p>
 
-                                    <p>(6). Users and Members are subject to the <strong>FreeCause</strong> Disclaimer.
-                                        The Disclaimer forms part of these Terms. The <strong>FreeCause</strong> Privacy
+                                    <p>(6). Users and Members are subject to the <strong>xPetition</strong> Disclaimer.
+                                        The Disclaimer forms part of these Terms. The <strong>xPetition</strong> Privacy
                                         Policy is also subject to the Disclaimer and TOU. The Privacy Policy forms part
                                         of these Terms.</p>
 
-                                    <p>(7). <strong>FreeCause</strong> at its absolute discretion may release member or
+                                    <p>(7). <strong>xPetition</strong> at its absolute discretion may release member or
                                         signer contact and other identifying details to third parties without notice or
                                         reasons to the member or signer. This clause would be occasionally invoked, for
-                                        example, when <strong>FreeCause</strong> forms an opinion that the release of such
+                                        example, when <strong>xPetition</strong> forms an opinion that the release of such
                                         information would be fair or equitable or may help in a legitimate legal
                                         investigation, criminal or civil.</p>
 
                                     <p>(8). By subscribing to or using the Services, User acknowledges and agrees that
-                                        <strong>FreeCause</strong> is entitled to transfer User’s personal data to third
+                                        <strong>xPetition</strong> is entitled to transfer User’s personal data to third
                                         parties.<br />
-                                        If <strong>FreeCause</strong>, or substantially all of its assets were acquired,
-                                        or in the unlikely event that <strong>FreeCause</strong> goes out of business or
+                                        If <strong>xPetition</strong>, or substantially all of its assets were acquired,
+                                        or in the unlikely event that <strong>xPetition</strong> goes out of business or
                                         enters bankruptcy, user information would be one of the assets that is transferred
                                         or acquired by a third party. You acknowledge that such transfers may occur, and
-                                        that any acquirer of <strong>FreeCause</strong> may continue to use your personal
+                                        that any acquirer of <strong>xPetition</strong> may continue to use your personal
                                         information as set forth in this policy and that there may be changes to the
                                         policy.
                                     </p>
 
                                     <p>(9). Construction: Nothing in the Terms and Conditions shall be construed as
-                                        reducing or limiting <strong>FreeCause</strong>'s rights or interests as set forth
-                                        in the Disclaimer, or as expanding <strong>FreeCause</strong>'s duties,
+                                        reducing or limiting <strong>xPetition</strong>'s rights or interests as set forth
+                                        in the Disclaimer, or as expanding <strong>xPetition</strong>'s duties,
                                         obligations or liabilities beyond those provided for in the Terms and
                                         Conditions.</p>
 
-                                    <p>(10). <strong>FreeCause</strong> reserves the right to amend or change these terms
-                                        of service so as to improve the services of <strong>FreeCause</strong>.</p>
+                                    <p>(10). <strong>xPetition</strong> reserves the right to amend or change these terms
+                                        of service so as to improve the services of <strong>xPetition</strong>.</p>
 
-                                    <p>(11). While the services of <strong>FreeCause</strong> are generally free, we
+                                    <p>(11). While the services of <strong>xPetition</strong> are generally free, we
                                         reserve the right to place a sponsor's advertisement on the same page as a
                                         Member's petition. We also reserve the right to post a sponsor's url on a Member's
-                                        petition. <strong>FreeCause</strong> also offers premium services on a
+                                        petition. <strong>xPetition</strong> also offers premium services on a
                                         non-refundable
                                         fee basis.</p>
 
-                                    <p>(12) <strong>FreeCause</strong> may charge for premium services, on a non-refundable
-                                        basis, which may vary from time to time according to <strong>FreeCause</strong>'s
+                                    <p>(12) <strong>xPetition</strong> may charge for premium services, on a non-refundable
+                                        basis, which may vary from time to time according to <strong>xPetition</strong>'s
                                         discretion, use of server or administrative resources, and/or service
                                         availability. Premium service accounts with petitions that have massive signature
                                         counts may attract additional charges due to extra loads on server resources.
-                                        <strong>FreeCause</strong> may request the payment of premium services on an account
+                                        <strong>xPetition</strong> may request the payment of premium services on an account
                                         at its discretion. Such requests may be made, for example, in circumstances where
-                                        <strong>FreeCause</strong> forms the view that excessive administrative resources
+                                        <strong>xPetition</strong> forms the view that excessive administrative resources
                                         have been applied to an account.
                                     </p>
 
-                                    <p>(13). <strong>FreeCause</strong> has the right to moderate site content so that
-                                        <strong>FreeCause</strong>'s Terms are complied with. Due to the magnitude of
-                                        content on the site, <strong>FreeCause</strong> does not warrant that all content
-                                        is actively moderated. <strong>FreeCause</strong> does not warrant that its
+                                    <p>(13). <strong>xPetition</strong> has the right to moderate site content so that
+                                        <strong>xPetition</strong>'s Terms are complied with. Due to the magnitude of
+                                        content on the site, <strong>xPetition</strong> does not warrant that all content
+                                        is actively moderated. <strong>xPetition</strong> does not warrant that its
                                         moderation of content complies with the laws of relevant jurisdictions.
-                                        <strong>FreeCause</strong> has the right to remove any site content, including
+                                        <strong>xPetition</strong> has the right to remove any site content, including
                                         petitions and forums, without notice or reasons. Any content removal shall be at
-                                        <strong>FreeCause</strong>'s absolute discretion. Authors may submit a request for
-                                        removal of petition information, subject to <strong>FreeCause</strong>'s diescretion
+                                        <strong>xPetition</strong>'s absolute discretion. Authors may submit a request for
+                                        removal of petition information, subject to <strong>xPetition</strong>'s diescretion
                                         and an administrative fee. Petition or content removal may attract an
                                         administrative charge.
                                     </p>
 
-                                    <p>(14). <strong>FreeCause</strong> does not necessarily endorse any website or
+                                    <p>(14). <strong>xPetition</strong> does not necessarily endorse any website or
                                         advertiser displayed on the site. Ads served by a Google robot are not selected by
-                                        <strong>FreeCause</strong>.
+                                        <strong>xPetition</strong>.
                                     </p>
 
                                     <p>(15). The terms herein shall be governed by the protections afforded by the Supreme
@@ -334,8 +334,8 @@
                                         materials uploaded by members or users. Redress against member content lies with
                                         direct claims against members, authors and/or users, not this website.</p>
 
-                                    <p>(16). <strong>FreeCause</strong> is a premium content Website.
-                                        <strong>FreeCause</strong> agrees to supply a moderated premium content site that
+                                    <p>(16). <strong>xPetition</strong> is a premium content Website.
+                                        <strong>xPetition</strong> agrees to supply a moderated premium content site that
                                         displays and enhances petitions of local, national and international significance
                                         for the betterment of our members' interests.
                                     </p>

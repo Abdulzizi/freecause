@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Enarksis dwreas petytion se apla 3 vigmata',
-    'petition.edit_title' => 'Epektakse petytion - FreeCause',
+    'petition.edit_title' => 'Epektakse petytion - xPetition',
     'petition.step_create' => 'Dimiourgise tin petytion sou',
     'petition.step_share' => 'Moira se me filous',
     'petition.step_change' => 'Allakse ton kosmo!',

@@ -16,7 +16,7 @@
         <p style="white-space:pre-wrap;">{{ $message }}</p>
 
         <p style="margin-top:30px;font-size:13px;color:#777;">
-            FreeCause – Online Petition Platform
+            xPetition – Online Petition Platform
         </p>
     </div>
 </body>

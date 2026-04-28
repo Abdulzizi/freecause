@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Start a free petition In Just 3 Easy Steps',
-    'petition.edit_title' => 'Edit petition - FreeCause',
+    'petition.edit_title' => 'Edit petition - xPetition',
     'petition.step_create' => 'Create your petition',
     'petition.step_share' => 'Share with friends',
     'petition.step_change' => 'Change the world!',

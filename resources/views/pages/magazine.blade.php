@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Magazine - FreeCause')
+@section('title', 'Magazine - xPetition')
 @section('body_class', 'magazine')
 
 @section('content')
@@ -35,7 +35,7 @@
                     <div class="text-center py-4">
                         <h3 class="mb-3" style="font-weight:600;">Coming Soon</h3>
                         <p class="text-muted" style="font-size:16px;">
-                            The FreeCause magazine is under construction.<br>
+                            The xPetition magazine is under construction.<br>
                             Check back soon for articles, guides, and stories about activism and change.
                         </p>
                         <a href="{{ lroute('home') }}" class="btn btn-danger mt-3">Back to Home</a>

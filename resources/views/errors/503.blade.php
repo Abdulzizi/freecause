@@ -4,7 +4,7 @@
 
 @extends('layouts.legacy')
 
-@section('title', 'Maintenance - FreeCause')
+@section('title', 'Maintenance - xPetition')
 
 @section('content')
     <section class="py-5">
@@ -17,7 +17,7 @@
             <div class="bg-white shadow-sm rounded-3 p-4 mb-5" style="border:1px solid #eee;">
                 <div class="mb-2 headings">503</div>
                 <p style="font-size:15px; color:#555; margin-bottom:6px;">
-                    FreeCause is currently undergoing scheduled maintenance.
+                    xPetition is currently undergoing scheduled maintenance.
                 </p>
                 <p style="font-size:15px; color:#555; margin-bottom:20px;">
                     We will be back shortly. Thank you for your patience.

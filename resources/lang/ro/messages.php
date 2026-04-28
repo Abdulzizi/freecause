@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Incepe o petitie gratuita in doar 3 pasi simpli',
-    'petition.edit_title' => 'Editeaza petitia - FreeCause',
+    'petition.edit_title' => 'Editeaza petitia - xPetition',
     'petition.step_create' => 'Creaza petitia ta',
     'petition.step_share' => 'Impartaseste cu prietenii',
     'petition.step_change' => 'Schimba lumea!',

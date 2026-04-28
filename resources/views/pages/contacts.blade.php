@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Contacts - FreeCause - Online Petition')
+@section('title', 'Contacts - xPetition - Online Petition')
 @section('body_class', 'contacts')
 
 @section('content')

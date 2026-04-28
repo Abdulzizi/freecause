@@ -15,14 +15,14 @@
 
 <body style="font-family: Arial, sans-serif; background:#f4f4f4; padding:30px;">
     <div style="max-width:600px;margin:auto;background:#ffffff;padding:30px;border-radius:6px;">
-        <h2 style="margin-top:0;">{{ $greeting ?? 'Welcome to FreeCause' }}</h2>
+        <h2 style="margin-top:0;">{{ $greeting ?? 'Welcome to xPetition' }}</h2>
 
         <p>
             Hi {{ $firstName }},
         </p>
 
         <p>
-            Thank you for registering on FreeCause.
+            Thank you for registering on xPetition.
         </p>
 
         <p>
@@ -41,7 +41,7 @@
         </p>
 
         <p style="margin-top:30px;font-size:13px;color:#777;">
-            {{ $footer ?? 'FreeCause – Online Petition Platform' }}
+            {{ $footer ?? 'xPetition – Online Petition Platform' }}
         </p>
     </div>
 </body>

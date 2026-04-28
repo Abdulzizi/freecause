@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Start en gratis petition på kun 3 nemme trin',
-    'petition.edit_title' => 'Rediger petition - FreeCause',
+    'petition.edit_title' => 'Rediger petition - xPetition',
     'petition.step_create' => 'Opret din petition',
     'petition.step_share' => 'Del med venner',
     'petition.step_change' => 'Forandr verden!',

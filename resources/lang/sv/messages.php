@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Starta en gratis petition pa bara 3 enkla steg',
-    'petition.edit_title' => 'Redigera petition - FreeCause',
+    'petition.edit_title' => 'Redigera petition - xPetition',
     'petition.step_create' => 'Skapa din petition',
     'petition.step_share' => 'Dela med vanner',
     'petition.step_change' => 'Forandra varlden!',
