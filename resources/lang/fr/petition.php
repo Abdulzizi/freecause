@@ -2,7 +2,7 @@
 
 return [
     'create_title' => 'Lancez une petition gratuite en seulement 3 etapes',
-    'edit_title' => 'Modifier la petition - FreeCause',
+    'edit_title' => 'Modifier la petition - xPetition',
     'step_create' => 'Creez votre petition',
     'step_share' => 'Partagez avec vos amis',
     'step_change' => 'Changez le monde!',

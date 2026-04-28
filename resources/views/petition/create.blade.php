@@ -22,7 +22,7 @@
 
 @extends('layouts.legacy')
 
-@section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
+@section('title', $isEdit ? 'Edit petition - xPetition' : 'Create petition - xPetition')
 
 @section('content')
     <section class="py-5">

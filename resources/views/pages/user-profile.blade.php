@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', $user->display_name . ' - FreeCause')
+@section('title', $user->display_name . ' - xPetition')
 
 @section('content')
 

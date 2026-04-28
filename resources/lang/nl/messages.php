@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Start een gratis petitie in slechts 3 eenvoudige stappen',
-    'petition.edit_title' => 'Bewerk petitie - FreeCause',
+    'petition.edit_title' => 'Bewerk petitie - xPetition',
     'petition.step_create' => 'Maak je petitie',
     'petition.step_share' => 'Deel met vrienden',
     'petition.step_change' => 'Verander de wereld!',

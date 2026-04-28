@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'My petitions - FreeCause')
+@section('title', 'My petitions - xPetition')
 
 @section('content')
     <section class="py-4">

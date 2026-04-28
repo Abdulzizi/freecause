@@ -1,6 +1,6 @@
 {{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Privacy Policy - FreeCause - Online Petition') --}}
+{{-- @section('title', 'Privacy Policy - xPetition - Online Petition') --}}
 {{-- @section('body_class', 'privacy-policy') --}}
 
 {{-- @section('content') --}}

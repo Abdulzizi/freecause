@@ -83,6 +83,9 @@ class HomeController extends Controller
                 ->get();
         });
 
+        // phpredis can deserialize Eloquent collection items as arrays — normalise back to objects
+        $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->all()));
+
         $recentActivities = cache()->remember("home:recent:{$locale}", 300, function () use ($locale, $defaultLocale) {
             return DB::select("
                 SELECT s.*, p.id as petition_id,

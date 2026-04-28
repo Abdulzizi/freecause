@@ -2,7 +2,7 @@
 
 return [
     'create_title' => 'Sadece 3 kolay adimda ucretsiz bir petitions baslatin',
-    'edit_title' => 'Petitions duzenle - FreeCause',
+    'edit_title' => 'Petitions duzenle - xPetition',
     'step_create' => 'Petitionsinizi olusturun',
     'step_share' => 'Arkadaslarla paylasin',
     'step_change' => 'Dunyayi degistirin!',

@@ -1,6 +1,6 @@
 {{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Ethical code - FreeCause - Online Petition') --}}
+{{-- @section('title', 'Ethical code - xPetition - Online Petition') --}}
 {{-- @section('body_class', 'ethical-code') --}}
 
 {{-- @section('content') --}}
@@ -36,7 +36,7 @@
                                     <h2 class="title">Our code of ethics</h2>
 
                                     <p>
-                                        The operations of <em>FreeCause</em> are carried out in alignment with the values
+                                        The operations of <em>xPetition</em> are carried out in alignment with the values
                                         and principles outlined in
                                         our ethical code, which serves as an inspiration for every company representative,
                                         employee, and
@@ -65,7 +65,7 @@
                                     </p>
 
                                     <p>
-                                        With this Code of Ethics, the <em>FreeCause</em> network formally adopts the
+                                        With this Code of Ethics, the <em>xPetition</em> network formally adopts the
                                         principles of legitimacy,
                                         integrity, transparency, and verifiability as its guiding standards. This code
                                         establishes the
@@ -85,7 +85,7 @@
                                     </p>
 
                                     <p>
-                                        <em>FreeCause</em> does not accept financial contributions from governments or
+                                        <em>xPetition</em> does not accept financial contributions from governments or
                                         associations. Our only source
                                         of financial support comes from advertisements displayed on our web pages. These
                                         advertisements are
@@ -113,16 +113,16 @@
                                     <h2 class="title">Ethical Code</h2>
 
                                     <p>
-                                        <em>FreeCause</em> operates in the field of online petition collection. Our business
+                                        <em>xPetition</em> operates in the field of online petition collection. Our business
                                         model is built on
                                         upholding high ethical values, such as full compliance with the law, respect for
                                         workers and their
                                         rights, and fair competition among industry peers. Remaining true to our founding
                                         principles,
-                                        <em>FreeCause</em> is committed to honesty, transparency, discretion, security, and
+                                        <em>xPetition</em> is committed to honesty, transparency, discretion, security, and
                                         fair competition. This
                                         Code of Conduct serves as a benchmark for all individuals contributing to
-                                        <em>FreeCause</em>, particularly
+                                        <em>xPetition</em>, particularly
                                         those in leadership roles.
                                     </p>
 
@@ -130,13 +130,13 @@
 
                                     <h2 class="title">Trust</h2>
                                     <p>
-                                        <em>FreeCause</em>'s success is rooted in mutual trust among all stakeholders who
+                                        <em>xPetition</em>'s success is rooted in mutual trust among all stakeholders who
                                         contribute daily to the
                                         company, including clients, employees, representatives, and partners. This trust is
                                         built upon a
                                         shared mission, adherence to our values, and strict compliance with this code. A
                                         lack of respect for
-                                        these principles at any level is incompatible with <em>FreeCause</em>’s mission.
+                                        these principles at any level is incompatible with <em>xPetition</em>’s mission.
                                         Therefore, mutual respect is
                                         essential and fosters a culture of cooperation, characterized by professionalism,
                                         ethical behavior,
@@ -147,14 +147,14 @@
                                     <p>
                                         Valuing our human resources, respecting their independence, and encouraging their
                                         participation in
-                                        company decisions are core principles of <em>FreeCause</em>. We provide training and
+                                        company decisions are core principles of <em>xPetition</em>. We provide training and
                                         development programs to
                                         enhance professional skills and support employees in their career growth.
                                     </p>
 
                                     <h2 class="title">Honesty</h2>
                                     <p>
-                                        <em>FreeCause</em> ensures that all members, employees, and partners understand the
+                                        <em>xPetition</em> ensures that all members, employees, and partners understand the
                                         ethical implications of
                                         their actions and do not seek personal or corporate gain at the expense of legal
                                         compliance and
@@ -167,7 +167,7 @@
 
                                     <h2 class="title">Transparency</h2>
                                     <p>
-                                        <em>FreeCause</em> is committed to maintaining a clear, accurate, and comprehensive
+                                        <em>xPetition</em> is committed to maintaining a clear, accurate, and comprehensive
                                         portrayal of its business
                                         operations. We provide complete and transparent information regarding the principles
                                         guiding our
@@ -176,7 +176,7 @@
 
                                     <h2 class="title">Privacy</h2>
                                     <p>
-                                        Due to the nature of our operations, <em>FreeCause</em> ensures that all employees
+                                        Due to the nature of our operations, <em>xPetition</em> ensures that all employees
                                         and partners protect users'
                                         privacy. We safeguard personal information in compliance with applicable privacy
                                         laws and use
@@ -191,17 +191,17 @@
 
                                     <h2 class="title">Fairness</h2>
                                     <p>
-                                        <em>FreeCause</em> requires all members, employees, and partners to act with
+                                        <em>xPetition</em> requires all members, employees, and partners to act with
                                         fairness and integrity, avoiding
                                         opportunistic or discriminatory behavior. As an equal opportunity employer,
-                                        <em>FreeCause</em> does not
+                                        <em>xPetition</em> does not
                                         discriminate based on race, color, age, gender, disability, or any other
                                         characteristic.
                                     </p>
 
                                     <h2 class="title">Health and Safety in the Workplace</h2>
                                     <p>
-                                        <em>FreeCause</em> ensures that all employees and partners comply with safety
+                                        <em>xPetition</em> ensures that all employees and partners comply with safety
                                         measures in line with
                                         technological advancements. We are committed to safeguarding the physical and moral
                                         well-being of

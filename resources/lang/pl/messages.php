@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Rozpocznij darmowa petycje w zaledwie 3 prostych krokach',
-    'petition.edit_title' => 'Edytuj petycje - FreeCause',
+    'petition.edit_title' => 'Edytuj petycje - xPetition',
     'petition.step_create' => 'Utworz swoja petycje',
     'petition.step_share' => 'Podziel sie z przyjaciolmi',
     'petition.step_change' => 'Zmien swiat!',

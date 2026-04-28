@@ -6,7 +6,7 @@
     $content = $content ?? collect();
 
     $petitionTitle = e($tr->title ?? ($petition->title ?? 'Petition'));
-    $pageTitleTmpl = $content['title'] ?? ':title - FreeCause';
+    $pageTitleTmpl = $content['title'] ?? ':title - xPetition';
     $pageTitle = str_replace(':title', $petitionTitle, $pageTitleTmpl);
 
     $petitionImg = $petition->coverUrl();

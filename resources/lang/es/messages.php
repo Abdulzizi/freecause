@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Inicia una petición gratis en solo 3 pasos',
-    'petition.edit_title' => 'Editar petición - FreeCause',
+    'petition.edit_title' => 'Editar petición - xPetition',
     'petition.step_create' => 'Crea tu petición',
     'petition.step_share' => 'Comparte con amigos',
     'petition.step_change' => '¡Cambia el mundo!',

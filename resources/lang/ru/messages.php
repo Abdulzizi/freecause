@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Nachnite besplatnuyu peticiyu vsego za 3 shaga',
-    'petition.edit_title' => 'Redaktirovat peticiyu - FreeCause',
+    'petition.edit_title' => 'Redaktirovat peticiyu - xPetition',
     'petition.step_create' => 'Sozdajte vashu peticiyu',
     'petition.step_share' => 'Podelites s druzjami',
     'petition.step_change' => 'Izmenite mir!',
