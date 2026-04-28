@@ -121,6 +121,7 @@ class HomeController extends Controller
                 })
                 ->where('petitions.status', 'published')
                 ->where('petitions.is_active', 1)
+                ->where('petitions.is_featured', 1)
                 ->whereNotIn('petitions.id', $excludedIds)
                 ->orderByDesc('petitions.signature_count')
                 ->limit($maxFeatured)
