@@ -90,4 +90,76 @@ return [
     'common.no' => 'Nej',
     'common.required' => 'Obligatorisk',
     'common.optional' => 'Valgfrit',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Log ind med din konto med',
+    'auth.continue_google' => 'Fortsæt med Google',
+    'auth.or' => 'ELLER',
+    'auth.remember_me' => 'Husk mig',
+    'auth.resend_verification' => 'Gensend aktiveringsmail',
+    'auth.not_member' => 'Ikke medlem endnu?',
+    'auth.sign_up_now' => 'Tilmeld dig nu',
+    'auth.already_member' => 'Allerede medlem?',
+    'auth.sign_in_now' => 'Log ind nu',
+    'auth.create_account' => 'Opret din konto',
+    'auth.accept_terms' => 'Jeg accepterer brugsbetingelserne',
+    'auth.nickname_hint' => 'Privatliv i søgemaskiner? Du kan bruge et kaldenavn:',
+    'auth.email_placeholder' => 'Indtast din e-mail',
+    'auth.password_placeholder' => 'Indtast din adgangskode',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Nylige underskriftsindsamlinger jeg har underskrevet',
+    'myp.signed_empty' => 'Ingen underskrevne underskriftsindsamlinger endnu.',
+    'myp.full_list' => '» fuld liste',
+    'myp.created_heading' => 'Nylige underskriftsindsamlinger jeg har oprettet',
+    'myp.created_empty' => 'Ingen oprettede underskriftsindsamlinger endnu.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'Alle underskrifter',
+    'sig.total' => 'i alt',
+    'sig.sign_link' => 'Underskriv denne indsamling »',
+    'sig.no_signatures' => 'Ingen underskrifter endnu. Vær den første til at underskrive!',
+    'sig.anonymous' => 'Anonym',
+    'sig.continue' => 'fortsæt læsning »',
+    'sig.goal' => 'Mål:',
+    'sig.signatures' => 'underskrifter',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title' => 'Kontakt',
+    'contacts.home' => 'Hjem',
+    'contacts.name_label' => 'Navn (obligatorisk)',
+    'contacts.email_label' => 'E-mail (obligatorisk)',
+    'contacts.text_label' => 'Tekst (obligatorisk)',
+    'contacts.submit' => 'Send',
+    'contacts.name_placeholder' => 'Navn',
+    'contacts.email_placeholder' => 'E-mail',
+    'contacts.text_placeholder' => 'Tekst',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Underskriftsindsamlingsdata',
+    'create.select_one' => '(vælg en)',
+    'create.signatures_sfx' => 'underskrifter',
+    'create.tags_hint' => 'Maks 10 nøgleord, adskilt af komma',
+    'create.update' => 'Opdater',
+    'create.login_required' => 'Log venligst ind eller registrer dig ovenfor for at indsende.',
 ];

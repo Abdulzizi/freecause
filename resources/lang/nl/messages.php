@@ -90,4 +90,76 @@ return [
     'common.no' => 'Nee',
     'common.required' => 'Verplicht',
     'common.optional' => 'Optioneel',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Inloggen met uw account via',
+    'auth.continue_google' => 'Doorgaan met Google',
+    'auth.or' => 'OF',
+    'auth.remember_me' => 'Onthoud mij',
+    'auth.resend_verification' => 'Activeringsmail opnieuw versturen',
+    'auth.not_member' => 'Nog geen lid?',
+    'auth.sign_up_now' => 'Nu aanmelden',
+    'auth.already_member' => 'Al lid?',
+    'auth.sign_in_now' => 'Nu inloggen',
+    'auth.create_account' => 'Uw account aanmaken',
+    'auth.accept_terms' => 'Ik ga akkoord met de Gebruiksvoorwaarden',
+    'auth.nickname_hint' => 'Privacy in zoekmachines? U kunt een bijnaam gebruiken:',
+    'auth.email_placeholder' => 'Voer uw e-mail in',
+    'auth.password_placeholder' => 'Voer uw wachtwoord in',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Recente petities die ik heb ondertekend',
+    'myp.signed_empty' => 'Nog geen ondertekende petities.',
+    'myp.full_list' => '» volledige lijst',
+    'myp.created_heading' => 'Recente petities die ik heb aangemaakt',
+    'myp.created_empty' => 'Nog geen aangemaakte petities.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'Alle handtekeningen',
+    'sig.total' => 'totaal',
+    'sig.sign_link' => 'Onderteken deze petitie »',
+    'sig.no_signatures' => 'Nog geen handtekeningen. Wees de eerste!',
+    'sig.anonymous' => 'Anoniem',
+    'sig.continue' => 'verder lezen »',
+    'sig.goal' => 'Doel:',
+    'sig.signatures' => 'handtekeningen',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title' => 'Contact',
+    'contacts.home' => 'Home',
+    'contacts.name_label' => 'Naam (verplicht)',
+    'contacts.email_label' => 'E-mail (verplicht)',
+    'contacts.text_label' => 'Tekst (verplicht)',
+    'contacts.submit' => 'Versturen',
+    'contacts.name_placeholder' => 'Naam',
+    'contacts.email_placeholder' => 'E-mail',
+    'contacts.text_placeholder' => 'Tekst',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Petitiegegevens',
+    'create.select_one' => '(selecteer een)',
+    'create.signatures_sfx' => 'handtekeningen',
+    'create.tags_hint' => 'Max 10 trefwoorden, gescheiden door komma',
+    'create.update' => 'Bijwerken',
+    'create.login_required' => 'Log in of registreer hierboven om in te dienen.',
 ];

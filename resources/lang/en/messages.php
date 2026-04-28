@@ -90,4 +90,76 @@ return [
     'common.no' => 'No',
     'common.required' => 'Required',
     'common.optional' => 'Optional',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title'             => 'Contacts',
+    'contacts.home'              => 'Home',
+    'contacts.name_label'        => 'Name (mandatory)',
+    'contacts.name_placeholder'  => 'Name',
+    'contacts.email_label'       => 'Email (mandatory)',
+    'contacts.email_placeholder' => 'Email',
+    'contacts.text_label'        => 'Text (mandatory)',
+    'contacts.text_placeholder'  => 'Text',
+    'contacts.submit'            => 'Submit',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Sign In Using Your Account With',
+    'auth.continue_google' => 'Continue with Google',
+    'auth.or' => 'OR',
+    'auth.remember_me' => 'Remember me',
+    'auth.resend_verification' => 'Resend activation email',
+    'auth.not_member' => 'Not a member yet?',
+    'auth.sign_up_now' => 'Sign up now',
+    'auth.already_member' => 'Already a member?',
+    'auth.sign_in_now' => 'Sign in now',
+    'auth.create_account' => 'Create Your Account',
+    'auth.accept_terms' => 'I accept the Terms and Conditions of Use',
+    'auth.nickname_hint' => 'Privacy in the search engines? You can use a nickname:',
+    'auth.email_placeholder' => 'Enter your email',
+    'auth.password_placeholder' => 'Enter your password',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Recent Petitions I Have Signed',
+    'myp.signed_empty' => 'No signed petitions yet.',
+    'myp.full_list' => '» full list',
+    'myp.created_heading' => 'Recent Petitions I Have Created',
+    'myp.created_empty' => 'No created petitions yet.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'All Signatures',
+    'sig.total' => 'total',
+    'sig.sign_link' => 'Sign this petition »',
+    'sig.no_signatures' => 'No signatures yet. Be the first to sign!',
+    'sig.anonymous' => 'Anonymous',
+    'sig.continue' => 'continue reading »',
+    'sig.goal' => 'Goal:',
+    'sig.signatures' => 'signatures',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Petition Data',
+    'create.select_one' => '(select one)',
+    'create.signatures_sfx' => 'signatures',
+    'create.tags_hint' => '10 keywords max, separated by comma',
+    'create.update' => 'Update',
+    'create.login_required' => 'Please login or register above to submit.',
 ];
