@@ -90,4 +90,76 @@ return [
     'common.no' => 'Nu',
     'common.required' => 'Obligatoriu',
     'common.optional' => 'Optional',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Conectați-vă cu contul dvs. prin',
+    'auth.continue_google' => 'Continuați cu Google',
+    'auth.or' => 'SAU',
+    'auth.remember_me' => 'Ține-mă minte',
+    'auth.resend_verification' => 'Retrimite email de activare',
+    'auth.not_member' => 'Nu ești încă membru?',
+    'auth.sign_up_now' => 'Înregistrează-te acum',
+    'auth.already_member' => 'Ești deja membru?',
+    'auth.sign_in_now' => 'Conectează-te acum',
+    'auth.create_account' => 'Creează-ți contul',
+    'auth.accept_terms' => 'Accept Termenii și Condițiile de Utilizare',
+    'auth.nickname_hint' => 'Confidențialitate în motoarele de căutare? Poți folosi un pseudonim:',
+    'auth.email_placeholder' => 'Introduceți emailul',
+    'auth.password_placeholder' => 'Introduceți parola',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Petiții recente pe care le-am semnat',
+    'myp.signed_empty' => 'Nicio petiție semnată încă.',
+    'myp.full_list' => '» lista completă',
+    'myp.created_heading' => 'Petiții recente pe care le-am creat',
+    'myp.created_empty' => 'Nicio petiție creată încă.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'Toate semnăturile',
+    'sig.total' => 'total',
+    'sig.sign_link' => 'Semnează această petiție »',
+    'sig.no_signatures' => 'Nicio semnătură încă. Fii primul care semnează!',
+    'sig.anonymous' => 'Anonim',
+    'sig.continue' => 'citește mai mult »',
+    'sig.goal' => 'Obiectiv:',
+    'sig.signatures' => 'semnături',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title' => 'Contact',
+    'contacts.home' => 'Acasă',
+    'contacts.name_label' => 'Nume (obligatoriu)',
+    'contacts.email_label' => 'Email (obligatoriu)',
+    'contacts.text_label' => 'Text (obligatoriu)',
+    'contacts.submit' => 'Trimite',
+    'contacts.name_placeholder' => 'Nume',
+    'contacts.email_placeholder' => 'Email',
+    'contacts.text_placeholder' => 'Text',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Date petiție',
+    'create.select_one' => '(selectați)',
+    'create.signatures_sfx' => 'semnături',
+    'create.tags_hint' => 'Max 10 cuvinte cheie, separate prin virgulă',
+    'create.update' => 'Actualizează',
+    'create.login_required' => 'Vă rugăm să vă autentificați sau să vă înregistrați mai sus pentru a trimite.',
 ];

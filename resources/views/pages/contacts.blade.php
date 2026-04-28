@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Contacts - xPetition - Online Petition')
+@section('title', __('messages.contacts.title') . ' - xPetition')
 @section('body_class', 'contacts')
 
 @section('content')
@@ -8,13 +8,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">Contacts</h2>
+                    <h2 class="page-titles">{{ __('messages.contacts.title') }}</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
-                                <a href="{{ lroute('home') }}">Home</a>
+                                <a href="{{ lroute('home') }}">{{ __('messages.contacts.home') }}</a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">Contacts</li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ __('messages.contacts.title') }}</li>
                         </ol>
                     </nav>
                 </div>
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h4 class="headings">Contacts</h4>
+                                <h4 class="headings">{{ __('messages.contacts.title') }}</h4>
 
                                 @if (session('success'))
                                     <div class="alert alert-success">
@@ -44,25 +44,25 @@
                                         <input type="hidden" name="__contacts" value="1" />
 
                                         <div class="mb-3">
-                                            <label for="contact_name" class="form-label">Name (mandatory)</label>
-                                            <input id="contact_name" type="text" name="name" class="form-control" placeholder="Name"
+                                            <label for="contact_name" class="form-label">{{ __('messages.contacts.name_label') }}</label>
+                                            <input id="contact_name" type="text" name="name" class="form-control" placeholder="{{ __('messages.contacts.name_placeholder') }}"
                                                 value="" />
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="contact_email" class="form-label">Email (mandatory)</label>
-                                            <input id="contact_email" type="email" name="email" class="form-control" placeholder="Email"
+                                            <label for="contact_email" class="form-label">{{ __('messages.contacts.email_label') }}</label>
+                                            <input id="contact_email" type="email" name="email" class="form-control" placeholder="{{ __('messages.contacts.email_placeholder') }}"
                                                 value="" />
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="contact_text" class="form-label">Text (mandatory)</label>
+                                            <label for="contact_text" class="form-label">{{ __('messages.contacts.text_label') }}</label>
                                             <textarea id="contact_text" name="text" class="form-control" rows="5"
-                                                placeholder="Text"></textarea>
+                                                placeholder="{{ __('messages.contacts.text_placeholder') }}"></textarea>
                                         </div>
 
                                         <div class="mb-3">
-                                            <input type="submit" class="btn btn-primary" value="Submit">
+                                            <input type="submit" class="btn btn-primary" value="{{ __('messages.contacts.submit') }}">
                                         </div>
                                     </fieldset>
                                 </form>

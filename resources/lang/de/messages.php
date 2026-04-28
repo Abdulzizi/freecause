@@ -90,4 +90,76 @@ return [
     'common.no' => 'Nein',
     'common.required' => 'Pflichtfeld',
     'common.optional' => 'Optional',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Mit Ihrem Konto anmelden mit',
+    'auth.continue_google' => 'Mit Google fortfahren',
+    'auth.or' => 'ODER',
+    'auth.remember_me' => 'Angemeldet bleiben',
+    'auth.resend_verification' => 'Aktivierungs-E-Mail erneut senden',
+    'auth.not_member' => 'Noch kein Mitglied?',
+    'auth.sign_up_now' => 'Jetzt registrieren',
+    'auth.already_member' => 'Bereits Mitglied?',
+    'auth.sign_in_now' => 'Jetzt anmelden',
+    'auth.create_account' => 'Konto erstellen',
+    'auth.accept_terms' => 'Ich akzeptiere die Nutzungsbedingungen',
+    'auth.nickname_hint' => 'Privatsphäre in Suchmaschinen? Sie können einen Spitznamen verwenden:',
+    'auth.email_placeholder' => 'E-Mail eingeben',
+    'auth.password_placeholder' => 'Passwort eingeben',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Zuletzt unterzeichnete Petitionen',
+    'myp.signed_empty' => 'Noch keine unterzeichneten Petitionen.',
+    'myp.full_list' => '» vollständige Liste',
+    'myp.created_heading' => 'Zuletzt erstellte Petitionen',
+    'myp.created_empty' => 'Noch keine erstellten Petitionen.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'Alle Unterschriften',
+    'sig.total' => 'gesamt',
+    'sig.sign_link' => 'Diese Petition unterzeichnen »',
+    'sig.no_signatures' => 'Noch keine Unterschriften. Seien Sie der Erste!',
+    'sig.anonymous' => 'Anonym',
+    'sig.continue' => 'weiterlesen »',
+    'sig.goal' => 'Ziel:',
+    'sig.signatures' => 'Unterschriften',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title' => 'Kontakt',
+    'contacts.home' => 'Startseite',
+    'contacts.name_label' => 'Name (Pflichtfeld)',
+    'contacts.email_label' => 'E-Mail (Pflichtfeld)',
+    'contacts.text_label' => 'Text (Pflichtfeld)',
+    'contacts.submit' => 'Senden',
+    'contacts.name_placeholder' => 'Name',
+    'contacts.email_placeholder' => 'E-Mail',
+    'contacts.text_placeholder' => 'Text',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Petitionsdaten',
+    'create.select_one' => '(bitte wählen)',
+    'create.signatures_sfx' => 'Unterschriften',
+    'create.tags_hint' => 'Max. 10 Schlüsselwörter, durch Komma getrennt',
+    'create.update' => 'Aktualisieren',
+    'create.login_required' => 'Bitte melden Sie sich an oder registrieren Sie sich oben, um abzusenden.',
 ];

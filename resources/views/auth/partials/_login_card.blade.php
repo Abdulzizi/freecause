@@ -1,6 +1,6 @@
 <div class="bg-white rounded-3 shadow-sm p-4" style="border:1px solid #eee;">
     <div class="mb-3">
-        <div class="fw-semibold">Login</div>
+        <div class="fw-semibold">{{ __('messages.auth.login') }}</div>
         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
     </div>
 
@@ -15,23 +15,23 @@
         <input type="hidden" name="redirect" value="{{ $redirect }}">
 
         <div class="mb-3">
-            <label class="form-label mb-1">Email</label>
+            <label class="form-label mb-1">{{ __('messages.auth.email') }}</label>
             <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">Password</label>
+            <label class="form-label mb-1">{{ __('messages.auth.password') }}</label>
             <input type="password" name="password" class="form-control" required>
         </div>
 
         <button type="submit" class="btn btn-danger px-4" style="border-radius:6px;">
-            Login
+            {{ __('messages.auth.login') }}
         </button>
 
         <div class="mt-3">
-            <a href="{{ lroute('register') }}" class="red d-block fw-bold">Not a member yet? Sign up now</a>
-            <a href="{{ lroute('password.request') }}" class="red d-block mt-2">Forgot password?</a>
-            <a href="{{ lroute('verification.resend.form') }}" class="red d-block">Resend activation email</a>
+            <a href="{{ lroute('register') }}" class="red d-block fw-bold">{{ __('messages.auth.not_member') }} {{ __('messages.auth.sign_up_now') }}</a>
+            <a href="{{ lroute('password.request') }}" class="red d-block mt-2">{{ __('messages.auth.forgot_password') }}</a>
+            <a href="{{ lroute('verification.resend.form') }}" class="red d-block">{{ __('messages.auth.resend_verification') }}</a>
         </div>
     </form>
 </div>

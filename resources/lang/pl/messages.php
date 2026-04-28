@@ -31,8 +31,8 @@ return [
     'form.community_url' => 'URL spolecznosci',
     'form.city' => 'Miasto',
     'form.submit' => 'Wyslij',
-    'form.podglad' => 'Podglad',
-    'form.anuluj' => 'Anuluj',
+    'form.preview' => 'Podgląd',
+    'form.cancel' => 'Anuluj',
 
     /*
     |--------------------------------------------------------------------------
@@ -90,4 +90,76 @@ return [
     'common.no' => 'Nie',
     'common.required' => 'Wymagane',
     'common.optional' => 'Opcjonalne',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Extended
+    |--------------------------------------------------------------------------
+    */
+    'auth.google_heading' => 'Zaloguj się za pomocą swojego konta przez',
+    'auth.continue_google' => 'Kontynuuj z Google',
+    'auth.or' => 'LUB',
+    'auth.remember_me' => 'Zapamiętaj mnie',
+    'auth.resend_verification' => 'Wyślij ponownie e-mail aktywacyjny',
+    'auth.not_member' => 'Nie jesteś jeszcze członkiem?',
+    'auth.sign_up_now' => 'Zarejestruj się teraz',
+    'auth.already_member' => 'Jesteś już członkiem?',
+    'auth.sign_in_now' => 'Zaloguj się teraz',
+    'auth.create_account' => 'Utwórz swoje konto',
+    'auth.accept_terms' => 'Akceptuję Warunki korzystania z usługi',
+    'auth.nickname_hint' => 'Prywatność w wyszukiwarkach? Możesz użyć pseudonimu:',
+    'auth.email_placeholder' => 'Wprowadź swój e-mail',
+    'auth.password_placeholder' => 'Wprowadź swoje hasło',
+
+    /*
+    |--------------------------------------------------------------------------
+    | My Petitions Page
+    |--------------------------------------------------------------------------
+    */
+    'myp.signed_heading' => 'Ostatnie petycje, które podpisałem',
+    'myp.signed_empty' => 'Brak podpisanych petycji.',
+    'myp.full_list' => '» pełna lista',
+    'myp.created_heading' => 'Ostatnie petycje, które utworzyłem',
+    'myp.created_empty' => 'Brak utworzonych petycji.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signatures Page
+    |--------------------------------------------------------------------------
+    */
+    'sig.all_signatures' => 'Wszystkie podpisy',
+    'sig.total' => 'łącznie',
+    'sig.sign_link' => 'Podpisz tę petycję »',
+    'sig.no_signatures' => 'Brak podpisów. Bądź pierwszy!',
+    'sig.anonymous' => 'Anonimowy',
+    'sig.continue' => 'czytaj dalej »',
+    'sig.goal' => 'Cel:',
+    'sig.signatures' => 'podpisy',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contacts Page
+    |--------------------------------------------------------------------------
+    */
+    'contacts.title' => 'Kontakt',
+    'contacts.home' => 'Strona główna',
+    'contacts.name_label' => 'Imię (wymagane)',
+    'contacts.email_label' => 'E-mail (wymagane)',
+    'contacts.text_label' => 'Tekst (wymagane)',
+    'contacts.submit' => 'Wyślij',
+    'contacts.name_placeholder' => 'Imię',
+    'contacts.email_placeholder' => 'E-mail',
+    'contacts.text_placeholder' => 'Tekst',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Petition Page
+    |--------------------------------------------------------------------------
+    */
+    'create.petition_data' => 'Dane petycji',
+    'create.select_one' => '(wybierz)',
+    'create.signatures_sfx' => 'podpisy',
+    'create.tags_hint' => 'Maks. 10 słów kluczowych oddzielonych przecinkami',
+    'create.update' => 'Aktualizuj',
+    'create.login_required' => 'Zaloguj się lub zarejestruj powyżej, aby wysłać.',
 ];
