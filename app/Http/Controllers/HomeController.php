@@ -98,6 +98,9 @@ class HomeController extends Controller
             ", [$locale, $defaultLocale]);
         });
 
+        // phpredis can deserialize DB::select() stdClass results as arrays — normalise back to objects
+        $recentActivities = array_map(fn ($r) => is_array($r) ? (object) $r : $r, (array) $recentActivities);
+
         $maxFeatured = (int) Settings::get('max_featured_petitions_per_country', 5, 'global');
         if ($maxFeatured < 1) {
             $maxFeatured = 5;
@@ -176,6 +179,9 @@ class HomeController extends Controller
                 return [];
             }
         });
+
+        // phpredis can deserialize DB::select() stdClass results as arrays — normalise back to objects
+        $magazinePosts = array_map(fn ($r) => is_array($r) ? (object) $r : $r, (array) $magazinePosts);
 
         return view('pages.home', compact(
             'content',
