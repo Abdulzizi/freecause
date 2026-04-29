@@ -83,7 +83,10 @@ class HomeController extends Controller
                 ->get();
         });
 
-        // phpredis can deserialize Eloquent collection items as arrays — normalise back to objects
+        // phpredis can deserialize Eloquent collection as array — normalise back to collection of objects
+        if (is_array($categories)) {
+            $categories = collect($categories);
+        }
         $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->all()));
 
         $recentActivities = cache()->remember("home:recent:{$locale}", 300, function () use ($locale, $defaultLocale) {
