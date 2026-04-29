@@ -220,6 +220,7 @@ return [
     | Sign Form Extended
     |--------------------------------------------------------------------------
     */
+    'sign.page_title'      => 'Signer - :title',
     'sign.signed_hint'     => 'Soutenez et partagez votre cause. Cliquez sur "j\'aime" et signez la pétition',
     'sign.default_comment' => 'Je soutiens cette pétition',
     'sign.email_warning'   => 'Attention, l\'adresse email que vous fournissez doit être valide pour valider la signature, sinon elle sera supprimée.',
@@ -228,13 +229,37 @@ return [
     'sign.h2_line1'        => 'Soutenez et partagez votre cause.',
     'sign.h2_line2'        => 'Cliquez sur "j\'aime" et signez la pétition',
     'sign.btn'             => 'Signer',
+    'sign.btn_arrow'       => '»',
+    'sign.ph_name'         => 'Nom (obligatoire)',
+    'sign.ph_surname'      => 'Prénom (obligatoire)',
+    'sign.ph_email'        => 'Email (obligatoire)',
+    'sign.ph_password'     => 'Choisir un mot de passe (obligatoire)',
+    'sign.ph_city'         => 'Ville (optionnel)',
+    'sign.ph_nickname'     => 'Pseudo (optionnel)',
+    'sign.ph_comment'      => 'Commentaire',
+    'sign.lbl_name'        => 'Nom (obligatoire)',
+    'sign.lbl_surname'     => 'Prénom (obligatoire)',
+    'sign.lbl_email'       => 'Email (obligatoire)',
+    'sign.lbl_password'    => 'Choisir un mot de passe (obligatoire)',
+    'sign.lbl_city'        => 'Ville (optionnel)',
+    'sign.lbl_nickname'    => 'Pseudo (optionnel)',
+    'sign.lbl_comment'     => 'Commentaire',
+    'sign.privacy_hint'    => 'Confidentialité dans les moteurs de recherche ? Vous pouvez utiliser un pseudo :',
+    'sign.agree1_title'    => 'Je confirme l\'inscription et j\'accepte les <a class="red" href=":terms_url">Conditions d\'utilisation</a>',
+    'sign.agree2_title'    => 'Je confirme avoir lu la <a class="red" href=":privacy_url">Politique de confidentialité</a>',
+    'sign.agree3_title'    => 'J\'accepte le <a class="red" href=":privacy_url">Traitement des données personnelles</a>',
 
     /*
     |--------------------------------------------------------------------------
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
+    'show.page_title'             => ':title - xPetition',
     'show.btn_sign_now'           => 'Signer maintenant',
+    'show.google_continue'        => 'Continuer avec Google',
+    'show.or'                     => 'OU',
+    'show.auth_hint_split'        => 'Si vous avez déjà un compte <a class="red" href=":login_url">connectez-vous</a>, sinon <strong>créez un compte</strong> gratuitement puis signez la pétition en remplissant les champs ci-dessous.<br>L\'email et le mot de passe seront vos données de compte, vous pourrez signer d\'autres pétitions après vous être connecté.',
+    'show.auth_hint_stack'        => 'Si vous avez déjà un compte <a class="red" href=":login_url"><em>connectez-vous</em></a>',
     'show.box_sign_title'         => 'Signer la pétition',
     'show.box_shoutbox'           => 'Commentaires',
     'show.box_goal'               => 'Objectif',
@@ -261,6 +286,7 @@ return [
     | Thanks Page
     |--------------------------------------------------------------------------
     */
+    'thanks.petition_fallback' => 'pétition',
     'thanks.title_created'  => 'Merci ! - xPetition',
     'thanks.title_signed'   => 'Merci d\'avoir signé - xPetition',
     'thanks.h1_created'     => 'Merci !',
