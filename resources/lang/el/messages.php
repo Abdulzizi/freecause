@@ -220,6 +220,7 @@ return [
     | Sign Form Extended
     |--------------------------------------------------------------------------
     */
+    'sign.page_title'      => 'Sign - :title',
     'sign.signed_hint'     => 'Υποστηρίξτε και μοιραστείτε την αίτησή σας. Κάντε κλικ στο «like» και υπογράψτε την αίτηση',
     'sign.default_comment' => 'Υποστηρίζω αυτή την αίτηση',
     'sign.email_warning'   => 'Προσοχή, η διεύθυνση email πρέπει να είναι έγκυρη για την επικύρωση της υπογραφής, αλλιώς θα διαγραφεί.',
@@ -228,13 +229,37 @@ return [
     'sign.h2_line1'        => 'Υποστηρίξτε και μοιραστείτε την υπόθεσή σας.',
     'sign.h2_line2'        => 'Κάντε κλικ στο «like» και υπογράψτε την αίτηση',
     'sign.btn'             => 'Υπογραφή',
+    'sign.btn_arrow'       => '»',
+    'sign.ph_name'         => 'Name (mandatory)',
+    'sign.ph_surname'      => 'Surname (mandatory)',
+    'sign.ph_email'        => 'Email (mandatory)',
+    'sign.ph_password'     => 'Choose a password (mandatory)',
+    'sign.ph_city'         => 'City (optional)',
+    'sign.ph_nickname'     => 'Nickname (optional)',
+    'sign.ph_comment'      => 'Comment',
+    'sign.lbl_name'        => 'Name (mandatory)',
+    'sign.lbl_surname'     => 'Surname (mandatory)',
+    'sign.lbl_email'       => 'Email (mandatory)',
+    'sign.lbl_password'    => 'Choose a password (mandatory)',
+    'sign.lbl_city'        => 'City (optional)',
+    'sign.lbl_nickname'    => 'Nickname (optional)',
+    'sign.lbl_comment'     => 'Comment',
+    'sign.privacy_hint'    => 'Privacy in the search engines? You can use a nickname:',
+    'sign.agree1_title'    => 'I confirm registration and I agree to <a class="red" href=":terms_url">Usage and Limitations of Services</a>',
+    'sign.agree2_title'    => 'I confirm that I have read the <a class="red" href=":privacy_url">Privacy Policy</a>',
+    'sign.agree3_title'    => 'I agree to the <a class="red" href=":privacy_url">Personal Data Processing</a>',
 
     /*
     |--------------------------------------------------------------------------
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
+    'show.page_title'             => ':title - xPetition',
     'show.btn_sign_now'           => 'Υπογράψτε τώρα',
+    'show.google_continue'        => 'Continue with Google',
+    'show.or'                     => 'OR',
+    'show.auth_hint_split'        => 'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.',
+    'show.auth_hint_stack'        => 'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>',
     'show.box_sign_title'         => 'Υπογράψτε την αίτηση',
     'show.box_shoutbox'           => 'Σχόλια',
     'show.box_goal'               => 'Στόχος',
@@ -261,6 +286,7 @@ return [
     | Thanks Page
     |--------------------------------------------------------------------------
     */
+    'thanks.petition_fallback' => 'petition',
     'thanks.title_created'  => 'Ευχαριστούμε! - xPetition',
     'thanks.title_signed'   => 'Ευχαριστούμε για την υπογραφή σας - xPetition',
     'thanks.h1_created'     => 'Ευχαριστούμε!',
