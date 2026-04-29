@@ -158,6 +158,11 @@ class HomeController extends Controller
                     ->where('petitions.id', $featuredId)
                     ->first();
             });
+
+            // phpredis can deserialize Eloquent models as arrays — normalise back to object
+            if (is_array($featuredPetition)) {
+                $featuredPetition = (object) $featuredPetition;
+            }
         }
 
         $magazinePosts = cache()->remember('home:magazine_posts', 1800, function () {
