@@ -354,6 +354,455 @@
     </div>
 
     <div class="trans-section">
+        <div class="fc-tab">sign extended</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>sign.page_title</label>
+                    <input type="text" name="sign.page_title" value="{{ $translations['sign.page_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.signed_hint</label>
+                    <input type="text" name="sign.signed_hint" value="{{ $translations['sign.signed_hint'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.default_comment</label>
+                    <input type="text" name="sign.default_comment" value="{{ $translations['sign.default_comment'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.email_warning</label>
+                    <input type="text" name="sign.email_warning" value="{{ $translations['sign.email_warning'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.agree_yes</label>
+                    <input type="text" name="sign.agree_yes" value="{{ $translations['sign.agree_yes'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.agree_no</label>
+                    <input type="text" name="sign.agree_no" value="{{ $translations['sign.agree_no'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.h2_line1</label>
+                    <input type="text" name="sign.h2_line1" value="{{ $translations['sign.h2_line1'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.h2_line2</label>
+                    <input type="text" name="sign.h2_line2" value="{{ $translations['sign.h2_line2'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.btn</label>
+                    <input type="text" name="sign.btn" value="{{ $translations['sign.btn'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.btn_arrow</label>
+                    <input type="text" name="sign.btn_arrow" value="{{ $translations['sign.btn_arrow'] ?? '' }}">
+                </div>
+            </div>
+            <div class="trans-group">
+                <h3>Placeholders</h3>
+                <div class="trans-row">
+                    <label>sign.ph_name</label>
+                    <input type="text" name="sign.ph_name" value="{{ $translations['sign.ph_name'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_surname</label>
+                    <input type="text" name="sign.ph_surname" value="{{ $translations['sign.ph_surname'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_email</label>
+                    <input type="text" name="sign.ph_email" value="{{ $translations['sign.ph_email'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_password</label>
+                    <input type="text" name="sign.ph_password" value="{{ $translations['sign.ph_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_city</label>
+                    <input type="text" name="sign.ph_city" value="{{ $translations['sign.ph_city'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_nickname</label>
+                    <input type="text" name="sign.ph_nickname" value="{{ $translations['sign.ph_nickname'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.ph_comment</label>
+                    <input type="text" name="sign.ph_comment" value="{{ $translations['sign.ph_comment'] ?? '' }}">
+                </div>
+            </div>
+            <div class="trans-group">
+                <h3>Labels</h3>
+                <div class="trans-row">
+                    <label>sign.lbl_name</label>
+                    <input type="text" name="sign.lbl_name" value="{{ $translations['sign.lbl_name'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_surname</label>
+                    <input type="text" name="sign.lbl_surname" value="{{ $translations['sign.lbl_surname'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_email</label>
+                    <input type="text" name="sign.lbl_email" value="{{ $translations['sign.lbl_email'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_password</label>
+                    <input type="text" name="sign.lbl_password" value="{{ $translations['sign.lbl_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_city</label>
+                    <input type="text" name="sign.lbl_city" value="{{ $translations['sign.lbl_city'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_nickname</label>
+                    <input type="text" name="sign.lbl_nickname" value="{{ $translations['sign.lbl_nickname'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.lbl_comment</label>
+                    <input type="text" name="sign.lbl_comment" value="{{ $translations['sign.lbl_comment'] ?? '' }}">
+                </div>
+            </div>
+            <div class="trans-group">
+                <h3>Agreement &amp; Privacy</h3>
+                <div class="trans-row">
+                    <label>sign.privacy_hint</label>
+                    <input type="text" name="sign.privacy_hint" value="{{ $translations['sign.privacy_hint'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.agree1_title</label>
+                    <input type="text" name="sign.agree1_title" value="{{ $translations['sign.agree1_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.agree2_title</label>
+                    <input type="text" name="sign.agree2_title" value="{{ $translations['sign.agree2_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>sign.agree3_title</label>
+                    <input type="text" name="sign.agree3_title" value="{{ $translations['sign.agree3_title'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
+        <div class="fc-tab">petition show page</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>show.page_title</label>
+                    <input type="text" name="show.page_title" value="{{ $translations['show.page_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.btn_sign_now</label>
+                    <input type="text" name="show.btn_sign_now" value="{{ $translations['show.btn_sign_now'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.google_continue</label>
+                    <input type="text" name="show.google_continue" value="{{ $translations['show.google_continue'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.or</label>
+                    <input type="text" name="show.or" value="{{ $translations['show.or'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.auth_hint_split</label>
+                    <input type="text" name="show.auth_hint_split" value="{{ $translations['show.auth_hint_split'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.auth_hint_stack</label>
+                    <input type="text" name="show.auth_hint_stack" value="{{ $translations['show.auth_hint_stack'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_sign_title</label>
+                    <input type="text" name="show.box_sign_title" value="{{ $translations['show.box_sign_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_shoutbox</label>
+                    <input type="text" name="show.box_shoutbox" value="{{ $translations['show.box_shoutbox'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_goal</label>
+                    <input type="text" name="show.box_goal" value="{{ $translations['show.box_goal'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.goal_signatures</label>
+                    <input type="text" name="show.goal_signatures" value="{{ $translations['show.goal_signatures'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.goal_label</label>
+                    <input type="text" name="show.goal_label" value="{{ $translations['show.goal_label'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_latest</label>
+                    <input type="text" name="show.box_latest" value="{{ $translations['show.box_latest'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.latest_empty</label>
+                    <input type="text" name="show.latest_empty" value="{{ $translations['show.latest_empty'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.latest_browse_all</label>
+                    <input type="text" name="show.latest_browse_all" value="{{ $translations['show.latest_browse_all'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_information</label>
+                    <input type="text" name="show.box_information" value="{{ $translations['show.box_information'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.info_by</label>
+                    <input type="text" name="show.info_by" value="{{ $translations['show.info_by'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.info_in</label>
+                    <input type="text" name="show.info_in" value="{{ $translations['show.info_in'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.info_target</label>
+                    <input type="text" name="show.info_target" value="{{ $translations['show.info_target'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_tags</label>
+                    <input type="text" name="show.box_tags" value="{{ $translations['show.box_tags'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.tags_empty</label>
+                    <input type="text" name="show.tags_empty" value="{{ $translations['show.tags_empty'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_embed</label>
+                    <input type="text" name="show.box_embed" value="{{ $translations['show.box_embed'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.embed_direct</label>
+                    <input type="text" name="show.embed_direct" value="{{ $translations['show.embed_direct'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.embed_html</label>
+                    <input type="text" name="show.embed_html" value="{{ $translations['show.embed_html'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.embed_forum_no_title</label>
+                    <input type="text" name="show.embed_forum_no_title" value="{{ $translations['show.embed_forum_no_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.embed_forum_with_title</label>
+                    <input type="text" name="show.embed_forum_with_title" value="{{ $translations['show.embed_forum_with_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>show.box_widgets</label>
+                    <input type="text" name="show.box_widgets" value="{{ $translations['show.box_widgets'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
+        <div class="fc-tab">thanks page</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>thanks.title_created</label>
+                    <input type="text" name="thanks.title_created" value="{{ $translations['thanks.title_created'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.title_signed</label>
+                    <input type="text" name="thanks.title_signed" value="{{ $translations['thanks.title_signed'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.h1_created</label>
+                    <input type="text" name="thanks.h1_created" value="{{ $translations['thanks.h1_created'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.h1_signed</label>
+                    <input type="text" name="thanks.h1_signed" value="{{ $translations['thanks.h1_signed'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.p_created</label>
+                    <input type="text" name="thanks.p_created" value="{{ $translations['thanks.p_created'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.p_signed</label>
+                    <input type="text" name="thanks.p_signed" value="{{ $translations['thanks.p_signed'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.suggestions</label>
+                    <input type="text" name="thanks.suggestions" value="{{ $translations['thanks.suggestions'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.no_suggestions</label>
+                    <input type="text" name="thanks.no_suggestions" value="{{ $translations['thanks.no_suggestions'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.invite</label>
+                    <input type="text" name="thanks.invite" value="{{ $translations['thanks.invite'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>thanks.petition_fallback</label>
+                    <input type="text" name="thanks.petition_fallback" value="{{ $translations['thanks.petition_fallback'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
+        <div class="fc-tab">navbar</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>nav.explore</label>
+                    <input type="text" name="nav.explore" value="{{ $translations['nav.explore'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>nav.magazine</label>
+                    <input type="text" name="nav.magazine" value="{{ $translations['nav.magazine'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>nav.help</label>
+                    <input type="text" name="nav.help" value="{{ $translations['nav.help'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>nav.logout</label>
+                    <input type="text" name="nav.logout" value="{{ $translations['nav.logout'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>nav.startfree</label>
+                    <input type="text" name="nav.startfree" value="{{ $translations['nav.startfree'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
+        <div class="fc-tab">profile</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>profile.heading</label>
+                    <input type="text" name="profile.heading" value="{{ $translations['profile.heading'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.my_data</label>
+                    <input type="text" name="profile.my_data" value="{{ $translations['profile.my_data'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.reg_date</label>
+                    <input type="text" name="profile.reg_date" value="{{ $translations['profile.reg_date'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.my_petitions</label>
+                    <input type="text" name="profile.my_petitions" value="{{ $translations['profile.my_petitions'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.account_deletion</label>
+                    <input type="text" name="profile.account_deletion" value="{{ $translations['profile.account_deletion'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.enter_password</label>
+                    <input type="text" name="profile.enter_password" value="{{ $translations['profile.enter_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.confirm_delete_lbl</label>
+                    <input type="text" name="profile.confirm_delete_lbl" value="{{ $translations['profile.confirm_delete_lbl'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.delete</label>
+                    <input type="text" name="profile.delete" value="{{ $translations['profile.delete'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.first_name</label>
+                    <input type="text" name="profile.first_name" value="{{ $translations['profile.first_name'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.last_name</label>
+                    <input type="text" name="profile.last_name" value="{{ $translations['profile.last_name'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.identify_as</label>
+                    <input type="text" name="profile.identify_as" value="{{ $translations['profile.identify_as'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.id_full</label>
+                    <input type="text" name="profile.id_full" value="{{ $translations['profile.id_full'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.id_name</label>
+                    <input type="text" name="profile.id_name" value="{{ $translations['profile.id_name'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.id_nick</label>
+                    <input type="text" name="profile.id_nick" value="{{ $translations['profile.id_nick'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.change_email</label>
+                    <input type="text" name="profile.change_email" value="{{ $translations['profile.change_email'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.new_email</label>
+                    <input type="text" name="profile.new_email" value="{{ $translations['profile.new_email'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.confirm_email</label>
+                    <input type="text" name="profile.confirm_email" value="{{ $translations['profile.confirm_email'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.change_password</label>
+                    <input type="text" name="profile.change_password" value="{{ $translations['profile.change_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.current_password</label>
+                    <input type="text" name="profile.current_password" value="{{ $translations['profile.current_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.new_password</label>
+                    <input type="text" name="profile.new_password" value="{{ $translations['profile.new_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.confirm_new_password</label>
+                    <input type="text" name="profile.confirm_new_password" value="{{ $translations['profile.confirm_new_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>profile.save_changes</label>
+                    <input type="text" name="profile.save_changes" value="{{ $translations['profile.save_changes'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
+        <div class="fc-tab">forgot / reset password</div>
+        <div class="fc-box">
+            <div class="trans-group">
+                <div class="trans-row">
+                    <label>auth.forgot_title</label>
+                    <input type="text" name="auth.forgot_title" value="{{ $translations['auth.forgot_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.send_reset</label>
+                    <input type="text" name="auth.send_reset" value="{{ $translations['auth.send_reset'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.back_login</label>
+                    <input type="text" name="auth.back_login" value="{{ $translations['auth.back_login'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.reset_title</label>
+                    <input type="text" name="auth.reset_title" value="{{ $translations['auth.reset_title'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.new_password</label>
+                    <input type="text" name="auth.new_password" value="{{ $translations['auth.new_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.confirm_password</label>
+                    <input type="text" name="auth.confirm_password" value="{{ $translations['auth.confirm_password'] ?? '' }}">
+                </div>
+                <div class="trans-row">
+                    <label>auth.reset_submit</label>
+                    <input type="text" name="auth.reset_submit" value="{{ $translations['auth.reset_submit'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trans-section">
         <div class="fc-tab">my petitions</div>
         <div class="fc-box">
             <div class="trans-group">

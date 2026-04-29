@@ -4,53 +4,36 @@
     $useLabels = $variant === 'split';
     $isAuthed = auth()->check();
 
-    $content = $content ?? collect();
+    $tSignedAlready = __('messages.sign.already_signed');
+    $tSignedHint = __('messages.sign.signed_hint');
+    $tBtnSign = __('messages.sign.btn');
+    $tBtnArrow = __('messages.sign.btn_arrow');
 
-    $tSignedAlready = $content['signed_already'] ?? 'You signed this petition.';
-    $tSignedHint =
-        $content['signed_hint'] ?? 'Support and share your cause. Please click "like" button and sign the petition';
-    $tBtnSign = $content['btn_sign'] ?? 'Sign';
-    $tBtnArrow = $content['btn_sign_arrow'] ?? '»';
+    $phName = __('messages.sign.ph_name');
+    $phSurname = __('messages.sign.ph_surname');
+    $phEmail = __('messages.sign.ph_email');
+    $phPassword = __('messages.sign.ph_password');
+    $phCity = __('messages.sign.ph_city');
+    $phNickname = __('messages.sign.ph_nickname');
+    $phComment = __('messages.sign.ph_comment');
+    $defaultComment = __('messages.sign.default_comment');
 
-    $phName = $content['ph_name'] ?? 'Name (mandatory)';
-    $phSurname = $content['ph_surname'] ?? 'Surname (mandatory)';
-    $phEmail = $content['ph_email'] ?? 'Email (mandatory)';
-    $phPassword = $content['ph_password'] ?? 'Choose a password (mandatory)';
-    $phCity = $content['ph_city'] ?? 'City (optional)';
-    $phNickname = $content['ph_nickname'] ?? 'Nickname (optional)';
-    $phComment = $content['ph_comment'] ?? 'Comment';
-    $defaultComment = $content['default_comment'] ?? 'I support this petition';
+    $lblName = __('messages.sign.lbl_name');
+    $lblSurname = __('messages.sign.lbl_surname');
+    $lblEmail = __('messages.sign.lbl_email');
+    $lblPassword = __('messages.sign.lbl_password');
+    $lblCity = __('messages.sign.lbl_city');
+    $lblNickname = __('messages.sign.lbl_nickname');
+    $lblComment = __('messages.sign.lbl_comment');
 
-    $lblName = $content['lbl_name'] ?? $phName;
-    $lblSurname = $content['lbl_surname'] ?? $phSurname;
-    $lblEmail = $content['lbl_email'] ?? $phEmail;
-    $lblPassword = $content['lbl_password'] ?? $phPassword;
-    $lblCity = $content['lbl_city'] ?? $phCity;
-    $lblNickname = $content['lbl_nickname'] ?? $phNickname;
-    $lblComment = $content['lbl_comment'] ?? $phComment;
+    $privacyHint = __('messages.sign.privacy_hint');
+    $emailWarning = __('messages.sign.email_warning');
 
-    $privacyHint = $content['privacy_hint'] ?? 'Privacy in the search engines? You can use a nickname:';
-    $emailWarning =
-        $content['email_warning'] ??
-        'Attention, the email address you supply must be valid in order to validate the signature, otherwise it will be deleted.';
-
-    $agree1Title =
-        $content['agree1_title'] ??
-        'I confirm registration and I agree to <a class="red" href="' .
-            lroute('page.show', ['slug' => 'terms-of-service']) .
-            '">Usage and Limitations of Services</a>';
-    $agree2Title =
-        $content['agree2_title'] ??
-        'I confirm that I have read the <a class="red" href="' .
-            lroute('page.show', ['slug' => 'privacy-policy']) .
-            '">Privacy Policy</a>';
-    $agree3Title =
-        $content['agree3_title'] ??
-        'I agree to the <a class="red" href="' .
-            lroute('page.show', ['slug' => 'privacy-policy']) .
-            '">Personal Data Processing</a>';
-    $agreeYes = $content['agree_yes'] ?? 'I agree';
-    $agreeNo = $content['agree_no'] ?? 'I do not agree';
+    $agree1Title = __('messages.sign.agree1_title', ['terms_url' => lroute('page.show', ['slug' => 'terms-of-service'])]);
+    $agree2Title = __('messages.sign.agree2_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
+    $agree3Title = __('messages.sign.agree3_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
+    $agreeYes = __('messages.sign.agree_yes');
+    $agreeNo = __('messages.sign.agree_no');
 
     $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
     $signPostUrl = lroute('petition.sign', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);

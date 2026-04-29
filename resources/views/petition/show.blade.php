@@ -3,59 +3,47 @@
 @php
     $isAuthed = auth()->check();
 
-    $content = $content ?? collect();
-
     $petitionTitle = e($tr->title ?? ($petition->title ?? 'Petition'));
-    $pageTitleTmpl = $content['title'] ?? ':title - xPetition';
-    $pageTitle = str_replace(':title', $petitionTitle, $pageTitleTmpl);
+    $pageTitle = __('messages.show.page_title', ['title' => $petitionTitle]);
 
     $petitionImg = $petition->coverUrl();
     $petitionCredit = $petition->image_credit ?? '';
 
-    $btnSignNow = $content['btn_sign_now'] ?? 'Sign Now';
-    $boxSignTitle = $content['box_sign_title'] ?? 'Sign The Petition';
-    $googleContinue = $content['google_continue'] ?? 'Continue with Google';
-    $orText = $content['or'] ?? 'OR';
+    $btnSignNow = __('messages.show.btn_sign_now');
+    $boxSignTitle = __('messages.show.box_sign_title');
+    $googleContinue = __('messages.show.google_continue');
+    $orText = __('messages.show.or');
 
     $loginUrl = lroute('login');
 
-    $authHintSplit =
-        $content['auth_hint_split'] ??
-        'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.';
-    $authHintStack =
-        $content['auth_hint_stack'] ??
-        'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>';
+    $authHintSplit = __('messages.show.auth_hint_split', ['login_url' => $loginUrl]);
+    $authHintStack = __('messages.show.auth_hint_stack', ['login_url' => $loginUrl]);
 
-    $authHintSplit = str_replace(':login_url', $loginUrl, $authHintSplit);
-    $authHintStack = str_replace(':login_url', $loginUrl, $authHintStack);
+    $boxShoutbox = __('messages.show.box_shoutbox');
 
-    $boxShoutbox = $content['box_shoutbox'] ?? 'Shoutbox';
+    $boxGoal = __('messages.show.box_goal');
+    $goalSignaturesText = __('messages.show.goal_signatures', ['count' => number_format($goalCurrent)]);
+    $goalLabelText = __('messages.show.goal_label', ['count' => number_format($goalTotal)]);
 
-    $boxGoal = $content['box_goal'] ?? 'Goal';
-    $goalSignaturesTmpl = $content['goal_signatures'] ?? ':count signatures';
-    $goalLabelTmpl = $content['goal_label'] ?? 'Goal: :count';
-    $goalSignaturesText = str_replace(':count', number_format($goalCurrent), $goalSignaturesTmpl);
-    $goalLabelText = str_replace(':count', number_format($goalTotal), $goalLabelTmpl);
+    $boxLatest = __('messages.show.box_latest');
+    $latestEmpty = __('messages.show.latest_empty');
+    $latestBrowseAll = __('messages.show.latest_browse_all');
 
-    $boxLatest = $content['box_latest'] ?? 'Latest Signatures';
-    $latestEmpty = $content['latest_empty'] ?? 'no signatures yet';
-    $latestBrowseAll = $content['latest_browse_all'] ?? 'browse all the signatures »';
+    $boxInformation = __('messages.show.box_information');
+    $infoBy = __('messages.show.info_by');
+    $infoIn = __('messages.show.info_in');
+    $infoTarget = __('messages.show.info_target');
 
-    $boxInformation = $content['box_information'] ?? 'Information';
-    $infoBy = $content['info_by'] ?? 'By:';
-    $infoIn = $content['info_in'] ?? 'In:';
-    $infoTarget = $content['info_target'] ?? 'Petition target:';
+    $boxTags = __('messages.show.box_tags');
+    $tagsEmpty = __('messages.show.tags_empty');
 
-    $boxTags = $content['box_tags'] ?? 'Tags';
-    $tagsEmpty = $content['tags_empty'] ?? 'No tags';
+    $boxEmbed = __('messages.show.box_embed');
+    $embedDirect = __('messages.show.embed_direct');
+    $embedHtml = __('messages.show.embed_html');
+    $embedForumNoTitle = __('messages.show.embed_forum_no_title');
+    $embedForumWithTitle = __('messages.show.embed_forum_with_title');
 
-    $boxEmbed = $content['box_embed'] ?? 'Embed Codes';
-    $embedDirect = $content['embed_direct'] ?? 'direct link';
-    $embedHtml = $content['embed_html'] ?? 'link for html';
-    $embedForumNoTitle = $content['embed_forum_no_title'] ?? 'link for forum without title';
-    $embedForumWithTitle = $content['embed_forum_with_title'] ?? 'link for forum with title';
-
-    $boxWidgets = $content['box_widgets'] ?? 'Widgets';
+    $boxWidgets = __('messages.show.box_widgets');
 @endphp
 
 @section('title', $pageTitle)

@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Maks. 10 słów kluczowych oddzielonych przecinkami',
     'create.update' => 'Aktualizuj',
     'create.login_required' => 'Zaloguj się lub zarejestruj powyżej, aby wysłać.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Przeglądaj petycje',
+    'nav.magazine'  => 'Magazyn',
+    'nav.help'      => 'Pomoc',
+    'nav.logout'    => 'Wyloguj',
+    'nav.startfree' => 'Zacznij za darmo',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Zapomniałem hasła',
+    'auth.send_reset'       => 'Wyślij link resetujący',
+    'auth.back_login'       => 'Powrót do logowania',
+    'auth.reset_title'      => 'Resetuj hasło',
+    'auth.new_password'     => 'Nowe hasło',
+    'auth.confirm_password' => 'Potwierdź hasło',
+    'auth.reset_submit'     => 'Resetuj hasło',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Moje dane',
+    'profile.reg_date'           => 'Data rejestracji:',
+    'profile.my_petitions'       => '» Moje petycje',
+    'profile.account_deletion'   => 'Usunięcie konta',
+    'profile.enter_password'     => 'Wprowadź hasło, aby potwierdzić',
+    'profile.confirm_delete_lbl' => 'Zgadzam się na trwałe usunięcie konta',
+    'profile.delete'             => 'Usuń',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Imię',
+    'profile.last_name'          => 'Nazwisko',
+    'profile.identify_as'        => 'Identyfikuj mnie jako',
+    'profile.id_full'            => 'Pełne imię i nazwisko',
+    'profile.id_name'            => 'Imię',
+    'profile.id_nick'            => 'Pseudonim',
+    'profile.change_email'       => 'Zmień email',
+    'profile.new_email'          => 'Nowy email',
+    'profile.confirm_email'      => 'Potwierdź nowy email',
+    'profile.change_password'    => 'Zmień hasło',
+    'profile.current_password'   => 'Aktualne hasło',
+    'profile.new_password'       => 'Nowe hasło',
+    'profile.confirm_new_password' => 'Potwierdź nowe hasło',
+    'profile.save_changes'       => 'Zapisz zmiany',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Wesprzyj i udostępnij swoją sprawę. Kliknij "lubię to" i podpisz petycję',
+    'sign.default_comment' => 'Popierám tę petycję',
+    'sign.email_warning'   => 'Uwaga: podany adres email musi być prawidłowy, aby potwierdzić podpis, w przeciwnym razie zostanie usunięty.',
+    'sign.agree_yes'       => 'Zgadzam się',
+    'sign.agree_no'        => 'Nie zgadzam się',
+    'sign.h2_line1'        => 'Wesprzyj i udostępnij swoją sprawę.',
+    'sign.h2_line2'        => 'Kliknij "lubię to" i podpisz petycję',
+    'sign.btn'             => 'Podpisz',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Podpisz teraz',
+    'show.box_sign_title'         => 'Podpisz petycję',
+    'show.box_shoutbox'           => 'Komentarze',
+    'show.box_goal'               => 'Cel',
+    'show.goal_signatures'        => ':count podpisów',
+    'show.goal_label'             => 'Cel: :count',
+    'show.box_latest'             => 'Najnowsze podpisy',
+    'show.latest_empty'           => 'brak podpisów',
+    'show.latest_browse_all'      => 'przeglądaj wszystkie podpisy »',
+    'show.box_information'        => 'Informacje',
+    'show.info_by'                => 'Przez:',
+    'show.info_in'                => 'W:',
+    'show.info_target'            => 'Adresat petycji:',
+    'show.box_tags'               => 'Tagi',
+    'show.tags_empty'             => 'Brak tagów',
+    'show.box_embed'              => 'Kody osadzania',
+    'show.embed_direct'           => 'bezpośredni link',
+    'show.embed_html'             => 'link do html',
+    'show.embed_forum_no_title'   => 'link do forum bez tytułu',
+    'show.embed_forum_with_title' => 'link do forum z tytułem',
+    'show.box_widgets'            => 'Widżety',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Dziękujemy! - xPetition',
+    'thanks.title_signed'   => 'Dziękujemy za podpisanie - xPetition',
+    'thanks.h1_created'     => 'Dziękujemy!',
+    'thanks.h1_signed'      => 'Dziękujemy za podpisanie:',
+    'thanks.p_created'      => 'Twoja petycja została pomyślnie utworzona. Możesz ją teraz otworzyć, używając powyższego linku.',
+    'thanks.p_signed'       => 'Rejestracja zakończyła się powodzeniem, jednak nadal musisz aktywować konto, klikając link, który wkrótce otrzymasz na podany adres email.',
+    'thanks.suggestions'    => 'Petycje, które mogą Cię zainteresować',
+    'thanks.no_suggestions' => 'Brak sugestii.',
+    'thanks.invite'         => 'Zaproś znajomych z książki adresowej »',
 ];

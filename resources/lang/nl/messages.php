@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Max 10 trefwoorden, gescheiden door komma',
     'create.update' => 'Bijwerken',
     'create.login_required' => 'Log in of registreer hierboven om in te dienen.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Verken petities',
+    'nav.magazine'  => 'Magazine',
+    'nav.help'      => 'Help',
+    'nav.logout'    => 'Uitloggen',
+    'nav.startfree' => 'Gratis starten',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Wachtwoord vergeten',
+    'auth.send_reset'       => 'Reset-link versturen',
+    'auth.back_login'       => 'Terug naar inloggen',
+    'auth.reset_title'      => 'Wachtwoord resetten',
+    'auth.new_password'     => 'Nieuw wachtwoord',
+    'auth.confirm_password' => 'Bevestig wachtwoord',
+    'auth.reset_submit'     => 'Wachtwoord resetten',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Mijn gegevens',
+    'profile.reg_date'           => 'Registratiedatum:',
+    'profile.my_petitions'       => '» Mijn petities',
+    'profile.account_deletion'   => 'Account verwijderen',
+    'profile.enter_password'     => 'Voer uw wachtwoord in ter bevestiging',
+    'profile.confirm_delete_lbl' => 'Ik ga akkoord met de permanente verwijdering van het account',
+    'profile.delete'             => 'Verwijderen',
+    'profile.heading'            => 'Profiel',
+    'profile.first_name'         => 'Voornaam',
+    'profile.last_name'          => 'Achternaam',
+    'profile.identify_as'        => 'Identificeer mij als',
+    'profile.id_full'            => 'Volledige naam',
+    'profile.id_name'            => 'Voornaam',
+    'profile.id_nick'            => 'Bijnaam',
+    'profile.change_email'       => 'E-mail wijzigen',
+    'profile.new_email'          => 'Nieuw e-mailadres',
+    'profile.confirm_email'      => 'Nieuw e-mailadres bevestigen',
+    'profile.change_password'    => 'Wachtwoord wijzigen',
+    'profile.current_password'   => 'Huidig wachtwoord',
+    'profile.new_password'       => 'Nieuw wachtwoord',
+    'profile.confirm_new_password' => 'Nieuw wachtwoord bevestigen',
+    'profile.save_changes'       => 'Wijzigingen opslaan',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Steun en deel uw zaak. Klik op "vind ik leuk" en onderteken de petitie',
+    'sign.default_comment' => 'Ik steun deze petitie',
+    'sign.email_warning'   => 'Let op: het opgegeven e-mailadres moet geldig zijn om de handtekening te valideren, anders wordt deze verwijderd.',
+    'sign.agree_yes'       => 'Ik ga akkoord',
+    'sign.agree_no'        => 'Ik ga niet akkoord',
+    'sign.h2_line1'        => 'Steun en deel uw zaak.',
+    'sign.h2_line2'        => 'Klik op "vind ik leuk" en onderteken de petitie',
+    'sign.btn'             => 'Ondertekenen',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Nu ondertekenen',
+    'show.box_sign_title'         => 'Onderteken de petitie',
+    'show.box_shoutbox'           => 'Reacties',
+    'show.box_goal'               => 'Doel',
+    'show.goal_signatures'        => ':count handtekeningen',
+    'show.goal_label'             => 'Doel: :count',
+    'show.box_latest'             => 'Laatste handtekeningen',
+    'show.latest_empty'           => 'nog geen handtekeningen',
+    'show.latest_browse_all'      => 'bekijk alle handtekeningen »',
+    'show.box_information'        => 'Informatie',
+    'show.info_by'                => 'Door:',
+    'show.info_in'                => 'In:',
+    'show.info_target'            => 'Doel van de petitie:',
+    'show.box_tags'               => 'Labels',
+    'show.tags_empty'             => 'Geen labels',
+    'show.box_embed'              => 'Insluitcodes',
+    'show.embed_direct'           => 'directe link',
+    'show.embed_html'             => 'link voor html',
+    'show.embed_forum_no_title'   => 'link voor forum zonder titel',
+    'show.embed_forum_with_title' => 'link voor forum met titel',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Bedankt! - xPetition',
+    'thanks.title_signed'   => 'Dank voor uw handtekening - xPetition',
+    'thanks.h1_created'     => 'Bedankt!',
+    'thanks.h1_signed'      => 'Dank voor uw handtekening:',
+    'thanks.p_created'      => 'Uw petitie is succesvol aangemaakt. U kunt hem nu openen via de link hierboven.',
+    'thanks.p_signed'       => 'De registratie is geslaagd, maar u moet uw account nog activeren door op de link te klikken die u binnenkort ontvangt op het opgegeven e-mailadres.',
+    'thanks.suggestions'    => 'Petities die u wellicht interesseren',
+    'thanks.no_suggestions' => 'Nog geen suggesties.',
+    'thanks.invite'         => 'Vrienden uitnodigen uit uw adresboek »',
 ];

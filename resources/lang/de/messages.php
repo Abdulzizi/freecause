@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Max. 10 Schlüsselwörter, durch Komma getrennt',
     'create.update' => 'Aktualisieren',
     'create.login_required' => 'Bitte melden Sie sich an oder registrieren Sie sich oben, um abzusenden.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Petitionen erkunden',
+    'nav.magazine'  => 'Magazin',
+    'nav.help'      => 'Hilfe',
+    'nav.logout'    => 'Abmelden',
+    'nav.startfree' => 'Kostenlos starten',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Passwort vergessen',
+    'auth.send_reset'       => 'Link zum Zurücksetzen senden',
+    'auth.back_login'       => 'Zurück zum Login',
+    'auth.reset_title'      => 'Passwort zurücksetzen',
+    'auth.new_password'     => 'Neues Passwort',
+    'auth.confirm_password' => 'Passwort bestätigen',
+    'auth.reset_submit'     => 'Passwort zurücksetzen',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Meine Daten',
+    'profile.reg_date'           => 'Registrierungsdatum:',
+    'profile.my_petitions'       => '» Meine Petitionen',
+    'profile.account_deletion'   => 'Konto löschen',
+    'profile.enter_password'     => 'Geben Sie Ihr Passwort zur Bestätigung ein',
+    'profile.confirm_delete_lbl' => 'Ich stimme der dauerhaften Löschung des Kontos zu',
+    'profile.delete'             => 'Löschen',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Vorname',
+    'profile.last_name'          => 'Nachname',
+    'profile.identify_as'        => 'Zeige mich als',
+    'profile.id_full'            => 'Vollständiger Name',
+    'profile.id_name'            => 'Vorname',
+    'profile.id_nick'            => 'Spitzname',
+    'profile.change_email'       => 'E-Mail ändern',
+    'profile.new_email'          => 'Neue E-Mail',
+    'profile.confirm_email'      => 'Neue E-Mail bestätigen',
+    'profile.change_password'    => 'Passwort ändern',
+    'profile.current_password'   => 'Aktuelles Passwort',
+    'profile.new_password'       => 'Neues Passwort',
+    'profile.confirm_new_password' => 'Neues Passwort bestätigen',
+    'profile.save_changes'       => 'Änderungen speichern',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Unterstützen und teilen Sie Ihr Anliegen. Bitte klicken Sie auf "Like" und unterschreiben Sie die Petition',
+    'sign.default_comment' => 'Ich unterstütze diese Petition',
+    'sign.email_warning'   => 'Achtung: Die angegebene E-Mail-Adresse muss gültig sein, um die Unterschrift zu bestätigen, andernfalls wird sie gelöscht.',
+    'sign.agree_yes'       => 'Ich stimme zu',
+    'sign.agree_no'        => 'Ich stimme nicht zu',
+    'sign.h2_line1'        => 'Unterstützen und teilen Sie Ihr Anliegen.',
+    'sign.h2_line2'        => 'Bitte klicken Sie auf "Like" und unterschreiben Sie die Petition',
+    'sign.btn'             => 'Unterzeichnen',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Jetzt unterschreiben',
+    'show.box_sign_title'         => 'Petition unterzeichnen',
+    'show.box_shoutbox'           => 'Kommentare',
+    'show.box_goal'               => 'Ziel',
+    'show.goal_signatures'        => ':count Unterschriften',
+    'show.goal_label'             => 'Ziel: :count',
+    'show.box_latest'             => 'Neueste Unterschriften',
+    'show.latest_empty'           => 'noch keine Unterschriften',
+    'show.latest_browse_all'      => 'alle Unterschriften anzeigen »',
+    'show.box_information'        => 'Informationen',
+    'show.info_by'                => 'Von:',
+    'show.info_in'                => 'In:',
+    'show.info_target'            => 'Adressat der Petition:',
+    'show.box_tags'               => 'Schlagwörter',
+    'show.tags_empty'             => 'Keine Schlagwörter',
+    'show.box_embed'              => 'Einbettungscodes',
+    'show.embed_direct'           => 'direkter Link',
+    'show.embed_html'             => 'Link für HTML',
+    'show.embed_forum_no_title'   => 'Forumlink ohne Titel',
+    'show.embed_forum_with_title' => 'Forumlink mit Titel',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Danke! - xPetition',
+    'thanks.title_signed'   => 'Danke für Ihre Unterschrift - xPetition',
+    'thanks.h1_created'     => 'Danke!',
+    'thanks.h1_signed'      => 'Danke für Ihre Unterschrift:',
+    'thanks.p_created'      => 'Ihre Petition wurde erfolgreich erstellt. Sie können sie jetzt über den obigen Link öffnen.',
+    'thanks.p_signed'       => 'Die Registrierung war erfolgreich, jedoch müssen Sie Ihr Konto noch aktivieren, indem Sie auf den Link klicken, den Sie in Kürze an die angegebene E-Mail-Adresse erhalten.',
+    'thanks.suggestions'    => 'Petitionen, die Sie interessieren könnten',
+    'thanks.no_suggestions' => 'Noch keine Vorschläge.',
+    'thanks.invite'         => 'Freunde aus Ihrem Adressbuch einladen »',
 ];

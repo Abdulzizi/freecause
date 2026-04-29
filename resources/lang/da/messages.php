@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Maks 10 nøgleord, adskilt af komma',
     'create.update' => 'Opdater',
     'create.login_required' => 'Log venligst ind eller registrer dig ovenfor for at indsende.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Udforsk underskriftsindsamlinger',
+    'nav.magazine'  => 'Magasin',
+    'nav.help'      => 'Hjælp',
+    'nav.logout'    => 'Log ud',
+    'nav.startfree' => 'Start gratis',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Glemt adgangskode',
+    'auth.send_reset'       => 'Send nulstillingslink',
+    'auth.back_login'       => 'Tilbage til login',
+    'auth.reset_title'      => 'Nulstil adgangskode',
+    'auth.new_password'     => 'Ny adgangskode',
+    'auth.confirm_password' => 'Bekræft adgangskode',
+    'auth.reset_submit'     => 'Nulstil adgangskode',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Mine data',
+    'profile.reg_date'           => 'Registreringsdato:',
+    'profile.my_petitions'       => '» Mine underskriftsindsamlinger',
+    'profile.account_deletion'   => 'Sletning af konto',
+    'profile.enter_password'     => 'Indtast din adgangskode for at bekræfte',
+    'profile.confirm_delete_lbl' => 'Jeg accepterer permanent sletning af kontoen',
+    'profile.delete'             => 'Slet',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Fornavn',
+    'profile.last_name'          => 'Efternavn',
+    'profile.identify_as'        => 'Identificér mig som',
+    'profile.id_full'            => 'Fuldt navn',
+    'profile.id_name'            => 'Fornavn',
+    'profile.id_nick'            => 'Kaldenavn',
+    'profile.change_email'       => 'Skift e-mail',
+    'profile.new_email'          => 'Ny e-mail',
+    'profile.confirm_email'      => 'Bekræft ny e-mail',
+    'profile.change_password'    => 'Skift adgangskode',
+    'profile.current_password'   => 'Nuværende adgangskode',
+    'profile.new_password'       => 'Ny adgangskode',
+    'profile.confirm_new_password' => 'Bekræft ny adgangskode',
+    'profile.save_changes'       => 'Gem ændringer',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Støt og del din sag. Klik venligst på "like"-knappen og underskriv underskriftsindsamlingen',
+    'sign.default_comment' => 'Jeg støtter denne underskriftsindsamling',
+    'sign.email_warning'   => 'Bemærk, at den angivne e-mailadresse skal være gyldig for at validere underskriften, ellers slettes den.',
+    'sign.agree_yes'       => 'Jeg accepterer',
+    'sign.agree_no'        => 'Jeg accepterer ikke',
+    'sign.h2_line1'        => 'Støt og del din sag.',
+    'sign.h2_line2'        => 'Klik venligst på "like"-knappen og underskriv underskriftsindsamlingen',
+    'sign.btn'             => 'Underskriv',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Underskriv nu',
+    'show.box_sign_title'         => 'Underskriv underskriftsindsamlingen',
+    'show.box_shoutbox'           => 'Kommentarfelt',
+    'show.box_goal'               => 'Mål',
+    'show.goal_signatures'        => ':count underskrifter',
+    'show.goal_label'             => 'Mål: :count',
+    'show.box_latest'             => 'Seneste underskrifter',
+    'show.latest_empty'           => 'ingen underskrifter endnu',
+    'show.latest_browse_all'      => 'gennemse alle underskrifter »',
+    'show.box_information'        => 'Information',
+    'show.info_by'                => 'Af:',
+    'show.info_in'                => 'I:',
+    'show.info_target'            => 'Underskriftsindsamlingens mål:',
+    'show.box_tags'               => 'Emner',
+    'show.tags_empty'             => 'Ingen emner',
+    'show.box_embed'              => 'Indlejringskoder',
+    'show.embed_direct'           => 'direkte link',
+    'show.embed_html'             => 'link til html',
+    'show.embed_forum_no_title'   => 'link til forum uden titel',
+    'show.embed_forum_with_title' => 'link til forum med titel',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Tak! - xPetition',
+    'thanks.title_signed'   => 'Tak fordi du underskrev - xPetition',
+    'thanks.h1_created'     => 'Tak!',
+    'thanks.h1_signed'      => 'Tak fordi du underskrev:',
+    'thanks.p_created'      => 'Din underskriftsindsamling er oprettet med succes. Du kan åbne den nu via linket ovenfor.',
+    'thanks.p_signed'       => 'Registreringen er gennemført, men du skal stadig aktivere din konto ved at klikke på linket, du snart modtager på den angivne e-mailadresse.',
+    'thanks.suggestions'    => 'Underskriftsindsamlinger du måske kan lide',
+    'thanks.no_suggestions' => 'Ingen forslag endnu.',
+    'thanks.invite'         => 'Inviter venner fra din adressebog »',
 ];

@@ -162,4 +162,138 @@ return [
     'create.tags_hint' => '10 keywords max, separated by comma',
     'create.update' => 'Update',
     'create.login_required' => 'Please login or register above to submit.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Explore petitions',
+    'nav.magazine'  => 'Magazine',
+    'nav.help'      => 'Help',
+    'nav.logout'    => 'Logout',
+    'nav.startfree' => 'Start Free',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'    => 'Forgot Password',
+    'auth.send_reset'      => 'Send Reset Link',
+    'auth.back_login'      => 'Back to Login',
+    'auth.reset_title'     => 'Reset Password',
+    'auth.new_password'    => 'New Password',
+    'auth.confirm_password'=> 'Confirm Password',
+    'auth.reset_submit'    => 'Reset Password',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'My Data',
+    'profile.reg_date'           => 'Registration date:',
+    'profile.my_petitions'       => '» My Petitions',
+    'profile.account_deletion'   => 'Account Deletion',
+    'profile.enter_password'     => 'Enter your password to confirm',
+    'profile.confirm_delete_lbl' => 'I agree with the account permanent deletion',
+    'profile.delete'             => 'Delete',
+    'profile.heading'            => 'Profile',
+    'profile.first_name'         => 'First Name',
+    'profile.last_name'          => 'Last Name',
+    'profile.identify_as'        => 'Identify me as',
+    'profile.id_full'            => 'Full Name',
+    'profile.id_name'            => 'First Name',
+    'profile.id_nick'            => 'Nickname',
+    'profile.change_email'       => 'Change Email',
+    'profile.new_email'          => 'New email',
+    'profile.confirm_email'      => 'Confirm new email',
+    'profile.change_password'    => 'Change Password',
+    'profile.current_password'   => 'Current password',
+    'profile.new_password'       => 'New password',
+    'profile.confirm_new_password' => 'Confirm new password',
+    'profile.save_changes'       => 'Save Changes',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.page_title'      => 'Sign - :title',
+    'sign.signed_hint'     => 'Support and share your cause. Please click "like" button and sign the petition',
+    'sign.default_comment' => 'I support this petition',
+    'sign.email_warning'   => 'Attention, the email address you supply must be valid in order to validate the signature, otherwise it will be deleted.',
+    'sign.agree_yes'       => 'I agree',
+    'sign.agree_no'        => 'I do not agree',
+    'sign.h2_line1'        => 'Support and share your cause.',
+    'sign.h2_line2'        => 'Please click "like" button and sign the petition',
+    'sign.btn'             => 'Sign',
+    'sign.btn_arrow'       => '»',
+    'sign.ph_name'         => 'Name (mandatory)',
+    'sign.ph_surname'      => 'Surname (mandatory)',
+    'sign.ph_email'        => 'Email (mandatory)',
+    'sign.ph_password'     => 'Choose a password (mandatory)',
+    'sign.ph_city'         => 'City (optional)',
+    'sign.ph_nickname'     => 'Nickname (optional)',
+    'sign.ph_comment'      => 'Comment',
+    'sign.lbl_name'        => 'Name (mandatory)',
+    'sign.lbl_surname'     => 'Surname (mandatory)',
+    'sign.lbl_email'       => 'Email (mandatory)',
+    'sign.lbl_password'    => 'Choose a password (mandatory)',
+    'sign.lbl_city'        => 'City (optional)',
+    'sign.lbl_nickname'    => 'Nickname (optional)',
+    'sign.lbl_comment'     => 'Comment',
+    'sign.privacy_hint'    => 'Privacy in the search engines? You can use a nickname:',
+    'sign.agree1_title'    => 'I confirm registration and I agree to <a class="red" href=":terms_url">Usage and Limitations of Services</a>',
+    'sign.agree2_title'    => 'I confirm that I have read the <a class="red" href=":privacy_url">Privacy Policy</a>',
+    'sign.agree3_title'    => 'I agree to the <a class="red" href=":privacy_url">Personal Data Processing</a>',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.page_title'             => ':title - xPetition',
+    'show.btn_sign_now'           => 'Sign Now',
+    'show.google_continue'        => 'Continue with Google',
+    'show.or'                     => 'OR',
+    'show.auth_hint_split'        => 'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.',
+    'show.auth_hint_stack'        => 'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>',
+    'show.box_sign_title'         => 'Sign The Petition',
+    'show.box_shoutbox'           => 'Shoutbox',
+    'show.box_goal'               => 'Goal',
+    'show.goal_signatures'        => ':count signatures',
+    'show.goal_label'             => 'Goal: :count',
+    'show.box_latest'             => 'Latest Signatures',
+    'show.latest_empty'           => 'no signatures yet',
+    'show.latest_browse_all'      => 'browse all the signatures »',
+    'show.box_information'        => 'Information',
+    'show.info_by'                => 'By:',
+    'show.info_in'                => 'In:',
+    'show.info_target'            => 'Petition target:',
+    'show.box_tags'               => 'Tags',
+    'show.tags_empty'             => 'No tags',
+    'show.box_embed'              => 'Embed Codes',
+    'show.embed_direct'           => 'direct link',
+    'show.embed_html'             => 'link for html',
+    'show.embed_forum_no_title'   => 'link for forum without title',
+    'show.embed_forum_with_title' => 'link for forum with title',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.petition_fallback' => 'petition',
+    'thanks.title_created'  => 'Thanks! - xPetition',
+    'thanks.title_signed'   => 'Thank you for having signed - xPetition',
+    'thanks.h1_created'     => 'Thanks!',
+    'thanks.h1_signed'      => 'Thank you for having signed:',
+    'thanks.p_created'      => 'Your petition has been created successfully. You can open it now using the link above.',
+    'thanks.p_signed'       => 'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.',
+    'thanks.suggestions'    => 'Petitions you might like',
+    'thanks.no_suggestions' => 'No suggestions yet.',
+    'thanks.invite'         => 'Invite friends from your address book »',
 ];
