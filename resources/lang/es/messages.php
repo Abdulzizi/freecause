@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Máximo 10 palabras clave, separadas por coma',
     'create.update' => 'Actualizar',
     'create.login_required' => 'Por favor, inicia sesión o regístrate arriba para enviar.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Explorar peticiones',
+    'nav.magazine'  => 'Revista',
+    'nav.help'      => 'Ayuda',
+    'nav.logout'    => 'Cerrar sesión',
+    'nav.startfree' => 'Comenzar gratis',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Contraseña olvidada',
+    'auth.send_reset'       => 'Enviar enlace de restablecimiento',
+    'auth.back_login'       => 'Volver al inicio de sesión',
+    'auth.reset_title'      => 'Restablecer contraseña',
+    'auth.new_password'     => 'Nueva contraseña',
+    'auth.confirm_password' => 'Confirmar contraseña',
+    'auth.reset_submit'     => 'Restablecer contraseña',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Mis datos',
+    'profile.reg_date'           => 'Fecha de registro:',
+    'profile.my_petitions'       => '» Mis peticiones',
+    'profile.account_deletion'   => 'Eliminación de cuenta',
+    'profile.enter_password'     => 'Ingresa tu contraseña para confirmar',
+    'profile.confirm_delete_lbl' => 'Acepto la eliminación permanente de la cuenta',
+    'profile.delete'             => 'Eliminar',
+    'profile.heading'            => 'Perfil',
+    'profile.first_name'         => 'Nombre',
+    'profile.last_name'          => 'Apellido',
+    'profile.identify_as'        => 'Identificarme como',
+    'profile.id_full'            => 'Nombre completo',
+    'profile.id_name'            => 'Nombre',
+    'profile.id_nick'            => 'Apodo',
+    'profile.change_email'       => 'Cambiar email',
+    'profile.new_email'          => 'Nuevo email',
+    'profile.confirm_email'      => 'Confirmar nuevo email',
+    'profile.change_password'    => 'Cambiar contraseña',
+    'profile.current_password'   => 'Contraseña actual',
+    'profile.new_password'       => 'Nueva contraseña',
+    'profile.confirm_new_password' => 'Confirmar nueva contraseña',
+    'profile.save_changes'       => 'Guardar cambios',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Apoya y comparte tu causa. Por favor, haz clic en "me gusta" y firma la petición',
+    'sign.default_comment' => 'Apoyo esta petición',
+    'sign.email_warning'   => 'Atención, la dirección de email que proporciones debe ser válida para validar la firma, de lo contrario se eliminará.',
+    'sign.agree_yes'       => 'De acuerdo',
+    'sign.agree_no'        => 'No estoy de acuerdo',
+    'sign.h2_line1'        => 'Apoya y comparte tu causa.',
+    'sign.h2_line2'        => 'Por favor, haz clic en "me gusta" y firma la petición',
+    'sign.btn'             => 'Firmar',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Firmar ahora',
+    'show.box_sign_title'         => 'Firmar la petición',
+    'show.box_shoutbox'           => 'Comentarios',
+    'show.box_goal'               => 'Meta',
+    'show.goal_signatures'        => ':count firmas',
+    'show.goal_label'             => 'Meta: :count',
+    'show.box_latest'             => 'Últimas firmas',
+    'show.latest_empty'           => 'aún no hay firmas',
+    'show.latest_browse_all'      => 'ver todas las firmas »',
+    'show.box_information'        => 'Información',
+    'show.info_by'                => 'Por:',
+    'show.info_in'                => 'En:',
+    'show.info_target'            => 'Destinatario de la petición:',
+    'show.box_tags'               => 'Etiquetas',
+    'show.tags_empty'             => 'Sin etiquetas',
+    'show.box_embed'              => 'Códigos de inserción',
+    'show.embed_direct'           => 'enlace directo',
+    'show.embed_html'             => 'enlace para html',
+    'show.embed_forum_no_title'   => 'enlace para foro sin título',
+    'show.embed_forum_with_title' => 'enlace para foro con título',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => '¡Gracias! - xPetition',
+    'thanks.title_signed'   => 'Gracias por firmar - xPetition',
+    'thanks.h1_created'     => '¡Gracias!',
+    'thanks.h1_signed'      => 'Gracias por firmar:',
+    'thanks.p_created'      => 'Tu petición se ha creado correctamente. Puedes abrirla ahora usando el enlace de arriba.',
+    'thanks.p_signed'       => 'El registro fue exitoso, sin embargo, todavía debes activar tu cuenta haciendo clic en el enlace que recibirás pronto en la dirección de email proporcionada.',
+    'thanks.suggestions'    => 'Peticiones que podrían interesarte',
+    'thanks.no_suggestions' => 'Sin sugerencias aún.',
+    'thanks.invite'         => 'Invitar amigos de tu libreta de direcciones »',
 ];

@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Max 10 nyckelord, separerade med komma',
     'create.update' => 'Uppdatera',
     'create.login_required' => 'Logga in eller registrera dig ovan för att skicka.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Utforska namnlistor',
+    'nav.magazine'  => 'Magasin',
+    'nav.help'      => 'Hjälp',
+    'nav.logout'    => 'Logga ut',
+    'nav.startfree' => 'Starta gratis',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Glömt lösenord',
+    'auth.send_reset'       => 'Skicka återställningslänk',
+    'auth.back_login'       => 'Tillbaka till inloggning',
+    'auth.reset_title'      => 'Återställ lösenord',
+    'auth.new_password'     => 'Nytt lösenord',
+    'auth.confirm_password' => 'Bekräfta lösenord',
+    'auth.reset_submit'     => 'Återställ lösenord',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Mina uppgifter',
+    'profile.reg_date'           => 'Registreringsdatum:',
+    'profile.my_petitions'       => '» Mina namnlistor',
+    'profile.account_deletion'   => 'Radera konto',
+    'profile.enter_password'     => 'Ange ditt lösenord för att bekräfta',
+    'profile.confirm_delete_lbl' => 'Jag godkänner permanent radering av kontot',
+    'profile.delete'             => 'Radera',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Förnamn',
+    'profile.last_name'          => 'Efternamn',
+    'profile.identify_as'        => 'Visa mig som',
+    'profile.id_full'            => 'Fullständigt namn',
+    'profile.id_name'            => 'Förnamn',
+    'profile.id_nick'            => 'Smeknamn',
+    'profile.change_email'       => 'Ändra e-post',
+    'profile.new_email'          => 'Ny e-postadress',
+    'profile.confirm_email'      => 'Bekräfta ny e-postadress',
+    'profile.change_password'    => 'Ändra lösenord',
+    'profile.current_password'   => 'Nuvarande lösenord',
+    'profile.new_password'       => 'Nytt lösenord',
+    'profile.confirm_new_password' => 'Bekräfta nytt lösenord',
+    'profile.save_changes'       => 'Spara ändringar',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Stöd och dela din sak. Klicka på "gilla"-knappen och skriv under namnlistan',
+    'sign.default_comment' => 'Jag stöder denna namnlista',
+    'sign.email_warning'   => 'Obs! Den e-postadress du anger måste vara giltig för att validera underskriften, annars raderas den.',
+    'sign.agree_yes'       => 'Jag godkänner',
+    'sign.agree_no'        => 'Jag godkänner inte',
+    'sign.h2_line1'        => 'Stöd och dela din sak.',
+    'sign.h2_line2'        => 'Klicka på "gilla"-knappen och skriv under namnlistan',
+    'sign.btn'             => 'Skriv under',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Skriv under nu',
+    'show.box_sign_title'         => 'Skriv under namnlistan',
+    'show.box_shoutbox'           => 'Kommentarer',
+    'show.box_goal'               => 'Mål',
+    'show.goal_signatures'        => ':count underskrifter',
+    'show.goal_label'             => 'Mål: :count',
+    'show.box_latest'             => 'Senaste underskrifter',
+    'show.latest_empty'           => 'inga underskrifter ännu',
+    'show.latest_browse_all'      => 'bläddra i alla underskrifter »',
+    'show.box_information'        => 'Information',
+    'show.info_by'                => 'Av:',
+    'show.info_in'                => 'I:',
+    'show.info_target'            => 'Petitionens mottagare:',
+    'show.box_tags'               => 'Taggar',
+    'show.tags_empty'             => 'Inga taggar',
+    'show.box_embed'              => 'Inbäddningskoder',
+    'show.embed_direct'           => 'direktlänk',
+    'show.embed_html'             => 'länk för html',
+    'show.embed_forum_no_title'   => 'länk för forum utan titel',
+    'show.embed_forum_with_title' => 'länk för forum med titel',
+    'show.box_widgets'            => 'Widgets',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Tack! - xPetition',
+    'thanks.title_signed'   => 'Tack för din underskrift - xPetition',
+    'thanks.h1_created'     => 'Tack!',
+    'thanks.h1_signed'      => 'Tack för din underskrift:',
+    'thanks.p_created'      => 'Din namnlista har skapats framgångsrikt. Du kan öppna den nu med länken ovan.',
+    'thanks.p_signed'       => 'Registreringen lyckades, men du måste fortfarande aktivera ditt konto genom att klicka på länken som du snart kommer att få på den angivna e-postadressen.',
+    'thanks.suggestions'    => 'Namnlistor du kanske gillar',
+    'thanks.no_suggestions' => 'Inga förslag ännu.',
+    'thanks.invite'         => 'Bjud in vänner från din adressbok »',
 ];

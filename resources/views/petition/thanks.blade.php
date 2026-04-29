@@ -1,27 +1,23 @@
 @extends('layouts.legacy')
 
 @php
-    $content = $content ?? collect();
-
     $isCreated = ($mode ?? 'signed') === 'created';
 
     $pageTitle = $isCreated
-        ? $content['title_created'] ?? 'Thanks! - xPetition'
-        : $content['title_signed'] ?? 'Thank you for having signed - xPetition';
+        ? __('messages.thanks.title_created')
+        : __('messages.thanks.title_signed');
 
     $h1Text = $isCreated
-        ? $content['h1_created'] ?? 'Thanks!'
-        : $content['h1_signed'] ?? 'Thank you for having signed:';
+        ? __('messages.thanks.h1_created')
+        : __('messages.thanks.h1_signed');
 
     $pText = $isCreated
-        ? $content['p_created'] ??
-            'Your petition has been created successfully. You can open it now using the link above.'
-        : $content['p_signed'] ??
-            'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.';
+        ? __('messages.thanks.p_created')
+        : __('messages.thanks.p_signed');
 
-    $suggestionsTitle = $content['suggestions_h2'] ?? 'Petitions you might like';
-    $suggestionsEmpty = $content['suggestions_empty'] ?? 'No suggestions yet.';
-    $inviteBtnText = $content['invite_btn'] ?? 'Invite friends from your address book »';
+    $suggestionsTitle = __('messages.thanks.suggestions');
+    $suggestionsEmpty = __('messages.thanks.no_suggestions');
+    $inviteBtnText = __('messages.thanks.invite');
 
     $petitionUrl = isset($tr) && $tr ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp
@@ -39,7 +35,7 @@
 
                 <div class="mb-3">
                     <a class="red" href="{{ $petitionUrl }}">
-                        {{ $tr->title ?? ($content['petition_fallback'] ?? 'petition') }}
+                        {{ $tr->title ?? __('messages.thanks.petition_fallback') }}
                     </a>
                 </div>
 
@@ -62,7 +58,7 @@
                         <div class="mb-2">
                             <a class="d-block p-2" style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
                                 href="{{ $sUrl }}">
-                                {{ $p->tr_title ?? ($content['petition_fallback'] ?? 'petition') }}
+                                {{ $p->tr_title ?? __('messages.thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty

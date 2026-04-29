@@ -1,14 +1,11 @@
 @extends('layouts.legacy')
 
 @php
-    $content = $content ?? collect();
+    $pageTitle = __('messages.sign.page_title', ['title' => $tr->title ?? 'Petition']);
 
-    $pageTitle = $content['title'] ?? 'Sign - :title';
-    $pageTitle = str_replace(':title', $tr->title ?? 'Petition', $pageTitle);
-
-    $h2Line1 = $content['h2_line1'] ?? 'Support and share your cause.';
-    $h2Line2 = $content['h2_line2'] ?? 'Please click "like" button and sign the petition';
-    $btnText = $content['btn_sign'] ?? 'Sign';
+    $h2Line1 = __('messages.sign.h2_line1');
+    $h2Line2 = __('messages.sign.h2_line2');
+    $btnText = __('messages.sign.btn');
 
     $signUrl = isset($tr) && $tr ? lroute('petition.sign', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp

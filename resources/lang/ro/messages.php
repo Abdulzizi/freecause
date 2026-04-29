@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Max 10 cuvinte cheie, separate prin virgulă',
     'create.update' => 'Actualizează',
     'create.login_required' => 'Vă rugăm să vă autentificați sau să vă înregistrați mai sus pentru a trimite.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Explorează petiții',
+    'nav.magazine'  => 'Revistă',
+    'nav.help'      => 'Ajutor',
+    'nav.logout'    => 'Deconectare',
+    'nav.startfree' => 'Începe gratuit',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Parolă uitată',
+    'auth.send_reset'       => 'Trimite link de resetare',
+    'auth.back_login'       => 'Înapoi la autentificare',
+    'auth.reset_title'      => 'Resetare parolă',
+    'auth.new_password'     => 'Parolă nouă',
+    'auth.confirm_password' => 'Confirmare parolă',
+    'auth.reset_submit'     => 'Resetează parola',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Datele mele',
+    'profile.reg_date'           => 'Data înregistrării:',
+    'profile.my_petitions'       => '» Petițiile mele',
+    'profile.account_deletion'   => 'Ștergere cont',
+    'profile.enter_password'     => 'Introduceți parola pentru confirmare',
+    'profile.confirm_delete_lbl' => 'Sunt de acord cu ștergerea permanentă a contului',
+    'profile.delete'             => 'Șterge',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Prenume',
+    'profile.last_name'          => 'Nume',
+    'profile.identify_as'        => 'Identificați-mă ca',
+    'profile.id_full'            => 'Nume complet',
+    'profile.id_name'            => 'Prenume',
+    'profile.id_nick'            => 'Pseudonim',
+    'profile.change_email'       => 'Schimbă email',
+    'profile.new_email'          => 'Email nou',
+    'profile.confirm_email'      => 'Confirmare email nou',
+    'profile.change_password'    => 'Schimbă parola',
+    'profile.current_password'   => 'Parola curentă',
+    'profile.new_password'       => 'Parolă nouă',
+    'profile.confirm_new_password' => 'Confirmare parolă nouă',
+    'profile.save_changes'       => 'Salvează modificările',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Susțineți și distribuiți cauza dumneavoastră. Faceți clic pe „like" și semnați petiția',
+    'sign.default_comment' => 'Susțin această petiție',
+    'sign.email_warning'   => 'Atenție, adresa de email pe care o furnizați trebuie să fie validă pentru a valida semnătura, altfel aceasta va fi ștearsă.',
+    'sign.agree_yes'       => 'Sunt de acord',
+    'sign.agree_no'        => 'Nu sunt de acord',
+    'sign.h2_line1'        => 'Susțineți și distribuiți cauza dumneavoastră.',
+    'sign.h2_line2'        => 'Faceți clic pe „like" și semnați petiția',
+    'sign.btn'             => 'Semnează',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Semnează acum',
+    'show.box_sign_title'         => 'Semnează petiția',
+    'show.box_shoutbox'           => 'Comentarii',
+    'show.box_goal'               => 'Obiectiv',
+    'show.goal_signatures'        => ':count semnături',
+    'show.goal_label'             => 'Obiectiv: :count',
+    'show.box_latest'             => 'Ultimele semnături',
+    'show.latest_empty'           => 'nicio semnătură încă',
+    'show.latest_browse_all'      => 'vezi toate semnăturile »',
+    'show.box_information'        => 'Informații',
+    'show.info_by'                => 'De:',
+    'show.info_in'                => 'În:',
+    'show.info_target'            => 'Destinatarul petiției:',
+    'show.box_tags'               => 'Etichete',
+    'show.tags_empty'             => 'Fără etichete',
+    'show.box_embed'              => 'Coduri de încorporare',
+    'show.embed_direct'           => 'link direct',
+    'show.embed_html'             => 'link pentru html',
+    'show.embed_forum_no_title'   => 'link pentru forum fără titlu',
+    'show.embed_forum_with_title' => 'link pentru forum cu titlu',
+    'show.box_widgets'            => 'Widgeturi',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Mulțumim! - xPetition',
+    'thanks.title_signed'   => 'Mulțumim că ați semnat - xPetition',
+    'thanks.h1_created'     => 'Mulțumim!',
+    'thanks.h1_signed'      => 'Mulțumim că ați semnat:',
+    'thanks.p_created'      => 'Petiția dumneavoastră a fost creată cu succes. O puteți deschide acum folosind linkul de mai sus.',
+    'thanks.p_signed'       => 'Înregistrarea a fost realizată cu succes, însă trebuie să vă activați contul făcând clic pe linkul pe care îl veți primi în curând la adresa de email furnizată.',
+    'thanks.suggestions'    => 'Petiții care v-ar putea interesa',
+    'thanks.no_suggestions' => 'Nicio sugestie încă.',
+    'thanks.invite'         => 'Invitați prieteni din agenda dumneavoastră »',
 ];

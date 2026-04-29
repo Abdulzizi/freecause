@@ -162,4 +162,112 @@ return [
     'create.tags_hint' => 'Virgülle ayrılmış en fazla 10 anahtar kelime',
     'create.update' => 'Güncelle',
     'create.login_required' => 'Göndermek için lütfen yukarıdan giriş yapın veya kaydolun.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navbar
+    |--------------------------------------------------------------------------
+    */
+    'nav.explore'   => 'Dilekçeleri keşfet',
+    'nav.magazine'  => 'Dergi',
+    'nav.help'      => 'Yardım',
+    'nav.logout'    => 'Çıkış yap',
+    'nav.startfree' => 'Ücretsiz başla',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot / Reset Password
+    |--------------------------------------------------------------------------
+    */
+    'auth.forgot_title'     => 'Şifremi Unuttum',
+    'auth.send_reset'       => 'Sıfırlama bağlantısı gönder',
+    'auth.back_login'       => 'Girişe geri dön',
+    'auth.reset_title'      => 'Şifre Sıfırla',
+    'auth.new_password'     => 'Yeni Şifre',
+    'auth.confirm_password' => 'Şifreyi Onayla',
+    'auth.reset_submit'     => 'Şifreyi Sıfırla',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Page
+    |--------------------------------------------------------------------------
+    */
+    'profile.my_data'            => 'Bilgilerim',
+    'profile.reg_date'           => 'Kayıt tarihi:',
+    'profile.my_petitions'       => '» Dilekçelerim',
+    'profile.account_deletion'   => 'Hesap Silme',
+    'profile.enter_password'     => 'Onaylamak için şifrenizi girin',
+    'profile.confirm_delete_lbl' => 'Hesabın kalıcı olarak silinmesine onay veriyorum',
+    'profile.delete'             => 'Sil',
+    'profile.heading'            => 'Profil',
+    'profile.first_name'         => 'Ad',
+    'profile.last_name'          => 'Soyad',
+    'profile.identify_as'        => 'Beni şu şekilde tanımla',
+    'profile.id_full'            => 'Tam Ad',
+    'profile.id_name'            => 'Ad',
+    'profile.id_nick'            => 'Takma ad',
+    'profile.change_email'       => 'E-posta değiştir',
+    'profile.new_email'          => 'Yeni e-posta',
+    'profile.confirm_email'      => 'Yeni e-postayı onayla',
+    'profile.change_password'    => 'Şifre değiştir',
+    'profile.current_password'   => 'Mevcut şifre',
+    'profile.new_password'       => 'Yeni şifre',
+    'profile.confirm_new_password' => 'Yeni şifreyi onayla',
+    'profile.save_changes'       => 'Değişiklikleri kaydet',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sign Form Extended
+    |--------------------------------------------------------------------------
+    */
+    'sign.signed_hint'     => 'Davanızı destekleyin ve paylaşın. Lütfen "beğen" düğmesine tıklayın ve dilekçeyi imzalayın',
+    'sign.default_comment' => 'Bu dilekçeyi destekliyorum',
+    'sign.email_warning'   => 'Dikkat, sağladığınız e-posta adresi imzayı doğrulamak için geçerli olmalıdır, aksi takdirde silinecektir.',
+    'sign.agree_yes'       => 'Kabul ediyorum',
+    'sign.agree_no'        => 'Kabul etmiyorum',
+    'sign.h2_line1'        => 'Davanızı destekleyin ve paylaşın.',
+    'sign.h2_line2'        => 'Lütfen "beğen" düğmesine tıklayın ve dilekçeyi imzalayın',
+    'sign.btn'             => 'İmzala',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Petition Show Page
+    |--------------------------------------------------------------------------
+    */
+    'show.btn_sign_now'           => 'Şimdi imzala',
+    'show.box_sign_title'         => 'Dilekçeyi imzala',
+    'show.box_shoutbox'           => 'Yorumlar',
+    'show.box_goal'               => 'Hedef',
+    'show.goal_signatures'        => ':count imza',
+    'show.goal_label'             => 'Hedef: :count',
+    'show.box_latest'             => 'Son imzalar',
+    'show.latest_empty'           => 'henüz imza yok',
+    'show.latest_browse_all'      => 'tüm imzalara göz at »',
+    'show.box_information'        => 'Bilgi',
+    'show.info_by'                => 'Tarafından:',
+    'show.info_in'                => 'İçinde:',
+    'show.info_target'            => 'Dilekçenin hedefi:',
+    'show.box_tags'               => 'Etiketler',
+    'show.tags_empty'             => 'Etiket yok',
+    'show.box_embed'              => 'Gömme kodları',
+    'show.embed_direct'           => 'doğrudan bağlantı',
+    'show.embed_html'             => 'html için bağlantı',
+    'show.embed_forum_no_title'   => 'başlıksız forum bağlantısı',
+    'show.embed_forum_with_title' => 'başlıklı forum bağlantısı',
+    'show.box_widgets'            => 'Araçlar',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thanks Page
+    |--------------------------------------------------------------------------
+    */
+    'thanks.title_created'  => 'Teşekkürler! - xPetition',
+    'thanks.title_signed'   => 'İmzaladığınız için teşekkürler - xPetition',
+    'thanks.h1_created'     => 'Teşekkürler!',
+    'thanks.h1_signed'      => 'İmzaladığınız için teşekkürler:',
+    'thanks.p_created'      => 'Dilekçeniz başarıyla oluşturuldu. Yukarıdaki bağlantıyı kullanarak şimdi açabilirsiniz.',
+    'thanks.p_signed'       => 'Kayıt başarılı oldu, ancak sağlanan e-posta adresinize yakında alacağınız bağlantıya tıklayarak hesabınızı hâlâ etkinleştirmeniz gerekmektedir.',
+    'thanks.suggestions'    => 'Beğenebileceğiniz dilekçeler',
+    'thanks.no_suggestions' => 'Henüz öneri yok.',
+    'thanks.invite'         => 'Adres defterinizden arkadaş davet edin »',
 ];

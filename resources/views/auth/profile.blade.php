@@ -12,22 +12,22 @@
                 <div class="col-lg-4">
                     <div class="fc-card p-4">
 
-                        <h2 class="fc-h2 mb-3">My Data</h2>
+                        <h2 class="fc-h2 mb-3">{{ __('messages.profile.my_data') }}</h2>
 
                         <div class="fc-kv">
-                            <div class="fc-k">Email:</div>
+                            <div class="fc-k">{{ __('messages.auth.email') }}:</div>
                             <div class="fc-v">{{ $u->email }}</div>
                         </div>
 
                         <div class="fc-kv">
-                            <div class="fc-k">Registration date:</div>
+                            <div class="fc-k">{{ __('messages.profile.reg_date') }}</div>
                             <div class="fc-v">
                                 {{ optional($u->created_at)->format('d M y H:i') }}
                             </div>
                         </div>
 
                         <div class="mt-3">
-                            <a class="fc-link-red" href="{{ lroute('account.petitions') }}">» My Petitions</a>
+                            <a class="fc-link-red" href="{{ lroute('account.petitions') }}">{{ __('messages.profile.my_petitions') }}</a>
                         </div>
 
                         <div class="fc-dots my-3"></div>
@@ -59,24 +59,24 @@
                             <div class="fc-dots my-3"></div>
                         </div>
 
-                        <h3 class="fc-h3 mb-2">Account Deletion</h3>
+                        <h3 class="fc-h3 mb-2">{{ __('messages.profile.account_deletion') }}</h3>
 
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
 
                             <div class="mb-3">
-                                <label class="form-label">Enter your password to confirm</label>
+                                <label class="form-label">{{ __('messages.profile.enter_password') }}</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
 
                             <label class="d-flex align-items-center gap-2 mb-3" style="font-size:14px;">
                                 <input type="checkbox" name="confirm_delete" value="1" required>
-                                <span>I agree with the account permanent deletion</span>
+                                <span>{{ __('messages.profile.confirm_delete_lbl') }}</span>
                             </label>
 
                             <button type="submit" class="btn fc-btn-danger px-4"
                                 onclick="this.disabled=true;this.form.submit();">
-                                Delete <span class="ms-3">»</span>
+                                {{ __('messages.profile.delete') }} <span class="ms-3">»</span>
                             </button>
                         </form>
 
@@ -85,7 +85,7 @@
 
                 <div class="col-lg-8">
                     <div class="fc-card p-4">
-                        <h1 class="fc-title text-center mb-4">Profile</h1>
+                        <h1 class="fc-title text-center mb-4">{{ __('messages.profile.heading') }}</h1>
 
                         @if ($errors->any())
                             <div class="fc-error mb-3">
@@ -107,7 +107,7 @@
                             @csrf
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">First Name</label>
+                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.first_name') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="first_name"
                                         value="{{ old('first_name', $u->first_name) }}">
@@ -115,7 +115,7 @@
                             </div>
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">Last Name</label>
+                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.last_name') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="last_name"
                                         value="{{ old('last_name', $u->last_name) }}">
@@ -125,19 +125,19 @@
                             @php $idMode = old('identify_mode', $u->identify_mode ?? 'full'); @endphp
 
                             <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label">Identify me as</label>
+                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.identify_as') }}</label>
                                 <div class="col-sm-9 d-flex gap-4">
                                     <label><input type="radio" name="identify_mode" value="full"
-                                            {{ $idMode === 'full' ? 'checked' : '' }}> Full Name</label>
+                                            {{ $idMode === 'full' ? 'checked' : '' }}> {{ __('messages.profile.id_full') }}</label>
                                     <label><input type="radio" name="identify_mode" value="name"
-                                            {{ $idMode === 'name' ? 'checked' : '' }}> First Name</label>
+                                            {{ $idMode === 'name' ? 'checked' : '' }}> {{ __('messages.profile.id_name') }}</label>
                                     <label><input type="radio" name="identify_mode" value="nick"
-                                            {{ $idMode === 'nick' ? 'checked' : '' }}> Nickname</label>
+                                            {{ $idMode === 'nick' ? 'checked' : '' }}> {{ __('messages.profile.id_nick') }}</label>
                                 </div>
                             </div>
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">Nickname</label>
+                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.id_nick') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="nickname"
                                         value="{{ old('nickname', $u->nickname) }}">
@@ -145,7 +145,7 @@
                             </div>
 
                             <div class="row mb-4 align-items-center">
-                                <label class="col-sm-3 col-form-label">City</label>
+                                <label class="col-sm-3 col-form-label">{{ __('messages.form.city') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="city"
                                         value="{{ old('city', $u->city) }}">
@@ -154,11 +154,11 @@
 
                             <hr>
 
-                            <div class="mb-2"><strong>Change Email</strong></div>
+                            <div class="mb-2"><strong>{{ __('messages.profile.change_email') }}</strong></div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input class="form-control fc-input" name="new_email" placeholder="New email"
+                                    <input class="form-control fc-input" name="new_email" placeholder="{{ __('messages.profile.new_email') }}"
                                         value="{{ old('new_email') }}">
                                 </div>
                             </div>
@@ -166,38 +166,38 @@
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input class="form-control fc-input" name="new_email_confirmation"
-                                        placeholder="Confirm new email" value="{{ old('new_email_confirmation') }}">
+                                        placeholder="{{ __('messages.profile.confirm_email') }}" value="{{ old('new_email_confirmation') }}">
                                 </div>
                             </div>
 
                             <hr>
 
-                            <div class="mb-2"><strong>Change Password</strong></div>
+                            <div class="mb-2"><strong>{{ __('messages.profile.change_password') }}</strong></div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="current_password"
-                                        placeholder="Current password">
+                                        placeholder="{{ __('messages.profile.current_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="new_password"
-                                        placeholder="New password">
+                                        placeholder="{{ __('messages.profile.new_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="new_password_confirmation"
-                                        placeholder="Confirm new password">
+                                        placeholder="{{ __('messages.profile.confirm_new_password') }}">
                                 </div>
                             </div>
 
                             <div class="text-center">
                                 <button class="btn fc-btn-edit px-5" onclick="this.disabled=true;this.form.submit();">
-                                    Save Changes <span class="ms-3">»</span>
+                                    {{ __('messages.profile.save_changes') }} <span class="ms-3">»</span>
                                 </button>
                             </div>
 
