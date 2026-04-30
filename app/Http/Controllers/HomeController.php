@@ -87,7 +87,9 @@ class HomeController extends Controller
         if (is_array($categories)) {
             $categories = collect($categories);
         }
-        $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->all()));
+        if ($categories instanceof \Illuminate\Support\Collection) {
+            $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
+        }
 
         $recentActivities = cache()->remember("home:recent:{$locale}", 300, function () use ($locale, $defaultLocale) {
             return DB::select("
