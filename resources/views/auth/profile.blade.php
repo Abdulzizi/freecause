@@ -12,22 +12,22 @@
                 <div class="col-lg-4">
                     <div class="fc-card p-4">
 
-                        <h2 class="fc-h2 mb-3">{{ __('messages.profile.my_data') }}</h2>
+                        <h2 class="fc-h2 mb-3">{{ trans_db('profile.my_data') }}</h2>
 
                         <div class="fc-kv">
-                            <div class="fc-k">{{ __('messages.auth.email') }}:</div>
+                            <div class="fc-k">{{ trans_db('auth.email') }}:</div>
                             <div class="fc-v">{{ $u->email }}</div>
                         </div>
 
                         <div class="fc-kv">
-                            <div class="fc-k">{{ __('messages.profile.reg_date') }}</div>
+                            <div class="fc-k">{{ trans_db('profile.reg_date') }}</div>
                             <div class="fc-v">
                                 {{ optional($u->created_at)->format('d M y H:i') }}
                             </div>
                         </div>
 
                         <div class="mt-3">
-                            <a class="fc-link-red" href="{{ lroute('account.petitions') }}">{{ __('messages.profile.my_petitions') }}</a>
+                            <a class="fc-link-red" href="{{ lroute('account.petitions') }}">{{ trans_db('profile.my_petitions') }}</a>
                         </div>
 
                         <div class="fc-dots my-3"></div>
@@ -59,24 +59,24 @@
                             <div class="fc-dots my-3"></div>
                         </div>
 
-                        <h3 class="fc-h3 mb-2">{{ __('messages.profile.account_deletion') }}</h3>
+                        <h3 class="fc-h3 mb-2">{{ trans_db('profile.account_deletion') }}</h3>
 
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('messages.profile.enter_password') }}</label>
+                                <label class="form-label">{{ trans_db('profile.enter_password') }}</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
 
                             <label class="d-flex align-items-center gap-2 mb-3" style="font-size:14px;">
                                 <input type="checkbox" name="confirm_delete" value="1" required>
-                                <span>{{ __('messages.profile.confirm_delete_lbl') }}</span>
+                                <span>{{ trans_db('profile.confirm_delete_lbl') }}</span>
                             </label>
 
                             <button type="submit" class="btn fc-btn-danger px-4"
                                 onclick="this.disabled=true;this.form.submit();">
-                                {{ __('messages.profile.delete') }} <span class="ms-3">»</span>
+                                {{ trans_db('profile.delete') }} <span class="ms-3">»</span>
                             </button>
                         </form>
 
@@ -85,7 +85,7 @@
 
                 <div class="col-lg-8">
                     <div class="fc-card p-4">
-                        <h1 class="fc-title text-center mb-4">{{ __('messages.profile.heading') }}</h1>
+                        <h1 class="fc-title text-center mb-4">{{ trans_db('profile.heading') }}</h1>
 
                         @if ($errors->any())
                             <div class="fc-error mb-3">
@@ -107,7 +107,7 @@
                             @csrf
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.first_name') }}</label>
+                                <label class="col-sm-3 col-form-label">{{ trans_db('profile.first_name') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="first_name"
                                         value="{{ old('first_name', $u->first_name) }}">
@@ -115,7 +115,7 @@
                             </div>
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.last_name') }}</label>
+                                <label class="col-sm-3 col-form-label">{{ trans_db('profile.last_name') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="last_name"
                                         value="{{ old('last_name', $u->last_name) }}">
@@ -125,19 +125,19 @@
                             @php $idMode = old('identify_mode', $u->identify_mode ?? 'full'); @endphp
 
                             <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.identify_as') }}</label>
+                                <label class="col-sm-3 col-form-label">{{ trans_db('profile.identify_as') }}</label>
                                 <div class="col-sm-9 d-flex gap-4">
                                     <label><input type="radio" name="identify_mode" value="full"
-                                            {{ $idMode === 'full' ? 'checked' : '' }}> {{ __('messages.profile.id_full') }}</label>
+                                            {{ $idMode === 'full' ? 'checked' : '' }}> {{ trans_db('profile.id_full') }}</label>
                                     <label><input type="radio" name="identify_mode" value="name"
-                                            {{ $idMode === 'name' ? 'checked' : '' }}> {{ __('messages.profile.id_name') }}</label>
+                                            {{ $idMode === 'name' ? 'checked' : '' }}> {{ trans_db('profile.id_name') }}</label>
                                     <label><input type="radio" name="identify_mode" value="nick"
-                                            {{ $idMode === 'nick' ? 'checked' : '' }}> {{ __('messages.profile.id_nick') }}</label>
+                                            {{ $idMode === 'nick' ? 'checked' : '' }}> {{ trans_db('profile.id_nick') }}</label>
                                 </div>
                             </div>
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-3 col-form-label">{{ __('messages.profile.id_nick') }}</label>
+                                <label class="col-sm-3 col-form-label">{{ trans_db('profile.id_nick') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="nickname"
                                         value="{{ old('nickname', $u->nickname) }}">
@@ -145,7 +145,7 @@
                             </div>
 
                             <div class="row mb-4 align-items-center">
-                                <label class="col-sm-3 col-form-label">{{ __('messages.form.city') }}</label>
+                                <label class="col-sm-3 col-form-label">{{ trans_db('form.city') }}</label>
                                 <div class="col-sm-9">
                                     <input class="form-control fc-input" name="city"
                                         value="{{ old('city', $u->city) }}">
@@ -154,11 +154,11 @@
 
                             <hr>
 
-                            <div class="mb-2"><strong>{{ __('messages.profile.change_email') }}</strong></div>
+                            <div class="mb-2"><strong>{{ trans_db('profile.change_email') }}</strong></div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input class="form-control fc-input" name="new_email" placeholder="{{ __('messages.profile.new_email') }}"
+                                    <input class="form-control fc-input" name="new_email" placeholder="{{ trans_db('profile.new_email') }}"
                                         value="{{ old('new_email') }}">
                                 </div>
                             </div>
@@ -166,38 +166,38 @@
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input class="form-control fc-input" name="new_email_confirmation"
-                                        placeholder="{{ __('messages.profile.confirm_email') }}" value="{{ old('new_email_confirmation') }}">
+                                        placeholder="{{ trans_db('profile.confirm_email') }}" value="{{ old('new_email_confirmation') }}">
                                 </div>
                             </div>
 
                             <hr>
 
-                            <div class="mb-2"><strong>{{ __('messages.profile.change_password') }}</strong></div>
+                            <div class="mb-2"><strong>{{ trans_db('profile.change_password') }}</strong></div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="current_password"
-                                        placeholder="{{ __('messages.profile.current_password') }}">
+                                        placeholder="{{ trans_db('profile.current_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="new_password"
-                                        placeholder="{{ __('messages.profile.new_password') }}">
+                                        placeholder="{{ trans_db('profile.new_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
                                     <input type="password" class="form-control fc-input" name="new_password_confirmation"
-                                        placeholder="{{ __('messages.profile.confirm_new_password') }}">
+                                        placeholder="{{ trans_db('profile.confirm_new_password') }}">
                                 </div>
                             </div>
 
                             <div class="text-center">
                                 <button class="btn fc-btn-edit px-5" onclick="this.disabled=true;this.form.submit();">
-                                    {{ __('messages.profile.save_changes') }} <span class="ms-3">»</span>
+                                    {{ trans_db('profile.save_changes') }} <span class="ms-3">»</span>
                                 </button>
                             </div>
 

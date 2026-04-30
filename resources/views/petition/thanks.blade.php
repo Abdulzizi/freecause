@@ -4,20 +4,20 @@
     $isCreated = ($mode ?? 'signed') === 'created';
 
     $pageTitle = $isCreated
-        ? __('messages.thanks.title_created')
-        : __('messages.thanks.title_signed');
+        ? trans_db('thanks.title_created')
+        : trans_db('thanks.title_signed');
 
     $h1Text = $isCreated
-        ? __('messages.thanks.h1_created')
-        : __('messages.thanks.h1_signed');
+        ? trans_db('thanks.h1_created')
+        : trans_db('thanks.h1_signed');
 
     $pText = $isCreated
-        ? __('messages.thanks.p_created')
-        : __('messages.thanks.p_signed');
+        ? trans_db('thanks.p_created')
+        : trans_db('thanks.p_signed');
 
-    $suggestionsTitle = __('messages.thanks.suggestions');
-    $suggestionsEmpty = __('messages.thanks.no_suggestions');
-    $inviteBtnText = __('messages.thanks.invite');
+    $suggestionsTitle = trans_db('thanks.suggestions');
+    $suggestionsEmpty = trans_db('thanks.no_suggestions');
+    $inviteBtnText = trans_db('thanks.invite');
 
     $petitionUrl = isset($tr) && $tr ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp
@@ -35,7 +35,7 @@
 
                 <div class="mb-3">
                     <a class="red" href="{{ $petitionUrl }}">
-                        {{ $tr->title ?? __('messages.thanks.petition_fallback') }}
+                        {{ $tr->title ?? trans_db('thanks.petition_fallback') }}
                     </a>
                 </div>
 
@@ -58,7 +58,7 @@
                         <div class="mb-2">
                             <a class="d-block p-2" style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
                                 href="{{ $sUrl }}">
-                                {{ $p->tr_title ?? __('messages.thanks.petition_fallback') }}
+                                {{ $p->tr_title ?? trans_db('thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty
