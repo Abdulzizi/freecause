@@ -180,7 +180,7 @@ Route::group([
     // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
 
     Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
-        ->where(['slug' => '[\p{L}\p{N}\-]+', 'id' => '[0-9]+'])
+        ->where(['slug' => '[^/]+', 'id' => '[0-9]+'])
         ->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
@@ -238,7 +238,7 @@ Route::group([
     Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
     Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])
         ->where([
-            'categorySlug' => '[\p{L}\p{N}\-]+',
+            'categorySlug' => '[^/]+',
             'category' => '[0-9]+',
         ])->name('petitions.byCategory');
 
@@ -252,5 +252,5 @@ Route::group([
     Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign')->middleware('throttle:10,1');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
 
-    Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[\p{L}\p{N}\-]+')->name('page.show');
+    Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[^/]+')->name('page.show');
 });
