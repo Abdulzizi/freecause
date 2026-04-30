@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
+    private const CACHE_VERSION = 'v2';
+
     public function index(Request $request)
     {
         $locale = app()->getLocale();
         $defaultLocale = default_locale();
 
-        $cacheKey = "home:content:{$locale}";
+        $cacheKey = "home:content:" . self::CACHE_VERSION . ":{$locale}";
         $content = cache()->get($cacheKey);
 
         if ($content === null) {
@@ -63,7 +65,7 @@ class HomeController extends Controller
             );
         }
 
-        $categories = cache()->remember("home:categories:{$locale}", 43200, function () use ($locale, $defaultLocale) {
+        $categories = cache()->remember("home:categories:" . self::CACHE_VERSION . ":{$locale}", 43200, function () use ($locale, $defaultLocale) {
             return Category::select([
                 'categories.id',
                 'categories.sort_order',
@@ -91,7 +93,7 @@ class HomeController extends Controller
             $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
         }
 
-        $recentActivities = cache()->remember("home:recent:{$locale}", 300, function () use ($locale, $defaultLocale) {
+        $recentActivities = cache()->remember("home:recent:" . self::CACHE_VERSION . ":{$locale}", 300, function () use ($locale, $defaultLocale) {
             return DB::select("
                 SELECT s.*, p.id as petition_id,
                     COALESCE(pt_locale.title, pt_default.title) as petition_title,
@@ -116,7 +118,7 @@ class HomeController extends Controller
 
         $slot = (int) floor(time() / 60);
 
-        $pool = cache()->remember("home:pool:{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember("home:pool:" . self::CACHE_VERSION . ":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                     $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -145,7 +147,7 @@ class HomeController extends Controller
         if (! empty($pool)) {
             $featuredId = $pool[$slot % count($pool)];
 
-            $featuredPetition = cache()->remember("home:featured:{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
+            $featuredPetition = cache()->remember("home:featured:" . self::CACHE_VERSION . ":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select([
                     'petitions.*',
                     DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
@@ -170,7 +172,7 @@ class HomeController extends Controller
             }
         }
 
-        $magazinePosts = cache()->remember('home:magazine_posts', 1800, function () {
+        $magazinePosts = cache()->remember('home:magazine_posts:' . self::CACHE_VERSION, 1800, function () {
             try {
                 return DB::connection('magazine')->select("
                     SELECT
