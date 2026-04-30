@@ -198,9 +198,9 @@
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                                class="red">{{ $sig->name ?? 'Anonymous' }}</a>
+                                                class="red">{{ $sig->name ?? __('sig.anonymous') }}</a>
                                             <span class="text-muted">|</span>
-                                            <span>{{ $sig->text ?? 'I support this petition' }}</span>
+                                            <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>
                                     </div>
                                 @empty
@@ -329,7 +329,7 @@
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
                                 <div class="bg-white rounded-3 p-4 shadow-sm my-4" style="border:1px solid #eee;">
-                                    <div class="fc-box-title">Operations</div>
+                                    <div class="fc-box-title">{{ __('show.operations') }}</div>
                                     <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                         <div
                                             style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -339,11 +339,11 @@
                                     <div style="font-size:14px;line-height:1.9;">
                                         <div>
                                             <a class="red"
-                                                href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">Edit</a>
+                                                href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">{{ __('show.edit') }}</a>
                                         </div>
 
                                         <div class="mt-2">
-                                            Download signatures :
+                                            {{ __('show.download_signatures') }} :
                                             <a class="red"
                                                 href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
                                             <span class="text-muted"> </span>
