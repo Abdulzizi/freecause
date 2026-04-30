@@ -20,23 +20,23 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('petitions.index') }}">
-                        {{ $c['nav_explore'] ?? __('messages.nav.explore') }}
+                        {{ $c['nav_explore'] ?? trans_db('nav.explore') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/magazine">
-                        {{ $c['nav_magazine'] ?? __('messages.nav.magazine') }}
+                        {{ $c['nav_magazine'] ?? trans_db('nav.magazine') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('faqs') }}">
-                        {{ $c['nav_help'] ?? __('messages.nav.help') }}
+                        {{ $c['nav_help'] ?? trans_db('nav.help') }}
                     </a>
                 </li>
                 @if (!$isAuthed)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('login') }}">
-                            {{ $c['nav_login'] ?? __('messages.auth.login') }}
+                            {{ $c['nav_login'] ?? trans_db('auth.login') }}
                         </a>
                     </li>
                 @else
@@ -48,7 +48,7 @@
                             @csrf
                             <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
                             <button type="submit" class="nav-link btn btn-link p-0 fc-logout">
-                                {{ $c['nav_logout'] ?? __('messages.nav.logout') }}
+                                {{ $c['nav_logout'] ?? trans_db('nav.logout') }}
                             </button>
                         </form>
                     </li>
@@ -56,7 +56,7 @@
 
                 <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
                     <a class="btn btn-primary fc-startfree w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
-                        {{ $c['nav_startfree'] ?? __('messages.nav.startfree') }}
+                        {{ $c['nav_startfree'] ?? trans_db('nav.startfree') }}
                     </a>
                 </li>
 
