@@ -39,22 +39,22 @@
             @endif
 
             @if(!$isEdit)
-                <h2 class="text-center mb-4">{{ __('messages.petition.create_title') }}</h2>
+                <h2 class="text-center mb-4">{{ trans_db('petition.create_title') }}</h2>
 
                 <div class="fc-steps mb-5">
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-1 is-active"></span>
-                        <div class="fc-step-text">{{ __('messages.petition.step_create') }}</div>
+                        <div class="fc-step-text">{{ trans_db('petition.step_create') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-2"></span>
-                        <div class="fc-step-text">{{ __('messages.petition.step_share') }}</div>
+                        <div class="fc-step-text">{{ trans_db('petition.step_share') }}</div>
                     </div>
 
                     <div class="fc-step">
                         <span class="fc-step-icon fc-step-3"></span>
-                        <div class="fc-step-text">{{ __('messages.petition.step_change') }}</div>
+                        <div class="fc-step-text">{{ trans_db('petition.step_change') }}</div>
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@
                 <div class="card-body p-4">
 
                     <div class="mb-3">
-                        <div class="fw-semibold">{{ __('messages.create.petition_data') }}</div>
+                        <div class="fw-semibold">{{ trans_db('create.petition_data') }}</div>
                         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
                     </div>
 
@@ -84,12 +84,12 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.title') }}</label>
+                            <label class="form-label">{{ trans_db('form.title') }}</label>
                             <input class="form-control" name="title" value="{{ $oldTitle }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.description') }}</label>
+                            <label class="form-label">{{ trans_db('form.description') }}</label>
 
                             <div class="fc-markup">
                                 <div id="fc-quill-toolbar" class="fc-markup-bar">
@@ -116,14 +116,14 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">{{ __('messages.form.goal_signatures') }}</label>
+                                <label class="form-label">{{ trans_db('form.goal_signatures') }}</label>
 
                                 <select class="form-select" name="goal_signatures" required>
-                                    <option value="">{{ __('messages.create.select_one') }}</option>
+                                    <option value="">{{ trans_db('create.select_one') }}</option>
 
                                     @php
                                         $goals = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
-                                        $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' ' . __('messages.create.signatures_sfx');
+                                        $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' ' . trans_db('create.signatures_sfx');
                                     @endphp
 
                                     @foreach ($goals as $g)
@@ -135,9 +135,9 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">{{ __('messages.form.category') }}</label>
+                                <label class="form-label">{{ trans_db('form.category') }}</label>
                                 <select class="form-select" name="category_id" required>
-                                    <option value="">{{ __('messages.create.select_one') }}</option>
+                                    <option value="">{{ trans_db('create.select_one') }}</option>
                                     @foreach ($categories as $c)
                                         <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
                                             {{ $c->name }}
@@ -148,53 +148,53 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.tags') }}</label>
+                            <label class="form-label">{{ trans_db('form.tags') }}</label>
                             <input class="form-control" name="tags" value="{{ $oldTags }}">
-                            <small class="text-muted">{{ __('messages.create.tags_hint') }}</small>
+                            <small class="text-muted">{{ trans_db('create.tags_hint') }}</small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.image') }}</label>
+                            <label class="form-label">{{ trans_db('form.image') }}</label>
                             <input type="file" class="form-control" name="image" accept="image/jpeg,image/png">
                             <div class="mt-2">
-                                <label class="form-label">{{ __('messages.form.image_external') }}</label>
+                                <label class="form-label">{{ trans_db('form.image_external') }}</label>
                                 <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
                                     placeholder="https://">
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.youtube') }}</label>
+                            <label class="form-label">{{ trans_db('form.youtube') }}</label>
                             <input class="form-control" name="youtube" value="{{ $oldYoutube }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.target') }}</label>
+                            <label class="form-label">{{ trans_db('form.target') }}</label>
                             <input class="form-control" name="target" value="{{ $oldTarget }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.community') }}</label>
+                            <label class="form-label">{{ trans_db('form.community') }}</label>
                             <input class="form-control" name="community" value="{{ $oldCommunity }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{{ __('messages.form.community_url') }}</label>
+                            <label class="form-label">{{ trans_db('form.community_url') }}</label>
                             <input class="form-control" name="community_url" value="{{ $oldCommunityUrl }}">
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">{{ __('messages.form.city') }}</label>
+                            <label class="form-label">{{ trans_db('form.city') }}</label>
                             <input class="form-control" name="city" value="{{ $oldCity }}">
                         </div>
 
                         <div class="text-center">
                             @auth
-                                <button class="btn btn-danger px-5">{{ $isEdit ? __('messages.create.update') : __('messages.form.submit') }}</button>
+                                <button class="btn btn-danger px-5">{{ $isEdit ? trans_db('create.update') : trans_db('form.submit') }}</button>
                             @else
-                                <button class="btn btn-danger px-5" disabled title="Please login first">{{ __('messages.form.submit') }}</button>
+                                <button class="btn btn-danger px-5" disabled title="Please login first">{{ trans_db('form.submit') }}</button>
                                 <div class="text-muted mt-2" style="font-size:14px;">
-                                    {{ __('messages.create.login_required') }}
+                                    {{ trans_db('create.login_required') }}
                                 </div>
                             @endauth
                         </div>

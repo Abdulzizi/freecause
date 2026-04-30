@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', __('messages.auth.forgot_title'))
+@section('title', trans_db('auth.forgot_title'))
 
 @section('content')
     <section class="py-5">
@@ -8,7 +8,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-5">
                     <div class="fc-auth-card shadow-sm">
-                        <h4 class="mb-4 text-center">{{ __('messages.auth.forgot_title') }}</h4>
+                        <h4 class="mb-4 text-center">{{ trans_db('auth.forgot_title') }}</h4>
 
                         @if (session('status'))
                             <div class="alert alert-success">{{ session('status') }}</div>
@@ -18,7 +18,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('messages.auth.email') }}</label>
+                                <label class="form-label">{{ trans_db('auth.email') }}</label>
                                 <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email') }}" required>
                                 @error('email')
@@ -26,10 +26,10 @@
                                 @enderror
                             </div>
 
-                            <button class="btn btn-danger w-100">{{ __('messages.auth.send_reset') }}</button>
+                            <button class="btn btn-danger w-100">{{ trans_db('auth.send_reset') }}</button>
 
                             <div class="text-center mt-3">
-                                <a href="{{ lroute('login') }}" class="text-muted" style="font-size:14px;">{{ __('messages.auth.back_login') }}</a>
+                                <a href="{{ lroute('login') }}" class="text-muted" style="font-size:14px;">{{ trans_db('auth.back_login') }}</a>
                             </div>
                         </form>
                     </div>

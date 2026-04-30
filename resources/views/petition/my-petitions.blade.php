@@ -9,7 +9,7 @@
                 <div class="row g-0">
 
                     <div class="col-md-6 fc-myp-col fc-myp-left">
-                        <div class="fc-myp-head">{{ __('messages.myp.signed_heading') }}</div>
+                        <div class="fc-myp-head">{{ trans_db('myp.signed_heading') }}</div>
 
                         <div class="fc-myp-list">
                             @forelse($signed as $p)
@@ -22,7 +22,7 @@
                                     <div class="fc-myp-date">{{ $date->format('j F Y') }}</div>
                                 </a>
                             @empty
-                                <div class="fc-myp-empty">{{ __('messages.myp.signed_empty') }}</div>
+                                <div class="fc-myp-empty">{{ trans_db('myp.signed_empty') }}</div>
                             @endforelse
 
                             @if($tab === 'signed' && $signed instanceof \Illuminate\Contracts\Pagination\Paginator)
@@ -32,14 +32,14 @@
                             @else
                                 <a class="fc-myp-item fc-myp-full"
                                     href="{{ lroute('account.petitions', ['tab' => 'signed']) }}">
-                                    {{ __('messages.myp.full_list') }}
+                                    {{ trans_db('myp.full_list') }}
                                 </a>
                             @endif
                         </div>
                     </div>
 
                     <div class="col-md-6 fc-myp-col fc-myp-right">
-                        <div class="fc-myp-head">{{ __('messages.myp.created_heading') }}</div>
+                        <div class="fc-myp-head">{{ trans_db('myp.created_heading') }}</div>
 
                         <div class="fc-myp-list">
                             @forelse($created as $p)
@@ -49,7 +49,7 @@
                                     <div class="fc-myp-date">{{ optional($p->created_at)->format('j F Y') }}</div>
                                 </a>
                             @empty
-                                <div class="fc-myp-empty">{{ __('messages.myp.created_empty') }}</div>
+                                <div class="fc-myp-empty">{{ trans_db('myp.created_empty') }}</div>
                             @endforelse
 
                             @if($tab === 'created' && $created instanceof \Illuminate\Contracts\Pagination\Paginator)
@@ -59,7 +59,7 @@
                             @else
                                 <a class="fc-myp-item fc-myp-full"
                                     href="{{ lroute('account.petitions', ['tab' => 'created']) }}">
-                                    {{ __('messages.myp.full_list') }}
+                                    {{ trans_db('myp.full_list') }}
                                 </a>
                             @endif
                         </div>
