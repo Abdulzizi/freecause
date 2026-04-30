@@ -140,7 +140,7 @@
                             @endforeach
 
                             @if (session('login_url'))
-                                <li><a class="red" href="{{ session('login_url') }}">go to login</a></li>
+                                <li><a class="red" href="{{ session('login_url') }}">{{ __('auth.go_to_login') }}</a></li>
                             @endif
                         </ul>
                     </div>

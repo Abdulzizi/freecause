@@ -1,7 +1,7 @@
 @extends('layouts.legacy')
 
 @php
-    $petitionTitle = e($tr->title ?? 'Petition');
+    $petitionTitle = e($tr->title ?? __('common.petition'));
     $shortDesc = \Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200);
     $petitionUrl = lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]);
     $signUrl = lroute('petition.sign.page', ['slug' => $tr->slug, 'id' => $petition->id]);
@@ -88,7 +88,7 @@
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>
-                            @if (!empty($sig->text) && $sig->text !== 'I support this petition')
+                            @if (!empty($sig->text) && $sig->text !== __('sig.default_comment'))
                                 <p class="mb-0 mt-1 text-muted" style="font-size:14px;">
                                     "{{ $sig->text }}"
                                 </p>

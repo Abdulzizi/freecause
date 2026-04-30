@@ -1,7 +1,7 @@
 @extends('layouts.legacy')
 
 @php
-    $pageTitle = __('sign.page_title', ['title' => $tr->title ?? 'Petition']);
+    $pageTitle = __('sign.page_title', ['title' => $tr->title ?? __('common.petition')]);
 
     $h2Line1 = __('sign.h2_line1');
     $h2Line2 = __('sign.h2_line2');

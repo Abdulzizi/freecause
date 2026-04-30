@@ -111,7 +111,7 @@
                                     required>{!! $oldDesc !!}</textarea>
                             </div>
 
-                            <div class="fc-markup-hint">allowed: br, p, strong, em, u, ul, ol, li</div>
+                            <div class="fc-markup-hint">{{ __('create.markup_hint') }}</div>
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -192,7 +192,7 @@
                             @auth
                                 <button class="btn btn-danger px-5">{{ $isEdit ? __('create.update') : __('form.submit') }}</button>
                             @else
-                                <button class="btn btn-danger px-5" disabled title="Please login first">{{ __('form.submit') }}</button>
+                                <button class="btn btn-danger px-5" disabled title="{{ __('create.login_required') }}">{{ __('form.submit') }}</button>
                                 <div class="text-muted mt-2" style="font-size:14px;">
                                     {{ __('create.login_required') }}
                                 </div>
