@@ -1,11 +1,11 @@
 @extends('layouts.legacy')
 
 @php
-    $pageTitle = trans_db('sign.page_title', ['title' => $tr->title ?? 'Petition']);
+    $pageTitle = __('sign.page_title', ['title' => $tr->title ?? 'Petition']);
 
-    $h2Line1 = trans_db('sign.h2_line1');
-    $h2Line2 = trans_db('sign.h2_line2');
-    $btnText = trans_db('sign.btn');
+    $h2Line1 = __('sign.h2_line1');
+    $h2Line2 = __('sign.h2_line2');
+    $btnText = __('sign.btn');
 
     $signUrl = isset($tr) && $tr ? lroute('petition.sign', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
 @endphp

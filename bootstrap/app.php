@@ -9,7 +9,6 @@ use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\DebugForIp;
 use App\Http\Middleware\NoCacheHeaders;
 use App\Http\Middleware\SetLocale;
-use App\Providers\TranslationServiceProvider;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,9 +17,6 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
-    ->withProviders([
-        TranslationServiceProvider::class,
-    ])
     ->registered(function (Application $app) {
         $app->useLangPath(base_path('lang'));
     })

@@ -21,16 +21,16 @@
                     <div class="banner-content">
 
                         <h1 class="banner-heading mb-4">
-                            {{ trans_db('home.h1') }}
+                            {{ __('home.h1') }}
                         </h1>
 
                         <h2 class="banner-subtitle">
-                            {!! trans_db('home.h2') !!}
+                            {!! __('home.h2') !!}
                         </h2>
 
                         <div class="banner-btn mb-3">
                             <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ trans_db('home.btn_create_petition') }}
+                                {{ __('home.btn_create_petition') }}
                             </a>
                         </div>
 
@@ -51,14 +51,14 @@
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
                                     <i class="fa fa-home"></i>
-                                    {{ trans_db('home.tab_featured') }}
+                                    {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
                                     <i class="fa fa-clock-o"></i>
-                                    {{ trans_db('home.tab_recent') }}
+                                    {{ __('home.tab_recent') }}
                                 </button>
                             </li>
                         </ul>
@@ -79,7 +79,7 @@
                                                         @if ($featuredPetition)
                                                         <div class="col-sm-6 mb-4">
                                                             <span class="featured-badges">
-                                                                {{ trans_db('home.featured_badge') }}
+                                                                {{ __('home.featured_badge') }}
                                                             </span>
                                                             <div style="position:relative;overflow:hidden;border-radius:6px;height:320px;background:#1a1a1a;">
                                                                 <img src="{{ $featuredPetition->coverUrl() }}"
@@ -95,7 +95,7 @@
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>
-                                                                        {{ trans_db('home.petition_target_label') }}
+                                                                        {{ __('home.petition_target_label') }}
                                                                     </strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
@@ -112,22 +112,22 @@
                                                                     <div class="d-flex justify-content-between text-muted">
                                                                         <span>
                                                                             {{ number_format($signatures) }}
-                                                                            {{ trans_db('home.signatures_label') }}
+                                                                            {{ __('home.signatures_label') }}
                                                                         </span>
                                                                         <span>
-                                                                            {{ trans_db('home.goal_label') }}
+                                                                            {{ __('home.goal_label') }}
                                                                             {{ number_format($goal) }}
                                                                         </span>
                                                                     </div>
                                                                 </div>
 
                                                                 <a href="{{ $featuredUrl }}" class="btn btn-danger stretched-link">
-                                                                    {{ trans_db('home.read_more') }}
+                                                                    {{ __('home.read_more') }}
                                                                 </a>
                                                             @else
-                                                                <h5>{{ trans_db('home.featured_none_title') }}</h5>
+                                                                <h5>{{ __('home.featured_none_title') }}</h5>
                                                                 <p class="text-muted">
-                                                                    {{ trans_db('home.featured_none_sub') }}
+                                                                    {{ __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
                                                         </div>
@@ -176,7 +176,7 @@
                                                                         </span>
 
                                                                         <strong>
-                                                                            {{ trans_db('home.recent_has_signed') }}
+                                                                            {{ __('home.recent_has_signed') }}
                                                                         </strong>
                                                                     </p>
 
@@ -196,7 +196,7 @@
 
                                                         <li>
                                                             <div class="text-muted p-2">
-                                                                {{ trans_db('home.recent_empty') }}
+                                                                {{ __('home.recent_empty') }}
                                                             </div>
                                                         </li>
                                                     @endforelse
@@ -224,10 +224,10 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ trans_db('home.what_title') }}
+                            {{ __('home.what_title') }}
                         </h4>
 
-                        {!! \App\Services\ContentRenderer::render(trans_db('home.text_index_left')) !!}
+                        {!! \App\Services\ContentRenderer::render(__('home.text_index_left')) !!}
 
                     </div>
                 </div>
@@ -236,10 +236,10 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ trans_db('home.create_box_title') }}
+                            {{ __('home.create_box_title') }}
                         </h4>
 
-                        {!! \App\Services\ContentRenderer::render(trans_db('home.text_index_right')) !!}
+                        {!! \App\Services\ContentRenderer::render(__('home.text_index_right')) !!}
 
                     </div>
                 </div>
@@ -252,7 +252,7 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h4 class="headings">{{ trans_db('home.categories_title') }}</h4>
+                    <h4 class="headings">{{ __('home.categories_title') }}</h4>
                 </div>
             </div>
 
@@ -293,8 +293,8 @@
     <section class="blog-section">
         <div class="container">
             <div class="text-center mb-4">
-                <h2 class="mb-2">{{ trans_db('home.blog_title') }}</h2>
-                <p class="text-muted">{{ trans_db('home.blog_subtitle') }}
+                <h2 class="mb-2">{{ __('home.blog_title') }}</h2>
+                <p class="text-muted">{{ __('home.blog_subtitle') }}
                 </p>
             </div>
 
@@ -310,7 +310,7 @@
                             <div class="blog-content">
                                 <h3 class="blog-title">{{ $post->post_title }}</h3>
                                 <a class="red" href="/magazine/{{ $post->post_name }}">
-                                    {{ trans_db('home.blog_read_more') }}
+                                    {{ __('home.blog_read_more') }}
                                     <span style="margin-left:6px;">›</span>
                                 </a>
                             </div>

@@ -4,46 +4,46 @@
     $isAuthed = auth()->check();
 
     $petitionTitle = e($tr->title ?? ($petition->title ?? 'Petition'));
-    $pageTitle = trans_db('show.page_title', ['title' => $petitionTitle]);
+    $pageTitle = __('show.page_title', ['title' => $petitionTitle]);
 
     $petitionImg = $petition->coverUrl();
     $petitionCredit = $petition->image_credit ?? '';
 
-    $btnSignNow = trans_db('show.btn_sign_now');
-    $boxSignTitle = trans_db('show.box_sign_title');
-    $googleContinue = trans_db('show.google_continue');
-    $orText = trans_db('show.or');
+    $btnSignNow = __('show.btn_sign_now');
+    $boxSignTitle = __('show.box_sign_title');
+    $googleContinue = __('show.google_continue');
+    $orText = __('show.or');
 
     $loginUrl = lroute('login');
 
-    $authHintSplit = trans_db('show.auth_hint_split', ['login_url' => $loginUrl]);
-    $authHintStack = trans_db('show.auth_hint_stack', ['login_url' => $loginUrl]);
+    $authHintSplit = __('show.auth_hint_split', ['login_url' => $loginUrl]);
+    $authHintStack = __('show.auth_hint_stack', ['login_url' => $loginUrl]);
 
-    $boxShoutbox = trans_db('show.box_shoutbox');
+    $boxShoutbox = __('show.box_shoutbox');
 
-    $boxGoal = trans_db('show.box_goal');
-    $goalSignaturesText = trans_db('show.goal_signatures', ['count' => number_format($goalCurrent)]);
-    $goalLabelText = trans_db('show.goal_label', ['count' => number_format($goalTotal)]);
+    $boxGoal = __('show.box_goal');
+    $goalSignaturesText = __('show.goal_signatures', ['count' => number_format($goalCurrent)]);
+    $goalLabelText = __('show.goal_label', ['count' => number_format($goalTotal)]);
 
-    $boxLatest = trans_db('show.box_latest');
-    $latestEmpty = trans_db('show.latest_empty');
-    $latestBrowseAll = trans_db('show.latest_browse_all');
+    $boxLatest = __('show.box_latest');
+    $latestEmpty = __('show.latest_empty');
+    $latestBrowseAll = __('show.latest_browse_all');
 
-    $boxInformation = trans_db('show.box_information');
-    $infoBy = trans_db('show.info_by');
-    $infoIn = trans_db('show.info_in');
-    $infoTarget = trans_db('show.info_target');
+    $boxInformation = __('show.box_information');
+    $infoBy = __('show.info_by');
+    $infoIn = __('show.info_in');
+    $infoTarget = __('show.info_target');
 
-    $boxTags = trans_db('show.box_tags');
-    $tagsEmpty = trans_db('show.tags_empty');
+    $boxTags = __('show.box_tags');
+    $tagsEmpty = __('show.tags_empty');
 
-    $boxEmbed = trans_db('show.box_embed');
-    $embedDirect = trans_db('show.embed_direct');
-    $embedHtml = trans_db('show.embed_html');
-    $embedForumNoTitle = trans_db('show.embed_forum_no_title');
-    $embedForumWithTitle = trans_db('show.embed_forum_with_title');
+    $boxEmbed = __('show.box_embed');
+    $embedDirect = __('show.embed_direct');
+    $embedHtml = __('show.embed_html');
+    $embedForumNoTitle = __('show.embed_forum_no_title');
+    $embedForumWithTitle = __('show.embed_forum_with_title');
 
-    $boxWidgets = trans_db('show.box_widgets');
+    $boxWidgets = __('show.box_widgets');
 @endphp
 
 @section('title', $pageTitle)

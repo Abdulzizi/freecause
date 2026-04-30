@@ -4,36 +4,36 @@
     $useLabels = $variant === 'split';
     $isAuthed = auth()->check();
 
-    $tSignedAlready = trans_db('sign.already_signed');
-    $tSignedHint = trans_db('sign.signed_hint');
-    $tBtnSign = trans_db('sign.btn');
-    $tBtnArrow = trans_db('sign.btn_arrow');
+    $tSignedAlready = __('sign.already_signed');
+    $tSignedHint = __('sign.signed_hint');
+    $tBtnSign = __('sign.btn');
+    $tBtnArrow = __('sign.btn_arrow');
 
-    $phName = trans_db('sign.ph_name');
-    $phSurname = trans_db('sign.ph_surname');
-    $phEmail = trans_db('sign.ph_email');
-    $phPassword = trans_db('sign.ph_password');
-    $phCity = trans_db('sign.ph_city');
-    $phNickname = trans_db('sign.ph_nickname');
-    $phComment = trans_db('sign.ph_comment');
-    $defaultComment = trans_db('sign.default_comment');
+    $phName = __('sign.ph_name');
+    $phSurname = __('sign.ph_surname');
+    $phEmail = __('sign.ph_email');
+    $phPassword = __('sign.ph_password');
+    $phCity = __('sign.ph_city');
+    $phNickname = __('sign.ph_nickname');
+    $phComment = __('sign.ph_comment');
+    $defaultComment = __('sign.default_comment');
 
-    $lblName = trans_db('sign.lbl_name');
-    $lblSurname = trans_db('sign.lbl_surname');
-    $lblEmail = trans_db('sign.lbl_email');
-    $lblPassword = trans_db('sign.lbl_password');
-    $lblCity = trans_db('sign.lbl_city');
-    $lblNickname = trans_db('sign.lbl_nickname');
-    $lblComment = trans_db('sign.lbl_comment');
+    $lblName = __('sign.lbl_name');
+    $lblSurname = __('sign.lbl_surname');
+    $lblEmail = __('sign.lbl_email');
+    $lblPassword = __('sign.lbl_password');
+    $lblCity = __('sign.lbl_city');
+    $lblNickname = __('sign.lbl_nickname');
+    $lblComment = __('sign.lbl_comment');
 
-    $privacyHint = trans_db('sign.privacy_hint');
-    $emailWarning = trans_db('sign.email_warning');
+    $privacyHint = __('sign.privacy_hint');
+    $emailWarning = __('sign.email_warning');
 
-    $agree1Title = trans_db('sign.agree1_title', ['terms_url' => lroute('page.show', ['slug' => 'terms-of-service'])]);
-    $agree2Title = trans_db('sign.agree2_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
-    $agree3Title = trans_db('sign.agree3_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
-    $agreeYes = trans_db('sign.agree_yes');
-    $agreeNo = trans_db('sign.agree_no');
+    $agree1Title = __('sign.agree1_title', ['terms_url' => lroute('page.show', ['slug' => 'terms-of-service'])]);
+    $agree2Title = __('sign.agree2_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
+    $agree3Title = __('sign.agree3_title', ['privacy_url' => lroute('page.show', ['slug' => 'privacy-policy'])]);
+    $agreeYes = __('sign.agree_yes');
+    $agreeNo = __('sign.agree_no');
 
     $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
     $signPostUrl = lroute('petition.sign', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);

@@ -35,21 +35,21 @@
 
                         <p class="text-muted mb-3" style="font-size:14px;line-height:1.6;">
                             {{ $shortDesc }}
-                            <a href="{{ $petitionUrl }}" class="red ms-1">{{ trans_db('sig.continue') }}</a>
+                            <a href="{{ $petitionUrl }}" class="red ms-1">{{ __('sig.continue') }}</a>
                         </p>
 
                         <div class="fc-progress mb-2">
                             <div class="fc-progress-bar" style="width: {{ $pct }}%;"></div>
                         </div>
                         <div class="d-flex justify-content-between" style="font-size:13px;color:#666;">
-                            <span><strong>{{ number_format($goalCurrent) }}</strong> {{ trans_db('sig.signatures') }}</span>
-                            <span>{{ trans_db('sig.goal') }} {{ number_format($goalTotal) }}</span>
+                            <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
+                            <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
                     </div>
 
                     <div class="col-md-3 text-md-end">
                         <a href="{{ $signUrl }}" class="btn btn-danger px-4 py-2" style="font-size:15px;">
-                            {{ trans_db('sig.sign_link') }}
+                            {{ __('sig.sign_link') }}
                         </a>
                     </div>
 
@@ -59,9 +59,9 @@
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
 
                 <div class="fc-box-title mb-3">
-                    {{ trans_db('sig.all_signatures') }}
+                    {{ __('sig.all_signatures') }}
                     <span class="text-muted fw-normal" style="font-size:14px;">
-                        ({{ number_format($goalCurrent) }} {{ trans_db('sig.total') }})
+                        ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
 
@@ -78,7 +78,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <strong style="font-size:15px;">{{ $sig->name ?? trans_db('sig.anonymous') }}</strong>
+                                <strong style="font-size:15px;">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
                                     <span class="text-muted" style="font-size:13px;">
                                         · {{ $sig->user->city }}
@@ -97,7 +97,7 @@
                     </div>
                 @empty
                     <div class="text-muted py-4 text-center" style="font-size:14px;">
-                        {{ trans_db('sig.no_signatures') }}
+                        {{ __('sig.no_signatures') }}
                     </div>
                 @endforelse
 
