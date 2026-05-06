@@ -87,7 +87,18 @@ class PetitionController extends Controller
                 ->paginate(15);
         });
 
-        $petitions->withQueryString();
+        if (is_array($petitions)) {
+            $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
+            $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
+                $items,
+                $petitions['total'] ?? 0,
+                $petitions['per_page'] ?? 15,
+                $petitions['current_page'] ?? $page,
+                ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+            );
+        }
+
+        $petitions = $petitions->withQueryString();
 
         return view('pages.petitions-list', [
             'pageTitle' => 'All the petitions',
@@ -107,7 +118,7 @@ class PetitionController extends Controller
         $defaultLocale = default_locale();
 
         $petition = Petition::query()
-            ->with('category')
+            ->with(['category', 'user'])
             ->where('id', $id)
             ->where(function ($q) {
                 $q->where(function ($q2) {
@@ -127,6 +138,10 @@ class PetitionController extends Controller
             ?? PetitionTranslation::query()
                 ->where('petition_id', $petition->id)
                 ->where('locale', $defaultLocale)
+                ->first()
+            ?? PetitionTranslation::query()
+                ->where('petition_id', $petition->id)
+                ->orderBy('id')
                 ->first();
 
         abort_if(! $tr, 404);
@@ -149,10 +164,18 @@ class PetitionController extends Controller
         $goalCurrent = (int) ($petition->signature_count ?? 0);
         $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
 
-        $latest = Signature::where('petition_id', $petition->id)
-            ->latest('created_at')
-            ->limit(25)
-            ->get();
+        $latest = cache()->remember(
+            "petition:latest_sigs:{$petition->id}",
+            now()->addMinutes(5),
+            fn () => Signature::where('petition_id', $petition->id)
+                ->latest('created_at')
+                ->limit(25)
+                ->get()
+                ->toArray()
+        );
+
+        // Convert cached arrays back to objects if needed
+        $latest = collect($latest)->map(fn ($item) => is_array($item) ? (object) $item : $item);
 
         $directLink = lroute('petition.show', [
             'slug' => $tr->slug,
@@ -190,10 +213,22 @@ class PetitionController extends Controller
             ->where('is_active', 1)
             ->firstOrFail();
 
+        $defaultLocale = default_locale();
+
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
             ->where('locale', $locale)
-            ->firstOrFail();
+            ->first()
+            ?? PetitionTranslation::query()
+                ->where('petition_id', $petition->id)
+                ->where('locale', $defaultLocale)
+                ->first()
+            ?? PetitionTranslation::query()
+                ->where('petition_id', $petition->id)
+                ->orderBy('id')
+                ->first();
+
+        abort_if(! $tr, 404);
 
         if (auth()->check()) {
             if (! auth()->user()->verified) {
@@ -286,6 +321,7 @@ class PetitionController extends Controller
 
             if ($sig->wasRecentlyCreated) {
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
+                cache()->forget("petition:latest_sigs:{$petition->id}");
             }
 
             AppLog::info(
@@ -480,6 +516,7 @@ class PetitionController extends Controller
                 ]);
 
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
+                cache()->forget("petition:latest_sigs:{$petition->id}");
             }
 
             toast('Petition created successfully.', 'success');
@@ -522,6 +559,7 @@ class PetitionController extends Controller
 
             if ($sig->wasRecentlyCreated) {
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
+                cache()->forget("petition:latest_sigs:{$petition->id}");
             }
 
             session()->forget('sign');
@@ -563,6 +601,9 @@ class PetitionController extends Controller
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
                 ->where('locale', $defaultLocale)
+                ->first()
+            ?? PetitionTranslation::where('petition_id', $petition->id)
+                ->orderBy('id')
                 ->first();
 
         abort_if(! $tr, 404);
@@ -1019,6 +1060,9 @@ class PetitionController extends Controller
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
                 ->where('locale', $defaultLocale)
+                ->first()
+            ?? PetitionTranslation::where('petition_id', $petition->id)
+                ->orderBy('id')
                 ->first();
 
         abort_if(! $tr, 404);

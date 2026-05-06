@@ -37,7 +37,11 @@ class AdminAuthController extends Controller
             return back()->withErrors(['login' => 'invalid credentials'])->withInput();
         }
 
-        $passwordValid = Hash::check($password, $user->password);
+        try {
+            $passwordValid = Hash::check($password, $user->password);
+        } catch (\RuntimeException $e) {
+            $passwordValid = false;
+        }
 
         if (! $passwordValid && str_contains($user->password, ':')) {
             [$hash, $salt] = explode(':', $user->password, 2);

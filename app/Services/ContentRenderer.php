@@ -34,6 +34,11 @@ class ContentRenderer
 
             '{CREATE_PETITION_URL}' => lroute('petition.create'),
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
+
+            '{FAQ_URL}' => lroute('faqs'),
+            '{CONTACTS_URL}' => lroute('contacts'),
+            '{FAQ_LINK}' => '<a href="' . lroute('faqs') . '">FAQ</a>',
+            '{CONTACTS_LINK_FULL}' => '<a href="' . lroute('contacts') . '">' . __('contacts.title', [], app()->getLocale()) . '</a>',
         ];
 
         return str_replace(

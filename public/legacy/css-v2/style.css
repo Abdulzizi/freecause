@@ -2157,3 +2157,30 @@ span.featured-badges {
 .fc-quill .ql-editor ul { list-style: disc !important; padding-left: 22px !important; }
 .fc-quill .ql-editor ol { list-style: decimal !important; padding-left: 22px !important; }
 .fc-quill .ql-editor li { display: list-item !important; }
+
+/* Home page gray-box bullet lists */
+.gray-box ul {
+    list-style: disc !important;
+    padding-left: 24px !important;
+    margin: 10px 0 !important;
+}
+
+.gray-box ul li {
+    display: list-item !important;
+    list-style: disc !important;
+    list-style-type: disc !important;
+    margin-bottom: 6px;
+    line-height: 1.5;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+.gray-box ul li::marker {
+    content: "• " !important;
+    color: #333 !important;
+    font-size: 1.1em !important;
+}
+
+.gray-box ul li:last-child {
+    margin-bottom: 0;
+}
