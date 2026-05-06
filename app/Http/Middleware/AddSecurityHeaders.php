@@ -23,6 +23,9 @@ class AddSecurityHeaders
 
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
+        // Restrict browser features
+        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+
         // Admin routes get a permissive CSP (inline scripts/styles needed for the panel).
         // Public routes get a strict CSP — no unsafe-inline on scripts.
         if ($request->is('admin') || $request->is('admin/*')) {

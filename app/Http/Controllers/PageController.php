@@ -8,6 +8,8 @@ class PageController extends Controller
 {
     public function show(string $locale, string $slug)
     {
+        $defaultLocale = default_locale();
+
         $tr = PageTranslation::query()
             ->where('locale', $locale)
             ->where('slug', $slug)
@@ -16,10 +18,14 @@ class PageController extends Controller
 
         if (!$tr) {
             $tr = PageTranslation::query()
-                ->where('locale', 'en')
+                ->where('locale', $defaultLocale)
                 ->where('slug', $slug)
                 ->where('published', true)
-                ->firstOrFail();
+                ->first();
+        }
+
+        if (!$tr) {
+            abort(404);
         }
 
         return view('pages.show', compact('tr', 'locale'));

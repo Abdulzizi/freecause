@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CategoryPetitionController extends Controller
 {
     public function index(string $locale, string $categorySlug, Category $category)
     {
+        Log::info('CategoryPetitionController', [
+            'locale' => $locale,
+            'categorySlug' => $categorySlug,
+            'categoryId' => $category->id ?? 'null',
+        ]);
+
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
@@ -17,8 +24,17 @@ class CategoryPetitionController extends Controller
             ->where('locale', $locale)
             ->first()
             ?? $category->translations()
-            ->where('locale', $defaultLocale)
-            ->first();
+                ->where('locale', $defaultLocale)
+                ->first()
+            ?? $category->translations()
+                ->orderBy('id')
+                ->first();
+
+        Log::info('CategoryPetitionController translation', [
+            'tr' => $tr ? ['slug' => $tr->slug, 'locale' => $tr->locale] : 'null',
+            'categorySlug' => $categorySlug,
+            'locale' => $locale,
+        ]);
 
         abort_if(! $tr, 404);
 

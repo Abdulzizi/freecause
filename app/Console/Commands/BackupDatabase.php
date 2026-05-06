@@ -32,7 +32,7 @@ class BackupDatabase extends Command
         $tempPath = storage_path("app/backups/{$filename}");
 
         $cmd = sprintf(
-            'mysqldump -h%s -P%s -u%s %s %s | gzip > %s 2>/dev/null',
+            'mysqldump --no-tablespaces -h%s -P%s -u%s %s %s | gzip > %s 2>/dev/null',
             escapeshellarg($dbHost),
             escapeshellarg((string) $dbPort),
             escapeshellarg($dbUser),

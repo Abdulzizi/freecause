@@ -14,6 +14,7 @@ Schedule::command('signatures:reconcile')->dailyAt('03:00');
 Schedule::command('db:backup --keep=30')->dailyAt('02:00');
 Schedule::command('db:backup --keep=7')->weeklyOn(0, '03:00');
 Schedule::command('cache:warm')->hourly();
+Schedule::command('queue:monitor')->everyFiveMinutes();
 
 Schedule::call(function () {
     $deleted = Log::where('created_at', '<', now()->subDays(30))->delete();

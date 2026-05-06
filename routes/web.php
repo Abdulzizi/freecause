@@ -47,6 +47,18 @@ Route::get('/', function () {
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 
+// Test route
+Route::get('/test-route', function () {
+    \Illuminate\Support\Facades\Log::info('Test route hit', ['uri' => request()->path()]);
+    return 'Test OK - ' . now();
+})->withoutMiddleware(['setLocale', 'block.banned.ip', 'block.banned.user']);
+
+Route::get('/ads.txt', function () {
+    $content = Settings::get('ads_txt', '', 'global');
+
+    return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+});
+
 Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
@@ -65,11 +77,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/options/language', [LanguageOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.language.update');
         Route::get('/ads', [AdsTxtController::class, 'edit'])->middleware('permission:options,view')->name('ads');
         Route::post('/ads', [AdsTxtController::class, 'update'])->middleware('permission:options,edit')->name('ads.update');
-        Route::get('/ads.txt', function () {
-            $content = Settings::get('ads_txt', '', 'global');
-
-            return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
-        });
 
         // * USERS
         Route::get('/users', [AdminUsersController::class, 'index'])->middleware('permission:users,view')->name('users');
@@ -172,7 +179,7 @@ Route::group([
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:6,1');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware('throttle:5,1');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
     Route::get('/verify/{token}', [AuthController::class, 'verify'])->name('verify.account');
@@ -241,6 +248,15 @@ Route::group([
             'categorySlug' => '[^/]+',
             'category' => '[0-9]+',
         ])->name('petitions.byCategory');
+
+    // Debug route
+    Route::get('/debug-route', function () {
+        \Illuminate\Support\Facades\Log::info('Debug route hit', [
+            'uri' => request()->path(),
+            'all_routes' => \Illuminate\Support\Facades\Route::getRoutes()->getRoutesByName(),
+        ]);
+        return 'Debug OK';
+    });
 
     // petition creation
     Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
