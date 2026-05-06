@@ -167,7 +167,7 @@
 
                 <div class="fc-row">
                     <label>content</label>
-                    <textarea name="content" class="fc-textarea fc-editor" rows="12">{{ $selectedPage->content }}</textarea>
+                    <textarea id="content" name="content" class="fc-textarea fc-editor" rows="12">{{ $selectedPage->content }}</textarea>
                 </div>
 
                 <div style="display:flex; justify-content:flex-end;">
