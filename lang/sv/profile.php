@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Radera konto',
+    'change_email' => 'Ändra e-post',
+    'change_password' => 'Ändra lösenord',
+    'confirm_delete_lbl' => 'Jag godkänner permanent radering av kontot',
+    'confirm_email' => 'Bekräfta ny e-postadress',
+    'confirm_new_password' => 'Bekräfta nytt lösenord',
+    'current_password' => 'Nuvarande lösenord',
+    'delete' => 'Radera',
+    'enter_password' => 'Ange ditt lösenord för att bekräfta',
+    'first_name' => 'Förnamn',
+    'heading' => 'Profil',
+    'id_full' => 'Fullständigt namn',
+    'id_name' => 'Förnamn',
+    'id_nick' => 'Smeknamn',
+    'identify_as' => 'Visa mig som',
+    'last_name' => 'Efternamn',
+    'my_data' => 'Mina uppgifter',
+    'my_petitions' => '» Mina namnlistor',
+    'new_email' => 'Ny e-postadress',
+    'new_password' => 'Nytt lösenord',
+    'reg_date' => 'Registreringsdatum:',
+    'save_changes' => 'Spara ändringar',
+];

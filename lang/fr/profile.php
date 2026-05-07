@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Suppression du compte',
+    'change_email' => 'Changer d\'email',
+    'change_password' => 'Changer de mot de passe',
+    'confirm_delete_lbl' => 'J\'accepte la suppression définitive du compte',
+    'confirm_email' => 'Confirmer le nouvel email',
+    'confirm_new_password' => 'Confirmer le nouveau mot de passe',
+    'current_password' => 'Mot de passe actuel',
+    'delete' => 'Supprimer',
+    'enter_password' => 'Entrez votre mot de passe pour confirmer',
+    'first_name' => 'Prénom',
+    'heading' => 'Profil',
+    'id_full' => 'Nom complet',
+    'id_name' => 'Prénom',
+    'id_nick' => 'Pseudo',
+    'identify_as' => 'M\'identifier comme',
+    'last_name' => 'Nom de famille',
+    'my_data' => 'Mes données',
+    'my_petitions' => '» Mes pétitions',
+    'new_email' => 'Nouvel email',
+    'new_password' => 'Nouveau mot de passe',
+    'reg_date' => 'Date d\'inscription :',
+    'save_changes' => 'Enregistrer les modifications',
+];

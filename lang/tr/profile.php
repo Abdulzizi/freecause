@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Hesap Silme',
+    'change_email' => 'E-posta değiştir',
+    'change_password' => 'Şifre değiştir',
+    'confirm_delete_lbl' => 'Hesabın kalıcı olarak silinmesine onay veriyorum',
+    'confirm_email' => 'Yeni e-postayı onayla',
+    'confirm_new_password' => 'Yeni şifreyi onayla',
+    'current_password' => 'Mevcut şifre',
+    'delete' => 'Sil',
+    'enter_password' => 'Onaylamak için şifrenizi girin',
+    'first_name' => 'Ad',
+    'heading' => 'Profil',
+    'id_full' => 'Tam Ad',
+    'id_name' => 'Ad',
+    'id_nick' => 'Takma ad',
+    'identify_as' => 'Beni şu şekilde tanımla',
+    'last_name' => 'Soyad',
+    'my_data' => 'Bilgilerim',
+    'my_petitions' => '» Dilekçelerim',
+    'new_email' => 'Yeni e-posta',
+    'new_password' => 'Yeni şifre',
+    'reg_date' => 'Kayıt tarihi:',
+    'save_changes' => 'Değişiklikleri kaydet',
+];

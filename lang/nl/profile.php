@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Account verwijderen',
+    'change_email' => 'E-mail wijzigen',
+    'change_password' => 'Wachtwoord wijzigen',
+    'confirm_delete_lbl' => 'Ik ga akkoord met de permanente verwijdering van het account',
+    'confirm_email' => 'Nieuw e-mailadres bevestigen',
+    'confirm_new_password' => 'Nieuw wachtwoord bevestigen',
+    'current_password' => 'Huidig wachtwoord',
+    'delete' => 'Verwijderen',
+    'enter_password' => 'Voer uw wachtwoord in ter bevestiging',
+    'first_name' => 'Voornaam',
+    'heading' => 'Profiel',
+    'id_full' => 'Volledige naam',
+    'id_name' => 'Voornaam',
+    'id_nick' => 'Bijnaam',
+    'identify_as' => 'Identificeer mij als',
+    'last_name' => 'Achternaam',
+    'my_data' => 'Mijn gegevens',
+    'my_petitions' => '» Mijn petities',
+    'new_email' => 'Nieuw e-mailadres',
+    'new_password' => 'Nieuw wachtwoord',
+    'reg_date' => 'Registratiedatum:',
+    'save_changes' => 'Wijzigingen opslaan',
+];

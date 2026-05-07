@@ -40,18 +40,18 @@ class DashboardController extends Controller
         return [
             'users_total'        => $this->approxTableRows('users'),
             'users_verified'     => Cache::remember('admin:stats:users_verified', 3600, fn () => User::where('verified', 1)->count()),
-            'users_new_today'    => Cache::remember('admin:stats:users_today', 300, fn () use ($todayStart, $todayEnd) => User::whereBetween('created_at', [$todayStart, $todayEnd])->count()),
-            'users_new_week'     => Cache::remember('admin:stats:users_week', 300, fn () use ($weekAgo) => User::where('created_at', '>=', $weekAgo)->count()),
+            'users_new_today'    => Cache::remember('admin:stats:users_today', 300, function () use ($todayStart, $todayEnd) { return User::whereBetween('created_at', [$todayStart, $todayEnd])->count(); }),
+            'users_new_week'     => Cache::remember('admin:stats:users_week', 300, function () use ($weekAgo) { return User::where('created_at', '>=', $weekAgo)->count(); }),
 
             'petitions_total'    => $this->approxTableRows('petitions'),
             'petitions_published'=> Cache::remember('admin:stats:petitions_published', 600, fn () => Petition::where('status', 'published')->count()),
             'petitions_draft'    => Cache::remember('admin:stats:petitions_draft', 600, fn () => Petition::where('status', 'draft')->count()),
             'petitions_pending'  => Cache::remember('admin:stats:petitions_pending', 600, fn () => Petition::where('status', 'pending')->count()),
-            'petitions_new_today'=> Cache::remember('admin:stats:petitions_today', 300, fn () use ($todayStart, $todayEnd) => Petition::whereBetween('created_at', [$todayStart, $todayEnd])->count()),
+            'petitions_new_today'=> Cache::remember('admin:stats:petitions_today', 300, function () use ($todayStart, $todayEnd) { return Petition::whereBetween('created_at', [$todayStart, $todayEnd])->count(); }),
 
             'signatures_total'   => $this->approxTableRows('signatures'),
-            'signatures_today'   => Cache::remember('admin:stats:sigs_today', 300, fn () use ($todayStart, $todayEnd) => Signature::whereBetween('created_at', [$todayStart, $todayEnd])->count()),
-            'signatures_week'    => Cache::remember('admin:stats:sigs_week', 300, fn () use ($weekAgo) => Signature::where('created_at', '>=', $weekAgo)->count()),
+            'signatures_today'   => Cache::remember('admin:stats:sigs_today', 300, function () use ($todayStart, $todayEnd) { return Signature::whereBetween('created_at', [$todayStart, $todayEnd])->count(); }),
+            'signatures_week'    => Cache::remember('admin:stats:sigs_week', 300, function () use ($weekAgo) { return Signature::where('created_at', '>=', $weekAgo)->count(); }),
 
             'languages_active'   => Cache::remember('admin:stats:languages', 3600, fn () => Language::where('is_active', 1)->count()),
         ];
