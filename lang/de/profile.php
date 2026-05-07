@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Konto löschen',
+    'change_email' => 'E-Mail ändern',
+    'change_password' => 'Passwort ändern',
+    'confirm_delete_lbl' => 'Ich stimme der dauerhaften Löschung des Kontos zu',
+    'confirm_email' => 'Neue E-Mail bestätigen',
+    'confirm_new_password' => 'Neues Passwort bestätigen',
+    'current_password' => 'Aktuelles Passwort',
+    'delete' => 'Löschen',
+    'enter_password' => 'Geben Sie Ihr Passwort zur Bestätigung ein',
+    'first_name' => 'Vorname',
+    'heading' => 'Profil',
+    'id_full' => 'Vollständiger Name',
+    'id_name' => 'Vorname',
+    'id_nick' => 'Spitzname',
+    'identify_as' => 'Zeige mich als',
+    'last_name' => 'Nachname',
+    'my_data' => 'Meine Daten',
+    'my_petitions' => '» Meine Petitionen',
+    'new_email' => 'Neue E-Mail',
+    'new_password' => 'Neues Passwort',
+    'reg_date' => 'Registrierungsdatum:',
+    'save_changes' => 'Änderungen speichern',
+];

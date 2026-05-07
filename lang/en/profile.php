@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Account Deletion',
+    'change_email' => 'Change Email',
+    'change_password' => 'Change Password',
+    'confirm_delete_lbl' => 'I agree with the account permanent deletion',
+    'confirm_email' => 'Confirm new email',
+    'confirm_new_password' => 'Confirm new password',
+    'current_password' => 'Current password',
+    'delete' => 'Delete',
+    'enter_password' => 'Enter your password to confirm',
+    'first_name' => 'First Name',
+    'heading' => 'Profile',
+    'id_full' => 'Full Name',
+    'id_name' => 'First Name',
+    'id_nick' => 'Nickname',
+    'identify_as' => 'Identify me as',
+    'last_name' => 'Last Name',
+    'my_data' => 'My Data',
+    'my_petitions' => '» My Petitions',
+    'new_email' => 'New email',
+    'new_password' => 'New password',
+    'reg_date' => 'Registration date:',
+    'save_changes' => 'Save Changes',
+];

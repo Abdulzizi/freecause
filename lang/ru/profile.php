@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Удаление аккаунта',
+    'change_email' => 'Изменить email',
+    'change_password' => 'Изменить пароль',
+    'confirm_delete_lbl' => 'Я согласен с постоянным удалением аккаунта',
+    'confirm_email' => 'Подтвердить новый email',
+    'confirm_new_password' => 'Подтвердить новый пароль',
+    'current_password' => 'Текущий пароль',
+    'delete' => 'Удалить',
+    'enter_password' => 'Введите пароль для подтверждения',
+    'first_name' => 'Имя',
+    'heading' => 'Профиль',
+    'id_full' => 'Полное имя',
+    'id_name' => 'Имя',
+    'id_nick' => 'Псевдоним',
+    'identify_as' => 'Отображать меня как',
+    'last_name' => 'Фамилия',
+    'my_data' => 'Мои данные',
+    'my_petitions' => '» Мои петиции',
+    'new_email' => 'Новый email',
+    'new_password' => 'Новый пароль',
+    'reg_date' => 'Дата регистрации:',
+    'save_changes' => 'Сохранить изменения',
+];

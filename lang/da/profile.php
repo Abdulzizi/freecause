@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Sletning af konto',
+    'change_email' => 'Skift e-mail',
+    'change_password' => 'Skift adgangskode',
+    'confirm_delete_lbl' => 'Jeg accepterer permanent sletning af kontoen',
+    'confirm_email' => 'Bekræft ny e-mail',
+    'confirm_new_password' => 'Bekræft ny adgangskode',
+    'current_password' => 'Nuværende adgangskode',
+    'delete' => 'Slet',
+    'enter_password' => 'Indtast din adgangskode for at bekræfte',
+    'first_name' => 'Fornavn',
+    'heading' => 'Profil',
+    'id_full' => 'Fuldt navn',
+    'id_name' => 'Fornavn',
+    'id_nick' => 'Kaldenavn',
+    'identify_as' => 'Identificér mig som',
+    'last_name' => 'Efternavn',
+    'my_data' => 'Mine data',
+    'my_petitions' => '» Mine underskriftsindsamlinger',
+    'new_email' => 'Ny e-mail',
+    'new_password' => 'Ny adgangskode',
+    'reg_date' => 'Registreringsdato:',
+    'save_changes' => 'Gem ændringer',
+];

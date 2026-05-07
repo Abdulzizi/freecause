@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Ștergere cont',
+    'change_email' => 'Schimbă email',
+    'change_password' => 'Schimbă parola',
+    'confirm_delete_lbl' => 'Sunt de acord cu ștergerea permanentă a contului',
+    'confirm_email' => 'Confirmare email nou',
+    'confirm_new_password' => 'Confirmare parolă nouă',
+    'current_password' => 'Parola curentă',
+    'delete' => 'Șterge',
+    'enter_password' => 'Introduceți parola pentru confirmare',
+    'first_name' => 'Prenume',
+    'heading' => 'Profil',
+    'id_full' => 'Nume complet',
+    'id_name' => 'Prenume',
+    'id_nick' => 'Pseudonim',
+    'identify_as' => 'Identificați-mă ca',
+    'last_name' => 'Nume',
+    'my_data' => 'Datele mele',
+    'my_petitions' => '» Petițiile mele',
+    'new_email' => 'Email nou',
+    'new_password' => 'Parolă nouă',
+    'reg_date' => 'Data înregistrării:',
+    'save_changes' => 'Salvează modificările',
+];

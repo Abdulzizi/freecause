@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'account_deletion' => 'Διαγραφή λογαριασμού',
+    'change_email' => 'Αλλαγή email',
+    'change_password' => 'Αλλαγή κωδικού',
+    'confirm_delete_lbl' => 'Συμφωνώ με τη μόνιμη διαγραφή του λογαριασμού',
+    'confirm_email' => 'Επιβεβαίωση νέου email',
+    'confirm_new_password' => 'Επιβεβαίωση νέου κωδικού',
+    'current_password' => 'Τρέχων κωδικός',
+    'delete' => 'Διαγραφή',
+    'enter_password' => 'Εισάγετε τον κωδικό σας για επιβεβαίωση',
+    'first_name' => 'Όνομα',
+    'heading' => 'Προφίλ',
+    'id_full' => 'Πλήρες όνομα',
+    'id_name' => 'Όνομα',
+    'id_nick' => 'Ψευδώνυμο',
+    'identify_as' => 'Εμφάνισέ με ως',
+    'last_name' => 'Επώνυμο',
+    'my_data' => 'Τα στοιχεία μου',
+    'my_petitions' => '» Οι αιτήσεις μου',
+    'new_email' => 'Νέο email',
+    'new_password' => 'Νέος κωδικός',
+    'reg_date' => 'Ημερομηνία εγγραφής:',
+    'save_changes' => 'Αποθήκευση αλλαγών',
+];

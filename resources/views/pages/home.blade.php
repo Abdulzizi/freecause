@@ -21,16 +21,16 @@
                     <div class="banner-content">
 
                         <h1 class="banner-heading mb-4">
-                            {{ __('home.h1') }}
+                            {{ $content['h1'] ?? __('home.h1') }}
                         </h1>
 
                         <h2 class="banner-subtitle">
-                            {!! __('home.h2') !!}
+                            {!! $content['h2'] ?? __('home.h2') !!}
                         </h2>
 
                         <div class="banner-btn mb-3">
                             <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ __('home.btn_create_petition') }}
+                                {{ $content['btn_create_petition'] ?? __('home.btn_create_petition') }}
                             </a>
                         </div>
 
@@ -51,14 +51,14 @@
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
                                     <i class="fa fa-home"></i>
-                                    {{ __('home.tab_featured') }}
+                                    {{ $content['tab_featured'] ?? __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
                                     <i class="fa fa-clock-o"></i>
-                                    {{ __('home.tab_recent') }}
+                                    {{ $content['tab_recent'] ?? __('home.tab_recent') }}
                                 </button>
                             </li>
                         </ul>
@@ -79,7 +79,7 @@
                                                         @if ($featuredPetition)
                                                         <div class="col-sm-6 mb-4">
                                                             <span class="featured-badges">
-                                                                {{ __('home.featured_badge') }}
+                                                                {{ $content['featured_badge'] ?? __('home.featured_badge') }}
                                                             </span>
                                                             <div style="position:relative;overflow:hidden;border-radius:6px;height:320px;background:#1a1a1a;">
                                                                 <img src="{{ $featuredPetition->coverUrl() }}"
@@ -95,7 +95,7 @@
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>
-                                                                        {{ __('home.petition_target_label') }}
+                                                                        {{ $content['petition_target_label'] ?? __('home.petition_target_label') }}
                                                                     </strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
@@ -112,22 +112,22 @@
                                                                     <div class="d-flex justify-content-between text-muted">
                                                                         <span>
                                                                             {{ number_format($signatures) }}
-                                                                            {{ __('home.signatures_label') }}
+                                                                            {{ $content['signatures_label'] ?? __('home.signatures_label') }}
                                                                         </span>
                                                                         <span>
-                                                                            {{ __('home.goal_label') }}
+                                                                            {{ $content['goal_label'] ?? __('home.goal_label') }}
                                                                             {{ number_format($goal) }}
                                                                         </span>
                                                                     </div>
                                                                 </div>
 
                                                                 <a href="{{ $featuredUrl }}" class="btn btn-danger stretched-link">
-                                                                    {{ __('home.read_more') }}
+                                                                    {{ $content['read_more'] ?? __('home.read_more') }}
                                                                 </a>
                                                             @else
-                                                                <h5>{{ __('home.featured_none_title') }}</h5>
+                                                                <h5>{{ $content['featured_none_title'] ?? __('home.featured_none_title') }}</h5>
                                                                 <p class="text-muted">
-                                                                    {{ __('home.featured_none_sub') }}
+                                                                    {{ $content['featured_none_sub'] ?? __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
                                                         </div>
@@ -176,7 +176,7 @@
                                                                         </span>
 
                                                                         <strong>
-                                                                            {{ __('home.recent_has_signed') }}
+                                                                            {{ $content['recent_has_signed'] ?? __('home.recent_has_signed') }}
                                                                         </strong>
                                                                     </p>
 
@@ -196,7 +196,7 @@
 
                                                         <li>
                                                             <div class="text-muted p-2">
-                                                                {{ __('home.recent_empty') }}
+                                                                {{ $content['recent_empty'] ?? __('home.recent_empty') }}
                                                             </div>
                                                         </li>
                                                     @endforelse
@@ -224,10 +224,10 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ __('home.what_title') }}
+                            {{ $content['what_title'] ?? __('home.what_title') }}
                         </h4>
 
-                        {!! \App\Services\ContentRenderer::render(__('home.text_index_left')) !!}
+                        {!! \App\Services\ContentRenderer::render($content['text_index_left'] ?? __('home.text_index_left')) !!}
 
                     </div>
                 </div>
@@ -236,10 +236,10 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ __('home.create_box_title') }}
+                            {{ $content['create_box_title'] ?? __('home.create_box_title') }}
                         </h4>
 
-                        {!! \App\Services\ContentRenderer::render(__('home.text_index_right')) !!}
+                        {!! \App\Services\ContentRenderer::render($content['text_index_right'] ?? __('home.text_index_right')) !!}
 
                     </div>
                 </div>
