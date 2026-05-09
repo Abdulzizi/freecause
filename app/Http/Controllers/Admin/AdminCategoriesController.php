@@ -15,6 +15,14 @@ class AdminCategoriesController extends Controller
 {
     use ApproxRows;
 
+    private function bustCategoryCache(): void
+    {
+        $codes = Language::where('is_active', true)->pluck('code');
+        foreach ($codes as $loc) {
+            Cache::forget("categories:list:{$loc}");
+        }
+    }
+
     public function index(Request $request)
     {
         $locale = $request->query('locale', 'en');
@@ -52,6 +60,7 @@ class AdminCategoriesController extends Controller
         $selectedId = $request->query('select');
         $selectedCategory = null;
         $selectedTranslation = null;
+        $selectedPetitionCount = 0;
 
         if ($selectedId) {
             $selectedCategory = DB::table('categories')
@@ -62,9 +71,12 @@ class AdminCategoriesController extends Controller
                 ->where('category_id', (int) $selectedId)
                 ->where('locale', $locale)
                 ->first();
+
+            $selectedPetitionCount = DB::table('petitions')
+                ->where('category_id', (int) $selectedId)
+                ->count();
         }
 
-        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded
         $locales = Language::where('is_active', true)
             ->orderByDesc('is_default')
             ->orderBy('name')
@@ -77,6 +89,7 @@ class AdminCategoriesController extends Controller
             'approxTotal',
             'selectedCategory',
             'selectedTranslation',
+            'selectedPetitionCount',
             'locale',
             'locales'
         ));
@@ -113,7 +126,7 @@ class AdminCategoriesController extends Controller
             ]
         );
 
-        Cache::forget("categories_{$data['locale']}");
+        $this->bustCategoryCache();
 
         return redirect()
             ->route('admin.categories', [
@@ -121,5 +134,64 @@ class AdminCategoriesController extends Controller
                 'select' => $data['id']
             ])
             ->with('success', 'saved');
+    }
+
+    public function createCategory(Request $request)
+    {
+        $data = $request->validate([
+            'locale' => ['required', 'string', 'max:10'],
+            'name'   => ['required', 'string', 'max:150'],
+        ]);
+
+        $categoryId = DB::table('categories')->insertGetId([
+            'is_active'  => true,
+            'sort_order' => 0,
+        ]);
+
+        $base = Str::slug($data['name']) ?: 'category';
+        $slug = $base;
+        $i = 1;
+        while (DB::table('category_translations')
+            ->where('locale', $data['locale'])
+            ->where('slug', $slug)
+            ->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+
+        DB::table('category_translations')->insert([
+            'category_id' => $categoryId,
+            'locale'      => $data['locale'],
+            'name'        => $data['name'],
+            'slug'        => $slug,
+        ]);
+
+        $this->bustCategoryCache();
+
+        return redirect()
+            ->route('admin.categories', ['locale' => $data['locale'], 'select' => $categoryId])
+            ->with('success', 'Category created.');
+    }
+
+    public function destroy(Request $request)
+    {
+        $data = $request->validate([
+            'id' => ['required', 'integer', 'exists:categories,id'],
+        ]);
+
+        $id = (int) $data['id'];
+
+        $petitionCount = DB::table('petitions')->where('category_id', $id)->count();
+        if ($petitionCount > 0) {
+            return back()->withErrors(['id' => "Cannot delete: {$petitionCount} petition(s) are using this category."]);
+        }
+
+        DB::table('category_translations')->where('category_id', $id)->delete();
+        DB::table('categories')->where('id', $id)->delete();
+
+        $this->bustCategoryCache();
+
+        return redirect()
+            ->route('admin.categories')
+            ->with('success', 'Category deleted.');
     }
 }

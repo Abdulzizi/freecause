@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
+use App\Http\Controllers\Admin\TranslationsController;
+use App\Http\Controllers\Admin\TranslationAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
@@ -94,6 +96,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         // * CATEGORIES
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->middleware('permission:categories,view')->name('categories');
         Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->middleware('permission:categories,edit')->name('categories.save');
+        Route::post('/categories/create', [AdminCategoriesController::class, 'createCategory'])->middleware('permission:categories,edit')->name('categories.create');
+        Route::post('/categories/delete', [AdminCategoriesController::class, 'destroy'])->middleware('permission:categories,delete')->name('categories.destroy');
 
         // * FANPAGES
         // Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
@@ -129,6 +133,22 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->middleware('permission:languages,edit')->name('languages.update');
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
+
+        // * TRANSLATIONS
+        Route::get('/translations', [TranslationsController::class, 'index'])->middleware('permission:languages,view')->name('translations.index');
+        Route::post('/translations', [TranslationsController::class, 'update'])->middleware('permission:languages,edit')->name('translations.update');
+
+        // * TRANSLATION MANAGER (DB-Driven)
+        Route::prefix('translation-manager')->name('translation-manager.')->group(function () {
+            Route::get('/', [TranslationAdminController::class, 'index'])->middleware('permission:languages,view')->name('index');
+            Route::post('/update', [TranslationAdminController::class, 'update'])->middleware('permission:languages,edit')->name('update');
+            Route::post('/bulk-update', [TranslationAdminController::class, 'bulkUpdate'])->middleware('permission:languages,edit')->name('bulk.update');
+            Route::get('/export', [TranslationAdminController::class, 'export'])->middleware('permission:languages,view')->name('export');
+            Route::post('/import', [TranslationAdminController::class, 'import'])->middleware('permission:languages,edit')->name('import');
+            Route::post('/copy-from-source', [TranslationAdminController::class, 'copyFromSource'])->middleware('permission:languages,edit')->name('copy.source');
+            Route::delete('/{id}', [TranslationAdminController::class, 'destroy'])->middleware('permission:languages,delete')->name('destroy');
+            Route::post('/clear-cache', [TranslationAdminController::class, 'clearCache'])->middleware('permission:system,manage')->name('clear.cache');
+        });
 
         // * SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
