@@ -128,13 +128,10 @@ class HomeController extends Controller
                     $join->on('pt_default.petition_id', '=', 'petitions.id')
                         ->where('pt_default.locale', '=', $defaultLocale);
                 })
-                ->where(function ($q) {
-                    $q->whereNotNull('pt_locale.title')
-                        ->orWhereNotNull('pt_default.title');
-                })
+                ->whereNotNull('pt_locale.title')
+                ->where('pt_locale.is_featured', 1)
                 ->where('petitions.status', 'published')
                 ->where('petitions.is_active', 1)
-                ->where('petitions.is_featured', 1)
                 ->whereNotIn('petitions.id', $excludedIds)
                 ->orderByDesc('petitions.signature_count')
                 ->limit($maxFeatured)

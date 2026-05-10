@@ -42,6 +42,14 @@ All public routes are prefixed with `/{locale}/` (e.g., `/en/petitions`). The ro
 2. **`SetLocale`** — Parses locale from URL segment 1, validates against active languages (60s cache), sets `App::setLocale()`.
 3. Admin routes additionally run **`AdminAuth`** → **`AdminAuditLog`** → **`CheckPermission`**.
 
+### External Services Policy
+
+**Only two external services are permitted:**
+- **Google OAuth** — via `laravel/socialite`. Credentials (`google_client_id`, `google_client_secret`) stored in the `settings` DB table.
+- **SMTP — Brevo** — host: `smtp-relay.brevo.com`, port: 587, TLS. Credentials stored in the `settings` DB table AND `.env` as fallback.
+
+**Nothing else.** No Cloudinary, Resend, AWS S3, Mailgun, Postmark, Pusher, Sentry, or any other external service. Images are stored locally in `storage/app/public/petitions/` and resized with `intervention/image-laravel`. Backups go to `storage/app/backups/` (local disk).
+
 ### Dynamic Configuration (Settings Table)
 
 SMTP, Google OAuth credentials, base URL, and ads.txt are stored in the `settings` DB table — not in `.env`. They're read in `AppServiceProvider::boot()` via `Settings::get()` (5-min cache). The `Settings` support class wraps all access with `Cache::remember()`. Use `Settings::set()` to update and auto-bust the cache.
