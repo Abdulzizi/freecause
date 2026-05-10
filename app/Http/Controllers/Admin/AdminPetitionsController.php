@@ -195,9 +195,10 @@ class AdminPetitionsController extends Controller
                     'locale' => $data['locale'],
                 ],
                 [
-                    'title' => $title,
-                    'slug' => $slug,
+                    'title'       => $title,
+                    'slug'        => $slug,
                     'description' => sanitizePetitionHtml($data['text'] ?? ''),
+                    'is_featured' => $request->boolean('is_featured'),
                 ]
             );
 
@@ -266,15 +267,14 @@ class AdminPetitionsController extends Controller
                 break;
 
             case 'feature':
-                DB::table('petitions')->whereIn('id', $ids)->update([
-                    'is_featured' => 1,
-                ]);
+                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
+                // Feature in all existing translations so they appear on every locale's home
+                DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 1]);
                 break;
 
             case 'unfeature':
-                DB::table('petitions')->whereIn('id', $ids)->update([
-                    'is_featured' => 0,
-                ]);
+                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 0]);
+                DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
             case 'ban':

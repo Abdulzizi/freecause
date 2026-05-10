@@ -214,9 +214,9 @@
                 </div>
 
                 <div class="fc-row">
-                    <label>featured</label>
+                    <label>featured <span style="font-size:11px;color:#888;">(this locale)</span></label>
                     <input type="checkbox" name="is_featured" value="1"
-                        {{ $selectedPetition->is_featured ? 'checked' : '' }}>
+                        {{ ($selectedTranslation->is_featured ?? false) ? 'checked' : '' }}>
                 </div>
 
                 <div class="fc-row">
