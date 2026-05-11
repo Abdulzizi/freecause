@@ -69,7 +69,7 @@ REDIS_PORT=6379
 git add <files>
 git commit -m "message"
 git push origin main
-ssh root@37.60.254.112 "cd /var/www/freecause && git pull origin main && php artisan migrate --force && php artisan cache:clear && php artisan config:clear && php artisan view:clear"
+ssh root@37.60.254.112 "cd /var/www/freecause && git pull origin main && php artisan migrate --force && php artisan cache:clear && php artisan config:clear && php artisan view:clear && systemctl restart php8.3-fpm"
 ```
 
 ### Fresh Server Setup
