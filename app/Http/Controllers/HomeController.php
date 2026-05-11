@@ -139,6 +139,29 @@ class HomeController extends Controller
                 ->toArray();
         });
 
+        // If this locale has no specifically-featured petitions, fall back to default locale's pool
+        // so non-English home pages still show a featured petition until admins configure per-locale.
+        $usingFallbackPool = false;
+        if (empty($pool) && $locale !== $defaultLocale) {
+            $usingFallbackPool = true;
+            $pool = cache()->remember("home:pool:" . self::CACHE_VERSION . ":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
+                return Petition::select(['petitions.id'])
+                    ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                        $join->on('pt_default.petition_id', '=', 'petitions.id')
+                            ->where('pt_default.locale', '=', $defaultLocale);
+                    })
+                    ->whereNotNull('pt_default.title')
+                    ->where('pt_default.is_featured', 1)
+                    ->where('petitions.status', 'published')
+                    ->where('petitions.is_active', 1)
+                    ->whereNotIn('petitions.id', $excludedIds)
+                    ->orderByDesc('petitions.signature_count')
+                    ->limit($maxFeatured)
+                    ->pluck('petitions.id')
+                    ->toArray();
+            });
+        }
+
         $featuredPetition = null;
 
         if (! empty($pool)) {
