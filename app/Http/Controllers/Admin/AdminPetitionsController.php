@@ -268,12 +268,17 @@ class AdminPetitionsController extends Controller
 
             case 'feature':
                 DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
-                // Feature in all existing translations so they appear on every locale's home
-                DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 1]);
+                // Only feature in the default locale — per-locale featuring is set individually in the edit panel
+                $defaultLocale = \App\Models\Language::where('is_default', true)->value('code') ?? 'en';
+                DB::table('petition_translations')
+                    ->whereIn('petition_id', $ids)
+                    ->where('locale', $defaultLocale)
+                    ->update(['is_featured' => 1]);
                 break;
 
             case 'unfeature':
                 DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 0]);
+                // Remove from ALL locales — un-featuring is global
                 DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
