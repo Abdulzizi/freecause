@@ -64,12 +64,14 @@ REDIS_PORT=6379
 
 **Always use git — never SCP files directly to production.**
 
+Server: `37.60.254.112` · user: `root` · pass: `5xrfIGZ49JM9SAcH3p` · key: `~/.ssh/id_contabo`
+
 ```bash
 # Local → GitHub → Server
 git add <files>
 git commit -m "message"
 git push origin main
-ssh root@37.60.254.112 "cd /var/www/freecause && git pull origin main && php artisan migrate --force && php artisan cache:clear && php artisan config:clear && php artisan view:clear && systemctl restart php8.3-fpm"
+ssh -i ~/.ssh/id_contabo root@37.60.254.112 "cd /var/www/freecause && git pull origin main && php artisan migrate --force && php artisan cache:clear && php artisan config:clear && php artisan view:clear && systemctl restart php8.3-fpm"
 ```
 
 ### Fresh Server Setup
