@@ -230,7 +230,7 @@ Route::group([
         $adminEmail = config('mail.from.address');
 
         try {
-            Mail::to($adminEmail)->send(new ContactMail($data['name'], $data['email'], $data['text']));
+            Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text']));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
 

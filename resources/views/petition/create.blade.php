@@ -13,7 +13,7 @@
 
     $oldTags = old('tags', $petition->tags ?? '');
     $oldImageUrl = old('image_url', $petition->image_url ?? '');
-    $oldYoutube = old('youtube', $petition->youtube ?? '');
+    $oldYoutube = old('youtube', $petition->youtube_url ?? '');
     $oldTarget = old('target', $petition->target ?? '');
     $oldCommunity = old('community', $petition->community ?? '');
     $oldCommunityUrl = old('community_url', $petition->community_url ?? '');
