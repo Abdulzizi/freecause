@@ -1,3 +1,38 @@
+/* ── Share bar ──────────────────────────────────────────────── */
+.fc-share-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.fc-share-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+.fc-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+.fc-share-btn:hover { opacity: .85; text-decoration: none; }
+.fc-share-fb  { background: #1877f2; color: #fff; }
+.fc-share-tw  { background: #000;    color: #fff; }
+.fc-share-wa  { background: #25d366; color: #fff; }
+.fc-share-copy{ background: #f0f0f0; color: #333; }
+
+/* ── Breadcrumb ─────────────────────────────────────────────── */
+.breadcrumb { background: none; padding: 0; }
+.breadcrumb-item + .breadcrumb-item::before { color: #aaa; }
+
 /* A simple CSS reset */
 * {
     margin: 0;
