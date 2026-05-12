@@ -67,10 +67,10 @@ REDIS_PORT=6379
 Server: `37.60.254.112` · user: `root` · pass: `5xrfIGZ49JM9SAcH3p` · key: `~/.ssh/id_ed25519`
 
 ```bash
-# Local → GitHub → Server
-git add <files>
-git commit -m "message"
-git push origin main
+# Run all git commands through WSL to avoid Windows credential popups:
+#   wsl.exe -d ubuntu -e sh -c "cd /home/jawad/dev/freecause && git add <files> && git commit -m '...' && git push origin main"
+#
+# Deploy to server:
 ssh -i ~/.ssh/id_ed25519 root@37.60.254.112 "cd /var/www/freecause && git pull origin main && php artisan migrate --force && php artisan cache:clear && php artisan config:clear && php artisan view:clear && systemctl restart php8.3-fpm"
 ```
 
