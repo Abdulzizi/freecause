@@ -2184,3 +2184,18 @@ span.featured-badges {
 .gray-box ul li:last-child {
     margin-bottom: 0;
 }
+
+.gray-box a {
+    color: #cc1f1f;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.gray-box a:hover {
+    text-decoration: underline;
+}
+
+.gray-box p:last-child {
+    margin-top: 14px;
+    margin-bottom: 0;
+}
