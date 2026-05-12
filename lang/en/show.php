@@ -28,4 +28,11 @@ return [
     'embed_forum_with_title' => 'link for forum with title',
     'box_widgets'            => 'Widgets',
     'download_signatures'    => 'Download Signatures',
+    'share'                  => 'Share',
+    'copy_link'              => 'Copy link',
+    'link_copied'            => 'Copied!',
+    'breadcrumb_home'        => 'Home',
+    'breadcrumb_petitions'   => 'Petitions',
+    'operations'             => 'My Petition',
+    'edit'                   => 'Edit petition',
 ];

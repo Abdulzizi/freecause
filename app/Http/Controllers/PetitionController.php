@@ -54,60 +54,71 @@ class PetitionController extends Controller
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $page = max(1, min((int) request('page', 1), 500));
-        $cacheKey = "petitions:index:{$locale}:page:{$page}";
+        $search = trim((string) request('q', ''));
+        $page   = max(1, min((int) request('page', 1), 500));
 
-        $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($locale, $defaultLocale) {
+        $query = Petition::query()
+            ->select([
+                'petitions.id',
+                'petitions.signature_count',
+                'petitions.goal_signatures',
+                'petitions.category_id',
+                'petitions.cover_image',
+                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
+                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
+            ])
+            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
+            })
+            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('pt_default.petition_id', '=', 'petitions.id')
+                    ->where('pt_default.locale', '=', $defaultLocale);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('pt_locale.title')
+                    ->orWhereNotNull('pt_default.title');
+            })
+            ->where('petitions.status', 'published')
+            ->where('petitions.is_active', 1);
 
-            return Petition::query()
-                ->select([
-                    'petitions.id',
-                    'petitions.signature_count',
-                    'petitions.goal_signatures',
-                    'petitions.category_id',
-                    'petitions.cover_image',
-                    DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                    DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
-                ])
-                ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                    $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                        ->where('pt_locale.locale', '=', $locale);
-                })
-                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                    $join->on('pt_default.petition_id', '=', 'petitions.id')
-                        ->where('pt_default.locale', '=', $defaultLocale);
-                })
-                ->where(function ($q) {
-                    $q->whereNotNull('pt_locale.title')
-                        ->orWhereNotNull('pt_default.title');
-                })
-                ->where('petitions.status', 'published')
-                ->where('petitions.is_active', 1)
-                ->orderByDesc('petitions.id')
-                ->paginate(15);
-        });
+        if ($search !== '') {
+            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('pt_locale.title', 'LIKE', $like)
+                    ->orWhere('pt_default.title', 'LIKE', $like);
+            });
+            $query->orderByDesc('petitions.signature_count');
+            $petitions = $query->paginate(15)->withQueryString();
+        } else {
+            $cacheKey = "petitions:index:{$locale}:page:{$page}";
+            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query) {
+                return $query->orderByDesc('petitions.id')->paginate(15);
+            });
 
-        if (is_array($petitions)) {
-            $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
-            $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $petitions['total'] ?? 0,
-                $petitions['per_page'] ?? 15,
-                $petitions['current_page'] ?? $page,
-                ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
-            );
+            if (is_array($petitions)) {
+                $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
+                $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $items,
+                    $petitions['total'] ?? 0,
+                    $petitions['per_page'] ?? 15,
+                    $petitions['current_page'] ?? $page,
+                    ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+                );
+            }
+
+            $petitions = $petitions->withQueryString();
         }
 
-        $petitions = $petitions->withQueryString();
-
         return view('pages.petitions-list', [
-            'pageTitle' => 'All the petitions',
-            'heading' => 'Petitions',
+            'pageTitle' => $search ? __('Search results for ":q"', ['q' => $search]) : 'All the petitions',
+            'heading'   => $search ? __('Search: ":q"', ['q' => $search]) : 'Petitions',
+            'search'    => $search,
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,
-            'petitionUrl' => fn ($row) => lroute('petition.show', [
+            'petitionUrl'   => fn ($row) => lroute('petition.show', [
                 'slug' => $row->tr_slug,
-                'id' => $row->id,
+                'id'   => $row->id,
             ]),
         ]);
     }

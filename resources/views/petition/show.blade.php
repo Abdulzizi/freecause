@@ -56,6 +56,21 @@
     <section class="py-5">
         <div class="container">
 
+            {{-- Breadcrumb --}}
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb" style="font-size:13px;margin-bottom:0;">
+                    <li class="breadcrumb-item">
+                        <a href="{{ lroute('home') }}" class="red">{{ __('show.breadcrumb_home') }}</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ lroute('petitions.index') }}" class="red">{{ __('show.breadcrumb_petitions') }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ \Illuminate\Support\Str::limit($petitionTitle, 55) }}
+                    </li>
+                </ol>
+            </nav>
+
             <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                     <h1 class="mb-0" style="font-size:22px;font-weight:700;line-height:1.3;">
@@ -65,6 +80,31 @@
                     @if (!$hasSigned)
                         <a href="#signFormTop" class="btn btn-danger fc-sign-now">{{ $btnSignNow }}</a>
                     @endif
+                </div>
+
+                {{-- Share buttons --}}
+                <div class="fc-share-bar mb-3">
+                    <span class="fc-share-label">{{ __('show.share') }}:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-fb"
+                       aria-label="Share on Facebook">
+                        <i class="fa fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
+                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-tw"
+                       aria-label="Share on Twitter">
+                        <i class="fa fa-twitter"></i> Twitter
+                    </a>
+                    <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.request()->url()) }}"
+                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-wa"
+                       aria-label="Share on WhatsApp">
+                        <i class="fa fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <button type="button" class="fc-share-btn fc-share-copy"
+                            onclick="navigator.clipboard.writeText('{{ request()->url() }}').then(()=>{this.innerHTML='<i class=\'fa fa-check\'></i> {{ __('show.link_copied') }}';})"
+                            aria-label="Copy link">
+                        <i class="fa fa-link"></i> {{ __('show.copy_link') }}
+                    </button>
                 </div>
 
                 <div class="row g-4">
@@ -446,6 +486,28 @@
         border-radius: 6px;
     }
 </style>
+
+@push('head')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": {{ Illuminate\Support\Js::from($petitionTitle) }},
+  "description": {{ Illuminate\Support\Js::from(\Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200)) }},
+  "url": "{{ request()->url() }}",
+  "image": "{{ $petitionImg }}",
+  "author": {
+    "@type": "Person",
+    "name": {{ Illuminate\Support\Js::from($petition->user->name ?? 'Unknown') }}
+  },
+  "interactionStatistic": {
+    "@type": "InteractionCounter",
+    "interactionType": "https://schema.org/SignAction",
+    "userInteractionCount": {{ (int) $petition->signature_count }}
+  }
+}
+</script>
+@endpush
 
 @push('scripts')
     <script>

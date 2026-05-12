@@ -197,6 +197,10 @@
                                                         <li>
                                                             <div class="text-muted p-2">
                                                                 {{ $content['recent_empty'] ?? __('home.recent_empty') }}
+                                                                &mdash;
+                                                                <a href="{{ lroute('petitions.index') }}" class="red">
+                                                                    {{ __('home.btn_browse_petitions') }}
+                                                                </a>
                                                             </div>
                                                         </li>
                                                     @endforelse

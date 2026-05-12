@@ -1,2 +1,7 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: */download/pdf
+Disallow: */download/txt
+Crawl-delay: 2

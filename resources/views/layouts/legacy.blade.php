@@ -32,25 +32,28 @@
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
+    <link rel="canonical" href="{{ url()->current() }}">
+
     <meta property="og:site_name" content="xPetition">
     <meta property="og:type" content="website">
     @hasSection('og_title')
         <meta property="og:title" content="@yield('og_title')">
         <meta property="og:description" content="@yield('og_description')">
-        <meta property="og:image" content="@yield('og_image')">
+        <meta property="og:image" content="@yield('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png'))">
         <meta property="og:url" content="@yield('og_url', request()->url())">
     @else
         <meta property="og:title" content="@yield('title', 'xPetition')">
         <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
+        <meta property="og:image" content="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
         <meta property="og:url" content="{{ request()->url() }}">
     @endif
 
     {!! $headExtra !!}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
     <link rel="stylesheet"
-        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
+        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/themes/smoothness/jquery-ui.min.css" />
 
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/slick.css') }}">
