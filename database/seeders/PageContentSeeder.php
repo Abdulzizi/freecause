@@ -44,7 +44,7 @@ class PageContentSeeder extends Seeder
                 'page' => 'home',
                 'locale' => 'fr',
                 'key' => 'text_index_left',
-                'value' => '<p>Une pétition en ligne vous permet de collecter des signatures numériques pour soutenir une cause et obtenir un vrai changement.</p><ul><li>Atteignez des milliers de soutiens instantanément</li><li>Présentez des signatures vérifiées aux décideurs</li><li>Suivez vos progrès en temps réel</li><li>Gratuit pour créer, signer et partager</li></ul><p>Nouveau sur les pétitions ? Consultez notre <a href="{FAQ_URL}">FAQ</a> pour tout comprendre, ou <a href="{CONTACTS_URL}">contactez-nous</a> si vous avez besoin d'aide.</p>',
+                'value' => '<p>Une pétition en ligne vous permet de collecter des signatures numériques pour soutenir une cause et obtenir un vrai changement.</p><ul><li>Atteignez des milliers de soutiens instantanément</li><li>Présentez des signatures vérifiées aux décideurs</li><li>Suivez vos progrès en temps réel</li><li>Gratuit pour créer, signer et partager</li></ul><p>Nouveau sur les pétitions ? Consultez notre <a href="{FAQ_URL}">FAQ</a> pour tout comprendre, ou <a href="{CONTACTS_URL}">contactez-nous</a> si vous avez besoin d\'aide.</p>',
             ],
             [
                 'page' => 'home',
