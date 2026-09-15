@@ -71,27 +71,22 @@
                                     <div class="row featured-row">
                                         <div class="col-lg-12 mb-25">
 
-                                            <div class="card featured-box position-relative">
+                                            <div class="card featured-box">
                                                 <div class="card-body">
+
+                                                    <span class="featured-badges">
+                                                        {{ $content['featured_badge'] ?? __('home.featured_badge') }}
+                                                    </span>
 
                                                     <div class="row featured-box-inner">
 
                                                         @if ($featuredPetition)
-                                                        <div class="col-sm-6 mb-4">
-                                                            <span class="featured-badges">
-                                                                {{ $content['featured_badge'] ?? __('home.featured_badge') }}
-                                                            </span>
-                                                            <div style="position:relative;overflow:hidden;border-radius:6px;height:320px;background:#1a1a1a;">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}"
-                                                                    loading="lazy" aria-hidden="true"
-                                                                    style="position:absolute;inset:-15px;width:calc(100% + 30px);height:calc(100% + 30px);object-fit:cover;filter:blur(18px);opacity:0.55;">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}"
-                                                                    loading="lazy"
-                                                                    style="position:relative;z-index:1;width:100%;height:320px;object-fit:contain;">
-                                                            </div>
+                                                        <div class="col-md-6 mb-4">
+                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
+                                                                loading="lazy" alt="{{ $featuredPetition->tr_title }}">
                                                         </div>
 
-                                                        <div class="col-sm-6 mb-4">
+                                                        <div class="col-md-6 mb-4">
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>
@@ -104,26 +99,6 @@
                                                                     {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                 </p>
 
-                                                                <div class="goal-progress mb-3">
-                                                                    <div class="progress mb-2">
-                                                                        <div class="progress-bar"
-                                                                            style="width: {{ $progress }}%;"></div>
-                                                                    </div>
-                                                                    <div class="d-flex justify-content-between text-muted">
-                                                                        <span>
-                                                                            {{ number_format($signatures) }}
-                                                                            {{ $content['signatures_label'] ?? __('home.signatures_label') }}
-                                                                        </span>
-                                                                        <span>
-                                                                            {{ $content['goal_label'] ?? __('home.goal_label') }}
-                                                                            {{ number_format($goal) }}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                                <a href="{{ $featuredUrl }}" class="btn btn-danger stretched-link">
-                                                                    {{ $content['read_more'] ?? __('home.read_more') }}
-                                                                </a>
                                                             @else
                                                                 <h5>{{ $content['featured_none_title'] ?? __('home.featured_none_title') }}</h5>
                                                                 <p class="text-muted">
@@ -131,7 +106,29 @@
                                                                 </p>
                                                             @endif
                                                         </div>
+
+                                                        @if ($featuredPetition)
+                                                            <a href="{{ $featuredUrl }}">
+                                                                {{ $content['read_more'] ?? __('home.featured_read_more') }}
+                                                            </a>
+                                                        @endif
                                                     </div>
+
+                                                    @if ($featuredPetition)
+                                                        <div class="goal-progress mb-3">
+                                                            <div class="progress mb-2">
+                                                                <div class="progress-bar" style="width: {{ $progress }}%;"></div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between text-muted">
+                                                                <span>{{ number_format($signatures) }} {{ $content['signatures_label'] ?? __('home.signatures_label') }}</span>
+                                                                <span>{{ $content['goal_label'] ?? __('home.goal_label') }} {{ number_format($goal) }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <a href="{{ $featuredUrl }}" class="btn btn-primary">
+                                                            {{ $content['read_more'] ?? __('home.featured_read_more') }}
+                                                        </a>
+                                                    @endif
 
                                                 </div>
                                             </div>

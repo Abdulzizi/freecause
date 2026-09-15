@@ -18,8 +18,8 @@ class PageContentSeeder extends Seeder
             ['page' => 'global', 'locale' => 'en', 'key' => 'footer_additional_html', 'value' => ''],
 
             // ENGLISH
-            ['page' => 'home', 'locale' => 'en', 'key' => 'h1', 'value' => 'Change the World'],
-            ['page' => 'home', 'locale' => 'en', 'key' => 'h2', 'value' => 'Welcome to <span class="red">FreeCause - Online Petition</span>, the ultimate platform to launch your cause.'],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'h1', 'value' => 'Change the world!'],
+            ['page' => 'home', 'locale' => 'en', 'key' => 'h2', 'value' => 'Welcome to FreeCause - Online Petition, the ultimate spot to kick off your online petition—let’s make some waves!'],
             [
                 'page' => 'home',
                 'locale' => 'en',

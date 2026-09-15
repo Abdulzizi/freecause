@@ -2010,21 +2010,68 @@ span.featured-badges {
 }
 
 @media (max-width: 768px) {
+    .main-banner {
+        padding: 3rem 0;
+    }
+
+    .banner-subtitle {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    section.tabs-area {
+        padding: 24px 0;
+    }
+
+    .tab-cards .tab-card-content {
+        padding: 16px;
+    }
+
     .tabs-area .nav.nav-tabs .nav-item {
-        min-width: 190px;
-        width: 100%;
+        flex: 1 1 50%;
+        min-width: 0;
     }
 
     .tabs-area .nav.nav-tabs {
         display: flex;
         flex-wrap: nowrap;
-        overflow-x: scroll;
+    }
+
+    .tabs-area .nav-tabs .nav-link {
+        width: 100%;
+        padding: 12px 8px;
+        font-size: 13px;
+        white-space: normal;
+    }
+
+    .featured-box img {
+        width: 100%;
+        height: auto;
+    }
+
+    .featured-box h5,
+    .featured-box p {
+        overflow-wrap: anywhere;
     }
 }
 
 @media (max-width: 576px) {
     .banner-heading {
         font-size: 2rem;
+        line-height: 1.15;
+        margin-bottom: 1rem !important;
+    }
+
+    .banner-btn a {
+        width: 100%;
+    }
+
+    .tab-cards .tab-card-content {
+        padding: 12px;
+    }
+
+    .featured-box .col-md-6 {
+        margin-bottom: 16px !important;
     }
 }
 
