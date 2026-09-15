@@ -350,9 +350,28 @@ class AuthController extends Controller
             return redirect()->to("/{$locale}/resend-verification");
         }
 
-        $user->verified = true;
-        $user->verification_token = null;
-        $user->save();
+        DB::transaction(function () use ($user) {
+            $pending = DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->selectRaw('petition_id, COUNT(*) as total')
+                ->groupBy('petition_id')
+                ->get();
+
+            $user->verified = true;
+            $user->verification_token = null;
+            $user->save();
+
+            DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->update(['confirmed' => true, 'updated_at' => now()]);
+
+            foreach ($pending as $row) {
+                DB::table('petitions')->where('id', $row->petition_id)->increment('signature_count', $row->total);
+                cache()->forget("petition:latest_sigs:{$row->petition_id}");
+            }
+        });
 
         // * AUTO LOGIN AFTER VERIFY
         // Auth::login($user);

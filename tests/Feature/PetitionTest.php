@@ -12,6 +12,7 @@ use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use App\Support\Settings;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -111,7 +112,7 @@ class PetitionTest extends TestCase
             'description' => 'Description',
         ]);
 
-        $this->post("/en/petition/confirm-petition/{$petition->id}/sign/confirm", [
+        $confirmation = $this->post("/en/petition/confirm-petition/{$petition->id}/sign/confirm", [
             'name' => 'Guest',
             'surname' => 'Signer',
             'email' => 'guest-confirm@example.com',
@@ -119,9 +120,23 @@ class PetitionTest extends TestCase
             'agree1' => 'agree',
             'agree2' => 'agree',
             'agree3' => 'agree',
-        ])->assertOk();
+        ]);
+
+        $confirmation->assertOk()->assertSee('Support and share your cause.');
 
         $this->assertDatabaseMissing('users', ['email' => 'guest-confirm@example.com']);
+
+        $response = $this->post("/en/petition/confirm-petition/{$petition->id}/sign", [
+            'agree1' => 'agree',
+            'agree2' => 'agree',
+            'agree3' => 'agree',
+            'comment' => 'I support this petition',
+        ]);
+
+        $response->assertRedirect("/en/petition/confirm-petition/{$petition->id}/thanksforsigning/1");
+        $this->followRedirects($response)->assertSee('Thank you for having signed:');
+        $this->assertDatabaseHas('users', ['email' => 'guest-confirm@example.com']);
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
     }
 
     public function test_existing_account_can_sign_with_valid_password(): void
@@ -258,7 +273,10 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('signatures', [
             'petition_id' => $petition->id,
             'email' => $this->user->email,
+            'confirmed' => true,
         ]);
+
+        $response->assertRedirect("/en/petition/test-petition/{$petition->id}/thanksforsigning/1");
 
         $petition->refresh();
         $this->assertEquals(1, $petition->signature_count);
@@ -301,6 +319,52 @@ class PetitionTest extends TestCase
             'petition_id' => $petition->id,
             'email' => 'newuser@example.com',
         ]);
+    }
+
+    public function test_verifying_guest_confirms_signature_and_updates_counter(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+            'signature_count' => 0,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Verification Petition',
+            'slug' => 'verification-petition',
+            'description' => 'Test petition description.',
+        ]);
+
+        $this->post("/en/petition/verification-petition/{$petition->id}/sign", [
+            'name' => 'Pending',
+            'surname' => 'Signer',
+            'email' => 'pending@example.com',
+            'password' => 'password123',
+            'agree1' => 'agree',
+            'agree2' => 'agree',
+            'agree3' => 'agree',
+        ])->assertRedirect("/en/petition/verification-petition/{$petition->id}/thanksforsigning/0");
+
+        $user = User::where('email', 'pending@example.com')->firstOrFail();
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+        ]);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 0]);
+
+        $this->get("/en/verify/{$user->verification_token}")->assertRedirect('/en');
+
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'verified' => true]);
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => true,
+        ]);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
     }
 
     public function test_cannot_sign_same_petition_twice(): void

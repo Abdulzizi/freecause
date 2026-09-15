@@ -258,7 +258,7 @@ class PetitionController extends Controller
 
     public function sign(Request $request, string $locale, string $slug, int $id)
     {
-        if ($request->session()->has('sign') && ! $request->has('agree1')) {
+        if ($request->session()->has('sign')) {
             $request->merge($request->session()->get('sign'));
         }
 
@@ -401,11 +401,12 @@ class PetitionController extends Controller
                     'locale' => $locale,
                     // 'city'    => $data['city'] ?? null,
                     'text' => $data['comment'] ?? 'I support this petition',
+                    'confirmed' => $user->verified,
                     'ip_address' => request()->ip(),
                 ]
             );
 
-            if ($sig->wasRecentlyCreated) {
+            if ($sig->wasRecentlyCreated && $sig->confirmed) {
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
                 cache()->forget("petition:latest_sigs:{$petition->id}");
             }
@@ -672,7 +673,7 @@ class PetitionController extends Controller
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => 0,
+                'status' => 1,
             ]);
         });
     }
@@ -742,6 +743,7 @@ class PetitionController extends Controller
             'suggestions',
             'locale',
             'mode',
+            'status',
             'tr',
             'content'
         ));

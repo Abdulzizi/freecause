@@ -16,7 +16,13 @@ class Signature extends Model
         'email',
         'locale',
         'text',
+        'confirmed',
         'ip_address',
+    ];
+
+    protected $casts = [
+        'confirmed' => 'boolean',
+        'is_spam' => 'boolean',
     ];
 
     public function petition()
