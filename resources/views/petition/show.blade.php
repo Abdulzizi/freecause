@@ -490,7 +490,7 @@
 @push('head')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": {{ Illuminate\Support\Js::from($petitionTitle) }},
   "description": {{ Illuminate\Support\Js::from(\Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200)) }},

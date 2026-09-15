@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -15,12 +16,9 @@ return new class extends Migration
 
         // Seed: any petition currently marked is_featured globally → mark all its
         // existing translations as featured too (preserves existing admin intent).
-        DB::statement("
-            UPDATE petition_translations pt
-            JOIN petitions p ON p.id = pt.petition_id
-            SET pt.is_featured = 1
-            WHERE p.is_featured = 1
-        ");
+        DB::table('petition_translations')
+            ->whereIn('petition_id', DB::table('petitions')->where('is_featured', 1)->select('id'))
+            ->update(['is_featured' => 1]);
     }
 
     public function down(): void

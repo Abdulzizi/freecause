@@ -12,6 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasIndex('users', 'users_level_index')) {
+                $table->dropIndex('users_level_index');
+            }
+
             $table->dropColumn('level');
         });
     }
@@ -23,6 +27,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('level', 30)->default('user')->after('ip');
+            $table->index('level');
         });
     }
 };

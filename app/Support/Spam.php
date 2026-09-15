@@ -16,11 +16,13 @@ class Spam
         'escort',
         'seo service',
         'cheap pills',
+        'free money',
+        'paypal',
     ];
 
     public static function isSpam(string $text): bool
     {
-        $text = strtolower($text);
+        $text = strtr(strtolower($text), ['1' => 'i']);
 
         foreach (self::$badKeywords as $word) {
             if (str_contains($text, $word)) {
@@ -52,6 +54,8 @@ class Spam
             ->where('type', $type)
             ->where('created_at', '>=', now()->subMinutes(5))
             ->count();
+
+        self::log($type, 'Rate limit attempt');
 
         if ($count >= $limit) {
             self::banCurrentIp('Auto ban: too many '.$type.' attempts');

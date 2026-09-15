@@ -322,7 +322,7 @@ class PetitionController extends Controller
                 ['petition_id' => $petition->id, 'email' => $email],
                 [
                     'user_id' => $user->id,
-                    'name' => $data['nickname'] ?: $user->name,
+                    'name' => ($data['nickname'] ?? null) ?: $user->name,
                     'locale' => $locale,
                     // 'city'    => $data['city'] ?? null,
                     'text' => $data['comment'] ?? 'I support this petition',
@@ -589,7 +589,9 @@ class PetitionController extends Controller
                 'petition.sign'
             );
 
-            toast('Thank you for signing!', 'success');
+            if ($sig->wasRecentlyCreated) {
+                toast('Thank you for signing!', 'success');
+            }
 
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,

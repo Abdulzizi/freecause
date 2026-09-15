@@ -14,17 +14,14 @@ class UserFactory extends Factory
     protected $model = User::class;
 
     protected static ?string $password = null;
-    protected static ?int $userLevelId = null;
     protected static ?array $languageCodes = null;
     protected static ?array $localeMap = null;
 
     public function definition(): array
     {
-        if (!static::$userLevelId) {
-            static::$userLevelId = UserLevel::where('name', 'user')->value('id');
-            if (!static::$userLevelId) {
-                throw new \RuntimeException('User levels not seeded.');
-            }
+        $userLevelId = UserLevel::where('name', 'user')->value('id');
+        if (!$userLevelId) {
+            throw new \RuntimeException('User levels not seeded.');
         }
 
         if (!static::$languageCodes) {
@@ -52,9 +49,8 @@ class UserFactory extends Factory
             'password'      => static::$password ??= Hash::make('password'),
             'locale'        => $locale,
             'ip'            => $this->faker->ipv4(),
-            'level_id'      => static::$userLevelId,
+            'level_id'      => $userLevelId,
             'google_id'     => $this->faker->optional(0.2)->uuid(),
-            'facebook_id'   => $this->faker->optional(0.15)->uuid(),
             'verified'      => $this->faker->boolean(20),
             'remember_token' => Str::random(10),
         ];

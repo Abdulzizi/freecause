@@ -8,6 +8,8 @@ use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
+use Database\Seeders\LanguageSeeder;
+use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,6 +24,8 @@ class PetitionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
 
         $this->user = User::factory()->create([
             'verified' => true,
@@ -73,6 +77,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Draft Petition',
             'slug' => 'draft-petition',
+            'description' => 'Draft petition description.',
         ]);
 
         $response = $this->post("/en/petition/draft-petition/{$petition->id}/sign", [
@@ -100,6 +105,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Inactive Petition',
             'slug' => 'inactive-petition',
+            'description' => 'Inactive petition description.',
         ]);
 
         $response = $this->post("/en/petition/inactive-petition/{$petition->id}/sign", [
@@ -128,6 +134,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Test Petition',
             'slug' => 'test-petition',
+            'description' => 'Test petition description.',
         ]);
 
         $response = $this->actingAs($this->user)->post("/en/petition/test-petition/{$petition->id}/sign", [
@@ -161,6 +168,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Test Petition',
             'slug' => 'test-petition',
+            'description' => 'Test petition description.',
         ]);
 
         $response = $this->post("/en/petition/test-petition/{$petition->id}/sign", [
@@ -198,6 +206,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Test Petition',
             'slug' => 'test-petition',
+            'description' => 'Test petition description.',
         ]);
 
         Signature::create([
@@ -215,7 +224,7 @@ class PetitionTest extends TestCase
             'agree3' => 'agree',
         ]);
 
-        $response->assertSessionHas('info');
+        $response->assertSessionHas('toast.type', 'info');
     }
 
     public function test_petition_creation_requires_authentication(): void
@@ -295,6 +304,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Test Petition',
             'slug' => 'test-petition',
+            'description' => 'Test petition description.',
         ]);
 
         $response = $this->post("/en/petition/test-petition/{$petition->id}/sign", [
@@ -308,7 +318,7 @@ class PetitionTest extends TestCase
             'agree3' => 'agree',
         ]);
 
-        $response->assertSessionHas('error');
+        $response->assertSessionHas('toast.type', 'error');
     }
 
     public function test_signature_rate_limited(): void
@@ -323,6 +333,7 @@ class PetitionTest extends TestCase
             'locale' => 'en',
             'title' => 'Test Petition',
             'slug' => 'test-petition',
+            'description' => 'Test petition description.',
         ]);
 
         for ($i = 0; $i < 10; $i++) {
@@ -349,6 +360,7 @@ class PetitionTest extends TestCase
             'agree3' => 'agree',
         ]);
 
-        $response->assertStatus(429);
+        $response->assertRedirect();
+        $response->assertSessionHasErrors();
     }
 }

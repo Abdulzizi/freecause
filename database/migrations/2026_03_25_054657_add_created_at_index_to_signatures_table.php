@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('signatures', function (Blueprint $table) {
-            if (!collect(\DB::select("SHOW INDEX FROM signatures WHERE Key_name = 'signatures_created_at_index'"))->count()) {
+            if (! Schema::hasIndex('signatures', 'signatures_created_at_index')) {
                 $table->index('created_at', 'signatures_created_at_index');
             }
         });

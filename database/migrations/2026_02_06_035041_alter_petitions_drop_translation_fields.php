@@ -9,6 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('petitions', function (Blueprint $table) {
+            if (Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')) {
+                $table->dropIndex('petitions_category_id_locale_status_index');
+            }
+
             if (Schema::hasColumn('petitions', 'title')) $table->dropColumn('title');
 
             if (Schema::hasColumn('petitions', 'slug')) {
@@ -44,8 +48,8 @@ return new class extends Migration
                 $table->string('locale', 5)->default('en');
             }
 
-            if (!Schema::hasIndex('petitions', 'petitions_locale_status_index')) {
-                $table->index(['locale', 'status']);
+            if (!Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')) {
+                $table->index(['category_id', 'locale', 'status']);
             }
         });
     }
