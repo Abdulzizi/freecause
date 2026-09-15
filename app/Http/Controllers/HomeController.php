@@ -98,7 +98,7 @@ class HomeController extends Controller
                 SELECT s.*, p.id as petition_id,
                     COALESCE(pt_locale.title, pt_default.title) as petition_title,
                     COALESCE(pt_locale.slug, pt_default.slug) as petition_slug
-                FROM signatures s FORCE INDEX (signatures_created_at_index)
+                FROM signatures s
                 JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
                 LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
                 LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
