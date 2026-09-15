@@ -9,12 +9,15 @@ use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Mail\VerifyAccountMail;
 use App\Support\AppLog;
+use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
@@ -133,7 +136,7 @@ class PetitionController extends Controller
             ->where('id', $id)
             ->where(function ($q) {
                 $q->where(function ($q2) {
-                    $q2->where('status', 'published')->where('is_active', 1);
+                    $q2->where('status', 'published');
                 })
                     ->orWhere(function ($q2) {
                         $q2->where('status', 'draft')
@@ -141,6 +144,10 @@ class PetitionController extends Controller
                     });
             })
             ->firstOrFail();
+
+        if ($petition->status === 'published' && $petition->is_active) {
+            $this->recordView($request, $petition);
+        }
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
@@ -165,6 +172,10 @@ class PetitionController extends Controller
             ]);
         }
 
+        if ($petition->status === 'published' && ! $petition->is_active) {
+            return response()->view('petition.offline', compact('petition', 'tr', 'locale'));
+        }
+
         $hasSigned = auth()->check()
             ? Signature::where('petition_id', $petition->id)
                 ->where('email', auth()->user()->email)
@@ -179,14 +190,12 @@ class PetitionController extends Controller
             "petition:latest_sigs:{$petition->id}",
             now()->addMinutes(5),
             fn () => Signature::where('petition_id', $petition->id)
+                ->where('confirmed', true)
+                ->where('is_spam', false)
                 ->latest('created_at')
-                ->limit(25)
+                ->limit(27)
                 ->get()
-                ->toArray()
         );
-
-        // Convert cached arrays back to objects if needed
-        $latest = collect($latest)->map(fn ($item) => is_array($item) ? (object) $item : $item);
 
         $directLink = lroute('petition.show', [
             'slug' => $tr->slug,
@@ -216,8 +225,43 @@ class PetitionController extends Controller
         ));
     }
 
+    private function recordView(Request $request, Petition $petition): void
+    {
+        $sessionKey = "petition_viewed.{$petition->id}";
+
+        if ($request->session()->has($sessionKey)) {
+            return;
+        }
+
+        DB::transaction(function () use ($petition) {
+            $today = now()->toDateString();
+            $now = now();
+
+            DB::table('petition_views')->insertOrIgnore([
+                'petition_id' => $petition->id,
+                'viewed_on' => $today,
+                'views' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('petition_views')
+                ->where('petition_id', $petition->id)
+                ->where('viewed_on', $today)
+                ->increment('views', 1, ['updated_at' => $now]);
+
+            DB::table('petitions')->where('id', $petition->id)->increment('views');
+        });
+
+        $request->session()->put($sessionKey, true);
+    }
+
     public function sign(Request $request, string $locale, string $slug, int $id)
     {
+        if ($request->session()->has('sign') && ! $request->has('agree1')) {
+            $request->merge($request->session()->get('sign'));
+        }
+
         $petition = Petition::query()
             ->where('id', $id)
             ->where('status', 'published')
@@ -291,20 +335,42 @@ class PetitionController extends Controller
 
         $email = strtolower(trim($data['email']));
 
-        if (User::where('email', $email)->exists()) {
-            $loginUrl = url("/{$locale}/login?email=".urlencode($email).'&redirect='.urlencode(url()->previous()));
+        $existingUser = User::where('email', $email)->first();
 
-            toast('This email is already registered. Please sign in first.', 'warning');
+        $passwordValid = false;
 
-            return back()
-                ->withInput($request->except('password'))
-                ->with('login_url', $loginUrl);
+        if ($existingUser) {
+            try {
+                $passwordValid = Hash::check($data['password'], $existingUser->password);
+            } catch (\RuntimeException) {
+                $passwordValid = false;
+            }
+
+            if (! $passwordValid && str_contains($existingUser->password, ':')) {
+                [$hash, $salt] = explode(':', $existingUser->password, 2);
+                $passwordValid = hash_equals($hash, md5(md5($data['password']).$salt));
+
+                if ($passwordValid) {
+                    $existingUser->forceFill(['password' => Hash::make($data['password'])])->save();
+                }
+            }
         }
 
-        return DB::transaction(function () use ($data, $email, $locale, $petition, $tr) {
-            $userLevel = UserLevel::where('name', 'user')->first();
+        if ($existingUser && ! $passwordValid) {
+            return back()
+                ->withErrors(['email' => 'The email or password is incorrect.'])
+                ->withInput($request->except('password'));
+        }
 
-            $user = User::create([
+        if (Signature::where('petition_id', $petition->id)->where('email', $email)->exists()) {
+            return back()->withErrors(['email' => 'You already signed this petition.']);
+        }
+
+        return DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser) {
+            $userLevel = UserLevel::where('name', 'user')->first();
+            $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
+
+            $user = $existingUser ?? User::create([
                 'name' => trim($data['name'].' '.$data['surname']),
                 'first_name' => $data['name'],
                 'last_name' => $data['surname'],
@@ -313,10 +379,19 @@ class PetitionController extends Controller
                 'locale' => $locale,
                 'ip' => request()->ip(),
                 'level_id' => $userLevel?->id,
-                'verified' => true,
+                'verified' => ! $needsVerification,
+                'verification_token' => $needsVerification ? Str::random(64) : null,
                 'nickname' => $data['nickname'] ?? null,
                 'city' => $data['city'] ?? null,
             ]);
+
+            if (! $existingUser && $needsVerification && Settings::get('smtp_enabled', false)) {
+                try {
+                    Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
+                } catch (\Throwable $e) {
+                    AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
+                }
+            }
 
             $sig = Signature::firstOrCreate(
                 ['petition_id' => $petition->id, 'email' => $email],
@@ -347,7 +422,7 @@ class PetitionController extends Controller
                 'locale' => $locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => 0,
+                'status' => $user->verified ? 1 : 0,
             ]);
         });
     }
@@ -674,11 +749,15 @@ class PetitionController extends Controller
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
-        if (! auth()->check()) {
+        if ($request->isMethod('get') && ! auth()->check()) {
             return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
-        $petition = Petition::findOrFail($id);
+        $petition = Petition::query()
+            ->whereKey($id)
+            ->where('status', 'published')
+            ->where('is_active', true)
+            ->firstOrFail();
 
         $tr = PetitionTranslation::where('petition_id', $petition->id)
             ->where('locale', $locale)
@@ -697,7 +776,7 @@ class PetitionController extends Controller
             ]);
         }
 
-        $alreadySigned = Signature::where('petition_id', $petition->id)
+        $alreadySigned = auth()->check() && Signature::where('petition_id', $petition->id)
             ->where('email', auth()->user()->email)
             ->exists();
 
@@ -709,12 +788,27 @@ class PetitionController extends Controller
             ]);
         }
 
-        session([
-            'sign.comment' => $request->input('comment'),
-            'sign.agree1' => $request->input('agree1', 'agree'),
-            'sign.agree2' => $request->input('agree2', 'agree'),
-            'sign.agree3' => $request->input('agree3', 'agree'),
-        ]);
+        $rules = auth()->check()
+            ? [
+                'comment' => ['nullable', 'string', 'max:500'],
+                'agree1' => ['required', 'in:agree'],
+                'agree2' => ['required', 'in:agree'],
+                'agree3' => ['required', 'in:agree'],
+            ]
+            : [
+                'name' => ['required', 'string', 'max:60'],
+                'surname' => ['required', 'string', 'max:60'],
+                'email' => ['required', 'email', 'max:190'],
+                'password' => ['required', 'string', 'min:8', 'max:72'],
+                'comment' => ['nullable', 'string', 'max:500'],
+                'city' => ['nullable', 'string', 'max:80'],
+                'nickname' => ['nullable', 'string', 'max:80'],
+                'agree1' => ['required', 'in:agree'],
+                'agree2' => ['required', 'in:agree'],
+                'agree3' => ['required', 'in:agree'],
+            ];
+
+        session(['sign' => $request->validate($rules)]);
 
         $content = PageContent::where('page', 'petition_sign')
             ->where('locale', $locale)

@@ -28,6 +28,7 @@
 .fc-share-tw  { background: #000;    color: #fff; }
 .fc-share-wa  { background: #25d366; color: #fff; }
 .fc-share-copy{ background: #f0f0f0; color: #333; }
+.fc-share-copy--copied{ background: #198754; color: #fff; }
 
 /* ── Breadcrumb ─────────────────────────────────────────────── */
 .breadcrumb { background: none; padding: 0; }

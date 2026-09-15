@@ -26,12 +26,18 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'script'])
+    ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
+Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
+    ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
 Route::get('/', function () {
     $default = cache()->remember(
@@ -248,7 +254,7 @@ Route::group([
     // petition actions (show / sign / thanks)
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
     Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->where(['id' => '[0-9]+'])->name('petition.signatures');
-    Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
+    Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
     Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign')->middleware('throttle:10,1');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
 

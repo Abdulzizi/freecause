@@ -100,8 +100,9 @@
                        aria-label="Share on WhatsApp">
                         <i class="fa fa-whatsapp"></i> WhatsApp
                     </a>
-                    <button type="button" class="fc-share-btn fc-share-copy"
-                            onclick="navigator.clipboard.writeText('{{ request()->url() }}').then(()=>{this.innerHTML='<i class=\'fa fa-check\'></i> {{ __('show.link_copied') }}';})"
+                    <button type="button" id="copyPetitionLink" class="fc-share-btn fc-share-copy"
+                            data-url="{{ request()->url() }}"
+                            data-copied-label="{{ __('show.link_copied') }}"
                             aria-label="Copy link">
                         <i class="fa fa-link"></i> {{ __('show.copy_link') }}
                     </button>
@@ -233,7 +234,7 @@
                                 @forelse($latest as $i => $sig)
                                     <div class="fc-latest-row">
                                         <div class="fc-latest-date">
-                                            {{ optional($sig->created_at)->format('j F Y') }}
+                                            {{ $sig->created_at?->format('j F Y') }}
                                         </div>
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
@@ -351,17 +352,17 @@
 
                             <div id="widgetsBody" class="collapse">
                                 <div class="mt-3">
-                                    <div class="mb-2"><strong>728×90</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>468×60</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>336×280</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>125×125</strong></div>
-                                    <textarea class="form-control" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
+                                    @foreach (['728x90', '468x60', '336x280', '125x125'] as $widgetType)
+                                        @php
+                                            $widgetCode = '<script src="'.url("/widgets/pbadge/{$petition->id}/{$widgetType}").'"></script>';
+                                        @endphp
+                                        <div class="mb-2"><strong>{{ str_replace('x', '×', $widgetType) }}</strong></div>
+                                        <textarea class="form-control mb-3" rows="3" readonly>{{ $widgetCode }}</textarea>
+                                        <div class="mb-4 overflow-auto">
+                                            <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
+                                                alt="{{ $widgetType }} petition widget preview">
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -510,20 +511,5 @@
 @endpush
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('widgetsToggle');
-            const body = document.getElementById('widgetsBody');
-            if (!toggle || !body || !window.bootstrap) return;
-
-            body.addEventListener('shown.bs.collapse', () => {
-                toggle.removeAttribute('data-bs-toggle');
-                toggle.removeAttribute('data-bs-target');
-                toggle.removeAttribute('aria-controls');
-                toggle.style.cursor = 'default';
-            }, {
-                once: true
-            });
-        });
-    </script>
+    <script src="{{ asset('legacy/js-v2/petition-show.js') }}"></script>
 @endpush

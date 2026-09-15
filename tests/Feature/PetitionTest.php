@@ -11,6 +11,7 @@ use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -63,6 +64,114 @@ class PetitionTest extends TestCase
 
         $response = $this->get("/en/petition/test-petition/{$petition->id}");
         $response->assertStatus(200);
+    }
+
+    public function test_petition_view_is_counted_once_per_session(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Viewed Petition',
+            'slug' => 'viewed-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
+        $this->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'views' => 1]);
+        $this->assertDatabaseHas('petition_views', ['petition_id' => $petition->id, 'views' => 1]);
+    }
+
+    public function test_inactive_published_petition_shows_offline_page(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => false]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Offline Petition',
+            'slug' => 'offline-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/offline-petition/{$petition->id}")
+            ->assertOk()
+            ->assertSee('This petition is currently offline.');
+    }
+
+    public function test_guest_signing_uses_confirmation_step(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Confirm Petition',
+            'slug' => 'confirm-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->post("/en/petition/confirm-petition/{$petition->id}/sign/confirm", [
+            'name' => 'Guest',
+            'surname' => 'Signer',
+            'email' => 'guest-confirm@example.com',
+            'password' => 'password123',
+            'agree1' => 'agree',
+            'agree2' => 'agree',
+            'agree3' => 'agree',
+        ])->assertOk();
+
+        $this->assertDatabaseMissing('users', ['email' => 'guest-confirm@example.com']);
+    }
+
+    public function test_existing_account_can_sign_with_valid_password(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'existing@example.com',
+            'password' => Hash::make('password123'),
+            'verified' => false,
+        ]);
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Existing User Petition',
+            'slug' => 'existing-user-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->post("/en/petition/existing-user-petition/{$petition->id}/sign", [
+            'name' => 'Existing',
+            'surname' => 'User',
+            'email' => $user->email,
+            'password' => 'password123',
+            'agree1' => 'agree',
+            'agree2' => 'agree',
+            'agree3' => 'agree',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
+    }
+
+    public function test_petition_widget_script_and_render_endpoints_work(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Widget Petition',
+            'slug' => 'widget-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/widgets/pbadge/{$petition->id}/728x90")
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/javascript; charset=UTF-8')
+            ->assertSee("/widget-render/pbadge/{$petition->id}/728x90", false);
+
+        $this->get("/widget-render/pbadge/{$petition->id}/728x90")
+            ->assertOk()
+            ->assertSee('Widget Petition');
     }
 
     public function test_cannot_sign_draft_petition(): void
