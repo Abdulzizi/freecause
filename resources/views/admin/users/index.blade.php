@@ -29,8 +29,18 @@
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
         <input class="fc-input" name="first_name" style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
         <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
+        <input class="fc-input" style="max-width:140px;" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
         <input class="fc-input" style="max-width:220px;" name="email" placeholder="Email" value="{{ $filters['email'] }}">
         <input class="fc-input" style="max-width:130px;" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
+
+        <select class="fc-select" name="status" style="max-width:130px;">
+            <option value="">status...</option>
+            <option value="verified" {{ $filters['status'] === 'verified' ? 'selected' : '' }}>verified</option>
+            <option value="unverified" {{ $filters['status'] === 'unverified' ? 'selected' : '' }}>unverified</option>
+        </select>
+
+        <input class="fc-input" style="max-width:150px;" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
+        <input class="fc-input" style="max-width:150px;" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
 
         <select class="fc-select" name="level" style="max-width:140px;">
             @foreach ($levels as $k => $label)
@@ -219,6 +229,27 @@
                     <label>last name</label>
                     <input class="fc-input" type="text" name="last_name"
                         value="{{ $selectedUser->last_name ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>nickname</label>
+                    <input class="fc-input" type="text" name="nickname"
+                        value="{{ $selectedUser->nickname ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>location</label>
+                    <input class="fc-input" type="text" name="city"
+                        value="{{ $selectedUser->city ?? '' }}">
+                </div>
+
+                <div class="fc-row">
+                    <label>identify as</label>
+                    <select class="fc-select" name="identify_mode">
+                        <option value="full" {{ ($selectedUser->identify_mode ?? 'full') === 'full' ? 'selected' : '' }}>full name</option>
+                        <option value="name" {{ ($selectedUser->identify_mode ?? '') === 'name' ? 'selected' : '' }}>first name</option>
+                        <option value="nick" {{ ($selectedUser->identify_mode ?? '') === 'nick' ? 'selected' : '' }}>nickname</option>
+                    </select>
                 </div>
 
                 <div class="fc-row">
