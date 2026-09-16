@@ -25,6 +25,10 @@
             <option value="auth.google" {{ request('context')=='auth.google'?'selected':'' }}>Google OAuth</option>
             <option value="petition.sign" {{ request('context')=='petition.sign'?'selected':'' }}>Petition Signed</option>
         </select>
+
+        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}" style="max-width:130px;">
+        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" style="max-width:150px;">
+        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}" style="max-width:150px;">
     </x-admin.filter-box>
 
     <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">

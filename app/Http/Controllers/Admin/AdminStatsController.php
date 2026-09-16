@@ -4,20 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
-use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AdminStatsController extends Controller
 {
-    use ApproxRows;
     public function index(Request $request)
     {
         $filters = [
             'locale' => $request->query('locale', ''),
-            'range'  => $request->query('range', '30d'),
-            'type'   => $request->query('type', ''),
+            'range' => $request->query('range', '30d'),
+            'type' => $request->query('type', ''),
         ];
 
         $from = $this->resolveRange($filters['range']);
@@ -51,40 +49,33 @@ class AdminStatsController extends Controller
     private function resolveRange(string $range)
     {
         return match ($range) {
-            '1d'  => now()->subDay(),
-            '7d'  => now()->subDays(7),
+            '1d' => now()->subDay(),
+            '7d' => now()->subDays(7),
             default => now()->subDays(30),
         };
     }
 
     private function summaryStats($locale, $from)
     {
-        // Totals: use approximate row counts (fast, cached 1h) for display
-        $usersTotal      = $this->approxTableRows('users');
-        $petitionsTotal  = $this->approxTableRows('petitions');
-        $signaturesTotal = $this->approxTableRows('signatures');
+        $usersTotal = Cache::remember('admin:stats:users_total', 600, fn () => DB::table('users')->count());
+        $petitionsTotal = Cache::remember('admin:stats:petitions_total', 600, fn () => DB::table('petitions')->count());
+        $signaturesTotal = Cache::remember('admin:stats:signatures_total', 600, fn () => DB::table('signatures')->count());
 
-        // Verified/published ratios: cache for 10 minutes
-        $usersVerified = Cache::remember('admin:stats:users_verified', 600, fn() =>
-            DB::table('users')->where('verified', 1)->count()
+        $usersVerified = Cache::remember('admin:stats:users_verified', 600, fn () => DB::table('users')->where('verified', 1)->count()
         );
-        $petitionsPublished = Cache::remember('admin:stats:petitions_published', 600, fn() =>
-            DB::table('petitions')->where('status', 'published')->count()
+        $petitionsPublished = Cache::remember('admin:stats:petitions_published', 600, fn () => DB::table('petitions')->where('status', 'published')->count()
         );
 
         // Recent counts: cache 5 min keyed by range + locale
-        $rangeKey = $from->toDateString() . ':' . ($locale ?: 'all');
-        $usersNew = Cache::remember("admin:stats:users_new:{$rangeKey}", 300, fn() =>
-            DB::table('users')->where('created_at', '>=', $from)->count()
+        $rangeKey = $from->toDateString().':'.($locale ?: 'all');
+        $usersNew = Cache::remember("admin:stats:users_new:{$rangeKey}", 300, fn () => DB::table('users')->where('created_at', '>=', $from)->count()
         );
-        $petitionsNew = Cache::remember("admin:stats:petitions_new:{$rangeKey}", 300, fn() =>
-            DB::table('petitions')->where('created_at', '>=', $from)->count()
+        $petitionsNew = Cache::remember("admin:stats:petitions_new:{$rangeKey}", 300, fn () => DB::table('petitions')->where('created_at', '>=', $from)->count()
         );
-        $signaturesNew = Cache::remember("admin:stats:sigs_new:{$rangeKey}", 300, fn() =>
-            DB::table('signatures')
-                ->where('created_at', '>=', $from)
-                ->when($locale, fn($q) => $q->where('locale', $locale))
-                ->count()
+        $signaturesNew = Cache::remember("admin:stats:sigs_new:{$rangeKey}", 300, fn () => DB::table('signatures')
+            ->where('created_at', '>=', $from)
+            ->when($locale, fn ($q) => $q->where('locale', $locale))
+            ->count()
         );
 
         return [
@@ -100,8 +91,8 @@ class AdminStatsController extends Controller
 
             'signatures_total' => $signaturesTotal,
 
-            'users_new'      => $usersNew,
-            'petitions_new'  => $petitionsNew,
+            'users_new' => $usersNew,
+            'petitions_new' => $petitionsNew,
             'signatures_new' => $signaturesNew,
         ];
     }
@@ -136,13 +127,13 @@ class AdminStatsController extends Controller
                 DB::raw('COUNT(*) as total')
             )
             ->where('s.created_at', '>=', $from)
-            ->when($locale, fn($q) => $q->where('s.locale', $locale))
-            ->groupBy('email')
+            ->when($locale, fn ($q) => $q->where('s.locale', $locale))
+            ->groupBy(DB::raw('COALESCE(u.email, s.email)'))
             ->orderByDesc('total');
 
         return [
             ['Email', 'Total Signatures'],
-            $q->simplePaginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString(),
         ];
     }
 
@@ -160,7 +151,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Email', 'Total Petitions'],
-            $q->simplePaginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString(),
         ];
     }
 
@@ -173,7 +164,7 @@ class AdminStatsController extends Controller
 
         return [
             ['ID', 'Status', 'Created At'],
-            $q->simplePaginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString(),
         ];
     }
 
@@ -186,7 +177,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Verified Emails'],
-            $q->simplePaginate(25)->withQueryString()
+            $q->simplePaginate(25)->withQueryString(),
         ];
     }
 }
