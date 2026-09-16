@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -18,11 +17,16 @@ class AdminSignaturesController extends Controller
     {
         $filters = [
             'petition_id' => trim((string) $request->query('petition_id', '')),
-            'email'       => trim((string) $request->query('email', '')),
-            'text'        => trim((string) $request->query('text', '')),
+            'user_id' => trim((string) $request->query('user_id', '')),
+            'email' => trim((string) $request->query('email', '')),
+            'ip' => trim((string) $request->query('ip', '')),
+            'text' => trim((string) $request->query('text', '')),
             'category_id' => trim((string) $request->query('category_id', '')),
-            'locale'      => trim((string) $request->query('locale', '')),
-            'confirmed'   => $request->query('confirmed', ''),
+            'locale' => trim((string) $request->query('locale', '')),
+            'confirmed' => $request->query('confirmed', ''),
+            'spam' => $request->query('spam', ''),
+            'date_from' => trim((string) $request->query('date_from', '')),
+            'date_to' => trim((string) $request->query('date_to', '')),
         ];
 
         // $hasText = Schema::hasColumn('signatures', 'text');
@@ -31,12 +35,12 @@ class AdminSignaturesController extends Controller
         $hasText = cache()->remember(
             'schema:signatures:has_text',
             3600,
-            fn() => Schema::hasColumn('signatures', 'text')
+            fn () => Schema::hasColumn('signatures', 'text')
         );
         $hasConfirmed = cache()->remember(
             'schema:signatures:has_confirmed',
             3600,
-            fn() => Schema::hasColumn('signatures', 'confirmed')
+            fn () => Schema::hasColumn('signatures', 'confirmed')
         );
 
         $catLocale = $filters['locale'] !== '' ? $filters['locale'] : 'en';
@@ -80,12 +84,20 @@ class AdminSignaturesController extends Controller
             $q->where('s.petition_id', (int) $filters['petition_id']);
         }
 
+        if ($filters['user_id'] !== '') {
+            $q->where('s.user_id', (int) $filters['user_id']);
+        }
+
         if ($filters['email'] !== '') {
-            $q->where('s.email', 'like', $filters['email'] . '%');
+            $q->where('s.email', 'like', $filters['email'].'%');
+        }
+
+        if ($filters['ip'] !== '') {
+            $q->where('s.ip_address', 'like', $filters['ip'].'%');
         }
 
         if ($hasText && $filters['text'] !== '') {
-            $q->where('s.text', 'like', $filters['text'] . '%');
+            $q->where('s.text', 'like', $filters['text'].'%');
         }
 
         if ($filters['category_id'] !== '') {
@@ -98,6 +110,18 @@ class AdminSignaturesController extends Controller
 
         if ($hasConfirmed && $filters['confirmed'] !== '') {
             $q->where('s.confirmed', (int) $filters['confirmed']);
+        }
+
+        if ($filters['spam'] !== '') {
+            $q->where('s.is_spam', (int) $filters['spam']);
+        }
+
+        if ($filters['date_from'] !== '') {
+            $q->whereDate('s.created_at', '>=', $filters['date_from']);
+        }
+
+        if ($filters['date_to'] !== '') {
+            $q->whereDate('s.created_at', '<=', $filters['date_to']);
         }
 
         $q->orderByDesc('s.id');
@@ -129,18 +153,24 @@ class AdminSignaturesController extends Controller
     public function bulkAction(Request $request)
     {
         $data = $request->validate([
-            'ids'    => ['required', 'array'],
-            'ids.*'  => ['integer'],
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:signatures,id'],
             'action' => ['required', 'string', 'in:approve,reject,delete'],
         ]);
 
         $ids = $data['ids'];
 
-        match ($data['action']) {
-            'approve' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 1]),
-            'reject'  => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 0]),
-            'delete'  => DB::table('signatures')->whereIn('id', $ids)->delete(),
-        };
+        $petitionIds = DB::table('signatures')->whereIn('id', $ids)->pluck('petition_id')->unique()->all();
+
+        DB::transaction(function () use ($data, $ids, $petitionIds) {
+            match ($data['action']) {
+                'approve' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 1]),
+                'reject' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 0]),
+                'delete' => DB::table('signatures')->whereIn('id', $ids)->delete(),
+            };
+
+            $this->recalculateSignatureCounts($petitionIds);
+        });
 
         return response()->json(['ok' => true]);
     }
@@ -149,13 +179,31 @@ class AdminSignaturesController extends Controller
     {
         $data = $request->validate([
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
+            'ids.*' => ['integer', 'exists:signatures,id'],
         ]);
 
-        DB::table('signatures')
-            ->whereIn('id', $data['ids'])
-            ->delete();
+        $petitionIds = DB::table('signatures')->whereIn('id', $data['ids'])->pluck('petition_id')->unique()->all();
+
+        DB::transaction(function () use ($data, $petitionIds) {
+            DB::table('signatures')
+                ->whereIn('id', $data['ids'])
+                ->delete();
+
+            $this->recalculateSignatureCounts($petitionIds);
+        });
 
         return response()->json(['ok' => true]);
+    }
+
+    private function recalculateSignatureCounts(array $petitionIds): void
+    {
+        foreach ($petitionIds as $pid) {
+            $count = DB::table('signatures')
+                ->where('petition_id', $pid)
+                ->where('confirmed', 1)
+                ->count();
+
+            DB::table('petitions')->where('id', $pid)->update(['signature_count' => $count]);
+        }
     }
 }
