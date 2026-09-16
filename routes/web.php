@@ -51,12 +51,6 @@ Route::get('/', function () {
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 
-// Test route
-Route::get('/test-route', function () {
-    \Illuminate\Support\Facades\Log::info('Test route hit', ['uri' => request()->path()]);
-    return 'Test OK - ' . now();
-})->withoutMiddleware(['setLocale', 'block.banned.ip', 'block.banned.user']);
-
 Route::get('/ads.txt', function () {
     $content = Settings::get('ads_txt', '', 'global');
 
@@ -238,15 +232,6 @@ Route::group([
             'categorySlug' => '[^/]+',
             'category' => '[0-9]+',
         ])->name('petitions.byCategory');
-
-    // Debug route
-    Route::get('/debug-route', function () {
-        \Illuminate\Support\Facades\Log::info('Debug route hit', [
-            'uri' => request()->path(),
-            'all_routes' => \Illuminate\Support\Facades\Route::getRoutes()->getRoutesByName(),
-        ]);
-        return 'Debug OK';
-    });
 
     // petition creation
     Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
