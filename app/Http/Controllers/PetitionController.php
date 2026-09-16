@@ -224,6 +224,27 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
+        // Use signing comments as the legacy shoutbox.
+        $defaultComments = \App\Models\Language::where('is_active', true)
+            ->pluck('code')
+            ->push($locale, $defaultLocale)
+            ->unique()
+            ->map(fn ($loc) => __('sign.default_comment', [], $loc))
+            ->filter()
+            ->values()
+            ->all();
+
+        $shoutbox = Signature::with('user')
+            ->where('petition_id', $petition->id)
+            ->where('is_spam', false)
+            ->where('confirmed', true)
+            ->whereNotNull('text')
+            ->whereRaw("TRIM(text) <> ''")
+            ->when(! empty($defaultComments), fn ($q) => $q->whereNotIn('text', $defaultComments))
+            ->orderBy('created_at')
+            ->paginate(10, ['*'], 'shoutbox')
+            ->withQueryString();
+
         return view('petition.show', compact(
             'petition',
             'tr',
@@ -235,7 +256,8 @@ class PetitionController extends Controller
             'directLink',
             'hasSigned',
             'content',
-            'formContent'
+            'formContent',
+            'shoutbox'
         ));
     }
 

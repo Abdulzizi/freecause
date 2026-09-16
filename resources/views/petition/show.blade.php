@@ -166,6 +166,37 @@
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
                                 </div>
                             </div>
+
+                            <div class="fc-shoutbox">
+                                @forelse ($shoutbox as $comment)
+                                    <div class="d-flex align-items-start gap-3 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                @if ($comment->user)
+                                                    <a class="red" style="font-weight:600;font-size:15px;"
+                                                        href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($comment->user->name ?? 'user') ?: 'user', 'id' => $comment->user_id]) }}">
+                                                        {{ $comment->name ?? $comment->user->name ?? __('sig.anonymous') }}
+                                                    </a>
+                                                @else
+                                                    <strong style="font-size:15px;">{{ $comment->name ?? __('sig.anonymous') }}</strong>
+                                                @endif
+                                                <span class="text-muted ms-auto" style="font-size:12px;">
+                                                    {{ optional($comment->created_at)->format('j F Y') }}
+                                                </span>
+                                            </div>
+                                            <p class="mb-0 mt-1 text-muted" style="font-size:14px;">
+                                                "{{ $comment->text }}"
+                                            </p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-muted" style="font-size:14px;">{{ __('sig.no_comments') }}</div>
+                                @endforelse
+
+                                @if ($shoutbox->hasPages())
+                                    @include('partials.pagination', ['paginator' => $shoutbox])
+                                @endif
+                            </div>
                         </div>
                     </div>
 

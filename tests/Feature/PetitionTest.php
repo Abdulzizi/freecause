@@ -152,6 +152,45 @@ class PetitionTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_shoutbox_only_contains_real_signing_comments(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Shoutbox Petition',
+            'slug' => 'shoutbox-petition',
+            'description' => 'Description',
+        ]);
+
+        Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+            'name' => 'Visible Supporter',
+            'text' => 'This cause matters to our community.',
+            'confirmed' => true,
+            'is_spam' => false,
+        ]);
+
+        Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'text' => 'I support this petition',
+            'confirmed' => true,
+            'is_spam' => false,
+        ]);
+
+        $this->get("/en/petition/shoutbox-petition/{$petition->id}")
+            ->assertOk()
+            ->assertSee('This cause matters to our community.')
+            ->assertViewHas('shoutbox', fn ($comments) => $comments->pluck('text')->all() === [
+                'This cause matters to our community.',
+            ]);
+    }
+
     public function test_petition_view_is_counted_once_per_session(): void
     {
         $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
