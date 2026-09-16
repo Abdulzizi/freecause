@@ -11,19 +11,26 @@ class ContactMail extends Mailable
     use Queueable, SerializesModels;
 
     public string $senderName;
+
     public string $senderEmail;
+
     public string $message;
 
-    public function __construct(string $senderName, string $senderEmail, string $message)
+    public ?string $subjectLine;
+
+    public function __construct(string $senderName, string $senderEmail, string $message, ?string $subjectLine = null)
     {
-        $this->senderName  = $senderName;
+        $this->senderName = $senderName;
         $this->senderEmail = $senderEmail;
-        $this->message     = $message;
+        $this->message = $message;
+        $this->subjectLine = $subjectLine;
     }
 
     public function build()
     {
-        return $this->subject('Contact form: ' . $this->senderName)
+        $subject = $this->subjectLine ?: 'Contact form: '.$this->senderName;
+
+        return $this->subject($subject)
             ->replyTo($this->senderEmail, $this->senderName)
             ->view('emails.contact');
     }

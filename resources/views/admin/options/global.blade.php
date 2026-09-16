@@ -82,6 +82,7 @@
             </div>
         </div>
 
+        @if ($is_system_admin)
         <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
@@ -97,6 +98,7 @@
                 <textarea class="fc-textarea" name="inject_body_html">{{ $inject_body_html }}</textarea>
             </div>
         </div>
+        @endif
 
         <div class="fc-tab">oauth</div>
         <div class="fc-box">
@@ -113,7 +115,9 @@
 
             <div class="fc-row">
                 <label>google client secret</label>
-                <input class="fc-input" type="text" name="google_client_secret" value="{{ $google_client_secret }}">
+                <input class="fc-input" type="password" name="google_client_secret" value=""
+                    autocomplete="new-password"
+                    placeholder="{{ $google_client_secret_set ? '•••••••• (leave blank to keep)' : 'not set' }}">
             </div>
 
         </div>
@@ -152,7 +156,9 @@
                 <label>smtp password</label>
                 <div style="position:relative;">
                     <input id="smtp_pass_input" class="fc-input" type="password" name="smtp_pass"
-                        value="{{ $smtp_pass }}" style="padding-right:36px;">
+                        value="" autocomplete="new-password"
+                        placeholder="{{ $smtp_pass_set ? '•••••••• (leave blank to keep)' : 'not set' }}"
+                        style="padding-right:36px;">
 
                     <i id="toggle_smtp_pass" class="fa fa-eye"
                         style="

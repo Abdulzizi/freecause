@@ -203,16 +203,21 @@ Route::group([
 
     Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
     Route::post('/contacts', function (\Illuminate\Http\Request $request) {
+        if (! Settings::get('email_contact_enabled', true, 'global')) {
+            abort(404);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
             'text' => ['required', 'string', 'max:5000'],
         ]);
 
-        $adminEmail = config('mail.from.address');
+        $adminEmail = Settings::get('email_to_staff', '', 'global') ?: config('mail.from.address');
+        $subject = Settings::get('email_contact_subject', '', 'global') ?: null;
 
         try {
-            Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text']));
+            Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text'], $subject));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
 
