@@ -189,14 +189,16 @@ class AdminUsersController extends Controller
 
     public function bulkBan(Request $request)
     {
-        $ids = $request->input('ids', []);
+        $ids = $this->validatedIds($request);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
 
         $bannedLevel = UserLevel::where('name', 'banned')->first();
+        if (! $bannedLevel) {
+            return response()->json(['ok' => false, 'error' => 'banned role missing']);
+        }
 
-        // Optional ban metadata sent as JSON body (from future UI)
         $reason = $request->input('reason') ?: null;
         $days = (int) $request->input('days', 0);
         $until = $days > 0 ? now()->addDays($days) : null;
@@ -217,7 +219,7 @@ class AdminUsersController extends Controller
 
     public function bulkUnban(Request $request)
     {
-        $ids = $request->input('ids', []);
+        $ids = $this->validatedIds($request);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
@@ -225,6 +227,10 @@ class AdminUsersController extends Controller
         $userLevel = UserLevel::where('name', 'user')->first();
         $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
         $adminLevelId = UserLevel::where('name', 'admin')->value('id');
+
+        if (! $userLevel || ! $bannedLevelId) {
+            return response()->json(['ok' => false, 'error' => 'role missing']);
+        }
 
         User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
@@ -243,20 +249,23 @@ class AdminUsersController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        $ids = $request->input('ids', []);
-
+        $ids = $this->validatedIds($request);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
 
         $adminLevelId = UserLevel::where('name', 'admin')->value('id');
+        if (! $adminLevelId) {
+            return response()->json(['ok' => false, 'error' => 'admin role missing']);
+        }
+
         $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
 
         $deleted = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
             ->where(function ($q) use ($adminLevelId, $bannedLevelId) {
                 $q->whereNull('level_id')
-                    ->orWhereNotIn('level_id', [$adminLevelId, $bannedLevelId]);
+                    ->orWhereNotIn('level_id', array_filter([$adminLevelId, $bannedLevelId]));
             })
             ->delete();
 
@@ -264,6 +273,23 @@ class AdminUsersController extends Controller
             'ok' => $deleted > 0,
             'deleted' => $deleted,
         ]);
+    }
+
+    private function validatedIds(Request $request): array
+    {
+        $validator = validator(
+            ['ids' => $request->input('ids', [])],
+            [
+                'ids' => ['required', 'array'],
+                'ids.*' => ['integer', 'exists:users,id'],
+            ]
+        );
+
+        if ($validator->fails()) {
+            return [];
+        }
+
+        return array_map('intval', $validator->validated()['ids']);
     }
 
     public function bulkAction(Request $request)

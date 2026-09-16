@@ -7,6 +7,7 @@ use App\Models\Language;
 use App\Models\PageContent;
 use App\Services\PageContentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LanguageOptionsController extends Controller
 {
@@ -135,22 +136,24 @@ class LanguageOptionsController extends Controller
         $existingGlobal = PageContent::where('page', 'global')->where('locale', $locale)->pluck('value', 'key')->toArray();
         $existingLayout = PageContent::where('page', 'layout')->where('locale', $locale)->pluck('value', 'key')->toArray();
 
-        foreach ($this->homepageKeys as $key) {
-            $save('home', $key, $existingHome);
-        }
+        DB::transaction(function () use ($save, $existingHome, $existingGlobal, $existingLayout, $locale) {
+            foreach ($this->homepageKeys as $key) {
+                $save('home', $key, $existingHome);
+            }
 
-        foreach ($this->globalKeys as $key) {
-            $save('global', $key, $existingGlobal, $key === 'head_additional_html');
-        }
+            foreach ($this->globalKeys as $key) {
+                $save('global', $key, $existingGlobal, $key === 'head_additional_html');
+            }
 
-        PageContent::where('page', 'home')
-            ->where('locale', $locale)
-            ->whereIn('key', $this->globalKeys)
-            ->delete();
+            PageContent::where('page', 'home')
+                ->where('locale', $locale)
+                ->whereIn('key', $this->globalKeys)
+                ->delete();
 
-        foreach ($this->layoutKeys as $key) {
-            $save('layout', $key, $existingLayout, true);
-        }
+            foreach ($this->layoutKeys as $key) {
+                $save('layout', $key, $existingLayout, true);
+            }
+        });
 
         app(PageContentService::class)->clear('home', $locale);
         app(PageContentService::class)->clear('global', $locale);

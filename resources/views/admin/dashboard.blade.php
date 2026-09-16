@@ -73,10 +73,18 @@
 <div class="dash-section">
     <h2>Quick Actions</h2>
     <div class="quick-actions">
+        @if(admin_can('petitions', 'view'))
         <a href="{{ route('admin.petitions') }}" class="quick-btn">Manage Petitions</a>
+        @endif
+        @if(admin_can('users', 'view'))
         <a href="{{ route('admin.users') }}" class="quick-btn">Manage Users</a>
+        @endif
+        @if(admin_can('options', 'view'))
         <a href="{{ route('admin.options.global') }}" class="quick-btn">Global Settings</a>
+        @endif
+        @if(admin_can('stats', 'view'))
         <a href="{{ route('admin.stats') }}" class="quick-btn">View Stats</a>
+        @endif
     </div>
 </div>
 

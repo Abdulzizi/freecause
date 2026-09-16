@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -17,29 +18,40 @@ class PermissionSeeder extends Seeder
             return;
         }
 
-        $modules = [
-            'users' => ['view', 'create', 'edit', 'delete'],
-            'petitions' => ['view', 'create', 'edit', 'delete', 'feature'],
-            'categories' => ['view', 'create', 'edit', 'delete'],
-            'pages' => ['view', 'edit'],
-            'signatures' => ['view', 'delete'],
-            'spam' => ['view', 'edit', 'delete'],
-            'logs' => ['view', 'delete'],
-            'stats' => ['view'],
-            'languages' => ['view', 'edit', 'delete'],
-            'options' => ['view', 'edit'],
-        ];
+        $modules = Permission::matrix();
 
-        foreach ($modules as $module => $actions) {
-            foreach ($actions as $action) {
-                DB::table('permissions')->insert([
-                    'level_id' => $adminLevelId,
-                    'module' => $module,
-                    'action' => $action,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+        DB::transaction(function () use ($adminLevelId, $modules) {
+            $allowed = [];
+
+            foreach ($modules as $module => $actions) {
+                foreach ($actions as $action) {
+                    $allowed[] = $module.'|'.$action;
+
+                    DB::table('permissions')->updateOrInsert(
+                        [
+                            'level_id' => $adminLevelId,
+                            'module' => $module,
+                            'action' => $action,
+                        ],
+                        [
+                            'updated_at' => now(),
+                            'created_at' => now(),
+                        ]
+                    );
+                }
             }
-        }
+
+            DB::table('permissions')
+                ->where('level_id', $adminLevelId)
+                ->get(['id', 'module', 'action'])
+                ->each(function ($row) use ($allowed, $adminLevelId) {
+                    if (! in_array($row->module.'|'.$row->action, $allowed, true)) {
+                        DB::table('permissions')
+                            ->where('level_id', $adminLevelId)
+                            ->where('id', $row->id)
+                            ->delete();
+                    }
+                });
+        });
     }
 }

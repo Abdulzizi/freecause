@@ -58,7 +58,7 @@ class AdminAuthController extends Controller
 
         $user->load('level');
 
-        if (! $user->hasLevel('admin')) {
+        if (! $user->canAccessAdmin()) {
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
 

@@ -15,7 +15,6 @@ use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
-use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AuthController;
@@ -137,15 +136,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->middleware('permission:system,manage')->name('system.user_levels.delete');
         Route::get('/system/permissions', [PermissionController::class, 'index'])->middleware('permission:system,manage')->name('system.permissions');
         Route::post('/system/permissions', [PermissionController::class, 'store'])->middleware('permission:system,manage')->name('system.permissions.store');
-
-        Route::get('/utils/import', [ImportController::class, 'index'])->middleware('permission:options,edit')->name('utils.import');
-        Route::post('/utils/import', [ImportController::class, 'store'])->middleware('permission:options,edit')->name('utils.import.store');
-
-        // * BACKUP
-        Route::get('/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->middleware('permission:options,view')->name('backup.index');
-        Route::post('/backup/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->middleware('permission:options,edit')->name('backup.create');
-        Route::get('/backup/download/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->middleware('permission:options,view')->name('backup.download');
-        Route::post('/backup/delete/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'delete'])->middleware('permission:options,edit')->name('backup.delete');
     });
 });
 
