@@ -57,6 +57,10 @@ class Petition extends Model
         }
 
         if ($this->image_url) {
+            if (str_starts_with($this->image_url, 'http://') || str_starts_with($this->image_url, 'https://')) {
+                return $this->image_url;
+            }
+
             $path = Storage::disk('public')->path("petitions/{$this->image_url}");
             if (file_exists($path)) {
                 return Storage::disk('public')->url("petitions/{$this->image_url}");
@@ -89,7 +93,9 @@ class Petition extends Model
         $locale ??= app()->getLocale();
 
         $t = $this->translation($locale);
-        if ($t) return $t;
+        if ($t) {
+            return $t;
+        }
 
         if ($this->relationLoaded('translations')) {
             return $this->translations->sortBy('id')->first();
@@ -108,10 +114,12 @@ class Petition extends Model
     {
         return $this->translationOrFallback($locale)?->slug;
     }
+
     public function titleFor(?string $locale = null): ?string
     {
         return $this->translationOrFallback($locale)?->title;
     }
+
     public function descriptionFor(?string $locale = null): ?string
     {
         return $this->translationOrFallback($locale)?->description;

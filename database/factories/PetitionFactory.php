@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Petition;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class PetitionFactory extends Factory
 {
@@ -35,7 +34,7 @@ class PetitionFactory extends Factory
             'signature_count' => 0,
 
             // 85% published, 15% draft
-            'status' => $this->faker->boolean(85) ? 'published' : 'draft',
+            'status' => $isPublished ? 'published' : 'draft',
             // 95% active
             'is_active' => $this->faker->boolean(95),
             // only published petitions can be featured
@@ -49,7 +48,7 @@ class PetitionFactory extends Factory
             'community_url' => $this->faker->optional(0.25)->url(),
             'youtube_url' => $this->faker->optional(0.2)->url(),
             'image_url' => null,
-            'cover_image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/1200/630'
+            'cover_image' => 'https://picsum.photos/seed/'.$this->faker->uuid.'/1200/630',
         ];
     }
 }

@@ -8,11 +8,13 @@ use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
+use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
-use App\Support\Settings;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -484,6 +486,28 @@ class PetitionTest extends TestCase
         $response->assertSessionHas('toast.type', 'info');
     }
 
+    public function test_guest_create_page_shows_tabbed_authentication_without_petition_form(): void
+    {
+        $this->get('/en/create-petition')
+            ->assertOk()
+            ->assertSee('id="create-login-tab"', false)
+            ->assertSee('id="create-register-tab"', false)
+            ->assertSee('id="create-login-pane"', false)
+            ->assertDontSee('data-petition-form', false);
+    }
+
+    public function test_authenticated_create_page_shows_petition_form_without_authentication_tabs(): void
+    {
+        $this->actingAs($this->user)->get('/en/create-petition')
+            ->assertOk()
+            ->assertSee('data-petition-form', false)
+            ->assertSee('class="fc-submit-bar text-center"', false)
+            ->assertSee('.fc-submit-bar .btn', false)
+            ->assertDontSee('position: fixed;', false)
+            ->assertDontSee('id="create-login-tab"', false)
+            ->assertDontSee('id="create-register-tab"', false);
+    }
+
     public function test_petition_creation_requires_authentication(): void
     {
         $response = $this->post('/en/create-petition', [
@@ -511,6 +535,141 @@ class PetitionTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'draft',
         ]);
+    }
+
+    public function test_inactive_category_cannot_be_used_for_creation(): void
+    {
+        $inactive = Category::factory()->create(['is_active' => false]);
+
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $inactive->id,
+        ])->assertSessionHasErrors('category_id');
+    }
+
+    public function test_creation_accepts_legacy_youtube_id_and_extensionless_image_url(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'youtube' => 'dQw4w9WgXcQ',
+            'image_url' => 'https://images.example.com/render?id=123',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', [
+            'user_id' => $this->user->id,
+            'youtube_url' => 'dQw4w9WgXcQ',
+            'image_url' => 'https://images.example.com/render?id=123',
+        ]);
+    }
+
+    public function test_uploaded_image_keeps_format_and_aspect_ratio(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'image' => UploadedFile::fake()->image('portrait.png', 400, 1200),
+        ])->assertRedirect();
+
+        $petition = Petition::where('user_id', $this->user->id)->latest('id')->firstOrFail();
+        [$width, $height, $type] = getimagesize(Storage::disk('public')->path($petition->cover_image));
+
+        $this->assertSame(267, $width);
+        $this->assertSame(800, $height);
+        $this->assertSame(IMAGETYPE_PNG, $type);
+    }
+
+    public function test_owner_cannot_edit_after_another_user_signed(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        $signer = User::factory()->create();
+        Signature::create([
+            'petition_id' => $petition->id,
+            'user_id' => $signer->id,
+            'name' => $signer->name,
+            'email' => $signer->email,
+            'locale' => 'en',
+        ]);
+
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}/edit")
+            ->assertForbidden();
+    }
+
+    public function test_edit_updates_slug_but_preserves_goal(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'goal_signatures' => 100,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Updated Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'goal_signatures' => 500,
+        ])->assertRedirect("/en/petition/updated-petition-title/{$petition->id}");
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'goal_signatures' => 100]);
+        $this->assertDatabaseHas('petition_translations', [
+            'petition_id' => $petition->id,
+            'slug' => 'updated-petition-title',
+        ]);
+    }
+
+    public function test_edit_can_remove_current_image_without_orphaning_file(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/original.png', 'image');
+
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'cover_image' => 'petitions/original.png',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'remove_image' => 1,
+        ])->assertRedirect();
+
+        Storage::disk('public')->assertMissing('petitions/original.png');
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => null]);
     }
 
     public function test_petition_title_requires_minimum_words(): void

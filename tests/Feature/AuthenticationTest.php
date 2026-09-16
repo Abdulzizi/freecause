@@ -8,6 +8,7 @@ use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -50,6 +51,21 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/en');
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_embedded_login_returns_to_create_page(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'creator@example.com',
+            'password' => Hash::make('password123'),
+            'verified' => true,
+        ]);
+
+        $this->post('/en/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+            'redirect' => '/en/create-petition',
+        ])->assertRedirect('/en/create-petition');
     }
 
     public function test_login_normalizes_email_case_and_spaces(): void
@@ -114,6 +130,27 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_embedded_login_error_appears_once_on_create_page(): void
+    {
+        User::factory()->create([
+            'email' => 'embedded@example.com',
+            'password' => Hash::make('correct-password'),
+            'verified' => true,
+        ]);
+
+        $this->post('/en/login', [
+            'email' => 'embedded@example.com',
+            'password' => 'wrong-password',
+            'auth_form' => 'login',
+            'redirect' => '/en/create-petition',
+        ]);
+
+        $response = $this->get('/en/create-petition');
+
+        $response->assertOk();
+        $this->assertSame(1, substr_count($response->getContent(), 'invalid credentials'));
+    }
+
     public function test_login_fails_for_unverified_user(): void
     {
         User::factory()->create([
@@ -144,6 +181,22 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'newuser@example.com',
         ]);
+    }
+
+    public function test_embedded_registration_returns_to_create_page(): void
+    {
+        Settings::set('require_email_verification', false);
+
+        $this->post('/en/register', [
+            'name' => 'Petition',
+            'surname' => 'Creator',
+            'email' => 'petition.creator@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+            'redirect' => '/en/create-petition',
+        ])->assertRedirect('/en/create-petition');
+
+        $this->assertAuthenticated();
     }
 
     public function test_registration_requires_valid_email(): void

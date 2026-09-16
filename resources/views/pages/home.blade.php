@@ -5,7 +5,7 @@
 @php
     $featuredUrl = $featuredPetition
         ? lroute('petition.show', ['slug' => $featuredPetition->tr_slug, 'id' => $featuredPetition->id])
-        : lroute('petitions.index');
+        : null;
 
     $signatures = $featuredPetition?->signature_count ?? 0;
     $goal = $featuredPetition?->goal_signatures ?? 100;

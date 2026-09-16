@@ -150,7 +150,12 @@ class AuthController extends Controller
 
         toast('Account created successfully.', 'success');
 
-        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$locale}"));
+        $dest = $request->input('redirect');
+        if (! $dest || ! str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
+            $dest = "/{$locale}";
+        }
+
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
 
     public function login(Request $request, string $locale)
@@ -168,7 +173,7 @@ class AuthController extends Controller
 
         if ($user) {
             if (! $user->verified) {
-                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email');
+                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email', 'auth_form');
             }
 
             if ($user->hasLevel('banned')) {
@@ -218,7 +223,7 @@ class AuthController extends Controller
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
+        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email', 'auth_form');
     }
 
     public function logout(Request $request)

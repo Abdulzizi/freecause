@@ -12,6 +12,7 @@ class PetitionTranslation extends Model
         'title',
         'slug',
         'description',
+        'is_featured',
     ];
 
     public function petition()
