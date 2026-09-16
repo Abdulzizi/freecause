@@ -99,15 +99,6 @@
                                 </button>
                             </form>
 
-                            <form method="post" action="{{ route('admin.languages.destroy', $lang) }}"
-                                onsubmit="return confirm('delete this language?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="fc-btn" type="submit">
-                                    delete
-                                </button>
-                            </form>
-
                         </div>
                     @endif
 

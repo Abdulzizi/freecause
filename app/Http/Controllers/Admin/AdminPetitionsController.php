@@ -121,19 +121,29 @@ class AdminPetitionsController extends Controller
     public function save(Request $request)
     {
         $data = $request->validate([
-            'id' => ['required', 'integer'],
-            'locale' => ['required', 'string'],
-            'title' => ['nullable', 'string'],
-            'slug' => ['nullable', 'string'],
+            'id' => ['required', 'integer', 'exists:petitions,id'],
+            'locale' => ['required', 'string', 'exists:languages,code'],
+            'status' => ['required', 'in:draft,published'],
+            'title' => ['required', 'string'],
+            'slug' => ['required', 'string'],
             'text' => ['nullable', 'string'],
             'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
             'is_active' => ['nullable'],
-            'status' => ['required', 'string'],
             'is_featured' => ['nullable'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'cover_image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
             'remove_image' => ['nullable'],
         ]);
+
+        $slugTaken = DB::table('petition_translations')
+            ->where('slug', $data['slug'])
+            ->where('locale', $data['locale'])
+            ->where('petition_id', '!=', $data['id'])
+            ->exists();
+
+        if ($slugTaken) {
+            return back()->withErrors(['slug' => 'Slug already used'])->withInput();
+        }
 
         $petitionUpdate = [
             'goal_signatures' => $data['goal_signatures'] ?? 100,
@@ -171,23 +181,6 @@ class AdminPetitionsController extends Controller
             ->where('id', $data['id'])
             ->update($petitionUpdate);
 
-        $exists = DB::table('petition_translations')
-            ->where('slug', $data['slug'])
-            ->where('locale', $data['locale'])
-            ->where('petition_id', '!=', $data['id'])
-            ->exists();
-
-        if ($exists) {
-            return back()->withErrors(['slug' => 'Slug already used']);
-        }
-
-        $slug = $data['slug'] ?? '';
-        $title = $data['title'] ?? '';
-
-        if (empty($title) && empty($slug)) {
-            return back()->withErrors(['title' => 'Title or slug is required.']);
-        }
-
         DB::table('petition_translations')
             ->updateOrInsert(
                 [
@@ -195,8 +188,8 @@ class AdminPetitionsController extends Controller
                     'locale' => $data['locale'],
                 ],
                 [
-                    'title'       => $title,
-                    'slug'        => $slug,
+                    'title' => $data['title'],
+                    'slug' => $data['slug'],
                     'description' => sanitizePetitionHtml($data['text'] ?? ''),
                     'is_featured' => $request->boolean('is_featured'),
                 ]

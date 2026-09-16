@@ -21,13 +21,21 @@ class AdminLanguagesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'max:8', 'unique:languages,code'],
+            'code' => ['required', 'string', 'regex:/^[a-z]{2,8}$/', 'unique:languages,code'],
             'name' => ['required', 'max:255'],
             // 'flag' => ['nullable', 'max:100'],
         ]);
 
+        $code = strtolower($request->code);
+
+        if (! is_dir(base_path('lang/'.$code))) {
+            return back()
+                ->withInput()
+                ->withErrors(['code' => "Missing translation directory lang/{$code}."]);
+        }
+
         Language::create([
-            'code' => strtolower($request->code),
+            'code' => $code,
             'name' => $request->name,
             // 'flag' => $request->flag ?? null,
             'is_active' => true,
@@ -44,7 +52,7 @@ class AdminLanguagesController extends Controller
 
     public function update(Request $request, Language $language)
     {
-        if ($language->is_default && !$request->has('is_active')) {
+        if ($language->is_default && ! $request->has('is_active')) {
             return back()->with('error', 'cannot deactivate default language');
         }
 
@@ -65,7 +73,7 @@ class AdminLanguagesController extends Controller
     {
         Language::where('is_default', 1)->update(['is_default' => 0]);
 
-        $language->update(['is_default' => 1]);
+        $language->update(['is_default' => 1, 'is_active' => 1]);
 
         Cache::forget('active_languages');
         Cache::forget('default_language');

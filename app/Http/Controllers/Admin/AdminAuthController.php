@@ -13,7 +13,7 @@ class AdminAuthController extends Controller
     public function show()
     {
         if (Auth::guard('admin')->check()) {
-            return redirect()->route('admin.options.global');
+            return redirect()->route('admin.dashboard');
         }
 
         return view('admin.auth.login');
@@ -65,7 +65,7 @@ class AdminAuthController extends Controller
         Auth::guard('admin')->login($user);
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.options.global');
+        return redirect()->route('admin.dashboard');
     }
 
     public function logout(Request $request)
