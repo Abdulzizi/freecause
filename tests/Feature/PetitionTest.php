@@ -48,6 +48,89 @@ class PetitionTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_petition_search_filters_published_petitions(): void
+    {
+        $matching = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        $other = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        PetitionTranslation::create([
+            'petition_id' => $matching->id,
+            'locale' => 'en',
+            'title' => 'Protect Local Forests',
+            'slug' => 'protect-local-forests',
+            'description' => 'Description',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $other->id,
+            'locale' => 'en',
+            'title' => 'Improve Public Transit',
+            'slug' => 'improve-public-transit',
+            'description' => 'Description',
+        ]);
+
+        $this->get('/en/petitions?q=Forest')
+            ->assertOk()
+            ->assertSee('Protect Local Forests')
+            ->assertDontSee('Improve Public Transit');
+    }
+
+    public function test_category_search_filters_only_that_category(): void
+    {
+        $matching = Petition::factory()->create([
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        $other = Petition::factory()->create([
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $matching->id,
+            'locale' => 'en',
+            'title' => 'Protect Test Animals',
+            'slug' => 'protect-test-animals',
+            'description' => 'Description',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $other->id,
+            'locale' => 'en',
+            'title' => 'Build Safer Roads',
+            'slug' => 'build-safer-roads',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petitions/category-test-category-{$this->category->id}?q=Animals")
+            ->assertOk()
+            ->assertSee('Protect Test Animals')
+            ->assertDontSee('Build Safer Roads');
+
+        $this->get("/en/petitions/category-test-category-{$this->category->id}?q=Missing")
+            ->assertOk()
+            ->assertSee('No petitions found.');
+    }
+
+    public function test_petition_search_pagination_preserves_query(): void
+    {
+        foreach (range(1, 16) as $number) {
+            $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+            PetitionTranslation::create([
+                'petition_id' => $petition->id,
+                'locale' => 'en',
+                'title' => "Forest Campaign {$number}",
+                'slug' => "forest-campaign-{$number}",
+                'description' => 'Description',
+            ]);
+        }
+
+        $this->get('/en/petitions?q=Forest')
+            ->assertOk()
+            ->assertSee('page=2', false)
+            ->assertSee('q=Forest', false);
+    }
+
     public function test_can_view_published_petition(): void
     {
         $petition = Petition::factory()->create([
