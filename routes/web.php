@@ -97,9 +97,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/categories/create', [AdminCategoriesController::class, 'createCategory'])->middleware('permission:categories,edit')->name('categories.create');
         Route::post('/categories/delete', [AdminCategoriesController::class, 'destroy'])->middleware('permission:categories,delete')->name('categories.destroy');
 
-        // * FANPAGES
-        // Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
-
         // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');

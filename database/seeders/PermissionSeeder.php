@@ -13,7 +13,7 @@ class PermissionSeeder extends Seeder
             ->where('name', 'admin')
             ->value('id');
 
-        if (!$adminLevelId) {
+        if (! $adminLevelId) {
             return;
         }
 
@@ -22,7 +22,6 @@ class PermissionSeeder extends Seeder
             'petitions' => ['view', 'create', 'edit', 'delete', 'feature'],
             'categories' => ['view', 'create', 'edit', 'delete'],
             'pages' => ['view', 'edit'],
-            'fanpages' => ['view'],
             'signatures' => ['view', 'delete'],
             'spam' => ['view', 'edit', 'delete'],
             'logs' => ['view', 'delete'],
