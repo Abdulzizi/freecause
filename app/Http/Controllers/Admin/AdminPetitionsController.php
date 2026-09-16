@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
@@ -112,6 +113,21 @@ class AdminPetitionsController extends Controller
 
         $activeLanguages = Language::where('is_active', 1)->orderBy('code')->pluck('code')->toArray();
 
+        $defaultLocale = default_locale();
+        $categories = Category::query()
+            ->select(['categories.id'])
+            ->addSelect([
+                'name' => DB::table('category_translations')
+                    ->select('name')
+                    ->whereColumn('category_id', 'categories.id')
+                    ->whereIn('locale', [$locale, $defaultLocale])
+                    ->orderByRaw('locale = ? desc', [$locale])
+                    ->limit(1),
+            ])
+            ->where('categories.is_active', 1)
+            ->orderBy('name')
+            ->get();
+
         return view('admin.petitions.index', compact(
             'petitions',
             'filters',
@@ -119,7 +135,8 @@ class AdminPetitionsController extends Controller
             'selectedPetition',
             'selectedTranslation',
             'locale',
-            'activeLanguages'
+            'activeLanguages',
+            'categories'
         ));
     }
 
@@ -129,13 +146,21 @@ class AdminPetitionsController extends Controller
             'id' => ['required', 'integer', 'exists:petitions,id'],
             'locale' => ['required', 'string', 'exists:languages,code'],
             'status' => ['required', 'in:draft,published'],
-            'title' => ['required', 'string'],
-            'slug' => ['required', 'string'],
+            'title' => ['required', 'string', 'max:190'],
+            'slug' => ['required', 'string', 'max:190'],
             'text' => ['nullable', 'string'],
             'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
             'is_active' => ['nullable'],
             'is_featured' => ['nullable'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'tags' => ['nullable', 'string', 'max:255'],
+            'youtube_url' => ['nullable', 'string', 'max:200'],
+            'target' => ['nullable', 'string', 'max:190'],
+            'community' => ['nullable', 'string', 'max:190'],
+            'community_url' => ['nullable', 'url', 'max:500'],
+            'city' => ['nullable', 'string', 'max:120'],
+            'created_at' => ['nullable', 'date'],
             'cover_image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
             'remove_image' => ['nullable'],
         ]);
@@ -157,48 +182,73 @@ class AdminPetitionsController extends Controller
             'is_featured' => $request->boolean('is_featured'),
         ];
 
-        // Transfer petition ownership if a valid new user_id was provided
+        foreach (['category_id', 'tags', 'youtube_url', 'target', 'community', 'community_url', 'city'] as $field) {
+            if ($request->has($field)) {
+                $value = $data[$field] ?? null;
+                $petitionUpdate[$field] = ($value === '' ? null : $value);
+            }
+        }
+
+        if ($request->has('created_at') && ! empty($data['created_at'])) {
+            $petitionUpdate['created_at'] = $data['created_at'];
+        }
+
         if (! empty($data['user_id'])) {
             $petitionUpdate['user_id'] = (int) $data['user_id'];
         }
 
-        // Handle cover image replacement
-        if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('petitions', 'public');
-            $abs = Storage::disk('public')->path($path);
-            Image::read($abs)->cover(1200, 630)->toJpeg(82)->save($abs);
-            // Delete old image if it was a stored file
-            $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
-            if ($old && ! str_starts_with($old, 'http')) {
-                Storage::disk('public')->delete($old);
+        $newImagePath = null;
+        $oldImageToDelete = null;
+
+        try {
+            if ($request->hasFile('cover_image')) {
+                $newImagePath = $request->file('cover_image')->store('petitions', 'public');
+                $abs = Storage::disk('public')->path($newImagePath);
+                Image::read($abs)->cover(1200, 630)->toJpeg(82)->save($abs);
+                $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
+                if ($old && ! str_starts_with($old, 'http')) {
+                    $oldImageToDelete = $old;
+                }
+                $petitionUpdate['cover_image'] = $newImagePath;
+            } elseif ($request->boolean('remove_image')) {
+                $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
+                if ($old && ! str_starts_with($old, 'http')) {
+                    $oldImageToDelete = $old;
+                }
+                $petitionUpdate['cover_image'] = null;
+                $petitionUpdate['image_url'] = null;
             }
-            $petitionUpdate['cover_image'] = $path;
-        } elseif ($request->boolean('remove_image')) {
-            $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
-            if ($old && ! str_starts_with($old, 'http')) {
-                Storage::disk('public')->delete($old);
+
+            DB::transaction(function () use ($data, $petitionUpdate, $request) {
+                DB::table('petitions')
+                    ->where('id', $data['id'])
+                    ->update($petitionUpdate);
+
+                DB::table('petition_translations')
+                    ->updateOrInsert(
+                        [
+                            'petition_id' => $data['id'],
+                            'locale' => $data['locale'],
+                        ],
+                        [
+                            'title' => $data['title'],
+                            'slug' => $data['slug'],
+                            'description' => sanitizePetitionHtml($data['text'] ?? ''),
+                            'is_featured' => $request->boolean('is_featured'),
+                        ]
+                    );
+            });
+        } catch (\Throwable $e) {
+            if ($newImagePath) {
+                Storage::disk('public')->delete($newImagePath);
             }
-            $petitionUpdate['cover_image'] = null;
-            $petitionUpdate['image_url'] = null;
+
+            throw $e;
         }
 
-        DB::table('petitions')
-            ->where('id', $data['id'])
-            ->update($petitionUpdate);
-
-        DB::table('petition_translations')
-            ->updateOrInsert(
-                [
-                    'petition_id' => $data['id'],
-                    'locale' => $data['locale'],
-                ],
-                [
-                    'title' => $data['title'],
-                    'slug' => $data['slug'],
-                    'description' => sanitizePetitionHtml($data['text'] ?? ''),
-                    'is_featured' => $request->boolean('is_featured'),
-                ]
-            );
+        if ($oldImageToDelete) {
+            Storage::disk('public')->delete($oldImageToDelete);
+        }
 
         try {
             $locales = active_locales() ?: ['en'];

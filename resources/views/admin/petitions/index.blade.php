@@ -254,6 +254,83 @@
                 </div>
 
                 <div class="fc-row">
+                    <label>category</label>
+                    <div>
+                        <select class="fc-select" name="category_id">
+                            <option value="">—</option>
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->id }}"
+                                    {{ (int) ($selectedPetition->category_id ?? 0) === (int) $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name ?? ('#' . $cat->id) }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>tags</label>
+                    <div>
+                        <input class="fc-input" type="text" name="tags" value="{{ $selectedPetition->tags ?? '' }}"
+                            placeholder="tag1, tag2">
+                        @error('tags') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>youtube</label>
+                    <div>
+                        <input class="fc-input" type="text" name="youtube_url"
+                            value="{{ $selectedPetition->youtube_url ?? '' }}">
+                        @error('youtube_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>target</label>
+                    <div>
+                        <input class="fc-input" type="text" name="target" value="{{ $selectedPetition->target ?? '' }}">
+                        @error('target') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>community</label>
+                    <div>
+                        <input class="fc-input" type="text" name="community"
+                            value="{{ $selectedPetition->community ?? '' }}">
+                        @error('community') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>community url</label>
+                    <div>
+                        <input class="fc-input" type="text" name="community_url"
+                            value="{{ $selectedPetition->community_url ?? '' }}" placeholder="https://">
+                        @error('community_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>location</label>
+                    <div>
+                        <input class="fc-input" type="text" name="city" value="{{ $selectedPetition->city ?? '' }}">
+                        @error('city') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>date created</label>
+                    <div>
+                        <input class="fc-input" type="datetime-local" name="created_at"
+                            value="{{ $selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : '' }}">
+                        @error('created_at') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
                     <label>text</label>
                     <textarea class="fc-input" name="text" rows="8">{{ $selectedTranslation->description ?? '' }}</textarea>
                 </div>
