@@ -42,6 +42,27 @@
             color: #d61f26;
         }
 
+        .fc-or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            gap: .75rem;
+            margin: 1rem 0;
+            color: #888;
+            font-weight: 600;
+            font-size: .85rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .fc-or-divider::before,
+        .fc-or-divider::after {
+            content: "";
+            flex: 1 1 auto;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
         @media (max-width: 767.98px) {
             .fc-create-page {
                 padding-top: 1.25rem !important;
@@ -279,12 +300,20 @@
                             <div class="mb-3" data-image-field>
                                 <label class="form-label">{{ __('form.image') }}</label>
 
+                                <p class="text-muted small mb-2" data-image-instructions>
+                                    Upload an image or provide an external image link. Use only one option.
+                                </p>
+
                                 {{-- Advisory only; the server enforces the 4 MB limit. --}}
                                 <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
 
                                 <input type="file" class="form-control @error('image') is-invalid @enderror"
                                     name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                     data-image-input data-max-size="4194304">
+
+                                <small class="text-muted d-block mt-1" data-image-formats>
+                                    Accepted formats: JPG, PNG, GIF, WebP — max 4 MB.
+                                </small>
 
                                 @error('image')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -314,6 +343,11 @@
                                         </div>
                                     </div>
                                 @endif
+
+                                <div class="fc-or-divider" role="separator" aria-label="or">
+                                    <span>OR</span>
+                                </div>
+
                                 <div class="mt-2">
                                     <label class="form-label">{{ __('form.image_external') }}</label>
                                     <input class="form-control @error('image_url') is-invalid @enderror"

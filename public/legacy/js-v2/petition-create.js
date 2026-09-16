@@ -104,15 +104,14 @@ document.addEventListener('DOMContentLoaded', function () {
         fileInput.addEventListener('change', function () {
             resetPreview();
             var file = fileInput.files && fileInput.files[0];
-            if (!file) return;
-
-            if (urlInput && urlInput.value.trim() !== '') {
-                urlInput.value = '';
-                clearError(urlInput);
+            if (!file) {
+                syncMutualExclusion();
+                return;
             }
 
             if (!validateFile(file)) {
                 fileInput.value = '';
+                syncMutualExclusion();
                 return;
             }
 
@@ -123,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (sizeEl) sizeEl.textContent = '(' + formatSize(file.size) + ')';
                 preview.classList.remove('d-none');
             }
+
+            syncMutualExclusion();
         });
     }
 
@@ -131,17 +132,26 @@ document.addEventListener('DOMContentLoaded', function () {
             if (fileInput) fileInput.value = '';
             clearError(fileInput);
             resetPreview();
+            syncMutualExclusion();
         });
     }
 
     if (urlInput) {
-        urlInput.addEventListener('input', function () {
-            if (urlInput.value.trim() !== '' && fileInput && fileInput.value) {
-                fileInput.value = '';
-                clearError(fileInput);
-                resetPreview();
-            }
-        });
+        urlInput.addEventListener('input', syncMutualExclusion);
+    }
+
+    function syncMutualExclusion() {
+        var hasFile = !!(fileInput && fileInput.files && fileInput.files.length > 0);
+        var hasUrl = !!(urlInput && urlInput.value.trim() !== '');
+
+        if (fileInput) {
+            fileInput.disabled = hasUrl;
+            fileInput.classList.toggle('disabled', hasUrl);
+        }
+        if (urlInput) {
+            urlInput.disabled = hasFile;
+            urlInput.classList.toggle('disabled', hasFile);
+        }
     }
 
     form.addEventListener('submit', function (e) {
@@ -176,6 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // On load, scroll to the first server-side validation error, if any.
     focusFirstError();
+    syncMutualExclusion();
 });

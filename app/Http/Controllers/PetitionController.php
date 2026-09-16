@@ -10,6 +10,7 @@ use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Rules\SafeExternalImageUrl;
 use App\Support\AppLog;
 use App\Support\Settings;
 use App\Support\Spam;
@@ -482,6 +483,11 @@ class PetitionController extends Controller
                 ->withInput();
         }
 
+        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
+        if (! $request->hasFile('image') && filled($request->input('image_url'))) {
+            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        }
+
         $data = $request->validate([
             'title' => [
                 'required',
@@ -531,12 +537,7 @@ class PetitionController extends Controller
             ],
 
             'image' => ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => [
-                'nullable',
-                'url',
-                'max:500',
-                'regex:/^https?:\/\//i',
-            ],
+            'image_url' => $imageUrlRules,
 
             'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
 
@@ -966,6 +967,14 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
+        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
+        $submittedUrl = $request->input('image_url');
+        if (! $request->hasFile('image')
+            && filled($submittedUrl)
+            && $submittedUrl !== $petition->image_url) {
+            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        }
+
         $data = $request->validate([
             'title' => [
                 'required',
@@ -1013,12 +1022,7 @@ class PetitionController extends Controller
             ],
 
             'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => [
-                'nullable',
-                'url',
-                'max:500',
-                'regex:/^https?:\/\//i',
-            ],
+            'image_url' => $imageUrlRules,
 
             'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
 
