@@ -381,6 +381,7 @@ class PetitionController extends Controller
                 'level_id' => $userLevel?->id,
                 'verified' => ! $needsVerification,
                 'verification_token' => $needsVerification ? Str::random(64) : null,
+                'verification_token_sent_at' => $needsVerification ? now() : null,
                 'nickname' => $data['nickname'] ?? null,
                 'city' => $data['city'] ?? null,
             ]);

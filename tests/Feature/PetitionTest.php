@@ -349,6 +349,7 @@ class PetitionTest extends TestCase
         ])->assertRedirect("/en/petition/verification-petition/{$petition->id}/thanksforsigning/0");
 
         $user = User::where('email', 'pending@example.com')->firstOrFail();
+        $this->assertNotNull($user->verification_token_sent_at);
         $this->assertDatabaseHas('signatures', [
             'petition_id' => $petition->id,
             'user_id' => $user->id,

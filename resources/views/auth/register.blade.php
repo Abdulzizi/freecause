@@ -47,22 +47,22 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label mb-1">{{ __('auth.name') }}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
+                                        <input type="text" name="name" value="{{ old('name') }}" class="form-control" autocomplete="given-name" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label mb-1">{{ __('auth.surname') }}</label>
-                                        <input type="text" name="surname" value="{{ old('surname') }}" class="form-control" required>
+                                        <input type="text" name="surname" value="{{ old('surname') }}" class="form-control" autocomplete="family-name" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label mb-1">{{ __('auth.email') }}</label>
-                                        <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
+                                        <input type="email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label mb-1">{{ __('auth.password') }}</label>
-                                        <input type="password" name="password" class="form-control" required>
+                                        <input type="password" name="password" class="form-control" autocomplete="new-password" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
@@ -79,9 +79,8 @@
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms"
                                         {{ old('agree_terms') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="agree_terms">
-                                        <span class="red">{{ __('auth.accept_terms') }}</span>
-                                    </label>
+                                    <label class="form-check-label" for="agree_terms">{{ __('auth.accept_terms') }}</label>
+                                    <a class="red ms-1" href="{{ lroute('page.show', ['slug' => 'terms-of-service']) }}" target="_blank" rel="noopener">↗</a>
                                 </div>
 
                                 <div class="text-center">
