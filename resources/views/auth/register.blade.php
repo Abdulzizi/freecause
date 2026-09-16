@@ -78,9 +78,9 @@
 
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms"
-                                        {{ old('agree_terms') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="agree_terms">{{ __('auth.accept_terms') }}</label>
-                                    <a class="red ms-1" href="{{ lroute('page.show', ['slug' => 'terms-of-service']) }}" target="_blank" rel="noopener">↗</a>
+                                        aria-labelledby="agree_terms_label" {{ old('agree_terms') ? 'checked' : '' }}>
+                                    <a id="agree_terms_label" class="form-check-label red" href="{{ lroute('page.show', ['slug' => 'terms-of-service']) }}"
+                                        target="_blank" rel="noopener">{{ __('auth.accept_terms') }}</a>
                                 </div>
 
                                 <div class="text-center">
