@@ -43,6 +43,30 @@
         <input class="fc-input" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}"
             style="max-width:220px;">
 
+        <input class="fc-input" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}"
+            style="max-width:100px;">
+
+        <select class="fc-select" name="category" style="max-width:160px;">
+            <option value="">category...</option>
+            @foreach ($categories as $cat)
+                <option value="{{ $cat->id }}" {{ (string) ($filters['category'] ?? '') === (string) $cat->id ? 'selected' : '' }}>
+                    {{ $cat->name ?? ('#' . $cat->id) }}
+                </option>
+            @endforeach
+        </select>
+
+        <select class="fc-select" name="status" style="max-width:130px;">
+            <option value="">status...</option>
+            <option value="published" {{ ($filters['status'] ?? '') === 'published' ? 'selected' : '' }}>published</option>
+            <option value="draft" {{ ($filters['status'] ?? '') === 'draft' ? 'selected' : '' }}>draft</option>
+        </select>
+
+        <select class="fc-select" name="active" style="max-width:120px;">
+            <option value="">active...</option>
+            <option value="1" {{ ($filters['active'] ?? '') === '1' ? 'selected' : '' }}>active</option>
+            <option value="0" {{ ($filters['active'] ?? '') === '0' ? 'selected' : '' }}>inactive</option>
+        </select>
+
         <label>
             <input type="checkbox" name="featured" value="1"
                 {{ ($filters['featured'] ?? '') !== '' ? 'checked' : '' }}>

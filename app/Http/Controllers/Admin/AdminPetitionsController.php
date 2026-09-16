@@ -24,6 +24,10 @@ class AdminPetitionsController extends Controller
         $filters = [
             'id' => trim((string) $request->query('id', '')),
             'title' => trim((string) $request->query('title', '')),
+            'owner' => trim((string) $request->query('owner', '')),
+            'category' => trim((string) $request->query('category', '')),
+            'status' => trim((string) $request->query('status', '')),
+            'active' => $request->query('active', ''),
             'featured' => $request->query('featured', ''),
             'missing_locale' => trim((string) $request->query('missing_locale', '')),
         ];
@@ -66,14 +70,27 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            $safeTitle = preg_replace('/[+\-<>~*()"@]+/', ' ', $filters['title']);
-            $safeTitle = trim($safeTitle);
-            if ($safeTitle !== '') {
-                $q->whereRaw(
-                    'MATCH(pt.title) AGAINST(? IN BOOLEAN MODE) OR MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)',
-                    ['+'.$safeTitle.'*', '+'.$safeTitle.'*']
-                );
-            }
+            $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $filters['title']).'%';
+            $q->where(function ($sub) use ($like) {
+                $sub->where('pt.title', 'like', $like)
+                    ->orWhere('pt_default.title', 'like', $like);
+            });
+        }
+
+        if ($filters['owner'] !== '') {
+            $q->where('petitions.user_id', (int) $filters['owner']);
+        }
+
+        if ($filters['category'] !== '') {
+            $q->where('petitions.category_id', (int) $filters['category']);
+        }
+
+        if (in_array($filters['status'], ['draft', 'published'], true)) {
+            $q->where('petitions.status', $filters['status']);
+        }
+
+        if ($filters['active'] !== '') {
+            $q->where('petitions.is_active', $filters['active'] === '1' ? 1 : 0);
         }
 
         if ($filters['featured'] !== '') {
@@ -277,9 +294,9 @@ class AdminPetitionsController extends Controller
         $locale = $request->input('locale', 'en');
 
         $data = $request->validate([
-            'action' => ['required', 'string'],
+            'action' => ['required', 'string', 'in:publish,unpublish,activate,deactivate,feature,unfeature,ban'],
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
+            'ids.*' => ['integer', 'exists:petitions,id'],
         ]);
 
         $ids = $data['ids'];
