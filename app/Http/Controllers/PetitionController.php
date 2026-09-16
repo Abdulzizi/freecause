@@ -224,7 +224,6 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
-        // Use signing comments as the legacy shoutbox.
         $defaultComments = \App\Models\Language::where('is_active', true)
             ->pluck('code')
             ->push($locale, $defaultLocale)
@@ -490,9 +489,6 @@ class PetitionController extends Controller
 
     public function store(Request $request, string $locale)
     {
-        // Detect uploads dropped by PHP before validation (e.g. exceeds
-        // upload_max_filesize / post_max_size). In that case the file arrives
-        // invalid/empty and the normal validation rules never fire, so guard here.
         $uploaded = $request->file('image');
         if ($uploaded !== null && ! $uploaded->isValid()) {
             $reason = $uploaded->getError();
@@ -605,7 +601,6 @@ class PetitionController extends Controller
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
                 $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
-                // External URL is only kept when no file is uploaded (mutual exclusion).
                 $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
@@ -613,8 +608,6 @@ class PetitionController extends Controller
                     $newCoverImage = $path;
                     $abs = Storage::disk('public')->path($path);
 
-                    // Process before saving; a corrupt/unreadable file throws and
-                    // is caught below, rolling back and deleting the stored file.
                     try {
                         Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
                     } catch (\Throwable $e) {
@@ -623,7 +616,6 @@ class PetitionController extends Controller
                         ]);
                     }
 
-                    // Only set cover_image after confirming the stored file exists.
                     if (! Storage::disk('public')->exists($path)) {
                         throw ValidationException::withMessages([
                             'image' => 'The image failed to save. Please try again.',

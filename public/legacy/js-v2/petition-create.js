@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) form.addEventListener('submit', syncHidden);
 });
 
-// Image upload UX + client-side guards (independent of Quill availability).
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('[data-petition-form]');
     if (!form) return;

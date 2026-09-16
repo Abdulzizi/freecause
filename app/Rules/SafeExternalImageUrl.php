@@ -106,7 +106,6 @@ class SafeExternalImageUrl implements ValidationRule
         return null;
     }
 
-    /** @return list<string>|null */
     private function resolvePublicIps(string $host): ?array
     {
         if (filter_var($host, FILTER_VALIDATE_IP)) {
@@ -196,7 +195,6 @@ class SafeExternalImageUrl implements ValidationRule
         return 'ok';
     }
 
-    /** @return array{status:string,http_code:int,content_type:?string,length:?int} */
     private function request(string $url, bool $head, float $deadline): array
     {
         $current = $url;
@@ -235,7 +233,6 @@ class SafeExternalImageUrl implements ValidationRule
                 CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
                 CURLOPT_USERAGENT => 'FreeCause-ImageValidator/1.0',
                 CURLOPT_MAXFILESIZE => $this->maxBytes,
-                // DNS pin
                 CURLOPT_RESOLVE => ["{$host}:{$port}:{$ips[0]}"],
             ]);
 

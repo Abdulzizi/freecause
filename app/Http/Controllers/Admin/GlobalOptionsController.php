@@ -57,14 +57,11 @@ class GlobalOptionsController extends Controller
             }
         }
 
-        // Never expose stored secrets in page HTML.
         $data['google_client_secret'] = '';
         $data['smtp_pass'] = '';
         $data['google_client_secret_set'] = trim((string) Settings::get('google_client_secret', '', 'global')) !== '';
         $data['smtp_pass_set'] = trim((string) Settings::get('smtp_pass', '', 'global')) !== '';
 
-        // Injected HTML executes on every page view: never load its stored value
-        // for non-system admins.
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
         $data['is_system_admin'] = $isSystemAdmin;
         if (! $isSystemAdmin) {
@@ -93,7 +90,6 @@ class GlobalOptionsController extends Controller
 
         $secretKeys = ['google_client_secret', 'smtp_pass'];
 
-        // Injected HTML runs on every page view; restrict to system-level admins.
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
         foreach ($this->defaults as $key => $default) {
@@ -101,7 +97,6 @@ class GlobalOptionsController extends Controller
                 continue;
             }
 
-            // Keep an existing secret when its field is submitted blank.
             if (in_array($key, $secretKeys, true)) {
                 $new = (string) $request->input($key, '');
                 if (trim($new) === '') {

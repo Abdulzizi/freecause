@@ -304,7 +304,6 @@
                                     Upload an image or provide an external image link. Use only one option.
                                 </p>
 
-                                {{-- Advisory only; the server enforces the 4 MB limit. --}}
                                 <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
 
                                 <input type="file" class="form-control @error('image') is-invalid @enderror"
@@ -319,7 +318,6 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
 
-                                {{-- Client-side preview (hidden until a file is chosen) --}}
                                 <div class="mt-3 d-none" data-image-preview>
                                     <img src="" alt="Selected image preview" class="img-thumbnail"
                                         style="max-height: 220px; width: auto; height: auto; object-fit: contain;" data-image-preview-img>

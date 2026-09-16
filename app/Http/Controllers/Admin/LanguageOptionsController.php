@@ -11,9 +11,6 @@ use Illuminate\Http\Request;
 class LanguageOptionsController extends Controller
 {
     protected array $homepageKeys = [
-        'meta_keywords',
-        'meta_description',
-        'head_additional_html',
         'h1',
         'h2',
         'btn_create_petition',
@@ -31,6 +28,20 @@ class LanguageOptionsController extends Controller
         'text_index_left',
         'text_index_right',
         'exclude_most_read',
+    ];
+
+    protected array $globalKeys = [
+        'meta_keywords',
+        'meta_description',
+        'head_additional_html',
+    ];
+
+    protected array $preserveIfBlank = [
+        'text_index_left',
+        'text_index_right',
+        'footer_about',
+        'footer_links',
+        'footer_bottom',
     ];
 
     protected array $layoutKeys = [
@@ -64,6 +75,15 @@ class LanguageOptionsController extends Controller
                 ->pluck('value', 'key')
                 ->toArray();
 
+            $globalValues = PageContent::where('page', 'global')
+                ->where('locale', $locale)
+                ->pluck('value', 'key')
+                ->toArray();
+
+            foreach ($this->globalKeys as $key) {
+                $values[$key] = $globalValues[$key] ?? ($values[$key] ?? '');
+            }
+
             $layoutValues = PageContent::where('page', 'layout')
                 ->where('locale', $locale)
                 ->pluck('value', 'key')
@@ -71,11 +91,11 @@ class LanguageOptionsController extends Controller
         }
 
         return view('admin.options.language', [
-            'locales'      => $locales,
-            'locale'       => $locale,
-            'values'       => $values,
+            'locales' => $locales,
+            'locale' => $locale,
+            'values' => $values,
             'layoutValues' => $layoutValues,
-            'showForm'     => $showForm,
+            'showForm' => $showForm,
         ]);
     }
 
@@ -84,41 +104,56 @@ class LanguageOptionsController extends Controller
         $locales = $this->getLocales();
 
         $request->validate([
-            'locale' => ['required', 'in:' . implode(',', array_keys($locales))],
+            'locale' => ['required', 'in:'.implode(',', array_keys($locales))],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'exclude_most_read' => ['nullable', 'regex:/^\s*\d+(\s*,\s*\d+)*\s*$/'],
         ]);
 
         $locale = $request->input('locale');
 
-        foreach ($this->homepageKeys as $key) {
+        $save = function (string $page, string $key, array $existing, bool $sanitize = false) use ($request, $locale) {
+            $value = (string) $request->input($key, '');
+
+            if (in_array($key, $this->preserveIfBlank, true) && trim($value) === '') {
+                if (array_key_exists($key, $existing)) {
+                    return;
+                }
+            }
+
+            if ($sanitize) {
+                $value = sanitizeAdminHtml($value);
+            }
+
             PageContent::updateOrCreate(
-                [
-                    'page'   => 'home',
-                    'locale' => $locale,
-                    'key'    => $key,
-                ],
-                [
-                    'value' => $request->input($key, ''),
-                ]
+                ['page' => $page, 'locale' => $locale, 'key' => $key],
+                ['value' => $value]
             );
+        };
+
+        $existingHome = PageContent::where('page', 'home')->where('locale', $locale)->pluck('value', 'key')->toArray();
+        $existingGlobal = PageContent::where('page', 'global')->where('locale', $locale)->pluck('value', 'key')->toArray();
+        $existingLayout = PageContent::where('page', 'layout')->where('locale', $locale)->pluck('value', 'key')->toArray();
+
+        foreach ($this->homepageKeys as $key) {
+            $save('home', $key, $existingHome);
         }
 
+        foreach ($this->globalKeys as $key) {
+            $save('global', $key, $existingGlobal, $key === 'head_additional_html');
+        }
+
+        PageContent::where('page', 'home')
+            ->where('locale', $locale)
+            ->whereIn('key', $this->globalKeys)
+            ->delete();
+
         foreach ($this->layoutKeys as $key) {
-            $value = $request->input($key, '');
-            // Footer keys contain HTML rendered to all users — strip dangerous elements
-            $value = sanitizeAdminHtml($value);
-            PageContent::updateOrCreate(
-                [
-                    'page'   => 'layout',
-                    'locale' => $locale,
-                    'key'    => $key,
-                ],
-                [
-                    'value' => $value,
-                ]
-            );
+            $save('layout', $key, $existingLayout, true);
         }
 
         app(PageContentService::class)->clear('home', $locale);
+        app(PageContentService::class)->clear('global', $locale);
         app(PageContentService::class)->clear('layout', $locale);
 
         return redirect()

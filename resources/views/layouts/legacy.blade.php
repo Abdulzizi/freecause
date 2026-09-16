@@ -9,13 +9,15 @@
         $locale = app()->getLocale();
 
         $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
+        $homeMeta = app(App\Services\PageContentService::class)->getPage('home', $locale);
 
         $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - xPetition';
         $metaDescription =
             $globalMeta['meta_description'] ??
-            'xPetition - Online petition platform to launch and support causes worldwide.';
-        $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, xpetition';
-        $headExtra = $globalMeta['head_additional_html'] ?? '';
+            ($homeMeta['meta_description'] ??
+            'xPetition - Online petition platform to launch and support causes worldwide.');
+        $metaKeywords = $globalMeta['meta_keywords'] ?? ($homeMeta['meta_keywords'] ?? 'petitions, activism, online petition, xpetition');
+        $headExtra = $globalMeta['head_additional_html'] ?? ($homeMeta['head_additional_html'] ?? '');
         $footerExtra = $globalMeta['footer_additional_html'] ?? '';
     @endphp
 
