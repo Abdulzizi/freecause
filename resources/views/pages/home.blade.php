@@ -95,7 +95,7 @@
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
-                                                                <p>
+                                                                <p class="featured-description">
                                                                     {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                 </p>
 
