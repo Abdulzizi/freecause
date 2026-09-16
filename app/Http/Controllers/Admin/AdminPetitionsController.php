@@ -33,6 +33,11 @@ class AdminPetitionsController extends Controller
             fn () => Language::where('is_default', 1)->value('code') ?? 'en'
         );
 
+        $driver = DB::connection()->getDriverName();
+        $localesExpr = ($driver === 'mysql' || $driver === 'mariadb')
+            ? 'GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",")'
+            : 'GROUP_CONCAT(locale, ",")';
+
         $q = DB::table('petitions')
             ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
                 $j->on('pt.petition_id', '=', 'petitions.id')
@@ -52,7 +57,7 @@ class AdminPetitionsController extends Controller
                 'petitions.created_at',
                 DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                 DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
-                DB::raw('(SELECT GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",") FROM petition_translations WHERE petition_id = petitions.id) as translation_locales'),
+                DB::raw('(SELECT '.$localesExpr.' FROM petition_translations WHERE petition_id = petitions.id) as translation_locales'),
             ]);
 
         if ($filters['id'] !== '') {
