@@ -587,6 +587,78 @@ class PetitionTest extends TestCase
         $this->assertSame(IMAGETYPE_PNG, $type);
     }
 
+    public function test_webp_image_is_stored_and_linked_to_created_petition(): void
+    {
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'image' => UploadedFile::fake()->image('petition.webp', 1200, 600),
+        ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        $petition = Petition::where('user_id', $this->user->id)->latest('id')->firstOrFail();
+        $this->assertNotNull($petition->cover_image);
+        Storage::disk('public')->assertExists($petition->cover_image);
+        $this->assertSame(IMAGETYPE_WEBP, getimagesize(Storage::disk('public')->path($petition->cover_image))[2]);
+    }
+
+    public function test_oversized_image_does_not_create_petition(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'image' => UploadedFile::fake()->create('large.webp', 4097, 'image/webp'),
+        ])->assertSessionHasErrors('image');
+
+        $this->assertDatabaseMissing('petitions', ['user_id' => $this->user->id]);
+    }
+
+    public function test_php_rejected_upload_does_not_create_petition(): void
+    {
+        $rejectedUpload = new UploadedFile(
+            '',
+            'large.webp',
+            'image/webp',
+            UPLOAD_ERR_INI_SIZE,
+            true,
+        );
+
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'image' => $rejectedUpload,
+        ])->assertSessionHasErrors('image');
+
+        $this->assertDatabaseMissing('petitions', ['user_id' => $this->user->id]);
+    }
+
+    public function test_image_file_and_external_url_cannot_be_submitted_together(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'image' => UploadedFile::fake()->image('petition.webp'),
+            'image_url' => 'https://images.example.com/petition.webp',
+        ])->assertSessionHasErrors(['image', 'image_url']);
+
+        $this->assertDatabaseMissing('petitions', ['user_id' => $this->user->id]);
+    }
+
     public function test_owner_cannot_edit_after_another_user_signed(): void
     {
         $petition = Petition::factory()->create([

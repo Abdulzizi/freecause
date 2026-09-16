@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Intervention\Image\Laravel\Facades\Image;
 
 class PetitionController extends Controller
@@ -466,6 +467,21 @@ class PetitionController extends Controller
 
     public function store(Request $request, string $locale)
     {
+        // Detect uploads dropped by PHP before validation (e.g. exceeds
+        // upload_max_filesize / post_max_size). In that case the file arrives
+        // invalid/empty and the normal validation rules never fire, so guard here.
+        $uploaded = $request->file('image');
+        if ($uploaded !== null && ! $uploaded->isValid()) {
+            $reason = $uploaded->getError();
+            $message = in_array($reason, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
+                ? 'The image may not be larger than 4 MB.'
+                : 'The image failed to upload. Please try again.';
+
+            return back()
+                ->withErrors(['image' => $message])
+                ->withInput();
+        }
+
         $data = $request->validate([
             'title' => [
                 'required',
@@ -514,7 +530,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
+            'image' => ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
             'image_url' => [
                 'nullable',
                 'url',
@@ -534,13 +550,13 @@ class PetitionController extends Controller
         ]);
 
         if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
-            toast('Please choose either upload or external image (not both).', 'error');
+            $conflict = 'Please choose either upload an image OR use an external image link (not both).';
 
             return back()
-                // ->withErrors([
-                //     'image' => 'Please choose either upload an image OR use an external image link (not both).',
-                //     'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
-                // ])
+                ->withErrors([
+                    'image' => $conflict,
+                    'image_url' => $conflict,
+                ])
                 ->withInput();
         }
 
@@ -566,14 +582,30 @@ class PetitionController extends Controller
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
                 $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
-                $petition->image_url = $data['image_url'] ?? null;
+                // External URL is only kept when no file is uploaded (mutual exclusion).
+                $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
                     $path = $request->file('image')->store('petitions', 'public');
                     $newCoverImage = $path;
                     $abs = Storage::disk('public')->path($path);
 
-                    Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                    // Process before saving; a corrupt/unreadable file throws and
+                    // is caught below, rolling back and deleting the stored file.
+                    try {
+                        Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                    } catch (\Throwable $e) {
+                        throw ValidationException::withMessages([
+                            'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
+                        ]);
+                    }
+
+                    // Only set cover_image after confirming the stored file exists.
+                    if (! Storage::disk('public')->exists($path)) {
+                        throw ValidationException::withMessages([
+                            'image' => 'The image failed to save. Please try again.',
+                        ]);
+                    }
 
                     $petition->cover_image = $path;
                 }
@@ -1032,14 +1064,14 @@ class PetitionController extends Controller
 
                 $petition->image_url = $data['image_url'] ?? null;
 
-            if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('petitions', 'public');
-                $newCoverImage = $path;
-                $abs = Storage::disk('public')->path($path);
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('petitions', 'public');
+                    $newCoverImage = $path;
+                    $abs = Storage::disk('public')->path($path);
 
-                Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                    Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
 
-                $petition->cover_image = $newCoverImage;
+                    $petition->cover_image = $newCoverImage;
 
                     $petition->image_url = null;
                 } elseif ($request->boolean('remove_image') || filled($petition->image_url)) {

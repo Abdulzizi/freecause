@@ -8,7 +8,7 @@ return [
     'community_url' => 'Petition community url',
     'description' => 'Text (mandatory)',
     'goal_signatures' => 'Goal (mandatory)',
-    'image' => 'Image (Max 4MB, JPG/PNG)',
+    'image' => 'Image (JPG, PNG, GIF or WebP — max 4 MB)',
     'image_external' => 'Or supply an external link :',
     'preview' => 'Preview',
     'submit' => 'Submit',

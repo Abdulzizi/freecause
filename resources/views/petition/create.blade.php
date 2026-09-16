@@ -276,9 +276,35 @@
                                 <small class="text-muted">{{ __('create.tags_hint') }}</small>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3" data-image-field>
                                 <label class="form-label">{{ __('form.image') }}</label>
-                                <input type="file" class="form-control" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+
+                                {{-- Advisory only; the server enforces the 4 MB limit. --}}
+                                <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
+
+                                <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                    name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
+                                    data-image-input data-max-size="4194304">
+
+                                @error('image')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+
+                                {{-- Client-side preview (hidden until a file is chosen) --}}
+                                <div class="mt-3 d-none" data-image-preview>
+                                    <img src="" alt="Selected image preview" class="img-thumbnail"
+                                        style="max-height: 220px; width: auto; height: auto; object-fit: contain;" data-image-preview-img>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <small class="text-muted">
+                                            <span data-image-name></span>
+                                            <span class="ms-1" data-image-size></span>
+                                        </small>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-image-remove>
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+
                                 @if($isEdit && ($petition->cover_image || $petition->image_url))
                                     <div class="mt-3">
                                         <img src="{{ $petition->coverUrl() }}" class="img-thumbnail" style="max-height: 220px;" alt="Current petition image">
@@ -290,8 +316,11 @@
                                 @endif
                                 <div class="mt-2">
                                     <label class="form-label">{{ __('form.image_external') }}</label>
-                                    <input class="form-control" name="image_url" value="{{ $oldImageUrl }}"
-                                        placeholder="https://">
+                                    <input class="form-control @error('image_url') is-invalid @enderror"
+                                        name="image_url" value="{{ $oldImageUrl }}" placeholder="https://" data-image-url>
+                                    @error('image_url')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -321,7 +350,10 @@
                             </div>
 
                             <div class="fc-submit-bar text-center">
-                                <button class="btn btn-danger px-5">{{ $isEdit ? __('create.update') : __('form.submit') }}</button>
+                                <button class="btn btn-danger px-5" data-submit-btn
+                                    data-submitting-text="{{ $isEdit ? __('create.update') : 'Creating petition…' }}">
+                                    {{ $isEdit ? __('create.update') : __('form.submit') }}
+                                </button>
                             </div>
                         </form>
 
