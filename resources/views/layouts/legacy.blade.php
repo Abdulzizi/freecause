@@ -10,17 +10,30 @@
         $fallbackLocale = config('app.fallback_locale', 'en');
 
         $pageContentService = app(App\Services\PageContentService::class);
-        $globalMeta = $pageContentService->getPageWithFallback('global', $locale, $fallbackLocale);
-        $homeMeta = $pageContentService->getPageWithFallback('home', $locale, $fallbackLocale);
+        $globalMeta = $pageContentService->getPage('global', $locale);
+        $homeMeta = $pageContentService->getPage('home', $locale);
+        $globalMetaDefault = $locale === $fallbackLocale ? $globalMeta : $pageContentService->getPage('global', $fallbackLocale);
+        $homeMetaDefault = $locale === $fallbackLocale ? $homeMeta : $pageContentService->getPage('home', $fallbackLocale);
 
-        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - xPetition';
+        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ($globalMetaDefault['meta_title_suffix'] ?? ' - xPetition');
         $metaDescription =
             $globalMeta['meta_description'] ??
             ($homeMeta['meta_description'] ??
-            'xPetition - Online petition platform to launch and support causes worldwide.');
-        $metaKeywords = $globalMeta['meta_keywords'] ?? ($homeMeta['meta_keywords'] ?? 'petitions, activism, online petition, xpetition');
-        $headExtra = $globalMeta['head_additional_html'] ?? ($homeMeta['head_additional_html'] ?? '');
-        $footerExtra = $globalMeta['footer_additional_html'] ?? '';
+            ($globalMetaDefault['meta_description'] ??
+            ($homeMetaDefault['meta_description'] ??
+            'xPetition - Online petition platform to launch and support causes worldwide.')));
+        $metaKeywords =
+            $globalMeta['meta_keywords'] ??
+            ($homeMeta['meta_keywords'] ??
+            ($globalMetaDefault['meta_keywords'] ??
+            ($homeMetaDefault['meta_keywords'] ??
+            'petitions, activism, online petition, xpetition')));
+        $headExtra =
+            $globalMeta['head_additional_html'] ??
+            ($homeMeta['head_additional_html'] ??
+            ($globalMetaDefault['head_additional_html'] ??
+            ($homeMetaDefault['head_additional_html'] ?? '')));
+        $footerExtra = $globalMeta['footer_additional_html'] ?? ($globalMetaDefault['footer_additional_html'] ?? '');
     @endphp
 
     <title>
