@@ -8,19 +8,30 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')
+            && ! Schema::hasIndex('petitions', 'petitions_category_id_index')) {
+            Schema::table('petitions', function (Blueprint $table) {
+                $table->index('category_id');
+            });
+        }
+
         Schema::table('petitions', function (Blueprint $table) {
             if (Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')) {
                 $table->dropIndex('petitions_category_id_locale_status_index');
             }
 
-            if (Schema::hasColumn('petitions', 'title')) $table->dropColumn('title');
+            if (Schema::hasColumn('petitions', 'title')) {
+                $table->dropColumn('title');
+            }
 
             if (Schema::hasColumn('petitions', 'slug')) {
                 $table->dropUnique(['slug']);
                 $table->dropColumn('slug');
             }
 
-            if (Schema::hasColumn('petitions', 'description')) $table->dropColumn('description');
+            if (Schema::hasColumn('petitions', 'description')) {
+                $table->dropColumn('description');
+            }
 
             if (Schema::hasColumn('petitions', 'locale')) {
                 $table->dropColumn('locale');
@@ -28,29 +39,37 @@ return new class extends Migration
         });
     }
 
-
     public function down(): void
     {
         Schema::table('petitions', function (Blueprint $table) {
-            if (!Schema::hasColumn('petitions', 'title')) {
+            if (! Schema::hasColumn('petitions', 'title')) {
                 $table->string('title');
             }
 
-            if (!Schema::hasColumn('petitions', 'slug')) {
+            if (! Schema::hasColumn('petitions', 'slug')) {
                 $table->string('slug')->unique();
             }
 
-            if (!Schema::hasColumn('petitions', 'description')) {
+            if (! Schema::hasColumn('petitions', 'description')) {
                 $table->text('description');
             }
 
-            if (!Schema::hasColumn('petitions', 'locale')) {
+            if (! Schema::hasColumn('petitions', 'locale')) {
                 $table->string('locale', 5)->default('en');
             }
-
-            if (!Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')) {
-                $table->index(['category_id', 'locale', 'status']);
-            }
         });
+
+        if (! Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')) {
+            Schema::table('petitions', function (Blueprint $table) {
+                $table->index(['category_id', 'locale', 'status']);
+            });
+        }
+
+        if (Schema::hasIndex('petitions', 'petitions_category_id_locale_status_index')
+            && Schema::hasIndex('petitions', 'petitions_category_id_index')) {
+            Schema::table('petitions', function (Blueprint $table) {
+                $table->dropIndex('petitions_category_id_index');
+            });
+        }
     }
 };
