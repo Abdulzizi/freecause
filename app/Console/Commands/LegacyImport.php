@@ -91,7 +91,11 @@ class LegacyImport extends Command
             return $this->importPetitionAssets((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets');
+        if ($phase === 'signatures') {
+            return $this->importSignatures((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures');
 
         return self::FAILURE;
     }
@@ -724,6 +728,116 @@ class LegacyImport extends Command
         }
 
         return basename($pic) === $pic;
+    }
+
+    private function importSignatures(bool $dryRun): int
+    {
+        $chunk = $this->input->hasParameterOption('--chunk')
+            ? max(1, (int) $this->option('chunk'))
+            : 1000;
+
+        $shortLocales = array_flip(config('language_flags', []));
+
+        $minId = $this->option('from-id') !== null
+            ? (int) $this->option('from-id')
+            : (int) DB::connection('legacy')->table('signatures')->min('id');
+
+        $maxId = $this->option('to-id') !== null
+            ? (int) $this->option('to-id')
+            : (int) DB::connection('legacy')->table('signatures')->max('id');
+
+        $inserted = 0;
+        $duplicates = 0;
+        $missingPetition = 0;
+        $missingUser = 0;
+        $invalidTimestamp = 0;
+
+        for ($lo = $minId; $lo <= $maxId; $lo += $chunk) {
+            $hi = min($lo + $chunk - 1, $maxId);
+
+            $rows = DB::connection('legacy')->table('signatures')
+                ->where('id', '>=', $lo)->where('id', '<=', $hi)
+                ->orderBy('id')
+                ->get(['id', 'user_id', 'petition_id', 'verified', 'deleted', 'dt', 'text', 'ip', 'prefix']);
+
+            if ($rows->isEmpty()) {
+                continue;
+            }
+
+            $petitionIds = $rows->pluck('petition_id')->map(fn ($v) => (int) $v)->unique()->values()->all();
+            $userIds = $rows->pluck('user_id')->map(fn ($v) => (int) $v)->unique()->values()->all();
+
+            $existingPetitionIds = array_flip(
+                DB::table('petitions')->whereIn('id', $petitionIds)->pluck('id')->map(fn ($v) => (int) $v)->all()
+            );
+
+            $targetUsers = [];
+            foreach (DB::table('users')->whereIn('id', $userIds)->get(['id', 'name', 'first_name', 'nickname', 'email', 'identify_mode']) as $u) {
+                $targetUsers[(int) $u->id] = $u;
+            }
+
+            $records = [];
+            foreach ($rows as $row) {
+                if (! isset($existingPetitionIds[(int) $row->petition_id])) {
+                    $missingPetition++;
+
+                    continue;
+                }
+
+                if (! isset($targetUsers[(int) $row->user_id])) {
+                    $missingUser++;
+
+                    continue;
+                }
+
+                $user = $targetUsers[(int) $row->user_id];
+                $name = match ($user->identify_mode) {
+                    'nick' => trim((string) $user->nickname) !== '' ? $user->nickname : $user->name,
+                    'name' => trim((string) $user->first_name) !== '' ? $user->first_name : $user->name,
+                    default => $user->name,
+                };
+
+                $dt = $row->dt;
+                if ($dt === null || $dt === '0000-00-00 00:00:00') {
+                    $dt = now();
+                    $invalidTimestamp++;
+                }
+
+                $records[] = [
+                    'id' => (int) $row->id,
+                    'petition_id' => (int) $row->petition_id,
+                    'user_id' => (int) $row->user_id,
+                    'name' => $name,
+                    'email' => $user->email,
+                    'locale' => $shortLocales[$this->prefixLocales[$row->prefix] ?? 'en_US'] ?? 'en',
+                    'text' => $row->text,
+                    'confirmed' => ((string) $row->verified === '1' && (string) $row->deleted === '0'),
+                    'is_spam' => false,
+                    'ip_address' => $row->ip,
+                    'created_at' => $dt,
+                    'updated_at' => $dt,
+                ];
+            }
+
+            if ($dryRun || empty($records)) {
+                continue;
+            }
+
+            DB::transaction(function () use ($records, &$inserted, &$duplicates) {
+                foreach (array_chunk($records, 500) as $batch) {
+                    $affected = DB::table('signatures')->insertOrIgnore($batch);
+                    $inserted += $affected;
+                    $duplicates += count($batch) - $affected;
+                }
+            });
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Signature import complete.');
+        $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
+        $this->line("inserted: {$inserted} duplicates: {$duplicates}");
+        $this->line("missing petitions: {$missingPetition} missing users: {$missingUser} invalid timestamps: {$invalidTimestamp}");
+
+        return self::SUCCESS;
     }
 
     private function uniquePetitionSlug(string $locale, string $source, int $petitionId, array &$usedSlugs, int &$collisions): string
