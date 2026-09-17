@@ -157,9 +157,7 @@ Route::group([
 
     // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
 
-    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
-        ->where(['slug' => '[^/]+', 'id' => '[0-9]+'])
-        ->name('user.profile');
+    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['slug' => '[^/]+', 'id' => '[0-9]+'])->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');

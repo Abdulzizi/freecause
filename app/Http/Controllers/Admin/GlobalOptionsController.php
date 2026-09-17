@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\Cache;
 class GlobalOptionsController extends Controller
 {
     private array $defaults = [
-        'site_name' => 'FreeCause',
-        'site_name_short' => 'FreeCause',
-        'site_logo' => '',
-        'site_favicon' => '',
         'base_url' => '',
         'short_base_url' => '',
         'email_to_staff' => '',
@@ -77,8 +73,6 @@ class GlobalOptionsController extends Controller
         $validated = $request->validate([
             'base_url' => ['nullable', 'url', 'max:255'],
             'short_base_url' => ['nullable', 'url', 'max:255'],
-            'site_logo' => ['nullable', 'url', 'max:255'],
-            'site_favicon' => ['nullable', 'url', 'max:255'],
             'email_to_staff' => ['nullable', 'email', 'max:190'],
             'email_from' => ['nullable', 'email', 'max:190'],
             'smtp_encryption' => ['nullable', 'in:tls,ssl,'],
