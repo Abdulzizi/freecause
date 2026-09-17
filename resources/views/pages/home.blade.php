@@ -30,7 +30,7 @@
 
                         <div class="banner-btn mb-3">
                             <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ $content['btn_create_petition'] ?? __('home.btn_create_petition') }}
+                                {{ __('home.btn_create_petition') }}
                             </a>
                         </div>
 
@@ -51,14 +51,14 @@
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
                                     <i class="fa fa-home"></i>
-                                    {{ $content['tab_featured'] ?? __('home.tab_featured') }}
+                                    {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
                                     <i class="fa fa-clock-o"></i>
-                                    {{ $content['tab_recent'] ?? __('home.tab_recent') }}
+                                    {{ __('home.tab_recent') }}
                                 </button>
                             </li>
                         </ul>
@@ -75,7 +75,7 @@
                                                 <div class="card-body">
 
                                                     <span class="featured-badges">
-                                                        {{ $content['featured_badge'] ?? __('home.featured_badge') }}
+                                                        {{ __('home.featured_badge') }}
                                                     </span>
 
                                                     <div class="row featured-box-inner">
@@ -90,7 +90,7 @@
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>
-                                                                        {{ $content['petition_target_label'] ?? __('home.petition_target_label') }}
+                                                                        {{ __('home.petition_target_label') }}
                                                                     </strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
@@ -100,16 +100,16 @@
                                                                 </p>
 
                                                             @else
-                                                                <h5>{{ $content['featured_none_title'] ?? __('home.featured_none_title') }}</h5>
+                                                                <h5>{{ __('home.featured_none_title') }}</h5>
                                                                 <p class="text-muted">
-                                                                    {{ $content['featured_none_sub'] ?? __('home.featured_none_sub') }}
+                                                                    {{ __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
                                                         </div>
 
                                                         @if ($featuredPetition)
                                                             <a href="{{ $featuredUrl }}">
-                                                                {{ $content['read_more'] ?? __('home.featured_read_more') }}
+                                                                {{ __('home.featured_read_more') }}
                                                             </a>
                                                         @endif
                                                     </div>
@@ -120,13 +120,13 @@
                                                                 <div class="progress-bar" style="width: {{ $progress }}%;"></div>
                                                             </div>
                                                             <div class="d-flex justify-content-between text-muted">
-                                                                <span>{{ number_format($signatures) }} {{ $content['signatures_label'] ?? __('home.signatures_label') }}</span>
-                                                                <span>{{ $content['goal_label'] ?? __('home.goal_label') }} {{ number_format($goal) }}</span>
+                                                                <span>{{ number_format($signatures) }} {{ __('home.signatures_label') }}</span>
+                                                                <span>{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
                                                             </div>
                                                         </div>
 
                                                         <a href="{{ $featuredUrl }}" class="btn btn-primary">
-                                                            {{ $content['read_more'] ?? __('home.featured_read_more') }}
+                                                            {{ __('home.featured_read_more') }}
                                                         </a>
                                                     @endif
 
@@ -173,7 +173,7 @@
                                                                         </span>
 
                                                                         <strong>
-                                                                            {{ $content['recent_has_signed'] ?? __('home.recent_has_signed') }}
+                                                                            {{ __('home.recent_has_signed') }}
                                                                         </strong>
                                                                     </p>
 
@@ -193,7 +193,7 @@
 
                                                         <li>
                                                             <div class="text-muted p-2">
-                                                                {{ $content['recent_empty'] ?? __('home.recent_empty') }}
+                                                                {{ __('home.recent_empty') }}
                                                                 &mdash;
                                                                 <a href="{{ lroute('petitions.index') }}" class="red">
                                                                     {{ __('home.btn_browse_petitions') }}
