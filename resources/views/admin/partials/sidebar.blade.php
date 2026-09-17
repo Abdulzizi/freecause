@@ -4,7 +4,7 @@
 
     <div class="group-title">site</div>
     @if (admin_can('options', 'view'))
-        <a href="{{ route('admin.options.global') }}" class="{{ request()->routeIs('admin.options.global') ? 'active' : '' }}">global options</a>
+        <a href="{{ route('admin.options.global') }}" class="{{ request()->routeIs('admin.options.global') ? 'active' : '' }}">site settings</a>
         <a href="{{ route('admin.options.language') }}" class="{{ request()->routeIs('admin.options.language') ? 'active' : '' }}">localized content</a>
         <a href="{{ route('admin.ads') }}" class="{{ request()->routeIs('admin.ads') ? 'active' : '' }}">ads.txt</a>
     @endif

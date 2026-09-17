@@ -1,13 +1,14 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Global Options')
+@section('title', 'Site Settings')
 
 @section('content')
-    <h1>options</h1>
+    <h1>Site Settings</h1>
 
     <form method="post" action="{{ route('admin.options.global.update') }}">
         @csrf
 
+        @if ($is_system_admin)
         <div class="fc-tab">general</div>
         <div class="fc-box">
 
@@ -40,6 +41,7 @@
             @endif
 
         </div>
+        @endif
 
         <div class="fc-tab">email</div>
         <div class="fc-box">
@@ -71,6 +73,7 @@
         </div>
         @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">oauth</div>
         <div class="fc-box">
 
@@ -92,7 +95,9 @@
             </div>
 
         </div>
+        @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">smtp</div>
         <div class="fc-box">
             <input type="hidden" name="smtp_enabled" value="0">
@@ -158,6 +163,7 @@
                 </select>
             </div>
         </div>
+        @endif
 
         <div class="fc-tab">miscellaneous</div>
         <div class="fc-box">
@@ -168,6 +174,7 @@
             </div>
         </div>
 
+        @if ($is_system_admin)
         <div class="fc-tab">maintenance</div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
@@ -178,7 +185,9 @@
                 <input class="fc-input" type="text" name="special_debug_ip" value="{{ $special_debug_ip }}">
             </div>
         </div>
+        @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">logging</div>
         <div class="fc-box">
             <input type="hidden" name="logging_enabled" value="0">
@@ -202,6 +211,7 @@
                 <input class="fc-input" type="text" name="logging_cookie_value" value="{{ $logging_cookie_value }}">
             </div>
         </div>
+        @endif
 
         <div class="fc-tab">announcement banner</div>
         <div class="fc-box">
@@ -278,6 +288,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         var input = document.getElementById('smtp_pass_input');
         var toggle = document.getElementById('toggle_smtp_pass');
+
+        if (! input || ! toggle) {
+            return;
+        }
 
         toggle.addEventListener('click', function() {
             if (input.type === 'password') {

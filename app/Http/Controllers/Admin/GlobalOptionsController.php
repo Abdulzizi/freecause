@@ -41,6 +41,25 @@ class GlobalOptionsController extends Controller
         'email_contact_enabled' => true,
     ];
 
+    private array $systemOnlyKeys = [
+        'base_url',
+        'short_base_url',
+        'inject_head_html',
+        'inject_body_html',
+        'google_client_id',
+        'google_client_secret',
+        'smtp_enabled',
+        'require_email_verification',
+        'smtp_host',
+        'smtp_user',
+        'smtp_pass',
+        'smtp_encryption',
+        'special_debug_ip',
+        'logging_enabled',
+        'logging_cookie_name',
+        'logging_cookie_value',
+    ];
+
     public function edit()
     {
         $data = [];
@@ -61,8 +80,11 @@ class GlobalOptionsController extends Controller
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
         $data['is_system_admin'] = $isSystemAdmin;
         if (! $isSystemAdmin) {
-            $data['inject_head_html'] = '';
-            $data['inject_body_html'] = '';
+            foreach ($this->systemOnlyKeys as $key) {
+                if (array_key_exists($key, $data)) {
+                    $data[$key] = is_bool($this->defaults[$key]) ? false : '';
+                }
+            }
         }
 
         return view('admin.options.global', $data);
@@ -87,7 +109,7 @@ class GlobalOptionsController extends Controller
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
         foreach ($this->defaults as $key => $default) {
-            if (in_array($key, ['inject_head_html', 'inject_body_html'], true) && ! $isSystemAdmin) {
+            if (in_array($key, $this->systemOnlyKeys, true) && ! $isSystemAdmin) {
                 continue;
             }
 
