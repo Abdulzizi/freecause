@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LegacyImport extends Command
@@ -86,7 +87,11 @@ class LegacyImport extends Command
             return $this->importPetitions((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions');
+        if ($phase === 'petition-assets') {
+            return $this->importPetitionAssets((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets');
 
         return self::FAILURE;
     }
@@ -509,6 +514,216 @@ class LegacyImport extends Command
         $this->line("skipped (missing user): {$skippedUsers} missing mapping: {$missingMapping} target-missing category: {$targetMissingCategory} collisions: {$collisions}");
 
         return self::SUCCESS;
+    }
+
+    private function importPetitionAssets(bool $dryRun): int
+    {
+        $chunk = $this->input->hasParameterOption('--chunk')
+            ? max(1, (int) $this->option('chunk'))
+            : 500;
+
+        $picsPath = env('LEGACY_PICS_PATH');
+        $picsPath = is_string($picsPath) ? rtrim($picsPath, '/') : null;
+
+        $minId = $this->option('from-id') !== null
+            ? (int) $this->option('from-id')
+            : (int) DB::connection('legacy')->table('petitions')->min('id');
+
+        $maxId = $this->option('to-id') !== null
+            ? (int) $this->option('to-id')
+            : (int) DB::connection('legacy')->table('petitions')->max('id');
+
+        $tagsUpdated = 0;
+        $tagsSkippedMissing = 0;
+        $imgCopied = 0;
+        $imgReused = 0;
+        $imgMissing = 0;
+        $imgInvalid = 0;
+        $imgSkipped = 0;
+
+        for ($lo = $minId; $lo <= $maxId; $lo += $chunk) {
+            $hi = min($lo + $chunk - 1, $maxId);
+
+            $petitions = DB::connection('legacy')->table('petitions')
+                ->where('id', '>=', $lo)->where('id', '<=', $hi)
+                ->orderBy('id')
+                ->get(['id', 'prefix', 'pic']);
+
+            if ($petitions->isEmpty()) {
+                continue;
+            }
+
+            $ids = $petitions->pluck('id')->map(fn ($v) => (int) $v)->all();
+            $petitionPrefix = [];
+            foreach ($petitions as $p) {
+                $petitionPrefix[(int) $p->id] = $p->prefix;
+            }
+
+            $existingTargetIds = array_flip(
+                DB::table('petitions')->whereIn('id', $ids)->pluck('id')->map(fn ($v) => (int) $v)->all()
+            );
+
+            $tagRows = DB::connection('legacy')->table('petitions_tags')
+                ->join('tags', 'tags.id', '=', 'petitions_tags.tag_id')
+                ->whereIn('petitions_tags.petition_id', $ids)
+                ->orderBy('petitions_tags.petition_id')
+                ->orderBy('tags.id')
+                ->get(['petitions_tags.petition_id', 'petitions_tags.prefix', 'tags.name']);
+
+            $grouped = [];
+            foreach ($tagRows as $tr) {
+                $pid = (int) $tr->petition_id;
+                if (($petitionPrefix[$pid] ?? null) !== $tr->prefix) {
+                    continue;
+                }
+                $name = trim((string) $tr->name);
+                if ($name === '') {
+                    continue;
+                }
+                $key = mb_strtolower($name);
+                if (! isset($grouped[$pid])) {
+                    $grouped[$pid] = [];
+                }
+                if (! isset($grouped[$pid][$key])) {
+                    $grouped[$pid][$key] = $name;
+                }
+            }
+
+            $tagUpdates = [];
+            foreach ($petitions as $p) {
+                $pid = (int) $p->id;
+                if (isset($existingTargetIds[$pid])) {
+                    $tagUpdates[$pid] = '';
+                }
+            }
+            foreach ($grouped as $pid => $names) {
+                if (! isset($existingTargetIds[$pid])) {
+                    $tagsSkippedMissing++;
+
+                    continue;
+                }
+                $tagUpdates[$pid] = implode(', ', array_values($names));
+            }
+
+            $coverUpdates = [];
+            foreach ($petitions as $p) {
+                $pid = (int) $p->id;
+                $pic = (string) $p->pic;
+
+                if ($pic === '' || str_starts_with($pic, 'http://') || str_starts_with($pic, 'https://')) {
+                    $imgSkipped++;
+
+                    continue;
+                }
+
+                if (! $this->validPicFilename($pic)) {
+                    $imgInvalid++;
+
+                    continue;
+                }
+
+                if (! isset($existingTargetIds[$pid])) {
+                    $imgSkipped++;
+
+                    continue;
+                }
+
+                $fullLocale = $this->prefixLocales[$p->prefix] ?? 'en_US';
+                $relative = 'petitions/legacy/'.$fullLocale.'/'.$pic;
+
+                if ($picsPath === null) {
+                    $imgMissing++;
+
+                    continue;
+                }
+
+                $source = $picsPath.'/'.$fullLocale.'/'.$pic;
+
+                if (! is_file($source)) {
+                    $imgMissing++;
+
+                    continue;
+                }
+
+                $dest = Storage::disk('public')->path($relative);
+
+                if (is_file($dest) && filesize($dest) === filesize($source) && hash_file('sha256', $dest) === hash_file('sha256', $source)) {
+                    $imgReused++;
+                    $coverUpdates[$pid] = $relative;
+
+                    continue;
+                }
+
+                if ($dryRun) {
+                    $imgCopied++;
+                    $coverUpdates[$pid] = $relative;
+
+                    continue;
+                }
+
+                if (! is_dir(dirname($dest))) {
+                    mkdir(dirname($dest), 0755, true);
+                }
+
+                if (copy($source, $dest)) {
+                    $imgCopied++;
+                    $coverUpdates[$pid] = $relative;
+                } else {
+                    $imgMissing++;
+                }
+            }
+
+            if ($dryRun) {
+                continue;
+            }
+
+            $this->bulkUpdateColumn('tags', $tagUpdates);
+            $this->bulkUpdateColumn('cover_image', $coverUpdates);
+            $tagsUpdated += count($tagUpdates);
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Petition assets import complete.');
+        $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
+        $this->line("tags updated: {$tagsUpdated} tags skipped (missing target): {$tagsSkippedMissing}");
+        $this->line("images copied: {$imgCopied} reused: {$imgReused} missing: {$imgMissing} invalid: {$imgInvalid} skipped: {$imgSkipped}");
+
+        return self::SUCCESS;
+    }
+
+    private function bulkUpdateColumn(string $column, array $updates): void
+    {
+        if (empty($updates)) {
+            return;
+        }
+
+        DB::transaction(function () use ($column, $updates) {
+            foreach (array_chunk($updates, 500, true) as $batch) {
+                $ids = array_keys($batch);
+                $cases = '';
+                $bindings = [];
+                foreach ($batch as $id => $value) {
+                    $cases .= ' when ? then ?';
+                    $bindings[] = $id;
+                    $bindings[] = $value;
+                }
+                $placeholders = implode(',', array_fill(0, count($ids), '?'));
+                $sql = "update `petitions` set `{$column}` = case `id`{$cases} end where `id` in ({$placeholders})";
+                DB::update($sql, array_merge($bindings, $ids));
+            }
+        });
+    }
+
+    private function validPicFilename(string $pic): bool
+    {
+        if ($pic === '' || str_contains($pic, '/') || str_contains($pic, '\\') || str_contains($pic, "\0")) {
+            return false;
+        }
+
+        if ($pic === '.' || $pic === '..' || str_contains($pic, '..')) {
+            return false;
+        }
+
+        return basename($pic) === $pic;
     }
 
     private function uniquePetitionSlug(string $locale, string $source, int $petitionId, array &$usedSlugs, int &$collisions): string
