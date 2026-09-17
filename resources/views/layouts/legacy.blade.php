@@ -7,9 +7,11 @@
 
     @php
         $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale', 'en');
 
-        $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
-        $homeMeta = app(App\Services\PageContentService::class)->getPage('home', $locale);
+        $pageContentService = app(App\Services\PageContentService::class);
+        $globalMeta = $pageContentService->getPageWithFallback('global', $locale, $fallbackLocale);
+        $homeMeta = $pageContentService->getPageWithFallback('home', $locale, $fallbackLocale);
 
         $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - xPetition';
         $metaDescription =

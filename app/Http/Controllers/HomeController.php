@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\PageContent;
 use App\Models\Petition;
+use App\Services\PageContentService;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,45 +18,7 @@ class HomeController extends Controller
         $locale = app()->getLocale();
         $defaultLocale = default_locale();
 
-        $cacheKey = "home:content:" . self::CACHE_VERSION . ":{$locale}";
-        $content = cache()->get($cacheKey);
-
-        if ($content === null) {
-            $lockKey = "lock:{$cacheKey}";
-            $lock = cache()->lock($lockKey, 10);
-
-            try {
-                $lock->block(2);
-                $content = cache()->remember($cacheKey, 1800, function () use ($locale, $defaultLocale) {
-                    $c = PageContent::where('page', 'home')
-                        ->where('locale', $locale)
-                        ->pluck('value', 'key');
-
-                    if ($c->isEmpty()) {
-                        $c = PageContent::where('page', 'home')
-                            ->where('locale', $defaultLocale)
-                            ->pluck('value', 'key');
-                    }
-
-                    return $c;
-                });
-                $lock->release();
-            } catch (\Exception $e) {
-                $content = cache()->remember($cacheKey, 1800, function () use ($locale, $defaultLocale) {
-                    $c = PageContent::where('page', 'home')
-                        ->where('locale', $locale)
-                        ->pluck('value', 'key');
-
-                    if ($c->isEmpty()) {
-                        $c = PageContent::where('page', 'home')
-                            ->where('locale', $defaultLocale)
-                            ->pluck('value', 'key');
-                    }
-
-                    return $c;
-                });
-            }
-        }
+        $content = app(PageContentService::class)->getPageWithFallback('home', $locale, $defaultLocale);
 
         $excludedIds = [];
         if (! empty($content['exclude_most_read'])) {
@@ -65,7 +27,7 @@ class HomeController extends Controller
             );
         }
 
-        $categories = cache()->remember("home:categories:" . self::CACHE_VERSION . ":{$locale}", 43200, function () use ($locale, $defaultLocale) {
+        $categories = cache()->remember('home:categories:'.self::CACHE_VERSION.":{$locale}", 43200, function () use ($locale, $defaultLocale) {
             return Category::select([
                 'categories.id',
                 'categories.sort_order',
@@ -93,7 +55,7 @@ class HomeController extends Controller
             $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
         }
 
-        $recentActivities = cache()->remember("home:recent:" . self::CACHE_VERSION . ":{$locale}", 300, function () use ($locale, $defaultLocale) {
+        $recentActivities = cache()->remember('home:recent:'.self::CACHE_VERSION.":{$locale}", 300, function () use ($locale, $defaultLocale) {
             return DB::select("
                 SELECT s.*, p.id as petition_id,
                     COALESCE(pt_locale.title, pt_default.title) as petition_title,
@@ -118,7 +80,7 @@ class HomeController extends Controller
 
         $slot = (int) floor(time() / 60);
 
-        $pool = cache()->remember("home:pool:" . self::CACHE_VERSION . ":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember('home:pool:'.self::CACHE_VERSION.":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                     $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -144,7 +106,7 @@ class HomeController extends Controller
         $usingFallbackPool = false;
         if (empty($pool) && $locale !== $defaultLocale) {
             $usingFallbackPool = true;
-            $pool = cache()->remember("home:pool:" . self::CACHE_VERSION . ":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
+            $pool = cache()->remember('home:pool:'.self::CACHE_VERSION.":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
                 return Petition::select(['petitions.id'])
                     ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
                         $join->on('pt_default.petition_id', '=', 'petitions.id')
@@ -167,7 +129,7 @@ class HomeController extends Controller
         if (! empty($pool)) {
             $featuredId = $pool[$slot % count($pool)];
 
-            $featuredPetition = cache()->remember("home:featured:" . self::CACHE_VERSION . ":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
+            $featuredPetition = cache()->remember('home:featured:'.self::CACHE_VERSION.":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select([
                     'petitions.*',
                     DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
@@ -192,7 +154,7 @@ class HomeController extends Controller
             }
         }
 
-        $magazinePosts = cache()->remember('home:magazine_posts:' . self::CACHE_VERSION, 1800, function () {
+        $magazinePosts = cache()->remember('home:magazine_posts:'.self::CACHE_VERSION, 1800, function () {
             try {
                 return DB::connection('magazine')->select("
                     SELECT
