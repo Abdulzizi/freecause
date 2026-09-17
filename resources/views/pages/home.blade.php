@@ -225,7 +225,7 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['what_title'] ?? __('home.what_title') }}
+                            {{ __('home.what_title') }}
                         </h4>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_left'] ?? __('home.text_index_left')) !!}
@@ -237,7 +237,7 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['create_box_title'] ?? __('home.create_box_title') }}
+                            {{ __('home.create_box_title') }}
                         </h4>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_right'] ?? __('home.text_index_right')) !!}
