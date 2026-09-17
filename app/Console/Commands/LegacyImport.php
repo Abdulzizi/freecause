@@ -82,7 +82,11 @@ class LegacyImport extends Command
             return $this->importUsers((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users');
+        if ($phase === 'petitions') {
+            return $this->importPetitions((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions');
 
         return self::FAILURE;
     }
@@ -336,6 +340,203 @@ class LegacyImport extends Command
         $this->line('invalid: '.$invalid.(empty($invalidIds) ? '' : ' (ids: '.implode(', ', $invalidIds).')'));
 
         return self::SUCCESS;
+    }
+
+    private function importPetitions(bool $dryRun): int
+    {
+        $chunk = $this->input->hasParameterOption('--chunk')
+            ? max(1, (int) $this->option('chunk'))
+            : 1000;
+
+        $shortLocales = array_flip(config('language_flags', []));
+
+        $categoryMap = [];
+        foreach (DB::connection('legacy')->table('petition_categories')->select('id', 'old_id')->get() as $c) {
+            $categoryMap[(int) $c->id] = (int) $c->old_id;
+        }
+        $targetCategoryIds = array_flip(
+            DB::table('categories')->pluck('id')->map(fn ($v) => (int) $v)->all()
+        );
+
+        $minId = $this->option('from-id') !== null
+            ? (int) $this->option('from-id')
+            : (int) DB::connection('legacy')->table('petitions')->min('id');
+
+        $maxId = $this->option('to-id') !== null
+            ? (int) $this->option('to-id')
+            : (int) DB::connection('legacy')->table('petitions')->max('id');
+
+        $processed = 0;
+        $created = 0;
+        $updated = 0;
+        $skippedUsers = 0;
+        $missingMapping = 0;
+        $targetMissingCategory = 0;
+        $collisions = 0;
+
+        $usedSlugs = [];
+        DB::table('petition_translations')
+            ->where(function ($q) use ($minId, $maxId) {
+                $q->where('petition_id', '<', $minId)->orWhere('petition_id', '>', $maxId);
+            })
+            ->select('petition_id', 'locale', 'slug')
+            ->orderBy('petition_id')
+            ->chunk(5000, function ($chunkRows) use (&$usedSlugs) {
+                foreach ($chunkRows as $t) {
+                    $usedSlugs[$t->locale][$t->slug] = (int) $t->petition_id;
+                }
+            });
+
+        for ($lo = $minId; $lo <= $maxId; $lo += $chunk) {
+            $hi = min($lo + $chunk - 1, $maxId);
+
+            $rows = DB::connection('legacy')->table('petitions')
+                ->where('id', '>=', $lo)
+                ->where('id', '<=', $hi)
+                ->orderBy('id')
+                ->get();
+
+            if ($rows->isEmpty()) {
+                continue;
+            }
+
+            $ids = $rows->pluck('id')->map(fn ($v) => (int) $v)->all();
+            $userIds = $rows->pluck('user_id')->map(fn ($v) => (int) $v)->unique()->values()->all();
+
+            $existingUserIds = array_flip(
+                DB::table('users')->whereIn('id', $userIds)->pluck('id')->map(fn ($v) => (int) $v)->all()
+            );
+            $existingPetitionIds = array_flip(
+                DB::table('petitions')->whereIn('id', $ids)->pluck('id')->map(fn ($v) => (int) $v)->all()
+            );
+
+            $petitionRecords = [];
+            $translationRecords = [];
+
+            foreach ($rows as $row) {
+                $processed++;
+
+                if (! isset($existingUserIds[(int) $row->user_id])) {
+                    $skippedUsers++;
+
+                    continue;
+                }
+
+                $categoryId = null;
+                if ((int) $row->category_id !== 0) {
+                    if (! isset($categoryMap[(int) $row->category_id])) {
+                        $missingMapping++;
+                    } elseif (! isset($targetCategoryIds[$categoryMap[(int) $row->category_id]])) {
+                        $targetMissingCategory++;
+                    } else {
+                        $categoryId = $categoryMap[(int) $row->category_id];
+                    }
+                }
+
+                $published = ((string) $row->active === '1' && (string) $row->verified === '1');
+                $imageUrl = (str_starts_with((string) $row->pic, 'http://') || str_starts_with((string) $row->pic, 'https://'))
+                    ? $row->pic
+                    : null;
+
+                if (isset($existingPetitionIds[(int) $row->id])) {
+                    $updated++;
+                } else {
+                    $created++;
+                }
+
+                $petitionRecords[] = [
+                    'id' => (int) $row->id,
+                    'user_id' => (int) $row->user_id,
+                    'goal_signatures' => (int) $row->goal,
+                    'signature_count' => 0,
+                    'status' => $published ? 'published' : 'draft',
+                    'category_id' => $categoryId,
+                    'target' => $row->target,
+                    'city' => $row->city,
+                    'community' => $row->community,
+                    'community_url' => $row->community_url,
+                    'youtube_url' => $row->yt,
+                    'image_url' => $imageUrl,
+                    'views' => (int) $row->views,
+                    'is_active' => ((string) $row->alive === '1'),
+                    'is_featured' => ((string) $row->featured === '1'),
+                    'created_at' => $row->dt,
+                    'updated_at' => $row->dt,
+                ];
+
+                $locale = $shortLocales[$this->prefixLocales[$row->prefix] ?? 'en_US'] ?? 'en';
+                $source = trim((string) $row->slug) !== '' ? $row->slug : $row->title;
+                $slug = $this->uniquePetitionSlug($locale, (string) $source, (int) $row->id, $usedSlugs, $collisions);
+
+                $translationRecords[] = [
+                    'petition_id' => (int) $row->id,
+                    'locale' => $locale,
+                    'title' => $row->title,
+                    'description' => $row->text,
+                    'slug' => $slug,
+                    'is_featured' => ((string) $row->featured === '1'),
+                    'created_at' => $row->dt,
+                    'updated_at' => $row->dt,
+                ];
+            }
+
+            if ($dryRun || empty($petitionRecords)) {
+                continue;
+            }
+
+            DB::transaction(function () use ($petitionRecords, $translationRecords) {
+                foreach (array_chunk($petitionRecords, 1000) as $batch) {
+                    DB::table('petitions')->upsert(
+                        $batch,
+                        ['id'],
+                        ['user_id', 'goal_signatures', 'status', 'category_id', 'target', 'city', 'community', 'community_url', 'youtube_url', 'image_url', 'views', 'is_active', 'is_featured', 'updated_at']
+                    );
+                }
+
+                foreach (array_chunk($translationRecords, 1000) as $batch) {
+                    DB::table('petition_translations')->upsert(
+                        $batch,
+                        ['petition_id', 'locale'],
+                        ['title', 'description', 'slug', 'is_featured', 'updated_at']
+                    );
+                }
+            });
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Petition import complete.');
+        $this->line("range: {$minId}-{$maxId} chunk: {$chunk} processed: {$processed}");
+        $this->line("created: {$created} updated: {$updated}");
+        $this->line("skipped (missing user): {$skippedUsers} missing mapping: {$missingMapping} target-missing category: {$targetMissingCategory} collisions: {$collisions}");
+
+        return self::SUCCESS;
+    }
+
+    private function uniquePetitionSlug(string $locale, string $source, int $petitionId, array &$usedSlugs, int &$collisions): string
+    {
+        $base = Str::slug($source);
+
+        if ($base === '') {
+            $base = 'petition';
+        }
+
+        if (! isset($usedSlugs[$locale][$base]) || $usedSlugs[$locale][$base] === $petitionId) {
+            $usedSlugs[$locale][$base] = $petitionId;
+
+            return $base;
+        }
+
+        $collisions++;
+        $slug = $base.'-'.$petitionId;
+        $i = 2;
+
+        while (isset($usedSlugs[$locale][$slug]) && $usedSlugs[$locale][$slug] !== $petitionId) {
+            $slug = $base.'-'.$petitionId.'-'.$i;
+            $i++;
+        }
+
+        $usedSlugs[$locale][$slug] = $petitionId;
+
+        return $slug;
     }
 
     private function resolveName(array $prefixNames, string $locale): ?string
