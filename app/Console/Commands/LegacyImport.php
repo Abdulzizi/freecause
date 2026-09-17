@@ -95,7 +95,11 @@ class LegacyImport extends Command
             return $this->importSignatures((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures');
+        if ($phase === 'signature-counts') {
+            return $this->rebuildSignatureCounts((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures, signature-counts');
 
         return self::FAILURE;
     }
@@ -836,6 +840,84 @@ class LegacyImport extends Command
         $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
         $this->line("inserted: {$inserted} duplicates: {$duplicates}");
         $this->line("missing petitions: {$missingPetition} missing users: {$missingUser} invalid timestamps: {$invalidTimestamp}");
+
+        return self::SUCCESS;
+    }
+
+    private function rebuildSignatureCounts(bool $dryRun): int
+    {
+        $chunk = $this->input->hasParameterOption('--chunk')
+            ? max(1, (int) $this->option('chunk'))
+            : 1000;
+
+        $minId = $this->option('from-id') !== null
+            ? (int) $this->option('from-id')
+            : (int) DB::table('petitions')->min('id');
+
+        $maxId = $this->option('to-id') !== null
+            ? (int) $this->option('to-id')
+            : (int) DB::table('petitions')->max('id');
+
+        if ($minId === 0 && $maxId === 0 && DB::table('petitions')->count() === 0) {
+            $this->info(($dryRun ? '[dry-run] ' : '').'Signature count rebuild complete.');
+            $this->line('range: empty processed: 0');
+            $this->line('petitions updated: 0 confirmed signatures counted: 0 zero-count petitions: 0');
+
+            return self::SUCCESS;
+        }
+
+        if ($minId > $maxId) {
+            $this->error('Invalid range: from-id is greater than to-id.');
+
+            return self::FAILURE;
+        }
+
+        $petitionsUpdated = 0;
+        $confirmedCounted = 0;
+        $zeroCount = 0;
+
+        for ($lo = $minId; $lo <= $maxId; $lo += $chunk) {
+            $hi = min($lo + $chunk - 1, $maxId);
+
+            $ids = DB::table('petitions')
+                ->where('id', '>=', $lo)->where('id', '<=', $hi)
+                ->orderBy('id')
+                ->pluck('id')->map(fn ($v) => (int) $v)->all();
+
+            if (empty($ids)) {
+                continue;
+            }
+
+            $counts = DB::table('signatures')
+                ->whereIn('petition_id', $ids)
+                ->where('confirmed', 1)
+                ->groupBy('petition_id')
+                ->selectRaw('petition_id, COUNT(*) AS c')
+                ->pluck('c', 'petition_id')
+                ->toArray();
+
+            $updates = [];
+            foreach ($ids as $id) {
+                $count = (int) ($counts[$id] ?? 0);
+                $updates[$id] = $count;
+                $confirmedCounted += $count;
+                if ($count === 0) {
+                    $zeroCount++;
+                }
+            }
+
+            $petitionsUpdated += count($updates);
+
+            if ($dryRun) {
+                continue;
+            }
+
+            $this->bulkUpdateColumn('signature_count', $updates);
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Signature count rebuild complete.');
+        $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
+        $this->line("petitions updated: {$petitionsUpdated} confirmed signatures counted: {$confirmedCounted} zero-count petitions: {$zeroCount}");
 
         return self::SUCCESS;
     }
