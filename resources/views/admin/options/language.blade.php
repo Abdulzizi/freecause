@@ -1,10 +1,10 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Homepage Content')
+@section('title', 'Localized Content')
 
 @section('content')
 
-    <h1>homepage content</h1>
+    <h1>localized content</h1>
 
     <div class="fc-tab">choose language</div>
     <div class="fc-box">
@@ -38,12 +38,6 @@
                 <div class="fc-row">
                     <label>meta description</label>
                     <textarea class="fc-textarea" name="meta_description">{{ $values['meta_description'] ?? '' }}</textarea>
-                </div>
-
-                <div class="fc-row">
-                    <label>additional html</label>
-                    <textarea class="fc-textarea"
-                        name="head_additional_html">{{ $values['head_additional_html'] ?? '' }}</textarea>
                 </div>
 
             </div>
@@ -105,6 +99,17 @@
                         value="{{ $values['exclude_most_read'] ?? '' }}">
                 </div>
             </div>
+
+            @if (!empty($is_system_admin))
+            <div class="fc-tab">advanced localized HTML</div>
+            <div class="fc-box">
+                <div class="fc-row">
+                    <label>additional head html</label>
+                    <textarea class="fc-textarea"
+                        name="head_additional_html">{{ $values['head_additional_html'] ?? '' }}</textarea>
+                </div>
+            </div>
+            @endif
 
             <div style="text-align:right; margin-top:10px;">
                 <button class="fc-btn" type="submit">save</button>

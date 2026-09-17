@@ -55,6 +55,8 @@ class LanguageOptionsController extends Controller
         $locale = $request->query('locale');
         $showForm = $locale && isset($locales[$locale]);
 
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+
         $values = [];
         $layoutValues = [];
 
@@ -70,7 +72,15 @@ class LanguageOptionsController extends Controller
                 ->toArray();
 
             foreach ($this->globalKeys as $key) {
+                if ($key === 'head_additional_html' && ! $isSystemAdmin) {
+                    continue;
+                }
+
                 $values[$key] = $globalValues[$key] ?? ($values[$key] ?? '');
+            }
+
+            if (! $isSystemAdmin) {
+                unset($values['head_additional_html']);
             }
 
             $layoutValues = PageContent::where('page', 'layout')
@@ -85,6 +95,7 @@ class LanguageOptionsController extends Controller
             'values' => $values,
             'layoutValues' => $layoutValues,
             'showForm' => $showForm,
+            'is_system_admin' => $isSystemAdmin,
         ]);
     }
 
@@ -100,6 +111,8 @@ class LanguageOptionsController extends Controller
         ]);
 
         $locale = $request->input('locale');
+
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
         $save = function (string $page, string $key, array $existing, bool $sanitize = false) use ($request, $locale) {
             $value = (string) $request->input($key, '');
@@ -124,18 +137,23 @@ class LanguageOptionsController extends Controller
         $existingGlobal = PageContent::where('page', 'global')->where('locale', $locale)->pluck('value', 'key')->toArray();
         $existingLayout = PageContent::where('page', 'layout')->where('locale', $locale)->pluck('value', 'key')->toArray();
 
-        DB::transaction(function () use ($save, $existingHome, $existingGlobal, $existingLayout, $locale) {
+        $permittedGlobalKeys = array_values(array_filter(
+            $this->globalKeys,
+            fn ($key) => $key !== 'head_additional_html' || $isSystemAdmin
+        ));
+
+        DB::transaction(function () use ($save, $existingHome, $existingGlobal, $existingLayout, $locale, $permittedGlobalKeys) {
             foreach ($this->homepageKeys as $key) {
                 $save('home', $key, $existingHome);
             }
 
-            foreach ($this->globalKeys as $key) {
+            foreach ($permittedGlobalKeys as $key) {
                 $save('global', $key, $existingGlobal, $key === 'head_additional_html');
             }
 
             PageContent::where('page', 'home')
                 ->where('locale', $locale)
-                ->whereIn('key', $this->globalKeys)
+                ->whereIn('key', $permittedGlobalKeys)
                 ->delete();
 
             foreach ($this->layoutKeys as $key) {
