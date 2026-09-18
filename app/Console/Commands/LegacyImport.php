@@ -99,7 +99,11 @@ class LegacyImport extends Command
             return $this->rebuildSignatureCounts((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures, signature-counts');
+        if ($phase === 'pages') {
+            return $this->importPages((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures, signature-counts, pages');
 
         return self::FAILURE;
     }
@@ -700,11 +704,16 @@ class LegacyImport extends Command
 
     private function bulkUpdateColumn(string $column, array $updates): void
     {
+        $this->bulkUpdateColumnByTable('petitions', $column, $updates);
+    }
+
+    private function bulkUpdateColumnByTable(string $table, string $column, array $updates): void
+    {
         if (empty($updates)) {
             return;
         }
 
-        DB::transaction(function () use ($column, $updates) {
+        DB::transaction(function () use ($table, $column, $updates) {
             foreach (array_chunk($updates, 500, true) as $batch) {
                 $ids = array_keys($batch);
                 $cases = '';
@@ -715,7 +724,7 @@ class LegacyImport extends Command
                     $bindings[] = $value;
                 }
                 $placeholders = implode(',', array_fill(0, count($ids), '?'));
-                $sql = "update `petitions` set `{$column}` = case `id`{$cases} end where `id` in ({$placeholders})";
+                $sql = "update `{$table}` set `{$column}` = case `id`{$cases} end where `id` in ({$placeholders})";
                 DB::update($sql, array_merge($bindings, $ids));
             }
         });
@@ -918,6 +927,145 @@ class LegacyImport extends Command
         $this->info(($dryRun ? '[dry-run] ' : '').'Signature count rebuild complete.');
         $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
         $this->line("petitions updated: {$petitionsUpdated} confirmed signatures counted: {$confirmedCounted} zero-count petitions: {$zeroCount}");
+
+        return self::SUCCESS;
+    }
+
+    private function importPages(bool $dryRun): int
+    {
+        $chunk = $this->input->hasParameterOption('--chunk')
+            ? max(1, (int) $this->option('chunk'))
+            : 500;
+
+        $shortLocales = array_flip(config('language_flags', []));
+
+        $minId = $this->option('from-id') !== null
+            ? (int) $this->option('from-id')
+            : (int) DB::connection('legacy')->table('pages')->min('id');
+
+        $maxId = $this->option('to-id') !== null
+            ? (int) $this->option('to-id')
+            : (int) DB::connection('legacy')->table('pages')->max('id');
+
+        $pagesCreated = 0;
+        $pagesUpdated = 0;
+        $translationsCreated = 0;
+        $translationsUpdated = 0;
+        $collisions = 0;
+        $invalidTimestamp = 0;
+
+        $usedSlugs = [];
+        DB::table('page_translations')
+            ->where(function ($q) use ($minId, $maxId) {
+                $q->where('page_id', '<', $minId)->orWhere('page_id', '>', $maxId);
+            })
+            ->select('page_id', 'locale', 'slug')
+            ->orderBy('page_id')
+            ->chunk(5000, function ($rows) use (&$usedSlugs) {
+                foreach ($rows as $t) {
+                    $usedSlugs[$t->locale][$t->slug] = (int) $t->page_id;
+                }
+            });
+
+        for ($lo = $minId; $lo <= $maxId; $lo += $chunk) {
+            $hi = min($lo + $chunk - 1, $maxId);
+
+            $rows = DB::connection('legacy')->table('pages')
+                ->where('id', '>=', $lo)->where('id', '<=', $hi)
+                ->orderBy('id')
+                ->get(['id', 'published', 'title', 'slug', 'text', 'dt', 'prefix']);
+
+            if ($rows->isEmpty()) {
+                continue;
+            }
+
+            $ids = $rows->pluck('id')->map(fn ($v) => (int) $v)->all();
+
+            $existingPageIds = array_flip(
+                DB::table('pages')->whereIn('id', $ids)->pluck('id')->map(fn ($v) => (int) $v)->all()
+            );
+            $existingTranslations = [];
+            foreach (DB::table('page_translations')->whereIn('page_id', $ids)->get(['id', 'page_id', 'locale']) as $t) {
+                $existingTranslations[(int) $t->page_id.':'.$t->locale] = (int) $t->id;
+            }
+
+            $pageRecords = [];
+            $insertTranslations = [];
+            $updateTranslations = [];
+
+            foreach ($rows as $row) {
+                $pid = (int) $row->id;
+
+                $dt = $row->dt;
+                if ($dt === null || $dt === '0000-00-00 00:00:00') {
+                    $dt = now();
+                    $invalidTimestamp++;
+                }
+
+                if (isset($existingPageIds[$pid])) {
+                    $pagesUpdated++;
+                } else {
+                    $pagesCreated++;
+                }
+                $pageRecords[] = ['id' => $pid, 'created_at' => $dt, 'updated_at' => $dt];
+
+                $locale = $shortLocales[$this->prefixLocales[$row->prefix] ?? 'en_US'] ?? 'en';
+                $source = trim((string) $row->slug) !== '' ? $row->slug : $row->title;
+                $slug = $this->uniquePetitionSlug($locale, (string) $source, $pid, $usedSlugs, $collisions);
+                $published = ((string) $row->published === '1');
+
+                $key = $pid.':'.$locale;
+                if (isset($existingTranslations[$key])) {
+                    $translationsUpdated++;
+                    $updateTranslations[$existingTranslations[$key]] = [
+                        'title' => $row->title,
+                        'slug' => $slug,
+                        'content' => $row->text,
+                        'published' => $published,
+                        'updated_at' => $dt,
+                    ];
+                } else {
+                    $translationsCreated++;
+                    $insertTranslations[] = [
+                        'page_id' => $pid,
+                        'locale' => $locale,
+                        'title' => $row->title,
+                        'slug' => $slug,
+                        'content' => $row->text,
+                        'published' => $published,
+                        'created_at' => $dt,
+                        'updated_at' => $dt,
+                    ];
+                }
+            }
+
+            if ($dryRun) {
+                continue;
+            }
+
+            DB::transaction(function () use ($pageRecords, $insertTranslations, $updateTranslations) {
+                foreach (array_chunk($pageRecords, 500) as $batch) {
+                    DB::table('pages')->upsert($batch, ['id'], ['updated_at']);
+                }
+
+                foreach (array_chunk($insertTranslations, 500) as $batch) {
+                    DB::table('page_translations')->insert($batch);
+                }
+
+                foreach (['title', 'slug', 'content', 'published', 'updated_at'] as $col) {
+                    $map = [];
+                    foreach ($updateTranslations as $id => $values) {
+                        $map[$id] = $values[$col];
+                    }
+                    $this->bulkUpdateColumnByTable('page_translations', $col, $map);
+                }
+            });
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Page import complete.');
+        $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
+        $this->line("pages created: {$pagesCreated} updated: {$pagesUpdated} translations created: {$translationsCreated} updated: {$translationsUpdated}");
+        $this->line("collisions: {$collisions} invalid timestamps: {$invalidTimestamp}");
 
         return self::SUCCESS;
     }
