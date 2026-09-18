@@ -559,8 +559,8 @@ class PetitionController extends Controller
 
             'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
 
-            'target' => ['nullable', 'string', 'max:190'],
-            'community' => ['nullable', 'string', 'max:190'],
+            'target' => ['nullable', 'string', 'max:255'],
+            'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ], [
@@ -1042,8 +1042,8 @@ class PetitionController extends Controller
 
             'remove_image' => ['nullable', 'boolean'],
 
-            'target' => ['nullable', 'string', 'max:190'],
-            'community' => ['nullable', 'string', 'max:190'],
+            'target' => ['nullable', 'string', 'max:255'],
+            'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ]);

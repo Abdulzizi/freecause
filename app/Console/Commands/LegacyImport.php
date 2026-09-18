@@ -962,9 +962,6 @@ class LegacyImport extends Command
 
         $usedSlugs = [];
         DB::table('page_translations')
-            ->where(function ($q) use ($minId, $maxId) {
-                $q->where('page_id', '<', $minId)->orWhere('page_id', '>', $maxId);
-            })
             ->select('page_id', 'locale', 'slug')
             ->orderBy('page_id')
             ->chunk(5000, function ($rows) use (&$usedSlugs) {
