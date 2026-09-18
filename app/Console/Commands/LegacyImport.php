@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Services\PageContentService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -103,7 +105,11 @@ class LegacyImport extends Command
             return $this->importPages((bool) $this->option('dry-run'));
         }
 
-        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures, signature-counts, pages');
+        if ($phase === 'content') {
+            return $this->importContent((bool) $this->option('dry-run'));
+        }
+
+        $this->error('Unsupported or missing --phase. Supported: categories, users, petitions, petition-assets, signatures, signature-counts, pages, content');
 
         return self::FAILURE;
     }
@@ -1066,6 +1072,155 @@ class LegacyImport extends Command
         $this->line("range: {$minId}-{$maxId} chunk: {$chunk}");
         $this->line("pages created: {$pagesCreated} updated: {$pagesUpdated} translations created: {$translationsCreated} updated: {$translationsUpdated}");
         $this->line("collisions: {$collisions} invalid timestamps: {$invalidTimestamp}");
+
+        return self::SUCCESS;
+    }
+
+    private function importContent(bool $dryRun): int
+    {
+        $settingsMap = [
+            'options_url' => ['base_url', 'string'],
+            'options_short_url' => ['short_base_url', 'string'],
+            'options_mail_to' => ['email_to_staff', 'string'],
+            'options_mail_from' => ['email_from', 'string'],
+            'options_html_head' => ['inject_head_html', 'text'],
+            'options_html_body' => ['inject_body_html', 'text'],
+            'options_debug_ip' => ['special_debug_ip', 'string'],
+            'options_smtp_enabled' => ['smtp_enabled', 'bool'],
+            'options_max_featured_per_country' => ['max_featured_petitions_per_country', 'int'],
+            'options_logging_enabled' => ['logging_enabled', 'bool'],
+            'options_logging_by_cookie_name' => ['logging_cookie_name', 'string'],
+        ];
+
+        $skippedSecretKeys = [
+            'options_facebook_appid', 'options_facebook_secret',
+            'options_google_client_id', 'options_google_client_secret',
+            'options_smtp_host', 'options_smtp_port', 'options_smtp_user', 'options_smtp_pass',
+        ];
+
+        $contentMap = [
+            'options_keywords' => ['global', 'meta_keywords'],
+            'options_description' => ['global', 'meta_description'],
+            'options_head' => ['global', 'head_additional_html'],
+            'options_footer' => ['global', 'footer_additional_html'],
+            'options_h1' => ['home', 'h1'],
+            'options_h2' => ['home', 'h2'],
+            'options_text_index_l' => ['home', 'text_index_left'],
+            'options_text_index_r' => ['home', 'text_index_right'],
+            'options_exclude_mostread_petition_ids' => ['home', 'exclude_most_read'],
+        ];
+
+        $globalRows = DB::connection('legacy')->table('cfgs')
+            ->where('prefix', '')
+            ->whereIn('name', array_keys($settingsMap))
+            ->get(['name', 'value']);
+
+        $settingUpdates = [];
+        foreach ($globalRows as $row) {
+            [$targetKey, $type] = $settingsMap[$row->name];
+            $value = trim((string) $row->value);
+
+            if ($type === 'bool') {
+                $value = $value === '1' ? '1' : '0';
+            } elseif ($type === 'int') {
+                $value = (string) max(1, min(100, (int) $value));
+            }
+
+            $settingUpdates[$targetKey] = ['type' => $type, 'value' => $value];
+        }
+
+        $localizedRows = DB::connection('legacy')->table('cfgs')
+            ->whereIn('name', array_keys($contentMap))
+            ->get(['name', 'value', 'prefix']);
+
+        $byPrefix = [];
+        foreach ($localizedRows as $row) {
+            $byPrefix[$row->prefix][$row->name] = $row->value;
+        }
+
+        $contentUpdates = [];
+        $localesTouched = [];
+        $pagesLocales = [];
+        foreach ($this->localePrefixes as $locale => $prefixes) {
+            foreach ($contentMap as $cfgName => [$page, $targetKey]) {
+                foreach ($prefixes as $prefix) {
+                    if (isset($byPrefix[$prefix][$cfgName])) {
+                        $contentUpdates[] = [
+                            'page' => $page,
+                            'locale' => $locale,
+                            'key' => $targetKey,
+                            'value' => trim((string) $byPrefix[$prefix][$cfgName]),
+                        ];
+                        $localesTouched[$locale] = true;
+                        $pagesLocales[$page.':'.$locale] = [$page, $locale];
+                        break;
+                    }
+                }
+            }
+        }
+
+        $settingsImported = count($settingUpdates);
+        $localizedImported = count($contentUpdates);
+        $localesImported = count($localesTouched);
+
+        $knownNames = array_merge(array_keys($settingsMap), array_keys($contentMap), $skippedSecretKeys);
+        $skippedUnknownKeys = DB::connection('legacy')->table('cfgs')
+            ->whereNotIn('name', $knownNames)
+            ->distinct()
+            ->count('name');
+
+        if (! $dryRun) {
+            $now = now();
+
+            $existingSettings = DB::table('settings')
+                ->where('group', 'global')
+                ->whereIn('key', array_keys($settingUpdates))
+                ->pluck('key')
+                ->all();
+            $existingSettings = array_flip($existingSettings);
+
+            $existingContent = [];
+            foreach (DB::table('page_contents')->get(['page', 'locale', 'key']) as $c) {
+                $existingContent[$c->page.':'.$c->locale.':'.$c->key] = true;
+            }
+
+            DB::transaction(function () use ($settingUpdates, $contentUpdates, $now, $existingSettings, $existingContent) {
+                foreach ($settingUpdates as $key => $data) {
+                    $values = ['type' => $data['type'], 'value' => $data['value'], 'updated_at' => $now];
+                    if (! isset($existingSettings[$key])) {
+                        $values['created_at'] = $now;
+                    }
+                    DB::table('settings')->updateOrInsert(
+                        ['group' => 'global', 'key' => $key],
+                        $values
+                    );
+                }
+
+                foreach ($contentUpdates as $row) {
+                    $values = ['value' => $row['value'], 'updated_at' => $now];
+                    if (! isset($existingContent[$row['page'].':'.$row['locale'].':'.$row['key']])) {
+                        $values['created_at'] = $now;
+                    }
+                    DB::table('page_contents')->updateOrInsert(
+                        ['page' => $row['page'], 'locale' => $row['locale'], 'key' => $row['key']],
+                        $values
+                    );
+                }
+            });
+
+            foreach (array_keys($settingUpdates) as $key) {
+                Cache::forget("setting:global:{$key}");
+            }
+
+            $service = new PageContentService;
+            foreach ($pagesLocales as [$page, $locale]) {
+                $service->clear($page, $locale);
+            }
+        }
+
+        $this->info(($dryRun ? '[dry-run] ' : '').'Content import complete.');
+        $this->line("settings imported: {$settingsImported} localized rows imported: {$localizedImported} locales imported: {$localesImported}");
+        $this->line('skipped secret keys: '.count($skippedSecretKeys).' skipped unknown keys: '.$skippedUnknownKeys);
 
         return self::SUCCESS;
     }
