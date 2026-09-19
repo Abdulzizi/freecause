@@ -291,6 +291,7 @@
         </div>
     </section>
 
+    @if (count($magazinePosts) > 0)
     <section class="blog-section">
         <div class="container">
             <div class="text-center mb-4">
@@ -322,15 +323,14 @@
                 @endforeach
             </div>
 
-            @if (count($magazinePosts) > 0)
-                <div class="text-center mt-4">
-                    <a href="/magazine" class="btn btn-outline-danger">
-                        {{ __('home.blog_view_all') }}
-                    </a>
-                </div>
-            @endif
+            <div class="text-center mt-4">
+                <a href="/magazine" class="btn btn-outline-danger">
+                    {{ __('home.blog_view_all') }}
+                </a>
+            </div>
         </div>
     </section>
+    @endif
 @endsection
 
 @push('scripts')

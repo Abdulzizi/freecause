@@ -398,6 +398,7 @@ class LegacyImport extends Command
         $collisions = 0;
 
         $usedSlugs = [];
+        $affectedLocales = [];
         DB::table('petition_translations')
             ->where(function ($q) use ($minId, $maxId) {
                 $q->where('petition_id', '<', $minId)->orWhere('petition_id', '>', $maxId);
@@ -488,6 +489,7 @@ class LegacyImport extends Command
                 ];
 
                 $locale = $shortLocales[$this->prefixLocales[$row->prefix] ?? 'en_US'] ?? 'en';
+                $affectedLocales[$locale] = true;
                 $source = trim((string) $row->slug) !== '' ? $row->slug : $row->title;
                 $slug = $this->uniquePetitionSlug($locale, (string) $source, (int) $row->id, $usedSlugs, $collisions);
 
@@ -524,6 +526,17 @@ class LegacyImport extends Command
                     );
                 }
             });
+        }
+
+        if (! $dryRun && ! empty($affectedLocales)) {
+            $slot = (int) floor(time() / 60);
+            foreach (array_keys($affectedLocales) as $locale) {
+                Cache::forget('home:pool:v2:'.$locale);
+                Cache::forget('home:recent:v2:'.$locale);
+                for ($s = $slot - 1; $s <= $slot + 1; $s++) {
+                    Cache::forget('home:featured:v2:'.$locale.':'.$s);
+                }
+            }
         }
 
         $this->info(($dryRun ? '[dry-run] ' : '').'Petition import complete.');
@@ -1138,15 +1151,26 @@ class LegacyImport extends Command
         $contentUpdates = [];
         $localesTouched = [];
         $pagesLocales = [];
+        $footerDeletes = [];
         foreach ($this->localePrefixes as $locale => $prefixes) {
             foreach ($contentMap as $cfgName => [$page, $targetKey]) {
                 foreach ($prefixes as $prefix) {
                     if (isset($byPrefix[$prefix][$cfgName])) {
+                        $value = trim((string) $byPrefix[$prefix][$cfgName]);
+
+                        if ($targetKey === 'footer_additional_html' && ! $this->footerHasUniqueContent($value)) {
+                            $footerDeletes[$page.':'.$locale] = [$page, $locale, $targetKey];
+                            $localesTouched[$locale] = true;
+                            $pagesLocales[$page.':'.$locale] = [$page, $locale];
+
+                            continue;
+                        }
+
                         $contentUpdates[] = [
                             'page' => $page,
                             'locale' => $locale,
                             'key' => $targetKey,
-                            'value' => trim((string) $byPrefix[$prefix][$cfgName]),
+                            'value' => $value,
                         ];
                         $localesTouched[$locale] = true;
                         $pagesLocales[$page.':'.$locale] = [$page, $locale];
@@ -1181,7 +1205,7 @@ class LegacyImport extends Command
                 $existingContent[$c->page.':'.$c->locale.':'.$c->key] = true;
             }
 
-            DB::transaction(function () use ($settingUpdates, $contentUpdates, $now, $existingSettings, $existingContent) {
+            DB::transaction(function () use ($settingUpdates, $contentUpdates, $footerDeletes, $now, $existingSettings, $existingContent) {
                 foreach ($settingUpdates as $key => $data) {
                     $values = ['type' => $data['type'], 'value' => $data['value'], 'updated_at' => $now];
                     if (! isset($existingSettings[$key])) {
@@ -1191,6 +1215,14 @@ class LegacyImport extends Command
                         ['group' => 'global', 'key' => $key],
                         $values
                     );
+                }
+
+                foreach ($footerDeletes as [$page, $locale, $targetKey]) {
+                    DB::table('page_contents')
+                        ->where('page', $page)
+                        ->where('locale', $locale)
+                        ->where('key', $targetKey)
+                        ->delete();
                 }
 
                 foreach ($contentUpdates as $row) {
@@ -1220,6 +1252,37 @@ class LegacyImport extends Command
         $this->line('skipped secret keys: '.count($skippedSecretKeys).' skipped unknown keys: '.$skippedUnknownKeys);
 
         return self::SUCCESS;
+    }
+
+    private function footerHasUniqueContent(string $value): bool
+    {
+        if (trim($value) === '') {
+            return false;
+        }
+
+        $normalized = str_replace(['\\r', '\\n', "\r", "\n", "\t"], ' ', $value);
+        $normalized = html_entity_decode($normalized, ENT_QUOTES | ENT_HTML5);
+
+        $normalized = preg_replace('/<a\b[^>]*>\s*\{BRAND_NAME\}\s*<\/a>/i', ' ', $normalized);
+        $normalized = preg_replace('/\{[A-Z0-9_]+\}/', ' ', $normalized);
+
+        $phrases = [
+            'Freedom in Sharing™',
+            'Freedom in Sharing',
+            'All Rights Reserved',
+            'Freecause LLC',
+            'Albuquerque, NM, USA',
+        ];
+        $normalized = str_ireplace($phrases, ' ', $normalized);
+
+        if (preg_match('/<a\b/i', $normalized)) {
+            return true;
+        }
+
+        $normalized = strip_tags($normalized);
+        $normalized = preg_replace('/[\s\-–—•·|,]+/u', '', $normalized);
+
+        return trim($normalized) !== '';
     }
 
     private function uniquePetitionSlug(string $locale, string $source, int $petitionId, array &$usedSlugs, int &$collisions): string
