@@ -1230,6 +1230,8 @@ class LegacyImport extends Command
             $base = 'petition';
         }
 
+        $base = $this->trimSlugBase($base, 255);
+
         if (! isset($usedSlugs[$locale][$base]) || $usedSlugs[$locale][$base] === $petitionId) {
             $usedSlugs[$locale][$base] = $petitionId;
 
@@ -1237,17 +1239,32 @@ class LegacyImport extends Command
         }
 
         $collisions++;
-        $slug = $base.'-'.$petitionId;
+        $suffix = '-'.$petitionId;
+        $slug = $this->trimSlugBase($base, 255 - Str::length($suffix)).$suffix;
         $i = 2;
 
         while (isset($usedSlugs[$locale][$slug]) && $usedSlugs[$locale][$slug] !== $petitionId) {
-            $slug = $base.'-'.$petitionId.'-'.$i;
+            $suffix = '-'.$petitionId.'-'.$i;
+            $slug = $this->trimSlugBase($base, 255 - Str::length($suffix)).$suffix;
             $i++;
         }
 
         $usedSlugs[$locale][$slug] = $petitionId;
 
         return $slug;
+    }
+
+    private function trimSlugBase(string $base, int $max): string
+    {
+        if ($max < 1) {
+            $max = 1;
+        }
+
+        if (Str::length($base) <= $max) {
+            return $base;
+        }
+
+        return rtrim(Str::substr($base, 0, $max), '-');
     }
 
     private function resolveName(array $prefixNames, string $locale): ?string

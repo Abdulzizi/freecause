@@ -1216,6 +1216,10 @@ class PetitionController extends Controller
         $base = Str::slug($title);
         $base = $base ?: 'petition';
 
+        if (Str::length($base) > 255) {
+            $base = rtrim(Str::substr($base, 0, 255), '-');
+        }
+
         $slug = $base;
         $i = 1;
 
@@ -1223,7 +1227,11 @@ class PetitionController extends Controller
             ->where('slug', $slug)
             ->when($ignoreTranslationId, fn ($query) => $query->whereKeyNot($ignoreTranslationId))
             ->exists()) {
-            $slug = $base.'-'.$i++;
+            $suffix = '-'.$i++;
+            $trimmed = Str::length($base) + Str::length($suffix) > 255
+                ? rtrim(Str::substr($base, 0, 255 - Str::length($suffix)), '-')
+                : $base;
+            $slug = $trimmed.$suffix;
         }
 
         return $slug;
