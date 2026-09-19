@@ -303,22 +303,24 @@
             <div class="row g-4">
                 @foreach ($magazinePosts as $post)
                     <div class="col-md-4">
-                        <div class="blog-grid">
-                            <div class="blog-images">
-                                @if ($post->thumbnail_path)
-                                    <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
-                                @else
-                                    <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
-                                @endif
-                            </div>
-                            <div class="blog-content">
-                                <h3 class="blog-title">{{ $post->post_title }}</h3>
-                                <a class="red" href="/magazine/{{ $post->post_name }}">
+                        <a class="d-block h-100 text-decoration-none" href="/magazine/{{ $post->post_name }}">
+                            <div class="blog-grid">
+                                <div class="blog-images">
+                                    @if ($post->thumbnail_path)
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
+                                    @else
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                    @endif
+                                </div>
+                                <div class="blog-content">
+                                    <h3 class="blog-title">{{ $post->post_title }}</h3>
+                                    <span class="red">
                                     {{ __('home.blog_read_more') }}
                                     <span style="margin-left:6px;">›</span>
-                                </a>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
