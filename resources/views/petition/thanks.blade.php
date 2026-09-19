@@ -2,6 +2,7 @@
 
 @php
     $isCreated = ($mode ?? 'signed') === 'created';
+    $requiresVerification = ! $isCreated && (string) ($status ?? '0') === '0';
 
     $pageTitle = $isCreated
         ? __('thanks.title_created')
@@ -39,9 +40,11 @@
                     </a>
                 </div>
 
-                <p class="mb-4" style="font-size:15px;">
-                    {{ $pText }}
-                </p>
+                @if ($isCreated || $requiresVerification)
+                    <p class="mb-4" style="font-size:15px;">
+                        {{ $pText }}
+                    </p>
+                @endif
 
                 <h2 class="mb-3" style="font-size:22px;">
                     {{ $suggestionsTitle }}

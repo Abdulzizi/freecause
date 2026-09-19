@@ -23,8 +23,14 @@
         <input class="fc-input" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}"
             style="max-width:120px;">
 
+        <input class="fc-input" name="user_id" placeholder="User ID" value="{{ $filters['user_id'] ?? '' }}"
+            style="max-width:100px;">
+
         <input class="fc-input" name="email" placeholder="Email" value="{{ $filters['email'] ?? '' }}"
             style="max-width:220px;">
+
+        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}"
+            style="max-width:130px;">
 
         @if ($hasText)
             <input class="fc-input" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}"
@@ -56,6 +62,17 @@
                 <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
             </select>
         @endif
+
+        <select class="fc-select" name="spam" style="max-width:140px;">
+            <option value="">spam...</option>
+            <option value="1" {{ ($filters['spam'] ?? '') === '1' ? 'selected' : '' }}>spam</option>
+            <option value="0" {{ ($filters['spam'] ?? '') === '0' ? 'selected' : '' }}>not spam</option>
+        </select>
+
+        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
+            style="max-width:150px;">
+        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
+            style="max-width:150px;">
 
     </x-admin.filter-box>
 

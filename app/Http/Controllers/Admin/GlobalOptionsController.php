@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\Cache;
 class GlobalOptionsController extends Controller
 {
     private array $defaults = [
-        'site_name' => 'FreeCause',
-        'site_name_short' => 'FreeCause',
-        'site_logo' => '',
-        'site_favicon' => '',
         'base_url' => '',
         'short_base_url' => '',
         'email_to_staff' => '',
@@ -45,6 +41,25 @@ class GlobalOptionsController extends Controller
         'email_contact_enabled' => true,
     ];
 
+    private array $systemOnlyKeys = [
+        'base_url',
+        'short_base_url',
+        'inject_head_html',
+        'inject_body_html',
+        'google_client_id',
+        'google_client_secret',
+        'smtp_enabled',
+        'require_email_verification',
+        'smtp_host',
+        'smtp_user',
+        'smtp_pass',
+        'smtp_encryption',
+        'special_debug_ip',
+        'logging_enabled',
+        'logging_cookie_name',
+        'logging_cookie_value',
+    ];
+
     public function edit()
     {
         $data = [];
@@ -57,20 +72,52 @@ class GlobalOptionsController extends Controller
             }
         }
 
+        $data['google_client_secret'] = '';
+        $data['smtp_pass'] = '';
+        $data['google_client_secret_set'] = trim((string) Settings::get('google_client_secret', '', 'global')) !== '';
+        $data['smtp_pass_set'] = trim((string) Settings::get('smtp_pass', '', 'global')) !== '';
+
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+        $data['is_system_admin'] = $isSystemAdmin;
+        if (! $isSystemAdmin) {
+            foreach ($this->systemOnlyKeys as $key) {
+                if (array_key_exists($key, $data)) {
+                    $data[$key] = is_bool($this->defaults[$key]) ? false : '';
+                }
+            }
+        }
+
         return view('admin.options.global', $data);
     }
 
     public function update(Request $request)
     {
+        $validated = $request->validate([
+            'base_url' => ['nullable', 'url', 'max:255'],
+            'short_base_url' => ['nullable', 'url', 'max:255'],
+            'email_to_staff' => ['nullable', 'email', 'max:190'],
+            'email_from' => ['nullable', 'email', 'max:190'],
+            'smtp_encryption' => ['nullable', 'in:tls,ssl,'],
+            'max_featured_petitions_per_country' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'special_debug_ip' => ['nullable', 'ip'],
+        ]);
+
         $errors = [];
 
-        // inject_head_html and inject_body_html can execute arbitrary JavaScript on
-        // every page view. Restrict saving these to system-level admins only.
+        $secretKeys = ['google_client_secret', 'smtp_pass'];
+
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
         foreach ($this->defaults as $key => $default) {
-            if (in_array($key, ['inject_head_html', 'inject_body_html'], true) && ! $isSystemAdmin) {
+            if (in_array($key, $this->systemOnlyKeys, true) && ! $isSystemAdmin) {
                 continue;
+            }
+
+            if (in_array($key, $secretKeys, true)) {
+                $new = (string) $request->input($key, '');
+                if (trim($new) === '') {
+                    continue;
+                }
             }
 
             try {
@@ -81,6 +128,8 @@ class GlobalOptionsController extends Controller
                     if ($value <= 0) {
                         $value = $default;
                     }
+                } elseif (array_key_exists($key, $validated)) {
+                    $value = $validated[$key] ?? $default;
                 } else {
                     $value = $request->input($key, $default);
                 }

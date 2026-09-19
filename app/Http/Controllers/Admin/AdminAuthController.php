@@ -13,7 +13,7 @@ class AdminAuthController extends Controller
     public function show()
     {
         if (Auth::guard('admin')->check()) {
-            return redirect()->route('admin.options.global');
+            return redirect()->route('admin.dashboard');
         }
 
         return view('admin.auth.login');
@@ -58,14 +58,14 @@ class AdminAuthController extends Controller
 
         $user->load('level');
 
-        if (! $user->hasLevel('admin')) {
+        if (! $user->canAccessAdmin()) {
             return back()->withErrors(['login' => 'not authorized'])->withInput();
         }
 
         Auth::guard('admin')->login($user);
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.options.global');
+        return redirect()->route('admin.dashboard');
     }
 
     public function logout(Request $request)

@@ -7,16 +7,33 @@
 
     @php
         $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale', 'en');
 
-        $globalMeta = app(App\Services\PageContentService::class)->getPage('global', $locale);
+        $pageContentService = app(App\Services\PageContentService::class);
+        $globalMeta = $pageContentService->getPage('global', $locale);
+        $homeMeta = $pageContentService->getPage('home', $locale);
+        $globalMetaDefault = $locale === $fallbackLocale ? $globalMeta : $pageContentService->getPage('global', $fallbackLocale);
+        $homeMetaDefault = $locale === $fallbackLocale ? $homeMeta : $pageContentService->getPage('home', $fallbackLocale);
 
-        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ' - xPetition';
+        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ($globalMetaDefault['meta_title_suffix'] ?? ' - xPetition');
         $metaDescription =
             $globalMeta['meta_description'] ??
-            'xPetition - Online petition platform to launch and support causes worldwide.';
-        $metaKeywords = $globalMeta['meta_keywords'] ?? 'petitions, activism, online petition, xpetition';
-        $headExtra = $globalMeta['head_additional_html'] ?? '';
-        $footerExtra = $globalMeta['footer_additional_html'] ?? '';
+            ($homeMeta['meta_description'] ??
+            ($globalMetaDefault['meta_description'] ??
+            ($homeMetaDefault['meta_description'] ??
+            'xPetition - Online petition platform to launch and support causes worldwide.')));
+        $metaKeywords =
+            $globalMeta['meta_keywords'] ??
+            ($homeMeta['meta_keywords'] ??
+            ($globalMetaDefault['meta_keywords'] ??
+            ($homeMetaDefault['meta_keywords'] ??
+            'petitions, activism, online petition, xpetition')));
+        $headExtra =
+            $globalMeta['head_additional_html'] ??
+            ($homeMeta['head_additional_html'] ??
+            ($globalMetaDefault['head_additional_html'] ??
+            ($homeMetaDefault['head_additional_html'] ?? '')));
+        $footerExtra = $globalMeta['footer_additional_html'] ?? ($globalMetaDefault['footer_additional_html'] ?? '');
     @endphp
 
     <title>
@@ -48,7 +65,7 @@
         <meta property="og:url" content="{{ request()->url() }}">
     @endif
 
-    {!! $headExtra !!}
+    {!! \App\Services\ContentRenderer::render($headExtra) !!}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
@@ -86,7 +103,7 @@
         @yield('content')
     </main>
 
-    {!! $footerExtra !!}
+    {!! \App\Services\ContentRenderer::render($footerExtra) !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('legacy/js-v2/slick.js') }}"></script>

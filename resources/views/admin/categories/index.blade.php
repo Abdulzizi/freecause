@@ -153,6 +153,18 @@
                 </div>
             </div>
 
+            <div class="fc-row">
+                <label>active</label>
+                <input type="checkbox" name="is_active" value="1"
+                       {{ ($selectedCategory->is_active ?? 1) ? 'checked' : '' }}>
+            </div>
+
+            <div class="fc-row">
+                <label>sort order</label>
+                <input class="fc-input" type="number" name="sort_order" min="0"
+                       value="{{ $selectedCategory->sort_order ?? 0 }}" style="max-width:100px;">
+            </div>
+
             <div style="display:flex; justify-content:flex-end; margin-top:6px;">
                 <button class="fc-btn" type="submit">save</button>
             </div>

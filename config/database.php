@@ -44,16 +44,29 @@ return [
         ],
 
         'magazine' => [
-            'driver'    => 'mysql',
-            'host'      => env('MAGAZINE_DB_HOST', '127.0.0.1'),
-            'port'      => env('MAGAZINE_DB_PORT', '3306'),
-            'database'  => env('MAGAZINE_DB_DATABASE', 'magazine'),
-            'username'  => env('MAGAZINE_DB_USERNAME', 'freecause'),
-            'password'  => env('MAGAZINE_DB_PASSWORD', 'secret'),
-            'charset'   => 'utf8mb4',
+            'driver' => 'mysql',
+            'host' => env('MAGAZINE_DB_HOST', '127.0.0.1'),
+            'port' => env('MAGAZINE_DB_PORT', '3306'),
+            'database' => env('MAGAZINE_DB_DATABASE', 'magazine'),
+            'username' => env('MAGAZINE_DB_USERNAME', 'freecause'),
+            'password' => env('MAGAZINE_DB_PASSWORD', 'secret'),
+            'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => 'abi_',
-            'strict'    => false,
+            'prefix' => 'abi_',
+            'strict' => false,
+        ],
+
+        'legacy' => [
+            'driver' => 'mysql',
+            'host' => env('LEGACY_DB_HOST'),
+            'port' => env('LEGACY_DB_PORT', '3306'),
+            'database' => env('LEGACY_DB_DATABASE'),
+            'username' => env('LEGACY_DB_USERNAME'),
+            'password' => env('LEGACY_DB_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
         ],
 
         'mysql' => [

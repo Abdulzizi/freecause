@@ -185,6 +185,33 @@ if (!function_exists('admin_user')) {
     }
 }
 
+if (!function_exists('admin_can')) {
+    function admin_can(string $module, string $action = 'view'): bool
+    {
+        $user = admin_user();
+        if (!$user) {
+            return false;
+        }
+
+        $user->loadMissing('level');
+        if (!$user->level_id) {
+            return false;
+        }
+        if ($user->level && $user->level->is_system) {
+            return true;
+        }
+
+        return \Illuminate\Support\Facades\Cache::remember(
+            "permissions:{$user->level_id}:{$module}:{$action}",
+            300,
+            fn () => \App\Models\Permission::where('level_id', $user->level_id)
+                ->where('module', $module)
+                ->where('action', $action)
+                ->exists()
+        );
+    }
+}
+
 /**
  * Sanitize HTML for admin-managed rich content (pages, footer).
  * Strips <script>, <iframe>, <object>, <embed>, <form> elements and all

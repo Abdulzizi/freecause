@@ -44,6 +44,12 @@ class WpSso
      */
     public static function logoutUrl(string $redirect): string
     {
+        if (! config('app.sso_secret')) {
+            \Illuminate\Support\Facades\Log::warning('SSO: sso_secret not configured, skipping WordPress logout');
+
+            return $redirect;
+        }
+
         return '/magazine/sso.php?'.http_build_query([
             'action' => 'logout',
             'r' => $redirect,

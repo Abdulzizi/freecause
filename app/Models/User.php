@@ -61,6 +61,21 @@ class User extends Authenticatable
         return $this->level?->name === $name;
     }
 
+    public function canAccessAdmin(): bool
+    {
+        $this->loadMissing('level');
+
+        if (! $this->level_id || ! $this->level) {
+            return false;
+        }
+
+        if ($this->level->is_system) {
+            return true;
+        }
+
+        return Permission::where('level_id', $this->level_id)->exists();
+    }
+
     public function getDisplayNameAttribute(): string
     {
         return match ($this->identify_mode) {

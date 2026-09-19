@@ -19,6 +19,7 @@ class CategoryPetitionController extends Controller
 
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
+        $search = trim((string) request('q', ''));
 
         $tr = $category->translations()
             ->where('locale', $locale)
@@ -46,7 +47,7 @@ class CategoryPetitionController extends Controller
             ]);
         }
 
-        $petitions = Petition::query()
+        $query = Petition::query()
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
@@ -70,8 +71,17 @@ class CategoryPetitionController extends Controller
             })
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
-            ->where('petitions.category_id', $category->id)
-            ->orderByDesc('petitions.id')
+            ->where('petitions.category_id', $category->id);
+
+        if ($search !== '') {
+            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('pt_locale.title', 'LIKE', $like)
+                    ->orWhere('pt_default.title', 'LIKE', $like);
+            });
+        }
+
+        $petitions = $query->orderByDesc('petitions.id')
             ->paginate(15)
             ->withQueryString();
 
@@ -80,6 +90,7 @@ class CategoryPetitionController extends Controller
             'heading' => $tr->name . ' Petitions',
             'category' => $category,
             'categoryTr' => $tr,
+            'search' => $search,
             'petitions' => $petitions,
         ]);
     }

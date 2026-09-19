@@ -4,7 +4,7 @@
         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
     </div>
 
-    @if ($errors->any())
+    @if (old('auth_form') === 'login' && $errors->any())
         <div class="alert alert-danger">
             {{ $errors->first() }}
         </div>
@@ -12,6 +12,7 @@
 
     <form method="POST" action="{{ lroute('login.post') }}">
         @csrf
+        <input type="hidden" name="auth_form" value="login">
         <input type="hidden" name="redirect" value="{{ $redirect }}">
 
         <div class="mb-3">

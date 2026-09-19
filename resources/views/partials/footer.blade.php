@@ -4,11 +4,7 @@
 
     $service = app(App\Services\PageContentService::class);
 
-    $layoutContent = $service->getPage('layout', $locale);
-
-    if (empty($layoutContent)) {
-        $layoutContent = $service->getPage('layout', $fallbackLocale);
-    }
+    $layoutContent = $service->getPageWithFallback('layout', $locale, $fallbackLocale);
 
     $about  = $layoutContent['footer_about'] ?? '';
     $links  = $layoutContent['footer_links'] ?? '';

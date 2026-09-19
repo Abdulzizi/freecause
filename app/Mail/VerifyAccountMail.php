@@ -15,7 +15,7 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
 
     public string $firstName;
     public string $verificationToken;
-    public string $locale;
+    public $locale;
 
     /**
      * Accept primitives instead of the User model so the job does not crash

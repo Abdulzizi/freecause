@@ -1,10 +1,10 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Homepage Content')
+@section('title', 'Localized Content')
 
 @section('content')
 
-    <h1>homepage content</h1>
+    <h1>localized content</h1>
 
     <div class="fc-tab">choose language</div>
     <div class="fc-box">
@@ -38,12 +38,6 @@
                 <div class="fc-row">
                     <label>meta description</label>
                     <textarea class="fc-textarea" name="meta_description">{{ $values['meta_description'] ?? '' }}</textarea>
-                </div>
-
-                <div class="fc-row">
-                    <label>additional html</label>
-                    <textarea class="fc-textarea"
-                        name="head_additional_html">{{ $values['head_additional_html'] ?? '' }}</textarea>
                 </div>
 
             </div>
@@ -106,75 +100,16 @@
                 </div>
             </div>
 
-            <div class="fc-tab">featured & tabs</div>
+            @if (!empty($is_system_admin))
+            <div class="fc-tab">advanced localized HTML</div>
             <div class="fc-box">
-
                 <div class="fc-row">
-                    <label>button create petition</label>
-                    <input class="fc-input" type="text" name="btn_create_petition"
-                        value="{{ $values['btn_create_petition'] ?? '' }}">
+                    <label>additional head html</label>
+                    <textarea class="fc-textarea"
+                        name="head_additional_html">{{ $values['head_additional_html'] ?? '' }}</textarea>
                 </div>
-
-                <div class="fc-row">
-                    <label>tab featured</label>
-                    <input class="fc-input" type="text" name="tab_featured" value="{{ $values['tab_featured'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>tab recent</label>
-                    <input class="fc-input" type="text" name="tab_recent" value="{{ $values['tab_recent'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>featured badge</label>
-                    <input class="fc-input" type="text" name="featured_badge" value="{{ $values['featured_badge'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>featured none title</label>
-                    <input class="fc-input" type="text" name="featured_none_title"
-                        value="{{ $values['featured_none_title'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>featured none subtitle</label>
-                    <input class="fc-input" type="text" name="featured_none_sub"
-                        value="{{ $values['featured_none_sub'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>petition target label</label>
-                    <input class="fc-input" type="text" name="petition_target_label"
-                        value="{{ $values['petition_target_label'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>signatures label</label>
-                    <input class="fc-input" type="text" name="signatures_label" value="{{ $values['signatures_label'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>goal label</label>
-                    <input class="fc-input" type="text" name="goal_label" value="{{ $values['goal_label'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>read more label</label>
-                    <input class="fc-input" type="text" name="read_more" value="{{ $values['read_more'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>recent has signed</label>
-                    <input class="fc-input" type="text" name="recent_has_signed"
-                        value="{{ $values['recent_has_signed'] ?? '' }}">
-                </div>
-
-                <div class="fc-row">
-                    <label>recent empty</label>
-                    <input class="fc-input" type="text" name="recent_empty" value="{{ $values['recent_empty'] ?? '' }}">
-                </div>
-
             </div>
+            @endif
 
             <div style="text-align:right; margin-top:10px;">
                 <button class="fc-btn" type="submit">save</button>

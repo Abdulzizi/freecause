@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +28,7 @@ class AdminCategoriesController extends Controller
         $locale = $request->query('locale', 'en');
 
         $filters = [
-            'id'   => trim((string) $request->query('id', '')),
+            'id' => trim((string) $request->query('id', '')),
             'name' => trim((string) $request->query('name', '')),
         ];
 
@@ -39,7 +39,7 @@ class AdminCategoriesController extends Controller
             })
             ->select([
                 'categories.id',
-                DB::raw("'" . $locale . "' as locale"),
+                DB::raw("'".$locale."' as locale"),
                 'ct.name',
                 'ct.slug',
             ]);
@@ -49,7 +49,7 @@ class AdminCategoriesController extends Controller
         }
 
         if ($filters['name'] !== '') {
-            $q->where('ct.name', 'like', '%' . $filters['name'] . '%');
+            $q->where('ct.name', 'like', '%'.$filters['name'].'%');
         }
 
         $q->orderBy('categories.id');
@@ -98,40 +98,53 @@ class AdminCategoriesController extends Controller
     public function save(Request $request)
     {
         $data = $request->validate([
-            'id'     => ['required', 'integer'],
-            'locale' => ['required', 'string'],
-            'name'   => ['required', 'string', 'max:150'],
-            'slug'   => [
-                'nullable',
-                'string',
-                'max:150',
-                Rule::unique('category_translations')
-                    ->where(fn($q) => $q->where('locale', $request->locale))
-                    ->ignore($request->id, 'category_id')
-            ],
+            'id' => ['required', 'integer', 'exists:categories,id'],
+            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
+            'name' => ['required', 'string', 'max:150'],
+            'slug' => ['nullable', 'string', 'max:150'],
+            'is_active' => ['nullable'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $slug = $data['slug']
             ? Str::slug($data['slug'])
             : Str::slug($data['name']);
 
-        DB::table('category_translations')->updateOrInsert(
-            [
-                'category_id' => $data['id'],
-                'locale'      => $data['locale'],
-            ],
-            [
-                'name' => $data['name'],
-                'slug' => $slug,
-            ]
-        );
+        $slugTaken = DB::table('category_translations')
+            ->where('locale', $data['locale'])
+            ->where('slug', $slug)
+            ->where('category_id', '!=', $data['id'])
+            ->exists();
+
+        if ($slugTaken) {
+            return back()->withErrors(['slug' => 'Slug already used for this locale.'])->withInput();
+        }
+
+        DB::transaction(function () use ($request, $data, $slug) {
+            $categoryUpdate = ['is_active' => $request->boolean('is_active')];
+            if ($request->has('sort_order')) {
+                $categoryUpdate['sort_order'] = (int) ($data['sort_order'] ?? 0);
+            }
+            DB::table('categories')->where('id', $data['id'])->update($categoryUpdate);
+
+            DB::table('category_translations')->updateOrInsert(
+                [
+                    'category_id' => $data['id'],
+                    'locale' => $data['locale'],
+                ],
+                [
+                    'name' => $data['name'],
+                    'slug' => $slug,
+                ]
+            );
+        });
 
         $this->bustCategoryCache();
 
         return redirect()
             ->route('admin.categories', [
                 'locale' => $data['locale'],
-                'select' => $data['id']
+                'select' => $data['id'],
             ])
             ->with('success', 'saved');
     }
@@ -139,31 +152,35 @@ class AdminCategoriesController extends Controller
     public function createCategory(Request $request)
     {
         $data = $request->validate([
-            'locale' => ['required', 'string', 'max:10'],
-            'name'   => ['required', 'string', 'max:150'],
+            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
+            'name' => ['required', 'string', 'max:150'],
         ]);
 
-        $categoryId = DB::table('categories')->insertGetId([
-            'is_active'  => true,
-            'sort_order' => 0,
-        ]);
+        $categoryId = DB::transaction(function () use ($data) {
+            $categoryId = DB::table('categories')->insertGetId([
+                'is_active' => true,
+                'sort_order' => 0,
+            ]);
 
-        $base = Str::slug($data['name']) ?: 'category';
-        $slug = $base;
-        $i = 1;
-        while (DB::table('category_translations')
-            ->where('locale', $data['locale'])
-            ->where('slug', $slug)
-            ->exists()) {
-            $slug = $base . '-' . $i++;
-        }
+            $base = Str::slug($data['name']) ?: 'category';
+            $slug = $base;
+            $i = 1;
+            while (DB::table('category_translations')
+                ->where('locale', $data['locale'])
+                ->where('slug', $slug)
+                ->exists()) {
+                $slug = $base.'-'.$i++;
+            }
 
-        DB::table('category_translations')->insert([
-            'category_id' => $categoryId,
-            'locale'      => $data['locale'],
-            'name'        => $data['name'],
-            'slug'        => $slug,
-        ]);
+            DB::table('category_translations')->insert([
+                'category_id' => $categoryId,
+                'locale' => $data['locale'],
+                'name' => $data['name'],
+                'slug' => $slug,
+            ]);
+
+            return $categoryId;
+        });
 
         $this->bustCategoryCache();
 

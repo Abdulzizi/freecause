@@ -46,7 +46,8 @@
             {{ $tSignedAlready }}
         </p>
     @else
-        <form action="{{ $signPageUrl }}" method="GET" class="fc-sign-form fc-sign-form--{{ $variant }}">
+        <form action="{{ $signPageUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+            @csrf
 
             <div class="row g-2">
 
@@ -126,7 +127,7 @@
 
     @endif
 @else
-    <form action="{{ $signPostUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+    <form action="{{ $signPageUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
 
         <div class="row g-2">

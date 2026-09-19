@@ -31,7 +31,6 @@
                     <input type="hidden" name="agree3" value="{{ session('sign.agree3', 'agree') }}">
 
                     <input type="hidden" name="comment" value="{{ session('sign.comment', 'I support this petition') }}">
-
                     <button class="btn btn-danger px-5 py-3" type="submit" style="font-size:22px;">
                         {{ $btnText }} <span style="margin-left:16px;">»</span>
                     </button>

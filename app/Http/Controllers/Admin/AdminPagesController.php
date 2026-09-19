@@ -7,15 +7,17 @@ use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageTranslation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AdminPagesController extends Controller
 {
     public function index(Request $request)
     {
         $filters = [
-            'id'     => $request->query('id', ''),
-            'title'  => $request->query('title', ''),
+            'id' => $request->query('id', ''),
+            'title' => $request->query('title', ''),
             'locale' => $request->query('locale', ''),
             'select' => $request->query('select', ''),
         ];
@@ -27,7 +29,7 @@ class AdminPagesController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            $q->where('title', 'like', '%' . $filters['title'] . '%');
+            $q->where('title', 'like', '%'.$filters['title'].'%');
         }
 
         if ($filters['locale'] !== '') {
@@ -39,7 +41,8 @@ class AdminPagesController extends Controller
         $pages = $q->paginate(25)->withQueryString();
 
         $pages->getCollection()->transform(function ($p) {
-            $p->client_url = url($p->locale . '/' . $p->slug);
+            $p->client_url = url($p->locale.'/'.$p->slug);
+
             return $p;
         });
 
@@ -73,39 +76,48 @@ class AdminPagesController extends Controller
         ));
     }
 
-
     public function save(Request $request)
     {
         $data = $request->validate([
-            'page_id'   => 'nullable|integer',
-            'locale'    => 'required|string|max:8',
-            'title'     => 'required|string',
-            'slug'      => 'nullable|string',
-            'content'   => 'nullable|string',
+            'page_id' => ['nullable', 'integer', 'exists:pages,id'],
+            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
+            'title' => ['required', 'string', 'max:190'],
+            'slug' => ['nullable', 'string', 'max:190'],
+            'content' => ['nullable', 'string'],
         ]);
 
-        $data['published'] = $request->has('published');
+        $published = $request->has('published');
+        $slug = $data['slug'] ? Str::slug($data['slug']) : Str::slug($data['title']);
 
-        if (empty($data['page_id'])) {
-            $page = Page::create();
-        } else {
-            $page = Page::findOrFail($data['page_id']);
+        $slugQuery = PageTranslation::where('locale', $data['locale'])
+            ->where('slug', $slug);
+
+        if (! empty($data['page_id'])) {
+            $slugQuery->where('page_id', '!=', $data['page_id']);
         }
 
-        $slug = $data['slug'] ?: Str::slug($data['title']);
+        if ($slugQuery->exists()) {
+            return back()->withErrors(['slug' => 'Slug already used for this locale.'])->withInput();
+        }
 
-        PageTranslation::updateOrCreate(
-            [
-                'page_id' => $page->id,
-                'locale'  => $data['locale'],
-            ],
-            [
-                'title'     => $data['title'],
-                'slug'      => $slug,
-                'content'   => sanitizeAdminHtml($data['content'] ?? ''),
-                'published' => $data['published'],
-            ]
-        );
+        DB::transaction(function () use ($data, $slug, $published) {
+            $page = empty($data['page_id'])
+                ? Page::create()
+                : Page::findOrFail($data['page_id']);
+
+            PageTranslation::updateOrCreate(
+                [
+                    'page_id' => $page->id,
+                    'locale' => $data['locale'],
+                ],
+                [
+                    'title' => $data['title'],
+                    'slug' => $slug,
+                    'content' => sanitizeAdminHtml($data['content'] ?? ''),
+                    'published' => $published,
+                ]
+            );
+        });
 
         return redirect()->route('admin.pages')
             ->with('success', 'Page saved');
@@ -116,7 +128,7 @@ class AdminPagesController extends Controller
         $ids = $request->input('ids', []);
         $action = $request->input('action');
 
-        if (!is_array($ids) || empty($ids)) {
+        if (! is_array($ids) || empty($ids)) {
             return back()->with('error', 'No pages selected');
         }
 

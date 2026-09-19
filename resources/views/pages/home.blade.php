@@ -5,7 +5,7 @@
 @php
     $featuredUrl = $featuredPetition
         ? lroute('petition.show', ['slug' => $featuredPetition->tr_slug, 'id' => $featuredPetition->id])
-        : lroute('petitions.index');
+        : null;
 
     $signatures = $featuredPetition?->signature_count ?? 0;
     $goal = $featuredPetition?->goal_signatures ?? 100;
@@ -25,12 +25,12 @@
                         </h1>
 
                         <h2 class="banner-subtitle">
-                            {!! $content['h2'] ?? __('home.h2') !!}
+                            {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                         </h2>
 
                         <div class="banner-btn mb-3">
                             <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ $content['btn_create_petition'] ?? __('home.btn_create_petition') }}
+                                {{ __('home.btn_create_petition') }}
                             </a>
                         </div>
 
@@ -51,14 +51,14 @@
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
                                     <i class="fa fa-home"></i>
-                                    {{ $content['tab_featured'] ?? __('home.tab_featured') }}
+                                    {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
                                     <i class="fa fa-clock-o"></i>
-                                    {{ $content['tab_recent'] ?? __('home.tab_recent') }}
+                                    {{ __('home.tab_recent') }}
                                 </button>
                             </li>
                         </ul>
@@ -71,67 +71,64 @@
                                     <div class="row featured-row">
                                         <div class="col-lg-12 mb-25">
 
-                                            <div class="card featured-box position-relative">
+                                            <div class="card featured-box">
                                                 <div class="card-body">
+
+                                                    <span class="featured-badges">
+                                                        {{ __('home.featured_badge') }}
+                                                    </span>
 
                                                     <div class="row featured-box-inner">
 
                                                         @if ($featuredPetition)
-                                                        <div class="col-sm-6 mb-4">
-                                                            <span class="featured-badges">
-                                                                {{ $content['featured_badge'] ?? __('home.featured_badge') }}
-                                                            </span>
-                                                            <div style="position:relative;overflow:hidden;border-radius:6px;height:320px;background:#1a1a1a;">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}"
-                                                                    loading="lazy" aria-hidden="true"
-                                                                    style="position:absolute;inset:-15px;width:calc(100% + 30px);height:calc(100% + 30px);object-fit:cover;filter:blur(18px);opacity:0.55;">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}"
-                                                                    loading="lazy"
-                                                                    style="position:relative;z-index:1;width:100%;height:320px;object-fit:contain;">
-                                                            </div>
+                                                        <div class="col-md-6 mb-4">
+                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
+                                                                loading="lazy" alt="{{ $featuredPetition->tr_title }}">
                                                         </div>
 
-                                                        <div class="col-sm-6 mb-4">
+                                                        <div class="col-md-6 mb-4">
                                                                 <h5>{{ $featuredPetition->tr_title }}</h5>
                                                                 <p>
                                                                     <strong>
-                                                                        {{ $content['petition_target_label'] ?? __('home.petition_target_label') }}
+                                                                        {{ __('home.petition_target_label') }}
                                                                     </strong>
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
-                                                                <p>
+                                                                <p class="featured-description">
                                                                     {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                 </p>
 
-                                                                <div class="goal-progress mb-3">
-                                                                    <div class="progress mb-2">
-                                                                        <div class="progress-bar"
-                                                                            style="width: {{ $progress }}%;"></div>
-                                                                    </div>
-                                                                    <div class="d-flex justify-content-between text-muted">
-                                                                        <span>
-                                                                            {{ number_format($signatures) }}
-                                                                            {{ $content['signatures_label'] ?? __('home.signatures_label') }}
-                                                                        </span>
-                                                                        <span>
-                                                                            {{ $content['goal_label'] ?? __('home.goal_label') }}
-                                                                            {{ number_format($goal) }}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                                <a href="{{ $featuredUrl }}" class="btn btn-danger stretched-link">
-                                                                    {{ $content['read_more'] ?? __('home.read_more') }}
-                                                                </a>
                                                             @else
-                                                                <h5>{{ $content['featured_none_title'] ?? __('home.featured_none_title') }}</h5>
+                                                                <h5>{{ __('home.featured_none_title') }}</h5>
                                                                 <p class="text-muted">
-                                                                    {{ $content['featured_none_sub'] ?? __('home.featured_none_sub') }}
+                                                                    {{ __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
                                                         </div>
+
+                                                        @if ($featuredPetition)
+                                                            <a href="{{ $featuredUrl }}">
+                                                                {{ __('home.featured_read_more') }}
+                                                            </a>
+                                                        @endif
                                                     </div>
+
+                                                    @if ($featuredPetition)
+                                                        <div class="goal-progress mb-3">
+                                                            <div class="progress mb-2">
+                                                                <div class="progress-bar" style="width: {{ $progress }}%;"></div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between text-muted">
+                                                                <span>{{ number_format($signatures) }} {{ __('home.signatures_label') }}</span>
+                                                                <span>{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <a href="{{ $featuredUrl }}" class="btn btn-primary">
+                                                            {{ __('home.featured_read_more') }}
+                                                        </a>
+                                                    @endif
 
                                                 </div>
                                             </div>
@@ -176,7 +173,7 @@
                                                                         </span>
 
                                                                         <strong>
-                                                                            {{ $content['recent_has_signed'] ?? __('home.recent_has_signed') }}
+                                                                            {{ __('home.recent_has_signed') }}
                                                                         </strong>
                                                                     </p>
 
@@ -196,7 +193,7 @@
 
                                                         <li>
                                                             <div class="text-muted p-2">
-                                                                {{ $content['recent_empty'] ?? __('home.recent_empty') }}
+                                                                {{ __('home.recent_empty') }}
                                                                 &mdash;
                                                                 <a href="{{ lroute('petitions.index') }}" class="red">
                                                                     {{ __('home.btn_browse_petitions') }}
@@ -228,7 +225,7 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['what_title'] ?? __('home.what_title') }}
+                            {{ __('home.what_title') }}
                         </h4>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_left'] ?? __('home.text_index_left')) !!}
@@ -240,7 +237,7 @@
                     <div class="gray-box">
 
                         <h4 class="headings">
-                            {{ $content['create_box_title'] ?? __('home.create_box_title') }}
+                            {{ __('home.create_box_title') }}
                         </h4>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_right'] ?? __('home.text_index_right')) !!}
@@ -294,6 +291,7 @@
         </div>
     </section>
 
+    @if (count($magazinePosts) > 0)
     <section class="blog-section">
         <div class="container">
             <div class="text-center mb-4">
@@ -305,35 +303,36 @@
             <div class="row g-4">
                 @foreach ($magazinePosts as $post)
                     <div class="col-md-4">
-                        <div class="blog-grid">
-                            <div class="blog-images">
-                                @if ($post->thumbnail_path)
-                                    <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
-                                @else
-                                    <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
-                                @endif
-                            </div>
-                            <div class="blog-content">
-                                <h3 class="blog-title">{{ $post->post_title }}</h3>
-                                <a class="red" href="/magazine/{{ $post->post_name }}">
+                        <a class="d-block h-100 text-decoration-none" href="/magazine/{{ $post->post_name }}">
+                            <div class="blog-grid">
+                                <div class="blog-images">
+                                    @if ($post->thumbnail_path)
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
+                                    @else
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                    @endif
+                                </div>
+                                <div class="blog-content">
+                                    <h3 class="blog-title">{{ $post->post_title }}</h3>
+                                    <span class="red">
                                     {{ __('home.blog_read_more') }}
                                     <span style="margin-left:6px;">›</span>
-                                </a>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
 
-            @if (count($magazinePosts) > 0)
-                <div class="text-center mt-4">
-                    <a href="/magazine" class="btn btn-outline-danger">
-                        {{ __('home.blog_view_all') }}
-                    </a>
-                </div>
-            @endif
+            <div class="text-center mt-4">
+                <a href="/magazine" class="btn btn-outline-danger">
+                    {{ __('home.blog_view_all') }}
+                </a>
+            </div>
         </div>
     </section>
+    @endif
 @endsection
 
 @push('scripts')

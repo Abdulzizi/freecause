@@ -27,9 +27,12 @@ pipeline {
                             php artisan storage:link --force &&
                             php artisan optimize:clear &&
                             php artisan optimize &&
+                            sudo cp deploy/php/freecause-uploads.ini /etc/php/8.2/fpm/conf.d/zz-freecause-uploads.ini &&
+                            sudo cp deploy/php/freecause-uploads.ini /etc/php/8.2/cli/conf.d/zz-freecause-uploads.ini &&
                             sudo systemctl restart php8.2-fpm &&
                             sudo supervisorctl restart freecause-queue:* &&
                             sleep 5 &&
+                            php -i | grep -E '^(upload_max_filesize|post_max_size)' &&
                             curl -sf https://${DEPLOY_HOST}/up || exit 1
                         "
                     '''

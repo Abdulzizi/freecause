@@ -11,7 +11,7 @@
                         <h4 class="mb-4 text-center">{{ __('auth.forgot_title') }}</h4>
 
                         @if (session('status'))
-                            <div class="alert alert-success">{{ session('status') }}</div>
+                            <div class="alert alert-success" role="status">{{ session('status') }}</div>
                         @endif
 
                         <form method="POST" action="{{ lroute('password.email') }}">
@@ -20,7 +20,7 @@
                             <div class="mb-3">
                                 <label class="form-label">{{ __('auth.email') }}</label>
                                 <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email') }}" required>
+                                    value="{{ old('email') }}" autocomplete="email" autofocus required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

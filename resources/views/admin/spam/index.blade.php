@@ -10,6 +10,20 @@
         <strong>{{ number_format($bannedCount) }}</strong> IP banned.
     </div>
 
+    <x-admin.filter-box title="filter spam" :action="route('admin.spam')" :reset="route('admin.spam')">
+        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}" style="max-width:150px;">
+
+        <select class="fc-select" name="type" style="max-width:160px;">
+            <option value="">type...</option>
+            @foreach ($types as $t)
+                <option value="{{ $t }}" {{ ($filters['type'] ?? '') === $t ? 'selected' : '' }}>{{ $t }}</option>
+            @endforeach
+        </select>
+
+        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" style="max-width:150px;">
+        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}" style="max-width:150px;">
+    </x-admin.filter-box>
+
     <form method="post" action="{{ route('admin.spam.clear') }}" onsubmit="return confirmClear()" style="margin-bottom:15px;">
         @csrf
         <button class="fc-btn" style="background:#dc3545;">

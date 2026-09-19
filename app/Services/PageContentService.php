@@ -21,6 +21,17 @@ class PageContentService
         );
     }
 
+    public function getPageWithFallback(string $page, string $locale, string $fallbackLocale): array
+    {
+        $content = $this->getPage($page, $locale);
+
+        if (! empty($content) || $locale === $fallbackLocale) {
+            return $content;
+        }
+
+        return $this->getPage($page, $fallbackLocale);
+    }
+
     public function clear(string $page, string $locale): void
     {
         Cache::forget("page_content_{$page}_{$locale}");

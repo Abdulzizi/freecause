@@ -22,13 +22,21 @@ use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(string $locale)
     {
+        if (Auth::check()) {
+            return redirect()->to("/{$locale}");
+        }
+
         return view('auth.login');
     }
 
     public function showRegister(string $locale)
     {
+        if (Auth::check()) {
+            return redirect()->to("/{$locale}");
+        }
+
         return view('auth.register', compact('locale'));
     }
 
@@ -39,12 +47,14 @@ class AuthController extends Controller
 
     public function register(Request $request, string $locale)
     {
+        $request->merge(['email' => strtolower(trim((string) $request->email))]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:60'],
             'surname' => ['required', 'string', 'max:60'],
             'email' => ['required', 'email', 'max:190', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'max:72'],
-            'nickname' => ['nullable', 'string', 'max:80'],
+            'nickname' => ['nullable', 'regex:/^[A-Za-z0-9]{3,32}$/', 'unique:users,nickname'],
             'city' => ['nullable', 'string', 'max:80'],
             'agree_terms' => ['accepted'],
         ]);
@@ -100,6 +110,7 @@ class AuthController extends Controller
 
             'verified' => $needsVerif ? false : true,
             'verification_token' => $token,
+            'verification_token_sent_at' => $needsVerif ? now() : null,
         ]);
 
         AppLog::info(
@@ -139,11 +150,18 @@ class AuthController extends Controller
 
         toast('Account created successfully.', 'success');
 
-        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$locale}"));
+        $dest = $request->input('redirect');
+        if (! $dest || ! str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
+            $dest = "/{$locale}";
+        }
+
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
 
     public function login(Request $request, string $locale)
     {
+        $request->merge(['email' => strtolower(trim((string) $request->email))]);
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -155,7 +173,7 @@ class AuthController extends Controller
 
         if ($user) {
             if (! $user->verified) {
-                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email');
+                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email', 'auth_form');
             }
 
             if ($user->hasLevel('banned')) {
@@ -170,8 +188,13 @@ class AuthController extends Controller
             }
         }
 
-        // Try standard bcrypt login first
-        $loggedIn = Auth::guard('web')->attempt($credentials, $remember);
+        // Try standard bcrypt login first.
+        try {
+            $loggedIn = ! ($user && str_contains($user->password, ':'))
+                && Auth::guard('web')->attempt($credentials, $remember);
+        } catch (\RuntimeException) {
+            $loggedIn = false;
+        }
 
         // Fallback: legacy md5(md5(password).salt):salt hash for migrated old users
         if (! $loggedIn && $user && str_contains($user->password, ':')) {
@@ -200,13 +223,14 @@ class AuthController extends Controller
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email');
+        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email', 'auth_form');
     }
 
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();
 
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         $locale = $request->input('locale', 'en');
@@ -350,9 +374,28 @@ class AuthController extends Controller
             return redirect()->to("/{$locale}/resend-verification");
         }
 
-        $user->verified = true;
-        $user->verification_token = null;
-        $user->save();
+        DB::transaction(function () use ($user) {
+            $pending = DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->selectRaw('petition_id, COUNT(*) as total')
+                ->groupBy('petition_id')
+                ->get();
+
+            $user->verified = true;
+            $user->verification_token = null;
+            $user->save();
+
+            DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->update(['confirmed' => true, 'updated_at' => now()]);
+
+            foreach ($pending as $row) {
+                DB::table('petitions')->where('id', $row->petition_id)->increment('signature_count', $row->total);
+                cache()->forget("petition:latest_sigs:{$row->petition_id}");
+            }
+        });
 
         // * AUTO LOGIN AFTER VERIFY
         // Auth::login($user);
@@ -391,7 +434,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with('success', __($status))
+            ? back()->with('status', __($status))
             : back()->withErrors(['email' => __($status)]);
     }
 
@@ -448,16 +491,8 @@ class AuthController extends Controller
 
         $user = User::where('email', strtolower(trim($request->email)))->first();
 
-        if (! $user) {
-            return back()->withErrors([
-                'email' => 'User not found.',
-            ]);
-        }
-
-        if ($user->verified) {
-            return back()->withErrors([
-                'email' => 'This account is already verified.',
-            ]);
+        if (! $user || $user->verified) {
+            return back()->with('success', 'If the account needs activation, a new email has been sent.');
         }
 
         $user->verification_token = Str::random(64);
@@ -487,6 +522,6 @@ class AuthController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Verification email has been resent.');
+        return back()->with('success', 'If the account needs activation, a new email has been sent.');
     }
 }

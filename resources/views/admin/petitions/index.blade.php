@@ -43,6 +43,30 @@
         <input class="fc-input" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}"
             style="max-width:220px;">
 
+        <input class="fc-input" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}"
+            style="max-width:100px;">
+
+        <select class="fc-select" name="category" style="max-width:160px;">
+            <option value="">category...</option>
+            @foreach ($categories as $cat)
+                <option value="{{ $cat->id }}" {{ (string) ($filters['category'] ?? '') === (string) $cat->id ? 'selected' : '' }}>
+                    {{ $cat->name ?? ('#' . $cat->id) }}
+                </option>
+            @endforeach
+        </select>
+
+        <select class="fc-select" name="status" style="max-width:130px;">
+            <option value="">status...</option>
+            <option value="published" {{ ($filters['status'] ?? '') === 'published' ? 'selected' : '' }}>published</option>
+            <option value="draft" {{ ($filters['status'] ?? '') === 'draft' ? 'selected' : '' }}>draft</option>
+        </select>
+
+        <select class="fc-select" name="active" style="max-width:120px;">
+            <option value="">active...</option>
+            <option value="1" {{ ($filters['active'] ?? '') === '1' ? 'selected' : '' }}>active</option>
+            <option value="0" {{ ($filters['active'] ?? '') === '0' ? 'selected' : '' }}>inactive</option>
+        </select>
+
         <label>
             <input type="checkbox" name="featured" value="1"
                 {{ ($filters['featured'] ?? '') !== '' ? 'checked' : '' }}>
@@ -250,6 +274,83 @@
                         <input class="fc-input" type="number" name="goal_signatures"
                             value="{{ $selectedPetition->goal_signatures }}">
                         @error('goal_signatures') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>category</label>
+                    <div>
+                        <select class="fc-select" name="category_id">
+                            <option value="">—</option>
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->id }}"
+                                    {{ (int) ($selectedPetition->category_id ?? 0) === (int) $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name ?? ('#' . $cat->id) }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>tags</label>
+                    <div>
+                        <input class="fc-input" type="text" name="tags" value="{{ $selectedPetition->tags ?? '' }}"
+                            placeholder="tag1, tag2">
+                        @error('tags') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>youtube</label>
+                    <div>
+                        <input class="fc-input" type="text" name="youtube_url"
+                            value="{{ $selectedPetition->youtube_url ?? '' }}">
+                        @error('youtube_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>target</label>
+                    <div>
+                        <input class="fc-input" type="text" name="target" value="{{ $selectedPetition->target ?? '' }}">
+                        @error('target') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>community</label>
+                    <div>
+                        <input class="fc-input" type="text" name="community"
+                            value="{{ $selectedPetition->community ?? '' }}">
+                        @error('community') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>community url</label>
+                    <div>
+                        <input class="fc-input" type="text" name="community_url"
+                            value="{{ $selectedPetition->community_url ?? '' }}" placeholder="https://">
+                        @error('community_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>location</label>
+                    <div>
+                        <input class="fc-input" type="text" name="city" value="{{ $selectedPetition->city ?? '' }}">
+                        @error('city') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="fc-row">
+                    <label>date created</label>
+                    <div>
+                        <input class="fc-input" type="datetime-local" name="created_at"
+                            value="{{ $selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : '' }}">
+                        @error('created_at') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
                     </div>
                 </div>
 

@@ -9,16 +9,36 @@ trait ApproxRows
 {
     protected function approxTableRows(string $table): int
     {
+        $allowed = [
+            'users',
+            'petitions',
+            'signatures',
+            'categories',
+            'pages',
+            'logs',
+            'banned_ips',
+        ];
+
+        if (! in_array($table, $allowed, true)) {
+            return 0;
+        }
+
         return (int) Cache::remember("approx_rows:$table", 3600, function () use ($table) {
-            $db = DB::getDatabaseName();
+            $driver = DB::connection()->getDriverName();
 
-            $row = DB::table('information_schema.TABLES')
-                ->select('TABLE_ROWS')
-                ->where('TABLE_SCHEMA', $db)
-                ->where('TABLE_NAME', $table)
-                ->first();
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                $db = DB::getDatabaseName();
 
-            return $row ? (int) $row->TABLE_ROWS : 0;
+                $row = DB::table('information_schema.TABLES')
+                    ->select('TABLE_ROWS')
+                    ->where('TABLE_SCHEMA', $db)
+                    ->where('TABLE_NAME', $table)
+                    ->first();
+
+                return $row ? (int) $row->TABLE_ROWS : 0;
+            }
+
+            return DB::table($table)->count();
         });
     }
 }

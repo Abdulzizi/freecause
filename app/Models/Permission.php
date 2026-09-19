@@ -8,6 +8,23 @@ class Permission extends Model
 {
     protected $fillable = ['level_id', 'module', 'action'];
 
+    public static function matrix(): array
+    {
+        return [
+            'users' => ['view', 'edit', 'delete'],
+            'petitions' => ['view', 'edit'],
+            'categories' => ['view', 'edit', 'delete'],
+            'pages' => ['view', 'edit'],
+            'signatures' => ['view', 'edit', 'delete'],
+            'spam' => ['view', 'edit', 'delete'],
+            'logs' => ['view', 'delete'],
+            'stats' => ['view'],
+            'languages' => ['view', 'edit', 'delete'],
+            'options' => ['view', 'edit'],
+            'system' => ['manage'],
+        ];
+    }
+
     public function level()
     {
         return $this->belongsTo(UserLevel::class, 'level_id');

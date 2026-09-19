@@ -22,12 +22,16 @@
                     <form method="GET" action="" class="d-flex gap-2" style="max-width:300px;width:100%;">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('Search petitions…') }}"
+                               aria-label="{{ __('Search petitions') }}"
                                class="form-control form-control-sm">
-                        <button type="submit" class="btn btn-sm btn-danger">
+                        <button type="submit" class="btn btn-sm btn-danger" aria-label="{{ __('Search') }}">
                             <i class="fa fa-search"></i>
                         </button>
                         @if(request('q'))
-                            <a href="{{ request()->url() }}" class="btn btn-sm btn-outline-secondary">✕</a>
+                            <a href="{{ request()->url() }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+                               aria-label="{{ __('Clear search') }}" title="{{ __('Clear search') }}">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </a>
                         @endif
                     </form>
                 </div>

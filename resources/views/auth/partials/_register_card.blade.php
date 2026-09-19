@@ -6,7 +6,7 @@
         <div class="fw-semibold" style="font-size:22px;">{{ __('auth.register') }}</div>
     </div>
 
-    @if ($errors->any())
+    @if (old('auth_form') === 'register' && $errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
                 @foreach ($errors->all() as $e)
@@ -18,6 +18,7 @@
 
     <form method="POST" action="{{ lroute('register.post') }}">
         @csrf
+        <input type="hidden" name="auth_form" value="register">
         <input type="hidden" name="redirect" value="{{ $redirect }}">
 
         <div class="mb-3">

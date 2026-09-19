@@ -1,42 +1,14 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Global Options')
+@section('title', 'Site Settings')
 
 @section('content')
-    <h1>options</h1>
+    <h1>Site Settings</h1>
 
     <form method="post" action="{{ route('admin.options.global.update') }}">
         @csrf
 
-        <div class="fc-tab">branding</div>
-        <div class="fc-box">
-            <p style="font-size:12px; color:#666; margin-bottom:8px;">
-                Customize your site's branding. These values are used across the site.
-            </p>
-
-            <div class="fc-row">
-                <label>site name</label>
-                <input class="fc-input" type="text" name="site_name" value="{{ $site_name }}">
-            </div>
-
-            <div class="fc-row">
-                <label>short name</label>
-                <input class="fc-input" type="text" name="site_name_short" value="{{ $site_name_short }}">
-                <span style="font-size:11px; color:#666; display:block; margin-top:4px;">Used in share links and short displays</span>
-            </div>
-
-            <div class="fc-row">
-                <label>logo url</label>
-                <input class="fc-input" type="text" name="site_logo" value="{{ $site_logo }}" placeholder="https://...">
-            </div>
-
-            <div class="fc-row">
-                <label>favicon url</label>
-                <input class="fc-input" type="text" name="site_favicon" value="{{ $site_favicon }}" placeholder="https://...">
-            </div>
-
-        </div>
-
+        @if ($is_system_admin)
         <div class="fc-tab">general</div>
         <div class="fc-box">
 
@@ -69,6 +41,7 @@
             @endif
 
         </div>
+        @endif
 
         <div class="fc-tab">email</div>
         <div class="fc-box">
@@ -82,6 +55,7 @@
             </div>
         </div>
 
+        @if ($is_system_admin)
         <div class="fc-tab">inject html <span style="font-size:0.75em; color:#c00;">(system admin only)</span></div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
@@ -97,7 +71,9 @@
                 <textarea class="fc-textarea" name="inject_body_html">{{ $inject_body_html }}</textarea>
             </div>
         </div>
+        @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">oauth</div>
         <div class="fc-box">
 
@@ -113,11 +89,15 @@
 
             <div class="fc-row">
                 <label>google client secret</label>
-                <input class="fc-input" type="text" name="google_client_secret" value="{{ $google_client_secret }}">
+                <input class="fc-input" type="password" name="google_client_secret" value=""
+                    autocomplete="new-password"
+                    placeholder="{{ $google_client_secret_set ? '•••••••• (leave blank to keep)' : 'not set' }}">
             </div>
 
         </div>
+        @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">smtp</div>
         <div class="fc-box">
             <input type="hidden" name="smtp_enabled" value="0">
@@ -152,7 +132,9 @@
                 <label>smtp password</label>
                 <div style="position:relative;">
                     <input id="smtp_pass_input" class="fc-input" type="password" name="smtp_pass"
-                        value="{{ $smtp_pass }}" style="padding-right:36px;">
+                        value="" autocomplete="new-password"
+                        placeholder="{{ $smtp_pass_set ? '•••••••• (leave blank to keep)' : 'not set' }}"
+                        style="padding-right:36px;">
 
                     <i id="toggle_smtp_pass" class="fa fa-eye"
                         style="
@@ -181,6 +163,7 @@
                 </select>
             </div>
         </div>
+        @endif
 
         <div class="fc-tab">miscellaneous</div>
         <div class="fc-box">
@@ -191,6 +174,7 @@
             </div>
         </div>
 
+        @if ($is_system_admin)
         <div class="fc-tab">maintenance</div>
         <div class="fc-box">
             <p style="font-size:12px; color:#666; margin-bottom:8px;">
@@ -201,7 +185,9 @@
                 <input class="fc-input" type="text" name="special_debug_ip" value="{{ $special_debug_ip }}">
             </div>
         </div>
+        @endif
 
+        @if ($is_system_admin)
         <div class="fc-tab">logging</div>
         <div class="fc-box">
             <input type="hidden" name="logging_enabled" value="0">
@@ -225,6 +211,7 @@
                 <input class="fc-input" type="text" name="logging_cookie_value" value="{{ $logging_cookie_value }}">
             </div>
         </div>
+        @endif
 
         <div class="fc-tab">announcement banner</div>
         <div class="fc-box">
@@ -301,6 +288,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         var input = document.getElementById('smtp_pass_input');
         var toggle = document.getElementById('toggle_smtp_pass');
+
+        if (! input || ! toggle) {
+            return;
+        }
 
         toggle.addEventListener('click', function() {
             if (input.type === 'password') {

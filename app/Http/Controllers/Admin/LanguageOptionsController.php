@@ -7,30 +7,30 @@ use App\Models\Language;
 use App\Models\PageContent;
 use App\Services\PageContentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LanguageOptionsController extends Controller
 {
     protected array $homepageKeys = [
-        'meta_keywords',
-        'meta_description',
-        'head_additional_html',
         'h1',
         'h2',
-        'btn_create_petition',
-        'tab_featured',
-        'tab_recent',
-        'featured_badge',
-        'featured_none_title',
-        'featured_none_sub',
-        'petition_target_label',
-        'signatures_label',
-        'goal_label',
-        'read_more',
-        'recent_has_signed',
-        'recent_empty',
         'text_index_left',
         'text_index_right',
         'exclude_most_read',
+    ];
+
+    protected array $globalKeys = [
+        'meta_keywords',
+        'meta_description',
+        'head_additional_html',
+    ];
+
+    protected array $preserveIfBlank = [
+        'text_index_left',
+        'text_index_right',
+        'footer_about',
+        'footer_links',
+        'footer_bottom',
     ];
 
     protected array $layoutKeys = [
@@ -55,6 +55,8 @@ class LanguageOptionsController extends Controller
         $locale = $request->query('locale');
         $showForm = $locale && isset($locales[$locale]);
 
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+
         $values = [];
         $layoutValues = [];
 
@@ -64,6 +66,23 @@ class LanguageOptionsController extends Controller
                 ->pluck('value', 'key')
                 ->toArray();
 
+            $globalValues = PageContent::where('page', 'global')
+                ->where('locale', $locale)
+                ->pluck('value', 'key')
+                ->toArray();
+
+            foreach ($this->globalKeys as $key) {
+                if ($key === 'head_additional_html' && ! $isSystemAdmin) {
+                    continue;
+                }
+
+                $values[$key] = $globalValues[$key] ?? ($values[$key] ?? '');
+            }
+
+            if (! $isSystemAdmin) {
+                unset($values['head_additional_html']);
+            }
+
             $layoutValues = PageContent::where('page', 'layout')
                 ->where('locale', $locale)
                 ->pluck('value', 'key')
@@ -71,11 +90,12 @@ class LanguageOptionsController extends Controller
         }
 
         return view('admin.options.language', [
-            'locales'      => $locales,
-            'locale'       => $locale,
-            'values'       => $values,
+            'locales' => $locales,
+            'locale' => $locale,
+            'values' => $values,
             'layoutValues' => $layoutValues,
-            'showForm'     => $showForm,
+            'showForm' => $showForm,
+            'is_system_admin' => $isSystemAdmin,
         ]);
     }
 
@@ -84,41 +104,65 @@ class LanguageOptionsController extends Controller
         $locales = $this->getLocales();
 
         $request->validate([
-            'locale' => ['required', 'in:' . implode(',', array_keys($locales))],
+            'locale' => ['required', 'in:'.implode(',', array_keys($locales))],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'exclude_most_read' => ['nullable', 'regex:/^\s*\d+(\s*,\s*\d+)*\s*$/'],
         ]);
 
         $locale = $request->input('locale');
 
-        foreach ($this->homepageKeys as $key) {
-            PageContent::updateOrCreate(
-                [
-                    'page'   => 'home',
-                    'locale' => $locale,
-                    'key'    => $key,
-                ],
-                [
-                    'value' => $request->input($key, ''),
-                ]
-            );
-        }
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
-        foreach ($this->layoutKeys as $key) {
-            $value = $request->input($key, '');
-            // Footer keys contain HTML rendered to all users — strip dangerous elements
-            $value = sanitizeAdminHtml($value);
+        $save = function (string $page, string $key, array $existing, bool $sanitize = false) use ($request, $locale) {
+            $value = (string) $request->input($key, '');
+
+            if (in_array($key, $this->preserveIfBlank, true) && trim($value) === '') {
+                if (array_key_exists($key, $existing)) {
+                    return;
+                }
+            }
+
+            if ($sanitize) {
+                $value = sanitizeAdminHtml($value);
+            }
+
             PageContent::updateOrCreate(
-                [
-                    'page'   => 'layout',
-                    'locale' => $locale,
-                    'key'    => $key,
-                ],
-                [
-                    'value' => $value,
-                ]
+                ['page' => $page, 'locale' => $locale, 'key' => $key],
+                ['value' => $value]
             );
-        }
+        };
+
+        $existingHome = PageContent::where('page', 'home')->where('locale', $locale)->pluck('value', 'key')->toArray();
+        $existingGlobal = PageContent::where('page', 'global')->where('locale', $locale)->pluck('value', 'key')->toArray();
+        $existingLayout = PageContent::where('page', 'layout')->where('locale', $locale)->pluck('value', 'key')->toArray();
+
+        $permittedGlobalKeys = array_values(array_filter(
+            $this->globalKeys,
+            fn ($key) => $key !== 'head_additional_html' || $isSystemAdmin
+        ));
+
+        DB::transaction(function () use ($save, $existingHome, $existingGlobal, $existingLayout, $locale, $permittedGlobalKeys) {
+            foreach ($this->homepageKeys as $key) {
+                $save('home', $key, $existingHome);
+            }
+
+            foreach ($permittedGlobalKeys as $key) {
+                $save('global', $key, $existingGlobal, $key === 'head_additional_html');
+            }
+
+            PageContent::where('page', 'home')
+                ->where('locale', $locale)
+                ->whereIn('key', $permittedGlobalKeys)
+                ->delete();
+
+            foreach ($this->layoutKeys as $key) {
+                $save('layout', $key, $existingLayout, true);
+            }
+        });
 
         app(PageContentService::class)->clear('home', $locale);
+        app(PageContentService::class)->clear('global', $locale);
         app(PageContentService::class)->clear('layout', $locale);
 
         return redirect()

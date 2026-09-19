@@ -100,8 +100,9 @@
                        aria-label="Share on WhatsApp">
                         <i class="fa fa-whatsapp"></i> WhatsApp
                     </a>
-                    <button type="button" class="fc-share-btn fc-share-copy"
-                            onclick="navigator.clipboard.writeText('{{ request()->url() }}').then(()=>{this.innerHTML='<i class=\'fa fa-check\'></i> {{ __('show.link_copied') }}';})"
+                    <button type="button" id="copyPetitionLink" class="fc-share-btn fc-share-copy"
+                            data-url="{{ request()->url() }}"
+                            data-copied-label="{{ __('show.link_copied') }}"
                             aria-label="Copy link">
                         <i class="fa fa-link"></i> {{ __('show.copy_link') }}
                     </button>
@@ -164,6 +165,37 @@
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
                                 </div>
+                            </div>
+
+                            <div class="fc-shoutbox">
+                                @forelse ($shoutbox as $comment)
+                                    <div class="d-flex align-items-start gap-3 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                @if ($comment->user)
+                                                    <a class="red" style="font-weight:600;font-size:15px;"
+                                                        href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($comment->user->name ?? 'user') ?: 'user', 'id' => $comment->user_id]) }}">
+                                                        {{ $comment->name ?? $comment->user->name ?? __('sig.anonymous') }}
+                                                    </a>
+                                                @else
+                                                    <strong style="font-size:15px;">{{ $comment->name ?? __('sig.anonymous') }}</strong>
+                                                @endif
+                                                <span class="text-muted ms-auto" style="font-size:12px;">
+                                                    {{ optional($comment->created_at)->format('j F Y') }}
+                                                </span>
+                                            </div>
+                                            <p class="mb-0 mt-1 text-muted" style="font-size:14px;">
+                                                "{{ $comment->text }}"
+                                            </p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-muted" style="font-size:14px;">{{ __('sig.no_comments') }}</div>
+                                @endforelse
+
+                                @if ($shoutbox->hasPages())
+                                    @include('partials.pagination', ['paginator' => $shoutbox])
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -233,7 +265,7 @@
                                 @forelse($latest as $i => $sig)
                                     <div class="fc-latest-row">
                                         <div class="fc-latest-date">
-                                            {{ optional($sig->created_at)->format('j F Y') }}
+                                            {{ $sig->created_at?->format('j F Y') }}
                                         </div>
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
@@ -351,17 +383,17 @@
 
                             <div id="widgetsBody" class="collapse">
                                 <div class="mt-3">
-                                    <div class="mb-2"><strong>728×90</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>468×60</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>336×280</strong></div>
-                                    <textarea class="form-control mb-3" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
-
-                                    <div class="mb-2"><strong>125×125</strong></div>
-                                    <textarea class="form-control" rows="3" readonly><script src="{{ url("/widgets/pbadge/{$petition->id}") }}"></script></textarea>
+                                    @foreach (['728x90', '468x60', '336x280', '125x125'] as $widgetType)
+                                        @php
+                                            $widgetCode = '<script src="'.url("/widgets/pbadge/{$petition->id}/{$widgetType}").'"></script>';
+                                        @endphp
+                                        <div class="mb-2"><strong>{{ str_replace('x', '×', $widgetType) }}</strong></div>
+                                        <textarea class="form-control mb-3" rows="3" readonly>{{ $widgetCode }}</textarea>
+                                        <div class="mb-4 overflow-auto">
+                                            <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
+                                                alt="{{ $widgetType }} petition widget preview">
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -490,7 +522,7 @@
 @push('head')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": {{ Illuminate\Support\Js::from($petitionTitle) }},
   "description": {{ Illuminate\Support\Js::from(\Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200)) }},
@@ -510,20 +542,5 @@
 @endpush
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('widgetsToggle');
-            const body = document.getElementById('widgetsBody');
-            if (!toggle || !body || !window.bootstrap) return;
-
-            body.addEventListener('shown.bs.collapse', () => {
-                toggle.removeAttribute('data-bs-toggle');
-                toggle.removeAttribute('data-bs-target');
-                toggle.removeAttribute('aria-controls');
-                toggle.style.cursor = 'default';
-            }, {
-                once: true
-            });
-        });
-    </script>
+    <script src="{{ asset('legacy/js-v2/petition-show.js') }}"></script>
 @endpush

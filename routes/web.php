@@ -15,11 +15,8 @@ use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\AdsTxtController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
-use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
-use App\Http\Controllers\Admin\TranslationsController;
-use App\Http\Controllers\Admin\TranslationAdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\GoogleAuthController;
@@ -28,12 +25,18 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'script'])
+    ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
+Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
+    ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
 Route::get('/', function () {
     $default = cache()->remember(
@@ -46,12 +49,6 @@ Route::get('/', function () {
 });
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
-
-// Test route
-Route::get('/test-route', function () {
-    \Illuminate\Support\Facades\Log::info('Test route hit', ['uri' => request()->path()]);
-    return 'Test OK - ' . now();
-})->withoutMiddleware(['setLocale', 'block.banned.ip', 'block.banned.user']);
 
 Route::get('/ads.txt', function () {
     $content = Settings::get('ads_txt', '', 'global');
@@ -99,9 +96,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/categories/create', [AdminCategoriesController::class, 'createCategory'])->middleware('permission:categories,edit')->name('categories.create');
         Route::post('/categories/delete', [AdminCategoriesController::class, 'destroy'])->middleware('permission:categories,delete')->name('categories.destroy');
 
-        // * FANPAGES
-        // Route::get('/fanpages', [AdminFanpagesController::class, 'index'])->middleware('permission:pages,view')->name('fanpages');
-
         // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
@@ -134,22 +128,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
-        // * TRANSLATIONS
-        Route::get('/translations', [TranslationsController::class, 'index'])->middleware('permission:languages,view')->name('translations.index');
-        Route::post('/translations', [TranslationsController::class, 'update'])->middleware('permission:languages,edit')->name('translations.update');
-
-        // * TRANSLATION MANAGER (DB-Driven)
-        Route::prefix('translation-manager')->name('translation-manager.')->group(function () {
-            Route::get('/', [TranslationAdminController::class, 'index'])->middleware('permission:languages,view')->name('index');
-            Route::post('/update', [TranslationAdminController::class, 'update'])->middleware('permission:languages,edit')->name('update');
-            Route::post('/bulk-update', [TranslationAdminController::class, 'bulkUpdate'])->middleware('permission:languages,edit')->name('bulk.update');
-            Route::get('/export', [TranslationAdminController::class, 'export'])->middleware('permission:languages,view')->name('export');
-            Route::post('/import', [TranslationAdminController::class, 'import'])->middleware('permission:languages,edit')->name('import');
-            Route::post('/copy-from-source', [TranslationAdminController::class, 'copyFromSource'])->middleware('permission:languages,edit')->name('copy.source');
-            Route::delete('/{id}', [TranslationAdminController::class, 'destroy'])->middleware('permission:languages,delete')->name('destroy');
-            Route::post('/clear-cache', [TranslationAdminController::class, 'clearCache'])->middleware('permission:system,manage')->name('clear.cache');
-        });
-
         // * SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->middleware('permission:system,manage')->name('system.user_info.update');
@@ -158,15 +136,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/system/user-levels/delete', [AdminUserLevelsController::class, 'delete'])->middleware('permission:system,manage')->name('system.user_levels.delete');
         Route::get('/system/permissions', [PermissionController::class, 'index'])->middleware('permission:system,manage')->name('system.permissions');
         Route::post('/system/permissions', [PermissionController::class, 'store'])->middleware('permission:system,manage')->name('system.permissions.store');
-
-        Route::get('/utils/import', [ImportController::class, 'index'])->middleware('permission:options,edit')->name('utils.import');
-        Route::post('/utils/import', [ImportController::class, 'store'])->middleware('permission:options,edit')->name('utils.import.store');
-
-        // * BACKUP
-        Route::get('/backup', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->middleware('permission:options,view')->name('backup.index');
-        Route::post('/backup/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->middleware('permission:options,edit')->name('backup.create');
-        Route::get('/backup/download/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->middleware('permission:options,view')->name('backup.download');
-        Route::post('/backup/delete/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'delete'])->middleware('permission:options,edit')->name('backup.delete');
     });
 });
 
@@ -188,9 +157,7 @@ Route::group([
 
     // Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['id' => '[0-9]+'])->name('user.profile');
 
-    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])
-        ->where(['slug' => '[^/]+', 'id' => '[0-9]+'])
-        ->name('user.profile');
+    Route::get('/user/{slug}/{id}', [UserProfileController::class, 'show'])->where(['slug' => '[^/]+', 'id' => '[0-9]+'])->name('user.profile');
 
     Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');
@@ -221,16 +188,21 @@ Route::group([
 
     Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
     Route::post('/contacts', function (\Illuminate\Http\Request $request) {
+        if (! Settings::get('email_contact_enabled', true, 'global')) {
+            abort(404);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
             'text' => ['required', 'string', 'max:5000'],
         ]);
 
-        $adminEmail = config('mail.from.address');
+        $adminEmail = Settings::get('email_to_staff', '', 'global') ?: config('mail.from.address');
+        $subject = Settings::get('email_contact_subject', '', 'global') ?: null;
 
         try {
-            Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text']));
+            Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text'], $subject));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
 
@@ -251,22 +223,13 @@ Route::group([
             'category' => '[0-9]+',
         ])->name('petitions.byCategory');
 
-    // Debug route
-    Route::get('/debug-route', function () {
-        \Illuminate\Support\Facades\Log::info('Debug route hit', [
-            'uri' => request()->path(),
-            'all_routes' => \Illuminate\Support\Facades\Route::getRoutes()->getRoutesByName(),
-        ]);
-        return 'Debug OK';
-    });
-
     // petition creation
     Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
 
     // petition actions (show / sign / thanks)
     Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->where(['id' => '[0-9]+'])->name('petition.show');
     Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->where(['id' => '[0-9]+'])->name('petition.signatures');
-    Route::get('/petition/{slug}/{id}/sign', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
+    Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->where(['id' => '[0-9]+'])->name('petition.sign.page');
     Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->where(['id' => '[0-9]+'])->name('petition.sign')->middleware('throttle:10,1');
     Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])->where('id', '[0-9]+')->where('status', '([0-9]+|created)?')->name('petition.thanks');
 

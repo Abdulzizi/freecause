@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminLogsController extends Controller
@@ -16,6 +15,9 @@ class AdminLogsController extends Controller
             'q' => trim($request->query('q', '')),
             'level' => $request->query('level'),
             'context' => trim($request->query('context', '')),
+            'ip' => trim($request->query('ip', '')),
+            'date_from' => trim($request->query('date_from', '')),
+            'date_to' => trim($request->query('date_to', '')),
         ];
 
         $q = Log::query()->orderByDesc('id');
@@ -33,6 +35,18 @@ class AdminLogsController extends Controller
 
         if ($filters['context']) {
             $q->where('context', $filters['context']);
+        }
+
+        if ($filters['ip']) {
+            $q->where('ip', 'like', $filters['ip'].'%');
+        }
+
+        if ($filters['date_from']) {
+            $q->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if ($filters['date_to']) {
+            $q->whereDate('created_at', '<=', $filters['date_to']);
         }
 
         $logs = $q->paginate(25)->withQueryString();
@@ -53,8 +67,8 @@ class AdminLogsController extends Controller
     public function export(Request $request): StreamedResponse
     {
         $filters = [
-            'q'       => trim($request->query('q', '')),
-            'level'   => $request->query('level'),
+            'q' => trim($request->query('q', '')),
+            'level' => $request->query('level'),
             'context' => trim($request->query('context', '')),
         ];
 
@@ -66,8 +80,12 @@ class AdminLogsController extends Controller
                     ->orWhere('content', 'like', "%{$filters['q']}%");
             });
         }
-        if ($filters['level'])   $q->where('level', $filters['level']);
-        if ($filters['context']) $q->where('context', $filters['context']);
+        if ($filters['level']) {
+            $q->where('level', $filters['level']);
+        }
+        if ($filters['context']) {
+            $q->where('context', $filters['context']);
+        }
 
         return response()->streamDownload(function () use ($q) {
             $handle = fopen('php://output', 'w');
@@ -86,7 +104,7 @@ class AdminLogsController extends Controller
                 }
             });
             fclose($handle);
-        }, 'logs-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv']);
+        }, 'logs-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
     }
 
     public function prune(Request $request)

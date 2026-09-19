@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\VerifyAccountMail;
 use App\Models\Category;
 use App\Models\PageContent;
 use App\Models\Petition;
@@ -9,14 +10,19 @@ use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Rules\SafeExternalImageUrl;
 use App\Support\AppLog;
+use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Intervention\Image\Laravel\Facades\Image;
 
 class PetitionController extends Controller
@@ -24,6 +30,17 @@ class PetitionController extends Controller
     private function requireOwner(Petition $petition): void
     {
         abort_unless(auth()->check() && (int) $petition->user_id === (int) auth()->id(), 403);
+    }
+
+    private function requireEditable(Petition $petition): void
+    {
+        $this->requireOwner($petition);
+
+        abort_if(
+            $petition->signatures()->where('user_id', '!=', $petition->user_id)->exists(),
+            403,
+            'Petition can no longer be edited after another person has signed.'
+        );
     }
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
@@ -55,7 +72,7 @@ class PetitionController extends Controller
         $defaultLocale = default_locale();
 
         $search = trim((string) request('q', ''));
-        $page   = max(1, min((int) request('page', 1), 500));
+        $page = max(1, min((int) request('page', 1), 500));
 
         $query = Petition::query()
             ->select([
@@ -112,13 +129,13 @@ class PetitionController extends Controller
 
         return view('pages.petitions-list', [
             'pageTitle' => $search ? __('Search results for ":q"', ['q' => $search]) : 'All the petitions',
-            'heading'   => $search ? __('Search: ":q"', ['q' => $search]) : 'Petitions',
-            'search'    => $search,
+            'heading' => $search ? __('Search: ":q"', ['q' => $search]) : 'Petitions',
+            'search' => $search,
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,
-            'petitionUrl'   => fn ($row) => lroute('petition.show', [
+            'petitionUrl' => fn ($row) => lroute('petition.show', [
                 'slug' => $row->tr_slug,
-                'id'   => $row->id,
+                'id' => $row->id,
             ]),
         ]);
     }
@@ -133,7 +150,7 @@ class PetitionController extends Controller
             ->where('id', $id)
             ->where(function ($q) {
                 $q->where(function ($q2) {
-                    $q2->where('status', 'published')->where('is_active', 1);
+                    $q2->where('status', 'published');
                 })
                     ->orWhere(function ($q2) {
                         $q2->where('status', 'draft')
@@ -141,6 +158,10 @@ class PetitionController extends Controller
                     });
             })
             ->firstOrFail();
+
+        if ($petition->status === 'published' && $petition->is_active) {
+            $this->recordView($request, $petition);
+        }
 
         $tr = PetitionTranslation::query()
             ->where('petition_id', $petition->id)
@@ -165,6 +186,10 @@ class PetitionController extends Controller
             ]);
         }
 
+        if ($petition->status === 'published' && ! $petition->is_active) {
+            return response()->view('petition.offline', compact('petition', 'tr', 'locale'));
+        }
+
         $hasSigned = auth()->check()
             ? Signature::where('petition_id', $petition->id)
                 ->where('email', auth()->user()->email)
@@ -179,14 +204,12 @@ class PetitionController extends Controller
             "petition:latest_sigs:{$petition->id}",
             now()->addMinutes(5),
             fn () => Signature::where('petition_id', $petition->id)
+                ->where('confirmed', true)
+                ->where('is_spam', false)
                 ->latest('created_at')
-                ->limit(25)
+                ->limit(27)
                 ->get()
-                ->toArray()
         );
-
-        // Convert cached arrays back to objects if needed
-        $latest = collect($latest)->map(fn ($item) => is_array($item) ? (object) $item : $item);
 
         $directLink = lroute('petition.show', [
             'slug' => $tr->slug,
@@ -201,6 +224,26 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
+        $defaultComments = \App\Models\Language::where('is_active', true)
+            ->pluck('code')
+            ->push($locale, $defaultLocale)
+            ->unique()
+            ->map(fn ($loc) => __('sign.default_comment', [], $loc))
+            ->filter()
+            ->values()
+            ->all();
+
+        $shoutbox = Signature::with('user')
+            ->where('petition_id', $petition->id)
+            ->where('is_spam', false)
+            ->where('confirmed', true)
+            ->whereNotNull('text')
+            ->whereRaw("TRIM(text) <> ''")
+            ->when(! empty($defaultComments), fn ($q) => $q->whereNotIn('text', $defaultComments))
+            ->orderBy('created_at')
+            ->paginate(10, ['*'], 'shoutbox')
+            ->withQueryString();
+
         return view('petition.show', compact(
             'petition',
             'tr',
@@ -212,12 +255,48 @@ class PetitionController extends Controller
             'directLink',
             'hasSigned',
             'content',
-            'formContent'
+            'formContent',
+            'shoutbox'
         ));
+    }
+
+    private function recordView(Request $request, Petition $petition): void
+    {
+        $sessionKey = "petition_viewed.{$petition->id}";
+
+        if ($request->session()->has($sessionKey)) {
+            return;
+        }
+
+        DB::transaction(function () use ($petition) {
+            $today = now()->toDateString();
+            $now = now();
+
+            DB::table('petition_views')->insertOrIgnore([
+                'petition_id' => $petition->id,
+                'viewed_on' => $today,
+                'views' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('petition_views')
+                ->where('petition_id', $petition->id)
+                ->where('viewed_on', $today)
+                ->increment('views', 1, ['updated_at' => $now]);
+
+            DB::table('petitions')->where('id', $petition->id)->increment('views');
+        });
+
+        $request->session()->put($sessionKey, true);
     }
 
     public function sign(Request $request, string $locale, string $slug, int $id)
     {
+        if ($request->session()->has('sign')) {
+            $request->merge($request->session()->get('sign'));
+        }
+
         $petition = Petition::query()
             ->where('id', $id)
             ->where('status', 'published')
@@ -291,20 +370,42 @@ class PetitionController extends Controller
 
         $email = strtolower(trim($data['email']));
 
-        if (User::where('email', $email)->exists()) {
-            $loginUrl = url("/{$locale}/login?email=".urlencode($email).'&redirect='.urlencode(url()->previous()));
+        $existingUser = User::where('email', $email)->first();
 
-            toast('This email is already registered. Please sign in first.', 'warning');
+        $passwordValid = false;
 
-            return back()
-                ->withInput($request->except('password'))
-                ->with('login_url', $loginUrl);
+        if ($existingUser) {
+            try {
+                $passwordValid = Hash::check($data['password'], $existingUser->password);
+            } catch (\RuntimeException) {
+                $passwordValid = false;
+            }
+
+            if (! $passwordValid && str_contains($existingUser->password, ':')) {
+                [$hash, $salt] = explode(':', $existingUser->password, 2);
+                $passwordValid = hash_equals($hash, md5(md5($data['password']).$salt));
+
+                if ($passwordValid) {
+                    $existingUser->forceFill(['password' => Hash::make($data['password'])])->save();
+                }
+            }
         }
 
-        return DB::transaction(function () use ($data, $email, $locale, $petition, $tr) {
-            $userLevel = UserLevel::where('name', 'user')->first();
+        if ($existingUser && ! $passwordValid) {
+            return back()
+                ->withErrors(['email' => 'The email or password is incorrect.'])
+                ->withInput($request->except('password'));
+        }
 
-            $user = User::create([
+        if (Signature::where('petition_id', $petition->id)->where('email', $email)->exists()) {
+            return back()->withErrors(['email' => 'You already signed this petition.']);
+        }
+
+        return DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser) {
+            $userLevel = UserLevel::where('name', 'user')->first();
+            $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
+
+            $user = $existingUser ?? User::create([
                 'name' => trim($data['name'].' '.$data['surname']),
                 'first_name' => $data['name'],
                 'last_name' => $data['surname'],
@@ -313,24 +414,35 @@ class PetitionController extends Controller
                 'locale' => $locale,
                 'ip' => request()->ip(),
                 'level_id' => $userLevel?->id,
-                'verified' => true,
+                'verified' => ! $needsVerification,
+                'verification_token' => $needsVerification ? Str::random(64) : null,
+                'verification_token_sent_at' => $needsVerification ? now() : null,
                 'nickname' => $data['nickname'] ?? null,
                 'city' => $data['city'] ?? null,
             ]);
+
+            if (! $existingUser && $needsVerification && Settings::get('smtp_enabled', false)) {
+                try {
+                    Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
+                } catch (\Throwable $e) {
+                    AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
+                }
+            }
 
             $sig = Signature::firstOrCreate(
                 ['petition_id' => $petition->id, 'email' => $email],
                 [
                     'user_id' => $user->id,
-                    'name' => $data['nickname'] ?: $user->name,
+                    'name' => ($data['nickname'] ?? null) ?: $user->name,
                     'locale' => $locale,
                     // 'city'    => $data['city'] ?? null,
                     'text' => $data['comment'] ?? 'I support this petition',
+                    'confirmed' => $user->verified,
                     'ip_address' => request()->ip(),
                 ]
             );
 
-            if ($sig->wasRecentlyCreated) {
+            if ($sig->wasRecentlyCreated && $sig->confirmed) {
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
                 cache()->forget("petition:latest_sigs:{$petition->id}");
             }
@@ -347,7 +459,7 @@ class PetitionController extends Controller
                 'locale' => $locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => 0,
+                'status' => $user->verified ? 1 : 0,
             ]);
         });
     }
@@ -377,11 +489,28 @@ class PetitionController extends Controller
 
     public function store(Request $request, string $locale)
     {
+        $uploaded = $request->file('image');
+        if ($uploaded !== null && ! $uploaded->isValid()) {
+            $reason = $uploaded->getError();
+            $message = in_array($reason, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
+                ? 'The image may not be larger than 4 MB.'
+                : 'The image failed to upload. Please try again.';
+
+            return back()
+                ->withErrors(['image' => $message])
+                ->withInput();
+        }
+
+        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
+        if (! $request->hasFile('image') && filled($request->input('image_url'))) {
+            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        }
+
         $data = $request->validate([
             'title' => [
                 'required',
                 'string',
-                'max:190',
+                'max:255',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
                     $words = array_values(array_filter($words, fn ($w) => $w !== ''));
@@ -403,7 +532,7 @@ class PetitionController extends Controller
             ],
 
             'goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
-            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
 
             'tags' => [
                 'nullable',
@@ -425,26 +554,13 @@ class PetitionController extends Controller
                 },
             ],
 
-            'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => [
-                'nullable',
-                'url',
-                'max:500',
-                'regex:/^https?:\/\//i',
-                function ($attr, $value, $fail) {
-                    $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
-                    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
-                    $ext = pathinfo($path, PATHINFO_EXTENSION);
-                    if (! $ext || ! in_array($ext, $allowed, true)) {
-                        $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
-                    }
-                },
-            ],
+            'image' => ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
+            'image_url' => $imageUrlRules,
 
-            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/i'],
+            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
 
-            'target' => ['nullable', 'string', 'max:190'],
-            'community' => ['nullable', 'string', 'max:190'],
+            'target' => ['nullable', 'string', 'max:255'],
+            'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ], [
@@ -453,92 +569,112 @@ class PetitionController extends Controller
         ]);
 
         if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
-            toast('Please choose either upload or external image (not both).', 'error');
+            $conflict = 'Please choose either upload an image OR use an external image link (not both).';
 
             return back()
-                // ->withErrors([
-                //     'image' => 'Please choose either upload an image OR use an external image link (not both).',
-                //     'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
-                // ])
+                ->withErrors([
+                    'image' => $conflict,
+                    'image_url' => $conflict,
+                ])
                 ->withInput();
         }
 
-        return DB::transaction(function () use ($request, $data, $locale) {
+        $newCoverImage = null;
 
-            $tags = collect(explode(',', $data['tags'] ?? ''))
-                ->map(fn ($t) => trim($t))
-                ->filter()
-                ->take(10)
-                ->implode(',');
+        try {
+            return DB::transaction(function () use ($request, $data, $locale, &$newCoverImage) {
 
-            $petition = new Petition;
-            $petition->user_id = auth()->id();
-            $petition->status = 'draft';
-            $petition->goal_signatures = $data['goal_signatures'];
-            $petition->category_id = $data['category_id'];
-            $petition->target = $data['target'] ?? null;
-            $petition->tags = $tags ?: null;
-            $petition->city = $data['city'] ?? null;
-            $petition->community = $data['community'] ?? null;
-            $petition->community_url = $data['community_url'] ?? null;
-            $petition->youtube_url = $data['youtube'] ?? null;
-            $petition->image_url = $data['image_url'] ?? null;
+                $tags = collect(explode(',', $data['tags'] ?? ''))
+                    ->map(fn ($t) => trim($t))
+                    ->filter()
+                    ->take(10)
+                    ->implode(',');
 
-            if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('petitions', 'public');
-                $abs = Storage::disk('public')->path($path);
+                $petition = new Petition;
+                $petition->user_id = auth()->id();
+                $petition->status = 'draft';
+                $petition->goal_signatures = $data['goal_signatures'];
+                $petition->category_id = $data['category_id'];
+                $petition->target = $data['target'] ?? null;
+                $petition->tags = $tags ?: null;
+                $petition->city = $data['city'] ?? null;
+                $petition->community = $data['community'] ?? null;
+                $petition->community_url = $data['community_url'] ?? null;
+                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
+                $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
-                Image::read($abs)
-                    ->cover(1200, 630)
-                    ->toJpeg(82)
-                    ->save($abs);
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('petitions', 'public');
+                    $newCoverImage = $path;
+                    $abs = Storage::disk('public')->path($path);
 
-                $petition->cover_image = $path;
-            }
+                    try {
+                        Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                    } catch (\Throwable $e) {
+                        throw ValidationException::withMessages([
+                            'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
+                        ]);
+                    }
 
-            $petition->save();
+                    if (! Storage::disk('public')->exists($path)) {
+                        throw ValidationException::withMessages([
+                            'image' => 'The image failed to save. Please try again.',
+                        ]);
+                    }
 
-            $slug = $this->makeUniqueSlug($data['title'], $locale);
+                    $petition->cover_image = $path;
+                }
 
-            $petition->translations()->create([
-                'locale' => $locale,
-                'title' => $data['title'],
-                'slug' => $slug,
-                'description' => sanitizePetitionHtml($data['description']),
-            ]);
+                $petition->save();
 
-            $user = auth()->user();
+                $slug = $this->makeUniqueSlug($data['title'], $locale);
 
-            $alreadySigned = Signature::query()
-                ->where('petition_id', $petition->id)
-                ->where(function ($q) use ($user) {
-                    $q->where('user_id', $user->id)
-                        ->orWhere('email', $user->email);
-                })
-                ->exists();
-
-            if (! $alreadySigned) {
-                Signature::create([
-                    'petition_id' => $petition->id,
-                    'user_id' => $user->id,
-                    'name' => $user->name ?? 'Anonymous',
-                    'email' => $user->email,
+                $petition->translations()->create([
                     'locale' => $locale,
+                    'title' => $data['title'],
+                    'slug' => $slug,
+                    'description' => sanitizePetitionHtml($data['description']),
                 ]);
 
-                DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                cache()->forget("petition:latest_sigs:{$petition->id}");
+                $user = auth()->user();
+
+                $alreadySigned = Signature::query()
+                    ->where('petition_id', $petition->id)
+                    ->where(function ($q) use ($user) {
+                        $q->where('user_id', $user->id)
+                            ->orWhere('email', $user->email);
+                    })
+                    ->exists();
+
+                if (! $alreadySigned) {
+                    Signature::create([
+                        'petition_id' => $petition->id,
+                        'user_id' => $user->id,
+                        'name' => $user->name ?? 'Anonymous',
+                        'email' => $user->email,
+                        'locale' => $locale,
+                    ]);
+
+                    DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
+                    cache()->forget("petition:latest_sigs:{$petition->id}");
+                }
+
+                toast('Petition created successfully.', 'success');
+
+                return redirect()->route('petition.thanks', [
+                    'locale' => $locale,
+                    'slug' => $slug,
+                    'id' => $petition->id,
+                    'status' => 'created',
+                ]);
+            });
+        } catch (\Throwable $e) {
+            if ($newCoverImage) {
+                Storage::disk('public')->delete($newCoverImage);
             }
 
-            toast('Petition created successfully.', 'success');
-
-            return redirect()->route('petition.thanks', [
-                'locale' => $locale,
-                'slug' => $slug,
-                'id' => $petition->id,
-                'status' => 'created',
-            ]);
-        });
+            throw $e;
+        }
     }
 
     private function signAsAuthed(Request $request, string $locale, Petition $petition)
@@ -589,13 +725,15 @@ class PetitionController extends Controller
                 'petition.sign'
             );
 
-            toast('Thank you for signing!', 'success');
+            if ($sig->wasRecentlyCreated) {
+                toast('Thank you for signing!', 'success');
+            }
 
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => 0,
+                'status' => 1,
             ]);
         });
     }
@@ -665,6 +803,7 @@ class PetitionController extends Controller
             'suggestions',
             'locale',
             'mode',
+            'status',
             'tr',
             'content'
         ));
@@ -672,11 +811,15 @@ class PetitionController extends Controller
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
-        if (! auth()->check()) {
+        if ($request->isMethod('get') && ! auth()->check()) {
             return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
-        $petition = Petition::findOrFail($id);
+        $petition = Petition::query()
+            ->whereKey($id)
+            ->where('status', 'published')
+            ->where('is_active', true)
+            ->firstOrFail();
 
         $tr = PetitionTranslation::where('petition_id', $petition->id)
             ->where('locale', $locale)
@@ -695,7 +838,7 @@ class PetitionController extends Controller
             ]);
         }
 
-        $alreadySigned = Signature::where('petition_id', $petition->id)
+        $alreadySigned = auth()->check() && Signature::where('petition_id', $petition->id)
             ->where('email', auth()->user()->email)
             ->exists();
 
@@ -707,12 +850,27 @@ class PetitionController extends Controller
             ]);
         }
 
-        session([
-            'sign.comment' => $request->input('comment'),
-            'sign.agree1' => $request->input('agree1', 'agree'),
-            'sign.agree2' => $request->input('agree2', 'agree'),
-            'sign.agree3' => $request->input('agree3', 'agree'),
-        ]);
+        $rules = auth()->check()
+            ? [
+                'comment' => ['nullable', 'string', 'max:500'],
+                'agree1' => ['required', 'in:agree'],
+                'agree2' => ['required', 'in:agree'],
+                'agree3' => ['required', 'in:agree'],
+            ]
+            : [
+                'name' => ['required', 'string', 'max:60'],
+                'surname' => ['required', 'string', 'max:60'],
+                'email' => ['required', 'email', 'max:190'],
+                'password' => ['required', 'string', 'min:8', 'max:72'],
+                'comment' => ['nullable', 'string', 'max:500'],
+                'city' => ['nullable', 'string', 'max:80'],
+                'nickname' => ['nullable', 'string', 'max:80'],
+                'agree1' => ['required', 'in:agree'],
+                'agree2' => ['required', 'in:agree'],
+                'agree3' => ['required', 'in:agree'],
+            ];
+
+        session(['sign' => $request->validate($rules)]);
 
         $content = PageContent::where('page', 'petition_sign')
             ->where('locale', $locale)
@@ -781,7 +939,7 @@ class PetitionController extends Controller
     public function edit(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->with('category')->findOrFail($id);
-        $this->requireOwner($petition);
+        $this->requireEditable($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
         if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
@@ -815,7 +973,7 @@ class PetitionController extends Controller
     public function update(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
-        $this->requireOwner($petition);
+        $this->requireEditable($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
         if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
@@ -823,11 +981,19 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
+        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
+        $submittedUrl = $request->input('image_url');
+        if (! $request->hasFile('image')
+            && filled($submittedUrl)
+            && $submittedUrl !== $petition->image_url) {
+            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        }
+
         $data = $request->validate([
             'title' => [
                 'required',
                 'string',
-                'max:190',
+                'max:255',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
                     $words = array_values(array_filter($words, fn ($w) => $w !== ''));
@@ -848,8 +1014,7 @@ class PetitionController extends Controller
                 },
             ],
 
-            'goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
-            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
 
             'tags' => [
                 'nullable',
@@ -871,25 +1036,14 @@ class PetitionController extends Controller
             ],
 
             'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => [
-                'nullable',
-                'url',
-                'max:500',
-                'regex:/^https?:\/\//i',
-                function ($attr, $value, $fail) {
-                    $path = strtolower(parse_url((string) $value, PHP_URL_PATH) ?? '');
-                    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
-                    $ext = pathinfo($path, PATHINFO_EXTENSION);
-                    if (! $ext || ! in_array($ext, $allowed, true)) {
-                        $fail('Image URL must point to a valid image file (jpg, jpeg, png, gif, webp, avif).');
-                    }
-                },
-            ],
+            'image_url' => $imageUrlRules,
 
-            'youtube' => ['nullable', 'url', 'max:200', 'regex:/^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/i'],
+            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
 
-            'target' => ['nullable', 'string', 'max:190'],
-            'community' => ['nullable', 'string', 'max:190'],
+            'remove_image' => ['nullable', 'boolean'],
+
+            'target' => ['nullable', 'string', 'max:255'],
+            'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
         ]);
@@ -905,54 +1059,71 @@ class PetitionController extends Controller
                 ->withInput();
         }
 
-        return DB::transaction(function () use ($request, $data, $petition, $tr) {
+        $oldCoverImage = $petition->cover_image;
+        $newCoverImage = null;
 
-            $tags = collect(explode(',', $data['tags'] ?? ''))
-                ->map(fn ($t) => trim($t))
-                ->filter()
-                ->take(10)
-                ->implode(',');
+        try {
+            $response = DB::transaction(function () use ($request, $data, $petition, $tr, &$newCoverImage) {
 
-            $petition->goal_signatures = $data['goal_signatures'];
-            $petition->category_id = $data['category_id'];
-            $petition->target = $data['target'] ?? null;
-            $petition->tags = $tags ?: null;
-            $petition->city = $data['city'] ?? null;
-            $petition->community = $data['community'] ?? null;
-            $petition->community_url = $data['community_url'] ?? null;
+                $tags = collect(explode(',', $data['tags'] ?? ''))
+                    ->map(fn ($t) => trim($t))
+                    ->filter()
+                    ->take(10)
+                    ->implode(',');
 
-            $petition->youtube_url = $data['youtube'] ?? null;
+                $petition->category_id = $data['category_id'];
+                $petition->target = $data['target'] ?? null;
+                $petition->tags = $tags ?: null;
+                $petition->city = $data['city'] ?? null;
+                $petition->community = $data['community'] ?? null;
+                $petition->community_url = $data['community_url'] ?? null;
 
-            $petition->image_url = $data['image_url'] ?? null;
+                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
 
-            if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('petitions', 'public');
-                $abs = Storage::disk('public')->path($path);
+                $petition->image_url = $data['image_url'] ?? null;
 
-                Image::read($abs)
-                    ->cover(1200, 630)
-                    ->toJpeg(82)
-                    ->save($abs);
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('petitions', 'public');
+                    $newCoverImage = $path;
+                    $abs = Storage::disk('public')->path($path);
 
-                $petition->cover_image = $path;
+                    Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
 
-                $petition->image_url = null;
+                    $petition->cover_image = $newCoverImage;
+
+                    $petition->image_url = null;
+                } elseif ($request->boolean('remove_image') || filled($petition->image_url)) {
+                    $petition->cover_image = null;
+                }
+
+                $petition->save();
+
+                $tr->title = $data['title'];
+                $tr->slug = $this->makeUniqueSlug($data['title'], $tr->locale, $tr->id);
+                $tr->description = sanitizePetitionHtml($data['description']);
+                $tr->save();
+
+                toast('Petition updated successfully.', 'success');
+
+                return redirect()->route('petition.show', [
+                    'locale' => $tr->locale,
+                    'slug' => $tr->slug,
+                    'id' => $petition->id,
+                ]);
+            });
+        } catch (\Throwable $e) {
+            if ($newCoverImage) {
+                Storage::disk('public')->delete($newCoverImage);
             }
 
-            $petition->save();
+            throw $e;
+        }
 
-            $tr->title = $data['title'];
-            $tr->description = sanitizePetitionHtml($data['description']);
-            $tr->save();
+        if ($oldCoverImage && $oldCoverImage !== $petition->cover_image && ! Str::startsWith($oldCoverImage, ['http://', 'https://'])) {
+            Storage::disk('public')->delete($oldCoverImage);
+        }
 
-            toast('Petition updated successfully.', 'success');
-
-            return redirect()->route('petition.show', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
-        });
+        return $response;
     }
 
     public function downloadTxt(Request $request, string $locale, string $slug, int $id)
@@ -1040,19 +1211,43 @@ class PetitionController extends Controller
         }
     }
 
-    private function makeUniqueSlug(string $title, string $locale): string
+    private function makeUniqueSlug(string $title, string $locale, ?int $ignoreTranslationId = null): string
     {
         $base = Str::slug($title);
         $base = $base ?: 'petition';
 
+        if (Str::length($base) > 255) {
+            $base = rtrim(Str::substr($base, 0, 255), '-');
+        }
+
         $slug = $base;
         $i = 1;
 
-        while (PetitionTranslation::where('locale', $locale)->where('slug', $slug)->exists()) {
-            $slug = $base.'-'.$i++;
+        while (PetitionTranslation::where('locale', $locale)
+            ->where('slug', $slug)
+            ->when($ignoreTranslationId, fn ($query) => $query->whereKeyNot($ignoreTranslationId))
+            ->exists()) {
+            $suffix = '-'.$i++;
+            $trimmed = Str::length($base) + Str::length($suffix) > 255
+                ? rtrim(Str::substr($base, 0, 255 - Str::length($suffix)), '-')
+                : $base;
+            $slug = $trimmed.$suffix;
         }
 
         return $slug;
+    }
+
+    private function youtubeId(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        if (preg_match('/(?:v=|youtu\.be\/)([\w_-]+)/i', $value, $matches)) {
+            return $matches[1];
+        }
+
+        return $value;
     }
 
     public function signatures(Request $request, string $locale, string $slug, int $id)

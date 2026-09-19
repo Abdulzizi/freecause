@@ -6,7 +6,7 @@
     <section class="py-5">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-5 col-md-7">
+                <div class="col-lg-6 col-md-8">
 
                     <div class="card shadow-lg border-0" style="border-radius:12px;">
                         <div class="card-body p-4 p-md-5">
@@ -34,8 +34,20 @@
                             </div>
 
                             @if ($errors->any())
-                                <div class="alert alert-danger">
+                                <div class="alert alert-danger" role="alert">
                                     {{ $errors->first() }}
+                                </div>
+                            @endif
+
+                            @if (session('success'))
+                                <div class="alert alert-success" role="status">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="alert alert-danger" role="alert">
+                                    {{ session('error') }}
                                 </div>
                             @endif
 
@@ -49,12 +61,13 @@
                                 <div class="mb-3">
                                     <label class="form-label mb-1">{{ __('auth.email') }}</label>
                                     <input type="email" name="email" value="{{ old('email') }}" class="form-control"
+                                        autocomplete="email" autofocus
                                         placeholder="{{ __('auth.email_placeholder') }}" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label mb-1">{{ __('auth.password') }}</label>
-                                    <input type="password" name="password" class="form-control"
+                                    <input type="password" name="password" class="form-control" autocomplete="current-password"
                                         placeholder="{{ __('auth.password_placeholder') }}" required>
                                 </div>
 

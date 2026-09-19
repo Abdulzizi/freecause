@@ -147,12 +147,12 @@
 
     // Replace legacy placeholders with your Laravel routes/URLs (safe for now).
     $replace = [
-        '{CREATE_PETITION_URL}' => url('/' . app()->getLocale() . '/petition/create'),
-        '{CONTACTS_URL}' => url('/' . app()->getLocale() . '/contacts'),
-        '{RECOVER_URL}' => url('/' . app()->getLocale() . '/login'),
-        '{HOW_TO_CREATE_LINK}' => url('/' . app()->getLocale() . '/help'),
-        '{DONATIONS_LINK}' => url('/' . app()->getLocale() . '/donate'),
-        'https://www.test.freecause.com/ethical-code' => url('/' . app()->getLocale() . '/contacts'),
+        '{CREATE_PETITION_URL}' => lroute('petition.create'),
+        '{CONTACTS_URL}' => lroute('contacts'),
+        '{RECOVER_URL}' => lroute('password.request'),
+        '{HOW_TO_CREATE_LINK}' => 'the create-petition page',
+        '{DONATIONS_LINK}' => 'the donations page',
+        'https://www.test.freecause.com/ethical-code' => lroute('page.show', ['slug' => 'ethical-code']),
     ];
 
     foreach ($faq as $section => $items) {
