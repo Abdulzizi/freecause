@@ -33,7 +33,7 @@
                             <h4 class="headings">{{ $title }}</h4>
 
                             <div class="privacy-inner">
-                                {!! $content !!}
+                                {!! \App\Services\ContentRenderer::render($content) !!}
                             </div>
                         </div>
 

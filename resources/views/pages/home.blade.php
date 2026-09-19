@@ -25,7 +25,7 @@
                         </h1>
 
                         <h2 class="banner-subtitle">
-                            {!! $content['h2'] ?? __('home.h2') !!}
+                            {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                         </h2>
 
                         <div class="banner-btn mb-3">

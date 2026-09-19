@@ -65,7 +65,7 @@
         <meta property="og:url" content="{{ request()->url() }}">
     @endif
 
-    {!! $headExtra !!}
+    {!! \App\Services\ContentRenderer::render($headExtra) !!}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
@@ -103,7 +103,7 @@
         @yield('content')
     </main>
 
-    {!! $footerExtra !!}
+    {!! \App\Services\ContentRenderer::render($footerExtra) !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('legacy/js-v2/slick.js') }}"></script>
