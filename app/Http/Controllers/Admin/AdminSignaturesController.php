@@ -55,9 +55,26 @@ class AdminSignaturesController extends Controller
             ->orderBy('c.id')
             ->get();
 
-        $q = DB::table('signatures as s')
-            ->join('petitions as p', 'p.id', '=', 's.petition_id')
-            ->leftJoin('users as u', 'u.id', '=', 's.user_id')
+        $hasActiveFilters = false;
+        foreach ($filters as $filterValue) {
+            if ((string) $filterValue !== '') {
+                $hasActiveFilters = true;
+                break;
+            }
+        }
+
+        $useSignatureFirst = ! $hasActiveFilters
+            && in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
+
+        $q = DB::table('signatures as s');
+
+        if ($useSignatureFirst) {
+            $q->fromRaw('signatures as s force index (primary) straight_join petitions as p on p.id = s.petition_id');
+        } else {
+            $q->join('petitions as p', 'p.id', '=', 's.petition_id');
+        }
+
+        $q->leftJoin('users as u', 'u.id', '=', 's.user_id')
             ->leftJoin('petition_translations as pt', function ($j) {
                 $j->on('pt.petition_id', '=', 'p.id')
                     ->on('pt.locale', '=', 's.locale');
