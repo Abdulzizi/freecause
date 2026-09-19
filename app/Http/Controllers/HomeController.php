@@ -56,6 +56,21 @@ class HomeController extends Controller
         }
 
         $recentActivities = cache()->remember('home:recent:'.self::CACHE_VERSION.":{$locale}", 300, function () use ($locale, $defaultLocale) {
+            if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
+                return DB::select("
+                    SELECT s.*, p.id as petition_id,
+                        COALESCE(pt_locale.title, pt_default.title) as petition_title,
+                        COALESCE(pt_locale.slug, pt_default.slug) as petition_slug
+                    FROM signatures s FORCE INDEX (signatures_created_at_index)
+                    STRAIGHT_JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
+                    LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
+                    LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
+                    WHERE pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL
+                    ORDER BY s.created_at DESC
+                    LIMIT 10
+                ", [$locale, $defaultLocale]);
+            }
+
             return DB::select("
                 SELECT s.*, p.id as petition_id,
                     COALESCE(pt_locale.title, pt_default.title) as petition_title,
