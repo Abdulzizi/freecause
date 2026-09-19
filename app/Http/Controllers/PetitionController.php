@@ -510,7 +510,7 @@ class PetitionController extends Controller
             'title' => [
                 'required',
                 'string',
-                'max:190',
+                'max:255',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
                     $words = array_values(array_filter($words, fn ($w) => $w !== ''));
@@ -993,7 +993,7 @@ class PetitionController extends Controller
             'title' => [
                 'required',
                 'string',
-                'max:190',
+                'max:255',
                 function ($attr, $value, $fail) {
                     $words = preg_split('/\s+/', trim((string) $value));
                     $words = array_values(array_filter($words, fn ($w) => $w !== ''));

@@ -163,7 +163,7 @@ class AdminPetitionsController extends Controller
             'id' => ['required', 'integer', 'exists:petitions,id'],
             'locale' => ['required', 'string', 'exists:languages,code'],
             'status' => ['required', 'in:draft,published'],
-            'title' => ['required', 'string', 'max:190'],
+            'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:190'],
             'text' => ['nullable', 'string'],
             'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
