@@ -47,7 +47,7 @@ jobs:
           HEALTH_URL: ${{ vars.HEALTH_URL || 'https://preview.freecause.com/' }}
         run: |
           for i in 1 2 3 4 5; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "$HEALTH_URL" || true)
+            code=$(curl -sL --max-redirs 5 -o /dev/null -w '%{http_code}' "$HEALTH_URL" || true)
             if [ "$code" = "200" ]; then
               echo "health OK ($code)"
               exit 0
