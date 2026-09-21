@@ -12,8 +12,9 @@ class AddSecurityHeaders
     {
         $response = $next($request);
 
-        // Enforce HTTPS for 1 year
-        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        if ($request->isSecure()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
 
         // Prevent clickjacking
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
@@ -59,7 +60,7 @@ class AddSecurityHeaders
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
                 "object-src 'none'; ".
                 "base-uri 'self';".
-                'upgrade-insecure-requests;';
+                ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         }
         $response->headers->set('Content-Security-Policy', $csp);
 

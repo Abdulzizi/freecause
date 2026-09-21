@@ -15,19 +15,19 @@
         $globalMetaDefault = $locale === $fallbackLocale ? $globalMeta : $pageContentService->getPage('global', $fallbackLocale);
         $homeMetaDefault = $locale === $fallbackLocale ? $homeMeta : $pageContentService->getPage('home', $fallbackLocale);
 
-        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ($globalMetaDefault['meta_title_suffix'] ?? ' - xPetition');
+        $metaSuffix = $globalMeta['meta_title_suffix'] ?? ($globalMetaDefault['meta_title_suffix'] ?? ' - FreeCause');
         $metaDescription =
             $globalMeta['meta_description'] ??
             ($homeMeta['meta_description'] ??
             ($globalMetaDefault['meta_description'] ??
             ($homeMetaDefault['meta_description'] ??
-            'xPetition - Online petition platform to launch and support causes worldwide.')));
+            'FreeCause - Online petition platform to launch and support causes worldwide.')));
         $metaKeywords =
             $globalMeta['meta_keywords'] ??
             ($homeMeta['meta_keywords'] ??
             ($globalMetaDefault['meta_keywords'] ??
             ($homeMetaDefault['meta_keywords'] ??
-            'petitions, activism, online petition, xpetition')));
+            'petitions, activism, online petition, freecause')));
         $headExtra =
             $globalMeta['head_additional_html'] ??
             ($homeMeta['head_additional_html'] ??
@@ -40,7 +40,7 @@
         @hasSection('title')
             @yield('title'){{ $metaSuffix }}
         @else
-            xPetition{{ $metaSuffix }}
+            FreeCause{{ $metaSuffix }}
         @endif
     </title>
 
@@ -51,7 +51,7 @@
 
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <meta property="og:site_name" content="xPetition">
+    <meta property="og:site_name" content="FreeCause">
     <meta property="og:type" content="website">
     @hasSection('og_title')
         <meta property="og:title" content="@yield('og_title')">
@@ -59,7 +59,7 @@
         <meta property="og:image" content="@yield('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png'))">
         <meta property="og:url" content="@yield('og_url', request()->url())">
     @else
-        <meta property="og:title" content="@yield('title', 'xPetition')">
+        <meta property="og:title" content="@yield('title', 'FreeCause')">
         <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
         <meta property="og:image" content="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
         <meta property="og:url" content="{{ request()->url() }}">

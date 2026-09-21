@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'xPetition - Online Petition')
+@section('title', 'FreeCause - Online Petition')
 
 @php
     $featuredUrl = $featuredPetition
