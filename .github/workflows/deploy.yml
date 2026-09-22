@@ -19,6 +19,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Run deploy on server
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -30,17 +44,19 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_deploy
           chmod 600 ~/.ssh/id_deploy
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 \
-            root@"$DEPLOY_HOST" \
+          SSH_ARGS="-i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20"
+          ssh $SSH_ARGS root@"$DEPLOY_HOST" \
             "cd $DEPLOY_PATH && \
              git fetch origin --tags && \
              git checkout $TAG && \
+             rm -rf public/build && \
              php artisan config:clear && php artisan config:cache && \
              php artisan view:clear && php artisan view:cache && \
              php artisan route:clear && php artisan route:cache && \
              systemctl reload php8.3-fpm && \
              git log -1 --oneline && \
              echo DEPLOY_OK"
+          scp $SSH_ARGS -r public/build root@"$DEPLOY_HOST":"$DEPLOY_PATH/public/"
 
       - name: Smoke test
         env:
