@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Sadece 3 kolay adimda ucretsiz bir petitions baslatin',
-    'petition.edit_title' => 'Petitions duzenle - xPetition',
+    'petition.edit_title' => 'Petitions duzenle - FreeCause',
     'petition.step_create' => 'Petitionsinizi olusturun',
     'petition.step_share' => 'Arkadaslarla paylasin',
     'petition.step_change' => 'Dunyayi degistirin!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Şimdi imzala',
     'show.google_continue'        => 'Google ile devam et',
     'show.or'                     => 'VEYA',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'dilekçe',
-    'thanks.title_created'  => 'Teşekkürler! - xPetition',
-    'thanks.title_signed'   => 'İmzaladığınız için teşekkürler - xPetition',
+    'thanks.title_created'  => 'Teşekkürler! - FreeCause',
+    'thanks.title_signed'   => 'İmzaladığınız için teşekkürler - FreeCause',
     'thanks.h1_created'     => 'Teşekkürler!',
     'thanks.h1_signed'      => 'İmzaladığınız için teşekkürler:',
     'thanks.p_created'      => 'Dilekçeniz başarıyla oluşturuldu. Yukarıdaki bağlantıyı kullanarak şimdi açabilirsiniz.',

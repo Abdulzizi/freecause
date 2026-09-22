@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Enarksis dwreas petytion se apla 3 vigmata',
-    'petition.edit_title' => 'Epektakse petytion - xPetition',
+    'petition.edit_title' => 'Epektakse petytion - FreeCause',
     'petition.step_create' => 'Dimiourgise tin petytion sou',
     'petition.step_share' => 'Moira se me filous',
     'petition.step_change' => 'Allakse ton kosmo!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Υπογράψτε τώρα',
     'show.google_continue'        => 'Συνέχεια με Google',
     'show.or'                     => 'Ή',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'αίτηση',
-    'thanks.title_created'  => 'Ευχαριστούμε! - xPetition',
-    'thanks.title_signed'   => 'Ευχαριστούμε για την υπογραφή σας - xPetition',
+    'thanks.title_created'  => 'Ευχαριστούμε! - FreeCause',
+    'thanks.title_signed'   => 'Ευχαριστούμε για την υπογραφή σας - FreeCause',
     'thanks.h1_created'     => 'Ευχαριστούμε!',
     'thanks.h1_signed'      => 'Ευχαριστούμε που υπογράψατε:',
     'thanks.p_created'      => 'Η αίτησή σας δημιουργήθηκε επιτυχώς. Μπορείτε να την ανοίξετε τώρα χρησιμοποιώντας τον σύνδεσμο παραπάνω.',

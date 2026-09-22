@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Start een gratis petitie in slechts 3 eenvoudige stappen',
-    'petition.edit_title' => 'Bewerk petitie - xPetition',
+    'petition.edit_title' => 'Bewerk petitie - FreeCause',
     'petition.step_create' => 'Maak je petitie',
     'petition.step_share' => 'Deel met vrienden',
     'petition.step_change' => 'Verander de wereld!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Nu ondertekenen',
     'show.google_continue'        => 'Doorgaan met Google',
     'show.or'                     => 'OF',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'petitie',
-    'thanks.title_created'  => 'Bedankt! - xPetition',
-    'thanks.title_signed'   => 'Dank voor uw handtekening - xPetition',
+    'thanks.title_created'  => 'Bedankt! - FreeCause',
+    'thanks.title_signed'   => 'Dank voor uw handtekening - FreeCause',
     'thanks.h1_created'     => 'Bedankt!',
     'thanks.h1_signed'      => 'Dank voor uw handtekening:',
     'thanks.p_created'      => 'Uw petitie is succesvol aangemaakt. U kunt hem nu openen via de link hierboven.',

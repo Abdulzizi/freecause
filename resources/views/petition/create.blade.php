@@ -23,7 +23,7 @@
 
 @extends('layouts.legacy')
 
-@section('title', $isEdit ? 'Edit petition - xPetition' : 'Create petition - xPetition')
+@section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
 
 @push('head')
     <style>

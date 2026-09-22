@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Nachnite besplatnuyu peticiyu vsego za 3 shaga',
-    'petition.edit_title' => 'Redaktirovat peticiyu - xPetition',
+    'petition.edit_title' => 'Redaktirovat peticiyu - FreeCause',
     'petition.step_create' => 'Sozdajte vashu peticiyu',
     'petition.step_share' => 'Podelites s druzjami',
     'petition.step_change' => 'Izmenite mir!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Подписать сейчас',
     'show.google_continue'        => 'Продолжить с Google',
     'show.or'                     => 'ИЛИ',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'петиция',
-    'thanks.title_created'  => 'Спасибо! - xPetition',
-    'thanks.title_signed'   => 'Спасибо за подпись - xPetition',
+    'thanks.title_created'  => 'Спасибо! - FreeCause',
+    'thanks.title_signed'   => 'Спасибо за подпись - FreeCause',
     'thanks.h1_created'     => 'Спасибо!',
     'thanks.h1_signed'      => 'Спасибо за подпись:',
     'thanks.p_created'      => 'Ваша петиция успешно создана. Вы можете открыть её сейчас по ссылке выше.',

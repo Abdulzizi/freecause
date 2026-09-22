@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Starta en gratis petition pa bara 3 enkla steg',
-    'petition.edit_title' => 'Redigera petition - xPetition',
+    'petition.edit_title' => 'Redigera petition - FreeCause',
     'petition.step_create' => 'Skapa din petition',
     'petition.step_share' => 'Dela med vanner',
     'petition.step_change' => 'Forandra varlden!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Skriv under nu',
     'show.google_continue'        => 'Fortsätt med Google',
     'show.or'                     => 'ELLER',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'petition',
-    'thanks.title_created'  => 'Tack! - xPetition',
-    'thanks.title_signed'   => 'Tack för din underskrift - xPetition',
+    'thanks.title_created'  => 'Tack! - FreeCause',
+    'thanks.title_signed'   => 'Tack för din underskrift - FreeCause',
     'thanks.h1_created'     => 'Tack!',
     'thanks.h1_signed'      => 'Tack för din underskrift:',
     'thanks.p_created'      => 'Din namnlista har skapats framgångsrikt. Du kan öppna den nu med länken ovan.',

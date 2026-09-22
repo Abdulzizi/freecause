@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Incepe o petitie gratuita in doar 3 pasi simpli',
-    'petition.edit_title' => 'Editeaza petitia - xPetition',
+    'petition.edit_title' => 'Editeaza petitia - FreeCause',
     'petition.step_create' => 'Creaza petitia ta',
     'petition.step_share' => 'Impartaseste cu prietenii',
     'petition.step_change' => 'Schimba lumea!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Semnează acum',
     'show.google_continue'        => 'Continuați cu Google',
     'show.or'                     => 'SAU',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'petiție',
-    'thanks.title_created'  => 'Mulțumim! - xPetition',
-    'thanks.title_signed'   => 'Mulțumim că ați semnat - xPetition',
+    'thanks.title_created'  => 'Mulțumim! - FreeCause',
+    'thanks.title_signed'   => 'Mulțumim că ați semnat - FreeCause',
     'thanks.h1_created'     => 'Mulțumim!',
     'thanks.h1_signed'      => 'Mulțumim că ați semnat:',
     'thanks.p_created'      => 'Petiția dumneavoastră a fost creată cu succes. O puteți deschide acum folosind linkul de mai sus.',

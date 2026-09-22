@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Inicia una petición gratis en solo 3 pasos',
-    'petition.edit_title' => 'Editar petición - xPetition',
+    'petition.edit_title' => 'Editar petición - FreeCause',
     'petition.step_create' => 'Crea tu petición',
     'petition.step_share' => 'Comparte con amigos',
     'petition.step_change' => '¡Cambia el mundo!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Firmar ahora',
     'show.google_continue'        => 'Continuar con Google',
     'show.or'                     => 'O',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'petición',
-    'thanks.title_created'  => '¡Gracias! - xPetition',
-    'thanks.title_signed'   => 'Gracias por firmar - xPetition',
+    'thanks.title_created'  => '¡Gracias! - FreeCause',
+    'thanks.title_signed'   => 'Gracias por firmar - FreeCause',
     'thanks.h1_created'     => '¡Gracias!',
     'thanks.h1_signed'      => 'Gracias por firmar:',
     'thanks.p_created'      => 'Tu petición se ha creado correctamente. Puedes abrirla ahora usando el enlace de arriba.',

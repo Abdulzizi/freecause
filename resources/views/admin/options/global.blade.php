@@ -238,7 +238,7 @@
             <div class="fc-row">
                 <label>greeting / heading</label>
                 <input class="fc-input" type="text" name="email_verify_greeting" value="{{ $email_verify_greeting }}"
-                    placeholder="Welcome to xPetition">
+                    placeholder="Welcome to FreeCause">
             </div>
             <div class="fc-row">
                 <label>button text</label>
@@ -248,7 +248,7 @@
             <div class="fc-row">
                 <label>footer line</label>
                 <input class="fc-input" type="text" name="email_verify_footer" value="{{ $email_verify_footer }}"
-                    placeholder="xPetition – Online Petition Platform">
+                    placeholder="FreeCause – Online Petition Platform">
             </div>
         </div>
 

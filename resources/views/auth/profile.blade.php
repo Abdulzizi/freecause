@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Account - xPetition')
+@section('title', 'Account - FreeCause')
 
 @section('content')
     @php $u = auth()->user(); @endphp

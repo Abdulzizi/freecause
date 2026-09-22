@@ -38,8 +38,8 @@ return [
     ],
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@xpetition.com'),
-        'name'    => env('MAIL_FROM_NAME', 'xPetition'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@freecause.com'),
+        'name'    => env('MAIL_FROM_NAME', 'FreeCause'),
     ],
 
 ];

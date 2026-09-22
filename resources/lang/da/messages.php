@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'petition.create_title' => 'Start en gratis petition på kun 3 nemme trin',
-    'petition.edit_title' => 'Rediger petition - xPetition',
+    'petition.edit_title' => 'Rediger petition - FreeCause',
     'petition.step_create' => 'Opret din petition',
     'petition.step_share' => 'Del med venner',
     'petition.step_change' => 'Forandr verden!',
@@ -254,7 +254,7 @@ return [
     | Petition Show Page
     |--------------------------------------------------------------------------
     */
-    'show.page_title'             => ':title - xPetition',
+    'show.page_title'             => ':title - FreeCause',
     'show.btn_sign_now'           => 'Underskriv nu',
     'show.google_continue'        => 'Fortsæt med Google',
     'show.or'                     => 'ELLER',
@@ -287,8 +287,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'thanks.petition_fallback' => 'petition',
-    'thanks.title_created'  => 'Tak! - xPetition',
-    'thanks.title_signed'   => 'Tak fordi du underskrev - xPetition',
+    'thanks.title_created'  => 'Tak! - FreeCause',
+    'thanks.title_signed'   => 'Tak fordi du underskrev - FreeCause',
     'thanks.h1_created'     => 'Tak!',
     'thanks.h1_signed'      => 'Tak fordi du underskrev:',
     'thanks.p_created'      => 'Din underskriftsindsamling er oprettet med succes. Du kan åbne den nu via linket ovenfor.',
