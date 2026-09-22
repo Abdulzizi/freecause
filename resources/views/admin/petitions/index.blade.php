@@ -128,22 +128,22 @@
                     {{-- ACTIVE --}}
                     <td>
                         {!! $p->is_active
-                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Active">✔</span>'
-                            : '<span style="color:#c00;" title="Not active">✖</span>' !!}
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
                     {{-- PUBLISHED --}}
                     <td>
                         {!! $p->status === 'published'
-                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Published">✔</span>'
-                            : '<span style="color:#c00;" title="Not published">✖</span>' !!}
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
                     {{-- FEATURED --}}
                     <td>
                         {!! $p->is_featured
-                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Featured">✔</span>'
-                            : '<span style="color:#c00;" title="Not featured">✖</span>' !!}
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
