@@ -57,43 +57,45 @@ class AdminStatsController extends Controller
 
     private function summaryStats($locale, $from)
     {
-        $usersTotal = Cache::remember('admin:stats:users_total', 600, fn () => DB::table('users')->count());
-        $petitionsTotal = Cache::remember('admin:stats:petitions_total', 600, fn () => DB::table('petitions')->count());
-        $signaturesTotal = Cache::remember('admin:stats:signatures_total', 600, fn () => DB::table('signatures')->count());
-
-        $usersVerified = Cache::remember('admin:stats:users_verified', 600, fn () => DB::table('users')->where('verified', 1)->count()
-        );
-        $petitionsPublished = Cache::remember('admin:stats:petitions_published', 600, fn () => DB::table('petitions')->where('status', 'published')->count()
-        );
+        $totals = DB::table('users')
+            ->selectRaw('
+                COUNT(*) as users_total,
+                SUM(verified) as users_verified,
+                (SELECT COUNT(*) FROM petitions) as petitions_total,
+                (SELECT COUNT(*) FROM petitions WHERE status = "published") as petitions_published,
+                (SELECT COUNT(*) FROM signatures) as signatures_total
+            ')
+            ->first();
 
         // Recent counts: cache 5 min keyed by range + locale
         $rangeKey = $from->toDateString().':'.($locale ?: 'all');
-        $usersNew = Cache::remember("admin:stats:users_new:{$rangeKey}", 300, fn () => DB::table('users')->where('created_at', '>=', $from)->count()
-        );
-        $petitionsNew = Cache::remember("admin:stats:petitions_new:{$rangeKey}", 300, fn () => DB::table('petitions')->where('created_at', '>=', $from)->count()
-        );
-        $signaturesNew = Cache::remember("admin:stats:sigs_new:{$rangeKey}", 300, fn () => DB::table('signatures')
-            ->where('created_at', '>=', $from)
-            ->when($locale, fn ($q) => $q->where('locale', $locale))
-            ->count()
-        );
+        $recent = Cache::remember("admin:stats:recent:{$rangeKey}", 300, function () use ($from, $locale) {
+            return [
+                'users_new' => DB::table('users')->where('created_at', '>=', $from)->count(),
+                'petitions_new' => DB::table('petitions')->where('created_at', '>=', $from)->count(),
+                'signatures_new' => DB::table('signatures')
+                    ->where('created_at', '>=', $from)
+                    ->when($locale, fn ($q) => $q->where('locale', $locale))
+                    ->count(),
+            ];
+        });
 
         return [
-            'users_total' => $usersTotal,
-            'users_verified_percent' => $usersTotal > 0
-                ? round(($usersVerified / $usersTotal) * 100, 1)
+            'users_total' => $totals->users_total,
+            'users_verified_percent' => $totals->users_total > 0
+                ? round(($totals->users_verified / $totals->users_total) * 100, 1)
                 : 0,
 
-            'petitions_total' => $petitionsTotal,
-            'petitions_publish_percent' => $petitionsTotal > 0
-                ? round(($petitionsPublished / $petitionsTotal) * 100, 1)
+            'petitions_total' => $totals->petitions_total,
+            'petitions_publish_percent' => $totals->petitions_total > 0
+                ? round(($totals->petitions_published / $totals->petitions_total) * 100, 1)
                 : 0,
 
-            'signatures_total' => $signaturesTotal,
+            'signatures_total' => $totals->signatures_total,
 
-            'users_new' => $usersNew,
-            'petitions_new' => $petitionsNew,
-            'signatures_new' => $signaturesNew,
+            'users_new' => $recent['users_new'],
+            'petitions_new' => $recent['petitions_new'],
+            'signatures_new' => $recent['signatures_new'],
         ];
     }
 

@@ -32,6 +32,14 @@ class AdminCategoriesController extends Controller
             'name' => trim((string) $request->query('name', '')),
         ];
 
+        // Pre-fetch petition counts per category (single query, avoids N+1)
+        $petitionCounts = DB::table('petitions')
+            ->whereNotNull('category_id')
+            ->select('category_id', DB::raw('COUNT(*) as petition_count'))
+            ->groupBy('category_id')
+            ->pluck('petition_count', 'category_id')
+            ->toArray();
+
         $q = DB::table('categories')
             ->leftJoin('category_translations as ct', function ($j) use ($locale) {
                 $j->on('ct.category_id', '=', 'categories.id')
@@ -57,6 +65,12 @@ class AdminCategoriesController extends Controller
         $categories = $q->paginate(50)->withQueryString();
         $approxTotal = $this->approxTableRows('categories');
 
+        // Attach petition counts to paginated collection
+        $categories->getCollection()->transform(function ($cat) use ($petitionCounts) {
+            $cat->petition_count = $petitionCounts[$cat->id] ?? 0;
+            return $cat;
+        });
+
         $selectedId = $request->query('select');
         $selectedCategory = null;
         $selectedTranslation = null;
@@ -72,9 +86,7 @@ class AdminCategoriesController extends Controller
                 ->where('locale', $locale)
                 ->first();
 
-            $selectedPetitionCount = DB::table('petitions')
-                ->where('category_id', (int) $selectedId)
-                ->count();
+            $selectedPetitionCount = $petitionCounts[$selectedId] ?? 0;
         }
 
         $locales = Language::where('is_active', true)

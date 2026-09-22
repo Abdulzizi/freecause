@@ -43,14 +43,19 @@ class AdminPetitionsController extends Controller
             ? 'GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",")'
             : 'GROUP_CONCAT(locale, ",")';
 
+        $localesSub = DB::table('petition_translations')
+            ->select('petition_id', DB::raw($localesExpr . ' as translation_locales'))
+            ->groupBy('petition_id');
+
         $q = DB::table('petitions')
+            ->leftJoinSub($localesSub, 'pt_locales', 'pt_locales.petition_id', '=', 'petitions.id')
             ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
                 $j->on('pt.petition_id', '=', 'petitions.id')
-                    ->where('pt.locale', '=', $locale);
+                  ->where('pt.locale', '=', $locale);
             })
             ->leftJoin('petition_translations as pt_default', function ($j) use ($defaultLocale) {
                 $j->on('pt_default.petition_id', '=', 'petitions.id')
-                    ->where('pt_default.locale', '=', $defaultLocale);
+                  ->where('pt_default.locale', '=', $defaultLocale);
             })
             ->select([
                 'petitions.id',
@@ -62,7 +67,7 @@ class AdminPetitionsController extends Controller
                 'petitions.created_at',
                 DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                 DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
-                DB::raw('(SELECT '.$localesExpr.' FROM petition_translations WHERE petition_id = petitions.id) as translation_locales'),
+                'pt_locales.translation_locales',
             ]);
 
         if ($filters['id'] !== '') {
@@ -99,12 +104,11 @@ class AdminPetitionsController extends Controller
 
         if ($filters['missing_locale'] !== '') {
             $ml = $filters['missing_locale'];
-            $q->whereNotExists(function ($sub) use ($ml) {
-                $sub->select(DB::raw(1))
-                    ->from('petition_translations')
-                    ->whereColumn('petition_id', 'petitions.id')
-                    ->where('locale', $ml);
-            });
+            $q->leftJoin('petition_translations as pt_ml', function ($j) use ($ml) {
+                $j->on('pt_ml.petition_id', '=', 'petitions.id')
+                  ->where('pt_ml.locale', '=', $ml);
+            })
+            ->whereNull('pt_ml.petition_id');
         }
 
         $q->orderByDesc('petitions.id');
