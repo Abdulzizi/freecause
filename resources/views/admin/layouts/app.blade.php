@@ -15,21 +15,28 @@
 
 <body>
     <div class="fc-topbar">
-        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-        <span class="sep">|</span> v 1.2.1
-        <span class="sep">|</span> support
-        <span class="sep">|</span> <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
-        <span class="sep">|</span>
-
-        <form method="POST" action="{{ route('admin.logout') }}" style="display:inline">
-            @csrf
-            <button type="submit" class="fc-btn">exit</button>
-        </form>
+        <div class="fc-topbar-right">
+            <button class="fc-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="fc-menu" onclick="toggleSidebar()">
+                <i class="fa fa-bars"></i> Menu
+            </button>
+        </div>
+        <div class="fc-topbar-left">
+            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+            <span class="sep">|</span> v 1.2.1
+            <span class="sep">|</span> support
+            <span class="sep">|</span>
+            <div class="fc-user-info">
+                <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
+                <span class="sep">|</span>
+                <form method="POST" action="{{ route('admin.logout') }}" style="display:inline">
+                    @csrf
+                    <button type="submit" class="fc-btn">exit</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <button class="fc-menu-toggle" onclick="document.querySelector('.fc-menu').classList.toggle('show')">
-        <i class="fa fa-bars"></i> Menu
-    </button>
+    <div class="fc-menu-backdrop" id="fc-menu-backdrop" onclick="closeSidebar()"></div>
 
     <div class="fc-frame">
         @include('admin.partials.sidebar')
@@ -62,6 +69,35 @@
 
     <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
     <script>
+        const sidebar = document.getElementById('fc-menu');
+        const backdrop = document.getElementById('fc-menu-backdrop');
+        const toggleBtn = document.querySelector('.fc-menu-toggle');
+        let lastFocused = null;
+
+        function openSidebar() {
+            if (!sidebar || !backdrop) return;
+            lastFocused = document.activeElement;
+            sidebar.classList.add('show');
+            backdrop.classList.add('show');
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+            sidebar.focus();
+        }
+
+        function closeSidebar() {
+            if (!sidebar || !backdrop) return;
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            if (lastFocused) lastFocused.focus();
+        }
+
+        function toggleSidebar() {
+            if (sidebar?.classList.contains('show')) closeSidebar();
+            else openSidebar();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             if (document.querySelector('textarea.fc-editor')) {
                 CKEDITOR.replace('content', {
@@ -77,21 +113,44 @@
                     height: 350
                 });
             }
-        });
 
-        document.addEventListener('DOMContentLoaded', function () {
             const toast = document.getElementById('fc-toast');
-            if (!toast) return;
+            if (toast) {
+                setTimeout(() => toast.classList.add('show'), 50);
 
-            setTimeout(() => toast.classList.add('show'), 50);
+                const isError = toast.classList.contains('error');
+                const timeout = isError ? 5000 : 2000;
 
-            const isError = toast.classList.contains('error');
-            const timeout = isError ? 5000 : 2000;
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, timeout);
+            }
 
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, timeout);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sidebar?.classList.contains('show')) {
+                    closeSidebar();
+                }
+            });
+
+            if (sidebar) {
+                sidebar.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function () {
+                        if (window.innerWidth <= 768) closeSidebar();
+                    });
+                });
+            }
+
+            sidebar?.querySelectorAll('.fc-group').forEach((group, i) => {
+                const title = group.querySelector('.group-title');
+                if (!title) return;
+                const key = 'fc-group-' + i;
+                if (localStorage.getItem(key) === '1') group.classList.add('collapsed');
+                title.addEventListener('click', () => {
+                    group.classList.toggle('collapsed');
+                    localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
+                });
+            });
         });
     </script>
 
