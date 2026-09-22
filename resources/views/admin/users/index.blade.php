@@ -24,7 +24,11 @@
 
     <h1>users ({{ number_format($approxTotal) }})</h1>
 
-    <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')">
+    @php
+        $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
+    @endphp
+
+    <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')" :activeCount="$activeFilterCount">
 
         <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
         <input class="fc-input" name="first_name" style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
@@ -180,7 +184,7 @@
 
     </x-admin.list-table-box>
 
-    <x-admin.detail-panel title="user">
+    <x-admin.detail-panel title="user" :closeRoute="route('admin.users', request()->except('select'))">
         <form method="post" action="{{ route('admin.users.save') }}" style="margin:0;">
             @csrf
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">

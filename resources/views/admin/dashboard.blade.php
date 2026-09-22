@@ -88,7 +88,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<div class="dash-two-col">
     <div class="dash-section">
         <h2>Top Petitions</h2>
         <table class="table-list">
@@ -148,7 +148,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<div class="dash-two-col">
     <div class="dash-section">
         <h2>Recent Users</h2>
         <table class="table-list">

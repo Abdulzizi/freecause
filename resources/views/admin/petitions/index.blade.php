@@ -35,7 +35,11 @@
 
     <h1>petitions ({{ number_format($approxTotal) }})</h1>
 
-    <x-admin.filter-box title="filter petitions" :action="route('admin.petitions')" :reset="route('admin.petitions')">
+    @php
+        $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null && $v !== 'locale')->count();
+    @endphp
+
+    <x-admin.filter-box title="filter petitions" :action="route('admin.petitions')" :reset="route('admin.petitions')" :activeCount="$activeFilterCount">
         <input type="hidden" name="locale" value="{{ $locale }}">
 
         <input class="fc-input" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}" style="max-width:90px;">
@@ -124,22 +128,22 @@
                     {{-- ACTIVE --}}
                     <td>
                         {!! $p->is_active
-                            ? '<span style="color:#5c8f3a;font-weight:bold;">✔</span>'
-                            : '<span style="color:#c00;">✖</span>' !!}
+                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Active">✔</span>'
+                            : '<span style="color:#c00;" title="Not active">✖</span>' !!}
                     </td>
 
                     {{-- PUBLISHED --}}
                     <td>
                         {!! $p->status === 'published'
-                            ? '<span style="color:#5c8f3a;font-weight:bold;">✔</span>'
-                            : '<span style="color:#c00;">✖</span>' !!}
+                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Published">✔</span>'
+                            : '<span style="color:#c00;" title="Not published">✖</span>' !!}
                     </td>
 
                     {{-- FEATURED --}}
                     <td>
                         {!! $p->is_featured
-                            ? '<span style="color:#5c8f3a;font-weight:bold;">✔</span>'
-                            : '<span style="color:#c00;">✖</span>' !!}
+                            ? '<span style="color:#5c8f3a;font-weight:bold;" title="Featured">✔</span>'
+                            : '<span style="color:#c00;" title="Not featured">✖</span>' !!}
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
@@ -209,7 +213,7 @@
     </x-admin.list-table-box>
 
 
-    <x-admin.detail-panel title="petition">
+    <x-admin.detail-panel title="petition" :closeRoute="route('admin.petitions', request()->except('select'))">
         @if ($selectedPetition)
             <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
                 @csrf

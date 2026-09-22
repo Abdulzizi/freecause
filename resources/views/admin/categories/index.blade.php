@@ -40,9 +40,14 @@
 </div>
 
 {{-- ── FILTER ────────────────────────────────────────────────────────────── --}}
+@php
+    $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
+@endphp
+
 <x-admin.filter-box title="filter categories"
     :action="route('admin.categories')"
-    :reset="route('admin.categories')">
+    :reset="route('admin.categories')"
+    :activeCount="$activeFilterCount">
 
     <select class="fc-select" name="locale" style="max-width:140px;">
         @foreach ($locales as $k => $label)
@@ -116,7 +121,7 @@
 </x-admin.list-table-box>
 
 {{-- ── DETAIL / EDIT PANEL ───────────────────────────────────────────────── --}}
-<x-admin.detail-panel title="category">
+<x-admin.detail-panel title="category" :closeRoute="route('admin.categories', request()->except('select'))">
 
     @if ($selectedCategory)
         {{-- Edit translation --}}

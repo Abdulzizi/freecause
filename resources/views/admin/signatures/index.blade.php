@@ -18,7 +18,11 @@
 
     <h1>signatures ({{ number_format($approxTotal) }})</h1>
 
-    <x-admin.filter-box title="filter signatures" :action="route('admin.signatures')" :reset="route('admin.signatures')">
+    @php
+        $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
+    @endphp
+
+    <x-admin.filter-box title="filter signatures" :action="route('admin.signatures')" :reset="route('admin.signatures')" :activeCount="$activeFilterCount">
 
         <input class="fc-input" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}"
             style="max-width:120px;">

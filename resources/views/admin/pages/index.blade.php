@@ -32,7 +32,11 @@
     <h1>pages ({{ number_format($approxTotal) }})</h1>
 
 
-    <x-admin.filter-box title="filter pages" :action="route('admin.pages')" :reset="route('admin.pages')">
+    @php
+        $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
+    @endphp
+
+    <x-admin.filter-box title="filter pages" :action="route('admin.pages')" :reset="route('admin.pages')" :activeCount="$activeFilterCount">
 
         <input class="fc-input" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}" style="max-width:90px;">
 
@@ -132,7 +136,7 @@
     </x-admin.list-table-box>
 
 
-    <x-admin.detail-panel title="page">
+    <x-admin.detail-panel title="page" :closeRoute="route('admin.pages', request()->except('select'))">
 
         @if ($selectedPage)
             <form method="POST" action="{{ route('admin.pages.save') }}">

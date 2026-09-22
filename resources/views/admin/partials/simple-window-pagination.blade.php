@@ -9,8 +9,13 @@
     $window   = 5;
     $start    = max(1, $current - $window);
     $end      = $lastPage ? min($lastPage, $current + $window) : $current;
+    $perPage  = method_exists($p, 'perPage') ? $p->perPage() : 25;
+    $total    = method_exists($p, 'total') ? $p->total() : null;
+    $from     = $total ? (($current - 1) * $perPage) + 1 : null;
+    $to       = $total ? min($from + $perPage - 1, $total) : null;
 @endphp
 
+<div class="fc-pagination-wrap">
 <div class="fc-pagination" style="display:flex; gap:4px; align-items:center; font-size:11px;">
     @if($current > 1)
         <a href="{{ $p->url($current - 1) }}"
@@ -65,4 +70,9 @@
             »
         </a>
     @endif
+</div>
+
+@if($total !== null)
+    <span class="fc-pagination-total">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
+@endif
 </div>
