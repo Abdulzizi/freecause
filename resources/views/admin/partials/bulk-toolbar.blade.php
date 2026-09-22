@@ -1,29 +1,35 @@
-<div style="font-size:11px; color:#555; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-    <a href="#" data-bulk="all" title="Select all" aria-label="Select all" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
-        <span style="display:inline-block; width:14px; text-align:center;">✓</span>
-        <span class="bulk-label">All</span>
-    </a>
+<div class="fc-bulk-bar">
+    <div class="fc-bulk-select">
+        <a href="#" data-bulk="all" title="Select all" aria-label="Select all" class="fc-bulk-link">
+            <span class="fc-bulk-ico">✓</span>
+            <span class="bulk-label">All</span>
+        </a>
 
-    <a href="#" data-bulk="none" title="Deselect all" aria-label="Deselect all" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
-        <span style="display:inline-block; width:14px; text-align:center;">□</span>
-        <span class="bulk-label">None</span>
-    </a>
+        <a href="#" data-bulk="none" title="Deselect all" aria-label="Deselect all" class="fc-bulk-link">
+            <span class="fc-bulk-ico">□</span>
+            <span class="bulk-label">None</span>
+        </a>
 
-    <a href="#" data-bulk="invert" title="Invert selection" aria-label="Invert selection" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
-        <span style="display:inline-block; width:14px; text-align:center;">↔</span>
-        <span class="bulk-label">Invert</span>
-    </a>
+        <a href="#" data-bulk="invert" title="Invert selection" aria-label="Invert selection" class="fc-bulk-link">
+            <span class="fc-bulk-ico">↔</span>
+            <span class="bulk-label">Invert</span>
+        </a>
+    </div>
+
+    <span class="fc-bulk-count" id="fc-bulk-count" aria-live="polite"></span>
 
     @isset($banRoute)
-        <a href="#" data-bulk="ban"
-           data-confirm="{{ $banConfirm ?? 'Apply action to selected items?' }}"
-           data-ban-details="{{ ($banWithDetails ?? false) ? '1' : '0' }}"
-           title="{{ $banLabel ?? 'Ban' }}"
-           aria-label="{{ $banLabel ?? 'Ban' }}"
-           style="text-decoration:none; color:#900; display:inline-flex; align-items:center; gap:4px;">
-            <span style="display:inline-block; width:14px; text-align:center;">✖</span>
-            <span class="bulk-label">{{ $banLabel ?? 'Banned' }}</span>
-        </a>
+        <div class="fc-bulk-actions">
+            <a href="#" data-bulk="ban"
+               data-confirm="{{ $banConfirm ?? 'Apply action to selected items?' }}"
+               data-ban-details="{{ ($banWithDetails ?? false) ? '1' : '0' }}"
+               title="{{ $banLabel ?? 'Ban' }}"
+               aria-label="{{ $banLabel ?? 'Ban' }}"
+               class="fc-bulk-link fc-bulk-danger">
+                <span class="fc-bulk-ico">✖</span>
+                <span class="bulk-label">{{ $banLabel ?? 'Banned' }}</span>
+            </a>
+        </div>
     @endisset
 </div>
 
@@ -37,24 +43,32 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateState() {
         const boxes = getBoxes();
         const selected = boxes.filter(cb => cb.checked);
+        const count = selected.length;
+        const countEl = document.getElementById('fc-bulk-count');
 
-        const banBtn = document.querySelector('[data-bulk="ban"]');
-        if (!banBtn) return;
-
-        if (!selected.length) {
-            banBtn.style.opacity = '.4';
-            banBtn.style.pointerEvents = 'none';
-            return;
+        /* count badge */
+        if (countEl) {
+            countEl.textContent = count ? count + ' selected' : '';
+            countEl.classList.toggle('show', count > 0);
         }
 
-        const allBanned = selected.every(cb => cb.dataset.level === 'banned');
+        /* disable all action buttons when nothing selected */
+        document.querySelectorAll('.fc-toolbar-right .fc-icon-btn').forEach(btn => {
+            btn.disabled = count === 0;
+            btn.style.opacity = count === 0 ? '.35' : '1';
+            btn.style.pointerEvents = count === 0 ? 'none' : 'auto';
+        });
 
-        if (allBanned) {
-            banBtn.style.opacity = '.4';
-            banBtn.style.pointerEvents = 'none';
-        } else {
-            banBtn.style.opacity = '1';
-            banBtn.style.pointerEvents = 'auto';
+        /* ban-specific: also disable if all selected are already banned */
+        const banBtn = document.querySelector('[data-bulk="ban"]');
+        if (banBtn) {
+            if (!count || selected.every(cb => cb.dataset.level === 'banned')) {
+                banBtn.style.opacity = '.35';
+                banBtn.style.pointerEvents = 'none';
+            } else {
+                banBtn.style.opacity = '1';
+                banBtn.style.pointerEvents = 'auto';
+            }
         }
     }
 

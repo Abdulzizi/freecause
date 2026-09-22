@@ -544,6 +544,102 @@ body {
     padding: 0 4px;
 }
 
+/* ── Toolbar ─────────────────────────────────────── */
+.fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 11px;
+    color: #555;
+}
+
+.fc-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.fc-toolbar-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.fc-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fc-bulk-select {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fc-bulk-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: #555;
+    padding: 3px 6px;
+    border-radius: 3px;
+    transition: background 0.15s;
+}
+
+.fc-bulk-link:hover {
+    background: #f0f0f0;
+}
+
+.fc-bulk-danger {
+    color: #900;
+}
+
+.fc-bulk-danger:hover {
+    background: #fff0f0;
+}
+
+.fc-bulk-ico {
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.fc-bulk-count {
+    display: none;
+    align-items: center;
+    padding: 2px 8px;
+    background: #e8f0fe;
+    color: #1a5fb4;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.6;
+}
+
+.fc-bulk-count.show {
+    display: inline-flex;
+}
+
+.fc-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+    padding-left: 10px;
+    border-left: 1px solid #ddd;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     body {
@@ -728,6 +824,27 @@ body {
         min-width: 36px;
         text-align: center;
         font-size: 13px;
+    }
+
+    /* sticky toolbar on mobile */
+    .fc-toolbar {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        margin: 10px -10px -10px;
+        padding: 10px 12px;
+        border-top: 1px solid #ddd;
+        border-radius: 0 0 6px 6px;
+        box-shadow: 0 -2px 8px rgba(0,0,0,.06);
+        z-index: 10;
+    }
+
+    .fc-bulk-bar {
+        gap: 6px;
+    }
+
+    .fc-toolbar-right {
+        gap: 6px;
     }
 
     .admin-auth-stage {

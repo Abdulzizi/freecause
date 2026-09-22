@@ -33,15 +33,14 @@
         </div>
 
         @if ($bulk !== null || $hasFooter)
-            <div
-                style="font-size:11px; color:#555; display:flex; justify-content:space-between; align-items:flex-end;">
-                <div>
+            <div class="fc-toolbar">
+                <div class="fc-toolbar-left">
                     @if ($bulk != null)
                         @include('admin.partials.bulk-toolbar', $bulk)
                     @endif
                 </div>
 
-                <div style="display:flex; gap:10px; align-items:flex-end;">
+                <div class="fc-toolbar-right">
                     @if ($hasFooter)
                         {{ $footer }}
                     @endif
