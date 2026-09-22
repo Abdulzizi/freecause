@@ -1,26 +1,28 @@
-<div style="font-size:11px; color:#555;">
-    <a href="#" data-bulk="all" style="margin-right:12px; text-decoration:none; color:#555;">
+<div style="font-size:11px; color:#555; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+    <a href="#" data-bulk="all" title="Select all" aria-label="Select all" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
         <span style="display:inline-block; width:14px; text-align:center;">✓</span>
-        <span>All</span>
+        <span class="bulk-label">All</span>
     </a>
 
-    <a href="#" data-bulk="none" style="margin-right:12px; text-decoration:none; color:#555;">
+    <a href="#" data-bulk="none" title="Deselect all" aria-label="Deselect all" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
         <span style="display:inline-block; width:14px; text-align:center;">□</span>
-        <span>None</span>
+        <span class="bulk-label">None</span>
     </a>
 
-    <a href="#" data-bulk="invert" style="margin-right:12px; text-decoration:none; color:#555;">
+    <a href="#" data-bulk="invert" title="Invert selection" aria-label="Invert selection" style="text-decoration:none; color:#555; display:inline-flex; align-items:center; gap:4px;">
         <span style="display:inline-block; width:14px; text-align:center;">↔</span>
-        <span>Invert</span>
+        <span class="bulk-label">Invert</span>
     </a>
 
     @isset($banRoute)
         <a href="#" data-bulk="ban"
            data-confirm="{{ $banConfirm ?? 'Apply action to selected items?' }}"
            data-ban-details="{{ ($banWithDetails ?? false) ? '1' : '0' }}"
-           style="text-decoration:none; color:#900;">
+           title="{{ $banLabel ?? 'Ban' }}"
+           aria-label="{{ $banLabel ?? 'Ban' }}"
+           style="text-decoration:none; color:#900; display:inline-flex; align-items:center; gap:4px;">
             <span style="display:inline-block; width:14px; text-align:center;">✖</span>
-            <span>{{ $banLabel ?? 'Banned' }}</span>
+            <span class="bulk-label">{{ $banLabel ?? 'Banned' }}</span>
         </a>
     @endisset
 </div>

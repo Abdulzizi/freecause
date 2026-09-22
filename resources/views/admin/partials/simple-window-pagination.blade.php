@@ -11,7 +11,7 @@
     $end      = $lastPage ? min($lastPage, $current + $window) : $current;
 @endphp
 
-<div style="display:flex; gap:4px; align-items:center; font-size:11px;">
+<div class="fc-pagination" style="display:flex; gap:4px; align-items:center; font-size:11px;">
     @if($current > 1)
         <a href="{{ $p->url($current - 1) }}"
             style="padding:2px 6px; border:1px solid #ccc; background:#f7f7f7; text-decoration:none; color:#000;">

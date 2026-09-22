@@ -714,6 +714,22 @@ body {
         flex: 1 1 140px;
     }
 
+    .bulk-label {
+        display: none;
+    }
+
+    .fc-pagination {
+        gap: 6px;
+    }
+
+    .fc-pagination a,
+    .fc-pagination > span {
+        padding: 8px 10px;
+        min-width: 36px;
+        text-align: center;
+        font-size: 13px;
+    }
+
     .admin-auth-stage {
         padding: 24px 12px 40px;
     }
