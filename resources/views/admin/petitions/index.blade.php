@@ -96,14 +96,14 @@
             <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
                 <th>ID</th>
-                <th width="26"></th>
+                <th width="26" data-hide-mobile></th>
                 <th width="26">A</th>
                 <th width="26">P</th>
                 <th width="26">F</th>
-                <th>Signatures</th>
+                <th data-hide-mobile>Signatures</th>
                 <th>Title</th>
-                <th>Locales</th>
-                <th width="150">Date</th>
+                <th data-hide-mobile>Locales</th>
+                <th width="150" data-hide-mobile>Date</th>
             </tr>
         </x-slot:thead>
 
@@ -117,7 +117,7 @@
                         </a>
                     </td>
 
-                    <td>
+                    <td data-hide-mobile>
                         <input type="checkbox" class="bulk-checkbox" value="{{ $p->id }}">
                     </td>
 
@@ -142,9 +142,9 @@
                             : '<span style="color:#c00;">✖</span>' !!}
                     </td>
 
-                    <td>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
+                    <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
                     <td>{{ $p->title }}</td>
-                    <td>
+                    <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
                         @endphp
@@ -156,7 +156,7 @@
                             @endif
                         @endforeach
                     </td>
-                    <td>{{ $p->created_at }}</td>
+                    <td data-hide-mobile>{{ $p->created_at }}</td>
 
                 </tr>
             @endforeach

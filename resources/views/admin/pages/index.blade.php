@@ -55,12 +55,12 @@
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;">
                 <th width="70">ID</th>
-                <th width="26"></th>
+                <th width="26" data-hide-mobile></th>
                 <th width="26">P</th>
-                <th width="26"></th>
+                <th width="26" data-hide-mobile></th>
                 <th style="text-align: start">Title</th>
-                <th>Slug</th>
-                <th width="90">Locale</th>
+                <th data-hide-mobile>Slug</th>
+                <th width="90" data-hide-mobile>Locale</th>
             </tr>
         </x-slot:thead>
 
@@ -75,7 +75,7 @@
                         </a>
                     </td>
 
-                    <td>
+                    <td data-hide-mobile>
                         <input type="checkbox" class="bulk-checkbox" value="{{ $p->page_id }}">
                     </td>
 
@@ -87,15 +87,15 @@
                         @endif
                     </td>
 
-                    <td style="text-align:center;">
+                    <td data-hide-mobile style="text-align:center;">
                         <a href="{{ $p->client_url }}" target="_blank" title="Open page">
                             {!! $icoLink !!}
                         </a>
                     </td>
 
                     <td>{{ $p->title }}</td>
-                    <td style="text-align: center">{{ $p->slug }}</td>
-                    <td style="text-align: center">{{ $p->locale }}</td>
+                    <td data-hide-mobile style="text-align: center">{{ $p->slug }}</td>
+                    <td data-hide-mobile style="text-align: center">{{ $p->locale }}</td>
 
                 </tr>
             @endforeach

@@ -85,16 +85,16 @@
         <x-slot:thead>
             <tr style="border-bottom:1px solid #ccc;">
                 <th width="70">ID</th>
-                <th width="26"></th>
-                <th width="26"></th>
+                <th width="26" data-hide-mobile></th>
+                <th width="26" data-hide-mobile></th>
                 @if ($hasConfirmed)
-                    <th width="26" title="Confirmed">C</th>
+                    <th width="26" title="Confirmed" data-hide-mobile>C</th>
                 @endif
                 <th>User</th>
-                <th width="26"></th>
+                <th width="26" data-hide-mobile></th>
                 <th>Title</th>
                 @if ($hasText)
-                    <th>Text</th>
+                    <th data-hide-mobile>Text</th>
                 @endif
                 <th width="160">Date</th>
             </tr>
@@ -106,11 +106,11 @@
 
                     <td>{{ $s->id }}</td>
 
-                    <td>
+                    <td data-hide-mobile>
                         <input type="checkbox" class="bulk-checkbox" value="{{ $s->id }}">
                     </td>
 
-                    <td style="text-align:center;">
+                    <td data-hide-mobile style="text-align:center;">
                         @if ($s->user_verified)
                             <span class="fc-ok">✔</span>
                         @else
@@ -119,7 +119,7 @@
                     </td>
 
                     @if ($hasConfirmed)
-                        <td style="text-align:center;">
+                        <td data-hide-mobile style="text-align:center;">
                             @if ($s->confirmed)
                                 <span class="fc-ok" title="Confirmed">✔</span>
                             @else
@@ -142,7 +142,7 @@
                         @endif
                     </td>
 
-                    <td style="text-align:center;">
+                    <td data-hide-mobile style="text-align:center;">
                         @if ($s->petition_slug)
                             <a
                                 href="{{ route('petition.show', [
@@ -162,7 +162,7 @@
                     </td>
 
                     @if ($hasText)
-                        <td style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <td data-hide-mobile style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                             {{ $s->text }}
                         </td>
                     @endif

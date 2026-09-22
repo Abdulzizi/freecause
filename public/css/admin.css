@@ -537,6 +537,13 @@ body {
 }
 .quick-btn:hover { background: #2980b9; }
 
+.fc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding: 0 4px;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     body {
@@ -691,6 +698,20 @@ body {
         font-size: 12px;
         padding: 6px 8px;
         white-space: nowrap;
+    }
+
+    [data-hide-mobile] {
+        display: none !important;
+    }
+
+    .fc-box form {
+        gap: 8px !important;
+    }
+
+    .fc-box form > .fc-input,
+    .fc-box form > .fc-select {
+        max-width: none !important;
+        flex: 1 1 140px;
     }
 
     .admin-auth-stage {

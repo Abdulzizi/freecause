@@ -67,13 +67,13 @@
             <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
                 <th style="text-align:left; width:90px;">id</th>
-                <th style="width:26px;"></th>
-                <th style="width:26px; text-align:left;">v</th>
+                <th style="width:26px;" data-hide-mobile></th>
+                <th style="width:26px; text-align:left;" data-hide-mobile>v</th>
                 <th style="text-align:left;">email</th>
                 <th style="text-align:left;">username</th>
-                <th style="text-align:left;">first name</th>
-                <th style="text-align:left;">last name</th>
-                <th style="text-align:left; width:90px;">locale</th>
+                <th style="text-align:left;" data-hide-mobile>first name</th>
+                <th style="text-align:left;" data-hide-mobile>last name</th>
+                <th style="text-align:left; width:90px;" data-hide-mobile>locale</th>
                 <th style="text-align:left; width:160px;">registered</th>
             </tr>
         </x-slot:thead>
@@ -91,14 +91,14 @@
                         </a>
                     </td>
 
-                    <td style="text-align:left;">
+                    <td data-hide-mobile style="text-align:left;">
                         {{-- <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}> --}}
                         <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
                             data-level="{{ $u->level?->name }}"
                             {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
                     </td>
 
-                    <td style="text-align:left;">
+                    <td data-hide-mobile style="text-align:left;">
                         @if ($u->verified ?? 0)
                             <span style="color:#5c8f3a;">✔</span>
                         @else
@@ -142,9 +142,9 @@
                             </span>
                         @endif
                     </td>
-                    <td>{{ $u->first_name }}</td>
-                    <td>{{ $u->last_name }}</td>
-                    <td>
+                    <td data-hide-mobile>{{ $u->first_name }}</td>
+                    <td data-hide-mobile>{{ $u->last_name }}</td>
+                    <td data-hide-mobile>
                         @php
                             $short = \App\Support\Locale::toShort($u->locale);
                             $label = $locales[$short] ?? $short;

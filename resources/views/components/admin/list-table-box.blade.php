@@ -21,14 +21,16 @@
             {{ $emptyText }}
         </div>
     @else
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                {{ $thead }}
-            </thead>
-            <tbody>
-                {{ $tbody }}
-            </tbody>
-        </table>
+        <div class="fc-table-wrap">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    {{ $thead }}
+                </thead>
+                <tbody>
+                    {{ $tbody }}
+                </tbody>
+            </table>
+        </div>
 
         @if ($bulk !== null || $hasFooter)
             <div
