@@ -103,38 +103,29 @@
 
 
         <x-slot:footer>
-            <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div class="fc-toolbar-actions">
+                <div class="fc-action-group">
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="publish" title="Publish">
+                        {!! $icoPublish !!}
+                        <span class="fc-btn-label">Publish</span>
+                    </button>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="publish">
-                    {!! $icoPublish !!}
-                    <div style="font-size:10px; color:#666;">Publish</div>
-                </button>
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish" title="Unpublish">
+                        {!! $icoUnpublish !!}
+                        <span class="fc-btn-label">Unpublish</span>
+                    </button>
+                </div>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish">
-                    {!! $icoUnpublish !!}
-                    <div style="font-size:10px; color:#666;">Unpublish</div>
-                </button>
-
-                <button type="button" class="fc-icon-btn bulk-action" data-action="delete">
+                <button type="button" class="fc-icon-btn bulk-action" data-action="delete" title="Delete">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Delete</div>
+                    <span class="fc-btn-label">Delete</span>
                 </button>
 
-                <a href="{{ route('admin.pages', request()->except('select')) }}" title="Clear Selection"
-                    style="display:flex;
-                flex-direction:column;
-                align-items:center;
-                justify-content:center;
-                gap:2px;
-                width:44px;
-                height:44px;
-                border:1px solid #bbb;
-                background:#fff;
-                text-decoration:none;">
+                <a href="{{ route('admin.pages', request()->except('select')) }}"
+                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Clear</div>
+                    <span class="fc-btn-label">Clear</span>
                 </a>
-
             </div>
         </x-slot:footer>
 

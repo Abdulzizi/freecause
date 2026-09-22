@@ -164,49 +164,45 @@
 
 
         <x-slot:footer>
-            <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div class="fc-toolbar-actions">
+                <div class="fc-action-group">
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="publish" title="Publish">
+                        {!! $icoPublish !!}
+                        <span class="fc-btn-label">Publish</span>
+                    </button>
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish" title="Unpublish">
+                        {!! $icoUnpublish !!}
+                        <span class="fc-btn-label">Unpublish</span>
+                    </button>
+                </div>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="publish">
-                    {!! $icoPublish !!}
-                    <div style="font-size:10px; color:#666;">Publish</div>
-                </button>
+                <div class="fc-action-group">
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="activate" title="Activate">
+                        {!! $icoPublish !!}
+                        <span class="fc-btn-label">Activate</span>
+                    </button>
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="deactivate" title="Deactivate">
+                        {!! $icoUnpublish !!}
+                        <span class="fc-btn-label">Deactivate</span>
+                    </button>
+                </div>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish">
-                    {!! $icoUnpublish !!}
-                    <div style="font-size:10px; color:#666;">Unpublish</div>
-                </button>
+                <div class="fc-action-group">
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="feature" title="Feature">
+                        {!! $icoFeature !!}
+                        <span class="fc-btn-label">Feature</span>
+                    </button>
+                    <button type="button" class="fc-icon-btn bulk-action" data-action="unfeature" title="Unfeature">
+                        {!! $icoFeature !!}
+                        <span class="fc-btn-label">Unfeature</span>
+                    </button>
+                </div>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="activate">
-                    {!! $icoPublish !!}
-                    <div style="font-size:10px; color:#666;">Activate</div>
-                </button>
-
-                <button type="button" class="fc-icon-btn bulk-action" data-action="deactivate">
-                    {!! $icoUnpublish !!}
-                    <div style="font-size:10px; color:#666;">Deactivate</div>
-                </button>
-
-                <button type="button" class="fc-icon-btn bulk-action" data-action="feature">
-                    {!! $icoFeature !!}
-                    <div style="font-size:10px; color:#666;">Feature</div>
-                </button>
-
-                <button type="button" class="fc-icon-btn bulk-action" data-action="unfeature">
-                    {!! $icoFeature !!}
-                    <div style="font-size:10px; color:#666;">Unfeature</div>
-                </button>
-
-                {{-- <button type="button" class="fc-icon-btn bulk-action" data-action="ban">
-                    {!! $icoBan !!}
-                    <div style="font-size:10px; color:#666;">Ban</div>
-                </button> --}}
-
-                <a href="{{ route('admin.petitions', request()->except('select')) }}" title="Clear Selection"
-                    class="fc-icon-btn" style="text-decoration:none;">
+                <a href="{{ route('admin.petitions', request()->except('select')) }}"
+                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Clear</div>
+                    <span class="fc-btn-label">Clear</span>
                 </a>
-
             </div>
         </x-slot:footer>
 

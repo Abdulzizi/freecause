@@ -174,45 +174,36 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div style="display:flex; gap:10px; align-items:flex-end;">
-
+            <div class="fc-toolbar-actions">
                 @if ($hasConfirmed)
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="approve">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <div style="font-size:10px; color:#666;">Approve</div>
-                    </button>
+                    <div class="fc-action-group">
+                        <button type="button" class="fc-icon-btn bulk-action" data-action="approve" title="Approve">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="fc-btn-label">Approve</span>
+                        </button>
 
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="reject">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <div style="font-size:10px; color:#666;">Reject</div>
-                    </button>
+                        <button type="button" class="fc-icon-btn bulk-action" data-action="reject" title="Reject">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span class="fc-btn-label">Reject</span>
+                        </button>
+                    </div>
                 @endif
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="delete">
+                <button type="button" class="fc-icon-btn bulk-action" data-action="delete" title="Delete">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Delete</div>
+                    <span class="fc-btn-label">Delete</span>
                 </button>
 
-                <a href="{{ route('admin.signatures', request()->except('select')) }}" title="Clear Selection"
-                    style="display:flex;
-                        flex-direction:column;
-                        align-items:center;
-                        justify-content:center;
-                        gap:2px;
-                        width:44px;
-                        height:44px;
-                        border:1px solid #bbb;
-                        background:#fff;
-                        text-decoration:none;">
+                <a href="{{ route('admin.signatures', request()->except('select')) }}"
+                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Clear</div>
+                    <span class="fc-btn-label">Clear</span>
                 </a>
-
             </div>
         </x-slot:footer>
 

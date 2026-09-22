@@ -157,25 +157,24 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div style="display:flex; gap:10px; align-items:flex-end;">
-                <button type="button" id="bulk-unban" class="fc-icon-btn">
-                    {!! $icoUnban !!}
-                    <div style="font-size:10px; color:#666;">Unban</div>
-                </button>
+            <div class="fc-toolbar-actions">
+                <div class="fc-action-group">
+                    <button type="button" id="bulk-unban" class="fc-icon-btn" title="Unban">
+                        {!! $icoUnban !!}
+                        <span class="fc-btn-label">Unban</span>
+                    </button>
 
-                <button type="button" id="bulk-delete" class="fc-icon-btn">
-                    {!! $icoDelete !!}
-                    <div style="font-size:10px; color:#666;">Delete</div>
-                </button>
+                    <button type="button" id="bulk-delete" class="fc-icon-btn" title="Delete">
+                        {!! $icoDelete !!}
+                        <span class="fc-btn-label">Delete</span>
+                    </button>
+                </div>
 
-                <a href="{{ route('admin.users', request()->except('select')) }}" title="Clear Selection"
-                    style="display:flex; flex-direction:column; align-items:center; justify-content:center;
-                      gap:2px; width:44px; height:44px; border:1px solid #bbb; background:#fff;
-                      text-decoration:none;">
+                <a href="{{ route('admin.users', request()->except('select')) }}"
+                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
                     {!! $icoX !!}
-                    <div style="font-size:10px; color:#666;">Clear</div>
+                    <span class="fc-btn-label">Clear</span>
                 </a>
-
             </div>
         </x-slot:footer>
 
