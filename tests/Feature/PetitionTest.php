@@ -130,6 +130,23 @@ class PetitionTest extends TestCase
             ->assertOk();
     }
 
+    public function test_shoutbox_and_signatures_deep_pagination_is_clamped(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Deep Pagination Petition',
+            'slug' => 'deep-pagination-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/deep-pagination-petition/{$petition->id}?shoutbox=99999")
+            ->assertOk();
+        $this->get("/en/petition/deep-pagination-petition/{$petition->id}/signatures?page=99999")
+            ->assertOk();
+    }
+
     public function test_petition_search_pagination_preserves_query(): void
     {
         foreach (range(1, 16) as $number) {

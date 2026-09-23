@@ -233,6 +233,8 @@ class PetitionController extends Controller
             ->values()
             ->all();
 
+        $shoutboxPage = max(1, min((int) request('shoutbox', 1), 500));
+
         $shoutbox = Signature::with('user')
             ->where('petition_id', $petition->id)
             ->where('is_spam', false)
@@ -241,7 +243,7 @@ class PetitionController extends Controller
             ->whereRaw("TRIM(text) <> ''")
             ->when(! empty($defaultComments), fn ($q) => $q->whereNotIn('text', $defaultComments))
             ->orderBy('created_at')
-            ->paginate(10, ['*'], 'shoutbox')
+            ->paginate(10, ['*'], 'shoutbox', $shoutboxPage)
             ->withQueryString();
 
         return view('petition.show', compact(
@@ -1281,11 +1283,13 @@ class PetitionController extends Controller
             ]);
         }
 
+        $page = max(1, min((int) request('page', 1), 500));
+
         $signatures = Signature::with('user')
             ->where('petition_id', $petition->id)
             ->where('is_spam', false)
             ->orderByDesc('created_at')
-            ->paginate(25)
+            ->paginate(25, ['*'], 'page', $page)
             ->withQueryString();
 
         $goalTotal = (int) ($petition->goal_signatures ?? 100);
