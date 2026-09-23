@@ -2,8 +2,8 @@
 
 return [
     'petition_fallback' => 'petition',
-    'title_created'     => 'Thanks! - xPetition',
-    'title_signed'      => 'Thank you for having signed - xPetition',
+    'title_created'     => 'Thanks! - FreeCause',
+    'title_signed'      => 'Thank you for having signed - FreeCause',
     'h1_created'        => 'Thanks!',
     'h1_signed'         => 'Thank you for having signed:',
     'p_created'         => 'Your petition has been created successfully. You can open it now using the link above.',

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'page_title'             => ':title - xPetition',
+    'page_title'             => ':title - FreeCause',
     'btn_sign_now'           => 'Sign Now',
     'google_continue'        => 'Continue with Google',
     'or'                     => 'OR',
