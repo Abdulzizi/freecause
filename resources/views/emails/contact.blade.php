@@ -13,7 +13,7 @@
 
         <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
 
-        <p style="white-space:pre-wrap;">{{ $message }}</p>
+        <p style="white-space:pre-wrap;">{{ $body }}</p>
 
         <p style="margin-top:30px;font-size:13px;color:#777;">
             FreeCause – Online Petition Platform

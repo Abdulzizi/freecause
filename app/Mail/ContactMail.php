@@ -14,7 +14,7 @@ class ContactMail extends Mailable
 
     public string $senderEmail;
 
-    public string $message;
+    public string $body;
 
     public ?string $subjectLine;
 
@@ -22,7 +22,7 @@ class ContactMail extends Mailable
     {
         $this->senderName = $senderName;
         $this->senderEmail = $senderEmail;
-        $this->message = $message;
+        $this->body = $message;
         $this->subjectLine = $subjectLine;
     }
 
