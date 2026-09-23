@@ -139,7 +139,7 @@
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>
@@ -213,7 +213,7 @@
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
                                     <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google.png') }}" alt="Google">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>

@@ -220,11 +220,16 @@ class AppServiceProvider extends ServiceProvider
     private function bootOAuth(): void
     {
         try {
-            $locale = app()->getLocale();
+            $clientId = trim((string) Settings::get('google_client_id', ''));
+            $clientSecret = trim((string) Settings::get('google_client_secret', ''));
 
-            Config::set('services.google.client_id', Settings::get('google_client_id', ''));
-            Config::set('services.google.client_secret', Settings::get('google_client_secret', ''));
-            Config::set('services.google.redirect', url("/{$locale}/oauth/google/callback"));
+            if ($clientId !== '') {
+                Config::set('services.google.client_id', $clientId);
+            }
+
+            if ($clientSecret !== '') {
+                Config::set('services.google.client_secret', $clientSecret);
+            }
         } catch (\Throwable $e) {
             Log::warning('bootOAuth Google failed: '.$e->getMessage());
         }

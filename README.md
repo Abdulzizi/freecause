@@ -286,7 +286,7 @@ MAIL_PASSWORD=secret
 # Google OAuth (optional)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
+GOOGLE_REDIRECT_URI="${APP_URL}/en/oauth/google/callback"
 ```
 
 ### Admin Global Settings

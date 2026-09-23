@@ -16,7 +16,21 @@ class GoogleAuthController extends Controller
 {
     public function redirect(Request $request, string $locale)
     {
-        $flow = $request->query('flow', 'register'); // register | petition
+        if (! config('services.google.client_id') ||
+            ! config('services.google.client_secret') ||
+            ! config('services.google.redirect')) {
+            AppLog::warning(
+                'Google OAuth unavailable',
+                'Google OAuth credentials are not configured.',
+                'auth.google'
+            );
+
+            return back()->withErrors([
+                'oauth' => 'Google sign-in is temporarily unavailable. Please use email and password.',
+            ]);
+        }
+
+        $flow = $request->query('flow', 'register');
 
         if ($flow === 'petition') {
             $request->session()->put('oauth_ctx', [
@@ -26,9 +40,15 @@ class GoogleAuthController extends Controller
                 'slug' => (string) $request->query('slug'),
             ]);
         } else {
+            $redirect = (string) $request->query('redirect', '');
+            if (! str_starts_with($redirect, '/') || str_starts_with($redirect, '//')) {
+                $redirect = "/{$locale}";
+            }
+
             $request->session()->put('oauth_ctx', [
-                'flow' => 'register',
+                'flow' => in_array($flow, ['login', 'register'], true) ? $flow : 'register',
                 'locale' => $locale,
+                'redirect' => $redirect,
             ]);
         }
 
@@ -49,14 +69,14 @@ class GoogleAuthController extends Controller
 
         $parts = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY);
         $first = $parts[0] ?? $fullName;
-        $last  = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
+        $last = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
 
         $destLocale = $ctx['locale'] ?? $locale;
 
-        if (!$email) {
+        if (! $email) {
             AppLog::warning(
                 'Google OAuth missing email',
-                'Google ID: ' . $google->getId(),
+                'Google ID: '.$google->getId(),
                 'auth.google'
             );
 
@@ -76,23 +96,24 @@ class GoogleAuthController extends Controller
             if ($hasNoRealPassword) {
                 AppLog::info(
                     'Google OAuth re-linked (no password account)',
-                    'User ID: ' . $user->id . ' | Email: ' . $email,
+                    'User ID: '.$user->id.' | Email: '.$email,
                     'auth.google'
                 );
                 // fall through — google_id will be set below
             } else {
                 AppLog::warning(
                     'Google OAuth email conflict — existing account not linked',
-                    'Email: ' . $email . ' | Google ID: ' . $google->getId(),
+                    'Email: '.$email.' | Google ID: '.$google->getId(),
                     'auth.google'
                 );
+
                 return redirect("/{$destLocale}/login")
                     ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.'])
                     ->withInput(['email' => $email]);
             }
         }
 
-        if (!$user) {
+        if (! $user) {
             $newUser = true;
 
             $user = User::create([
@@ -109,7 +130,7 @@ class GoogleAuthController extends Controller
 
             AppLog::info(
                 'User registered via Google',
-                'User ID: ' . $user->id . ' | Email: ' . $email,
+                'User ID: '.$user->id.' | Email: '.$email,
                 'auth.google'
             );
         }
@@ -117,8 +138,12 @@ class GoogleAuthController extends Controller
         $user->ip = $request->ip();
         $user->locale = Locale::toFull($destLocale);
 
-        if (!$user->first_name) $user->first_name = $first;
-        if (!$user->last_name)  $user->last_name = $last;
+        if (! $user->first_name) {
+            $user->first_name = $first;
+        }
+        if (! $user->last_name) {
+            $user->last_name = $last;
+        }
 
         if ($user->verified === false) {
             $user->verified = true;
@@ -129,27 +154,30 @@ class GoogleAuthController extends Controller
         $user->save();
         Auth::login($user);
 
-        if (!$newUser) {
+        if (! $newUser) {
             AppLog::info(
                 'User login via Google',
-                'User ID: ' . $user->id . ' | Email: ' . $email,
+                'User ID: '.$user->id.' | Email: '.$email,
                 'auth.google'
             );
         }
 
         $request->session()->regenerate();
 
-        if (($ctx['flow'] ?? '') === 'petition' && !empty($ctx['petition_id']) && !empty($ctx['slug'])) {
+        if (($ctx['flow'] ?? '') === 'petition' && ! empty($ctx['petition_id']) && ! empty($ctx['slug'])) {
             $dest = route('petition.sign.page', [
                 'locale' => $ctx['locale'],
                 'slug' => $ctx['slug'],
                 'id' => $ctx['petition_id'],
             ]);
             // route() returns absolute URL; extract path for the SSO redirect
-            $dest = parse_url($dest, PHP_URL_PATH) . '?' . http_build_query(['oauth_logged_in' => 1]);
+            $dest = parse_url($dest, PHP_URL_PATH).'?'.http_build_query(['oauth_logged_in' => 1]);
+
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return redirect()->to(WpSso::loginUrl($user->email, $user->name, "/{$destLocale}"));
+        $dest = $ctx['redirect'] ?? "/{$destLocale}";
+
+        return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
 }

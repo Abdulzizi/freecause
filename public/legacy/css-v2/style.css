@@ -1651,7 +1651,7 @@ body {
 }
 
 .fc-oauth-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 10px 16px;

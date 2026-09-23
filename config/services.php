@@ -38,12 +38,12 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URI'),
+        'redirect' => env('GOOGLE_REDIRECT_URI') ?: rtrim((string) env('APP_URL'), '/').'/en/oauth/google/callback',
     ],
 
-    'emergency_email'    => env('ADMIN_EMERGENCY_EMAIL'),
+    'emergency_email' => env('ADMIN_EMERGENCY_EMAIL'),
     'emergency_password' => env('ADMIN_EMERGENCY_PASSWORD'),
 
-    'admin_username'          => env('ADMIN_USERNAME'),
+    'admin_username' => env('ADMIN_USERNAME'),
     'admin_username_password' => env('ADMIN_USERNAME_PASSWORD'),
 ];

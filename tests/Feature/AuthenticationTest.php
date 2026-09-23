@@ -4,12 +4,15 @@ namespace Tests\Feature;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\User;
+use App\Providers\AppServiceProvider;
 use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
+use Mockery;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -26,6 +29,107 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->get('/en/login');
         $response->assertStatus(200);
+    }
+
+    public function test_login_page_uses_current_google_icon(): void
+    {
+        $this->get('/en/login')
+            ->assertOk()
+            ->assertSee('legacy/images-v2/google-g.svg', false)
+            ->assertDontSee('legacy/images-v2/google.png', false);
+    }
+
+    public function test_google_oauth_keeps_environment_credentials_when_database_settings_are_empty(): void
+    {
+        config()->set('services.google.client_id', 'environment-client-id');
+        config()->set('services.google.client_secret', 'environment-client-secret');
+        Settings::set('google_client_id', '');
+        Settings::set('google_client_secret', '');
+
+        (new AppServiceProvider($this->app))->boot();
+
+        $this->assertSame('environment-client-id', config('services.google.client_id'));
+        $this->assertSame('environment-client-secret', config('services.google.client_secret'));
+    }
+
+    public function test_google_oauth_stays_on_site_when_credentials_are_missing(): void
+    {
+        config()->set('services.google.client_id');
+        config()->set('services.google.client_secret');
+
+        $this->from('/en/login')
+            ->get('/en/oauth/google?flow=login')
+            ->assertRedirect('/en/login')
+            ->assertSessionHasErrors('oauth');
+    }
+
+    public function test_google_oauth_preserves_embedded_return_path(): void
+    {
+        config()->set('services.google.client_id', 'client-id');
+        config()->set('services.google.client_secret', 'client-secret');
+        config()->set('services.google.redirect', 'https://www.freecause.com/en/oauth/google/callback');
+
+        $driver = Mockery::mock();
+        $driver->shouldReceive('redirect')
+            ->once()
+            ->andReturn(redirect()->away('https://accounts.google.test/oauth'));
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($driver);
+
+        $this->get('/en/oauth/google?flow=register&redirect=%2Fen%2Fcreate-petition')
+            ->assertRedirect('https://accounts.google.test/oauth')
+            ->assertSessionHas('oauth_ctx', [
+                'flow' => 'register',
+                'locale' => 'en',
+                'redirect' => '/en/create-petition',
+            ]);
+    }
+
+    public function test_google_oauth_callback_returns_to_embedded_page(): void
+    {
+        $googleUser = Mockery::mock();
+        $googleUser->shouldReceive('getEmail')->once()->andReturn('google@example.com');
+        $googleUser->shouldReceive('getName')->once()->andReturn('Google User');
+        $googleUser->shouldReceive('getId')->once()->andReturn('google-user-id');
+
+        $driver = Mockery::mock();
+        $driver->shouldReceive('user')->once()->andReturn($googleUser);
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($driver);
+
+        $this->withSession([
+            'oauth_ctx' => [
+                'flow' => 'register',
+                'locale' => 'en',
+                'redirect' => '/en/create-petition',
+            ],
+        ])->get('/en/oauth/google/callback')
+            ->assertRedirect('/en/create-petition');
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'google@example.com',
+            'google_id' => 'google-user-id',
+            'verified' => true,
+        ]);
+    }
+
+    public function test_google_oauth_rejects_external_return_path(): void
+    {
+        config()->set('services.google.client_id', 'client-id');
+        config()->set('services.google.client_secret', 'client-secret');
+        config()->set('services.google.redirect', 'https://www.freecause.com/en/oauth/google/callback');
+
+        $driver = Mockery::mock();
+        $driver->shouldReceive('redirect')
+            ->once()
+            ->andReturn(redirect()->away('https://accounts.google.test/oauth'));
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($driver);
+
+        $this->get('/en/oauth/google?flow=login&redirect=https%3A%2F%2Fevil.test')
+            ->assertSessionHas('oauth_ctx', [
+                'flow' => 'login',
+                'locale' => 'en',
+                'redirect' => '/en',
+            ]);
     }
 
     public function test_authenticated_user_cannot_reopen_auth_pages(): void

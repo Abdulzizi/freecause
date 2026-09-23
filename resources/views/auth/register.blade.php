@@ -14,8 +14,9 @@
                             <h3 class="text-center mb-4">{{ __('auth.create_account') }}</h3>
 
                             <div class="text-center mb-4">
-                                <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}" class="btn btn-light border px-3" style="border-radius:8px;">
-                                    <img src="{{ asset('legacy/images-v2/google.png') }}" alt="" style="width:18px;margin-right:8px;">
+                                <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}"
+                                    class="btn fc-google-btn fc-oauth-btn">
+                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
                             </div>
