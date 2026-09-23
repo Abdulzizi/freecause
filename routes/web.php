@@ -208,13 +208,16 @@ Route::group([
             Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text'], $subject));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
+            toast('Failed to send message. Please try again later.', 'error');
 
             return back()
                 ->withInput()
                 ->withErrors(['email' => 'Failed to send message. Please try again later.']);
         }
 
-        return back()->with('success', 'Your message has been sent. We will get back to you soon.');
+        toast('Your message has been sent. We will get back to you soon.', 'success');
+
+        return back();
     })->name('contacts.submit')->middleware('throttle:6,1');
 
     // home + petitions

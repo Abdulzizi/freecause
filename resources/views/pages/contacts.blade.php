@@ -31,9 +31,9 @@
                             <div class="mb-4">
                                 <h4 class="headings">{{ __('contacts.title') }}</h4>
 
-                                @if (session('success'))
-                                    <div class="alert alert-success">
-                                        {{ session('success') }}
+                                @if ($errors->any())
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ $errors->first() }}
                                     </div>
                                 @endif
 
@@ -46,19 +46,19 @@
                                         <div class="mb-3">
                                             <label for="contact_name" class="form-label">{{ __('contacts.name_label') }}</label>
                                             <input id="contact_name" type="text" name="name" class="form-control" placeholder="{{ __('contacts.name_placeholder') }}"
-                                                value="" />
+                                                value="{{ old('name') }}" required />
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="contact_email" class="form-label">{{ __('contacts.email_label') }}</label>
                                             <input id="contact_email" type="email" name="email" class="form-control" placeholder="{{ __('contacts.email_placeholder') }}"
-                                                value="" />
+                                                value="{{ old('email') }}" required />
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="contact_text" class="form-label">{{ __('contacts.text_label') }}</label>
                                             <textarea id="contact_text" name="text" class="form-control" rows="5"
-                                                placeholder="{{ __('contacts.text_placeholder') }}"></textarea>
+                                                placeholder="{{ __('contacts.text_placeholder') }}" required>{{ old('text') }}</textarea>
                                         </div>
 
                                         <div class="mb-3">

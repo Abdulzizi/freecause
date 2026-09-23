@@ -81,6 +81,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 
+    @vite(['resources/js/app.js'])
+
     @stack('head')
 
     {!! \App\Support\Settings::get('inject_head_html', '') !!}
@@ -110,6 +112,17 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
     @stack('scripts')
+
+    @if (session('toast'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const notification = @json(session('toast'));
+                const showToast = window.toast?.[notification.type] ?? window.toast?.info;
+
+                showToast?.(notification.message);
+            });
+        </script>
+    @endif
 
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
