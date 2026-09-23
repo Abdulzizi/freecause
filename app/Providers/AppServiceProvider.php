@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Models\Language;
 use App\Models\PageContent;
 use App\Support\Settings;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         $this->bootMail();
         $this->bootOAuth();
         $this->bootRateLimiting();
+        $this->bootBrandedResetMail();
     }
 
     private function bootRateLimiting(): void
@@ -234,5 +237,30 @@ class AppServiceProvider extends ServiceProvider
             Log::warning('bootOAuth Google failed: '.$e->getMessage());
         }
 
+    }
+
+    private function bootBrandedResetMail(): void
+    {
+        try {
+            ResetPassword::toMailUsing(function ($notifiable, $token) {
+                return (new MailMessage)
+                    ->subject('Reset your FreeCause password')
+                    ->view('emails.reset-password', [
+                        'firstName' => $notifiable->first_name ?: ($notifiable->name ?? 'there'),
+                        'resetUrl'  => $this->buildPasswordResetUrl($notifiable, $token),
+                        'email'     => $notifiable->getEmailForPasswordReset(),
+                    ]);
+            });
+        } catch (\Throwable $e) {
+            Log::warning('bootBrandedResetMail failed: '.$e->getMessage());
+        }
+    }
+
+    private function buildPasswordResetUrl($notifiable, string $token): string
+    {
+        return url(route('password.reset', [
+            'token' => $token,
+            'email' => $notifiable->getEmailForPasswordReset(),
+        ], false));
     }
 }

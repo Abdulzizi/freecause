@@ -1,3 +1,5 @@
+@extends('emails.layout')
+
 @php
     $verifyUrl = route('verify.account', [
         'locale' => $locale,
@@ -5,45 +7,25 @@
     ]);
 @endphp
 
-<!DOCTYPE html>
-<html>
+@section('preheader', 'One click and your FreeCause account is active.')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Verify your account</title>
-</head>
+@section('eyebrow', 'Account Verification')
+@section('heading', $greeting ?? 'Welcome to FreeCause')
+@section('title', ($greeting ?? 'Welcome to FreeCause').' · FreeCause')
 
-<body style="font-family: Arial, sans-serif; background:#f4f4f4; padding:30px;">
-    <div style="max-width:600px;margin:auto;background:#ffffff;padding:30px;border-radius:6px;">
-        <h2 style="margin-top:0;">{{ $greeting ?? 'Welcome to FreeCause' }}</h2>
+@section('content')
+    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
+    <p style="margin:0 0 16px;">Thank you for joining FreeCause. Please confirm your email address so your account is activated and your signature counts.</p>
+    <p style="margin:0;">Confirming takes a single click — no password required.</p>
+@endsection
 
-        <p>
-            Hi {{ $firstName }},
-        </p>
+@section('action', $buttonText ?? 'Verify My Account')
+@section('action_url', $verifyUrl)
 
-        <p>
-            Thank you for registering on FreeCause.
-        </p>
-
-        <p>
-            Please confirm your email address by clicking the button below:
-        </p>
-
-        <p style="text-align:center;margin:30px 0;">
-            <a href="{{ $verifyUrl }}"
-                style="background:#d61f26;color:#ffffff;padding:12px 25px;text-decoration:none;border-radius:4px;display:inline-block;">
-                {{ $buttonText ?? 'Verify My Account' }}
-            </a>
-        </p>
-
-        <p>
-            If you did not create this account, you can ignore this email.
-        </p>
-
-        <p style="margin-top:30px;font-size:13px;color:#777;">
-            {{ $footer ?? 'FreeCause – Online Petition Platform' }}
-        </p>
-    </div>
-</body>
-
-</html>
+@section('note')
+    <strong>Your secure link is valid for 48 hours.</strong><br>
+    If the button above does not work, copy and paste this link into your browser:
+    <span style="word-break:break-all;">{{ $verifyUrl }}</span>
+    <br><br>
+    Didn't create an account with FreeCause? You can safely ignore this email.
+@endsection

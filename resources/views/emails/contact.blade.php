@@ -1,23 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Contact form message</title>
-</head>
-<body style="font-family: Arial, sans-serif; background:#f4f4f4; padding:30px;">
-    <div style="max-width:600px;margin:auto;background:#ffffff;padding:30px;border-radius:6px;">
-        <h2 style="margin-top:0;">New contact form message</h2>
+@extends('emails.layout')
 
-        <p><strong>Name:</strong> {{ $senderName }}</p>
-        <p><strong>Email:</strong> {{ $senderEmail }}</p>
+@section('preheader', 'A new message arrived through the FreeCause contact form.')
 
-        <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+@section('eyebrow', 'Contact Form · Inbound')
+@section('heading', 'New contact form message')
+@section('title', 'New contact form message · FreeCause')
+@section('accent', true)
 
-        <p style="white-space:pre-wrap;">{{ $body }}</p>
+@section('content')
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 6px;">
+        <tr>
+            <td style="padding:6px 0;font-family:Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A39A90;width:86px;">Sender</td>
+            <td style="padding:6px 0 6px 16px;font-size:14px;color:#2E2C29;">{{ $senderName }}</td>
+        </tr>
+        <tr>
+            <td style="padding:6px 0;font-family:Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#A39A90;width:86px;">Email</td>
+            <td style="padding:6px 0 6px 16px;font-size:14px;color:#2E2C29;">
+                <a href="mailto:{{ $senderEmail }}" style="color:#B01F1F;text-decoration:none;">{{ $senderEmail }}</a>
+            </td>
+        </tr>
+    </table>
 
-        <p style="margin-top:30px;font-size:13px;color:#777;">
-            FreeCause – Online Petition Platform
-        </p>
-    </div>
-</body>
-</html>
+    <div style="border-left:3px solid #cc1f1f;background:#F7F5F1;background-clip:padding-box;border-radius:0 8px 8px 0;padding:18px 20px;margin:18px 0 4px;white-space:pre-wrap;font-size:14px;line-height:1.7;color:#3A3834;">{{ $body }}</div>
+@endsection
+
+@section('action', 'Reply to '.$senderName)
+@section('action_url', 'mailto:'.$senderEmail)
+
+@section('note', 'This message was sent through the contact form on www.freecause.com. Replying sends an email directly to the sender.')
