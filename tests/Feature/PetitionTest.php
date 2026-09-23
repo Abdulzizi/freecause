@@ -114,6 +114,22 @@ class PetitionTest extends TestCase
             ->assertSee('No petitions found.');
     }
 
+    public function test_category_index_page_loads(): void
+    {
+        $this->get("/en/petitions/category-test-category-{$this->category->id}")
+            ->assertOk();
+    }
+
+    public function test_deep_pagination_page_is_clamped(): void
+    {
+        Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->get('/en/petitions?page=99999')
+            ->assertOk();
+        $this->get("/en/petitions/category-test-category-{$this->category->id}?page=99999")
+            ->assertOk();
+    }
+
     public function test_petition_search_pagination_preserves_query(): void
     {
         foreach (range(1, 16) as $number) {

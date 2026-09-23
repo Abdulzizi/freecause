@@ -106,11 +106,11 @@ class PetitionController extends Controller
                     ->orWhere('pt_default.title', 'LIKE', $like);
             });
             $query->orderByDesc('petitions.signature_count');
-            $petitions = $query->paginate(15)->withQueryString();
+            $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
             $cacheKey = "petitions:index:{$locale}:page:{$page}";
-            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query) {
-                return $query->orderByDesc('petitions.id')->paginate(15);
+            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
+                return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
             });
 
             if (is_array($petitions)) {

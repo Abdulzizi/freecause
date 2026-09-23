@@ -20,6 +20,7 @@ class CategoryPetitionController extends Controller
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
         $search = trim((string) request('q', ''));
+        $page = max(1, min((int) request('page', 1), 500));
 
         $tr = $category->translations()
             ->where('locale', $locale)
@@ -79,11 +80,26 @@ class CategoryPetitionController extends Controller
                 $q->where('pt_locale.title', 'LIKE', $like)
                     ->orWhere('pt_default.title', 'LIKE', $like);
             });
-        }
+            $petitions = $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page)->withQueryString();
+        } else {
+            $cacheKey = "petitions:byCategory:{$locale}:{$category->id}:page:{$page}";
+            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
+                return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
+            });
 
-        $petitions = $query->orderByDesc('petitions.id')
-            ->paginate(15)
-            ->withQueryString();
+            if (is_array($petitions)) {
+                $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
+                $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $items,
+                    $petitions['total'] ?? 0,
+                    $petitions['per_page'] ?? 15,
+                    $petitions['current_page'] ?? $page,
+                    ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+                );
+            }
+
+            $petitions = $petitions->withQueryString();
+        }
 
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,
