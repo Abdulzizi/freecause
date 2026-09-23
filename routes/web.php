@@ -185,6 +185,9 @@ Route::group([
 
     // static pages
     Route::get('/faqs', fn () => view('pages.faq'))->name('faqs');
+    Route::get('/how-to-write-a-petition', fn () => view('pages.how-to-write-a-petition'))->name('how-to-write-a-petition');
+    Route::get('/donations', fn () => view('pages.donations'))->name('donations');
+    Route::get('/personal-data-processing', fn () => view('pages.personal-data-processing'))->name('personal-data-processing');
 
     Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
     Route::post('/contacts', function (\Illuminate\Http\Request $request) {

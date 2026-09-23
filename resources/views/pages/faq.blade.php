@@ -150,8 +150,8 @@
         '{CREATE_PETITION_URL}' => lroute('petition.create'),
         '{CONTACTS_URL}' => lroute('contacts'),
         '{RECOVER_URL}' => lroute('password.request'),
-        '{HOW_TO_CREATE_LINK}' => 'the create-petition page',
-        '{DONATIONS_LINK}' => 'the donations page',
+        '{HOW_TO_CREATE_LINK}' => '<a href="' . lroute('how-to-write-a-petition') . '">how to write a petition</a>',
+        '{DONATIONS_LINK}' => '<a href="' . lroute('donations') . '">donations page</a>',
         'https://www.test.freecause.com/ethical-code' => lroute('page.show', ['slug' => 'ethical-code']),
     ];
 
