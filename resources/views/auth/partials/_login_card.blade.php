@@ -1,4 +1,6 @@
 <div class="bg-white rounded-3 shadow-sm p-4" style="border:1px solid #eee;">
+    @include('auth.partials._social_box', ['redirect' => $redirect, 'flow' => 'login'])
+
     <div class="mb-3">
         <div class="fw-semibold">{{ __('auth.login') }}</div>
         <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
