@@ -208,11 +208,23 @@ Route::group([
             Mail::to($adminEmail)->queue(new ContactMail($data['name'], $data['email'], $data['text'], $subject));
         } catch (\Exception $e) {
             AppLog::error('Contact form mail failed', $e->getMessage(), 'contacts');
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Failed to send message. Please try again later.'], 500);
+            }
+
             toast('Failed to send message. Please try again later.', 'error');
 
             return back()
                 ->withInput()
                 ->withErrors(['email' => 'Failed to send message. Please try again later.']);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your message has been sent. We will get back to you soon.',
+            ]);
         }
 
         toast('Your message has been sent. We will get back to you soon.', 'success');

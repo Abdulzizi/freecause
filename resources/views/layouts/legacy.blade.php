@@ -114,14 +114,7 @@
     @stack('scripts')
 
     @if (session('toast'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const notification = @json(session('toast'));
-                const showToast = window.toast?.[notification.type] ?? window.toast?.info;
-
-                showToast?.(notification.message);
-            });
-        </script>
+        <div id="toast-flash" data-type="{{ session('toast')['type'] }}" data-message="{{ session('toast')['message'] }}" hidden></div>
     @endif
 
     {!! \App\Support\Settings::get('inject_body_html', '') !!}

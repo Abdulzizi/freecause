@@ -334,18 +334,3 @@
     </section>
     @endif
 @endsection
-
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            $("#slider .row a").hover(
-                function() {
-                    $(this).find(".popup").slideDown("fast");
-                },
-                function() {
-                    $(this).find(".popup").slideUp("fast");
-                }
-            );
-        });
-    </script>
-@endpush

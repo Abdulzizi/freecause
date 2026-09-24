@@ -37,7 +37,11 @@
                                     </div>
                                 @endif
 
-                                <form method="post" action="{{ route('contacts.submit', app()->getLocale()) }}">
+                                <form method="post" action="{{ route('contacts.submit', app()->getLocale()) }}"
+                                    id="contactForm"
+                                    data-sending="{{ __('contacts.sending') }}"
+                                    data-sent="{{ __('contacts.sent') }}"
+                                    data-failed="{{ __('contacts.failed') }}">
                                     @csrf
 
                                     <fieldset>
