@@ -9,18 +9,24 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryPetitionController extends Controller
 {
-    public function index(string $locale, string $categorySlug, Category $category)
+    public function index(string $locale, string $categorySlug, string $category)
     {
         Log::info('CategoryPetitionController', [
             'locale' => $locale,
             'categorySlug' => $categorySlug,
-            'categoryId' => $category->id ?? 'null',
+            'categoryId' => $category,
         ]);
 
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
         $search = trim((string) request('q', ''));
         $page = max(1, min((int) request('page', 1), 500));
+
+        $categoryId = (int) $category;
+        $category = Category::find($categoryId)
+            ?? Category::whereHas('translations', fn ($q) => $q->where('slug', $categorySlug))->first();
+
+        abort_if(! $category, 404);
 
         $tr = $category->translations()
             ->where('locale', $locale)
@@ -40,12 +46,15 @@ class CategoryPetitionController extends Controller
 
         abort_if(! $tr, 404);
 
-        if ($tr->slug !== $categorySlug || $tr->locale !== $locale) {
-            return redirect()->route('petitions.byCategory', [
+        if ($category->id !== $categoryId || $tr->slug !== $categorySlug || $tr->locale !== $locale) {
+            $url = route('petitions.byCategory', [
                 'locale' => $tr->locale,
                 'categorySlug' => $tr->slug,
                 'category' => $category->id,
             ]);
+            $query = request()->getQueryString();
+
+            return redirect($url.($query ? '?'.$query : ''), 301);
         }
 
         $query = Petition::query()
@@ -55,8 +64,8 @@ class CategoryPetitionController extends Controller
                 'petitions.goal_signatures',
                 'petitions.category_id',
                 'petitions.cover_image',
-                DB::raw("COALESCE(pt_locale.title, pt_default.title) as tr_title"),
-                DB::raw("COALESCE(pt_locale.slug, pt_default.slug) as tr_slug"),
+                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
+                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
             ])
             ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                 $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -103,7 +112,7 @@ class CategoryPetitionController extends Controller
 
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,
-            'heading' => $tr->name . ' Petitions',
+            'heading' => $tr->name.' Petitions',
             'category' => $category,
             'categoryTr' => $tr,
             'search' => $search,

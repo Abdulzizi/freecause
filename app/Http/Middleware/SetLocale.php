@@ -43,10 +43,51 @@ class SetLocale
         foreach (config('language_flags', []) as $short => $full) {
             $legacyMap[strtolower((string) $full)] = $short;
         }
+        foreach ($this->legacyLocaleAliases() as $full => $short) {
+            $legacyMap[strtolower((string) $full)] = $short;
+        }
 
         $short = $legacyMap[strtolower(str_replace('-', '_', $locale))] ?? null;
 
         return $short !== null && in_array($short, $allowedLocales, true) ? $short : null;
+    }
+
+    private function legacyLocaleAliases(): array
+    {
+        return [
+            'da_DK' => 'da',
+            'de_AT' => 'de',
+            'de_CH' => 'de',
+            'de_DE' => 'de',
+            'el_GR' => 'el',
+            'en_AU' => 'en',
+            'en_CA' => 'en',
+            'en_EU' => 'en',
+            'en_GB' => 'en',
+            'en_IE' => 'en',
+            'en_IN' => 'en',
+            'en_NZ' => 'en',
+            'en_PH' => 'en',
+            'en_US' => 'en',
+            'es_AR' => 'es',
+            'es_CO' => 'es',
+            'es_ES' => 'es',
+            'es_MX' => 'es',
+            'es_PE' => 'es',
+            'fr_CA' => 'fr',
+            'fr_CH' => 'fr',
+            'fr_FR' => 'fr',
+            'it_CH' => 'it',
+            'it_IT' => 'it',
+            'nl_NL' => 'nl',
+            'pl_PL' => 'pl',
+            'pt_BR' => 'pt',
+            'pt_PT' => 'pt',
+            'ro_RO' => 'ro',
+            'ru_RU' => 'ru',
+            'sv_SE' => 'sv',
+            'tr_TR' => 'tr',
+        ];
     }
 
     private function redirectPreservingPath(Request $request, string $locale, int $status): RedirectResponse
