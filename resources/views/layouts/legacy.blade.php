@@ -34,6 +34,7 @@
             ($globalMetaDefault['head_additional_html'] ??
             ($homeMetaDefault['head_additional_html'] ?? '')));
         $footerExtra = $globalMeta['footer_additional_html'] ?? ($globalMetaDefault['footer_additional_html'] ?? '');
+        $canonicalPageUrl = canonical_url().(request()->getQueryString() ? '?'.request()->getQueryString() : '');
     @endphp
 
     <title>
@@ -49,7 +50,7 @@
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ $canonicalPageUrl }}">
 
     <meta property="og:site_name" content="FreeCause">
     <meta property="og:type" content="website">
@@ -57,12 +58,12 @@
         <meta property="og:title" content="@yield('og_title')">
         <meta property="og:description" content="@yield('og_description')">
         <meta property="og:image" content="@yield('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png'))">
-        <meta property="og:url" content="@yield('og_url', request()->url())">
+        <meta property="og:url" content="@yield('og_url', $canonicalPageUrl)">
     @else
         <meta property="og:title" content="@yield('title', 'FreeCause')">
         <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
         <meta property="og:image" content="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
-        <meta property="og:url" content="{{ request()->url() }}">
+        <meta property="og:url" content="{{ $canonicalPageUrl }}">
     @endif
 
     {!! \App\Services\ContentRenderer::render($headExtra) !!}

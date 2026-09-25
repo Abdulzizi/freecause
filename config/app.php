@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'canonical_url' => env('CANONICAL_URL', 'https://www.freecause.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -10,7 +10,7 @@ if (! function_exists('active_locales')) {
         return cache()->remember(
             'active_languages',
             60,
-            fn() => Language::where('is_active', 1)->pluck('code')->toArray()
+            fn () => Language::where('is_active', 1)->pluck('code')->toArray()
         );
     }
 }
@@ -21,7 +21,7 @@ if (! function_exists('default_locale')) {
         return cache()->remember(
             'default_language',
             60,
-            fn() => Language::where('is_default', 1)->value('code') ?? 'en'
+            fn () => Language::where('is_default', 1)->value('code') ?? 'en'
         );
     }
 }
@@ -81,7 +81,7 @@ if (! function_exists('locale_url')) {
             static $translationCache = [];
 
             $cacheKey = "{$id}:{$newLocale}";
-            if (!array_key_exists($cacheKey, $translationCache)) {
+            if (! array_key_exists($cacheKey, $translationCache)) {
                 // Load all translations for this petition in one query and cache every locale
                 $allForPetition = PetitionTranslation::query()
                     ->where('petition_id', $id)
@@ -92,7 +92,7 @@ if (! function_exists('locale_url')) {
                     $translationCache["{$id}:{$loc}"] = $t;
                 }
 
-                if (!array_key_exists($cacheKey, $translationCache)) {
+                if (! array_key_exists($cacheKey, $translationCache)) {
                     $translationCache[$cacheKey] = $allForPetition->first() ?? null;
                 }
             }
@@ -105,9 +105,9 @@ if (! function_exists('locale_url')) {
             }
         }
 
-        return route($routeName, $params) .
+        return route($routeName, $params).
             (request()->getQueryString()
-                ? '?' . request()->getQueryString()
+                ? '?'.request()->getQueryString()
                 : '');
     }
 }
@@ -115,6 +115,20 @@ if (! function_exists('locale_url')) {
 function base_url()
 {
     return \App\Support\Settings::get('base_url', config('app.url'));
+}
+
+if (! function_exists('canonical_url')) {
+    function canonical_url(?string $path = null): string
+    {
+        $base = rtrim((string) config('app.canonical_url', 'https://www.freecause.com'), '/');
+
+        $path = trim((string) ($path ?? request()->path()), '/');
+        if ($path !== '') {
+            $base .= '/'.$path;
+        }
+
+        return $base;
+    }
 }
 
 function toast($message, $type = 'info')
@@ -132,7 +146,7 @@ function sanitizePetitionHtml(string $html): string
     libxml_use_internal_errors(true);
 
     $doc = new \DOMDocument('1.0', 'UTF-8');
-    $doc->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    $doc->loadHTML('<?xml encoding="utf-8" ?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
     $container = $doc->getElementsByTagName('div')->item(0);
 
@@ -150,7 +164,9 @@ function sanitizePetitionHtml(string $html): string
 
 function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc): void
 {
-    if (!$node->hasChildNodes()) return;
+    if (! $node->hasChildNodes()) {
+        return;
+    }
 
     for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
         $child = $node->childNodes->item($i);
@@ -164,11 +180,12 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
                 }
             }
 
-            if (!in_array($tag, $allowedTags, true)) {
+            if (! in_array($tag, $allowedTags, true)) {
                 while ($child->firstChild) {
                     $node->insertBefore($child->firstChild, $child);
                 }
                 $node->removeChild($child);
+
                 continue;
             }
 
@@ -178,23 +195,23 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
         }
     }
 }
-if (!function_exists('admin_user')) {
+if (! function_exists('admin_user')) {
     function admin_user(): ?\App\Models\User
     {
         return \Illuminate\Support\Facades\Auth::guard('admin')->user();
     }
 }
 
-if (!function_exists('admin_can')) {
+if (! function_exists('admin_can')) {
     function admin_can(string $module, string $action = 'view'): bool
     {
         $user = admin_user();
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
         $user->loadMissing('level');
-        if (!$user->level_id) {
+        if (! $user->level_id) {
             return false;
         }
         if ($user->level && $user->level->is_system) {
@@ -218,19 +235,23 @@ if (!function_exists('admin_can')) {
  * on* event handler attributes and javascript: hrefs/srcs.
  * Unlike sanitizePetitionHtml(), allows a wide range of formatting tags.
  */
-if (!function_exists('sanitizeAdminHtml')) {
+if (! function_exists('sanitizeAdminHtml')) {
     function sanitizeAdminHtml(?string $html): string
     {
-        if (!$html || trim($html) === '') return '';
+        if (! $html || trim($html) === '') {
+            return '';
+        }
 
         $dangerous = ['script', 'iframe', 'object', 'embed', 'form', 'base'];
 
         libxml_use_internal_errors(true);
         $doc = new \DOMDocument('1.0', 'UTF-8');
-        $doc->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $doc->loadHTML('<?xml encoding="utf-8" ?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         $container = $doc->getElementsByTagName('div')->item(0);
-        if (!$container) return $html;
+        if (! $container) {
+            return $html;
+        }
 
         adminHtmlSanitizeNode($container, $dangerous, $doc);
 
@@ -243,10 +264,12 @@ if (!function_exists('sanitizeAdminHtml')) {
     }
 }
 
-if (!function_exists('adminHtmlSanitizeNode')) {
+if (! function_exists('adminHtmlSanitizeNode')) {
     function adminHtmlSanitizeNode(\DOMNode $node, array $dangerous, \DOMDocument $doc): void
     {
-        if (!$node->hasChildNodes()) return;
+        if (! $node->hasChildNodes()) {
+            return;
+        }
 
         for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
             $child = $node->childNodes->item($i);
@@ -257,6 +280,7 @@ if (!function_exists('adminHtmlSanitizeNode')) {
                 // Remove dangerous elements entirely (including their children)
                 if (in_array($tag, $dangerous, true)) {
                     $node->removeChild($child);
+
                     continue;
                 }
 

@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CanonicalHost
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $canonicalUrl = (string) config('app.canonical_url', 'https://www.freecause.com');
+        $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
+
+        $host = strtolower($request->getHost());
+        $isPublicDomain = in_array($host, ['freecause.com', 'www.freecause.com'], true);
+
+        if ($isPublicDomain && $host !== $canonicalHost) {
+            $target = rtrim($canonicalUrl, '/').'/'.ltrim($request->path(), '/');
+
+            $query = $request->getQueryString();
+            if ($query) {
+                $target .= '?'.$query;
+            }
+
+            return redirect($target, 301);
+        }
+
+        return $next($request);
+    }
+}

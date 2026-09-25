@@ -24,6 +24,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
@@ -55,6 +56,30 @@ Route::get('/ads.txt', function () {
 
     return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
 });
+
+Route::get('/petitions/{path?}', function (?string $path = null) {
+    $default = cache()->remember('default_language', 60, fn () => \App\Models\Language::where('is_default', 1)->value('code') ?? 'en');
+
+    $target = '/'.$default.'/petitions'.($path ? '/'.$path : '');
+    $query = request()->getQueryString();
+
+    return redirect($target.($query ? '?'.$query : ''), 301);
+})->where('path', '.*');
+
+Route::get('/petition/{path?}', function (?string $path = null) {
+    $default = cache()->remember('default_language', 60, fn () => \App\Models\Language::where('is_default', 1)->value('code') ?? 'en');
+
+    $target = '/'.$default.'/petition'.($path ? '/'.$path : '');
+    $query = request()->getQueryString();
+
+    return redirect($target.($query ? '?'.$query : ''), 301);
+})->where('path', '.*');
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap-petitions.xml', [SitemapController::class, 'petitions'])->name('sitemap.petitions');
+Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
+Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
+Route::get('/sitemap-magazine.xml', [SitemapController::class, 'magazine'])->name('sitemap.magazine');
 
 Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');

@@ -5,6 +5,7 @@ use App\Http\Middleware\AdminAuditLog;
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\BlockBannedUser;
+use App\Http\Middleware\CanonicalHost;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\DebugForIp;
 use App\Http\Middleware\NoCacheHeaders;
@@ -45,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(DebugForIp::class);
         $middleware->append(BlockBannedIp::class);
         $middleware->append(AddSecurityHeaders::class);
+        $middleware->append(CanonicalHost::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
