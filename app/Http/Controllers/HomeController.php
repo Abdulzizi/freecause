@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
-    private const CACHE_VERSION = 'v2';
+    private const CACHE_VERSION = 'v3';
 
     public function index(Request $request)
     {
@@ -65,7 +65,8 @@ class HomeController extends Controller
                     STRAIGHT_JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
                     LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
                     LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
-                    WHERE pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL
+                    WHERE s.confirmed = 1 AND s.is_spam = 0
+                    AND (pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL)
                     ORDER BY s.created_at DESC
                     LIMIT 10
                 ", [$locale, $defaultLocale]);
@@ -79,9 +80,10 @@ class HomeController extends Controller
                 JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
                 LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
                 LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
-                WHERE pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL
-                ORDER BY s.created_at DESC
-                LIMIT 10
+                WHERE s.confirmed = 1 AND s.is_spam = 0
+                    AND (pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL)
+                    ORDER BY s.created_at DESC
+                    LIMIT 10
             ", [$locale, $defaultLocale]);
         });
 

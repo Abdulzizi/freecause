@@ -1287,6 +1287,7 @@ class PetitionController extends Controller
 
         $signatures = Signature::with('user')
             ->where('petition_id', $petition->id)
+            ->where('confirmed', true)
             ->where('is_spam', false)
             ->orderByDesc('created_at')
             ->paginate(25, ['*'], 'page', $page)
