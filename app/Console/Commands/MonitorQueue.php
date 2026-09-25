@@ -21,7 +21,7 @@ class MonitorQueue extends Command
         $failedJobs = DB::table('failed_jobs')->count();
         $oldestJob = DB::table('jobs')->orderBy('available_at')->value('available_at');
 
-        $this->info("Queue Health Check - ".now()->toDateTimeString());
+        $this->info('Queue Health Check - '.now()->toDateTimeString());
         $this->line("Pending jobs: {$pendingJobs}");
         $this->line("Failed jobs: {$failedJobs}");
 
@@ -39,7 +39,7 @@ class MonitorQueue extends Command
             $recentFailures = DB::table('failed_jobs')
                 ->orderByDesc('failed_at')
                 ->limit(5)
-                ->get(['id', 'queue', 'failed_at']);
+                ->get(['id', 'queue', 'payload', 'failed_at']);
 
             foreach ($recentFailures as $f) {
                 $payload = json_decode($f->payload, true);
@@ -58,13 +58,13 @@ class MonitorQueue extends Command
         }
 
         $supervisorStatus = $this->checkSupervisor();
-        if (!$supervisorStatus['healthy']) {
+        if (! $supervisorStatus['healthy']) {
             $msg = "Supervisor workers unhealthy: {$supervisorStatus['details']}";
             $alerts[] = $msg;
             $this->error($msg);
         }
 
-        if (!empty($alerts) && $this->option('alert-email')) {
+        if (! empty($alerts) && $this->option('alert-email')) {
             $this->sendAlert($this->option('alert-email'), $alerts);
         }
 
@@ -96,7 +96,7 @@ class MonitorQueue extends Command
                     $running++;
                 } else {
                     $parts = preg_split('/\s+/', trim($line));
-                    $details[] = $parts[0] ?? 'unknown' . ': ' . ($parts[1] ?? 'unknown');
+                    $details[] = $parts[0] ?? 'unknown'.': '.($parts[1] ?? 'unknown');
                 }
             }
 
