@@ -60,6 +60,27 @@ $toDefaultLocale = static function (string $segment, ?string $path = null) {
 Route::get('/petitions/{path?}', fn (?string $path = null) => $toDefaultLocale('petitions', $path))->where('path', '.*');
 Route::get('/petition/{path?}', fn (?string $path = null) => $toDefaultLocale('petition', $path))->where('path', '.*');
 
+// Unprefixed legacy default-locale (en_US) words -> same path under the default locale.
+// Only known legacy first segments are relayed; anything else keeps the existing
+// SetLocale browser-detect behaviour. Word translation happens in LegacyWordRedirect.
+$legacyUnprefixedWords = [
+    'search', 'faq', 'faqs', 'news', 'topics', 'results', 'recover-password',
+    'signatures', 'referers', 'download-signatures', 'invite-friends', 'tag', 'pic', 'feed',
+    'user',
+    'login', 'register', 'logout', 'profile', 'my-petitions', 'create-petition', 'edit-petition',
+    'verify', 'reset-password', 'resend-verification', 'forgot-password',
+    'contacts', 'donations', 'info', 'terms-of-service', 'privacy-policy', 'ethical-code',
+    'how-to-write-a-petition', 'personal-data-processing',
+    'ebay', 'zalando', 'amazon', 'expedia', 'booking', 'external',
+];
+
+Route::get('/{path?}', function (?string $path = null) {
+    $target = '/'.default_locale().'/'.ltrim((string) $path, '/');
+    $query = request()->getQueryString();
+
+    return redirect($target.($query ? '?'.$query : ''), 301);
+})->where('path', '^(?:'.implode('|', array_map('preg_quote', $legacyUnprefixedWords)).')(?:/.*)?$');
+
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->whereNumber('page')->name('sitemap.petitions');
 Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');

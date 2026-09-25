@@ -8,6 +8,7 @@ use App\Http\Middleware\BlockBannedUser;
 use App\Http\Middleware\CanonicalHost;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\DebugForIp;
+use App\Http\Middleware\LegacyWordRedirect;
 use App\Http\Middleware\NoCacheHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(BlockBannedIp::class);
         $middleware->append(AddSecurityHeaders::class);
         $middleware->append(CanonicalHost::class);
+        $middleware->append(LegacyWordRedirect::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 

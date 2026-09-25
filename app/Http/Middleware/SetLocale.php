@@ -39,20 +39,29 @@ class SetLocale
 
     private function mapLegacyLocale(string $locale, array $allowedLocales): ?string
     {
-        $legacyMap = [];
-        foreach (config('language_flags', []) as $short => $full) {
-            $legacyMap[strtolower((string) $full)] = $short;
-        }
-        foreach ($this->legacyLocaleAliases() as $full => $short) {
-            $legacyMap[strtolower((string) $full)] = $short;
-        }
-
-        $short = $legacyMap[strtolower(str_replace('-', '_', $locale))] ?? null;
+        $short = self::legacyLocaleMap()[strtolower(str_replace('-', '_', $locale))] ?? null;
 
         return $short !== null && in_array($short, $allowedLocales, true) ? $short : null;
     }
 
-    private function legacyLocaleAliases(): array
+    /**
+     * Full legacy locale literals (it_IT, en_US, pt-BR, ...) mapped to the
+     * short new-app locale they convert to.
+     */
+    public static function legacyLocaleMap(): array
+    {
+        $legacyMap = [];
+        foreach (config('language_flags', []) as $short => $full) {
+            $legacyMap[strtolower((string) $full)] = $short;
+        }
+        foreach (self::legacyLocaleAliases() as $full => $short) {
+            $legacyMap[strtolower((string) $full)] = $short;
+        }
+
+        return $legacyMap;
+    }
+
+    private static function legacyLocaleAliases(): array
     {
         return [
             'da_DK' => 'da',
