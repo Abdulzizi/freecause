@@ -11,11 +11,14 @@ use Illuminate\Support\Facades\URL;
 
 class SetLocale
 {
+    /** Set once a first-time visitor has been auto-redirected to their browser language. */
+    private const REDIRECT_COOKIE = 'locale_redirected_to';
+
     public function handle(Request $request, Closure $next)
     {
         $locale = strtolower((string) $request->route('locale'));
-        $allowedLocales = cache()->remember('active_languages', 300, fn () => Language::where('is_active', 1)->pluck('code')->toArray());
-        $defaultLocale = cache()->remember('default_language', 300, fn () => Language::where('is_default', 1)->value('code') ?? 'en');
+        $allowedLocales = self::allowedLocales();
+        $defaultLocale = self::defaultLocale();
 
         $mappedLocale = $this->mapLegacyLocale($locale, $allowedLocales);
         if ($mappedLocale !== null) {
@@ -29,12 +32,59 @@ class SetLocale
             return $this->redirectPreservingPath($request, $locale, 302);
         }
 
+        if ($autoRedirect = $this->autoRedirectToBrowserLocale($request, $locale)) {
+            return $autoRedirect;
+        }
+
         App::setLocale($locale);
         URL::defaults(['locale' => $locale]);
 
         session(['locale' => $locale]);
 
         return $next($request);
+    }
+
+    /**
+     * Legacy parity (gtranslate on the old site): a first-time visitor landing on
+     * the site root is sent to the language their browser asks for, unless that
+     * language is the default one. The root-only scope means an explicit
+     * /{locale}/... link is never hijacked, and the cookie keeps it to one
+     * redirect for 30 days instead of fighting the visitor on every page.
+     *
+     * Public so the unprefixed root route resolves the language in one hop rather
+     * than bouncing / -> /{default} -> /{browser}.
+     */
+    public function autoRedirectToBrowserLocale(Request $request, ?string $currentLocale = null): ?RedirectResponse
+    {
+        if (! $request->isMethod('GET')
+            || ! $request->routeIs('root', 'home')
+            || $request->cookies->has(self::REDIRECT_COOKIE)
+            || $request->header('X-Purpose') === 'prefetch'
+            || preg_match('/bot|spider|slurp|crawl|facebook|preview/i', (string) $request->header('User-Agent'))
+        ) {
+            return null;
+        }
+
+        $defaultLocale = self::defaultLocale();
+        $browserLocale = $this->detectBrowserLanguage($request, self::allowedLocales());
+
+        if ($browserLocale === null || $browserLocale === $defaultLocale || $browserLocale === $currentLocale) {
+            return null;
+        }
+
+        return redirect('/'.$browserLocale, 302)
+            ->cookie(cookie(self::REDIRECT_COOKIE, $browserLocale, 2592000))
+            ->header('Vary', 'Accept-Language');
+    }
+
+    private static function allowedLocales(): array
+    {
+        return cache()->remember('active_languages', 300, fn () => Language::where('is_active', 1)->pluck('code')->toArray());
+    }
+
+    private static function defaultLocale(): string
+    {
+        return cache()->remember('default_language', 300, fn () => Language::where('is_default', 1)->value('code') ?? 'en');
     }
 
     private function mapLegacyLocale(string $locale, array $allowedLocales): ?string

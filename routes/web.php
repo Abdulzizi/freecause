@@ -29,6 +29,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
+use App\Http\Middleware\SetLocale;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +41,10 @@ Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'scrip
 Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
     ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
-Route::get('/', fn () => redirect('/'.default_locale()));
+// Unprefixed root: send first-time visitors straight to their browser language
+// (one hop) instead of bouncing / -> /{default} -> /{browser} via SetLocale.
+Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(request()) ?? redirect('/'.default_locale()))
+    ->name('root');
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 
