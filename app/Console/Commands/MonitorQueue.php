@@ -81,7 +81,7 @@ class MonitorQueue extends Command
     {
         try {
             $output = [];
-            exec('supervisorctl status freecause-queue:* 2>&1', $output, $exitCode);
+            exec('supervisorctl status freecause-release-queue:* 2>&1', $output, $exitCode);
 
             $running = 0;
             $total = 0;
