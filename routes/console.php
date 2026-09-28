@@ -2,6 +2,7 @@
 
 use App\Models\Log;
 use App\Support\AppLog;
+use App\Support\Settings;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,9 @@ Schedule::command('signatures:reconcile')->dailyAt('03:00');
 Schedule::command('backup:run')->dailyAt('02:00');
 Schedule::command('backup:clean')->dailyAt('02:30');
 Schedule::command('cache:warm')->hourly();
-Schedule::command('queue:monitor')->everyFiveMinutes();
+Schedule::command('queue:monitor', [
+    '--alert-email' => Settings::get('email_to_staff', '') ?: config('mail.from.address'),
+])->everyFiveMinutes();
 
 Schedule::call(function () {
     $deleted = Log::where('created_at', '<', now()->subDays(30))->delete();
