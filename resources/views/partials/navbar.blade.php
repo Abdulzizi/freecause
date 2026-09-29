@@ -39,6 +39,11 @@
                             {{ $c['nav_login'] ?? __('auth.login') }}
                         </a>
                     </li>
+                    <li class="nav-item ms-lg-2 me-lg-3">
+                        <a class="btn btn-danger btn-sm fc-register-btn" href="{{ lroute('register') }}">
+                            {{ $c['nav_register'] ?? __('auth.register') }}
+                        </a>
+                    </li>
                 @else
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->display_name }}</a>

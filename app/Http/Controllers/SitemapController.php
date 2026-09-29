@@ -71,6 +71,9 @@ class SitemapController extends Controller
                 foreach (self::STATIC_PAGE_SLUGS as $slug) {
                     $pagesByLocale[$locale][] = $this->pageEntry(canonical_url($locale.'/'.$slug));
                 }
+
+                // Auth pages are locale-prefixed routes but not public static pages.
+                $pagesByLocale[$locale][] = $this->pageEntry(lroute('register', ['locale' => $locale]));
             }
 
             $entries = $this->withLocaleAlternates($pagesByLocale);
