@@ -7,23 +7,39 @@ use Illuminate\Support\Facades\Cache;
 
 class Settings
 {
+    private const CACHE_KEY = 'settings:all';
+
+    /**
+     * @return array<string, array<string, string|null>> group => key => raw value
+     */
+    private static function all(): array
+    {
+        try {
+            return Cache::remember(self::CACHE_KEY, 300, function () {
+                $grouped = [];
+
+                foreach (Setting::query()->get(['group', 'key', 'value']) as $row) {
+                    $grouped[$row->group][$row->key] = $row->value;
+                }
+
+                return $grouped;
+            });
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     public static function get(string $key, mixed $default = null, string $group = 'global'): mixed
     {
         try {
-            $cacheKey = "setting:{$group}:{$key}";
-
-            $value = Cache::remember($cacheKey, 300, function () use ($key, $group) {
-                return Setting::where('key', $key)
-                    ->where('group', $group)
-                    ->value('value');
-            });
+            $value = self::all()[$group][$key] ?? null;
 
             if ($value === null) {
                 return $default;
             }
 
             $decoded = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE && !is_string($decoded)) {
+            if (json_last_error() === JSON_ERROR_NONE && ! is_string($decoded)) {
                 return $decoded;
             }
 
@@ -44,6 +60,6 @@ class Settings
             ['value' => $value]
         );
 
-        Cache::forget("setting:{$group}:{$key}");
+        Cache::forget(self::CACHE_KEY);
     }
 }

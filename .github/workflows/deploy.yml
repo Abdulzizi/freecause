@@ -31,7 +31,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-scripts
 
       - name: Composer audit
-        run: composer audit --no-pull
+        run: composer audit --locked
 
       - name: Setup Node
         uses: actions/setup-node@v4
