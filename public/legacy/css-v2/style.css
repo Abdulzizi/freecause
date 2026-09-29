@@ -357,7 +357,7 @@ a {
 }
 
 input {
-    color: #abb5b3;
+    color: #333;
 }
 
 input::placeholder {
@@ -365,7 +365,7 @@ input::placeholder {
 }
 
 textarea {
-    color: #abb5b3;
+    color: #333;
 }
 
 textarea::placeholder {
@@ -374,6 +374,11 @@ textarea::placeholder {
 
 .form-control:focus {
     box-shadow: rgba(0, 0, 0, 0.16) 1px 1px 4px;
+}
+
+*:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
 }
 
 ul {

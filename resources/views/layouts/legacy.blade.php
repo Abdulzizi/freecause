@@ -69,13 +69,8 @@
     {!! \App\Services\ContentRenderer::render($headExtra) !!}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
-    <link rel="stylesheet"
-        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/themes/smoothness/jquery-ui.min.css" />
 
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('legacy/css-v2/slick.css') }}">
-    <link rel="stylesheet" href="{{ asset('legacy/css-v2/slick-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('legacy/css-v2/style.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -109,7 +104,6 @@
     {!! \App\Services\ContentRenderer::render($footerExtra) !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('legacy/js-v2/slick.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
     @stack('scripts')
