@@ -43,7 +43,7 @@ class AdminAuthController extends Controller
             $passwordValid = false;
         }
 
-        if (! $passwordValid && str_contains($user->password, ':')) {
+        if (! $passwordValid && filled($user->password) && str_contains($user->password, ':')) {
             [$hash, $salt] = explode(':', $user->password, 2);
             if (md5(md5($password).$salt) === $hash) {
                 $user->password = Hash::make($password);

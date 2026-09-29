@@ -188,16 +188,18 @@ class AuthController extends Controller
             }
         }
 
+        $legacyHash = $user && filled($user->password) && str_contains($user->password, ':');
+
         // Try standard bcrypt login first.
         try {
-            $loggedIn = ! ($user && str_contains($user->password, ':'))
+            $loggedIn = ! $legacyHash
                 && Auth::guard('web')->attempt($credentials, $remember);
         } catch (\RuntimeException) {
             $loggedIn = false;
         }
 
         // Fallback: legacy md5(md5(password).salt):salt hash for migrated old users
-        if (! $loggedIn && $user && str_contains($user->password, ':')) {
+        if (! $loggedIn && $legacyHash) {
             [$hash, $salt] = explode(':', $user->password, 2);
             if (md5(md5($credentials['password']).$salt) === $hash) {
                 // Rehash to bcrypt and save
