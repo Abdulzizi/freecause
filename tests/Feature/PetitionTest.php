@@ -271,12 +271,11 @@ class PetitionTest extends TestCase
 
         $confirmation = $this->post("/en/petition/confirm-petition/{$petition->id}/sign/confirm", [
             'name' => 'Guest',
-            'surname' => 'Signer',
             'email' => 'guest-confirm@example.com',
-            'password' => 'password123',
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
         ]);
 
         $confirmation->assertOk()->assertSee('Support and share your cause.');
@@ -284,9 +283,9 @@ class PetitionTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'guest-confirm@example.com']);
 
         $response = $this->post("/en/petition/confirm-petition/{$petition->id}/sign", [
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
             'comment' => 'I support this petition',
         ]);
 
@@ -296,7 +295,7 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
     }
 
-    public function test_existing_account_can_sign_with_valid_password(): void
+    public function test_existing_email_sign_attributes_to_account(): void
     {
         $user = User::factory()->create([
             'email' => 'existing@example.com',
@@ -312,17 +311,18 @@ class PetitionTest extends TestCase
             'description' => 'Description',
         ]);
 
+        $usersBefore = User::count();
+
         $this->post("/en/petition/existing-user-petition/{$petition->id}/sign", [
             'name' => 'Existing',
-            'surname' => 'User',
             'email' => $user->email,
-            'password' => 'password123',
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
+        $this->assertSame($usersBefore, User::count());
     }
 
     public function test_petition_widget_script_and_render_endpoints_work(): void
@@ -457,19 +457,18 @@ class PetitionTest extends TestCase
 
         $response = $this->post("/en/petition/test-petition/{$petition->id}/sign", [
             'name' => 'Test',
-            'surname' => 'User',
             'email' => 'newuser@example.com',
-            'password' => 'password123',
             'comment' => 'I fully support this cause!',
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
         ]);
 
         $response->assertRedirect();
 
         $this->assertDatabaseHas('users', [
             'email' => 'newuser@example.com',
+            'password' => null,
         ]);
 
         $this->assertDatabaseHas('signatures', [
@@ -497,12 +496,10 @@ class PetitionTest extends TestCase
 
         $this->post("/en/petition/verification-petition/{$petition->id}/sign", [
             'name' => 'Pending',
-            'surname' => 'Signer',
             'email' => 'pending@example.com',
-            'password' => 'password123',
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
         ])->assertRedirect("/en/petition/verification-petition/{$petition->id}/thanksforsigning/0");
 
         $user = User::where('email', 'pending@example.com')->firstOrFail();
@@ -869,16 +866,15 @@ class PetitionTest extends TestCase
 
         $response = $this->post("/en/petition/test-petition/{$petition->id}/sign", [
             'name' => 'Test',
-            'surname' => 'User',
             'email' => 'spam@example.com',
-            'password' => 'password123',
             'comment' => 'Buy v1agra now! http://spam.com',
-            'agree1' => 'agree',
-            'agree2' => 'agree',
-            'agree3' => 'agree',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
         ]);
 
         $response->assertSessionHas('toast.type', 'error');
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'spam@example.com']);
     }
 
     public function test_signature_rate_limited(): void
@@ -922,5 +918,149 @@ class PetitionTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHasErrors();
+    }
+
+    public function test_agree_checkboxes_required(): void
+    {
+        $petition = $this->makePublishedPetition('agree-required-petition');
+
+        $response = $this->post("/en/petition/agree-required-petition/{$petition->id}/sign", [
+            'name' => 'Agree',
+            'email' => 'agree-required@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree3' => '1',
+        ]);
+
+        $response->assertStatus(302)->assertSessionHasErrors('agree2');
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id]);
+        $this->assertDatabaseMissing('users', ['email' => 'agree-required@example.com']);
+    }
+
+    public function test_legacy_agree_value_rejected(): void
+    {
+        $petition = $this->makePublishedPetition('legacy-agree-petition');
+
+        $response = $this->post("/en/petition/legacy-agree-petition/{$petition->id}/sign", [
+            'name' => 'Legacy',
+            'email' => 'legacy-agree@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => 'agree',
+            'agree2' => '1',
+            'agree3' => '1',
+        ]);
+
+        $response->assertStatus(302)->assertSessionHasErrors('agree1');
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id]);
+    }
+
+    public function test_claim_endpoint_sets_password_once(): void
+    {
+        $petition = $this->makePublishedPetition('claim-once-petition');
+        $email = 'claim-once@example.com';
+        $signUrl = "/en/petition/claim-once-petition/{$petition->id}";
+
+        $this->post("{$signUrl}/sign/confirm", [
+            'name' => 'Claim',
+            'email' => $email,
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertOk();
+
+        $usersBeforeSign = User::count();
+
+        $this->post("{$signUrl}/sign", [
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+            'comment' => 'I support this petition',
+        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+
+        $this->get("{$signUrl}/thanksforsigning/1")
+            ->assertOk()
+            ->assertViewHas('canClaim', true);
+
+        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
+            ->assertRedirect('/en/login');
+
+        $user = User::where('email', $email)->firstOrFail();
+        $this->assertNotNull($user->password);
+        $this->assertTrue(Hash::check('secret123', $user->password));
+
+        // claim session is consumed on success, so a repeat attempt 404s instead of re-validating
+        $this->post("{$signUrl}/claim", ['password' => 'secret123'])->assertStatus(404);
+
+        // exactly one new user from signing (the petition owner user already existed)
+        $this->assertSame($usersBeforeSign + 1, User::count());
+        $this->assertSame(1, User::where('email', $email)->count());
+    }
+
+    public function test_claim_rejected_when_account_already_has_password(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'passworded@example.com',
+            'password' => Hash::make('password123'),
+            'verified' => true,
+        ]);
+        $petition = $this->makePublishedPetition('claim-passworded-petition');
+        $signUrl = "/en/petition/claim-passworded-petition/{$petition->id}";
+
+        $this->post("{$signUrl}/sign", [
+            'name' => 'Existing',
+            'email' => $user->email,
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+
+        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
+            ->assertStatus(302)
+            ->assertSessionHasErrors(['password' => 'This account already has a password — please log in.']);
+
+        $this->assertTrue(Hash::check('password123', $user->fresh()->password));
+    }
+
+    public function test_double_submit_race_gets_friendly_error(): void
+    {
+        $petition = $this->makePublishedPetition('double-submit-petition');
+        $url = "/en/petition/double-submit-petition/{$petition->id}/sign";
+        $payload = [
+            'name' => 'Double',
+            'email' => 'double-submit@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ];
+
+        $this->post($url, $payload)->assertRedirect();
+
+        $second = $this->post($url, $payload);
+        $second->assertStatus(302)->assertSessionHasErrors('email');
+
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+        $this->assertSame(1, User::where('email', 'double-submit@example.com')->count());
+    }
+
+    private function makePublishedPetition(string $slug): Petition
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+            'signature_count' => 0,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => ucfirst(str_replace('-', ' ', $slug)),
+            'slug' => $slug,
+            'description' => 'Description',
+        ]);
+
+        return $petition;
     }
 }
