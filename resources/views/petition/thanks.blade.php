@@ -46,6 +46,33 @@
                     </p>
                 @endif
 
+                @if (!empty($claim))
+                    <div class="mt-4">
+                        @if ($canClaim)
+                            <div class="p-3 rounded border bg-light">
+                                <h3 class="mb-3" style="font-size:18px;">{{ __('sign.claim_title') }}</h3>
+                                <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <input class="form-control @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
+                                        @error('password')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <button class="btn btn-danger" type="submit">{{ __('sign.claim_btn') }}</button>
+                                </form>
+                                <p class="mt-3 mb-0 text-muted" style="font-size:13px;">
+                                    {{ __('sign.claim_verify_note') }}
+                                </p>
+                            </div>
+                        @else
+                            <p class="mb-0 text-muted" style="font-size:14px;">
+                                {{ __('sign.claim_existing') }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
+
                 <h2 class="mb-3" style="font-size:22px;">
                     {{ $suggestionsTitle }}
                 </h2>

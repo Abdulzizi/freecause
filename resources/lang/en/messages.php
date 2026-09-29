@@ -248,6 +248,11 @@ return [
     'sign.agree1_title'    => 'I confirm registration and I agree to <a class="red" href=":terms_url">Usage and Limitations of Services</a>',
     'sign.agree2_title'    => 'I confirm that I have read the <a class="red" href=":privacy_url">Privacy Policy</a>',
     'sign.agree3_title'    => 'I agree to the <a class="red" href=":privacy_url">Personal Data Processing</a>',
+    'sign.claim_title'     => 'Create your FreeCause account',
+    'sign.claim_password'  => 'Choose a password',
+    'sign.claim_btn'       => 'Create my account',
+    'sign.claim_existing'  => 'This email already belongs to a FreeCause account — log in to manage it.',
+    'sign.claim_verify_note' => 'Check your inbox to verify your email before logging in.',
 
     /*
     |--------------------------------------------------------------------------

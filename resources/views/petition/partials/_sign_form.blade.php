@@ -10,20 +10,12 @@
     $tBtnArrow = __('sign.btn_arrow');
 
     $phName = __('sign.ph_name');
-    $phSurname = __('sign.ph_surname');
     $phEmail = __('sign.ph_email');
-    $phPassword = __('sign.ph_password');
-    $phCity = __('sign.ph_city');
-    $phNickname = __('sign.ph_nickname');
     $phComment = __('sign.ph_comment');
     $defaultComment = __('sign.default_comment');
 
     $lblName = __('sign.lbl_name');
-    $lblSurname = __('sign.lbl_surname');
     $lblEmail = __('sign.lbl_email');
-    $lblPassword = __('sign.lbl_password');
-    $lblCity = __('sign.lbl_city');
-    $lblNickname = __('sign.lbl_nickname');
     $lblComment = __('sign.lbl_comment');
 
     $privacyHint = __('sign.privacy_hint');
@@ -160,30 +152,11 @@
 
             <div class="{{ $col }} mb-3">
                 @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblSurname }}</label>
-                    <input class="form-control" type="text" name="surname" value="{{ old('surname') }}">
-                @else
-                    <input class="form-control" type="text" name="surname" value="{{ old('surname') }}"
-                        placeholder="{{ $phSurname }}">
-                @endif
-            </div>
-
-            <div class="{{ $col }} mb-3">
-                @if ($useLabels)
                     <label class="form-label fc-mini-label">{{ $lblEmail }}</label>
                     <input class="form-control" type="email" name="email" value="{{ old('email') }}">
                 @else
                     <input class="form-control" type="email" name="email" value="{{ old('email') }}"
                         placeholder="{{ $phEmail }}">
-                @endif
-            </div>
-
-            <div class="{{ $col }} mb-3">
-                @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblPassword }}</label>
-                    <input class="form-control" type="password" name="password">
-                @else
-                    <input class="form-control" type="password" name="password" placeholder="{{ $phPassword }}">
                 @endif
             </div>
 
@@ -193,35 +166,17 @@
                 </div>
             @endif
 
-            <div class="{{ $col }} mb-3">
-                @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblCity }}</label>
-                    <input class="form-control" type="text" name="city" value="{{ old('city') }}">
-                @else
-                    <input class="form-control" type="text" name="city" value="{{ old('city') }}"
-                        placeholder="{{ $phCity }}">
-                @endif
-            </div>
-
-            <div class="{{ $col }} mb-3">
-                @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblNickname }}</label>
-                    <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}">
-                @else
-                    <input class="form-control" type="text" name="nickname" value="{{ old('nickname') }}"
-                        placeholder="{{ $phNickname }}">
-                @endif
-            </div>
-
-            <div class="col-12 mb-3">
-                @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblComment }}</label>
-                    <input class="form-control" type="text" name="comment"
-                        value="{{ old('comment', $defaultComment) }}">
-                @else
-                    <input class="form-control" type="text" name="comment"
-                        value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
-                @endif
+            <div class="fc-sign-advanced d-none">
+                <div class="col-12 mb-3">
+                    @if ($useLabels)
+                        <label class="form-label fc-mini-label">{{ $lblComment }}</label>
+                        <input class="form-control" type="text" name="comment"
+                            value="{{ old('comment', $defaultComment) }}">
+                    @else
+                        <input class="form-control" type="text" name="comment"
+                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
+                    @endif
+                </div>
             </div>
 
             <div class="col-12">
@@ -232,57 +187,18 @@
                 @endif
 
                 {{-- agreements --}}
-                <div class="mb-3">
-                    <div style="font-weight:700;">
-                        {!! $agree1Title !!}
+                <div class="p-3 rounded bg-light border mb-3">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
+                        <label class="form-check-label" style="font-size:14px;" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
                     </div>
-                    <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree1" value="agree"
-                                {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
-                            {{ $agreeYes }}
-                        </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree1" value="no"
-                                {{ old('agree1') === 'no' ? 'checked' : '' }}>
-                            {{ $agreeNo }}
-                        </label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="agree2_{{ $variant }}" name="agree2" value="1" {{ old('agree2') ? 'checked' : '' }}>
+                        <label class="form-check-label" style="font-size:14px;" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <div style="font-weight:700;">
-                        {!! $agree2Title !!}
-                    </div>
-                    <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree2" value="agree"
-                                {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
-                            {{ $agreeYes }}
-                        </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree2" value="no"
-                                {{ old('agree2') === 'no' ? 'checked' : '' }}>
-                            {{ $agreeNo }}
-                        </label>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div style="font-weight:700;">
-                        {!! $agree3Title !!}
-                    </div>
-                    <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree3" value="agree"
-                                {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
-                            {{ $agreeYes }}
-                        </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree3" value="no"
-                                {{ old('agree3') === 'no' ? 'checked' : '' }}>
-                            {{ $agreeNo }}
-                        </label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="agree3_{{ $variant }}" name="agree3" value="1" {{ old('agree3') ? 'checked' : '' }}>
+                        <label class="form-check-label" style="font-size:14px;" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
                     </div>
                 </div>
 
