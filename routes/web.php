@@ -241,6 +241,7 @@ Route::prefix('{locale}')
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware('throttle:10,1');
+        Route::post('/petition/{slug}/{id}/claim', [PetitionController::class, 'claimAccount'])->name('petition.claim')->middleware('throttle:10,1');
         Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
             ->where('status', '([0-9]+|created)?')
             ->name('petition.thanks');
