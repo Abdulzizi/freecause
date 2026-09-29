@@ -52,7 +52,10 @@ class GoogleAuthController extends Controller
             ]);
         }
 
-        return Socialite::driver('google')->redirect();
+        $state = Str::random(40);
+        $request->session()->put('oauth_state', $state);
+
+        return Socialite::driver('google')->with(['state' => $state])->redirect();
     }
 
     public function callback(Request $request, string $locale)
@@ -62,7 +65,23 @@ class GoogleAuthController extends Controller
             'locale' => $locale,
         ]);
 
-        $google = Socialite::driver('google')->user();
+        try {
+            $google = Socialite::driver('google')->user();
+        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+            $request->session()->pull('oauth_state');
+
+            AppLog::warning(
+                'Google OAuth state mismatch',
+                'Session expired or replay detected',
+                'auth.google'
+            );
+
+            return redirect("/{$locale}/login")->withErrors([
+                'oauth' => 'Your session expired or the login was interrupted. Please try again.',
+            ]);
+        }
+
+        $request->session()->pull('oauth_state');
         $email = strtolower(trim($google->getEmail() ?? ''));
 
         $fullName = trim((string) ($google->getName() ?: 'Google User'));

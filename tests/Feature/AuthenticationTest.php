@@ -70,6 +70,7 @@ class AuthenticationTest extends TestCase
         config()->set('services.google.redirect', 'https://www.freecause.com/en/oauth/google/callback');
 
         $driver = Mockery::mock();
+        $driver->shouldReceive('with')->once()->andReturnSelf();
         $driver->shouldReceive('redirect')
             ->once()
             ->andReturn(redirect()->away('https://accounts.google.test/oauth'));
@@ -81,7 +82,8 @@ class AuthenticationTest extends TestCase
                 'flow' => 'register',
                 'locale' => 'en',
                 'redirect' => '/en/create-petition',
-            ]);
+            ])
+            ->assertSessionHas('oauth_state');
     }
 
     public function test_google_oauth_callback_returns_to_embedded_page(): void
@@ -101,6 +103,7 @@ class AuthenticationTest extends TestCase
                 'locale' => 'en',
                 'redirect' => '/en/create-petition',
             ],
+            'oauth_state' => 'test-state-token',
         ])->get('/en/oauth/google/callback')
             ->assertRedirect('/en/create-petition');
 
@@ -119,6 +122,7 @@ class AuthenticationTest extends TestCase
         config()->set('services.google.redirect', 'https://www.freecause.com/en/oauth/google/callback');
 
         $driver = Mockery::mock();
+        $driver->shouldReceive('with')->once()->andReturnSelf();
         $driver->shouldReceive('redirect')
             ->once()
             ->andReturn(redirect()->away('https://accounts.google.test/oauth'));
@@ -129,7 +133,8 @@ class AuthenticationTest extends TestCase
                 'flow' => 'login',
                 'locale' => 'en',
                 'redirect' => '/en',
-            ]);
+            ])
+            ->assertSessionHas('oauth_state');
     }
 
     public function test_authenticated_user_cannot_reopen_auth_pages(): void
