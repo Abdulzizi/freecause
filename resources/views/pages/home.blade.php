@@ -87,7 +87,7 @@
                                                         </div>
 
                                                         <div class="col-md-6 mb-4">
-                                                                <h5>{{ $featuredPetition->tr_title }}</h5>
+                                                                <h3>{{ $featuredPetition->tr_title }}</h3>
                                                                 <p>
                                                                     <strong>
                                                                         {{ __('home.petition_target_label') }}
@@ -100,7 +100,7 @@
                                                                 </p>
 
                                                             @else
-                                                                <h5>{{ __('home.featured_none_title') }}</h5>
+                                                                <h3>{{ __('home.featured_none_title') }}</h3>
                                                                 <p class="text-muted">
                                                                     {{ __('home.featured_none_sub') }}
                                                                 </p>
@@ -224,7 +224,7 @@
                 <div class="col-md-6 mb-25">
                     <div class="gray-box">
 
-                        <h4 class="headings">
+                        <h2 class="headings">
                             {{ __('home.what_title') }}
                         </h4>
 
@@ -236,7 +236,7 @@
                 <div class="col-md-6">
                     <div class="gray-box">
 
-                        <h4 class="headings">
+                        <h2 class="headings">
                             {{ __('home.create_box_title') }}
                         </h4>
 
@@ -253,7 +253,7 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h4 class="headings">{{ __('home.categories_title') }}</h4>
+                    <h2 class="headings">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
@@ -283,7 +283,7 @@
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="category-card d-block">
                             <span class="category-icon"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
-                            <h3 class="h5">{{ $cat->tr_name }}</h3>
+                            <h4 class="h5">{{ $cat->tr_name }}</h4>
                         </a>
                     </div>
                 @endforeach
@@ -313,7 +313,7 @@
                                     @endif
                                 </div>
                                 <div class="blog-content">
-                                    <h3 class="blog-title">{{ $post->post_title }}</h3>
+                                    <h4 class="blog-title">{{ $post->post_title }}</h4>
                                     <span class="red">
                                     {{ __('home.blog_read_more') }}
                                     <span style="margin-left:6px;">›</span>

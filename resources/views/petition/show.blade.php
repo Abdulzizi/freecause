@@ -112,7 +112,7 @@
                     <div class="col-lg-8">
                         <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
                             <img src="{{ $petitionImg }}" alt="" class="fc-petition-img-blur" aria-hidden="true">
-                            <img src="{{ $petitionImg }}" alt="petition image" class="fc-petition-img" loading="lazy">
+                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="fc-petition-img" loading="lazy">
                             @if ($petitionCredit)
                                 <span class="fc-img-credit">{{ $petitionCredit }}</span>
                             @endif
@@ -127,7 +127,7 @@
                         <div class="fc-dots my-4"></div>
 
                         <div id="signFormBottom" class="bg-light rounded-3 p-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxSignTitle }}</div>
+                            <h2 class="fc-box-title">{{ $boxSignTitle }}</h2>
 
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
@@ -160,7 +160,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <div class="fc-box-title">{{ $boxShoutbox }}</div>
+                            <h2 class="fc-box-title">{{ $boxShoutbox }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -202,7 +202,7 @@
 
                     <div class="col-lg-4">
                         <div id="signFormTop" class="bg-light rounded-3 p-4 mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxSignTitle }}</div>
+                            <h2 class="fc-box-title">{{ $boxSignTitle }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -234,7 +234,7 @@
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxGoal }}</div>
+                            <h2 class="fc-box-title">{{ $boxGoal }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -285,7 +285,7 @@
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxInformation }}</div>
+                            <h2 class="fc-box-title">{{ $boxInformation }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -321,7 +321,7 @@
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxTags }}</div>
+                            <h2 class="fc-box-title">{{ $boxTags }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -342,7 +342,7 @@
                         </div>
 
                         <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title">{{ $boxEmbed }}</div>
+                            <h2 class="fc-box-title">{{ $boxEmbed }}</h2>
                             <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                 <div
                                     style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
@@ -401,7 +401,7 @@
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
                                 <div class="bg-white rounded-3 p-4 shadow-sm my-4" style="border:1px solid #eee;">
-                                    <div class="fc-box-title">{{ __('show.operations') }}</div>
+                                    <h2 class="fc-box-title">{{ __('show.operations') }}</h2>
                                     <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
                                         <div
                                             style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">

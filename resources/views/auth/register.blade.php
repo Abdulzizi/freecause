@@ -11,7 +11,7 @@
                     <div class="card shadow-lg border-0" style="border-radius:12px;">
                         <div class="card-body p-4 p-md-5">
 
-                            <h3 class="text-center mb-4">{{ __('auth.create_account') }}</h3>
+                            <h1 class="text-center mb-4 fc-title" style="font-size:1.75rem;">{{ __('auth.create_account') }}</h1>
 
                             <div class="text-center mb-4">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}"

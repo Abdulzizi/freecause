@@ -12,7 +12,7 @@
                 <div class="col-lg-4">
                     <div class="fc-card p-4">
 
-                        <h2 class="fc-h2 mb-3">{{ __('profile.my_data') }}</h2>
+                        <h1 class="fc-h2 mb-3">{{ __('profile.my_data') }}</h1>
 
                         <div class="fc-kv">
                             <div class="fc-k">{{ __('auth.email') }}:</div>
@@ -59,7 +59,7 @@
                             <div class="fc-dots my-3"></div>
                         </div>
 
-                        <h3 class="fc-h3 mb-2">{{ __('profile.account_deletion') }}</h3>
+                        <h2 class="fc-h3 mb-2">{{ __('profile.account_deletion') }}</h2>
 
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
@@ -85,7 +85,7 @@
 
                 <div class="col-lg-8">
                     <div class="fc-card p-4">
-                        <h1 class="fc-title text-center mb-4">{{ __('profile.heading') }}</h1>
+                        <h3 class="fc-title text-center mb-4">{{ __('profile.heading') }}</h3>
 
                         @if ($errors->any())
                             <div class="fc-error mb-3">

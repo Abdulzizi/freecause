@@ -8,7 +8,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-5">
                     <div class="fc-auth-card shadow-sm">
-                        <h4 class="mb-4 text-center">{{ __('auth.reset_title') }}</h4>
+                        <h1 class="mb-4 text-center" style="font-size:1.5rem;">{{ __('auth.reset_title') }}</h1>
 
                         <form method="POST" action="{{ lroute('password.update') }}">
                             @csrf
