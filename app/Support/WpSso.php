@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Log;
+
 class WpSso
 {
     /**
@@ -13,7 +15,7 @@ class WpSso
         $secret = config('app.sso_secret');
 
         if (! $secret) {
-            \Illuminate\Support\Facades\Log::warning('SSO: sso_secret not configured, skipping WordPress login');
+            Log::warning('SSO: sso_secret not configured, skipping WordPress login');
 
             return $redirect;
         }
@@ -33,7 +35,7 @@ class WpSso
                 'r' => $redirect,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('SSO: failed to generate login URL - '.$e->getMessage());
+            Log::error('SSO: failed to generate login URL - '.$e->getMessage());
 
             return $redirect;
         }
@@ -45,7 +47,7 @@ class WpSso
     public static function logoutUrl(string $redirect): string
     {
         if (! config('app.sso_secret')) {
-            \Illuminate\Support\Facades\Log::warning('SSO: sso_secret not configured, skipping WordPress logout');
+            Log::warning('SSO: sso_secret not configured, skipping WordPress logout');
 
             return $redirect;
         }

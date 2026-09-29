@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Petition;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -98,12 +100,12 @@ class CategoryPetitionController extends Controller
 
             if (is_array($petitions)) {
                 $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
-                $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
+                $petitions = new LengthAwarePaginator(
                     $items,
                     $petitions['total'] ?? 0,
                     $petitions['per_page'] ?? 15,
                     $petitions['current_page'] ?? $page,
-                    ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+                    ['path' => Paginator::resolveCurrentPath()]
                 );
             }
 

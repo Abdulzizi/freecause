@@ -7,7 +7,9 @@ use App\Models\Petition;
 use App\Services\PageContentService;
 use App\Support\Settings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -51,7 +53,7 @@ class HomeController extends Controller
         if (is_array($categories)) {
             $categories = collect($categories);
         }
-        if ($categories instanceof \Illuminate\Support\Collection) {
+        if ($categories instanceof Collection) {
             $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
         }
 
@@ -188,7 +190,7 @@ class HomeController extends Controller
                     LIMIT 3
                 ");
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Magazine DB connection failed: '.$e->getMessage());
+                Log::error('Magazine DB connection failed: '.$e->getMessage());
 
                 return [];
             }

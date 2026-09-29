@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\Log;
-use Illuminate\Support\Facades\Request;
 
 class AppLog
 {
@@ -26,14 +25,14 @@ class AppLog
     {
         try {
             Log::create([
-                'level'   => $level,
-                'title'   => $title,
+                'level' => $level,
+                'title' => $title,
                 'content' => $content,
                 'context' => $context,
-                'ip'      => request()->ip(),
+                'ip' => request()->ip(),
             ]);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('AppLog write failed: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('AppLog write failed: '.$e->getMessage());
         }
     }
 }

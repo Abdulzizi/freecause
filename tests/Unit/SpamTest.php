@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Support\Spam;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class SpamTest extends TestCase
@@ -14,7 +15,7 @@ class SpamTest extends TestCase
     {
         parent::setUp();
 
-        $this->app['request']->setTrustedProxies(['127.0.0.1'], \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO | \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR | \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST);
+        $this->app['request']->setTrustedProxies(['127.0.0.1'], Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST);
     }
 
     public function test_spam_detects_bad_keywords(): void

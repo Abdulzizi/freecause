@@ -19,7 +19,7 @@ class Language extends Model
         $map = config('language_flags');
         $key = $map[$this->code] ?? 'en_US';
 
-        $path = 'legacy/images/country-flags/rounded1/' . $key . '.png';
+        $path = 'legacy/images/country-flags/rounded1/'.$key.'.png';
 
         return file_exists(public_path($path))
             ? $path

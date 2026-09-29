@@ -68,6 +68,7 @@ class AdminCategoriesController extends Controller
         // Attach petition counts to paginated collection
         $categories->getCollection()->transform(function ($cat) use ($petitionCounts) {
             $cat->petition_count = $petitionCounts[$cat->id] ?? 0;
+
             return $cat;
         });
 

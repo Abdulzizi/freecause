@@ -16,7 +16,7 @@ class PageController extends Controller
             ->where('published', true)
             ->first();
 
-        if (!$tr) {
+        if (! $tr) {
             $tr = PageTranslation::query()
                 ->where('locale', $defaultLocale)
                 ->where('slug', $slug)
@@ -24,7 +24,7 @@ class PageController extends Controller
                 ->first();
         }
 
-        if (!$tr) {
+        if (! $tr) {
             abort(404);
         }
 

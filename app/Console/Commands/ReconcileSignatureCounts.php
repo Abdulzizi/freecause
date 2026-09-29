@@ -7,14 +7,15 @@ use Illuminate\Support\Facades\DB;
 
 class ReconcileSignatureCounts extends Command
 {
-    protected $signature   = 'signatures:reconcile {--dry-run : Show mismatches without fixing}';
+    protected $signature = 'signatures:reconcile {--dry-run : Show mismatches without fixing}';
+
     protected $description = 'Reconcile petition signature_count against actual confirmed signatures';
 
     public function handle(): int
     {
         $this->info('Reconciling signature counts...');
 
-        $mismatches = DB::select("
+        $mismatches = DB::select('
             SELECT p.id, p.signature_count AS stored_count, sub.actual
             FROM petitions p
             JOIN (
@@ -29,19 +30,21 @@ class ReconcileSignatureCounts extends Command
             FROM petitions p
             WHERE p.signature_count != 0
             AND NOT EXISTS (SELECT 1 FROM signatures s WHERE s.petition_id = p.id AND s.confirmed = 1)
-        ");
+        ');
 
         if (empty($mismatches)) {
             $this->info('All signature counts are correct.');
+
             return 0;
         }
 
-        $this->warn(count($mismatches) . ' petitions have mismatched signature counts.');
+        $this->warn(count($mismatches).' petitions have mismatched signature counts.');
 
         if ($this->option('dry-run')) {
-            $this->table(['Petition ID', 'Stored', 'Actual'], array_map(fn($r) => [
+            $this->table(['Petition ID', 'Stored', 'Actual'], array_map(fn ($r) => [
                 $r->id, $r->stored_count, $r->actual,
             ], $mismatches));
+
             return 0;
         }
 
@@ -51,7 +54,8 @@ class ReconcileSignatureCounts extends Command
                 ->update(['signature_count' => $row->actual]);
         }
 
-        $this->info('Fixed ' . count($mismatches) . ' petition signature counts.');
+        $this->info('Fixed '.count($mismatches).' petition signature counts.');
+
         return 0;
     }
 }

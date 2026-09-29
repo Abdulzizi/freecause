@@ -28,19 +28,19 @@ class AdminSystemController extends Controller
             'current_password' => [
                 Rule::requiredIf($request->filled('new_password')),
                 'nullable',
-                'string'
+                'string',
             ],
 
             'new_password' => [
                 'nullable',
                 'confirmed',
                 'min:8',
-                'max:72'
+                'max:72',
             ],
         ]);
 
-        if (!empty($data['new_password'])) {
-            if (!Hash::check($data['current_password'], $admin->password)) {
+        if (! empty($data['new_password'])) {
+            if (! Hash::check($data['current_password'], $admin->password)) {
                 return back()->withErrors([
                     'current_password' => 'Current password is incorrect.',
                 ]);
@@ -54,13 +54,14 @@ class AdminSystemController extends Controller
 
         AppLog::info(
             'Admin account updated',
-            'Admin ID: ' . $admin->id . ' | Email: ' . $admin->email,
+            'Admin ID: '.$admin->id.' | Email: '.$admin->email,
             'admin.system'
         );
 
-        if (!empty($data['new_password'])) {
+        if (! empty($data['new_password'])) {
             Auth::guard('admin')->logout();
             $request->session()->regenerateToken();
+
             return redirect()->route('admin.login')->with('success', 'Password changed. Please login again.');
         }
 

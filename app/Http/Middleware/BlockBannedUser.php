@@ -16,10 +16,11 @@ class BlockBannedUser
             if ($user->banned_until !== null && now()->gt($user->banned_until)) {
                 $userLevel = UserLevel::where('name', 'user')->value('id');
                 $user->update([
-                    'level_id'      => $userLevel,
+                    'level_id' => $userLevel,
                     'banned_reason' => null,
-                    'banned_until'  => null,
+                    'banned_until' => null,
                 ]);
+
                 return $next($request);
             }
 

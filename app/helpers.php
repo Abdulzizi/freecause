@@ -1,7 +1,12 @@
 <?php
 
 use App\Models\Language;
+use App\Models\Permission;
 use App\Models\PetitionTranslation;
+use App\Models\User;
+use App\Support\Settings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 if (! function_exists('active_locales')) {
@@ -114,7 +119,7 @@ if (! function_exists('locale_url')) {
 
 function base_url()
 {
-    return \App\Support\Settings::get('base_url', config('app.url'));
+    return Settings::get('base_url', config('app.url'));
 }
 
 if (! function_exists('canonical_url')) {
@@ -145,7 +150,7 @@ function sanitizePetitionHtml(string $html): string
 
     libxml_use_internal_errors(true);
 
-    $doc = new \DOMDocument('1.0', 'UTF-8');
+    $doc = new DOMDocument('1.0', 'UTF-8');
     $doc->loadHTML('<?xml encoding="utf-8" ?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
     $container = $doc->getElementsByTagName('div')->item(0);
@@ -162,7 +167,7 @@ function sanitizePetitionHtml(string $html): string
     return trim($out);
 }
 
-function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc): void
+function domSanitizeNode(DOMNode $node, array $allowedTags, DOMDocument $doc): void
 {
     if (! $node->hasChildNodes()) {
         return;
@@ -196,9 +201,9 @@ function domSanitizeNode(\DOMNode $node, array $allowedTags, \DOMDocument $doc):
     }
 }
 if (! function_exists('admin_user')) {
-    function admin_user(): ?\App\Models\User
+    function admin_user(): ?User
     {
-        return \Illuminate\Support\Facades\Auth::guard('admin')->user();
+        return Auth::guard('admin')->user();
     }
 }
 
@@ -218,10 +223,10 @@ if (! function_exists('admin_can')) {
             return true;
         }
 
-        return \Illuminate\Support\Facades\Cache::remember(
+        return Cache::remember(
             "permissions:{$user->level_id}:{$module}:{$action}",
             300,
-            fn () => \App\Models\Permission::where('level_id', $user->level_id)
+            fn () => Permission::where('level_id', $user->level_id)
                 ->where('module', $module)
                 ->where('action', $action)
                 ->exists()
@@ -245,7 +250,7 @@ if (! function_exists('sanitizeAdminHtml')) {
         $dangerous = ['script', 'iframe', 'object', 'embed', 'form', 'base'];
 
         libxml_use_internal_errors(true);
-        $doc = new \DOMDocument('1.0', 'UTF-8');
+        $doc = new DOMDocument('1.0', 'UTF-8');
         $doc->loadHTML('<?xml encoding="utf-8" ?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         $container = $doc->getElementsByTagName('div')->item(0);
@@ -265,7 +270,7 @@ if (! function_exists('sanitizeAdminHtml')) {
 }
 
 if (! function_exists('adminHtmlSanitizeNode')) {
-    function adminHtmlSanitizeNode(\DOMNode $node, array $dangerous, \DOMDocument $doc): void
+    function adminHtmlSanitizeNode(DOMNode $node, array $dangerous, DOMDocument $doc): void
     {
         if (! $node->hasChildNodes()) {
             return;

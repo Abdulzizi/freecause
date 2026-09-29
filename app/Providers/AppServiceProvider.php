@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use App\Models\Language;
 use App\Models\PageContent;
 use App\Support\Settings;
@@ -149,7 +150,7 @@ class AppServiceProvider extends ServiceProvider
                     "categories:list:$locale",
                     now()->addHours(12),
                     function () use ($locale, $defaultLocale) {
-                        return \App\Models\Category::query()
+                        return Category::query()
                             ->leftJoin('category_translations as ct_locale', function ($j) use ($locale) {
                                 $j->on('ct_locale.category_id', '=', 'categories.id')
                                     ->where('ct_locale.locale', '=', $locale);
@@ -247,8 +248,8 @@ class AppServiceProvider extends ServiceProvider
                     ->subject('Reset your FreeCause password')
                     ->view('emails.reset-password', [
                         'firstName' => $notifiable->first_name ?: ($notifiable->name ?? 'there'),
-                        'resetUrl'  => $this->buildPasswordResetUrl($notifiable, $token),
-                        'email'     => $notifiable->getEmailForPasswordReset(),
+                        'resetUrl' => $this->buildPasswordResetUrl($notifiable, $token),
+                        'email' => $notifiable->getEmailForPasswordReset(),
                     ]);
             });
         } catch (\Throwable $e) {

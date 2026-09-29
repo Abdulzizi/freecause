@@ -6,7 +6,7 @@ class ContentRenderer
 {
     public static function render(?string $html): string
     {
-        if (!$html) {
+        if (! $html) {
             return '';
         }
 
@@ -18,27 +18,23 @@ class ContentRenderer
             '{SITE_NAME}' => config('app.name'),
             '{BRAND_NAME}' => config('app.name'),
 
-            '{SITE_NAME_LINK}' => '<span class="red"><a href="' . url('/') . '">' . config('app.name') . '</a></span>',
+            '{SITE_NAME_LINK}' => '<span class="red"><a href="'.url('/').'">'.config('app.name').'</a></span>',
 
-            '{CONTACTS_LINK}' =>
-            '<a href="' . lroute('contacts') . '">Contacts</a>',
+            '{CONTACTS_LINK}' => '<a href="'.lroute('contacts').'">Contacts</a>',
 
-            '{ETHICAL_CODE_LINK}' =>
-            '<a href="' . lroute('page.show', ['slug' => 'ethical-code']) . '">Ethical Code</a>',
+            '{ETHICAL_CODE_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'ethical-code']).'">Ethical Code</a>',
 
-            '{TOS_LINK}' =>
-            '<a href="' . lroute('page.show', ['slug' => 'terms-of-service']) . '">Terms of Service</a>',
+            '{TOS_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'terms-of-service']).'">Terms of Service</a>',
 
-            '{PRIVACY_POLICY_ROOT_LINK}' =>
-            '<a href="' . lroute('page.show', ['slug' => 'privacy-policy']) . '">Privacy Policy</a>',
+            '{PRIVACY_POLICY_ROOT_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">Privacy Policy</a>',
 
             '{CREATE_PETITION_URL}' => lroute('petition.create'),
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
 
             '{FAQ_URL}' => lroute('faqs'),
             '{CONTACTS_URL}' => lroute('contacts'),
-            '{FAQ_LINK}' => '<a href="' . lroute('faqs') . '">FAQ</a>',
-            '{CONTACTS_LINK_FULL}' => '<a href="' . lroute('contacts') . '">' . __('contacts.title', [], app()->getLocale()) . '</a>',
+            '{FAQ_LINK}' => '<a href="'.lroute('faqs').'">FAQ</a>',
+            '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], app()->getLocale()).'</a>',
         ];
 
         return str_replace(

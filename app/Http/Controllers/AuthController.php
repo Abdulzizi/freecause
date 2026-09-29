@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -346,7 +347,7 @@ class AuthController extends Controller
                 wp_delete_user($wpUserId);
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('WP user deletion failed: '.$e->getMessage());
+            Log::error('WP user deletion failed: '.$e->getMessage());
         }
 
         $u->delete();

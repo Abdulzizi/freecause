@@ -20,6 +20,7 @@ class CleanOrphanImages extends Command
 
         if (empty($files)) {
             $this->info('No files found in storage/petitions.');
+
             return 0;
         }
 
@@ -29,10 +30,11 @@ class CleanOrphanImages extends Command
             ->pluck('cover_image')
             ->toArray();
 
-        $orphans = array_filter($files, fn($f) => ! in_array($f, $referenced, true));
+        $orphans = array_filter($files, fn ($f) => ! in_array($f, $referenced, true));
 
         if (empty($orphans)) {
             $this->info('No orphan images found.');
+
             return 0;
         }
 
@@ -43,23 +45,28 @@ class CleanOrphanImages extends Command
             $totalBytes += $size;
 
             if ($dryRun) {
-                $this->line("[dry-run] would delete: {$file} (" . $this->formatBytes($size) . ')');
+                $this->line("[dry-run] would delete: {$file} (".$this->formatBytes($size).')');
             } else {
                 Storage::disk('public')->delete($file);
-                $this->line("deleted: {$file} (" . $this->formatBytes($size) . ')');
+                $this->line("deleted: {$file} (".$this->formatBytes($size).')');
             }
         }
 
         $label = $dryRun ? 'Would free' : 'Freed';
-        $this->info(count($orphans) . " orphan file(s). {$label}: " . $this->formatBytes($totalBytes));
+        $this->info(count($orphans)." orphan file(s). {$label}: ".$this->formatBytes($totalBytes));
 
         return 0;
     }
 
     private function formatBytes(int $bytes): string
     {
-        if ($bytes >= 1048576) return round($bytes / 1048576, 2) . ' MB';
-        if ($bytes >= 1024) return round($bytes / 1024, 1) . ' KB';
-        return $bytes . ' B';
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 2).' MB';
+        }
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 1).' KB';
+        }
+
+        return $bytes.' B';
     }
 }

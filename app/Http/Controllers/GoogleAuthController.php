@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class GoogleAuthController extends Controller
 {
@@ -67,7 +68,7 @@ class GoogleAuthController extends Controller
 
         try {
             $google = Socialite::driver('google')->user();
-        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+        } catch (InvalidStateException $e) {
             $request->session()->pull('oauth_state');
 
             AppLog::warning(

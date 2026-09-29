@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Schema;
 class AuditTranslations extends Command
 {
     protected $signature = 'translations:audit';
+
     protected $description = 'Audit all translation sources and export a safety-net backup';
 
     protected array $report = [];
+
     protected array $export = [];
 
     public function handle(): int
@@ -42,6 +44,7 @@ class AuditTranslations extends Command
         if (! Schema::hasTable('language_lines')) {
             $this->report['language_lines']['status'] = 'TABLE DOES NOT EXIST';
             $this->line('  Table does not exist.');
+
             return;
         }
 
@@ -51,8 +54,9 @@ class AuditTranslations extends Command
 
         if ($total === 0) {
             $this->report['language_lines']['status'] = 'EMPTY';
-            $this->line("  Total rows: 0");
-            $this->warn("  → SAFE TO DROP");
+            $this->line('  Total rows: 0');
+            $this->warn('  → SAFE TO DROP');
+
             return;
         }
 
@@ -64,8 +68,8 @@ class AuditTranslations extends Command
         $this->report['language_lines']['sample'] = $sample;
 
         $this->line("  Total rows: {$total}");
-        $this->line("  Groups: " . implode(', ', $groups));
-        $this->line("  Sample:");
+        $this->line('  Groups: '.implode(', ', $groups));
+        $this->line('  Sample:');
         foreach ($sample as $row) {
             $textPreview = mb_substr($row->text, 0, 60);
             $this->line("    - {$row->group}.{$row->key} → {$textPreview}");
@@ -78,6 +82,7 @@ class AuditTranslations extends Command
 
         if (! Schema::hasTable('translations')) {
             $this->report['translations']['status'] = 'TABLE DOES NOT EXIST';
+
             return;
         }
 
@@ -87,8 +92,9 @@ class AuditTranslations extends Command
 
         if ($total === 0) {
             $this->report['translations']['status'] = 'EMPTY';
-            $this->line("  Total rows: 0");
-            $this->warn("  → SAFE TO DROP");
+            $this->line('  Total rows: 0');
+            $this->warn('  → SAFE TO DROP');
+
             return;
         }
 
@@ -112,9 +118,9 @@ class AuditTranslations extends Command
         $this->report['translations']['sample'] = $sample;
 
         $this->line("  Total rows: {$total}");
-        $this->line("  Locales: " . json_encode($localeSummary));
-        $this->line("  Groups: " . implode(', ', $groups));
-        $this->warn("  → DEAD CODE: written by admin UI but NEVER read by views");
+        $this->line('  Locales: '.json_encode($localeSummary));
+        $this->line('  Groups: '.implode(', ', $groups));
+        $this->warn('  → DEAD CODE: written by admin UI but NEVER read by views');
     }
 
     protected function auditLangFiles(): void
@@ -127,6 +133,7 @@ class AuditTranslations extends Command
 
         if (! is_dir($langDir)) {
             $this->line('  lang/ directory does not exist.');
+
             return;
         }
 
@@ -135,7 +142,9 @@ class AuditTranslations extends Command
 
         foreach ($locales as $locale) {
             $localePath = "{$langDir}/{$locale}";
-            if (! is_dir($localePath)) continue;
+            if (! is_dir($localePath)) {
+                continue;
+            }
 
             $files = array_filter(scandir($localePath), fn ($f) => str_ends_with($f, '.php'));
             $localeKeys = [];
@@ -144,7 +153,9 @@ class AuditTranslations extends Command
             foreach ($files as $file) {
                 $filePath = "{$localePath}/{$file}";
                 $content = @include $filePath;
-                if (! is_array($content)) continue;
+                if (! is_array($content)) {
+                    continue;
+                }
 
                 $keyCount = count($content, COUNT_RECURSIVE) - count($content);
                 $localeKeys = array_merge($localeKeys, array_keys($content));
@@ -171,7 +182,7 @@ class AuditTranslations extends Command
 
         $fileCounts = array_map(fn ($r) => $r['file_count'], $fileReport);
         if (count(array_unique($fileCounts)) > 1) {
-            $this->warn("  ⚠ INCONSISTENT: Locales have different file structures");
+            $this->warn('  ⚠ INCONSISTENT: Locales have different file structures');
         }
     }
 
@@ -181,6 +192,7 @@ class AuditTranslations extends Command
 
         if (! Schema::hasTable('page_contents')) {
             $this->report['page_contents']['status'] = 'TABLE DOES NOT EXIST';
+
             return;
         }
 
@@ -212,9 +224,9 @@ class AuditTranslations extends Command
         ];
 
         $this->line("  Total rows: {$total}");
-        $this->line("  Pages: " . json_encode($pageSummary));
-        $this->line("  Keys: " . implode(', ', $keys));
-        $this->info("  → ACTIVE (used by home view and footer)");
+        $this->line('  Pages: '.json_encode($pageSummary));
+        $this->line('  Keys: '.implode(', ', $keys));
+        $this->info('  → ACTIVE (used by home view and footer)');
     }
 
     protected function auditViewUsage(): void
@@ -229,7 +241,7 @@ class AuditTranslations extends Command
 
         foreach ($bladeFiles as $bladeFile) {
             $content = File::get($bladeFile);
-            $relativePath = str_replace($viewsDir . '/', '', $bladeFile);
+            $relativePath = str_replace($viewsDir.'/', '', $bladeFile);
 
             preg_match_all("/__\(['\"]([a-z_]+\.[a-z_]+)/", $content, $matches);
             if (! empty($matches[1])) {
@@ -261,11 +273,11 @@ class AuditTranslations extends Command
             'key_files' => $allFiles,
         ];
 
-        $this->line("  Total unique keys: " . count($allKeys));
-        $this->line("  Groups used: " . implode(', ', array_keys($groups)));
-        $this->line("  Keys by group:");
+        $this->line('  Total unique keys: '.count($allKeys));
+        $this->line('  Groups used: '.implode(', ', array_keys($groups)));
+        $this->line('  Keys by group:');
         foreach ($groups as $group => $keys) {
-            $this->line("    {$group}: " . count($keys) . " keys");
+            $this->line("    {$group}: ".count($keys).' keys');
         }
 
         $this->checkMissingKeys($allKeys);
@@ -284,7 +296,9 @@ class AuditTranslations extends Command
 
             $found = false;
             foreach ($this->report['lang_files'] as $locale => $info) {
-                if (! is_array($info) || isset($info['files'])) continue;
+                if (! is_array($info) || isset($info['files'])) {
+                    continue;
+                }
                 foreach ($info['files'] as $file => $fileKeyCount) {
                     $fileName = str_replace('.php', '', $file);
                     if ($fileName === $group) {
@@ -298,7 +312,9 @@ class AuditTranslations extends Command
                         }
                     }
                 }
-                if ($found) break;
+                if ($found) {
+                    break;
+                }
             }
 
             if (! $found) {
@@ -307,12 +323,12 @@ class AuditTranslations extends Command
         }
 
         if (! empty($missingInFiles)) {
-            $this->warn("  Keys used in views but NOT found in any lang file:");
+            $this->warn('  Keys used in views but NOT found in any lang file:');
             foreach ($missingInFiles as $key => $count) {
                 $this->warn("    - {$key} (used {$count}x)");
             }
         } else {
-            $this->info("  All view keys found in lang files.");
+            $this->info('  All view keys found in lang files.');
         }
     }
 
@@ -331,14 +347,14 @@ class AuditTranslations extends Command
         if (($this->report['translations']['total_rows'] ?? 0) === 0) {
             $recs[] = 'translations table: SAFE TO DROP (empty)';
         } elseif (($this->report['translations']['total_rows'] ?? 0) > 0) {
-            $recs[] = 'translations table: SAFE TO DROP (dead code, but export ' . ($this->report['translations']['total_rows'] ?? 0) . ' rows first)';
+            $recs[] = 'translations table: SAFE TO DROP (dead code, but export '.($this->report['translations']['total_rows'] ?? 0).' rows first)';
         }
 
         $recs[] = 'lang/ files: Restructure into 9 files per locale';
         $recs[] = 'Home view: Admin-managed keys should use $content[] instead of __()';
 
         foreach ($recs as $i => $rec) {
-            $this->line("  " . ($i + 1) . ". {$rec}");
+            $this->line('  '.($i + 1).". {$rec}");
         }
 
         $this->report['recommendations'] = $recs;
@@ -349,15 +365,15 @@ class AuditTranslations extends Command
         $backupDir = storage_path('app/translation-backup');
         File::ensureDirectoryExists($backupDir);
 
-        $filename = 'audit-' . date('Y-m-d-His') . '.json';
+        $filename = 'audit-'.date('Y-m-d-His').'.json';
         $filepath = "{$backupDir}/{$filename}";
 
         File::put($filepath, json_encode($this->export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->newLine();
-        $this->info("=== EXPORT ===");
+        $this->info('=== EXPORT ===');
         $this->line("Full data exported to: {$filepath}");
-        $this->line("File size: " . round(File::size($filepath) / 1024, 1) . ' KB');
+        $this->line('File size: '.round(File::size($filepath) / 1024, 1).' KB');
     }
 
     protected function printReport(): void
@@ -382,6 +398,7 @@ class AuditTranslations extends Command
                 $files[] = $item->getPathname();
             }
         }
+
         return $files;
     }
 }

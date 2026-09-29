@@ -14,13 +14,14 @@ class AdminResetPassword extends Command
 
     public function handle(): int
     {
-        $email    = $this->argument('email');
+        $email = $this->argument('email');
         $password = $this->argument('password');
 
         $user = User::where('email', $email)->first();
 
         if (! $user) {
             $this->error("No user found with email: {$email}");
+
             return 1;
         }
 
@@ -28,6 +29,7 @@ class AdminResetPassword extends Command
 
         if (! $user->hasLevel('admin')) {
             $this->error("User {$email} is not an admin.");
+
             return 1;
         }
 

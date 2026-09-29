@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Petition;
 use Database\Seeders\LanguageSeeder;
+use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -38,9 +40,9 @@ class ExampleTest extends TestCase
 
     public function test_homepage_featured_petition_links_to_its_detail_page(): void
     {
-        $this->seed([LanguageSeeder::class, \Database\Seeders\UserLevelSeeder::class]);
+        $this->seed([LanguageSeeder::class, UserLevelSeeder::class]);
 
-        $petition = \App\Models\Petition::factory()->create([
+        $petition = Petition::factory()->create([
             'status' => 'published',
             'is_active' => true,
             'is_featured' => true,

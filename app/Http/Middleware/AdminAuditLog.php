@@ -13,7 +13,7 @@ class AdminAuditLog
         $response = $next($request);
 
         // Log all state-changing admin requests
-        if (!in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+        if (! in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
             return $response;
         }
 
@@ -30,7 +30,7 @@ class AdminAuditLog
             // Truncate large inputs to keep logs manageable
             array_walk($input, function (&$v) {
                 if (is_string($v) && mb_strlen($v) > 300) {
-                    $v = mb_substr($v, 0, 300) . '…';
+                    $v = mb_substr($v, 0, 300).'…';
                 }
             });
 
@@ -38,7 +38,7 @@ class AdminAuditLog
 
             AppLog::info(
                 "Admin action: {$method} /{$path}",
-                "Admin #{$adminId} ({$adminEmail}) | Status: {$status} | Input: " . json_encode($input, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR),
+                "Admin #{$adminId} ({$adminEmail}) | Status: {$status} | Input: ".json_encode($input, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR),
                 'admin.audit'
             );
         } catch (\Throwable) {

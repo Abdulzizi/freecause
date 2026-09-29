@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\Category;
+use App\Models\Language;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
@@ -15,7 +16,11 @@ use App\Support\AppLog;
 use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -115,12 +120,12 @@ class PetitionController extends Controller
 
             if (is_array($petitions)) {
                 $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
-                $petitions = new \Illuminate\Pagination\LengthAwarePaginator(
+                $petitions = new LengthAwarePaginator(
                     $items,
                     $petitions['total'] ?? 0,
                     $petitions['per_page'] ?? 15,
                     $petitions['current_page'] ?? $page,
-                    ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+                    ['path' => Paginator::resolveCurrentPath()]
                 );
             }
 
@@ -224,7 +229,7 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
-        $defaultComments = \App\Models\Language::where('is_active', true)
+        $defaultComments = Language::where('is_active', true)
             ->pluck('code')
             ->push($locale, $defaultLocale)
             ->unique()
@@ -447,7 +452,7 @@ class PetitionController extends Controller
                     'status' => $user->verified ? 1 : 0,
                 ]);
             });
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if (($e->errorInfo[0] ?? null) === '23000') {
                 return back()
                     ->withErrors(['email' => 'You already signed this petition.'])
@@ -971,7 +976,7 @@ class PetitionController extends Controller
         $this->requireEditable($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+        if ($trOrRedirect instanceof RedirectResponse) {
             return $trOrRedirect;
         }
         $tr = $trOrRedirect;
@@ -1005,7 +1010,7 @@ class PetitionController extends Controller
         $this->requireEditable($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+        if ($trOrRedirect instanceof RedirectResponse) {
             return $trOrRedirect;
         }
         $tr = $trOrRedirect;
@@ -1161,7 +1166,7 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+        if ($trOrRedirect instanceof RedirectResponse) {
             return $trOrRedirect;
         }
         $tr = $trOrRedirect;
@@ -1213,7 +1218,7 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
-        if ($trOrRedirect instanceof \Illuminate\Http\RedirectResponse) {
+        if ($trOrRedirect instanceof RedirectResponse) {
             return $trOrRedirect;
         }
         $tr = $trOrRedirect;

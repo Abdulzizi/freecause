@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Language;
+use App\Models\PageContent;
 use App\Models\Petition;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -49,7 +50,7 @@ class WarmCache extends Command
     private function warmHomePageCache(string $locale, string $defaultLocale): void
     {
         Cache::remember("home:content:{$locale}", 1800, function () use ($locale) {
-            return \App\Models\PageContent::where('page', 'home')
+            return PageContent::where('page', 'home')
                 ->where('locale', $locale)
                 ->pluck('value', 'key')
                 ->toArray();

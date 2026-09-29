@@ -8,20 +8,21 @@ use Illuminate\Support\Facades\File;
 class ConsolidateTranslations extends Command
 {
     protected $signature = 'translations:consolidate';
+
     protected $description = 'Consolidate all translation sources into clean lang/ files';
 
     protected array $locales = ['en', 'da', 'de', 'el', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'sv', 'tr'];
 
     protected array $fileMap = [
-        'auth'      => 'auth.php',
-        'common'    => 'common.php',
-        'contacts'  => 'contacts.php',
-        'form'      => 'form.php',
-        'home'      => 'home.php',
-        'nav'       => 'nav.php',
-        'petition'  => 'petition.php',
-        'profile'   => 'profile.php',
-        'sign'      => 'sign.php',
+        'auth' => 'auth.php',
+        'common' => 'common.php',
+        'contacts' => 'contacts.php',
+        'form' => 'form.php',
+        'home' => 'home.php',
+        'nav' => 'nav.php',
+        'petition' => 'petition.php',
+        'profile' => 'profile.php',
+        'sign' => 'sign.php',
     ];
 
     // Groups that should be merged into petition.php
@@ -37,6 +38,7 @@ class ConsolidateTranslations extends Command
         $backupFile = $this->findLatestBackup();
         if (! $backupFile) {
             $this->error('No audit backup found. Run "php artisan translations:audit" first.');
+
             return Command::FAILURE;
         }
 
@@ -51,7 +53,7 @@ class ConsolidateTranslations extends Command
         $this->mergePetitionGroups();
 
         $this->newLine();
-        $this->info("Loaded keys per group:");
+        $this->info('Loaded keys per group:');
         foreach ($this->groupKeys as $group => $locales) {
             $localeCount = count($locales);
             $enCount = count($locales['en'] ?? []);
@@ -73,6 +75,7 @@ class ConsolidateTranslations extends Command
                 $keys = $this->getKeysForLocale($group, $locale);
                 if (empty($keys)) {
                     $this->warn("  SKIP: {$locale}/{$filename} (no keys for group '{$group}')");
+
                     continue;
                 }
 
@@ -109,25 +112,34 @@ class ConsolidateTranslations extends Command
     protected function findLatestBackup(): ?string
     {
         $backupDir = storage_path('app/translation-backup');
-        if (! is_dir($backupDir)) return null;
+        if (! is_dir($backupDir)) {
+            return null;
+        }
 
         $files = File::glob("{$backupDir}/audit-*.json");
-        if (empty($files)) return null;
+        if (empty($files)) {
+            return null;
+        }
 
         usort($files, fn ($a, $b) => filemtime($b) - filemtime($a));
+
         return $files[0];
     }
 
     protected function loadFromLanguageLines(array $rows): void
     {
-        if (empty($rows)) return;
+        if (empty($rows)) {
+            return;
+        }
 
         foreach ($rows as $row) {
             $group = $row['group'];
             $key = $row['key'];
             $text = json_decode($row['text'], true);
 
-            if (! is_array($text)) continue;
+            if (! is_array($text)) {
+                continue;
+            }
 
             foreach ($this->locales as $locale) {
                 if (isset($text[$locale]) && $text[$locale] !== '') {
@@ -139,7 +151,9 @@ class ConsolidateTranslations extends Command
 
     protected function loadFromTranslationsTable(array $rows): void
     {
-        if (empty($rows)) return;
+        if (empty($rows)) {
+            return;
+        }
 
         $allGroups = array_merge(array_keys($this->fileMap), $this->petitionGroups);
 
@@ -149,9 +163,15 @@ class ConsolidateTranslations extends Command
             $key = $row['key'];
             $value = $row['value'];
 
-            if (! in_array($locale, $this->locales)) continue;
-            if (! in_array($group, $allGroups)) continue;
-            if ($value === null || $value === '') continue;
+            if (! in_array($locale, $this->locales)) {
+                continue;
+            }
+            if (! in_array($group, $allGroups)) {
+                continue;
+            }
+            if ($value === null || $value === '') {
+                continue;
+            }
 
             $this->groupKeys[$group][$locale][$key] = $value;
         }
@@ -162,26 +182,38 @@ class ConsolidateTranslations extends Command
         $allGroups = array_merge(array_keys($this->fileMap), $this->petitionGroups);
 
         foreach ($files as $path => $content) {
-            if (! is_array($content)) continue;
+            if (! is_array($content)) {
+                continue;
+            }
 
             $parts = explode('/', $path);
-            if (count($parts) !== 2) continue;
+            if (count($parts) !== 2) {
+                continue;
+            }
 
             $locale = $parts[0];
             $filename = $parts[1];
 
-            if (! in_array($locale, $this->locales)) continue;
+            if (! in_array($locale, $this->locales)) {
+                continue;
+            }
 
             foreach ($content as $key => $value) {
-                if (! is_string($value)) continue;
+                if (! is_string($value)) {
+                    continue;
+                }
 
                 $dotPos = strpos($key, '.');
-                if ($dotPos === false) continue;
+                if ($dotPos === false) {
+                    continue;
+                }
 
                 $group = substr($key, 0, $dotPos);
                 $subKey = substr($key, $dotPos + 1);
 
-                if (! in_array($group, $allGroups)) continue;
+                if (! in_array($group, $allGroups)) {
+                    continue;
+                }
 
                 $this->groupKeys[$group][$locale][$subKey] = $value;
             }
@@ -190,7 +222,9 @@ class ConsolidateTranslations extends Command
 
     protected function loadFromPageContent(array $rows): void
     {
-        if (empty($rows)) return;
+        if (empty($rows)) {
+            return;
+        }
 
         foreach ($rows as $row) {
             $page = $row['page'];
@@ -198,8 +232,12 @@ class ConsolidateTranslations extends Command
             $key = $row['key'];
             $value = $row['value'];
 
-            if (! in_array($locale, $this->locales)) continue;
-            if ($value === null || $value === '') continue;
+            if (! in_array($locale, $this->locales)) {
+                continue;
+            }
+            if ($value === null || $value === '') {
+                continue;
+            }
 
             if ($page === 'home' || $page === 'navbar') {
                 $this->groupKeys['home'][$locale][$key] = $value;
@@ -218,8 +256,12 @@ class ConsolidateTranslations extends Command
     protected function mergePetitionGroups(): void
     {
         foreach ($this->petitionGroups as $group) {
-            if ($group === 'petition') continue;
-            if (! isset($this->groupKeys[$group])) continue;
+            if ($group === 'petition') {
+                continue;
+            }
+            if (! isset($this->groupKeys[$group])) {
+                continue;
+            }
 
             foreach ($this->groupKeys[$group] as $locale => $keys) {
                 foreach ($keys as $key => $value) {
@@ -240,12 +282,13 @@ class ConsolidateTranslations extends Command
         }
 
         ksort($keys);
+
         return $keys;
     }
 
     protected function generatePhpFile(array $keys): string
     {
-        $lines = ["<?php\n", "return ["];
+        $lines = ["<?php\n", 'return ['];
 
         foreach ($keys as $key => $value) {
             $escapedValue = $this->escapePhpValue($value);
@@ -253,14 +296,15 @@ class ConsolidateTranslations extends Command
         }
 
         $lines[] = "];\n";
+
         return implode("\n", $lines);
     }
 
     protected function escapePhpValue(string $value): string
     {
         return str_replace(
-            ["\\", "'", "\n", "\r", "\t"],
-            ["\\\\", "\\'", "\\n", "\\r", "\\t"],
+            ['\\', "'", "\n", "\r", "\t"],
+            ['\\\\', "\\'", '\\n', '\\r', '\\t'],
             $value
         );
     }
@@ -271,7 +315,9 @@ class ConsolidateTranslations extends Command
 
         foreach ($this->locales as $locale) {
             $localeDir = "{$langDir}/{$locale}";
-            if (! is_dir($localeDir)) continue;
+            if (! is_dir($localeDir)) {
+                continue;
+            }
 
             foreach (File::files($localeDir) as $file) {
                 $filename = $file->getFilename();

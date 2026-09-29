@@ -44,18 +44,18 @@ class AdminPetitionsController extends Controller
             : 'GROUP_CONCAT(locale, ",")';
 
         $localesSub = DB::table('petition_translations')
-            ->select('petition_id', DB::raw($localesExpr . ' as translation_locales'))
+            ->select('petition_id', DB::raw($localesExpr.' as translation_locales'))
             ->groupBy('petition_id');
 
         $q = DB::table('petitions')
             ->leftJoinSub($localesSub, 'pt_locales', 'pt_locales.petition_id', '=', 'petitions.id')
             ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
                 $j->on('pt.petition_id', '=', 'petitions.id')
-                  ->where('pt.locale', '=', $locale);
+                    ->where('pt.locale', '=', $locale);
             })
             ->leftJoin('petition_translations as pt_default', function ($j) use ($defaultLocale) {
                 $j->on('pt_default.petition_id', '=', 'petitions.id')
-                  ->where('pt_default.locale', '=', $defaultLocale);
+                    ->where('pt_default.locale', '=', $defaultLocale);
             })
             ->select([
                 'petitions.id',
@@ -106,9 +106,9 @@ class AdminPetitionsController extends Controller
             $ml = $filters['missing_locale'];
             $q->leftJoin('petition_translations as pt_ml', function ($j) use ($ml) {
                 $j->on('pt_ml.petition_id', '=', 'petitions.id')
-                  ->where('pt_ml.locale', '=', $ml);
+                    ->where('pt_ml.locale', '=', $ml);
             })
-            ->whereNull('pt_ml.petition_id');
+                ->whereNull('pt_ml.petition_id');
         }
 
         $q->orderByDesc('petitions.id');
@@ -338,7 +338,7 @@ class AdminPetitionsController extends Controller
             case 'feature':
                 DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
                 // Only feature in the default locale — per-locale featuring is set individually in the edit panel
-                $defaultLocale = \App\Models\Language::where('is_default', true)->value('code') ?? 'en';
+                $defaultLocale = Language::where('is_default', true)->value('code') ?? 'en';
                 DB::table('petition_translations')
                     ->whereIn('petition_id', $ids)
                     ->where('locale', $defaultLocale)

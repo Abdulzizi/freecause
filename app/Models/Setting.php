@@ -43,6 +43,7 @@ class Setting extends Model
             case 'json':
             case 'array':
                 $decoded = json_decode((string) $this->value, true);
+
                 return $decoded === null ? $default : $decoded;
 
             case 'text':

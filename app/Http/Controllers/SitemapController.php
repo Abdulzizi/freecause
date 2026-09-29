@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PageTranslation;
 use Closure;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -327,7 +328,7 @@ class SitemapController extends Controller
         return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
     }
 
-    private function xml(string $content): \Illuminate\Http\Response
+    private function xml(string $content): Response
     {
         return response($content, 200, [
             'Content-Type' => 'application/xml; charset=UTF-8',

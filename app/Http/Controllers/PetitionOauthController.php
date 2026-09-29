@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Petition;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,14 +24,14 @@ class PetitionOauthController extends Controller
     {
         $ctx = $request->session()->pull('oauth_sign');
 
-        if (!$ctx) {
+        if (! $ctx) {
             return redirect("/{$locale}/")->withErrors(['oauth' => 'oauth session expired. please try again.']);
         }
 
         $google = Socialite::driver('google')->user();
         $email = strtolower(trim($google->getEmail() ?? ''));
 
-        if (!$email) {
+        if (! $email) {
             return redirect()->route('petition.show', [
                 'locale' => $ctx['locale'],
                 'slug' => $ctx['slug'],
