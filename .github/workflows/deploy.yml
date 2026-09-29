@@ -74,11 +74,12 @@ jobs:
             "cd $DEPLOY_PATH && \
              git fetch origin --tags && \
              git checkout $TAG && \
+             COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --no-interaction --optimize-autoloader && \
              rm -rf public/build && \
              php artisan config:clear && php artisan config:cache && \
              php artisan view:clear && php artisan view:cache && \
              php artisan route:clear && php artisan route:cache && \
-             systemctl reload php8.3-fpm && \
+             systemctl restart php8.3-fpm && \
              git log -1 --oneline && \
              echo DEPLOY_OK"
           scp $SSH_ARGS -r public/build root@"$DEPLOY_HOST":"$DEPLOY_PATH/public/"
