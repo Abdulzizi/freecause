@@ -26,22 +26,22 @@
 @section('title', $pageTitle)
 
 @section('content')
-    <section class="py-5">
+    <section class="py-16!">
         <div class="container">
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee; max-width: 820px; margin: 0 auto;">
+            <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]! max-w-[820px]! mx-auto!">
 
-                <h1 class="mb-3" style="font-size:28px;">
+                <h1 class="mb-3 text-2xl! md:text-[28px]!">
                     {{ $h1Text }}
                 </h1>
 
                 <div class="mb-3">
-                    <a class="red" href="{{ $petitionUrl }}">
+                    <a class="text-[#cc1f1f]!" href="{{ $petitionUrl }}">
                         {{ $tr->title ?? __('thanks.petition_fallback') }}
                     </a>
                 </div>
 
                 @if ($isCreated || $requiresVerification)
-                    <p class="mb-4" style="font-size:15px;">
+                    <p class="mb-4 text-[15px]!">
                         {{ $pText }}
                     </p>
                 @endif
@@ -50,7 +50,7 @@
                     <div class="mt-4">
                         @if ($canClaim)
                             <div class="p-3 rounded border bg-light">
-                                <h3 class="mb-3" style="font-size:18px;">{{ __('sign.claim_title') }}</h3>
+                                <h3 class="mb-3 text-[1.1rem]! md:text-lg!">{{ __('sign.claim_title') }}</h3>
                                 <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
                                     @csrf
                                     <div class="mb-3">
@@ -61,19 +61,19 @@
                                     </div>
                                     <button class="btn btn-danger" type="submit">{{ __('sign.claim_btn') }}</button>
                                 </form>
-                                <p class="mt-3 mb-0 text-muted" style="font-size:13px;">
+                                <p class="mt-3 mb-0 text-muted text-[13px]!">
                                     {{ __('sign.claim_verify_note') }}
                                 </p>
                             </div>
                         @else
-                            <p class="mb-0 text-muted" style="font-size:14px;">
+                            <p class="mb-0 text-muted text-sm!">
                                 {{ __('sign.claim_existing') }}
                             </p>
                         @endif
                     </div>
                 @endif
 
-                <h2 class="mb-3" style="font-size:22px;">
+                <h2 class="mb-3 text-[1.3rem]! md:text-[22px]!">
                     {{ $suggestionsTitle }}
                 </h2>
 
@@ -86,13 +86,13 @@
                         @endphp
 
                         <div class="mb-2">
-                            <a class="d-block p-2" style="border:1px solid #f0caca; border-radius:4px; background:#fff6f6;"
+                            <a class="d-block p-2 border border-[#f0caca]! rounded! bg-[#fff6f6]!"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty
-                        <div class="text-muted" style="font-size:14px;">
+                        <div class="text-muted text-sm!">
                             {{ $suggestionsEmpty }}
                         </div>
                     @endforelse

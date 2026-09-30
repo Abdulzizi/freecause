@@ -13,12 +13,11 @@
 @section('title', $pageTitle)
 
 @section('content')
-    <section class="py-5">
+    <section class="py-16!">
         <div class="container">
-            <div class="bg-white shadow-sm rounded-3 p-5 text-center"
-                style="border:1px solid #eee; max-width:900px; margin:0 auto;">
+            <div class="bg-white shadow-sm rounded-3 p-5 text-center border border-[#eee]! max-w-[900px]! mx-auto!">
 
-                <h2 class="mb-4" style="font-size:28px; font-weight:500;">
+                <h2 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium!">
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
                 </h2>
@@ -31,8 +30,8 @@
                     <input type="hidden" name="agree3" value="{{ session('sign.agree3', '1') }}">
 
                     <input type="hidden" name="comment" value="{{ session('sign.comment', 'I support this petition') }}">
-                    <button class="btn btn-danger px-5 py-3" type="submit" style="font-size:22px;">
-                        {{ $btnText }} <span style="margin-left:16px;">»</span>
+                    <button class="btn btn-danger px-5 py-3 text-[22px]!" type="submit">
+                        {{ $btnText }} <span class="ml-4!">»</span>
                     </button>
                 </form>
             </div>

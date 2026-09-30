@@ -14,37 +14,35 @@
 
 @section('content')
 
-    <section id="welcomes" class="main-banner">
+    <section id="welcomes" class="bg-[#f8f9fa]! pt-20! pb-20! md:pt-12! md:pb-12!">
         <div class="container">
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-8 text-center">
-                    <div class="banner-content">
 
-                        <h1 class="banner-heading mb-4">
-                            {{ $content['h1'] ?? __('home.h1') }}
-                        </h1>
+                    <h1 class="text-black! font-semibold! text-2xl! md:text-5xl! mb-6! max-sm:mb-4!">
+                        {{ $content['h1'] ?? __('home.h1') }}
+                    </h1>
 
-                        <h2 class="banner-subtitle">
-                            {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
-                        </h2>
+                    <h2 class="text-[#4b5563]! text-xl! md:text-[0.95rem]! md:leading-normal!">
+                        {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
+                    </h2>
 
-                        <div class="banner-btn mb-3">
-                            <a href="{{ lroute('petition.create') }}" class="btn btn-primary banner-btn-links">
-                                {{ __('home.btn_create_petition') }}
-                            </a>
-                        </div>
-
+                    <div class="mb-3">
+                        <a href="{{ lroute('petition.create') }}" class="btn btn-primary text-lg! font-medium! inline-block! px-6! py-2.5!">
+                            {{ __('home.btn_create_petition') }}
+                        </a>
                     </div>
+
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="tabs-area">
+    <section class="bg-[#f9fafb]! py-15! md:py-6!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="tab-cards">
+                    <div class="shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]! bg-white! rounded-[10px]!">
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
@@ -67,26 +65,26 @@
 
                             <div class="tab-pane fade show active" id="featured-petition-tab-pane">
 
-                                <div class="tab-card-content">
-                                    <div class="row featured-row">
-                                        <div class="col-lg-12 mb-25">
+                                <div class="p-4! md:p-[25px]! max-sm:p-3!">
+                                    <div class="row">
+                                        <div class="col-lg-12 mb-[25px]! max-md:mb-[30px]!">
 
-                                            <div class="card featured-box">
-                                                <div class="card-body">
+                                            <div class="card featured-box relative! shadow-none!">
+                                                <div class="card-body p-0!">
 
-                                                    <span class="featured-badges">
+                                                    <span class="bg-[#ffefef]! text-[#dc3545]! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
-                                                    <div class="row featured-box-inner">
+                                                    <div class="row relative!">
 
                                                         @if ($featuredPetition)
-                                                        <div class="col-md-6 mb-4">
+                                                        <div class="col-md-6 mb-6! max-sm:mb-4!">
                                                             <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
                                                                 loading="lazy" alt="{{ $featuredPetition->tr_title }}">
                                                         </div>
 
-                                                        <div class="col-md-6 mb-4">
+                                                        <div class="col-md-6 mb-6! max-sm:mb-4!">
                                                                 <h3>{{ $featuredPetition->tr_title }}</h3>
                                                                 <p>
                                                                     <strong>
@@ -95,7 +93,7 @@
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
-                                                                <p class="featured-description">
+                                                                <p class="line-clamp-7!">
                                                                     {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                 </p>
 
@@ -108,14 +106,14 @@
                                                         </div>
 
                                                         @if ($featuredPetition)
-                                                            <a href="{{ $featuredUrl }}">
+                                                            <a href="{{ $featuredUrl }}" class="absolute! inset-0! z-[2]! text-[0px]! bg-transparent!">
                                                                 {{ __('home.featured_read_more') }}
                                                             </a>
                                                         @endif
                                                     </div>
 
                                                     @if ($featuredPetition)
-                                                        <div class="goal-progress mb-3">
+                                                        <div class="mb-3">
                                                             <div class="progress mb-2">
                                                                 <div class="progress-bar" style="width: {{ $progress }}%;"></div>
                                                             </div>
@@ -141,12 +139,12 @@
 
                             <div class="tab-pane fade" id="recent-activities-tab-pane" role="tabpanel">
 
-                                <div class="tab-card-content">
-                                    <div class="row recent-activities-row">
+                                <div class="p-4! md:p-[25px]! max-sm:p-3!">
+                                    <div class="row">
                                         <div class="col-md-12">
-                                            <div class="most-grid">
+                                            <div class="mb-[50px]!">
 
-                                                <ul class="recent-activities most-listing">
+                                                <ul class="most-listing">
 
                                                     @forelse($recentActivities as $sig)
                                                         @php
@@ -162,13 +160,13 @@
                                                                 : '#';
                                                         @endphp
 
-                                                        <li>
+                                                        <li class="group">
                                                             <a href="{{ $url }}">
 
                                                                 <div
-                                                                    class="d-flex justify-content-between recent-activities-times mb-1">
-                                                                    <p class="fs-14">
-                                                                        <span class="user-name">
+                                                                    class="d-flex justify-content-between mb-1">
+                                                                    <p class="text-sm!">
+                                                                        <span>
                                                                             {{ $sig->name }}
                                                                         </span>
 
@@ -177,12 +175,12 @@
                                                                         </strong>
                                                                     </p>
 
-                                                                    <span class="red fs-14">
+                                                                    <span class="text-[#cc1f1f]! text-sm! group-hover:text-white!">
                                                                         {{ $sig->created_at ? \Carbon\Carbon::parse($sig->created_at)->diffForHumans() : '' }}
                                                                     </span>
                                                                 </div>
 
-                                                                <p class="fs-14">
+                                                                <p class="text-sm!">
                                                                     {{ $sig->petition_title }}
                                                                 </p>
 
@@ -191,11 +189,11 @@
 
                                                     @empty
 
-                                                        <li>
+                                                        <li class="group">
                                                             <div class="text-muted p-2">
                                                                 {{ __('home.recent_empty') }}
                                                                 &mdash;
-                                                                <a href="{{ lroute('petitions.index') }}" class="red">
+                                                                <a href="{{ lroute('petitions.index') }}" class="text-[#cc1f1f]! group-hover:text-white!">
                                                                     {{ __('home.btn_browse_petitions') }}
                                                                 </a>
                                                             </div>
@@ -217,14 +215,14 @@
         </div>
     </section>
 
-    <section class="online-petition py-5">
+    <section class="py-16!">
         <div class="container">
             <div class="row">
 
-                <div class="col-md-6 mb-25">
-                    <div class="gray-box">
+                <div class="col-md-6 mb-[25px]! max-md:mb-[30px]!">
+                    <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="headings">
+                        <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.what_title') }}
                         </h4>
 
@@ -234,9 +232,9 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="gray-box">
+                    <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="headings">
+                        <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.create_box_title') }}
                         </h4>
 
@@ -249,11 +247,11 @@
         </div>
     </section>
 
-    <section class="browse-categories py-5">
+    <section class="py-16!">
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h2 class="headings">{{ __('home.categories_title') }}</h2>
+                    <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
@@ -277,13 +275,13 @@
                 ];
             @endphp
 
-            <div class="row category-row">
+            <div class="row">
                 @foreach ($categories as $cat)
                     <div class="col-lg-3 col-sm-6 mb-3">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                            class="category-card d-block">
-                            <span class="category-icon"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
-                            <h4 class="h5">{{ $cat->tr_name }}</h4>
+                            class="bg-white! border border-[#eee]! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! d-block">
+                            <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
+                            <h4 class="h5 text-base! md:text-base!">{{ $cat->tr_name }}</h4>
                         </a>
                     </div>
                 @endforeach
@@ -292,7 +290,7 @@
     </section>
 
     @if (count($magazinePosts) > 0)
-    <section class="blog-section">
+    <section class="bg-[#f9fafb]! py-15!">
         <div class="container">
             <div class="text-center mb-4">
                 <h2 class="mb-2">{{ __('home.blog_title') }}</h2>
@@ -304,19 +302,19 @@
                 @foreach ($magazinePosts as $post)
                     <div class="col-md-4">
                         <a class="d-block h-100 text-decoration-none" href="/magazine/{{ $post->post_name }}">
-                            <div class="blog-grid">
-                                <div class="blog-images">
+                            <div class="shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]! rounded-[15px]! overflow-hidden! hover:shadow-[rgba(149,157,165,0.2)_0px_8px_24px]!">
+                                <div>
                                     @if ($post->thumbnail_path)
-                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}">
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
                                     @else
-                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
                                     @endif
                                 </div>
-                                <div class="blog-content">
-                                    <h4 class="blog-title">{{ $post->post_title }}</h4>
-                                    <span class="red">
+                                <div class="p-5! bg-white! min-h-[146px]!">
+                                    <h4 class="text-base! md:text-base! mb-2.5! text-black!">{{ $post->post_title }}</h4>
+                                    <span class="text-[#cc1f1f]!">
                                     {{ __('home.blog_read_more') }}
-                                    <span style="margin-left:6px;">›</span>
+                                    <span class="ml-1.5!">›</span>
                                     </span>
                                 </div>
                             </div>

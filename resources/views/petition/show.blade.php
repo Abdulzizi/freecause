@@ -58,12 +58,12 @@
 
             {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="mb-3">
-                <ol class="breadcrumb" style="font-size:13px;margin-bottom:0;">
+                <ol class="breadcrumb text-[13px]! mb-0!">
                     <li class="breadcrumb-item">
-                        <a href="{{ lroute('home') }}" class="red">{{ __('show.breadcrumb_home') }}</a>
+                        <a href="{{ lroute('home') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_home') }}</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ lroute('petitions.index') }}" class="red">{{ __('show.breadcrumb_petitions') }}</a>
+                        <a href="{{ lroute('petitions.index') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_petitions') }}</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         {{ \Illuminate\Support\Str::limit($petitionTitle, 55) }}
@@ -71,36 +71,36 @@
                 </ol>
             </nav>
 
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
+            <div class="bg-white shadow-sm rounded-3 p-4 border! border-[#eee]!">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                    <h1 class="mb-0" style="font-size:22px;font-weight:700;line-height:1.3;">
+                    <h1 class="mb-0 text-[22px]! font-bold! leading-[1.3]!">
                         {{ $petitionTitle }}
                     </h1>
 
                     @if (!$hasSigned)
-                        <a href="#signFormTop" class="btn btn-danger fc-sign-now">{{ $btnSignNow }}</a>
+                        <a href="#signFormTop" class="btn btn-danger rounded-md! bg-[#cc1f1f]! border-[#cc1f1f]! px-[14px]! py-[6px]! font-semibold!">{{ $btnSignNow }}</a>
                     @endif
                 </div>
 
                 {{-- Share buttons --}}
-                <div class="fc-share-bar mb-3">
-                    <span class="fc-share-label">{{ __('show.share') }}:</span>
+                <div class="flex! flex-wrap! items-center! gap-2! mb-3">
+                    <span class="text-[13px]! font-semibold! text-[#555]!">{{ __('show.share') }}:</span>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
-                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-fb"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-[#1877f2]! text-white!"
                        aria-label="Share on Facebook">
                         <i class="fa fa-facebook"></i> Facebook
                     </a>
                     <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
-                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-tw"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-black! text-white!"
                        aria-label="Share on Twitter">
                         <i class="fa fa-twitter"></i> Twitter
                     </a>
                     <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.request()->url()) }}"
-                       target="_blank" rel="noopener noreferrer" class="fc-share-btn fc-share-wa"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-[#25d366]! text-white!"
                        aria-label="Share on WhatsApp">
                         <i class="fa fa-whatsapp"></i> WhatsApp
                     </a>
-                    <button type="button" id="copyPetitionLink" class="fc-share-btn fc-share-copy"
+                    <button type="button" id="copyPetitionLink" class="fc-share-copy inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline!"
                             data-url="{{ request()->url() }}"
                             data-copied-label="{{ __('show.link_copied') }}"
                             aria-label="Copy link">
@@ -110,41 +110,37 @@
 
                 <div class="row g-4">
                     <div class="col-lg-8">
-                        <a href="#" class="fc-img-wrap" data-bs-toggle="modal" data-bs-target="#imgModal">
-                            <img src="{{ $petitionImg }}" alt="" class="fc-petition-img-blur" aria-hidden="true">
-                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="fc-petition-img" loading="lazy">
+                        <a href="#" class="relative! block! overflow-hidden! rounded-[10px]! bg-[#1a1a1a]! h-[380px]!" data-bs-toggle="modal" data-bs-target="#imgModal">
+                            <img src="{{ $petitionImg }}" alt="" class="absolute! inset-[-15px]! w-[calc(100%+30px)]! h-[calc(100%+30px)]! object-cover! blur-[18px]! opacity-[0.55]! rounded-none!" aria-hidden="true">
+                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="lazy">
                             @if ($petitionCredit)
-                                <span class="fc-img-credit">{{ $petitionCredit }}</span>
+                                <span class="absolute! right-[10px]! bottom-[10px]! rounded-md! bg-black/55! px-2! py-1! text-xs! text-white! text-shadow-[0_1px_2px_rgba(0,0,0,0.6)]!">{{ $petitionCredit }}</span>
                             @endif
                         </a>
 
-                        <div class="fc-content mt-3">
-                            <div class="fc-petition-description">
+                        <div class="mt-3">
+                            <div class="text-base! leading-[1.75]! text-[#222]! [&_p]:mb-3! [&_p]:text-sm! [&_p]:leading-[1.75]! [&_ul]:my-2.5! [&_ul]:mt-0! [&_ul]:mb-3.5! [&_ul]:list-disc! [&_ul]:pl-[22px]! [&_ol]:my-2.5! [&_ol]:mt-0! [&_ol]:mb-3.5! [&_ol]:list-decimal! [&_ol]:pl-[22px]! [&_li]:mb-1.5! [&_li]:text-sm! [&_li]:leading-[1.75]! [&_li>ul]:mt-2! [&_li>ol]:mt-2! [&_h3]:mt-4! [&_h3]:text-base! [&_h3]:font-bold! [&_h4]:mt-3.5! [&_h4]:text-[15px]! [&_h4]:font-bold!">
                                 {!! $tr->description !!}
                             </div>
                         </div>
 
-                        <div class="fc-dots my-4"></div>
+                        <div class="border-t-[2px_dotted_#ccc]! border-b-[1px_dotted_#bbb]! my-4"></div>
 
-                        <div id="signFormBottom" class="bg-light rounded-3 p-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxSignTitle }}</h2>
+                        <div id="signFormBottom" class="bg-light rounded-3 p-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxSignTitle }}</h2>
 
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                            @include('partials.gradient-divider')
 
                             @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                    <a class="btn fc-google-btn fc-oauth-btn"
+                                    <a class="btn inline-flex! items-center! gap-[10px]! rounded-md! border! border-[#ddd]! bg-white! px-4! py-2.5! text-sm! font-medium! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]! hover:no-underline!"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" class="w-[18px]! h-[18px]! block!" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>
 
-                                <div class="fc-or my-3"><span>{{ $orText }}</span></div>
+                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-[#ddd]!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
 
                                 <p class="mb-3">{!! $authHintSplit !!}</p>
                             @endif
@@ -160,37 +156,33 @@
                         </div>
 
                         <div class="mt-4">
-                            <h2 class="fc-box-title">{{ $boxShoutbox }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                            <h2 class="font-bold! text-base!">{{ $boxShoutbox }}</h2>
+                            @include('partials.gradient-divider')
 
-                            <div class="fc-shoutbox">
+                            <div>
                                 @forelse ($shoutbox as $comment)
                                     <div class="d-flex align-items-start gap-3 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 @if ($comment->user)
-                                                    <a class="red" style="font-weight:600;font-size:15px;"
+                                                    <a class="font-semibold! text-[15px]! text-[#cc1f1f]!"
                                                         href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($comment->user->name ?? 'user') ?: 'user', 'id' => $comment->user_id]) }}">
                                                         {{ $comment->name ?? $comment->user->name ?? __('sig.anonymous') }}
                                                     </a>
                                                 @else
-                                                    <strong style="font-size:15px;">{{ $comment->name ?? __('sig.anonymous') }}</strong>
+                                                    <strong class="text-[15px]!">{{ $comment->name ?? __('sig.anonymous') }}</strong>
                                                 @endif
-                                                <span class="text-muted ms-auto" style="font-size:12px;">
+                                                <span class="text-muted ms-auto text-xs!">
                                                     {{ optional($comment->created_at)->format('j F Y') }}
                                                 </span>
                                             </div>
-                                            <p class="mb-0 mt-1 text-muted" style="font-size:14px;">
+                                            <p class="mb-0 mt-1 text-muted text-sm!">
                                                 "{{ $comment->text }}"
                                             </p>
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-muted" style="font-size:14px;">{{ __('sig.no_comments') }}</div>
+                                    <div class="text-muted text-sm!">{{ __('sig.no_comments') }}</div>
                                 @endforelse
 
                                 @if ($shoutbox->hasPages())
@@ -201,24 +193,20 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <div id="signFormTop" class="bg-light rounded-3 p-4 mb-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxSignTitle }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                        <div id="signFormTop" class="bg-light rounded-3 p-4 mb-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxSignTitle }}</h2>
+                            @include('partials.gradient-divider')
 
                             @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                    <a class="btn fc-google-btn fc-oauth-btn"
+                                    <a class="btn inline-flex! items-center! gap-[10px]! rounded-md! border! border-[#ddd]! bg-white! px-4! py-2.5! text-sm! font-medium! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]! hover:no-underline!"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" class="w-[18px]! h-[18px]! block!" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>
 
-                                <div class="fc-or my-3"><span>{{ $orText }}</span></div>
+                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-[#ddd]!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
 
                                 <p class="mb-3">{!! $authHintStack !!}</p>
                             @endif
@@ -233,50 +221,42 @@
                             ])
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxGoal }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
+                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxGoal }}</h2>
+                            @include('partials.gradient-divider')
+
+                            <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-3">
+                                <div class="h-1.5! bg-[#2ca02c]!" style="width: {{ $pct }}%;"></div>
                             </div>
 
-                            <div class="fc-progress mt-3">
-                                <div class="fc-progress-bar" style="width: {{ $pct }}%;"></div>
-                            </div>
-
-                            <div class="d-flex justify-content-between mt-2" style="font-size:14px;">
+                            <div class="d-flex justify-content-between mt-2 text-sm!">
                                 <div>{{ $goalSignaturesText }}</div>
                                 <div class="text-muted">{{ $goalLabelText }}</div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <div class="fc-box-title d-flex align-items-center justify-content-between">
+                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4 border! border-[#eee]!">
+                            <div class="font-bold! text-base! d-flex align-items-center justify-content-between">
                                 <span>{{ $boxLatest }}</span>
                             </div>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                            @include('partials.gradient-divider')
 
-                            <div class="fc-latest mt-3">
+                            <div class="text-[13px]! mt-3">
                                 @forelse($latest as $i => $sig)
-                                    <div class="fc-latest-row">
-                                        <div class="fc-latest-date">
+                                    <div class="py-[6px]! border-b! border-[#f1f1f1]! last:border-b-0!">
+                                        <div class="font-bold! mb-0.5!">
                                             {{ $sig->created_at?->format('j F Y') }}
                                         </div>
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                                class="red">{{ $sig->name ?? __('sig.anonymous') }}</a>
+                                                class="text-[#cc1f1f]!">{{ $sig->name ?? __('sig.anonymous') }}</a>
                                             <span class="text-muted">|</span>
                                             <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-muted" style="font-size:14px;">{{ $latestEmpty }}</div>
+                                    <div class="text-muted text-sm!">{{ $latestEmpty }}</div>
                                 @endforelse
 
                                 <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
@@ -284,20 +264,16 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxInformation }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxInformation }}</h2>
+                            @include('partials.gradient-divider')
 
-                            <div class="mt-3" style="font-size:14px;line-height:1.8;">
+                            <div class="mt-3 text-sm! leading-[1.8]!">
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoBy }}</strong>
                                     @if ($petition->user)
                                         <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($petition->user->name ?? 'user') ?: 'user', 'id' => $petition->user_id]) }}"
-                                            class="red">
+                                            class="text-[#cc1f1f]!">
                                             {{ $petition->user->name }}
                                         </a>
                                     @else
@@ -308,7 +284,7 @@
                                 <div class="d-flex justify-content-between gap-2">
                                     <strong>{{ $infoIn }}</strong>
                                     <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}"
-                                        class="red">
+                                        class="text-[#cc1f1f]!">
                                         {{ $petition->category?->name ?? '-' }}
                                     </a>
                                 </div>
@@ -320,19 +296,14 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxTags }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
-                            <div class="mt-3" style="font-size:14px;">
+                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxTags }}</h2>
+                            @include('partials.gradient-divider')
+                            <div class="mt-3 text-sm!">
                                 @if ($petition->tags)
                                     @foreach (explode(',', $petition->tags) as $tag)
                                         @if (trim($tag))
-                                            <span class="badge bg-secondary me-1 mb-1"
-                                                style="font-weight:400;font-size:13px;">{{ trim($tag) }}</span>
+                                            <span class="badge bg-secondary me-1 mb-1 font-normal! text-[13px]!">{{ trim($tag) }}</span>
                                         @endif
                                     @endforeach
                                 @else
@@ -341,15 +312,11 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4" style="border:1px solid #eee;">
-                            <h2 class="fc-box-title">{{ $boxEmbed }}</h2>
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                        <div class="bg-white rounded-3 p-4 shadow-sm mb-4 border! border-[#eee]!">
+                            <h2 class="font-bold! text-base!">{{ $boxEmbed }}</h2>
+                            @include('partials.gradient-divider')
 
-                            <div class="mt-3" style="font-size:13px;">
+                            <div class="mt-3 text-[13px]!">
                                 <div class="mb-2"><strong>{{ $embedDirect }}</strong></div>
                                 <input class="form-control mb-3" value="{{ $directLink }}" readonly>
 
@@ -365,21 +332,17 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3 p-4 shadow-sm fc-widgets-box" style="border:1px solid #eee;">
-                            <button id="widgetsToggle" class="fc-widgets-toggle" type="button"
+                        <div class="bg-white rounded-3 p-4 shadow-sm border! border-[#eee]!">
+                            <button id="widgetsToggle" class="w-full! border-0! bg-transparent! p-0! inline-flex! items-center! cursor-pointer! focus:outline-none! focus:shadow-none!" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#widgetsBody" aria-expanded="false"
                                 aria-controls="widgetsBody">
-                                <span class="fc-box-title mb-0 d-flex align-items-center gap-2">
+                                <span class="font-bold! text-base! mb-0 d-flex align-items-center gap-2">
                                     {{ $boxWidgets }}
-                                    <i class="fa fa-angle-down fc-widgets-arrow cursor-pointer" aria-hidden="true"></i>
+                                    <i class="fa fa-angle-down leading-none! cursor-pointer" aria-hidden="true"></i>
                                 </span>
                             </button>
 
-                            <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                <div
-                                    style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                </div>
-                            </div>
+                            @include('partials.gradient-divider')
 
                             <div id="widgetsBody" class="collapse">
                                 <div class="mt-3">
@@ -400,26 +363,22 @@
 
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
-                                <div class="bg-white rounded-3 p-4 shadow-sm my-4" style="border:1px solid #eee;">
-                                    <h2 class="fc-box-title">{{ __('show.operations') }}</h2>
-                                    <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                                        <div
-                                            style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                                        </div>
-                                    </div>
+                                <div class="bg-white rounded-3 p-4 shadow-sm my-4 border! border-[#eee]!">
+                                    <h2 class="font-bold! text-base!">{{ __('show.operations') }}</h2>
+                                    @include('partials.gradient-divider')
 
-                                    <div style="font-size:14px;line-height:1.9;">
+                                    <div class="text-sm! leading-[1.9]!">
                                         <div>
-                                            <a class="red"
+                                            <a class="text-[#cc1f1f]!"
                                                 href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">{{ __('show.edit') }}</a>
                                         </div>
 
                                         <div class="mt-2">
                                             {{ __('show.download_signatures') }} :
-                                            <a class="red"
+                                            <a class="text-[#cc1f1f]!"
                                                 href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
                                             <span class="text-muted"> </span>
-                                            <a class="red"
+                                            <a class="text-[#cc1f1f]!"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
                                     </div>
@@ -438,7 +397,7 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content p-2">
                 <div class="modal-body p-0 position-relative">
-                    <button type="button" class="btn-close position-absolute" style="right:10px;top:10px;z-index:2;"
+                    <button type="button" class="btn-close position-absolute right-[10px]! top-[10px]! z-[2]!"
                         data-bs-dismiss="modal" aria-label="Close"></button>
                     <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" alt="petition image large">
                 </div>
@@ -446,78 +405,6 @@
         </div>
     </div>
 @endsection
-
-<style>
-    .fc-petition-description ul {
-        list-style: disc !important;
-        padding-left: 22px !important;
-        margin: 0 0 14px 0 !important;
-    }
-
-    .fc-petition-description ol {
-        list-style: decimal !important;
-        padding-left: 22px !important;
-        margin: 0 0 14px 0 !important;
-    }
-
-    .fc-petition-description p {
-        margin: 0 0 12px;
-    }
-
-    .fc-petition-description {
-        font-size: 16px;
-        line-height: 1.75;
-        color: #222;
-    }
-
-    .fc-petition-description li {
-        margin: 0 0 6px 0;
-    }
-
-    .fc-petition-description li>ul,
-    .fc-petition-description li>ol {
-        margin-top: 8px !important;
-    }
-
-    .fc-img-wrap {
-        position: relative;
-        overflow: hidden;
-        border-radius: 10px;
-        background: #1a1a1a;
-        height: 380px;
-    }
-
-    .fc-petition-img-blur {
-        position: absolute;
-        inset: -15px;
-        width: calc(100% + 30px);
-        height: calc(100% + 30px);
-        object-fit: cover;
-        filter: blur(18px);
-        opacity: 0.55;
-        border-radius: 0;
-    }
-
-    .fc-petition-img {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        height: 380px;
-        object-fit: contain;
-        display: block;
-    }
-
-    .fc-img-credit {
-        position: absolute;
-        right: 10px;
-        bottom: 10px;
-        background: rgba(0, 0, 0, .55);
-        color: #fff;
-        padding: 4px 8px;
-        font-size: 12px;
-        border-radius: 6px;
-    }
-</style>
 
 @push('head')
 <script type="application/ld+json">

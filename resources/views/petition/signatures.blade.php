@@ -11,44 +11,44 @@
 @section('title', 'Signatures: ' . $petitionTitle)
 
 @section('content')
-    <section class="py-5">
+    <section class="py-16!">
         <div class="container">
 
-            <div class="bg-white shadow-sm rounded-3 p-4 mb-4" style="border:1px solid #eee;">
+            <div class="bg-white shadow-sm rounded-3 p-4 mb-4 border border-[#eee]!">
                 <div class="row align-items-center g-4">
 
                     <div class="col-md-3 col-sm-4">
-                        <a href="{{ $petitionUrl }}" class="d-block" style="border-radius:8px;overflow:hidden;display:block;height:160px;background:#1a1a1a;position:relative;">
+                        <a href="{{ $petitionUrl }}" class="rounded-lg! overflow-hidden! block! h-40! bg-[#1a1a1a]! relative!">
                             <img src="{{ $coverImg }}" alt="" aria-hidden="true"
-                                style="position:absolute;inset:-10px;width:calc(100% + 20px);height:calc(100% + 20px);object-fit:cover;filter:blur(14px);opacity:0.55;">
+                                class="absolute! -inset-2.5! w-[calc(100%+20px)]! h-[calc(100%+20px)]! object-cover! blur-[14px]! opacity-[0.55]!">
                             <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
-                                style="position:relative;z-index:1;width:100%;height:160px;object-fit:contain;">
+                                class="relative! z-[1]! w-full! h-40! object-contain!">
                         </a>
                     </div>
 
                     <div class="col-md-6 col-sm-8">
-                        <h1 class="mb-2" style="font-size:19px;font-weight:700;line-height:1.35;">
+                        <h1 class="mb-2 text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
                             <a href="{{ $petitionUrl }}" class="text-dark text-decoration-none">
                                 {{ $petitionTitle }}
                             </a>
                         </h1>
 
-                        <p class="text-muted mb-3" style="font-size:14px;line-height:1.6;">
+                        <p class="text-muted mb-3 text-sm! leading-[1.6]!">
                             {{ $shortDesc }}
-                            <a href="{{ $petitionUrl }}" class="red ms-1">{{ __('sig.continue') }}</a>
+                            <a href="{{ $petitionUrl }}" class="text-[#cc1f1f]! ms-1!">{{ __('sig.continue') }}</a>
                         </p>
 
-                        <div class="fc-progress mb-2">
-                            <div class="fc-progress-bar" style="width: {{ $pct }}%;"></div>
+                        <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2">
+                            <div class="h-1.5! bg-[#2ca02c]!" style="width: {{ $pct }}%;"></div>
                         </div>
-                        <div class="d-flex justify-content-between" style="font-size:13px;color:#666;">
+                        <div class="d-flex justify-content-between text-[13px]! text-[#666]!">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
                     </div>
 
                     <div class="col-md-3 text-md-end">
-                        <a href="{{ $signUrl }}" class="btn btn-danger px-4 py-2" style="font-size:15px;">
+                        <a href="{{ $signUrl }}" class="btn btn-danger px-4 py-2 text-[15px]!">
                             {{ __('sig.sign_link') }}
                         </a>
                     </div>
@@ -56,47 +56,47 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
+            <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]!">
 
-                <div class="fc-box-title mb-3">
+                <div class="font-bold! text-base! mb-3">
                     {{ __('sig.all_signatures') }}
-                    <span class="text-muted fw-normal" style="font-size:14px;">
+                    <span class="text-muted fw-normal text-sm!">
                         ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
 
-                <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
+                <div class="h-0.5! bg-[#e9ecef]! relative! mb-[22px]!">
                     <div
-                        style="height:2px;width:100%;background:linear-gradient(to right,black,red);position:absolute;left:0;top:0;">
+                        class="h-0.5! w-full! bg-[linear-gradient(to_right,#000,#f00)]! absolute! left-0! top-0!">
                     </div>
                 </div>
 
                 @forelse($signatures as $sig)
                     <div class="d-flex align-items-start gap-3 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
-                        <div class="flex-shrink-0 text-muted" style="font-size:13px;min-width:32px;padding-top:2px;">
+                        <div class="flex-shrink-0 text-muted text-[13px]! min-w-[32px]! pt-0.5!">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <strong style="font-size:15px;">{{ $sig->name ?? __('sig.anonymous') }}</strong>
+                                <strong class="text-[15px]!">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
-                                    <span class="text-muted" style="font-size:13px;">
+                                    <span class="text-muted text-[13px]!">
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
-                                <span class="text-muted ms-auto" style="font-size:12px;">
+                                <span class="text-muted ms-auto text-xs!">
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>
                             @if (!empty($sig->text) && $sig->text !== __('sig.default_comment'))
-                                <p class="mb-0 mt-1 text-muted" style="font-size:14px;">
+                                <p class="mb-0 mt-1 text-muted text-sm!">
                                     "{{ $sig->text }}"
                                 </p>
                             @endif
                         </div>
                     </div>
                 @empty
-                    <div class="text-muted py-4 text-center" style="font-size:14px;">
+                    <div class="text-muted py-4 text-center text-sm!">
                         {{ __('sig.no_signatures') }}
                     </div>
                 @endforelse

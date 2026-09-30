@@ -3,23 +3,23 @@
 @section('title', ($pageTitle ?? 'Petitions') . ' - FreeCause')
 
 @section('content')
-    <section class="py-5">
+    <section class="py-16!">
         <div class="container">
 
             <nav aria-label="breadcrumb" class="mb-3">
-                <ol class="breadcrumb" style="font-size:13px;margin-bottom:0;">
+                <ol class="breadcrumb text-[13px]! mb-0!">
                     <li class="breadcrumb-item">
-                        <a href="{{ lroute('home') }}" class="red">{{ __('show.breadcrumb_home') }}</a>
+                        <a href="{{ lroute('home') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_home') }}</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $heading ?? 'Petitions' }}</li>
                 </ol>
             </nav>
 
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
+            <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]!">
 
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                    <div style="font-weight:700;">{{ $heading ?? 'Petitions' }}</div>
-                    <form method="GET" action="" class="d-flex gap-2" style="max-width:300px;width:100%;">
+                    <div class="font-bold!">{{ $heading ?? 'Petitions' }}</div>
+                    <form method="GET" action="" class="d-flex gap-2 max-w-[300px]! w-full!">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('Search petitions…') }}"
                                aria-label="{{ __('Search petitions') }}"
@@ -36,20 +36,20 @@
                     </form>
                 </div>
 
-                <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
+                <div class="h-0.5! bg-[#e9ecef]! relative! mb-[22px]!">
                     <div
-                        style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
+                        class="h-0.5! w-full! bg-[linear-gradient(to_right,#000,#f00)]! absolute! left-0! top-0!">
                     </div>
                 </div>
 
-                <div class="fc-petitions-list">
+                <div class="flex! flex-col! gap-2!">
                     @forelse($petitions as $petition)
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" class="fc-petition-row d-flex justify-content-between align-items-center">
+                        ]) }}" class="d-flex justify-content-between align-items-center px-3.5! py-2.5! border border-[#e9ecef]! rounded-md! text-[#cc1f1f]! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
                             <span>{{ $petition->tr_title }}</span>
-                            <span class="text-muted ms-3 text-nowrap" style="font-size:13px;">
+                            <span class="text-muted ms-3 text-nowrap text-[13px]!">
                                 {{ number_format($petition->signature_count ?? 0) }} signatures
                             </span>
                         </a>

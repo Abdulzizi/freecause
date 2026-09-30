@@ -25,102 +25,9 @@
 
 @section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
 
-@push('head')
-    <style>
-        .fc-auth-tabs {
-            max-width: 720px;
-            margin-inline: auto;
-        }
-
-        .fc-auth-tabs .nav-link {
-            width: 100%;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .fc-auth-tabs .nav-link.active {
-            color: #d61f26;
-        }
-
-        .fc-or-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            gap: .75rem;
-            margin: 1rem 0;
-            color: #888;
-            font-weight: 600;
-            font-size: .85rem;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-        }
-
-        .fc-or-divider::before,
-        .fc-or-divider::after {
-            content: "";
-            flex: 1 1 auto;
-            height: 1px;
-            background: #e0e0e0;
-        }
-
-        @media (max-width: 767.98px) {
-            .fc-create-page {
-                padding-top: 1.25rem !important;
-                padding-bottom: 1.25rem !important;
-            }
-
-            .fc-create-page > .container {
-                padding-inline: 12px;
-            }
-
-            .fc-create-heading {
-                font-size: 1.45rem;
-                margin-bottom: 1rem !important;
-            }
-
-            .fc-desktop-progress {
-                display: none !important;
-            }
-
-            .fc-auth-tabs .nav-link {
-                padding: .65rem .5rem;
-            }
-
-            .fc-auth-tabs .tab-pane > div {
-                padding: 1rem !important;
-                border-top: 0 !important;
-                border-radius: 0 0 .5rem .5rem !important;
-                box-shadow: none !important;
-            }
-
-            .fc-auth-tabs .form-control,
-            .fc-auth-tabs .form-select,
-            .fc-auth-tabs .btn,
-            .fc-petition-form .form-control,
-            .fc-petition-form .form-select,
-            .fc-submit-bar .btn {
-                width: 100%;
-            }
-
-            .fc-petition-card > .card-body {
-                padding: 1rem !important;
-            }
-
-            .fc-petition-form .row {
-                --bs-gutter-y: .75rem;
-            }
-
-            .fc-petition-form .mb-3 {
-                margin-bottom: .85rem !important;
-            }
-
-        }
-    </style>
-@endpush
-
 @section('content')
-    <section class="fc-create-page py-5">
-        <div class="container">
+    <section class="py-5 max-md:py-5!">
+        <div class="container max-md:px-3!">
 
             @auth
                 @if ($errors->any())
@@ -135,31 +42,31 @@
             @endauth
 
             @if(!$isEdit)
-                <h2 class="fc-create-heading text-center mb-4">Start a free petition</h2>
+                <h2 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Start a free petition</h2>
 
-                <div class="fc-steps fc-desktop-progress mb-5" aria-label="Petition creation progress">
-                    <div class="fc-step">
-                        <span class="fc-step-icon fc-step-1 is-active"></span>
-                        <div class="fc-step-text">{{ __('petition.step_create') }}</div>
+                <div class="flex! flex-wrap! items-center! justify-center! gap-[60px]! mb-10! max-md:hidden!" aria-label="Petition creation progress">
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                        <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:100%_0%]!"></span>
+                        <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_create') }}</div>
                     </div>
 
-                    <div class="fc-step">
-                        <span class="fc-step-icon fc-step-2"></span>
-                        <div class="fc-step-text">{{ __('petition.step_share') }}</div>
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                        <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:0%_50%]!"></span>
+                        <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_share') }}</div>
                     </div>
 
-                    <div class="fc-step">
-                        <span class="fc-step-icon fc-step-3"></span>
-                        <div class="fc-step-text">{{ __('petition.step_change') }}</div>
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                        <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:0%_100%]!"></span>
+                        <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
 
                 @guest
-                    <div class="fc-auth-tabs mb-4">
+                    <div class="mb-4! max-w-[720px]! mx-auto! [&_.nav-link]:w-full! [&_.nav-link]:text-[#333]! [&_.nav-link]:font-semibold! max-md:[&_.nav-link]:py-[0.65rem]! max-md:[&_.nav-link]:px-2! max-md:[&_.tab-pane>div]:p-4! max-md:[&_.tab-pane>div]:border-t-0! max-md:[&_.tab-pane>div]:rounded-t-none! max-md:[&_.tab-pane>div]:rounded-b-lg! max-md:[&_.tab-pane>div]:shadow-none! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full! max-md:[&_.btn]:w-full!">
                         <ul class="nav nav-tabs nav-fill" role="tablist" aria-label="Authentication options">
                             <li class="nav-item" role="presentation">
                                 <button
-                                    class="nav-link @if($activeAuthTab === 'login') active @endif"
+                                    class="nav-link @if($activeAuthTab === 'login') active text-[#d61f26]! @endif"
                                     id="create-login-tab"
                                     data-bs-toggle="tab"
                                     data-bs-target="#create-login-pane"
@@ -173,7 +80,7 @@
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button
-                                    class="nav-link @if($activeAuthTab === 'register') active @endif"
+                                    class="nav-link @if($activeAuthTab === 'register') active text-[#d61f26]! @endif"
                                     id="create-register-tab"
                                     data-bs-toggle="tab"
                                     data-bs-target="#create-register-pane"
@@ -212,15 +119,15 @@
             @endif
 
             @auth
-                <div class="fc-petition-card card border-0 shadow-sm">
-                    <div class="card-body p-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-6! max-md:p-4!">
 
                         <div class="mb-3">
                             <div class="fw-semibold">{{ __('create.petition_data') }}</div>
-                            <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
+                            <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
                         </div>
 
-                        <form class="fc-petition-form" data-petition-form method="POST" action="{{ $isEdit
+                        <form data-petition-form class="max-md:[&_.row]:[--bs-gutter-y:0.75rem]! max-md:[&_.mb-3]:mb-[0.85rem]! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full!" method="POST" action="{{ $isEdit
                             ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
@@ -233,27 +140,27 @@
                             <div class="mb-3">
                                 <label class="form-label">{{ __('form.description') }}</label>
 
-                                <div class="fc-markup">
-                                    <div id="fc-quill-toolbar" class="fc-markup-bar">
+                                <div class="border! border-[#d9d9d9]! rounded! overflow-hidden!">
+                                    <div id="fc-quill-toolbar" class="flex! items-center! gap-1.5! p-1.5! bg-[#f3f3f3]! border-b! border-[#d9d9d9]!">
                                         <button class="ql-bold" type="button" title="Bold (Ctrl+B)"></button>
                                         <button class="ql-italic" type="button" title="Italic (Ctrl+I)"></button>
                                         <button class="ql-underline" type="button" title="Underline (Ctrl+U)"></button>
 
-                                        <span class="fc-markup-divider"></span>
+                                        <span class="w-px! h-5! bg-[#cfcfcf]! mx-1.5!"></span>
 
                                         <button class="ql-list" value="bullet" type="button" title="Bullet list"></button>
                                         <button class="ql-list" value="ordered" type="button" title="Numbered list"></button>
 
-                                        <span class="fc-markup-spacer"></span>
+                                        <span class="flex-1!"></span>
                                     </div>
 
-                                    <div id="petition_editor" class="fc-quill"></div>
+                                    <div id="petition_editor" class="min-h-[260px]! text-sm! leading-[1.45]! [&_.ql-editor]:min-h-[260px]! [&_.ql-editor_ul]:list-disc! [&_.ql-editor_ul]:pl-[22px]! [&_.ql-editor_ol]:list-decimal! [&_.ql-editor_ol]:pl-[22px]! [&_.ql-editor_li]:list-item!"></div>
 
                                     <textarea id="petition_description" class="d-none" name="description"
                                         required>{!! $oldDesc !!}</textarea>
                                 </div>
 
-                                <div class="fc-markup-hint">{{ __('create.markup_hint') }}</div>
+                                <div class="block! pt-2! px-0.5! text-[13px]! text-[#555]!">{{ __('create.markup_hint') }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
@@ -319,8 +226,7 @@
                                 @enderror
 
                                 <div class="mt-3 d-none" data-image-preview>
-                                    <img src="" alt="Selected image preview" class="img-thumbnail"
-                                        style="max-height: 220px; width: auto; height: auto; object-fit: contain;" data-image-preview-img>
+                                    <img src="" alt="Selected image preview" class="img-thumbnail max-h-[220px]! w-auto! h-auto! object-contain!" data-image-preview-img>
                                     <div class="d-flex align-items-center justify-content-between mt-2">
                                         <small class="text-muted">
                                             <span data-image-name></span>
@@ -334,7 +240,7 @@
 
                                 @if($isEdit && ($petition->cover_image || $petition->image_url))
                                     <div class="mt-3">
-                                        <img src="{{ $petition->coverUrl() }}" class="img-thumbnail" style="max-height: 220px;" alt="Current petition image">
+                                        <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]!" alt="Current petition image">
                                         <div class="form-check mt-2">
                                             <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
                                             <label class="form-check-label" for="remove-petition-image">Remove current image</label>
@@ -342,7 +248,7 @@
                                     </div>
                                 @endif
 
-                                <div class="fc-or-divider" role="separator" aria-label="or">
+                                <div class="flex! items-center! text-center! gap-3! my-4! text-[#888]! font-semibold! text-sm! uppercase! tracking-[0.05em]! before:flex-1! before:h-px! before:bg-[#e0e0e0]! after:flex-1! after:h-px! after:bg-[#e0e0e0]! before:content-['']! after:content-['']!" role="separator" aria-label="or">
                                     <span>OR</span>
                                 </div>
 
@@ -381,7 +287,7 @@
                                 <input class="form-control" name="city" value="{{ $oldCity }}">
                             </div>
 
-                            <div class="fc-submit-bar text-center">
+                            <div class="text-center! max-md:[&_.btn]:w-full!">
                                 <button class="btn btn-danger px-5" data-submit-btn
                                     data-submitting-text="{{ $isEdit ? __('create.update') : 'Creating petition…' }}">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
