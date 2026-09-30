@@ -8,7 +8,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="text-xl! mb-[5px]!">Magazine</h2>
+                    <h1 class="text-xl! mb-[5px]!">Magazine</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                     <div class="text-center py-4">
-                        <h3 class="mb-3 font-semibold!">Coming Soon</h3>
+                        <h2 class="mb-3 font-semibold!">Coming Soon</h2>
                         <p class="text-muted text-base!">
                             The FreeCause magazine is under construction.<br>
                             Check back soon for articles, guides, and stories about activism and change.

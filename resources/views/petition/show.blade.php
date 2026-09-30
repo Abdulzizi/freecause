@@ -399,7 +399,7 @@
                 <div class="modal-body p-0 position-relative">
                     <button type="button" class="btn-close position-absolute right-[10px]! top-[10px]! z-[2]!"
                         data-bs-dismiss="modal" aria-label="Close"></button>
-                    <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" alt="petition image large">
+                    <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" alt="{{ $petitionTitle }}">
                 </div>
             </div>
         </div>

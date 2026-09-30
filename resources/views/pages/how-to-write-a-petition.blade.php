@@ -8,7 +8,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="text-xl! mb-[5px]!">How to write a petition</h2>
+                    <h1 class="text-xl! mb-[5px]!">How to write a petition</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h1 class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! mt-[30px]! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">How to write a petition</h1>
+                                <h2 class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! mt-[30px]! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">How to write a petition</h2>
 
                                 <div>
                                     <h2 class="text-lg! mt-[30px]! font-semibold!">Introduction</h2>

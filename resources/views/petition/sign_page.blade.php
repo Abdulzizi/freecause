@@ -17,10 +17,10 @@
         <div class="container">
             <div class="bg-white shadow-sm rounded-3 p-5 text-center border border-[#eee]! max-w-[900px]! mx-auto!">
 
-                <h2 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium!">
+                <h1 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium!">
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
-                </h2>
+                </h1>
 
                 <form action="{{ $signUrl }}" method="POST" class="d-inline-block">
                     @csrf

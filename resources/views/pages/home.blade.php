@@ -224,7 +224,7 @@
 
                         <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.what_title') }}
-                        </h4>
+                        </h2>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_left'] ?? __('home.text_index_left')) !!}
 
@@ -236,7 +236,7 @@
 
                         <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.create_box_title') }}
-                        </h4>
+                        </h2>
 
                         {!! \App\Services\ContentRenderer::render($content['text_index_right'] ?? __('home.text_index_right')) !!}
 
@@ -281,7 +281,7 @@
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="bg-white! border border-[#eee]! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! d-block">
                             <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
-                            <h4 class="h5 text-base! md:text-base!">{{ $cat->tr_name }}</h4>
+                            <h3 class="h5 text-base! md:text-base!">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
                 @endforeach
@@ -311,7 +311,7 @@
                                     @endif
                                 </div>
                                 <div class="p-5! bg-white! min-h-[146px]!">
-                                    <h4 class="text-base! md:text-base! mb-2.5! text-black!">{{ $post->post_title }}</h4>
+                                    <h3 class="text-base! md:text-base! mb-2.5! text-black!">{{ $post->post_title }}</h3>
                                     <span class="text-[#cc1f1f]!">
                                     {{ __('home.blog_read_more') }}
                                     <span class="ml-1.5!">›</span>

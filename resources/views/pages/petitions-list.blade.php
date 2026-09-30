@@ -18,7 +18,7 @@
             <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]!">
 
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                    <div class="font-bold!">{{ $heading ?? 'Petitions' }}</div>
+                    <h1 class="text-base! leading-normal! m-0! font-bold!">{{ $heading ?? 'Petitions' }}</h1>
                     <form method="GET" action="" class="d-flex gap-2 max-w-[300px]! w-full!">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('Search petitions…') }}"

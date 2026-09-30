@@ -9,7 +9,7 @@
                 <div class="row g-0">
 
                     <div class="col-md-6 border-r border-[#eee]! px-[26px]! py-[22px]! min-h-[260px]!">
-                        <div class="text-[26px]! font-medium! mb-[18px]! text-[#222]!">{{ __('myp.signed_heading') }}</div>
+                        <h1 class="m-0! text-[26px]! font-medium! mb-[18px]! text-[#222]!">{{ __('myp.signed_heading') }}</h1>
 
                         <div class="max-w-[520px]!">
                             @forelse($signed as $p)
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="col-md-6 px-[26px]! py-[22px]! min-h-[260px]!">
-                        <div class="text-[26px]! font-medium! mb-[18px]! text-[#222]!">{{ __('myp.created_heading') }}</div>
+                        <h2 class="m-0! text-[26px]! font-medium! mb-[18px]! text-[#222]!">{{ __('myp.created_heading') }}</h2>
 
                         <div class="max-w-[520px]!">
                             @forelse($created as $p)

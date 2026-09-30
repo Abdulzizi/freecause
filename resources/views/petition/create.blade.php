@@ -42,7 +42,7 @@
             @endauth
 
             @if(!$isEdit)
-                <h2 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Start a free petition</h2>
+                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Start a free petition</h1>
 
                 <div class="flex! flex-wrap! items-center! justify-center! gap-[60px]! mb-10! max-md:hidden!" aria-label="Petition creation progress">
                     <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
@@ -240,7 +240,7 @@
 
                                 @if($isEdit && ($petition->cover_image || $petition->image_url))
                                     <div class="mt-3">
-                                        <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]!" alt="Current petition image">
+                                        <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]!" alt="{{ $tr->title }}">
                                         <div class="form-check mt-2">
                                             <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
                                             <label class="form-check-label" for="remove-petition-image">Remove current image</label>

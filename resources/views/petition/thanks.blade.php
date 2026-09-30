@@ -50,7 +50,7 @@
                     <div class="mt-4">
                         @if ($canClaim)
                             <div class="p-3 rounded border bg-light">
-                                <h3 class="mb-3 text-[1.1rem]! md:text-lg!">{{ __('sign.claim_title') }}</h3>
+                                <h2 class="mb-3 text-[1.1rem]! md:text-lg!">{{ __('sign.claim_title') }}</h2>
                                 <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
                                     @csrf
                                     <div class="mb-3">

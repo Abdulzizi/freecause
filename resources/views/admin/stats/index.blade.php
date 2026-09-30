@@ -39,7 +39,7 @@
         <div class="flex! flex-wrap! gap-[30px]!">
 
             <div>
-                <h3>{{ number_format($summary['users_total']) }}</h3>
+                <h2>{{ number_format($summary['users_total']) }}</h2>
                 users<br>
                 <small>
                     +{{ number_format($summary['users_new']) }} new |
@@ -48,7 +48,7 @@
             </div>
 
             <div>
-                <h3>{{ number_format($summary['petitions_total']) }}</h3>
+                <h2>{{ number_format($summary['petitions_total']) }}</h2>
                 petitions<br>
                 <small>
                     +{{ number_format($summary['petitions_new']) }} new |
@@ -57,7 +57,7 @@
             </div>
 
             <div>
-                <h3>{{ number_format($summary['signatures_total']) }}</h3>
+                <h2>{{ number_format($summary['signatures_total']) }}</h2>
                 signatures<br>
                 <small>
                     +{{ number_format($summary['signatures_new']) }} new

@@ -4,26 +4,26 @@
 
 
 @section('content')
-<h2 class="mb-0! max-md:text-[15px]!">Dashboard</h2>
+<h1 class="mb-0! max-md:text-[15px]!">Dashboard</h1>
 
 <div class="grid! grid-cols-[repeat(auto-fit,minmax(240px,1fr))]! gap-4! mb-6! max-sm:grid-cols-1! max-sm:gap-3!">
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#3498db]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Users</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Users</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['users_total']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">{{ number_format($stats['users_verified']) }} verified ({{ round(($stats['users_verified'] / max($stats['users_total'], 1)) * 100) }}%)</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#2ecc71]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Petitions</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Petitions</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['petitions_total']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">{{ number_format($stats['petitions_published']) }} published</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#9b59b6]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Signatures</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Total Signatures</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['signatures_total']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">{{ number_format($stats['signatures_today']) }} today</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#e67e22]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Active Languages</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Active Languages</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ $stats['languages_active'] }}</div>
         <div class="text-xs! text-[#888]! mt-1!">enabled</div>
     </div>
@@ -31,17 +31,17 @@
 
 <div class="grid! grid-cols-[repeat(auto-fit,minmax(240px,1fr))]! gap-4! mb-6! max-sm:grid-cols-1! max-sm:gap-3!">
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#e74c3c]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">New Users (Today)</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">New Users (Today)</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['users_new_today']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">{{ number_format($stats['users_new_week']) }} this week</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#1abc9c]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">New Petitions (Today)</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">New Petitions (Today)</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['petitions_new_today']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">{{ number_format($stats['petitions_pending']) }} pending review</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#9b59b6]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Signatures (This Week)</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Signatures (This Week)</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($stats['signatures_week']) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">trend</div>
     </div>
@@ -49,22 +49,22 @@
 
 <div class="grid! grid-cols-[repeat(auto-fit,minmax(240px,1fr))]! gap-4! mb-6! max-sm:grid-cols-1! max-sm:gap-3!">
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#34495e]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Logs</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Logs</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($quickStats['logs_count'] ?? 0) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">entries</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#e67e22]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Banned IPs</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Banned IPs</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($quickStats['banned_ips'] ?? 0) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">blocked</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#16a085]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Categories</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Categories</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($quickStats['categories'] ?? 0) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">active</div>
     </div>
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#8e44ad]! max-sm:p-[15px]!">
-        <h3 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Pages</h3>
+        <h2 class="m-0! mb-2! text-[13px]! text-[#666]! uppercase!">Pages</h2>
         <div class="text-[28px]! font-bold! text-[#333]! max-sm:text-[22px]!">{{ number_format($quickStats['pages'] ?? 0) }}</div>
         <div class="text-xs! text-[#888]! mt-1!">static</div>
     </div>
