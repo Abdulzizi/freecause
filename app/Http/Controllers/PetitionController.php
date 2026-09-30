@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserLevel;
 use App\Rules\SafeExternalImageUrl;
 use App\Support\AppLog;
+use App\Support\CacheVersion;
 use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -113,7 +114,7 @@ class PetitionController extends Controller
             $query->orderByDesc('petitions.signature_count');
             $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $cacheKey = "petitions:index:{$locale}:page:{$page}";
+            $cacheKey = "petitions:index:{$locale}:page:{$page}".':'.CacheVersion::get('list');
             $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
                 return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
             });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use App\Services\PageContentService;
+use App\Support\CacheVersion;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -13,8 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
-    private const CACHE_VERSION = 'v3';
-
     public function index(Request $request)
     {
         $locale = app()->getLocale();
@@ -29,7 +28,7 @@ class HomeController extends Controller
             );
         }
 
-        $categories = cache()->remember('home:categories:'.self::CACHE_VERSION.":{$locale}", 43200, function () use ($locale, $defaultLocale) {
+        $categories = cache()->remember('home:categories:'.CacheVersion::get('home').":{$locale}", 43200, function () use ($locale, $defaultLocale) {
             return Category::select([
                 'categories.id',
                 'categories.sort_order',
@@ -57,7 +56,7 @@ class HomeController extends Controller
             $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
         }
 
-        $recentActivities = cache()->remember('home:recent:'.self::CACHE_VERSION.":{$locale}", 300, function () use ($locale, $defaultLocale) {
+        $recentActivities = cache()->remember('home:recent:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale) {
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
                 return DB::select("
                     SELECT s.*, p.id as petition_id,
@@ -99,7 +98,7 @@ class HomeController extends Controller
 
         $slot = (int) floor(time() / 60);
 
-        $pool = cache()->remember('home:pool:'.self::CACHE_VERSION.":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember('home:pool:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
                     $join->on('pt_locale.petition_id', '=', 'petitions.id')
@@ -125,7 +124,7 @@ class HomeController extends Controller
         $usingFallbackPool = false;
         if (empty($pool) && $locale !== $defaultLocale) {
             $usingFallbackPool = true;
-            $pool = cache()->remember('home:pool:'.self::CACHE_VERSION.":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
+            $pool = cache()->remember('home:pool:'.CacheVersion::get('home').":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
                 return Petition::select(['petitions.id'])
                     ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
                         $join->on('pt_default.petition_id', '=', 'petitions.id')
@@ -148,7 +147,7 @@ class HomeController extends Controller
         if (! empty($pool)) {
             $featuredId = $pool[$slot % count($pool)];
 
-            $featuredPetition = cache()->remember('home:featured:'.self::CACHE_VERSION.":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
+            $featuredPetition = cache()->remember('home:featured:'.CacheVersion::get('home').":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select([
                     'petitions.*',
                     DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
@@ -173,7 +172,7 @@ class HomeController extends Controller
             }
         }
 
-        $magazinePosts = cache()->remember('home:magazine_posts:'.self::CACHE_VERSION, 1800, function () {
+        $magazinePosts = cache()->remember('home:magazine_posts:'.CacheVersion::get('home'), 1800, function () {
             try {
                 return DB::connection('magazine')->select("
                     SELECT

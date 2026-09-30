@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PageTranslation;
+use App\Support\CacheVersion;
 use Closure;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -310,12 +311,12 @@ class SitemapController extends Controller
 
     private function cached(string $key, Closure $callback): string
     {
-        return Cache::remember('sitemap:'.$key, self::CACHE_TTL, $callback);
+        return Cache::remember('sitemap:'.CacheVersion::get('sitemap').':'.$key, self::CACHE_TTL, $callback);
     }
 
     private function cachedInt(string $key, Closure $callback): int
     {
-        return (int) Cache::remember('sitemap:'.$key, self::CACHE_TTL, $callback);
+        return (int) Cache::remember('sitemap:'.CacheVersion::get('sitemap').':'.$key, self::CACHE_TTL, $callback);
     }
 
     private function dateOnly(string $value): string

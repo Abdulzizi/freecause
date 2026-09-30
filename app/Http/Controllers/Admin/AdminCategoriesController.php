@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Support\ApproxRows;
+use App\Support\CacheVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -20,6 +22,14 @@ class AdminCategoriesController extends Controller
         $codes = Language::where('is_active', true)->pluck('code');
         foreach ($codes as $loc) {
             Cache::forget("categories:list:{$loc}");
+        }
+
+        try {
+            CacheVersion::bump('home');
+            CacheVersion::bump('list');
+            CacheVersion::bump('sitemap');
+        } catch (\Throwable $e) {
+            Log::warning('Cache bump failed after category save: '.$e->getMessage());
         }
     }
 

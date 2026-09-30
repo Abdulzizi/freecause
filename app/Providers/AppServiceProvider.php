@@ -5,6 +5,11 @@ namespace App\Providers;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\PageContent;
+use App\Models\Petition;
+use App\Models\PetitionTranslation;
+use App\Observers\CategoryObserver;
+use App\Observers\PetitionObserver;
+use App\Observers\PetitionTranslationObserver;
 use App\Support\Settings;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -29,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Petition::observe(PetitionObserver::class);
+        Category::observe(CategoryObserver::class);
+        PetitionTranslation::observe(PetitionTranslationObserver::class);
+
         try {
             if (! Schema::hasTable('settings')) {
                 $this->bootLocale();

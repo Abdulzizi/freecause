@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Petition;
+use App\Support\CacheVersion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +94,7 @@ class CategoryPetitionController extends Controller
             });
             $petitions = $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $cacheKey = "petitions:byCategory:{$locale}:{$category->id}:page:{$page}";
+            $cacheKey = "petitions:byCategory:{$locale}:{$category->id}:page:{$page}".':'.CacheVersion::get('list');
             $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
                 return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
             });

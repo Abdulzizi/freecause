@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Language;
 use App\Support\ApproxRows;
+use App\Support\CacheVersion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -272,20 +272,11 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            $locales = active_locales() ?: ['en'];
-            foreach ($locales as $l) {
-                for ($i = 1; $i <= 10; $i++) {
-                    Cache::forget("petitions:index:{$l}:page:{$i}");
-                }
-                Cache::forget("home:pool:{$l}");
-                Cache::forget("home:recent:{$l}");
-                $slot = (int) floor(time() / 60);
-                for ($s = 0; $s <= 2; $s++) {
-                    Cache::forget("home:featured:{$l}:".($slot + $s));
-                }
-            }
+            CacheVersion::bump('home');
+            CacheVersion::bump('list');
+            CacheVersion::bump('sitemap');
         } catch (\Throwable $e) {
-            Log::warning('Cache clear failed after petition save: '.$e->getMessage());
+            Log::warning('Cache bump failed after petition save: '.$e->getMessage());
         }
 
         return redirect()
@@ -364,23 +355,11 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            $locales = active_locales() ?: ['en'];
-
-            foreach ($locales as $l) {
-                for ($i = 1; $i <= 10; $i++) {
-                    Cache::forget("petitions:index:{$l}:page:{$i}");
-                }
-
-                Cache::forget("home:pool:{$l}");
-                Cache::forget("home:recent:{$l}");
-
-                $slot = (int) floor(time() / 60);
-                for ($s = 0; $s <= 2; $s++) {
-                    Cache::forget("home:featured:{$l}:".($slot + $s));
-                }
-            }
+            CacheVersion::bump('home');
+            CacheVersion::bump('list');
+            CacheVersion::bump('sitemap');
         } catch (\Throwable $e) {
-            Log::warning('Cache clear failed after petition bulk action: '.$e->getMessage());
+            Log::warning('Cache bump failed after petition bulk action: '.$e->getMessage());
         }
 
         return response()->json(['ok' => true]);
