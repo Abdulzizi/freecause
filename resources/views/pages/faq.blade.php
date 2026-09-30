@@ -163,24 +163,22 @@
 @endphp
 
 @section('content')
-    <section class="py-5">
+    <section class="py-16">
         <div class="container">
 
-            <div class="mb-4">
-                <h1 class="mb-2" style="font-size:24px;font-weight:600;">Faq</h1>
-                <div style="font-size:14px;">
-                    <a class="red" href="/{{ app()->getLocale() }}">Home</a>
-                    <span class="text-muted"> / </span>
-                    <span class="text-muted">Faq</span>
+            <div class="mb-6">
+                <h1 class="mb-2 text-2xl font-semibold">Faq</h1>
+                <div class="text-sm">
+                    <a class="text-brand" href="/{{ app()->getLocale() }}">Home</a>
+                    <span class="text-gray-500"> / </span>
+                    <span class="text-gray-500">Faq</span>
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
-                <div class="mb-2" style="font-weight:700;">FAQs</div>
-                <div style="height:2px;background:#e9ecef;position:relative;margin-bottom:22px;">
-                    <div
-                        style="height:2px;width:100%;background:linear-gradient(to right, black, red);position:absolute;left:0;top:0;">
-                    </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="mb-2 font-bold">FAQs</div>
+                <div class="relative mb-6 h-0.5 bg-gray-200">
+                    <div class="absolute left-0 top-0 h-0.5 w-full bg-gradient-to-r from-black to-brand"></div>
                 </div>
 
                 @php
@@ -189,9 +187,9 @@
                 @endphp
 
                 @foreach($faq as $sectionTitle => $items)
-                    <h2 class="mb-3" style="font-size:20px;font-weight:700;">{{ $sectionTitle }}</h2>
+                    <h2 class="mb-4 text-xl font-bold">{{ $sectionTitle }}</h2>
 
-                    <div class="accordion mb-4" id="{{ $accId }}-{{ \Illuminate\Support\Str::slug($sectionTitle) }}">
+                    <div class="accordion mb-6" id="{{ $accId }}-{{ \Illuminate\Support\Str::slug($sectionTitle) }}">
                         @foreach($items as $item)
                             @php
                                 $i++;
@@ -200,7 +198,7 @@
                                 $hasAnswer = trim(strip_tags($item['a'] ?? '')) !== '';
                             @endphp
 
-                            <div class="accordion-item" style="border:1px solid #e9ecef;">
+                            <div class="accordion-item border border-gray-200">
                                 <h2 class="accordion-header" id="{{ $headingId }}">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#{{ $collapseId }}" aria-expanded="false" aria-controls="{{ $collapseId }}">
@@ -213,10 +211,10 @@
                                     aria-labelledby="{{ $headingId }}">
                                     <div class="accordion-body">
                                         @if($hasAnswer)
-                                                {!! $item['a'] !!}
+                                            {!! $item['a'] !!}
                                         @else
-                                                <p class="mb-0 text-muted">...</p>
-                                            @endif
+                                            <p class="mb-0 text-gray-500">...</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
