@@ -3,11 +3,11 @@
 {{-- @section('title', 'Terms of Service - FreeCause - Online Petition') --}}
 
 {{-- @section('content') --}}
-    {{-- <section class="breadcrumb-section">
+    {{-- <section>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">Terms of Service</h2>
+                    <h2>Terms of Service</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -30,9 +30,9 @@
                         <div class="card-body">
 
                             <div class="mb-6!">
-                                {{-- <h4 class="headings">Terms of Service</h4>
+                                {{-- <h4>Terms of Service</h4>
 
-                                <div class="privacy-inner"> --}}
+                                <div> --}}
                                     <h3>FreeCause User Agreement</h3>
 
                                     <p>"User" refers to any individual who loads any material to or from the

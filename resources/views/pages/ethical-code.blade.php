@@ -4,11 +4,11 @@
 {{-- @section('body_class', 'ethical-code') --}}
 
 {{-- @section('content') --}}
-    {{-- <section class="breadcrumb-section">
+    {{-- <section>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">Ethical code</h2>
+                    <h2>Ethical code</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -29,9 +29,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-6!">
-                                {{-- <h4 class="headings">Ethical code</h4>
+                                {{-- <h4>Ethical code</h4>
 
-                                <div class="privacy-inner"> --}}
+                                <div> --}}
 
                                     <h2>Our code of ethics</h2>
 
@@ -208,7 +208,7 @@
                                         our employees and fostering a safe work environment.
                                     </p>
 
-                                {{-- </div><!-- /.privacy-inner --> --}}
+                                {{-- </div><!-- / --> --}}
                             </div>
                         </div>
                     </div>

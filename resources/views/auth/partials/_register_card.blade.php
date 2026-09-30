@@ -1,9 +1,9 @@
 {{-- expects: $locale, $redirect --}}
-<div class="bg-white rounded-3 shadow-sm p-4" style="border:1px solid #eee;">
+<div class="bg-white! rounded-3! shadow-sm! p-4! border! border-[#eee]!">
     @include('auth.partials._social_box', ['redirect' => $redirect])
 
     <div class="mb-3">
-        <div class="fw-semibold" style="font-size:22px;">{{ __('auth.register') }}</div>
+        <div class="fw-semibold! text-[22px]!">{{ __('auth.register') }}</div>
     </div>
 
     @if (old('auth_form') === 'register' && $errors->any())
@@ -41,7 +41,7 @@
             <input type="password" name="password" class="form-control" required>
         </div>
 
-        <div class="mb-3" style="font-size:14px;">
+        <div class="mb-3 text-[14px]!">
             {{ __('auth.nickname_hint') }}
         </div>
 
@@ -58,10 +58,10 @@
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms" {{ old('agree_terms') ? 'checked' : '' }}>
             <label class="form-check-label" for="agree_terms">
-                <span class="red">{{ __('auth.accept_terms') }}</span>
+                <span class="text-brand!">{{ __('auth.accept_terms') }}</span>
             </label>
         </div>
 
-        <button class="btn btn-danger px-4" style="border-radius:6px;">{{ __('auth.submit') }}</button>
+        <button class="btn btn-danger px-4 rounded-[6px]!">{{ __('auth.submit') }}</button>
     </form>
 </div>

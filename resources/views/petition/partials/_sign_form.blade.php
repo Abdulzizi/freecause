@@ -34,7 +34,7 @@
 @if ($isAuthed)
     @if (!empty($hasSigned) && $hasSigned)
 
-        <p class="mb-0" style="font-size:14px;">
+        <p class="mb-0 text-[14px]!">
             {{ $tSignedAlready }}
         </p>
     @else
@@ -43,67 +43,67 @@
 
             <div class="row g-2">
 
-                <div class="col-12 mb-3">
+                <div class="col-12 mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label fc-mini-label">{{ $lblComment }}</label>
-                        <input class="form-control" type="text" name="comment"
+                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
                             value="{{ old('comment', $defaultComment) }}">
                     @else
-                        <input class="form-control" type="text" name="comment"
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
                     @endif
                 </div>
 
                 {{-- @include('petition.partials._agreements') --}}
 
-                <div class="mb-3">
-                    <div style="font-weight:700;">
+                <div class="mb-[14px]!">
+                    <div class="font-bold!">
                         {!! $agree1Title !!}
                     </div>
                     <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree1" value="agree"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree1" value="agree"
                                 {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree1" value="no"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree1" value="no"
                                 {{ old('agree1') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <div style="font-weight:700;">
+                <div class="mb-[14px]!">
+                    <div class="font-bold!">
                         {!! $agree2Title !!}
                     </div>
                     <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree2" value="agree"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree2" value="agree"
                                 {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree2" value="no"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree2" value="no"
                                 {{ old('agree2') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <div style="font-weight:700;">
+                <div class="mb-[14px]!">
+                    <div class="font-bold!">
                         {!! $agree3Title !!}
                     </div>
                     <div class="mt-2">
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree3" value="agree"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree3" value="agree"
                                 {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block" style="font-size:14px;">
-                            <input type="radio" name="agree3" value="no"
+                        <label class="d-block text-[14px]!">
+                            <input class="scale-90! mr-[6px]!" type="radio" name="agree3" value="no"
                                 {{ old('agree3') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
@@ -111,7 +111,7 @@
                 </div>
 
                 <div class="col-12">
-                    <button class="btn btn-danger fc-sign-btn" type="submit">{{ $tBtnSign }}</button>
+                    <button class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[8px]! font-semibold! text-[14px]!" type="submit">{{ $tBtnSign }}</button>
                 </div>
 
             </div>
@@ -133,47 +133,47 @@
                             @endforeach
 
                             @if (session('login_url'))
-                                <li><a class="red" href="{{ session('login_url') }}">{{ __('auth.go_to_login') }}</a></li>
+                                <li><a class="text-brand!" href="{{ session('login_url') }}">{{ __('auth.go_to_login') }}</a></li>
                             @endif
                         </ul>
                     </div>
                 </div>
             @endif
 
-            <div class="{{ $col }} mb-3">
+            <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblName }}</label>
-                    <input class="form-control" type="text" name="name" value="{{ old('name') }}">
+                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblName }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" value="{{ old('name') }}">
                 @else
-                    <input class="form-control" type="text" name="name" value="{{ old('name') }}"
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" value="{{ old('name') }}"
                         placeholder="{{ $phName }}">
                 @endif
             </div>
 
-            <div class="{{ $col }} mb-3">
+            <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label fc-mini-label">{{ $lblEmail }}</label>
-                    <input class="form-control" type="email" name="email" value="{{ old('email') }}">
+                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblEmail }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" value="{{ old('email') }}">
                 @else
-                    <input class="form-control" type="email" name="email" value="{{ old('email') }}"
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" value="{{ old('email') }}"
                         placeholder="{{ $phEmail }}">
                 @endif
             </div>
 
             @if ($variant === 'split')
-                <div class="col-12" style="font-size:14px;">
+                <div class="col-12 text-[14px]!">
                     {{ $privacyHint }}
                 </div>
             @endif
 
             <div class="fc-sign-advanced d-none">
-                <div class="col-12 mb-3">
+                <div class="col-12 mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label fc-mini-label">{{ $lblComment }}</label>
-                        <input class="form-control" type="text" name="comment"
+                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
                             value="{{ old('comment', $defaultComment) }}">
                     @else
-                        <input class="form-control" type="text" name="comment"
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
                     @endif
                 </div>
@@ -181,28 +181,28 @@
 
             <div class="col-12">
                 @if ($variant === 'split')
-                    <p class="mt-2 mb-3" style="font-size:13px;">
+                    <p class="mt-2 text-[13px]! leading-[1.5]! mb-[14px]!">
                         {{ $emailWarning }}
                     </p>
                 @endif
 
                 {{-- agreements --}}
-                <div class="p-3 rounded bg-light border mb-3">
+                <div class="p-3 rounded bg-light border mb-[14px]!">
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
-                        <label class="form-check-label" style="font-size:14px;" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
+                        <label class="form-check-label text-[14px]!" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" id="agree2_{{ $variant }}" name="agree2" value="1" {{ old('agree2') ? 'checked' : '' }}>
-                        <label class="form-check-label" style="font-size:14px;" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
+                        <label class="form-check-label text-[14px]!" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="agree3_{{ $variant }}" name="agree3" value="1" {{ old('agree3') ? 'checked' : '' }}>
-                        <label class="form-check-label" style="font-size:14px;" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
+                        <label class="form-check-label text-[14px]!" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
                     </div>
                 </div>
 
-                <button class="btn btn-danger fc-sign-btn" type="submit">{{ $tBtnSign }}</button>
+                <button class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[8px]! font-semibold! text-[14px]!" type="submit">{{ $tBtnSign }}</button>
             </div>
         </div>
     </form>
