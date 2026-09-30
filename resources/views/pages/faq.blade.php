@@ -163,11 +163,11 @@
 @endphp
 
 @section('content')
-    <section class="py-16">
+    <section class="py-16!">
         <div class="container">
 
-            <div class="mb-6">
-                <h1 class="mb-2 text-2xl font-semibold">Faq</h1>
+            <div class="mb-6!">
+                <h1 class="mb-2 text-2xl! font-semibold!">Faq</h1>
                 <div class="text-sm">
                     <a class="text-brand" href="/{{ app()->getLocale() }}">Home</a>
                     <span class="text-gray-500"> / </span>
@@ -175,9 +175,9 @@
                 </div>
             </div>
 
-            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <div class="mb-2 font-bold">FAQs</div>
-                <div class="relative mb-6 h-0.5 bg-gray-200">
+            <div class="rounded-lg border border-gray-200 bg-white p-6! shadow-sm">
+                <div class="mb-2! font-bold">FAQs</div>
+                <div class="relative mb-6! h-0.5 bg-gray-200">
                     <div class="absolute left-0 top-0 h-0.5 w-full bg-gradient-to-r from-black to-brand"></div>
                 </div>
 
@@ -187,9 +187,9 @@
                 @endphp
 
                 @foreach($faq as $sectionTitle => $items)
-                    <h2 class="mb-4 text-xl font-bold">{{ $sectionTitle }}</h2>
+                    <h2 class="mb-4! text-xl! font-bold!">{{ $sectionTitle }}</h2>
 
-                    <div class="accordion mb-6" id="{{ $accId }}-{{ \Illuminate\Support\Str::slug($sectionTitle) }}">
+                    <div class="accordion mb-6!" id="{{ $accId }}-{{ \Illuminate\Support\Str::slug($sectionTitle) }}">
                         @foreach($items as $item)
                             @php
                                 $i++;
@@ -213,7 +213,7 @@
                                         @if($hasAnswer)
                                             {!! $item['a'] !!}
                                         @else
-                                            <p class="mb-0 text-gray-500">...</p>
+                                            <p class="mb-0! text-gray-500!">...</p>
                                         @endif
                                     </div>
                                 </div>
