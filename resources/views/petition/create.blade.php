@@ -116,6 +116,8 @@
                         </div>
                     </div>
                 @endguest
+            @else
+                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Edit petition</h1>
             @endif
 
             @auth
