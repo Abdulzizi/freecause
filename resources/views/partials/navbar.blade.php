@@ -2,7 +2,7 @@
     $isAuthed = auth()->check();
     $c = $navbarContent ?? [];
 @endphp
-<nav class="navbar navbar-expand-lg bg-white shadow-sm fc-navbar">
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="FreeCause">
@@ -47,7 +47,7 @@
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
                             <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
-                            <button type="submit" class="nav-link btn btn-link p-0 fc-logout">
+                            <button type="submit" class="nav-link btn btn-link p-0">
                                 {{ $c['nav_logout'] ?? __('nav.logout') }}
                             </button>
                         </form>
@@ -55,7 +55,7 @@
                 @endif
 
                 <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
-                    <a class="btn btn-primary fc-startfree w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
+                    <a class="btn btn-primary w-100 w-lg-auto px-[15px]! py-[6px]! rounded-lg!" href="{{ lroute('petition.create') }}">
                         {{ $c['nav_startfree'] ?? __('nav.startfree') }}
                     </a>
                 </li>
