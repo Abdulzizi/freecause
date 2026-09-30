@@ -7,7 +7,6 @@
     <title>@yield('title', 'Admin Login')</title>
     <link rel="icon" type="image/png" href="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
 
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     @vite(['resources/css/app.css'])
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 

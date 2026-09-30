@@ -1,6 +1,13 @@
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
+/* Extracted subset of the retired legacy stylesheets (bootstrap + style.css + admin.css):
+   only the rules still referenced by markup that keeps those class names (grid, forms,
+   buttons, behavioral collapse/dropdown states, JS state hooks). Order matters: this is
+   unlayered, so it beats Tailwind layers the way the old unlinked stylesheets did, while
+   `!`-marked utilities still win over it (layered !important beats unlayered !important). */
+@import './legacy-compat.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -17,7 +24,20 @@
 /* Tailwind ships a `.collapse { visibility: collapse }` utility (for tables). It hijacks
    Bootstrap's `.collapse` contract (navbar collapse + accordions): those hide via
    `display`, and visibility:collapse renders them permanently invisible. This unlayered
-   rule beats the layered utility; Bootstrap keeps owning display. */
+   rule beats the layered utility; the compat layer keeps owning display. */
 .collapse {
     visibility: visible;
+}
+
+/* Preflight deltas vs the retired baseline (browser default img display, preflight list
+   resets): keep the pre-preflight rendering for bare elements; `!`-marked utilities and
+   classed lists still override normally. */
+img {
+    display: inline;
+}
+ul:not([class]) {
+    list-style: disc outside;
+}
+ol:not([class]) {
+    list-style: decimal outside;
 }
