@@ -80,8 +80,17 @@
 
                                                         @if ($featuredPetition)
                                                         <div class="col-md-6 mb-6! max-sm:mb-4!">
+                                                            @php $wv = \App\Support\ImageVariants::urls($featuredPetition->cover_image); @endphp
+                                                            @if ($wv)
+                                                            <picture>
+                                                                <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
+                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
+                                                                    loading="lazy" decoding="async" alt="{{ $featuredPetition->tr_title }}">
+                                                            </picture>
+                                                            @else
                                                             <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
-                                                                loading="lazy" alt="{{ $featuredPetition->tr_title }}">
+                                                                loading="lazy" decoding="async" alt="{{ $featuredPetition->tr_title }}">
+                                                            @endif
                                                         </div>
 
                                                         <div class="col-md-6 mb-6! max-sm:mb-4!">

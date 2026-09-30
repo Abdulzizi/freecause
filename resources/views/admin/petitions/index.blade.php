@@ -371,7 +371,15 @@
                         }
                     @endphp
                     @if ($imgSrc)
-                        <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px]! max-h-[120px]! rounded! object-cover!">
+                        @php $wv = \App\Support\ImageVariants::urls($selectedPetition->cover_image); @endphp
+                        @if ($wv)
+                        <picture>
+                            <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="240px">
+                            <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px]! max-h-[120px]! rounded! object-cover!" loading="lazy" decoding="async">
+                        </picture>
+                        @else
+                        <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px]! max-h-[120px]! rounded! object-cover!" loading="lazy" decoding="async">
+                        @endif
                         <label class="text-[0.85em]!">
                             <input type="checkbox" name="remove_image" value="1"> remove image
                         </label>
