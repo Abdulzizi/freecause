@@ -235,10 +235,12 @@ if (! function_exists('admin_can')) {
 }
 
 /**
- * Sanitize HTML for admin-managed rich content (pages, footer).
- * Strips <script>, <iframe>, <object>, <embed>, <form> elements and all
- * on* event handler attributes and javascript: hrefs/srcs.
- * Unlike sanitizePetitionHtml(), allows a wide range of formatting tags.
+ * Sanitize HTML for admin-managed rich content (pages, footer) using a strict
+ * allowlist (adminHtmlAllowedTags()). Unknown containers are unwrapped so their
+ * text survives; scripting/embedding elements are deleted with their contents.
+ * Only href/src/alt/title/class survive — every style attribute and every on*
+ * handler is dropped, and URLs are limited to http, https, mailto, tel and
+ * relative paths. Unlike sanitizePetitionHtml(), formatting tags are permitted.
  */
 if (! function_exists('sanitizeAdminHtml')) {
     function sanitizeAdminHtml(?string $html): string
@@ -247,67 +249,238 @@ if (! function_exists('sanitizeAdminHtml')) {
             return '';
         }
 
-        $dangerous = ['script', 'iframe', 'object', 'embed', 'form', 'base'];
+        $escaped = htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $internal = libxml_use_internal_errors(true);
 
-        libxml_use_internal_errors(true);
-        $doc = new DOMDocument('1.0', 'UTF-8');
-        $doc->loadHTML('<?xml encoding="utf-8" ?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        try {
+            $doc = new DOMDocument('1.0', 'UTF-8');
+            $loaded = $doc->loadHTML(
+                '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>'
+                    .'<body><div data-fc-sanitize-root="1">'.$html.'</div></body></html>',
+                LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NONET
+            );
 
-        $container = $doc->getElementsByTagName('div')->item(0);
-        if (! $container) {
-            return $html;
+            $body = $doc->getElementsByTagName('body')->item(0);
+            $root = $body?->firstChild;
+
+            if (! $loaded || ! $root instanceof DOMElement || $root->getAttribute('data-fc-sanitize-root') === '') {
+                return $escaped;
+            }
+
+            $nodes = [$root];
+
+            // Malformed input (e.g. a stray </div>) can spill the rest of the
+            // fragment outside the wrapper; sanitize and keep those siblings too.
+            for ($sibling = $root->nextSibling; $sibling; $sibling = $sibling->nextSibling) {
+                $nodes[] = $sibling;
+            }
+
+            foreach ($nodes as $node) {
+                adminHtmlSanitizeNode($node);
+            }
+
+            $out = '';
+            foreach ($root->childNodes as $child) {
+                $out .= $doc->saveHTML($child);
+            }
+            for ($sibling = $root->nextSibling; $sibling; $sibling = $sibling->nextSibling) {
+                $out .= $doc->saveHTML($sibling);
+            }
+        } catch (Throwable) {
+            return $escaped;
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($internal);
         }
 
-        adminHtmlSanitizeNode($container, $dangerous, $doc);
+        return adminHtmlStripUnsafeUrls(trim($out));
+    }
+}
 
-        $out = '';
-        foreach ($container->childNodes as $child) {
-            $out .= $doc->saveHTML($child);
+if (! function_exists('adminHtmlAllowedTags')) {
+    /**
+     * tag => permitted attributes. Kept in step with the CKEditor toolbar used by
+     * the admin page/footer editors (format, bold/italic/underline, lists, link,
+     * image, table) plus the div/section wrappers present in stored content.
+     */
+    function adminHtmlAllowedTags(): array
+    {
+        return [
+            'p' => ['class'],
+            'div' => ['class'],
+            'section' => ['class'],
+            'br' => [],
+            'span' => ['class'],
+            'strong' => ['class'],
+            'b' => ['class'],
+            'em' => ['class'],
+            'i' => ['class'],
+            'u' => ['class'],
+            's' => ['class'],
+            'a' => ['href', 'class'],
+            'ul' => ['class'],
+            'ol' => ['class'],
+            'li' => ['class'],
+            'h2' => ['class'],
+            'h3' => ['class'],
+            'h4' => ['class'],
+            'h5' => ['class'],
+            'h6' => ['class'],
+            'blockquote' => ['class'],
+            'pre' => ['class'],
+            'code' => ['class'],
+            'sub' => [],
+            'sup' => [],
+            'hr' => [],
+            'img' => ['src', 'alt', 'title', 'class'],
+            'table' => ['class'],
+            'thead' => [],
+            'tbody' => [],
+            'tr' => [],
+            'th' => ['colspan', 'rowspan'],
+            'td' => ['colspan', 'rowspan'],
+        ];
+    }
+}
+
+if (! function_exists('adminHtmlKilledTags')) {
+    /**
+     * Elements dropped with their contents: they execute code, load remote
+     * documents or re-open parser contexts. Everything else unknown is unwrapped.
+     */
+    function adminHtmlKilledTags(): array
+    {
+        return [
+            'script', 'style', 'iframe', 'object', 'embed', 'applet', 'form', 'base', 'link', 'meta',
+            'svg', 'math', 'frame', 'frameset', 'noscript', 'template', 'head', 'title', 'xmp', 'plaintext',
+            'input', 'button', 'select', 'option', 'textarea', 'keygen', 'source', 'track',
+        ];
+    }
+}
+
+if (! function_exists('adminHtmlSafeUrl')) {
+    function adminHtmlSafeUrl(?string $url): bool
+    {
+        $url = trim((string) $url);
+
+        if ($url === '') {
+            return false;
         }
 
-        return trim($out);
+        // Decode one entity layer and drop the whitespace/control characters
+        // browsers ignore, so "jav&#x61;script:" and "java\tscript:" are seen.
+        $probe = preg_replace('/[\s\x00-\x20\x7f]+/', '', html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?? '';
+
+        if ($probe === '' || str_starts_with($probe, '//')) {
+            return false;
+        }
+
+        if (! preg_match('/^([a-z][a-z0-9+.\-]*):/i', $probe, $matches)) {
+            return true; // relative path, fragment or query
+        }
+
+        return in_array(strtolower($matches[1]), ['http', 'https', 'mailto', 'tel'], true);
     }
 }
 
 if (! function_exists('adminHtmlSanitizeNode')) {
-    function adminHtmlSanitizeNode(DOMNode $node, array $dangerous, DOMDocument $doc): void
+    function adminHtmlSanitizeNode(DOMNode $node): void
     {
-        if (! $node->hasChildNodes()) {
-            return;
-        }
+        $allowed = adminHtmlAllowedTags();
+        $killed = adminHtmlKilledTags();
 
-        for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
-            $child = $node->childNodes->item($i);
-
+        foreach (iterator_to_array($node->childNodes) as $child) {
             if ($child->nodeType === XML_ELEMENT_NODE) {
                 $tag = strtolower($child->nodeName);
 
-                // Remove dangerous elements entirely (including their children)
-                if (in_array($tag, $dangerous, true)) {
+                if (in_array($tag, $killed, true)) {
                     $node->removeChild($child);
 
                     continue;
                 }
 
-                // Strip on* event handlers and javascript: urls from attributes
-                if ($child->hasAttributes()) {
-                    for ($j = $child->attributes->length - 1; $j >= 0; $j--) {
-                        $attr = $child->attributes->item($j);
-                        $name = strtolower($attr->nodeName);
-                        $value = strtolower(trim($attr->nodeValue));
+                adminHtmlSanitizeNode($child);
 
-                        if (str_starts_with($name, 'on')) {
-                            $child->removeAttributeNode($attr);
-                        } elseif (in_array($name, ['href', 'src', 'action'], true) && str_starts_with(preg_replace('/\s/', '', $value), 'javascript:')) {
-                            $child->removeAttributeNode($attr);
-                        }
+                if (! array_key_exists($tag, $allowed)) {
+                    // Unknown container: drop the tag, keep the text.
+                    while ($child->firstChild) {
+                        $node->insertBefore($child->firstChild, $child);
+                    }
+                    $node->removeChild($child);
+
+                    continue;
+                }
+
+                $permitted = $allowed[$tag];
+                $drop = [];
+                $rewrite = [];
+
+                for ($i = $child->attributes->length - 1; $i >= 0; $i--) {
+                    $attr = $child->attributes->item($i);
+                    $name = strtolower($attr->nodeName);
+
+                    if (! in_array($name, $permitted, true)) {
+                        $drop[] = $name;
+
+                        continue;
+                    }
+
+                    $value = (string) $attr->nodeValue;
+
+                    if ($name === 'class') {
+                        $rewrite[$name] = trim(preg_replace('/[^a-zA-Z0-9 _-]/', '', $value) ?? '');
+
+                        continue;
+                    }
+
+                    if (in_array($name, ['href', 'src'], true) && ! adminHtmlSafeUrl($value)) {
+                        $drop[] = $name;
                     }
                 }
 
-                adminHtmlSanitizeNode($child, $dangerous, $doc);
-            } elseif ($child->nodeType === XML_COMMENT_NODE) {
+                foreach ($rewrite as $name => $value) {
+                    $child->setAttribute($name, $value);
+                }
+
+                foreach ($drop as $name) {
+                    $child->removeAttribute($name);
+                }
+
+                continue;
+            }
+
+            if (in_array($child->nodeType, [XML_COMMENT_NODE, XML_PI_NODE, XML_CDATA_SECTION_NODE], true)) {
                 $node->removeChild($child);
             }
         }
+    }
+}
+
+if (! function_exists('adminHtmlStripUnsafeUrls')) {
+    /**
+     * Second pass over the serialized output: re-check every href/src (decoding
+     * entities once more) and strip any attribute that slipped through.
+     */
+    function adminHtmlStripUnsafeUrls(string $html): string
+    {
+        $cleaned = preg_replace_callback('/<([a-z][a-z0-9]*)((?:\s[^>]*)?)\/?>/i', function (array $tag): string {
+            $attributes = preg_replace_callback('/([a-zA-Z_:.\-]+)\s*=\s*"([^"]*)"/', function (array $attr): string {
+                $name = strtolower($attr[1]);
+
+                if (str_starts_with($name, 'on') || in_array($name, ['style', 'srcset', 'srcdoc', 'formaction', 'xlink:href'], true)) {
+                    return '';
+                }
+
+                if (in_array($name, ['href', 'src'], true) && ! adminHtmlSafeUrl($attr[2])) {
+                    return '';
+                }
+
+                return $attr[0];
+            }, $tag[2]);
+
+            return '<'.strtolower($tag[1]).$attributes.'>';
+        }, $html);
+
+        return $cleaned ?? $html;
     }
 }
