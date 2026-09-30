@@ -23,7 +23,7 @@
                         {{ $content['h1'] ?? __('home.h1') }}
                     </h1>
 
-                    <h2 class="text-[#4b5563]! text-xl! md:text-[0.95rem]! md:leading-normal!">
+                    <h2 class="text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.2]!">
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
