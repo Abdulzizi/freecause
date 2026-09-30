@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
+use App\Support\ImageVariants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -226,6 +227,7 @@ class AdminPetitionsController extends Controller
                 $newImagePath = $request->file('cover_image')->store('petitions', 'public');
                 $abs = Storage::disk('public')->path($newImagePath);
                 Image::read($abs)->cover(1200, 630)->toJpeg(82)->save($abs);
+                ImageVariants::ensure($abs);
                 $old = DB::table('petitions')->where('id', $data['id'])->value('cover_image');
                 if ($old && ! str_starts_with($old, 'http')) {
                     $oldImageToDelete = $old;
@@ -262,6 +264,7 @@ class AdminPetitionsController extends Controller
         } catch (\Throwable $e) {
             if ($newImagePath) {
                 Storage::disk('public')->delete($newImagePath);
+                ImageVariants::purge($newImagePath);
             }
 
             throw $e;
@@ -269,6 +272,7 @@ class AdminPetitionsController extends Controller
 
         if ($oldImageToDelete) {
             Storage::disk('public')->delete($oldImageToDelete);
+            ImageVariants::purge($oldImageToDelete);
         }
 
         try {

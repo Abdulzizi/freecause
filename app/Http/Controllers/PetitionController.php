@@ -14,6 +14,7 @@ use App\Models\UserLevel;
 use App\Rules\SafeExternalImageUrl;
 use App\Support\AppLog;
 use App\Support\CacheVersion;
+use App\Support\ImageVariants;
 use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -610,6 +611,7 @@ class PetitionController extends Controller
 
                     try {
                         Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                        ImageVariants::ensure($abs);
                     } catch (\Throwable $e) {
                         throw ValidationException::withMessages([
                             'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
@@ -671,6 +673,7 @@ class PetitionController extends Controller
         } catch (\Throwable $e) {
             if ($newCoverImage) {
                 Storage::disk('public')->delete($newCoverImage);
+                ImageVariants::purge($newCoverImage);
             }
 
             throw $e;
@@ -1123,6 +1126,7 @@ class PetitionController extends Controller
                     $abs = Storage::disk('public')->path($path);
 
                     Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
+                    ImageVariants::ensure($abs);
 
                     $petition->cover_image = $newCoverImage;
 
@@ -1149,6 +1153,7 @@ class PetitionController extends Controller
         } catch (\Throwable $e) {
             if ($newCoverImage) {
                 Storage::disk('public')->delete($newCoverImage);
+                ImageVariants::purge($newCoverImage);
             }
 
             throw $e;
@@ -1156,6 +1161,7 @@ class PetitionController extends Controller
 
         if ($oldCoverImage && $oldCoverImage !== $petition->cover_image && ! Str::startsWith($oldCoverImage, ['http://', 'https://'])) {
             Storage::disk('public')->delete($oldCoverImage);
+            ImageVariants::purge($oldCoverImage);
         }
 
         return $response;
