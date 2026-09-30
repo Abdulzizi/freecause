@@ -4,20 +4,20 @@
 
 @section('content')
 
-    <h1>logs ({{ number_format($logs->total()) }})</h1>
+    <h1 class="m-0! mb-2! text-lg!">logs ({{ number_format($logs->total()) }})</h1>
 
     <x-admin.filter-box title="filter logs" :action="route('admin.logs')" :reset="route('admin.logs')">
 
-        <input class="fc-input" name="q" placeholder="type something..." value="{{ $filters['q'] ?? '' }}" style="max-width:260px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[260px]!" name="q" placeholder="type something..." value="{{ $filters['q'] ?? '' }}">
 
-        <select name="level" class="fc-input" style="max-width:150px;">
+        <select name="level" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!">
             <option value="">All levels</option>
             <option value="info" {{ request('level')=='info'?'selected':'' }}>Info</option>
             <option value="warning" {{ request('level')=='warning'?'selected':'' }}>Warning</option>
             <option value="error" {{ request('level')=='error'?'selected':'' }}>Error</option>
         </select>
 
-        <select name="context" class="fc-input" style="max-width:160px;">
+        <select name="context" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!">
             <option value="">All context</option>
             <option value="admin.audit" {{ request('context')=='admin.audit'?'selected':'' }}>Admin Audit</option>
             <option value="auth.register" {{ request('context')=='auth.register'?'selected':'' }}>Auth Register</option>
@@ -26,26 +26,26 @@
             <option value="petition.sign" {{ request('context')=='petition.sign'?'selected':'' }}>Petition Signed</option>
         </select>
 
-        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}" style="max-width:130px;">
-        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" style="max-width:150px;">
-        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}" style="max-width:150px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
-    <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
-        <a class="fc-btn" style="text-decoration:none;" href="{{ route('admin.logs.export', request()->query()) }}">
+    <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
+        <a class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm! no-underline!" href="{{ route('admin.logs.export', request()->query()) }}">
             export CSV
         </a>
 
-        <form method="post" action="{{ route('admin.logs.prune') }}" style="display:flex; gap:6px; align-items:center;"
+        <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!"
             onsubmit="return confirm('Delete all logs older than the selected number of days?')">
             @csrf
-            <select name="days" class="fc-input" style="max-width:140px;">
+            <select name="days" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!">
                 <option value="30">30 days</option>
                 <option value="60">60 days</option>
                 <option value="90" selected>90 days</option>
                 <option value="180">180 days</option>
             </select>
-            <button class="fc-btn" type="submit" style="background:#c00; color:#fff;">prune old logs</button>
+            <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm! bg-[#c00]! text-white!" type="submit">prune old logs</button>
         </form>
     </div>
 
@@ -56,31 +56,31 @@
 ]">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;">
-                <th style="width:70px;">ID</th>
-                <th style="width:80px;">Level</th>
+            <tr class="border-b! border-[#ccc]!">
+                <th class="w-[70px]!">ID</th>
+                <th class="w-[80px]!">Level</th>
                 <th>Content preview</th>
-                <th style="width:160px;">Date</th>
+                <th class="w-[160px]!">Date</th>
             </tr>
         </x-slot:thead>
 
         <x-slot:tbody>
             @foreach ($logs as $log)
-                <tr style="border-bottom:1px solid #eee;" onmouseover="this.style.background='#f7f7f7'" onmouseout="this.style.background=''">
+                <tr class="border-b! border-[#eee]! hover:bg-[#f7f7f7]!">
 
                     <td>
-                        <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" style="text-decoration:none; color:#000;">
+                        <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline! text-black!">
                             {{ $log->id }}
                         </a>
                     </td>
 
-                    <td style="text-align:left;">
+                    <td class="text-left!">
                         @if($log->level === 'error')
-                            <span style="color:#b00020;font-weight:bold;">ERROR</span>
+                            <span class="font-bold! text-[#b00020]!">ERROR</span>
                         @elseif($log->level === 'warning')
-                            <span style="color:#c67c00;font-weight:bold;">WARNING</span>
+                            <span class="font-bold! text-[#c67c00]!">WARNING</span>
                         @else
-                            <span style="color:#2f6f2f;font-weight:bold;">INFO</span>
+                            <span class="font-bold! text-[#2f6f2f]!">INFO</span>
                         @endif
                     </td>
 
@@ -89,7 +89,7 @@
                         {{ Str::limit($log->title . ' - ' . $log->content, 80) }}
                     </td>
 
-                    <td style="white-space:nowrap;">
+                    <td class="whitespace-nowrap!">
                         {{ $log->created_at }}
                     </td>
 
@@ -100,17 +100,17 @@
     </x-admin.list-table-box>
 
     @if($selected)
-            <div class="fc-tab">log</div>
-            <div class="fc-box">
+            <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">log</div>
+            <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
 
-                <div class="fc-row">
-                    <label>date</label>
+                <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-sm!">date</label>
                     <div>{{ $selected->created_at }}</div>
                 </div>
 
-                <div class="fc-row">
-                    <label>content</label>
-                    <textarea class="fc-textarea" readonly>
+                <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-sm!">content</label>
+                    <textarea class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-h-[140px]! resize-y! font-[Consolas,_Courier_New,_monospace]! text-[13px]!" readonly>
                         {{ $selected->content }}
                     </textarea>
                 </div>

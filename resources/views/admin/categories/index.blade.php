@@ -7,34 +7,34 @@
 <h1>categories ({{ number_format($approxTotal) }})</h1>
 
 @if (session('success'))
-    <div class="fc-success">{{ session('success') }}</div>
+    <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-2! py-1.5! rounded! mt-1.5! mb-2.5!">{{ session('success') }}</div>
 @endif
 
 @if ($errors->any())
-    <div class="fc-error" style="margin-bottom:12px;">{{ $errors->first() }}</div>
+    <div class="fc-error mb-3!">{{ $errors->first() }}</div>
 @endif
 
 {{-- ── NEW CATEGORY FORM ─────────────────────────────────────────────────── --}}
-<div style="background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:16px; margin-bottom:18px;">
-    <div style="font-weight:700; margin-bottom:10px; font-size:13px; text-transform:uppercase; letter-spacing:.05em;">
+<div class="bg-[#f9f9f9]! border! border-[#ddd]! rounded! p-4! mb-[18px]!">
+    <div class="font-bold! mb-2.5! text-[13px]! uppercase! tracking-[0.05em]!">
         + new category
     </div>
-    <form method="post" action="{{ route('admin.categories.create') }}" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <form method="post" action="{{ route('admin.categories.create') }}" class="flex! gap-2.5! items-end! flex-wrap!">
         @csrf
         <div>
-            <label style="display:block; font-size:12px; color:#555; margin-bottom:4px;">locale</label>
-            <select class="fc-select" name="locale" style="max-width:130px;">
+            <label class="block! text-xs! text-[#555]! mb-1!">locale</label>
+            <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="locale">
                 @foreach ($locales as $k => $label)
                     <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
         </div>
-        <div style="flex:1; min-width:180px;">
-            <label style="display:block; font-size:12px; color:#555; margin-bottom:4px;">name *</label>
-            <input class="fc-input" type="text" name="name" placeholder="Category name" required style="width:100%;">
+        <div class="flex-1! min-w-[180px]!">
+            <label class="block! text-xs! text-[#555]! mb-1!">name *</label>
+            <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
-            <button class="fc-btn" type="submit" style="background:#2a7a2a; color:#fff;">create</button>
+            <button class="border! border-[#7d7d7d]! bg-[#2a7a2a]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">create</button>
         </div>
     </form>
 </div>
@@ -49,7 +49,7 @@
     :reset="route('admin.categories')"
     :activeCount="$activeFilterCount">
 
-    <select class="fc-select" name="locale" style="max-width:140px;">
+    <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
         @foreach ($locales as $k => $label)
             <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>
                 {{ $label }}
@@ -57,15 +57,13 @@
         @endforeach
     </select>
 
-    <input class="fc-input" name="id"
+    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]!" name="id"
         placeholder="ID"
-        value="{{ $filters['id'] ?? '' }}"
-        style="max-width:90px;">
+        value="{{ $filters['id'] ?? '' }}">
 
-    <input class="fc-input" name="name"
+    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="name"
         placeholder="Name"
-        value="{{ $filters['name'] ?? '' }}"
-        style="max-width:180px;">
+        value="{{ $filters['name'] ?? '' }}">
 
 </x-admin.filter-box>
 
@@ -74,9 +72,9 @@
     :p="$categories">
 
     <x-slot:thead>
-        <tr style="border-bottom:1px solid #ccc;">
-            <th style="width:90px;">ID</th>
-            <th style="width:110px;">Locale</th>
+        <tr class="border-b! border-[#ccc]!">
+            <th class="w-[90px]!">ID</th>
+            <th class="w-[110px]!">Locale</th>
             <th>Name</th>
             <th>Slug</th>
         </tr>
@@ -88,7 +86,7 @@
                 $missing = empty($c->name);
             @endphp
 
-            <tr style="border-bottom:1px solid #eee;">
+            <tr class="border-b! border-[#eee]!">
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         {{ $c->id }}
@@ -100,7 +98,7 @@
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         @if($missing)
-                            <span style="color:#c00; font-weight:bold;">MISSING</span>
+                            <span class="text-[#c00]! font-bold!">MISSING</span>
                         @else
                             {{ $c->name }}
                         @endif
@@ -111,7 +109,7 @@
                     @if($c->slug)
                         {{ $c->slug }}
                     @else
-                        <span style="color:#999;">none</span>
+                        <span class="text-[#999]!">none</span>
                     @endif
                 </td>
             </tr>
@@ -127,75 +125,76 @@
         {{-- Edit translation --}}
         <form method="post"
               action="{{ route('admin.categories.save') }}"
-              style="margin:0;">
+              class="m-0!">
             @csrf
 
             <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
             <input type="hidden" name="locale" value="{{ $locale }}">
 
-            <div class="fc-row">
-                <label>locale</label>
-                <div style="padding:6px 0; color:#444;">{{ $locale }}</div>
+            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-xs! md:text-sm!">locale</label>
+                <div class="py-1.5! text-[#444]!">{{ $locale }}</div>
             </div>
 
-            <div class="fc-row">
-                <label>name *</label>
-                <input class="fc-input"
+            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-xs! md:text-sm!">name *</label>
+                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
                        type="text"
                        name="name"
                        value="{{ $selectedTranslation->name ?? '' }}"
                        required>
             </div>
 
-            <div class="fc-row">
-                <label>slug</label>
-                <input class="fc-input"
-                       type="text"
-                       name="slug"
-                       value="{{ $selectedTranslation->slug ?? '' }}">
-                <div style="font-size:11px; color:#777; margin-top:4px;">
-                    used in url: /petitions/category-<b>slug</b>-{{ $selectedCategory->id }}
+            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-xs! md:text-sm!">slug</label>
+                <div>
+                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
+                           type="text"
+                           name="slug"
+                           value="{{ $selectedTranslation->slug ?? '' }}">
+                    <div class="text-[11px]! text-[#777]! mt-1!">
+                        used in url: /petitions/category-<b>slug</b>-{{ $selectedCategory->id }}
+                    </div>
                 </div>
             </div>
 
-            <div class="fc-row">
-                <label>active</label>
+            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-xs! md:text-sm!">active</label>
                 <input type="checkbox" name="is_active" value="1"
                        {{ ($selectedCategory->is_active ?? 1) ? 'checked' : '' }}>
             </div>
 
-            <div class="fc-row">
-                <label>sort order</label>
-                <input class="fc-input" type="number" name="sort_order" min="0"
-                       value="{{ $selectedCategory->sort_order ?? 0 }}" style="max-width:100px;">
+            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-xs! md:text-sm!">sort order</label>
+                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" type="number" name="sort_order" min="0"
+                       value="{{ $selectedCategory->sort_order ?? 0 }}">
             </div>
 
-            <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-                <button class="fc-btn" type="submit">save</button>
+            <div class="flex! justify-end! mt-1.5!">
+                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!" type="submit">save</button>
             </div>
         </form>
 
         {{-- Delete category (only when no petitions use it) --}}
-        <div style="margin-top:18px; padding-top:14px; border-top:1px solid #eee;">
+        <div class="mt-[18px]! pt-3.5! border-t! border-[#eee]!">
             @if ($selectedPetitionCount === 0)
                 <form method="post" action="{{ route('admin.categories.destroy') }}"
                       onsubmit="return confirm('Delete category #{{ $selectedCategory->id }} and all its translations? This cannot be undone.')">
                     @csrf
                     <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
-                    <div style="display:flex; align-items:center; justify-content:space-between;">
-                        <span style="font-size:12px; color:#999;">no petitions use this category</span>
-                        <button class="fc-btn" type="submit"
-                                style="background:#c00; color:#fff; border-color:#c00;">delete category</button>
+                    <div class="flex! items-center! justify-between!">
+                        <span class="text-xs! text-[#999]!">no petitions use this category</span>
+                        <button class="border! border-[#c00]! bg-[#c00]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">delete category</button>
                     </div>
                 </form>
             @else
-                <div style="font-size:12px; color:#888;">
+                <div class="text-xs! text-[#888]!">
                     ⚠ {{ $selectedPetitionCount }} petition(s) use this category — cannot delete.
                 </div>
             @endif
         </div>
     @else
-        <div style="color:#777;">select a category to edit</div>
+        <div class="text-[#777]!">select a category to edit</div>
     @endif
 
 </x-admin.detail-panel>

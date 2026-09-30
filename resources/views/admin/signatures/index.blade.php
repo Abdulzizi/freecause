@@ -24,25 +24,20 @@
 
     <x-admin.filter-box title="filter signatures" :action="route('admin.signatures')" :reset="route('admin.signatures')" :activeCount="$activeFilterCount">
 
-        <input class="fc-input" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}"
-            style="max-width:120px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[120px]!" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}">
 
-        <input class="fc-input" name="user_id" placeholder="User ID" value="{{ $filters['user_id'] ?? '' }}"
-            style="max-width:100px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" name="user_id" placeholder="User ID" value="{{ $filters['user_id'] ?? '' }}">
 
-        <input class="fc-input" name="email" placeholder="Email" value="{{ $filters['email'] ?? '' }}"
-            style="max-width:220px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="email" placeholder="Email" value="{{ $filters['email'] ?? '' }}">
 
-        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}"
-            style="max-width:130px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
         @if ($hasText)
-            <input class="fc-input" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}"
-                style="max-width:220px;">
+            <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
         @endif
 
         {{-- BUG 3 FIX: locale options now come from $locales passed by controller --}}
-        <select class="fc-select" name="locale" style="max-width:140px;">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') == $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -50,7 +45,7 @@
             @endforeach
         </select>
 
-        <select class="fc-select" name="category_id" style="max-width:320px;">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[320px]!" name="category_id">
             <option value="">(Category)</option>
             @foreach ($categories as $c)
                 <option value="{{ $c->id }}" {{ ($filters['category_id'] ?? '') == $c->id ? 'selected' : '' }}>
@@ -60,23 +55,21 @@
         </select>
 
         @if ($hasConfirmed)
-            <select class="fc-select" name="confirmed" style="max-width:160px;">
+            <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="confirmed">
                 <option value="">all signatures</option>
                 <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
                 <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
             </select>
         @endif
 
-        <select class="fc-select" name="spam" style="max-width:140px;">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="spam">
             <option value="">spam...</option>
             <option value="1" {{ ($filters['spam'] ?? '') === '1' ? 'selected' : '' }}>spam</option>
             <option value="0" {{ ($filters['spam'] ?? '') === '0' ? 'selected' : '' }}>not spam</option>
         </select>
 
-        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
-            style="max-width:150px;">
-        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
-            style="max-width:150px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
 
     </x-admin.filter-box>
 
@@ -87,7 +80,7 @@
     ]">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;">
+            <tr class="border-b! border-[#ccc]!">
                 <th width="70">ID</th>
                 <th width="26" data-hide-mobile></th>
                 <th width="26" data-hide-mobile></th>
@@ -106,7 +99,7 @@
 
         <x-slot:tbody>
             @foreach ($signatures as $s)
-                <tr style="border-bottom:1px solid #eee;">
+                <tr class="border-b! border-[#eee]!">
 
                     <td>{{ $s->id }}</td>
 
@@ -114,7 +107,7 @@
                         <input type="checkbox" class="bulk-checkbox" value="{{ $s->id }}">
                     </td>
 
-                    <td data-hide-mobile style="text-align:center;">
+                    <td data-hide-mobile class="text-center!">
                         @if ($s->user_verified)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
@@ -123,7 +116,7 @@
                     </td>
 
                     @if ($hasConfirmed)
-                        <td data-hide-mobile style="text-align:center;">
+                        <td data-hide-mobile class="text-center!">
                             @if ($s->confirmed)
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             @else
@@ -146,7 +139,7 @@
                         @endif
                     </td>
 
-                    <td data-hide-mobile style="text-align:center;">
+                    <td data-hide-mobile class="text-center!">
                         @if ($s->petition_slug)
                             <a
                                 href="{{ route('petition.show', [
@@ -166,7 +159,7 @@
                     </td>
 
                     @if ($hasText)
-                        <td data-hide-mobile style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <td data-hide-mobile class="max-w-[300px]! overflow-hidden! text-ellipsis! whitespace-nowrap!">
                             {{ $s->text }}
                         </td>
                     @endif
@@ -178,35 +171,35 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div class="fc-toolbar-actions">
+            <div class="flex! gap-2! items-center! flex-wrap!">
                 @if ($hasConfirmed)
-                    <div class="fc-action-group">
-                        <button type="button" class="fc-icon-btn bulk-action" data-action="approve" title="Approve">
+                    <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
+                        <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="approve" title="Approve">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="fc-btn-label">Approve</span>
+                            <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Approve</span>
                         </button>
 
-                        <button type="button" class="fc-icon-btn bulk-action" data-action="reject" title="Reject">
+                        <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="reject" title="Reject">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                                 <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                             </svg>
-                            <span class="fc-btn-label">Reject</span>
+                            <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Reject</span>
                         </button>
                     </div>
                 @endif
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="delete" title="Delete">
+                <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Delete</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
                 </button>
 
                 <a href="{{ route('admin.signatures', request()->except('select')) }}"
-                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
+                    title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Clear</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>

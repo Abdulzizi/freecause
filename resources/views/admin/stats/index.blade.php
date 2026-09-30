@@ -4,11 +4,11 @@
 
 @section('content')
 
-    <h1>statistics</h1>
+    <h1 class="m-0! mb-2! text-lg! max-md:text-base!">statistics</h1>
 
     <x-admin.filter-box title="statistics" :action="route('admin.stats')" :reset="route('admin.stats')">
 
-        <select name="locale" class="fc-select" style="max-width:140px;">
+        <select name="locale" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[140px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!">
             <option value="">All locales</option>
             @foreach ($languages as $lang)
                 <option value="{{ $lang->code }}" {{ $filters['locale'] == $lang->code ? 'selected' : '' }}>
@@ -17,13 +17,13 @@
             @endforeach
         </select>
 
-        <select name="range" class="fc-select" style="max-width:160px;">
+        <select name="range" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[160px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!">
             <option value="1d" {{ $filters['range'] == '1d' ? 'selected' : '' }}>Last day</option>
             <option value="7d" {{ $filters['range'] == '7d' ? 'selected' : '' }}>Last 7 days</option>
             <option value="30d" {{ $filters['range'] == '30d' ? 'selected' : '' }}>Last 30 days</option>
         </select>
 
-        <select name="type" class="fc-select" style="max-width:240px;">
+        <select name="type" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[240px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!">
             <option value="">Select statistic</option>
             <option value="top_signers" {{ $filters['type'] == 'top_signers' ? 'selected' : '' }}>Top 20 signers</option>
             <option value="top_petitioners" {{ $filters['type'] == 'top_petitioners' ? 'selected' : '' }}>Top 20 petitioners
@@ -34,9 +34,9 @@
 
     </x-admin.filter-box>
 
-    <div class="fc-box" style="margin-bottom:20px;">
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-5!">
 
-        <div style="display:flex; flex-wrap:wrap; gap:30px;">
+        <div class="flex! flex-wrap! gap-[30px]!">
 
             <div>
                 <h3>{{ number_format($summary['users_total']) }}</h3>
@@ -74,16 +74,16 @@
         <x-admin.list-table-box :p="$results">
 
             <x-slot:thead>
-                <tr style="border-bottom:1px solid #ccc;">
+                <tr class="border-b! border-[#ccc]!">
                     @foreach ($columns as $c)
-                        <th style="text-align:left;">{{ $c }}</th>
+                        <th class="text-left!">{{ $c }}</th>
                     @endforeach
                 </tr>
             </x-slot:thead>
 
             <x-slot:tbody>
                 @foreach ($results as $row)
-                    <tr style="border-bottom:1px solid #eee;">
+                    <tr class="border-b! border-[#eee]!">
                         @foreach ((array) $row as $cell)
                             <td>{{ $cell }}</td>
                         @endforeach

@@ -42,15 +42,13 @@
     <x-admin.filter-box title="filter petitions" :action="route('admin.petitions')" :reset="route('admin.petitions')" :activeCount="$activeFilterCount">
         <input type="hidden" name="locale" value="{{ $locale }}">
 
-        <input class="fc-input" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}" style="max-width:90px;">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}">
 
-        <input class="fc-input" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}"
-            style="max-width:220px;">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}">
 
-        <input class="fc-input" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}"
-            style="max-width:100px;">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}">
 
-        <select class="fc-select" name="category" style="max-width:160px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="category">
             <option value="">category...</option>
             @foreach ($categories as $cat)
                 <option value="{{ $cat->id }}" {{ (string) ($filters['category'] ?? '') === (string) $cat->id ? 'selected' : '' }}>
@@ -59,13 +57,13 @@
             @endforeach
         </select>
 
-        <select class="fc-select" name="status" style="max-width:130px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
             <option value="">status...</option>
             <option value="published" {{ ($filters['status'] ?? '') === 'published' ? 'selected' : '' }}>published</option>
             <option value="draft" {{ ($filters['status'] ?? '') === 'draft' ? 'selected' : '' }}>draft</option>
         </select>
 
-        <select class="fc-select" name="active" style="max-width:120px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[120px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="active">
             <option value="">active...</option>
             <option value="1" {{ ($filters['active'] ?? '') === '1' ? 'selected' : '' }}>active</option>
             <option value="0" {{ ($filters['active'] ?? '') === '0' ? 'selected' : '' }}>inactive</option>
@@ -78,7 +76,7 @@
         </label>
 
         @if (!empty($activeLanguages))
-            <select class="fc-select" name="missing_locale" style="max-width:160px;">
+            <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="missing_locale">
                 <option value="">missing locale...</option>
                 @foreach ($activeLanguages as $lang)
                     <option value="{{ $lang }}" {{ ($filters['missing_locale'] ?? '') === $lang ? 'selected' : '' }}>
@@ -97,7 +95,7 @@
     ]">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
+            <tr class="border-b! border-solid! border-[#ccc]!" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
                 <th>ID</th>
                 <th width="26" data-hide-mobile></th>
@@ -113,7 +111,7 @@
 
         <x-slot:tbody>
             @foreach ($petitions as $p)
-                <tr style="border-bottom:1px solid #eee;">
+                <tr class="border-b! border-solid! border-[#eee]!">
 
                     <td>
                         <a href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
@@ -154,9 +152,9 @@
                         @endphp
                         @foreach ($activeLanguages as $lang)
                             @if (in_array($lang, $petitionLocales))
-                                <span style="display:inline-block;background:#d4edda;color:#155724;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                                <span class="inline-block! bg-[#d4edda]! text-[#155724]! rounded-[3px]! px-[5px]! py-px! text-[10px]! m-px!">{{ $lang }}</span>
                             @else
-                                <span style="display:inline-block;background:#f8d7da;color:#721c24;border-radius:3px;padding:1px 5px;font-size:10px;margin:1px;">{{ $lang }}</span>
+                                <span class="inline-block! bg-[#f8d7da]! text-[#721c24]! rounded-[3px]! px-[5px]! py-px! text-[10px]! m-px!">{{ $lang }}</span>
                             @endif
                         @endforeach
                     </td>
@@ -168,44 +166,44 @@
 
 
         <x-slot:footer>
-            <div class="fc-toolbar-actions">
-                <div class="fc-action-group">
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="publish" title="Publish">
+            <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
+                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
-                        <span class="fc-btn-label">Publish</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Publish</span>
                     </button>
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish" title="Unpublish">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
-                        <span class="fc-btn-label">Unpublish</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unpublish</span>
                     </button>
                 </div>
 
-                <div class="fc-action-group">
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="activate" title="Activate">
+                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="activate" title="Activate">
                         {!! $icoPublish !!}
-                        <span class="fc-btn-label">Activate</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Activate</span>
                     </button>
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="deactivate" title="Deactivate">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="deactivate" title="Deactivate">
                         {!! $icoUnpublish !!}
-                        <span class="fc-btn-label">Deactivate</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Deactivate</span>
                     </button>
                 </div>
 
-                <div class="fc-action-group">
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="feature" title="Feature">
+                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="feature" title="Feature">
                         {!! $icoFeature !!}
-                        <span class="fc-btn-label">Feature</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Feature</span>
                     </button>
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="unfeature" title="Unfeature">
+                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="unfeature" title="Unfeature">
                         {!! $icoFeature !!}
-                        <span class="fc-btn-label">Unfeature</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unfeature</span>
                     </button>
                 </div>
 
                 <a href="{{ route('admin.petitions', request()->except('select')) }}"
-                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
+                    title="Clear selection" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! no-underline! text-[#666]!">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Clear</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
@@ -221,15 +219,15 @@
                 <input type="hidden" name="id" value="{{ $selectedPetition->id }}">
                 <input type="hidden" name="locale" value="{{ $locale }}">
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>active</label>
                     <input type="checkbox" name="is_active" value="1"
                         {{ $selectedPetition->is_active ? 'checked' : '' }}>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>status</label>
-                    <select class="fc-select" name="status">
+                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="status">
                         <option value="draft" {{ $selectedPetition->status === 'draft' ? 'selected' : '' }}>draft</option>
                         <option value="published" {{ $selectedPetition->status === 'published' ? 'selected' : '' }}>
                             published
@@ -237,50 +235,50 @@
                     </select>
                 </div>
 
-                <div class="fc-row">
-                    <label>featured <span style="font-size:11px;color:#888;">(this locale)</span></label>
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
+                    <label>featured <span class="text-[11px]! text-[#888]!">(this locale)</span></label>
                     <input type="checkbox" name="is_featured" value="1"
                         {{ ($selectedTranslation->is_featured ?? false) ? 'checked' : '' }}>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>owner (user id)</label>
                     <div>
-                        <input class="fc-input" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
-                            placeholder="user ID" style="max-width:100px;">
-                        @error('user_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
+                            placeholder="user ID">
+                        @error('user_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>title</label>
                     <div>
-                        <input class="fc-input" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
-                        @error('title') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="title" value="{{ $selectedTranslation->title ?? '' }}">
+                        @error('title') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>slug</label>
                     <div>
-                        <input class="fc-input" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
-                        @error('slug') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="slug" value="{{ $selectedTranslation->slug ?? '' }}">
+                        @error('slug') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>signature goal</label>
                     <div>
-                        <input class="fc-input" type="number" name="goal_signatures"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="number" name="goal_signatures"
                             value="{{ $selectedPetition->goal_signatures }}">
-                        @error('goal_signatures') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('goal_signatures') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>category</label>
                     <div>
-                        <select class="fc-select" name="category_id">
+                        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="category_id">
                             <option value="">—</option>
                             @foreach ($categories as $cat)
                                 <option value="{{ $cat->id }}"
@@ -289,78 +287,78 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('category_id') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('category_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>tags</label>
                     <div>
-                        <input class="fc-input" type="text" name="tags" value="{{ $selectedPetition->tags ?? '' }}"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="tags" value="{{ $selectedPetition->tags ?? '' }}"
                             placeholder="tag1, tag2">
-                        @error('tags') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('tags') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>youtube</label>
                     <div>
-                        <input class="fc-input" type="text" name="youtube_url"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="youtube_url"
                             value="{{ $selectedPetition->youtube_url ?? '' }}">
-                        @error('youtube_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('youtube_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>target</label>
                     <div>
-                        <input class="fc-input" type="text" name="target" value="{{ $selectedPetition->target ?? '' }}">
-                        @error('target') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="target" value="{{ $selectedPetition->target ?? '' }}">
+                        @error('target') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>community</label>
                     <div>
-                        <input class="fc-input" type="text" name="community"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="community"
                             value="{{ $selectedPetition->community ?? '' }}">
-                        @error('community') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('community') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>community url</label>
                     <div>
-                        <input class="fc-input" type="text" name="community_url"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="community_url"
                             value="{{ $selectedPetition->community_url ?? '' }}" placeholder="https://">
-                        @error('community_url') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('community_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>location</label>
                     <div>
-                        <input class="fc-input" type="text" name="city" value="{{ $selectedPetition->city ?? '' }}">
-                        @error('city') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="city" value="{{ $selectedPetition->city ?? '' }}">
+                        @error('city') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>date created</label>
                     <div>
-                        <input class="fc-input" type="datetime-local" name="created_at"
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="datetime-local" name="created_at"
                             value="{{ $selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : '' }}">
-                        @error('created_at') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        @error('created_at') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>text</label>
-                    <textarea class="fc-input" name="text" rows="8">{{ $selectedTranslation->description ?? '' }}</textarea>
+                    <textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="text" rows="8">{{ $selectedTranslation->description ?? '' }}</textarea>
                 </div>
 
                 {{-- Image management --}}
-                <div class="fc-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                <div class="flex! flex-col! items-start! gap-1.5! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:[&_label]:text-xs!">
                     <label>cover image</label>
                     @php
                         $imgSrc = null;
@@ -373,24 +371,24 @@
                         }
                     @endphp
                     @if ($imgSrc)
-                        <img src="{{ $imgSrc }}" alt="cover" style="max-width:220px; max-height:120px; border-radius:4px; object-fit:cover;">
-                        <label style="font-size:0.85em;">
+                        <img src="{{ $imgSrc }}" alt="cover" class="max-w-[220px]! max-h-[120px]! rounded! object-cover!">
+                        <label class="text-[0.85em]!">
                             <input type="checkbox" name="remove_image" value="1"> remove image
                         </label>
                     @else
-                        <span style="color:#999; font-size:0.85em;">no image</span>
+                        <span class="text-[#999]! text-[0.85em]!">no image</span>
                     @endif
-                    <input class="fc-input" type="file" name="cover_image" accept="image/*" style="margin-top:4px;">
-                    <span style="color:#888; font-size:0.8em;">upload new image to replace current (max 4 MB)</span>
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! mt-1!" type="file" name="cover_image" accept="image/*">
+                    <span class="text-[#888]! text-[0.8em]!">upload new image to replace current (max 4 MB)</span>
                 </div>
 
-                <div style="display:flex; justify-content:flex-end;">
-                    <button class="fc-btn" type="submit">save</button>
+                <div class="flex! justify-end!">
+                    <button class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</button>
                 </div>
 
             </form>
         @else
-            <div style="color:#777;">select a petition to edit</div>
+            <div class="text-[#777]!">select a petition to edit</div>
         @endif
     </x-admin.detail-panel>
 

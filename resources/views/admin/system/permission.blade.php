@@ -4,25 +4,25 @@
 
 @section('content')
 
-    <h1>permissions</h1>
+    <h1 class="m-0! mb-2! text-lg!">permissions</h1>
 
     {{-- @if (session('success'))
-        <div class="fc-success" style="margin-bottom:15px;">
+        <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-1.5! py-1! rounded! my-1.5! mb-2.5!">
             {{ session('success') }}
         </div>
     @endif --}}
 
-    <div class="fc-box" style="padding:20px; margin-bottom:20px;">
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-5! mb-5!">
 
         <form method="get" action="{{ route('admin.system.permissions') }}"
-            style="display:flex; gap:40px; align-items:flex-end; flex-wrap:wrap;">
+            class="flex! gap-10! items-end! flex-wrap!">
 
             <div>
-                <label style="display:block; margin-bottom:6px;">
+                <label class="block! mb-1.5!">
                     Module
                 </label>
 
-                <select name="module" onchange="this.form.submit()" class="fc-input" style="min-width:220px;">
+                <select name="module" onchange="this.form.submit()" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
 
                     @foreach ($modules as $module => $actions)
                         <option value="{{ $module }}" {{ $selectedModule == $module ? 'selected' : '' }}>
@@ -34,11 +34,11 @@
             </div>
 
             <div>
-                <label style="display:block; margin-bottom:6px;">
+                <label class="block! mb-1.5!">
                     Level
                 </label>
 
-                <select name="level" onchange="this.form.submit()" class="fc-input" style="min-width:220px;">
+                <select name="level" onchange="this.form.submit()" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
 
                     @foreach ($levels as $level)
                         <option value="{{ $level->id }}" {{ $selectedLevel == $level->id ? 'selected' : '' }}>
@@ -53,10 +53,10 @@
 
     </div>
 
-    <div class="fc-tab">
+    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">
         privileges for <strong>{{ ucfirst($selectedModule) }}</strong>
     </div>
-    <div class="fc-box" style="padding:25px;">
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-[25px]!">
 
         <form method="post" action="{{ route('admin.system.permissions.store') }}">
             @csrf
@@ -65,28 +65,16 @@
             <input type="hidden" name="level_id" value="{{ $selectedLevel }}">
 
             <div
-                style="
-                display:grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap:12px;
-            ">
+                class="grid! gap-3! grid-cols-[repeat(auto-fill,minmax(200px,1fr))]!">
 
                 @foreach ($modules[$selectedModule] as $action)
                     <label
-                        style="
-                        display:flex;
-                        align-items:center;
-                        gap:8px;
-                        padding:8px 10px;
-                        border:1px solid #e5e5e5;
-                        background:#fafafa;
-                        border-radius:4px;
-                    ">
+                        class="flex! items-center! gap-2! px-2.5! py-2! border! border-[#e5e5e5]! bg-[#fafafa]! rounded!">
 
                         <input type="checkbox" name="actions[]" value="{{ $action }}"
                             {{ in_array($action, $permissions) ? 'checked' : '' }}>
 
-                        <span style="text-transform:capitalize;">
+                        <span class="capitalize!">
                             {{ $action }}
                         </span>
 
@@ -95,8 +83,8 @@
 
             </div>
 
-            <div style="display:flex; justify-content:flex-end; margin-top:25px;">
-                <button class="fc-btn">
+            <div class="flex! justify-end! mt-[25px]!">
+                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">
                     save
                 </button>
             </div>

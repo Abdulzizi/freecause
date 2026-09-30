@@ -30,30 +30,30 @@
 
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')" :activeCount="$activeFilterCount">
 
-        <input class="fc-input" style="max-width:90px;" name="id" placeholder="ID" value="{{ $filters['id'] }}">
-        <input class="fc-input" name="first_name" style="max-width:160px;" placeholder="First name" value="{{ $filters['first_name'] }}">
-        <input class="fc-input" style="max-width:160px;" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
-        <input class="fc-input" style="max-width:140px;" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
-        <input class="fc-input" style="max-width:220px;" name="email" placeholder="Email" value="{{ $filters['email'] }}">
-        <input class="fc-input" style="max-width:130px;" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="id" placeholder="ID" value="{{ $filters['id'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email" placeholder="Email" value="{{ $filters['email'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
 
-        <select class="fc-select" name="status" style="max-width:130px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
             <option value="">status...</option>
             <option value="verified" {{ $filters['status'] === 'verified' ? 'selected' : '' }}>verified</option>
             <option value="unverified" {{ $filters['status'] === 'unverified' ? 'selected' : '' }}>unverified</option>
         </select>
 
-        <input class="fc-input" style="max-width:150px;" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
-        <input class="fc-input" style="max-width:150px;" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
+        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
 
-        <select class="fc-select" name="level" style="max-width:140px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="level">
             @foreach ($levels as $k => $label)
                 <option value="{{ $k }}" {{ $filters['level'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
             @endforeach
         </select>
 
-        <select class="fc-select" name="locale" style="max-width:140px;">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ $filters['locale'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
@@ -68,17 +68,17 @@
         'banWithDetails'  => true,
     ]">
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;" onmouseover="this.style.background='#f7f7f7'"
+            <tr class="border-b! border-solid! border-[#ccc]!" onmouseover="this.style.background='#f7f7f7'"
                 onmouseout="this.style.background=''">
-                <th style="text-align:left; width:90px;">id</th>
-                <th style="width:26px;" data-hide-mobile></th>
-                <th style="width:26px; text-align:left;" data-hide-mobile>v</th>
-                <th style="text-align:left;">email</th>
-                <th style="text-align:left;">username</th>
-                <th style="text-align:left;" data-hide-mobile>first name</th>
-                <th style="text-align:left;" data-hide-mobile>last name</th>
-                <th style="text-align:left; width:90px;" data-hide-mobile>locale</th>
-                <th style="text-align:left; width:160px;">registered</th>
+                <th class="text-left! w-[90px]!">id</th>
+                <th width="26" data-hide-mobile></th>
+                <th class="w-[26px]! text-left!" data-hide-mobile>v</th>
+                <th class="text-left!">email</th>
+                <th class="text-left!">username</th>
+                <th class="text-left!" data-hide-mobile>first name</th>
+                <th class="text-left!" data-hide-mobile>last name</th>
+                <th class="text-left! w-[90px]!" data-hide-mobile>locale</th>
+                <th class="text-left! w-[160px]!">registered</th>
             </tr>
         </x-slot:thead>
 
@@ -87,22 +87,22 @@
                 @php
                     $isBanned = $u->level?->name === 'banned';
                 @endphp
-                <tr style="border-bottom:1px solid #eee;" class="{{ $isBanned ? 'fc-banned-row' : '' }}">
+                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
-                            style="text-decoration:none; color:#000;">
+                            class="no-underline! text-black!">
                             {{ $u->id }}
                         </a>
                     </td>
 
-                    <td data-hide-mobile style="text-align:left;">
+                    <td data-hide-mobile class="text-left!">
                         {{-- <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}> --}}
                         <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
                             data-level="{{ $u->level?->name }}"
                             {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
                     </td>
 
-                    <td data-hide-mobile style="text-align:left;">
+                    <td data-hide-mobile class="text-left!">
                         @if ($u->verified ?? 0)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
@@ -124,7 +124,7 @@
 
                         @if (!$isAdmin)
                             <a target="_blank" rel="noopener" href="{{ route('user.profile', ['locale' => app()->getLocale(), 'slug' => $u->username ?? \Str::slug($u->name), 'id' => $u->id]) }}"
-                                style="color:#000;">
+                                class="text-black!">
                                 {{ $u->name }}
                             </a>
                         @else
@@ -133,14 +133,7 @@
 
                         @if ($isBanned)
                             <span
-                                style="
-                                margin-left:6px;
-                                font-size:10px;
-                                padding:2px 6px;
-                                background:#c00;
-                                color:#fff;
-                                border-radius:2px;
-                            "
+                                class="ml-1.5! text-[10px]! px-1.5! py-0.5! bg-[#c00]! text-white! rounded-[2px]!"
                             title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
                                 BANNED
                             </span>
@@ -161,23 +154,23 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div class="fc-toolbar-actions">
-                <div class="fc-action-group">
-                    <button type="button" id="bulk-unban" class="fc-icon-btn" title="Unban">
+            <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
+                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
+                    <button type="button" id="bulk-unban" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Unban">
                         {!! $icoUnban !!}
-                        <span class="fc-btn-label">Unban</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unban</span>
                     </button>
 
-                    <button type="button" id="bulk-delete" class="fc-icon-btn" title="Delete">
+                    <button type="button" id="bulk-delete" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Delete">
                         {!! $icoDelete !!}
-                        <span class="fc-btn-label">Delete</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Delete</span>
                     </button>
                 </div>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}"
-                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
+                    title="Clear selection" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! no-underline! text-[#666]!">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Clear</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
@@ -185,28 +178,28 @@
     </x-admin.list-table-box>
 
     <x-admin.detail-panel title="user" :closeRoute="route('admin.users', request()->except('select'))">
-        <form method="post" action="{{ route('admin.users.save') }}" style="margin:0;">
+        <form method="post" action="{{ route('admin.users.save') }}" class="m-0!">
             @csrf
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
 
-            <div class="fc-tab" style="margin-top:0;">Access Data</div>
-            <div class="fc-box">
-                <div class="fc-row">
+            <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-0! max-md:text-xs! max-md:px-2! max-md:py-1!">Access Data</div>
+            <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>username</label>
-                    <input class="fc-input" type="text" name="username" value="{{ $selectedUser->name ?? '' }}">
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="username" value="{{ $selectedUser->name ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>password</label>
                     <div>
-                        <input class="fc-input" type="password" name="password" value="">
-                        @error('password') <span style="color:#c00; font-size:12px;">{{ $message }}</span> @enderror
+                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="password" name="password" value="">
+                        @error('password') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>level</label>
-                    <select class="fc-select" name="level">
+                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="level">
                         @foreach ($levels as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"
@@ -219,56 +212,56 @@
                 </div>
             </div>
 
-            <div class="fc-tab">other</div>
-            <div class="fc-box">
+            <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">other</div>
+            <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>first name</label>
-                    <input class="fc-input" type="text" name="first_name"
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="first_name"
                         value="{{ $selectedUser->first_name ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>last name</label>
-                    <input class="fc-input" type="text" name="last_name"
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="last_name"
                         value="{{ $selectedUser->last_name ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>nickname</label>
-                    <input class="fc-input" type="text" name="nickname"
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="nickname"
                         value="{{ $selectedUser->nickname ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>location</label>
-                    <input class="fc-input" type="text" name="city"
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="city"
                         value="{{ $selectedUser->city ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>identify as</label>
-                    <select class="fc-select" name="identify_mode">
+                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="identify_mode">
                         <option value="full" {{ ($selectedUser->identify_mode ?? 'full') === 'full' ? 'selected' : '' }}>full name</option>
                         <option value="name" {{ ($selectedUser->identify_mode ?? '') === 'name' ? 'selected' : '' }}>first name</option>
                         <option value="nick" {{ ($selectedUser->identify_mode ?? '') === 'nick' ? 'selected' : '' }}>nickname</option>
                     </select>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>verified</label>
                     <input type="checkbox" name="verified" value="1"
                         {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>email</label>
-                    <input class="fc-input" type="text" name="email" value="{{ $selectedUser->email ?? '' }}">
+                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email" value="{{ $selectedUser->email ?? '' }}">
                 </div>
 
-                <div class="fc-row">
+                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>locale</label>
-                    <select class="fc-select" name="locale">
+                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="locale">
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"
@@ -281,8 +274,8 @@
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-                <button class="fc-btn" type="submit">save</button>
+            <div class="flex! justify-end! mt-1.5!">
+                <button class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</button>
             </div>
         </form>
     </x-admin.detail-panel>

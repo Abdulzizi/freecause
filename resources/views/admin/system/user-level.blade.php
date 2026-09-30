@@ -4,10 +4,10 @@
 
 @section('content')
 
-    <h1>user levels ({{ number_format($levels->total()) }})</h1>
+    <h1 class="m-0! mb-2! text-lg!">user levels ({{ number_format($levels->total()) }})</h1>
 
     @if (session('success'))
-        <div class="fc-success" style="margin-bottom:15px;">
+        <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-1.5! py-1! rounded! my-1.5! mb-[15px]!">
             {{ session('success') }}
         </div>
     @endif
@@ -16,45 +16,45 @@
     <x-admin.list-table-box emptyText="no user levels found" :p="$levels">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc; height:44px;">
-                <th style="width:70px; text-align:left;">ID</th>
-                <th style="width:40px; text-align:left;"></th>
-                <th style="text-align:left;">Name (system key)</th>
-                <th style="text-align:right;">Visible Name</th>
-                <th style="width:90px; text-align:right;">System</th>
-                <th style="width:90px; text-align:right;">Users</th>
+            <tr class="border-b! border-[#ccc]! h-11!">
+                <th class="w-[70px]! text-left!">ID</th>
+                <th class="w-10! text-left!"></th>
+                <th class="text-left!">Name (system key)</th>
+                <th class="text-right!">Visible Name</th>
+                <th class="w-[90px]! text-right!">System</th>
+                <th class="w-[90px]! text-right!">Users</th>
             </tr>
         </x-slot:thead>
 
         <x-slot:tbody>
             @foreach ($levels as $level)
-                <tr style="border-bottom:1px solid #eee; height:44px;">
+                <tr class="border-b! border-[#eee]! h-11!">
 
-                    <td style="text-align:left; vertical-align:middle;">
+                    <td class="text-left! align-middle!">
                         {{ $level->id }}
                     </td>
 
-                    <td style="text-align:left; vertical-align:middle;">
+                    <td class="text-left! align-middle!">
                         @if (!$level->is_system && $level->users_count == 0)
                             <input type="checkbox" class="bulk-checkbox" value="{{ $level->id }}">
                         @endif
                     </td>
 
-                    <td style="text-align:left; vertical-align:middle;">
+                    <td class="text-left! align-middle!">
                         <strong>{{ $level->name }}</strong>
                     </td>
 
-                    <td style="text-align:right; vertical-align:middle;">
+                    <td class="text-right! align-middle!">
                         {{ $level->visible_name }}
                     </td>
 
-                    <td style="text-align:right; vertical-align:middle;">
+                    <td class="text-right! align-middle!">
                         {!! $level->is_system
                             ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
                             : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
-                    <td style="text-align:right; vertical-align:middle;">
+                    <td class="text-right! align-middle!">
                         {{ $level->users_count }}
                     </td>
 
@@ -63,16 +63,16 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div style="display:flex; gap:12px; align-items:center;">
+            <div class="flex! gap-3! items-center!">
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="delete">
+                <button type="button" class="flex! flex-col! items-center! justify-center! w-[52px]! h-11! border! border-[#bbb]! bg-white! gap-0.5! cursor-pointer! transition-colors! transition-opacity! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! bulk-action" data-action="delete">
 
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <svg class="max-md:w-4! max-md:h-4!" width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
                         <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
                     </svg>
 
-                    <div style="font-size:11px; color:#666;">
+                    <div class="text-[11px]! text-[#666]! max-md:hidden!">
                         delete
                     </div>
                 </button>
@@ -82,24 +82,24 @@
 
     </x-admin.list-table-box>
 
-    <div class="fc-tab" style="margin-top:25px;">new level</div>
-    <div class="fc-box" style="padding:20px;">
+    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-[25px]! mr-0! mb-0! ml-0!">new level</div>
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-5!">
 
         <form method="post" action="{{ route('admin.system.user_levels.store') }}">
             @csrf
 
-            <div class="fc-row">
-                <label>Name (system key)</label>
-                <input type="text" name="name" class="fc-input" required>
+            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-sm!">Name (system key)</label>
+                <input type="text" name="name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" required>
             </div>
 
-            <div class="fc-row">
-                <label>Visible Name</label>
-                <input type="text" name="visible_name" class="fc-input" required>
+            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-sm!">Visible Name</label>
+                <input type="text" name="visible_name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" required>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; margin-top:15px;">
-                <button class="fc-btn">
+            <div class="flex! justify-end! mt-[15px]!">
+                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">
                     add
                 </button>
             </div>

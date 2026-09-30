@@ -21,39 +21,39 @@
         </style>
     @endpush
 
-    <div class="admin-logo">
-        <span class="red">Online</span><span class="black">Petition</span>
+    <div class="text-center! mt-[10px]! mb-[25px]! text-[44px]! font-bold! tracking-[-1px]! max-md:text-[32px]!">
+        <span class="text-[#b30000]!">Online</span><span class="text-[#111]!">Petition</span>
     </div>
 
     @if (session('success'))
-        <div class="alert success">{{ session('success') }}</div>
+        <div class="w-[320px]! mx-auto! mb-3! border! border-[#b8d7b3]! bg-[#f2fff2]! text-[#1d7a2a]! p-2.5! px-3! rounded-[3px]! text-[13px]!">{{ session('success') }}</div>
     @endif
 
     @if ($errors->any())
-        <div class="alert">
+        <div class="w-[320px]! mx-auto! mb-3! border! border-[#d7b3b3]! bg-[#fff2f2]! text-[#7a1d1d]! p-2.5! px-3! rounded-[3px]! text-[13px]!">
             {{ $errors->first() }}
         </div>
     @endif
 
-    <div class="login-box">
-        <div class="login-title">LOGIN</div>
+    <div class="w-[320px]! mx-auto! rounded! border! border-[#3f66c7]! bg-gradient-to-b! from-[#86a9ff]! to-[#1f3f96]! shadow-[0_4px_12px_rgba(0,0,0,0.15)]! p-4!">
+        <div class="text-center! text-[#e9f0ff]! text-[34px]! font-extrabold! tracking-[6px]! [text-shadow:0_1px_0_rgba(0,0,0,0.25)]! my-1! mb-3!">LOGIN</div>
 
         <form method="POST" action="{{ route('admin.login.post') }}">
             @csrf
 
-            <div class="field-label">Email or Username</div>
-            <input class="field-input" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
+            <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Email or Username</div>
+            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-white!" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
 
-            <div class="field-label">Password</div>
-            <input class="field-input" type="password" name="password" autocomplete="current-password" required>
+            <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Password</div>
+            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-white!" type="password" name="password" autocomplete="current-password" required>
 
-            <div class="row-actions">
-                <label class="remember">
+            <div class="flex! items-center! justify-between! gap-2.5! mt-3!">
+                <label class="text-[#e9f0ff]! text-xs! flex! items-center! gap-1.5! select-none!">
                     <input type="checkbox" name="remember" value="1">
                     stay logged in
                 </label>
 
-                <button class="btn-login" type="submit" id="btn-login-submit">
+                <button class="btn-login border! border-[#a7b6da]! bg-[#f2f2f2]! px-2.5! py-1.5! rounded-sm! cursor-pointer! text-xs! font-bold!" type="submit" id="btn-login-submit">
                     sign in »
                 </button>
             </div>

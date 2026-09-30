@@ -6,27 +6,27 @@
 
     <h1>spam</h1>
 
-    <div class="fc-box" style="margin-bottom:15px;">
+    <div class="border! border-[#9e9e9e]! rounded! p-[10px]! mb-[15px]!">
         <strong>{{ number_format($bannedCount) }}</strong> IP banned.
     </div>
 
     <x-admin.filter-box title="filter spam" :action="route('admin.spam')" :reset="route('admin.spam')">
-        <input class="fc-input" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}" style="max-width:150px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
-        <select class="fc-select" name="type" style="max-width:160px;">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="type">
             <option value="">type...</option>
             @foreach ($types as $t)
                 <option value="{{ $t }}" {{ ($filters['type'] ?? '') === $t ? 'selected' : '' }}>{{ $t }}</option>
             @endforeach
         </select>
 
-        <input class="fc-input" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}" style="max-width:150px;">
-        <input class="fc-input" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}" style="max-width:150px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
-    <form method="post" action="{{ route('admin.spam.clear') }}" onsubmit="return confirmClear()" style="margin-bottom:15px;">
+    <form method="post" action="{{ route('admin.spam.clear') }}" onsubmit="return confirmClear()" class="mb-[15px]!">
         @csrf
-        <button class="fc-btn" style="background:#dc3545;">
+        <button class="border! border-[#7d7d7d]! bg-[#dc3545]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
             clear spam logs
         </button>
     </form>
@@ -34,20 +34,19 @@
     <x-admin.list-table-box empty-text="no blocked activity" :p="$logs">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;">
-                <th style="width:100px;">type</th>
-                <th style="width:150px;">ip</th>
+            <tr class="border-b! border-[#ccc]!">
+                <th class="w-[100px]!">type</th>
+                <th class="w-[150px]!">ip</th>
                 <th>payload</th>
-                <th style="width:160px;">date</th>
-                <th style="width:160px;">action</th>
+                <th class="w-[160px]!">date</th>
+                <th class="w-[160px]!">action</th>
             </tr>
         </x-slot:thead>
 
         <x-slot:tbody>
             @forelse($logs as $log)
                 <tr
-                    style="border-bottom:1px solid #eee;
-                    @if (in_array($log->ip, $bannedIps)) background:#fff3f3; @endif">
+                    class="border-b! border-[#eee]! @if (in_array($log->ip, $bannedIps)) bg-[#fff3f3]! @endif">
 
                     <td>{{ $log->type }}</td>
 
@@ -56,20 +55,15 @@
                     </td>
 
                     <td
-                        style="
-                            max-width:320px;
-                            white-space:nowrap;
-                            overflow:hidden;
-                            text-overflow:ellipsis;">
+                        class="max-w-[320px]! whitespace-nowrap! overflow-hidden! text-ellipsis!">
                         {{ \Illuminate\Support\Str::limit($log->payload, 80) }}
                     </td>
 
                     <td>{{ $log->created_at }}</td>
 
-                    <td style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <td class="flex! gap-1.5! flex-wrap!">
 
-                        <button type="button" onclick="togglePayload({{ $log->id }})" class="fc-btn"
-                            style="background:#6c757d;">
+                        <button type="button" onclick="togglePayload({{ $log->id }})" class="border! border-[#7d7d7d]! bg-[#6c757d]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
                             view
                         </button>
 
@@ -78,7 +72,7 @@
                                 onsubmit="return confirmUnban('{{ $log->ip }}')">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="fc-btn" style="background:#dc3545;">
+                                <button class="border! border-[#7d7d7d]! bg-[#dc3545]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
                                     unban
                                 </button>
                             </form>
@@ -87,7 +81,7 @@
                                 onsubmit="return confirmBan('{{ $log->ip }}')">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="fc-btn">
+                                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">
                                     ban
                                 </button>
                             </form>
@@ -96,8 +90,8 @@
                     </td>
                 </tr>
 
-                <tr id="payload-{{ $log->id }}" style="display:none; background:#f8f9fa;">
-                    <td colspan="5" style="padding:15px;">
+                <tr id="payload-{{ $log->id }}" style="display:none;" class="bg-[#f8f9fa]!">
+                    <td colspan="5" class="p-[15px]!">
 
                         <strong>full payload:</strong>
 
@@ -113,14 +107,14 @@
                         @endphp
 
                         <div
-                            style="background:#1e1e1e;border-radius:6px;border:1px solid #333;margin-top:10px;position:relative;">
+                            class="bg-[#1e1e1e]! rounded-md! border! border-[#333]! mt-2.5! relative!">
                             <button type="button" onclick="copyPayload({{ $log->id }})"
-                                style="position:absolute;top:8px;right:8px;background:#444;color:#fff;border:none;padding:4px 8px;font-size:12px;cursor:pointer;border-radius:4px;">
+                                class="absolute! top-2! right-2! bg-[#444]! text-white! border-none! py-1! px-2! text-xs! cursor-pointer! rounded!">
                                 copy
                             </button>
 
                             <pre id="payload-content-{{ $log->id }}"
-                                style="margin:0;padding:18px;color:#d4d4d4;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;overflow:auto;max-height:400px;">{{ $payloadFormatted }}</pre>
+                                class="m-0! p-[18px]! text-[#d4d4d4]! text-[13px]! leading-[1.5]! whitespace-pre-wrap! break-words! overflow-auto! max-h-[400px]!">{{ $payloadFormatted }}</pre>
                         </div>
 
 
@@ -129,7 +123,7 @@
 
             @empty
                 <tr>
-                    <td colspan="5" style="text-align:center;">
+                    <td colspan="5" class="text-center!">
                         no blocked activity
                     </td>
                 </tr>

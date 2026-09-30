@@ -38,12 +38,11 @@
 
     <x-admin.filter-box title="filter pages" :action="route('admin.pages')" :reset="route('admin.pages')" :activeCount="$activeFilterCount">
 
-        <input class="fc-input" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}" style="max-width:90px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]!" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}">
 
-        <input class="fc-input" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}"
-            style="max-width:220px;">
+        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}">
 
-        <select class="fc-select" name="locale" style="max-width:160px;">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') === $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -57,22 +56,22 @@
     <x-admin.list-table-box emptyText="no pages found" :p="$pages">
 
         <x-slot:thead>
-            <tr style="border-bottom:1px solid #ccc;">
+            <tr class="border-b! border-[#ccc]!">
                 <th width="70">ID</th>
                 <th width="26" data-hide-mobile></th>
                 <th width="26">P</th>
                 <th width="26" data-hide-mobile></th>
-                <th style="text-align: start">Title</th>
+                <th class="text-start!">Title</th>
                 <th data-hide-mobile>Slug</th>
-                <th width="90" data-hide-mobile>Locale</th>
+                <th class="w-[90px]!" data-hide-mobile>Locale</th>
             </tr>
         </x-slot:thead>
 
         <x-slot:tbody>
             @foreach ($pages as $p)
-                <tr style="border-bottom:1px solid #eee;">
+                <tr class="border-b! border-[#eee]!">
 
-                    <td style="text-align: center">
+                    <td class="text-center!">
                         <a
                             href="{{ route('admin.pages', array_merge(request()->query(), ['select' => $p->page_id, 'locale' => $p->locale])) }}">
                             {{ $p->page_id }}
@@ -83,7 +82,7 @@
                         <input type="checkbox" class="bulk-checkbox" value="{{ $p->page_id }}">
                     </td>
 
-                    <td style="text-align:center;">
+                    <td class="text-center!">
                         @if ($p->published)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
@@ -91,15 +90,15 @@
                         @endif
                     </td>
 
-                    <td data-hide-mobile style="text-align:center;">
+                    <td data-hide-mobile class="text-center!">
                         <a href="{{ $p->client_url }}" target="_blank" title="Open page">
                             {!! $icoLink !!}
                         </a>
                     </td>
 
                     <td>{{ $p->title }}</td>
-                    <td data-hide-mobile style="text-align: center">{{ $p->slug }}</td>
-                    <td data-hide-mobile style="text-align: center">{{ $p->locale }}</td>
+                    <td data-hide-mobile class="text-center!">{{ $p->slug }}</td>
+                    <td data-hide-mobile class="text-center!">{{ $p->locale }}</td>
 
                 </tr>
             @endforeach
@@ -107,28 +106,28 @@
 
 
         <x-slot:footer>
-            <div class="fc-toolbar-actions">
-                <div class="fc-action-group">
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="publish" title="Publish">
+            <div class="flex! gap-2! items-center! flex-wrap!">
+                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
+                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
-                        <span class="fc-btn-label">Publish</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Publish</span>
                     </button>
 
-                    <button type="button" class="fc-icon-btn bulk-action" data-action="unpublish" title="Unpublish">
+                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
-                        <span class="fc-btn-label">Unpublish</span>
+                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Unpublish</span>
                     </button>
                 </div>
 
-                <button type="button" class="fc-icon-btn bulk-action" data-action="delete" title="Delete">
+                <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Delete</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
                 </button>
 
                 <a href="{{ route('admin.pages', request()->except('select')) }}"
-                    title="Clear selection" class="fc-icon-btn fc-clear-btn">
+                    title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
                     {!! $icoX !!}
-                    <span class="fc-btn-label">Clear</span>
+                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
@@ -145,33 +144,33 @@
                 <input type="hidden" name="page_id" value="{{ $selectedPage->page_id }}">
                 <input type="hidden" name="locale" value="{{ $selectedPage->locale }}">
 
-                <div class="fc-row">
-                    <label>published</label>
+                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-xs! md:text-sm!">published</label>
                     <input type="checkbox" name="published" value="1" {{ $selectedPage->published ? 'checked' : '' }}>
                 </div>
 
-                <div class="fc-row">
-                    <label>title</label>
-                    <input class="fc-input" name="title" value="{{ $selectedPage->title }}">
+                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-xs! md:text-sm!">title</label>
+                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="title" value="{{ $selectedPage->title }}">
                 </div>
 
-                <div class="fc-row">
-                    <label>slug</label>
-                    <input class="fc-input" name="slug" value="{{ $selectedPage->slug }}">
+                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-xs! md:text-sm!">slug</label>
+                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="slug" value="{{ $selectedPage->slug }}">
                 </div>
 
-                <div class="fc-row">
-                    <label>content</label>
-                    <textarea id="content" name="content" class="fc-textarea fc-editor" rows="12">{{ $selectedPage->content }}</textarea>
+                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                    <label class="font-bold! text-xs! md:text-sm!">content</label>
+                    <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" rows="12">{{ $selectedPage->content }}</textarea>
                 </div>
 
-                <div style="display:flex; justify-content:flex-end;">
-                    <button class="fc-btn">save</button>
+                <div class="flex! justify-end!">
+                    <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">save</button>
                 </div>
 
             </form>
         @else
-            <div style="color:#777;">select a page to edit</div>
+            <div class="text-[#777]!">select a page to edit</div>
         @endif
 
     </x-admin.detail-panel>

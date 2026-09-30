@@ -4,97 +4,84 @@
 
 @section('content')
 
-    <h1>languages</h1>
+    <h1 class="m-0! mb-2! text-lg!">languages</h1>
 
-    <div class="fc-tab">add language</div>
-    <div class="fc-box">
+    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">add language</div>
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
         <form method="post" action="{{ route('admin.languages.store') }}">
             @csrf
 
-            <div class="fc-row">
-                <label style="width:120px;">code</label>
-                <input class="fc-input" name="code" placeholder="e.g. es" required>
+            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-sm! w-[120px]!">code</label>
+                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="code" placeholder="e.g. es" required>
             </div>
 
-            <div class="fc-row">
-                <label style="width:120px;">name</label>
-                <input class="fc-input" name="name" placeholder="Spanish" required>
+            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-sm! w-[120px]!">name</label>
+                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="name" placeholder="Spanish" required>
             </div>
 
-            {{-- <div class="fc-row">
-                <label>flag filename</label>
-                <input class="fc-input" name="flag" placeholder="en_US.png">
+            {{-- <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
+                <label class="font-bold! text-sm!">flag filename</label>
+                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="flag" placeholder="en_US.png">
             </div> --}}
 
-            <div style="text-align:right; margin-top:10px;">
-                <button class="fc-btn">create language</button>
+            <div class="text-right! mt-2.5!">
+                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">create language</button>
             </div>
         </form>
     </div>
 
-    <div class="fc-tab">existing languages</div>
-    <div class="fc-box">
+    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">existing languages</div>
+    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
 
         @forelse($languages as $lang)
             <div
-                style="
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            padding:15px 0;
-            border-bottom:1px solid #ddd;
-        ">
+                class="flex! justify-between! items-start! py-[15px]! border-b! border-[#ddd]!">
 
                 {{-- LEFT INFO --}}
-                <div style="min-width:200px;">
-                    <div style="font-size:16px; font-weight:bold;">
+                <div class="min-w-[200px]!">
+                    <div class="text-base! font-bold!">
                         {{ strtoupper($lang->code) }}: {{ $lang->name }}
 
                         @if ($lang->is_default)
                             <span
-                                style="
-                            background:#28a745;
-                            color:#fff;
-                            padding:2px 6px;
-                            border-radius:4px;
-                            font-size:12px;
-                            margin-left:6px;
-                        ">
+                                class="bg-[#28a745]! text-white! px-1.5! py-0.5! rounded! text-xs! ml-1.5!">
                                 default
                             </span>
                         @endif
                     </div>
 
-                    <div style="margin-top:5px; font-size:13px; color:#666;">
+                    <div class="mt-[5px]! text-[13px]! text-[#666]!">
                         status: {{ $lang->is_active ? 'active' : 'inactive' }}
                     </div>
                 </div>
 
-                <div style="flex:1; max-width:500px;">
+                <div class="flex-1! max-w-[500px]!">
 
                     <form method="post" action="{{ route('admin.languages.update', $lang) }}"
-                        style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+                        class="flex! gap-2.5! items-center! mb-1.5!">
                         @csrf
                         @method('PUT')
 
-                        <input class="fc-input" name="name" value="{{ $lang->name }}" style="max-width:180px;">
+                        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="name" value="{{ $lang->name }}">
 
-                        {{-- <input class="fc-input" name="flag" value="{{ $lang->flag }}" style="max-width:180px;"> --}}
+                        {{-- <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="flag" value="{{ $lang->flag }}"> --}}
 
-                        <label style="display:flex; align-items:center; gap:5px;">
+                        <label class="flex! items-center! gap-[5px]!">
                             <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
                             active
                         </label>
 
-                        <button class="fc-btn">save</button>
+                        <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">save</button>
                     </form>
 
                     @if (!$lang->is_default)
-                        <div style="display:flex; gap:8px;">
+                        <div class="flex! gap-2!">
 
                             <form method="post" action="{{ route('admin.languages.default', $lang) }}">
                                 @csrf
-                                <button class="fc-btn" type="submit">
+                                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!" type="submit">
                                     set default
                                 </button>
                             </form>
@@ -107,7 +94,7 @@
             </div>
 
         @empty
-            <div style="padding:20px; text-align:center; color:#777;">
+            <div class="p-5! text-center! text-[#777]!">
                 no languages created yet
             </div>
         @endforelse
