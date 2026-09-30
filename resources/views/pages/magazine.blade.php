@@ -4,11 +4,11 @@
 @section('body_class', 'magazine')
 
 @section('content')
-    <section class="breadcrumb-section">
+    <section class="bg-[#fbfbfb]! py-[30px]!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">Magazine</h2>
+                    <h2 class="text-xl! mb-[5px]!">Magazine</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -33,8 +33,8 @@
                         </div>
                     </div>
                     <div class="text-center py-4">
-                        <h3 class="mb-3" style="font-weight:600;">Coming Soon</h3>
-                        <p class="text-muted" style="font-size:16px;">
+                        <h3 class="mb-3 font-semibold!">Coming Soon</h3>
+                        <p class="text-muted text-base!">
                             The FreeCause magazine is under construction.<br>
                             Check back soon for articles, guides, and stories about activism and change.
                         </p>

@@ -7,8 +7,8 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-5">
-                    <div class="fc-auth-card shadow-sm">
-                        <h1 class="mb-4 text-center" style="font-size:1.5rem;">{{ __('auth.forgot_title') }}</h1>
+                    <div class="shadow-sm">
+                        <h1 class="mb-4 text-center text-2xl!">{{ __('auth.forgot_title') }}</h1>
 
                         @if (session('status'))
                             <div class="alert alert-success" role="status">{{ session('status') }}</div>
@@ -29,7 +29,7 @@
                             <button class="btn btn-danger w-100">{{ __('auth.send_reset') }}</button>
 
                             <div class="text-center mt-3">
-                                <a href="{{ lroute('login') }}" class="text-muted" style="font-size:14px;">{{ __('auth.back_login') }}</a>
+                                <a href="{{ lroute('login') }}" class="text-muted text-sm!">{{ __('auth.back_login') }}</a>
                             </div>
                         </form>
                     </div>

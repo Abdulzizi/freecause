@@ -10,56 +10,56 @@
             <div class="row g-4">
 
                 <div class="col-lg-4">
-                    <div class="fc-card p-4">
+                    <div class="bg-white! border! border-[#e9e9e9]! rounded-[3px]! shadow-[0_2px_8px_rgba(0,0,0,0.06)]! p-4">
 
-                        <h1 class="fc-h2 mb-3">{{ __('profile.my_data') }}</h1>
+                        <h1 class="text-[22px]! font-medium! mb-3">{{ __('profile.my_data') }}</h1>
 
-                        <div class="fc-kv">
-                            <div class="fc-k">{{ __('auth.email') }}:</div>
-                            <div class="fc-v">{{ $u->email }}</div>
+                        <div class="flex! gap-2.5! my-2.5! text-sm!">
+                            <div class="w-[140px]! text-[#333]!">{{ __('auth.email') }}:</div>
+                            <div class="text-[#222]!">{{ $u->email }}</div>
                         </div>
 
-                        <div class="fc-kv">
-                            <div class="fc-k">{{ __('profile.reg_date') }}</div>
-                            <div class="fc-v">
+                        <div class="flex! gap-2.5! my-2.5! text-sm!">
+                            <div class="w-[140px]! text-[#333]!">{{ __('profile.reg_date') }}</div>
+                            <div class="text-[#222]!">
                                 {{ optional($u->created_at)->format('d M y H:i') }}
                             </div>
                         </div>
 
                         <div class="mt-3">
-                            <a class="fc-link-red" href="{{ lroute('account.petitions') }}">{{ __('profile.my_petitions') }}</a>
+                            <a class="text-[#b10000]! no-underline! hover:underline!" href="{{ lroute('account.petitions') }}">{{ __('profile.my_petitions') }}</a>
                         </div>
 
-                        <div class="fc-dots my-3"></div>
+                        <div class="border-b! border-dotted! border-[#bbb]! my-3"></div>
 
                         <div class="mt-4">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="fc-social fb">Google</div>
+                                <div class="w-[130px]! h-10! rounded-md! border! border-[#ddd]! flex! items-center! justify-center! font-bold! bg-white! text-lg! text-[#1b4f9c]!">Google</div>
 
                                 @if ($u->google_id)
                                     <form method="POST" action="{{ lroute('account.unlink.google') }}">
                                         @csrf
-                                        <button type="submit" class="fc-toggle on">
-                                            <span class="knob"></span>
-                                            <span class="label">ON</span>
+                                        <button type="submit" class="relative! inline-block! w-[110px]! h-[34px]! rounded-md! border! border-[#cfcfcf]! bg-[#2d6cdf]! overflow-hidden!">
+                                            <span class="absolute! top-[1px]! left-[68px]! w-[40px]! h-[30px]! rounded-md! bg-white! shadow-md!"></span>
+                                            <span class="absolute! inset-0! flex! items-center! justify-center! font-bold! text-white!">ON</span>
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ lroute('oauth.google') }}" class="fc-toggle">
-                                        <span class="knob"></span>
-                                        <span class="label">OFF</span>
+                                    <a href="{{ lroute('oauth.google') }}" class="relative! inline-block! w-[110px]! h-[34px]! rounded-md! border! border-[#cfcfcf]! bg-[#eee]! overflow-hidden! no-underline!">
+                                        <span class="absolute! top-[1px]! left-[1px]! w-[40px]! h-[30px]! rounded-md! bg-white! shadow-md!"></span>
+                                        <span class="absolute! inset-0! flex! items-center! justify-center! font-bold! text-[#555]!">OFF</span>
                                     </a>
                                 @endif
                             </div>
 
-                            <div class="mt-3 fc-small text-muted">
+                            <div class="mt-3 text-sm! text-muted">
                                 {{ $u->display_name }} ( <strong>{{ $u->email }}</strong> )
                             </div>
 
-                            <div class="fc-dots my-3"></div>
+                            <div class="border-b! border-dotted! border-[#bbb]! my-3"></div>
                         </div>
 
-                        <h2 class="fc-h3 mb-2">{{ __('profile.account_deletion') }}</h2>
+                        <h2 class="text-[22px]! font-medium! mt-2! mb-2">{{ __('profile.account_deletion') }}</h2>
 
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
@@ -69,12 +69,12 @@
                                 <input type="password" name="password" class="form-control" required>
                             </div>
 
-                            <label class="d-flex align-items-center gap-2 mb-3" style="font-size:14px;">
+                            <label class="d-flex align-items-center gap-2 mb-3 text-sm!">
                                 <input type="checkbox" name="confirm_delete" value="1" required>
                                 <span>{{ __('profile.confirm_delete_lbl') }}</span>
                             </label>
 
-                            <button type="submit" class="btn fc-btn-danger px-4"
+                            <button type="submit" class="btn bg-gradient-to-b! from-[#b30000]! to-[#7d0000]! text-white! border-0! rounded-sm! font-semibold! px-4"
                                 onclick="this.disabled=true;this.form.submit();">
                                 {{ __('profile.delete') }} <span class="ms-3">»</span>
                             </button>
@@ -84,11 +84,11 @@
                 </div>
 
                 <div class="col-lg-8">
-                    <div class="fc-card p-4">
-                        <h3 class="fc-title text-center mb-4">{{ __('profile.heading') }}</h3>
+                    <div class="bg-white! border! border-[#e9e9e9]! rounded-[3px]! shadow-[0_2px_8px_rgba(0,0,0,0.06)]! p-4">
+                        <h3 class="text-[28px]! font-medium! text-center mb-4">{{ __('profile.heading') }}</h3>
 
                         @if ($errors->any())
-                            <div class="fc-error mb-3">
+                            <div class="mb-3">
                                 <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
@@ -98,7 +98,7 @@
                         @endif
 
                         @if (session('success'))
-                            <div class="fc-success mb-3">
+                            <div class="mb-3">
                                 {{ session('success') }}
                             </div>
                         @endif
@@ -109,7 +109,7 @@
                             <div class="row mb-3 align-items-center">
                                 <label class="col-sm-3 col-form-label">{{ __('profile.first_name') }}</label>
                                 <div class="col-sm-9">
-                                    <input class="form-control fc-input" name="first_name"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="first_name"
                                         value="{{ old('first_name', $u->first_name) }}">
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
                             <div class="row mb-3 align-items-center">
                                 <label class="col-sm-3 col-form-label">{{ __('profile.last_name') }}</label>
                                 <div class="col-sm-9">
-                                    <input class="form-control fc-input" name="last_name"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="last_name"
                                         value="{{ old('last_name', $u->last_name) }}">
                                 </div>
                             </div>
@@ -139,7 +139,7 @@
                             <div class="row mb-3 align-items-center">
                                 <label class="col-sm-3 col-form-label">{{ __('profile.id_nick') }}</label>
                                 <div class="col-sm-9">
-                                    <input class="form-control fc-input" name="nickname"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="nickname"
                                         value="{{ old('nickname', $u->nickname) }}">
                                 </div>
                             </div>
@@ -147,7 +147,7 @@
                             <div class="row mb-4 align-items-center">
                                 <label class="col-sm-3 col-form-label">{{ __('form.city') }}</label>
                                 <div class="col-sm-9">
-                                    <input class="form-control fc-input" name="city"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="city"
                                         value="{{ old('city', $u->city) }}">
                                 </div>
                             </div>
@@ -158,14 +158,14 @@
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input class="form-control fc-input" name="new_email" placeholder="{{ __('profile.new_email') }}"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="new_email" placeholder="{{ __('profile.new_email') }}"
                                         value="{{ old('new_email') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input class="form-control fc-input" name="new_email_confirmation"
+                                    <input class="form-control rounded-sm! h-[38px]!" name="new_email_confirmation"
                                         placeholder="{{ __('profile.confirm_email') }}" value="{{ old('new_email_confirmation') }}">
                                 </div>
                             </div>
@@ -176,27 +176,27 @@
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input type="password" class="form-control fc-input" name="current_password"
+                                    <input type="password" class="form-control rounded-sm! h-[38px]!" name="current_password"
                                         placeholder="{{ __('profile.current_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input type="password" class="form-control fc-input" name="new_password"
+                                    <input type="password" class="form-control rounded-sm! h-[38px]!" name="new_password"
                                         placeholder="{{ __('profile.new_password') }}">
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-sm-9 offset-sm-3">
-                                    <input type="password" class="form-control fc-input" name="new_password_confirmation"
+                                    <input type="password" class="form-control rounded-sm! h-[38px]!" name="new_password_confirmation"
                                         placeholder="{{ __('profile.confirm_new_password') }}">
                                 </div>
                             </div>
 
                             <div class="text-center">
-                                <button class="btn fc-btn-edit px-5" onclick="this.disabled=true;this.form.submit();">
+                                <button class="btn bg-gradient-to-b! from-[#b30000]! to-[#7d0000]! text-white! border-0! rounded-sm! font-semibold! min-w-[160px]! px-5" onclick="this.disabled=true;this.form.submit();">
                                     {{ __('profile.save_changes') }} <span class="ms-3">»</span>
                                 </button>
                             </div>

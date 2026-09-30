@@ -11,20 +11,20 @@
         <div class="container">
 
             <div class="mb-4">
-                <h1 class="mb-2" style="font-size:24px; font-weight:600;">Server Error</h1>
-                <div style="font-size:14px;">
-                    <a class="red" href="{{ url('/'.$locale) }}">Home</a>
+                <h1 class="mb-2 text-2xl! font-semibold!">Server Error</h1>
+                <div class="text-sm!">
+                    <a class="text-brand!" href="{{ url('/'.$locale) }}">Home</a>
                     <span class="text-muted"> / </span>
                     <span class="text-muted">500</span>
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-3 p-4 mb-5" style="border:1px solid #eee;">
-                <div class="mb-2 headings">500</div>
-                <p style="font-size:15px; color:#555; margin-bottom:6px;">
+            <div class="bg-white shadow-sm rounded-3 p-4 mb-5 border! border-[#eee]!">
+                <div class="mb-2 relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">500</div>
+                <p class="text-[15px]! text-[#555]! mb-1.5!">
                     Something went wrong on our end.
                 </p>
-                <p style="font-size:15px; color:#555; margin-bottom:20px;">
+                <p class="text-[15px]! text-[#555]! mb-5!">
                     We are working to fix the issue. Please try again in a few moments.
                 </p>
                 <a class="btn btn-danger" href="{{ url('/'.$locale) }}">Back to Home</a>

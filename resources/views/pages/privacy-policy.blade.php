@@ -22,13 +22,13 @@
         </div>
     </section> --}}
 
-    <section class="petitions-list py-5">
+    <section class="py-16!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-4">
+                            <div class="mb-6!">
                                 {{-- <h4 class="headings">Privacy Policy</h4>
 
                                 <div class="privacy-inner"> --}}

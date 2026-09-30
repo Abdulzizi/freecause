@@ -22,18 +22,18 @@
         </div>
     </section> --}}
 
-    <section class="petitions-list py-5">
+    <section class="py-16!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-4">
+                            <div class="mb-6!">
                                 {{-- <h4 class="headings">Ethical code</h4>
 
                                 <div class="privacy-inner"> --}}
 
-                                    <h2 class="title">Our code of ethics</h2>
+                                    <h2>Our code of ethics</h2>
 
                                     <p>
                                         The operations of <em>FreeCause</em> are carried out in alignment with the values
@@ -110,7 +110,7 @@
                                         nonviolent advocacy efforts.
                                     </p>
 
-                                    <h2 class="title">Ethical Code</h2>
+                                    <h2>Ethical Code</h2>
 
                                     <p>
                                         <em>FreeCause</em> operates in the field of online petition collection. Our business
@@ -126,9 +126,9 @@
                                         those in leadership roles.
                                     </p>
 
-                                    <h2 class="title">Principles:</h2>
+                                    <h2>Principles:</h2>
 
-                                    <h2 class="title">Trust</h2>
+                                    <h2>Trust</h2>
                                     <p>
                                         <em>FreeCause</em>'s success is rooted in mutual trust among all stakeholders who
                                         contribute daily to the
@@ -143,7 +143,7 @@
                                         and courteous interactions both within the company and externally.
                                     </p>
 
-                                    <h2 class="title">Human Resources</h2>
+                                    <h2>Human Resources</h2>
                                     <p>
                                         Valuing our human resources, respecting their independence, and encouraging their
                                         participation in
@@ -152,7 +152,7 @@
                                         enhance professional skills and support employees in their career growth.
                                     </p>
 
-                                    <h2 class="title">Honesty</h2>
+                                    <h2>Honesty</h2>
                                     <p>
                                         <em>FreeCause</em> ensures that all members, employees, and partners understand the
                                         ethical implications of
@@ -165,7 +165,7 @@
                                         improperly from company dealings.
                                     </p>
 
-                                    <h2 class="title">Transparency</h2>
+                                    <h2>Transparency</h2>
                                     <p>
                                         <em>FreeCause</em> is committed to maintaining a clear, accurate, and comprehensive
                                         portrayal of its business
@@ -174,7 +174,7 @@
                                         social mission.
                                     </p>
 
-                                    <h2 class="title">Privacy</h2>
+                                    <h2>Privacy</h2>
                                     <p>
                                         Due to the nature of our operations, <em>FreeCause</em> ensures that all employees
                                         and partners protect users'
@@ -189,7 +189,7 @@
                                         standards.
                                     </p>
 
-                                    <h2 class="title">Fairness</h2>
+                                    <h2>Fairness</h2>
                                     <p>
                                         <em>FreeCause</em> requires all members, employees, and partners to act with
                                         fairness and integrity, avoiding
@@ -199,7 +199,7 @@
                                         characteristic.
                                     </p>
 
-                                    <h2 class="title">Health and Safety in the Workplace</h2>
+                                    <h2>Health and Safety in the Workplace</h2>
                                     <p>
                                         <em>FreeCause</em> ensures that all employees and partners comply with safety
                                         measures in line with

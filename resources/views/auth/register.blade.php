@@ -8,28 +8,28 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6 col-md-8">
 
-                    <div class="card shadow-lg border-0" style="border-radius:12px;">
+                    <div class="card shadow-lg border-0 rounded-xl!">
                         <div class="card-body p-4 p-md-5">
 
-                            <h1 class="text-center mb-4 fc-title" style="font-size:1.75rem;">{{ __('auth.create_account') }}</h1>
+                            <h1 class="text-center mb-4 text-[28px]! font-medium!">{{ __('auth.create_account') }}</h1>
 
                             <div class="text-center mb-4">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}"
-                                    class="btn fc-google-btn fc-oauth-btn">
+                                    class="btn inline-flex! items-center! gap-2.5! px-4! py-2.5! text-sm! font-medium! rounded-md! bg-white! border! border-[#ddd]! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]!">
                                     <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
                             </div>
 
                             <div class="d-flex align-items-center gap-3 mb-4">
-                                <div style="height:1px;background:#ddd;flex:1;"></div>
+                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
                                 <div class="fw-semibold">{{ __('auth.or') }}</div>
-                                <div style="height:1px;background:#ddd;flex:1;"></div>
+                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
                             </div>
 
                             <div class="mb-3">
                                 <div class="fw-semibold">{{ __('auth.register') }}</div>
-                                <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
+                                <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
                             </div>
 
                             @if ($errors->any())
@@ -80,19 +80,19 @@
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms"
                                         aria-labelledby="agree_terms_label" {{ old('agree_terms') ? 'checked' : '' }}>
-                                    <a id="agree_terms_label" class="form-check-label red" href="{{ lroute('page.show', ['slug' => 'terms-of-service']) }}"
+                                    <a id="agree_terms_label" class="form-check-label text-brand!" href="{{ lroute('page.show', ['slug' => 'terms-of-service']) }}"
                                         target="_blank" rel="noopener">{{ __('auth.accept_terms') }}</a>
                                 </div>
 
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-danger px-4 py-2" style="border-radius:8px; min-width:160px;">
+                                    <button type="submit" class="btn btn-danger px-4 py-2 rounded-lg! min-w-[160px]!">
                                         {{ __('auth.submit') }}
                                     </button>
                                 </div>
 
                                 <div class="text-center mt-3">
                                     <span class="text-muted">{{ __('auth.already_member') }}</span>
-                                    <a href="{{ lroute('login') }}" class="red">{{ __('auth.sign_in_now') }}</a>
+                                    <a href="{{ lroute('login') }}" class="text-brand!">{{ __('auth.sign_in_now') }}</a>
                                 </div>
                             </form>
 

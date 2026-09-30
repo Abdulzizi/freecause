@@ -9,9 +9,9 @@
     @section('title', 'Forbidden')
 
     @section('content')
-        <div class="fc-box" style="padding:40px; text-align:center; max-width:600px; margin:60px auto;">
-            <h1 style="font-size:28px; margin-bottom:15px;">403 - Access Forbidden</h1>
-            <p style="margin-bottom:20px; color:#666;">
+        <div class="fc-box p-10! text-center! max-w-[600px]! my-[60px]! mx-auto!">
+            <h1 class="text-[28px]! mb-4!">403 - Access Forbidden</h1>
+            <p class="mb-5! text-[#666]!">
                 You do not have permission to access this section.
             </p>
             <a href="{{ route('admin.options.global') }}" class="fc-btn">
@@ -29,20 +29,20 @@
             <div class="container">
 
                 <div class="mb-4">
-                    <h1 class="mb-2" style="font-size:24px; font-weight:600;">Access Forbidden</h1>
-                    <div style="font-size:14px;">
-                        <a class="red" href="{{ url('/'.$locale) }}">Home</a>
+                    <h1 class="mb-2 text-2xl! font-semibold!">Access Forbidden</h1>
+                    <div class="text-sm!">
+                        <a class="text-brand!" href="{{ url('/'.$locale) }}">Home</a>
                         <span class="text-muted"> / </span>
                         <span class="text-muted">403</span>
                     </div>
                 </div>
 
-                <div class="bg-white shadow-sm rounded-3 p-4 mb-5" style="border:1px solid #eee;">
-                    <div class="mb-2 headings">403</div>
-                    <p style="font-size:15px; color:#555; margin-bottom:6px;">
+                <div class="bg-white shadow-sm rounded-3 p-4 mb-5 border! border-[#eee]!">
+                    <div class="mb-2 relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">403</div>
+                    <p class="text-[15px]! text-[#555]! mb-1.5!">
                         You do not have permission to access this page.
                     </p>
-                    <p style="font-size:15px; color:#555; margin-bottom:20px;">
+                    <p class="text-[15px]! text-[#555]! mb-5!">
                         If you believe this is a mistake, please contact support.
                     </p>
                     <a class="btn btn-danger" href="{{ url('/'.$locale) }}">Back to Home</a>

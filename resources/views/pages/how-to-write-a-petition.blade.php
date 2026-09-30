@@ -4,11 +4,11 @@
 @section('body_class', 'how-to-write-a-petition')
 
 @section('content')
-    <section class="breadcrumb-section">
+    <section class="bg-[#fbfbfb]! py-[30px]!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">How to write a petition</h2>
+                    <h2 class="text-xl! mb-[5px]!">How to write a petition</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -22,17 +22,17 @@
         </div>
     </section>
 
-    <section class="petitions-list py-5">
+    <section class="py-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h1 class="headings">How to write a petition</h1>
+                                <h1 class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! mt-[30px]! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">How to write a petition</h1>
 
-                                <div class="privacy-inner">
-                                    <h2>Introduction</h2>
+                                <div>
+                                    <h2 class="text-lg! mt-[30px]! font-semibold!">Introduction</h2>
 
                                     <p>Each of us, those who for one reason or another, feel compelled to protest against something and want to act. Some want their politicians to resign from their role, while others want to express their support for a politician, and some want that their favorite TV program would be again on air and still others want to see their favorite band's music in their hometown.</p>
 
@@ -43,11 +43,11 @@
 
                                     <p>Many activists have won their battle with <em>Online Petition</em>, that is, using our platform, which is simple and powerful. It's hard to say exactly what makes that a petition is signed by many people and reach the result. In some cases it is just luck. In other it's time. However, it is possible to draw some general principles and guidelines for writing a good petition.</p>
 
-                                    <h2>Guidelines for writing a good petition</h2>
+                                    <h2 class="text-lg! mt-[30px]! font-semibold!">Guidelines for writing a good petition</h2>
 
                                     <p>Here are some of the best tips from the team of <em>Online Petition</em>:</p>
 
-                                    <ul class="text-list">
+                                    <ul class="pl-5! mb-[15px]!">
                                         <li>
                                             <p>Write your petition clearly and concisely. Many of the potential of your petition's signatories often do not have much time at their disposal. It is important that in the introductory part of the petition will be shown in a concise manner the main objective. In the first paragraph you must specify the objectives that the petition aims to achieve.</p>
                                         </li>

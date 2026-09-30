@@ -4,11 +4,11 @@
 @section('body_class', 'contacts')
 
 @section('content')
-    <section class="breadcrumb-section">
+    <section class="bg-[#fbfbfb]! py-[30px]!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="page-titles">{{ __('contacts.title') }}</h2>
+                    <h2 class="text-xl! mb-[5px]!">{{ __('contacts.title') }}</h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0 p-0">
                             <li class="breadcrumb-item">
@@ -22,14 +22,14 @@
         </div>
     </section>
 
-    <section class="petitions-list py-5">
+    <section class="py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-5">
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h4 class="headings">{{ __('contacts.title') }}</h4>
+                                <h4 class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">{{ __('contacts.title') }}</h4>
 
                                 @if ($errors->any())
                                     <div class="alert alert-danger" role="alert">

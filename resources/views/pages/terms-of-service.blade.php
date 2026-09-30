@@ -21,7 +21,7 @@
         </div>
     </section> --}}
 
-    <section class="petitions-list py-5">
+    <section class="py-16!">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-body">
 
-                            <div class="mb-4">
+                            <div class="mb-6!">
                                 {{-- <h4 class="headings">Terms of Service</h4>
 
                                 <div class="privacy-inner"> --}}
@@ -206,7 +206,7 @@
                                         forward a closed petition to another petition site either by way of URL forwarding
                                         or by notation (text direction).</p>
 
-                                    <div style="padding-left:50px;">
+                                    <div class="pl-[50px]!">
                                         <p>(b) Members acknowledge that the signature list URL can be made available by
                                             them and sent (emailed) to the petition target for viewing of the signature
                                             list at any time and on completition of the petition. Members acknowledge

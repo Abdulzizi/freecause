@@ -8,39 +8,39 @@
         <div class="container">
 
             <div class="mb-4">
-                <h1 class="mb-2" style="font-size:24px; font-weight:600;">
+                <h1 class="mb-2 text-2xl! font-semibold!">
                     {{ $user->display_name }}
                 </h1>
-                <div style="font-size:14px;">
-                    <a class="red" href="/{{ app()->getLocale() }}">Home</a>
+                <div class="text-sm!">
+                    <a class="text-brand!" href="/{{ app()->getLocale() }}">Home</a>
                     <span class="text-muted"> / </span>
                     <span class="text-muted">{{ $user->display_name }}</span>
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-3 p-4" style="border:1px solid #eee;">
+            <div class="bg-white shadow-sm rounded-3 p-4 border! border-[#eee]!">
 
-                <div class="mb-4 headings" style="font-weight:700;">{{ $user->display_name }}</div>
+                <div class="mb-4 relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0! font-bold!">{{ $user->display_name }}</div>
 
                 <div class="row g-4">
 
                     <div class="col-md-4">
-                        <table style="width:100%; font-size:14px; border-collapse:collapse;">
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:10px 0; color:#555;">Registration date :</td>
-                                <td style="padding:10px 0; text-align:right; font-weight:500;">
+                        <table class="w-full! text-sm! border-collapse!">
+                            <tr class="border-b! border-[#eee]!">
+                                <td class="py-2.5! text-[#555]!">Registration date :</td>
+                                <td class="py-2.5! text-right! font-medium!">
                                     {{ optional($user->created_at)->format('n/j/y H:i') }}
                                 </td>
                             </tr>
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:10px 0; color:#555;">Petitions :</td>
-                                <td style="padding:10px 0; text-align:right; font-weight:500;">
+                            <tr class="border-b! border-[#eee]!">
+                                <td class="py-2.5! text-[#555]!">Petitions :</td>
+                                <td class="py-2.5! text-right! font-medium!">
                                     {{ $petitionCount }}
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding:10px 0; color:#555;">Signatures :</td>
-                                <td style="padding:10px 0; text-align:right; font-weight:500;">
+                                <td class="py-2.5! text-[#555]!">Signatures :</td>
+                                <td class="py-2.5! text-right! font-medium!">
                                     {{ $signatureCount }}
                                 </td>
                             </tr>
@@ -50,34 +50,34 @@
                     <div class="col-md-8">
 
                         <div class="mb-4">
-                            <h2 style="font-size:16px; font-weight:700; margin-bottom:12px;">
+                            <h2 class="text-base! font-bold! mb-3!">
                                 Recent petitions of {{ $user->display_name }}
                             </h2>
 
                             @forelse ($recentPetitions as $p)
-                                <div style="padding:6px 0; border-bottom:1px solid #f2f2f2; font-size:14px;">
-                                    <a class="red" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
+                                <div class="py-1.5! border-b! border-[#f2f2f2]! text-sm!">
+                                    <a class="text-brand!" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
                                         {{ $p->title }}
                                     </a>
                                 </div>
                             @empty
-                                <div style="font-size:13px; color:#999;">No petitions yet.</div>
+                                <div class="text-[13px]! text-[#999]!">No petitions yet.</div>
                             @endforelse
                         </div>
 
                         <div>
-                            <h2 style="font-size:16px; font-weight:700; margin-bottom:12px;">
+                            <h2 class="text-base! font-bold! mb-3!">
                                 Recent signatures of {{ $user->display_name }}
                             </h2>
 
                             @forelse ($recentSignatures as $s)
-                                <div style="padding:6px 0; border-bottom:1px solid #f2f2f2; font-size:14px;">
-                                    <a class="red" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
+                                <div class="py-1.5! border-b! border-[#f2f2f2]! text-sm!">
+                                    <a class="text-brand!" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
                                         {{ $s->title }}
                                     </a>
                                 </div>
                             @empty
-                                <div style="font-size:13px; color:#999;">No signatures yet.</div>
+                                <div class="text-[13px]! text-[#999]!">No signatures yet.</div>
                             @endforelse
                         </div>
 

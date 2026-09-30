@@ -8,28 +8,28 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6 col-md-8">
 
-                    <div class="card shadow-lg border-0" style="border-radius:12px;">
+                    <div class="card shadow-lg border-0 rounded-xl!">
                         <div class="card-body p-4 p-md-5">
 
-                            <h1 class="text-center mb-4 fc-title" style="font-size:1.75rem;">{{ __('auth.google_heading') }}</h1>
+                            <h1 class="text-center mb-4 text-[28px]! font-medium!">{{ __('auth.google_heading') }}</h1>
 
                             <div class="text-center mb-4">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}"
-                                    class="btn fc-google-btn fc-oauth-btn">
+                                    class="btn inline-flex! items-center! gap-2.5! px-4! py-2.5! text-sm! font-medium! rounded-md! bg-white! border! border-[#ddd]! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]!">
                                     <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
                             </div>
 
                             <div class="d-flex align-items-center gap-3 mb-4">
-                                <div style="height:1px;background:#ddd;flex:1;"></div>
+                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
                                 <div class="fw-semibold">{{ __('auth.or') }}</div>
-                                <div style="height:1px;background:#ddd;flex:1;"></div>
+                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
                             </div>
 
                             <div class="mb-3">
                                 <div class="fw-semibold">{{ __('auth.login') }}</div>
-                                <div style="height:2px;background:#d61f26;width:100%;margin-top:6px;"></div>
+                                <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
                             </div>
 
                             @if ($errors->any())
@@ -75,21 +75,21 @@
                                     <label class="form-check-label" for="remember">{{ __('auth.remember_me') }}</label>
                                 </div>
 
-                                <button type="submit" class="btn btn-danger w-100 py-2" style="border-radius:8px;">
+                                <button type="submit" class="btn btn-danger w-100 py-2 rounded-lg!">
                                     {{ __('auth.login') }}
                                 </button>
 
                                 <div class="text-center mt-3">
-                                    <a href="{{ lroute('password.request') }}" class="red">{{ __('auth.forgot_password') }}</a>
+                                    <a href="{{ lroute('password.request') }}" class="text-brand!">{{ __('auth.forgot_password') }}</a>
                                     <span class="text-muted px-2">|</span>
-                                    <a href="{{ lroute('verification.resend.form') }}" class="red">
+                                    <a href="{{ lroute('verification.resend.form') }}" class="text-brand!">
                                         {{ __('auth.resend_verification') }}
                                     </a>
                                 </div>
 
                                 <div class="text-center mt-3">
                                     <span class="text-muted">{{ __('auth.not_member') }}</span>
-                                    <a href="{{ lroute('register') }}" class="red">{{ __('auth.sign_up_now') }}</a>
+                                    <a href="{{ lroute('register') }}" class="text-brand!">{{ __('auth.sign_up_now') }}</a>
                                 </div>
                             </form>
 
