@@ -7,7 +7,6 @@ use App\Models\Language;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Legacy URL word compatibility layer.
@@ -26,7 +25,10 @@ class LegacyWordRedirect
      * Legacy words per route family. `canonical` entries are words that also
      * exist as new-app route words (matched for every locale when no locale
      * specific word matches) and generally pass through untouched unless their
-     * tail needs rewriting.
+     * tail needs rewriting. Families intentionally absent here (`feed`,
+     * `signatures`, `referers`, `invite-friends`, `tag`, `pic`,
+     * `download-signatures`) fall through to the router's 404 — deliberate
+     * per LEGACY_URL_MAPPING.md §5/§6/§7.
      */
     private const WORDS = [
         'list' => [
@@ -81,6 +83,9 @@ class LegacyWordRedirect
             'tr' => ['ara'],
         ],
         'faq' => [
+            // NOTE: no `canonical` — `/xx/faqs` is already the real route word and
+            // must pass through instead of looping.
+            'en' => ['faq'],
             'da' => ['faq'],
             'de' => ['haufig-gestellte-fragen'],
             'es' => ['preguntas-frecuentes'],
@@ -177,7 +182,9 @@ class LegacyWordRedirect
             'blog' => $this->redirectWithQuery($request, '/magazine/'),
             'topics', 'results' => $this->redirectWithQuery($request, "/$locale/petitions"),
             'recover' => $this->redirectWithQuery($request, "/$locale/forgot-password"),
-            'download' => $this->download($request, $locale, $tail),
+            // `/download-signatures/{id}` needs an id→slug resolution the plain
+            // redirect table can't provide: deferred, stays 404 (see report).
+            'download' => abort(404),
             default => abort(404),
         };
     }
@@ -268,31 +275,14 @@ class LegacyWordRedirect
     private function search(Request $request, string $locale, array $tail)
     {
         $query = $tail[0] ?? null;
-        $page = isset($tail[1]) ? $this->parsePage($tail[1]) : null;
+        $page = null;
+        if ($query !== null && isset($tail[1])) {
+            $page = ctype_digit($tail[1]) ? (int) $tail[1] : $this->parsePage($tail[1]);
+        }
 
         abort_if($query === null, 404);
 
         return $this->redirectWithQuery($request, "/$locale/petitions", $page, ['q' => $query]);
-    }
-
-    private function download(Request $request, string $locale, array $tail)
-    {
-        $id = (int) ($tail[0] ?? 0);
-        abort_if($id < 1, 404);
-        abort_unless(DB::table('petitions')->where('id', $id)->exists(), 404);
-
-        $slug = DB::table('petition_translations')
-            ->where('petition_id', $id)
-            ->where('locale', $locale)
-            ->value('slug')
-            ?? DB::table('petition_translations')
-                ->where('petition_id', $id)
-                ->where('locale', default_locale())
-                ->value('slug');
-
-        abort_if($slug === null, 404);
-
-        return $this->redirectWithQuery($request, "/$locale/petition/$slug/$id/download/txt");
     }
 
     /**
@@ -348,12 +338,12 @@ class LegacyWordRedirect
         $query = [];
         parse_str((string) $request->getQueryString(), $query);
 
-        if ($page !== null) {
-            $query['page'] = (string) $page;
-        }
-
         foreach ($extra as $key => $value) {
             $query[$key] = $value;
+        }
+
+        if ($page !== null) {
+            $query['page'] = (string) $page;
         }
 
         return redirect($target.($query !== [] ? '?'.http_build_query($query) : ''), 301);
