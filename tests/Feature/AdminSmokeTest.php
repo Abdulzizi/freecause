@@ -117,6 +117,61 @@ class AdminSmokeTest extends TestCase
         $this->assertGuest('admin');
     }
 
+    // ── Non-admin levels must not gain admin access ────────────────────
+    //
+    // Regression guard for the user-level access hole: is_system is the
+    // trusted-admin bypass in canAccessAdmin()/CheckPermission, so only the
+    // seeded `admin` level may carry it — `user`/`banned` must be denied.
+
+    /** @return array<string, array{string}> */
+    public static function nonAdminLevels(): array
+    {
+        return [
+            'user level' => ['user'],
+            'banned level' => ['banned'],
+        ];
+    }
+
+    public function test_only_admin_level_is_seeded_as_system(): void
+    {
+        $this->assertTrue((bool) UserLevel::where('name', 'admin')->value('is_system'));
+        $this->assertFalse((bool) UserLevel::where('name', 'user')->value('is_system'));
+        $this->assertFalse((bool) UserLevel::where('name', 'banned')->value('is_system'));
+    }
+
+    #[DataProvider('nonAdminLevels')]
+    public function test_admin_login_rejects_non_admin_level(string $level): void
+    {
+        $member = User::factory()->create([
+            'level_id' => UserLevel::where('name', $level)->value('id'),
+            'verified' => true,
+        ]);
+
+        $response = $this->from('/admin/login')->post('/admin/login', [
+            'login' => $member->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('/admin/login');
+        $response->assertSessionHasErrors('login');
+        $this->assertGuest('admin');
+    }
+
+    #[DataProvider('nonAdminLevels')]
+    public function test_non_admin_level_gets_403_on_admin_dashboard(string $level): void
+    {
+        $member = User::factory()->create([
+            'level_id' => UserLevel::where('name', $level)->value('id'),
+            'verified' => true,
+        ]);
+
+        // Even with a live admin-guard session (e.g. seeded before the fix),
+        // a non-system level must be refused, not shown the panel.
+        $this->actingAs($member, 'admin')
+            ->get('/admin/dashboard')
+            ->assertForbidden();
+    }
+
     public function test_unauthenticated_admin_request_redirects_to_login(): void
     {
         $this->get('/admin/dashboard')

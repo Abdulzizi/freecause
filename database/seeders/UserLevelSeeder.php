@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\UserLevel;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
 class UserLevelSeeder extends Seeder
@@ -11,9 +11,12 @@ class UserLevelSeeder extends Seeder
     public function run(): void
     {
         Schema::disableForeignKeyConstraints();
-        \App\Models\UserLevel::truncate();
+        UserLevel::truncate();
         Schema::enableForeignKeyConstraints();
 
+        // is_system = trusted admin level that bypasses permission checks
+        // (canAccessAdmin()/CheckPermission). ONLY `admin` may be system-level;
+        // `user`/`banned` must NOT grant admin access.
         UserLevel::insert([
             // [
             //     'name' => 'superadmin',
@@ -28,12 +31,12 @@ class UserLevelSeeder extends Seeder
             [
                 'name' => 'user',
                 'visible_name' => 'User',
-                'is_system' => true,
+                'is_system' => false,
             ],
             [
                 'name' => 'banned',
                 'visible_name' => 'Banned',
-                'is_system' => true,
+                'is_system' => false,
             ],
         ]);
     }
