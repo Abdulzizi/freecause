@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\CategoryTranslation;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Support\CacheVersion;
@@ -73,6 +74,45 @@ class CacheInvalidationTest extends TestCase
 
         $this->assertNotSame($homeBefore, CacheVersion::get('home'));
         $this->assertNotSame($listBefore, CacheVersion::get('list'));
+    }
+
+    public function test_category_translation_save_bumps_home_and_sitemap(): void
+    {
+        // create the parent category first so its own bump does not mask the translation bump
+        $category = Category::factory()->create();
+
+        $homeBefore = CacheVersion::get('home');
+        $sitemapBefore = CacheVersion::get('sitemap');
+
+        CategoryTranslation::create([
+            'category_id' => $category->id,
+            'locale' => 'en',
+            'name' => 'Original Category Name',
+            'slug' => 'original-category-name',
+        ]);
+
+        $this->assertNotSame($homeBefore, CacheVersion::get('home'));
+        $this->assertNotSame($sitemapBefore, CacheVersion::get('sitemap'));
+    }
+
+    public function test_category_translation_delete_bumps_home_and_sitemap(): void
+    {
+        $category = Category::factory()->create();
+
+        $translation = CategoryTranslation::create([
+            'category_id' => $category->id,
+            'locale' => 'en',
+            'name' => 'Original Category Name',
+            'slug' => 'original-category-name',
+        ]);
+
+        $homeBefore = CacheVersion::get('home');
+        $sitemapBefore = CacheVersion::get('sitemap');
+
+        $translation->delete();
+
+        $this->assertNotSame($homeBefore, CacheVersion::get('home'));
+        $this->assertNotSame($sitemapBefore, CacheVersion::get('sitemap'));
     }
 
     public function test_homepage_renders_new_petition_title_immediately_after_save(): void

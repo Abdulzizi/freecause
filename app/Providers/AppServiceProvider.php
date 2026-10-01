@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\CategoryTranslation;
 use App\Models\Language;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Observers\CategoryObserver;
+use App\Observers\CategoryTranslationObserver;
 use App\Observers\PetitionObserver;
 use App\Observers\PetitionTranslationObserver;
 use App\Support\Settings;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         Petition::observe(PetitionObserver::class);
         Category::observe(CategoryObserver::class);
         PetitionTranslation::observe(PetitionTranslationObserver::class);
+        CategoryTranslation::observe(CategoryTranslationObserver::class);
 
         try {
             if (! Schema::hasTable('settings')) {
