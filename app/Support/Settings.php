@@ -60,6 +60,14 @@ class Settings
             ['value' => $value]
         );
 
+        self::forget();
+    }
+
+    /**
+     * Invalidate the whole settings snapshot so the next read rebuilds it from the DB.
+     */
+    public static function forget(): void
+    {
         Cache::forget(self::CACHE_KEY);
     }
 }
