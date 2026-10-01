@@ -264,32 +264,12 @@
                 </div>
             </div>
 
-            @php
-                $categoryIcons = [
-                    1  => 'bi-hearts',
-                    2  => 'bi-briefcase',
-                    3  => 'bi-building',
-                    4  => 'bi-palette',
-                    5  => 'bi-book',
-                    6  => 'bi-tree',
-                    7  => 'bi-heart-pulse',
-                    8  => 'bi-person-check',
-                    9  => 'bi-flag',
-                    10 => 'bi-cpu',
-                    11 => 'bi-trophy',
-                    12 => 'bi-airplane',
-                    13 => 'bi-car-front',
-                    14 => 'bi-people',
-                    15 => 'bi-house-heart',
-                ];
-            @endphp
-
             <div class="row">
                 @foreach ($categories as $cat)
                     <div class="col-lg-3 col-sm-6 mb-3">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="bg-white! border border-[#eee]! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! d-block">
-                            <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ $categoryIcons[$cat->id] ?? 'bi-collection' }}"></i></span>
+                            <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
                             <h3 class="h5 text-base! md:text-base!">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
