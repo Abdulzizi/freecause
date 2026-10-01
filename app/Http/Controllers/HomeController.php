@@ -7,6 +7,7 @@ use App\Models\Petition;
 use App\Services\PageContentService;
 use App\Support\CacheVersion;
 use App\Support\Settings;
+use App\Support\TranslationJoin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -29,20 +30,18 @@ class HomeController extends Controller
         }
 
         $categories = cache()->remember('home:categories:'.CacheVersion::get('home').":{$locale}", 43200, function () use ($locale, $defaultLocale) {
-            return Category::select([
-                'categories.id',
-                'categories.sort_order',
-                DB::raw('COALESCE(ct_locale.name, ct_default.name) as tr_name'),
-                DB::raw('COALESCE(ct_locale.slug, ct_default.slug) as tr_slug'),
-            ])
-                ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
-                    $join->on('ct_locale.category_id', '=', 'categories.id')
-                        ->where('ct_locale.locale', '=', $locale);
-                })
-                ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
-                    $join->on('ct_default.category_id', '=', 'categories.id')
-                        ->where('ct_default.locale', '=', $defaultLocale);
-                })
+            return Category::select(['categories.id', 'categories.sort_order'])
+                ->withTranslation([
+                    'base' => 'categories',
+                    'base_key' => 'id',
+                    'translation_table' => 'category_translations',
+                    'translation_key' => 'category_id',
+                    'locale_alias' => 'ct_locale',
+                    'default_alias' => 'ct_default',
+                    'locale' => $locale,
+                    'default_locale' => $defaultLocale,
+                    'columns' => ['name' => 'tr_name', 'slug' => 'tr_slug'],
+                ])
                 ->where('categories.is_active', true)
                 ->orderBy('categories.sort_order')
                 ->get();
@@ -57,35 +56,47 @@ class HomeController extends Controller
         }
 
         $recentActivities = cache()->remember('home:recent:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale) {
+            $tr = TranslationJoin::raw([
+                'base' => 'p',
+                'base_key' => 'id',
+                'translation_table' => 'petition_translations',
+                'translation_key' => 'petition_id',
+                'locale_alias' => 'pt_locale',
+                'default_alias' => 'pt_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['title' => 'petition_title', 'slug' => 'petition_slug'],
+            ]);
+
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
                 return DB::select("
                     SELECT s.*, p.id as petition_id,
-                        COALESCE(pt_locale.title, pt_default.title) as petition_title,
-                        COALESCE(pt_locale.slug, pt_default.slug) as petition_slug
+                        {$tr['selects'][0]},
+                        {$tr['selects'][1]}
                     FROM signatures s FORCE INDEX (signatures_created_at_index)
                     STRAIGHT_JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
-                    LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
-                    LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
+                    {$tr['locale_join']}
+                    {$tr['default_join']}
                     WHERE s.confirmed = 1 AND s.is_spam = 0
                     AND (pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL)
                     ORDER BY s.created_at DESC
                     LIMIT 10
-                ", [$locale, $defaultLocale]);
+                ", $tr['bindings']);
             }
 
             return DB::select("
                 SELECT s.*, p.id as petition_id,
-                    COALESCE(pt_locale.title, pt_default.title) as petition_title,
-                    COALESCE(pt_locale.slug, pt_default.slug) as petition_slug
+                    {$tr['selects'][0]},
+                    {$tr['selects'][1]}
                 FROM signatures s
                 JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
-                LEFT JOIN petition_translations pt_locale ON pt_locale.petition_id = p.id AND pt_locale.locale = ?
-                LEFT JOIN petition_translations pt_default ON pt_default.petition_id = p.id AND pt_default.locale = ?
+                {$tr['locale_join']}
+                {$tr['default_join']}
                 WHERE s.confirmed = 1 AND s.is_spam = 0
                     AND (pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL)
                     ORDER BY s.created_at DESC
                     LIMIT 10
-            ", [$locale, $defaultLocale]);
+            ", $tr['bindings']);
         });
 
         // phpredis can deserialize DB::select() stdClass results as arrays — normalise back to objects
@@ -100,14 +111,17 @@ class HomeController extends Controller
 
         $pool = cache()->remember('home:pool:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
-                ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                    $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                        ->where('pt_locale.locale', '=', $locale);
-                })
-                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                    $join->on('pt_default.petition_id', '=', 'petitions.id')
-                        ->where('pt_default.locale', '=', $defaultLocale);
-                })
+                ->withTranslation([
+                    'base' => 'petitions',
+                    'base_key' => 'id',
+                    'translation_table' => 'petition_translations',
+                    'translation_key' => 'petition_id',
+                    'locale_alias' => 'pt_locale',
+                    'default_alias' => 'pt_default',
+                    'locale' => $locale,
+                    'default_locale' => $defaultLocale,
+                    'columns' => [],
+                ])
                 ->whereNotNull('pt_locale.title')
                 ->where('pt_locale.is_featured', 1)
                 ->where('petitions.status', 'published')
@@ -148,20 +162,18 @@ class HomeController extends Controller
             $featuredId = $pool[$slot % count($pool)];
 
             $featuredPetition = cache()->remember('home:featured:'.CacheVersion::get('home').":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
-                return Petition::select([
-                    'petitions.*',
-                    DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                    DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
-                    DB::raw('COALESCE(pt_locale.description, pt_default.description) as tr_description'),
-                ])
-                    ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                        $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                            ->where('pt_locale.locale', '=', $locale);
-                    })
-                    ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                        $join->on('pt_default.petition_id', '=', 'petitions.id')
-                            ->where('pt_default.locale', '=', $defaultLocale);
-                    })
+                return Petition::select(['petitions.*'])
+                    ->withTranslation([
+                        'base' => 'petitions',
+                        'base_key' => 'id',
+                        'translation_table' => 'petition_translations',
+                        'translation_key' => 'petition_id',
+                        'locale_alias' => 'pt_locale',
+                        'default_alias' => 'pt_default',
+                        'locale' => $locale,
+                        'default_locale' => $defaultLocale,
+                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug', 'description' => 'tr_description'],
+                    ])
                     ->where('petitions.id', $featuredId)
                     ->first();
             });

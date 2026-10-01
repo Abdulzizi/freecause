@@ -8,7 +8,6 @@ use App\Models\PageContent;
 use App\Models\Petition;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class WarmCache extends Command
 {
@@ -59,15 +58,17 @@ class WarmCache extends Command
         Cache::remember("home:categories:{$locale}", 43200, function () use ($locale, $defaultLocale) {
             return Category::query()
                 ->select(['categories.id'])
-                ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
-                ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
-                    $join->on('ct_locale.category_id', '=', 'categories.id')
-                        ->where('ct_locale.locale', '=', $locale);
-                })
-                ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
-                    $join->on('ct_default.category_id', '=', 'categories.id')
-                        ->where('ct_default.locale', '=', $defaultLocale);
-                })
+                ->withTranslation([
+                    'base' => 'categories',
+                    'base_key' => 'id',
+                    'translation_table' => 'category_translations',
+                    'translation_key' => 'category_id',
+                    'locale_alias' => 'ct_locale',
+                    'default_alias' => 'ct_default',
+                    'locale' => $locale,
+                    'default_locale' => $defaultLocale,
+                    'columns' => ['name' => 'name'],
+                ])
                 ->where('categories.is_active', true)
                 ->orderBy('name')
                 ->get()
@@ -77,15 +78,17 @@ class WarmCache extends Command
         Cache::remember("home:recent:{$locale}", 300, function () use ($locale) {
             return Petition::query()
                 ->select(['petitions.id', 'petitions.signature_count'])
-                ->selectRaw('COALESCE(pt_locale.title, pt_default.title) as title')
-                ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                    $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                        ->where('pt_locale.locale', '=', $locale);
-                })
-                ->leftJoin('petition_translations as pt_default', function ($join) {
-                    $join->on('pt_default.petition_id', '=', 'petitions.id')
-                        ->where('pt_default.locale', '=', 'en');
-                })
+                ->withTranslation([
+                    'base' => 'petitions',
+                    'base_key' => 'id',
+                    'translation_table' => 'petition_translations',
+                    'translation_key' => 'petition_id',
+                    'locale_alias' => 'pt_locale',
+                    'default_alias' => 'pt_default',
+                    'locale' => $locale,
+                    'default_locale' => 'en',
+                    'columns' => ['title' => 'title'],
+                ])
                 ->where('petitions.status', 'published')
                 ->where('petitions.is_active', 1)
                 ->orderByDesc('petitions.created_at')
@@ -110,17 +113,18 @@ class WarmCache extends Command
                         'petitions.goal_signatures',
                         'petitions.category_id',
                         'petitions.cover_image',
-                        DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                        DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
                     ])
-                    ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                        $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                            ->where('pt_locale.locale', '=', $locale);
-                    })
-                    ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                        $join->on('pt_default.petition_id', '=', 'petitions.id')
-                            ->where('pt_default.locale', '=', $defaultLocale);
-                    })
+                    ->withTranslation([
+                        'base' => 'petitions',
+                        'base_key' => 'id',
+                        'translation_table' => 'petition_translations',
+                        'translation_key' => 'petition_id',
+                        'locale_alias' => 'pt_locale',
+                        'default_alias' => 'pt_default',
+                        'locale' => $locale,
+                        'default_locale' => $defaultLocale,
+                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+                    ])
                     ->where(function ($q) {
                         $q->whereNotNull('pt_locale.title')
                             ->orWhereNotNull('pt_default.title');
@@ -141,15 +145,17 @@ class WarmCache extends Command
         Cache::remember("home:categories:{$locale}", 43200, function () use ($locale, $defaultLocale) {
             return Category::query()
                 ->select(['categories.id'])
-                ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
-                ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
-                    $join->on('ct_locale.category_id', '=', 'categories.id')
-                        ->where('ct_locale.locale', '=', $locale);
-                })
-                ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
-                    $join->on('ct_default.category_id', '=', 'categories.id')
-                        ->where('ct_default.locale', '=', $defaultLocale);
-                })
+                ->withTranslation([
+                    'base' => 'categories',
+                    'base_key' => 'id',
+                    'translation_table' => 'category_translations',
+                    'translation_key' => 'category_id',
+                    'locale_alias' => 'ct_locale',
+                    'default_alias' => 'ct_default',
+                    'locale' => $locale,
+                    'default_locale' => $defaultLocale,
+                    'columns' => ['name' => 'name'],
+                ])
                 ->where('categories.is_active', true)
                 ->orderBy('name')
                 ->get()

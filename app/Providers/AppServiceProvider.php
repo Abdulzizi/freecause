@@ -13,8 +13,10 @@ use App\Observers\CategoryTranslationObserver;
 use App\Observers\PetitionObserver;
 use App\Observers\PetitionTranslationObserver;
 use App\Support\Settings;
+use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
@@ -36,10 +38,18 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Builder::macro('withTranslation', function (array $config) {
+            return TranslationJoin::apply($this, $config);
+        });
+
         Petition::observe(PetitionObserver::class);
         Category::observe(CategoryObserver::class);
         PetitionTranslation::observe(PetitionTranslationObserver::class);
         CategoryTranslation::observe(CategoryTranslationObserver::class);
+
+        // Rate limiters touch no DB tables — register unconditionally so
+        // throttled routes don't 500 when `settings` is missing (e.g. tests).
+        $this->bootRateLimiting();
 
         try {
             if (! Schema::hasTable('settings')) {
@@ -58,7 +68,6 @@ class AppServiceProvider extends ServiceProvider
         $this->bootViewComposers();
         $this->bootMail();
         $this->bootOAuth();
-        $this->bootRateLimiting();
         $this->bootBrandedResetMail();
     }
 
@@ -163,21 +172,21 @@ class AppServiceProvider extends ServiceProvider
                     now()->addHours(12),
                     function () use ($locale, $defaultLocale) {
                         return Category::query()
-                            ->leftJoin('category_translations as ct_locale', function ($j) use ($locale) {
-                                $j->on('ct_locale.category_id', '=', 'categories.id')
-                                    ->where('ct_locale.locale', '=', $locale);
-                            })
-                            ->leftJoin('category_translations as ct_default', function ($j) use ($defaultLocale) {
-                                $j->on('ct_default.category_id', '=', 'categories.id')
-                                    ->where('ct_default.locale', '=', $defaultLocale);
-                            })
+                            ->select(['categories.id'])
+                            ->withTranslation([
+                                'base' => 'categories',
+                                'base_key' => 'id',
+                                'translation_table' => 'category_translations',
+                                'translation_key' => 'category_id',
+                                'locale_alias' => 'ct_locale',
+                                'default_alias' => 'ct_default',
+                                'locale' => $locale,
+                                'default_locale' => $defaultLocale,
+                                'columns' => ['name' => 'name', 'slug' => 'slug'],
+                            ])
                             ->where('categories.is_active', true)
                             ->orderBy('categories.id')
-                            ->get([
-                                'categories.id',
-                                \DB::raw('COALESCE(ct_locale.name, ct_default.name) as name'),
-                                \DB::raw('COALESCE(ct_locale.slug, ct_default.slug) as slug'),
-                            ]);
+                            ->get();
                     }
                 );
 

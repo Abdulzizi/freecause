@@ -88,17 +88,18 @@ class PetitionController extends Controller
                 'petitions.goal_signatures',
                 'petitions.category_id',
                 'petitions.cover_image',
-                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
             ])
-            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                    ->where('pt_locale.locale', '=', $locale);
-            })
-            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                $join->on('pt_default.petition_id', '=', 'petitions.id')
-                    ->where('pt_default.locale', '=', $defaultLocale);
-            })
+            ->withTranslation([
+                'base' => 'petitions',
+                'base_key' => 'id',
+                'translation_table' => 'petition_translations',
+                'translation_key' => 'petition_id',
+                'locale_alias' => 'pt_locale',
+                'default_alias' => 'pt_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+            ])
             ->where(function ($q) {
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
@@ -471,16 +472,17 @@ class PetitionController extends Controller
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
-            ->selectRaw('COALESCE(ct_locale.slug, ct_default.slug) as slug')
-            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
-                $join->on('ct_locale.category_id', '=', 'categories.id')
-                    ->where('ct_locale.locale', '=', $locale);
-            })
-            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
-                $join->on('ct_default.category_id', '=', 'categories.id')
-                    ->where('ct_default.locale', '=', $defaultLocale);
-            })
+            ->withTranslation([
+                'base' => 'categories',
+                'base_key' => 'id',
+                'translation_table' => 'category_translations',
+                'translation_key' => 'category_id',
+                'locale_alias' => 'ct_locale',
+                'default_alias' => 'ct_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['name' => 'name', 'slug' => 'slug'],
+            ])
             ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();
@@ -775,17 +777,18 @@ class PetitionController extends Controller
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
-                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
             ])
-            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                    ->where('pt_locale.locale', '=', $locale);
-            })
-            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                $join->on('pt_default.petition_id', '=', 'petitions.id')
-                    ->where('pt_default.locale', '=', $defaultLocale);
-            })
+            ->withTranslation([
+                'base' => 'petitions',
+                'base_key' => 'id',
+                'translation_table' => 'petition_translations',
+                'translation_key' => 'petition_id',
+                'locale_alias' => 'pt_locale',
+                'default_alias' => 'pt_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+            ])
             ->where(function ($q) {
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
@@ -926,18 +929,17 @@ class PetitionController extends Controller
         $tab = $request->query('tab');
 
         $withTr = function ($q) use ($locale, $defaultLocale) {
-            $q->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                    ->where('pt_locale.locale', '=', $locale);
-            })
-                ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                    $join->on('pt_default.petition_id', '=', 'petitions.id')
-                        ->where('pt_default.locale', '=', $defaultLocale);
-                })
-                ->addSelect([
-                    DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                    DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
-                ])
+            $q->withTranslation([
+                'base' => 'petitions',
+                'base_key' => 'id',
+                'translation_table' => 'petition_translations',
+                'translation_key' => 'petition_id',
+                'locale_alias' => 'pt_locale',
+                'default_alias' => 'pt_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+            ])
                 ->where(function ($q) {
                     $q->whereNotNull('pt_locale.title')
                         ->orWhereNotNull('pt_default.title');
@@ -989,16 +991,17 @@ class PetitionController extends Controller
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->selectRaw('COALESCE(ct_locale.name, ct_default.name) as name')
-            ->selectRaw('COALESCE(ct_locale.slug, ct_default.slug) as slug')
-            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
-                $join->on('ct_locale.category_id', '=', 'categories.id')
-                    ->where('ct_locale.locale', '=', $locale);
-            })
-            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
-                $join->on('ct_default.category_id', '=', 'categories.id')
-                    ->where('ct_default.locale', '=', $defaultLocale);
-            })
+            ->withTranslation([
+                'base' => 'categories',
+                'base_key' => 'id',
+                'translation_table' => 'category_translations',
+                'translation_key' => 'category_id',
+                'locale_alias' => 'ct_locale',
+                'default_alias' => 'ct_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['name' => 'name', 'slug' => 'slug'],
+            ])
             ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();

@@ -7,7 +7,6 @@ use App\Models\Petition;
 use App\Support\CacheVersion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CategoryPetitionController extends Controller
@@ -67,17 +66,18 @@ class CategoryPetitionController extends Controller
                 'petitions.goal_signatures',
                 'petitions.category_id',
                 'petitions.cover_image',
-                DB::raw('COALESCE(pt_locale.title, pt_default.title) as tr_title'),
-                DB::raw('COALESCE(pt_locale.slug, pt_default.slug) as tr_slug'),
             ])
-            ->leftJoin('petition_translations as pt_locale', function ($join) use ($locale) {
-                $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                    ->where('pt_locale.locale', '=', $locale);
-            })
-            ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                $join->on('pt_default.petition_id', '=', 'petitions.id')
-                    ->where('pt_default.locale', '=', $defaultLocale);
-            })
+            ->withTranslation([
+                'base' => 'petitions',
+                'base_key' => 'id',
+                'translation_table' => 'petition_translations',
+                'translation_key' => 'petition_id',
+                'locale_alias' => 'pt_locale',
+                'default_alias' => 'pt_default',
+                'locale' => $locale,
+                'default_locale' => $defaultLocale,
+                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+            ])
             ->where(function ($q) {
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
