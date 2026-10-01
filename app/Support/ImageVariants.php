@@ -79,11 +79,15 @@ class ImageVariants
             }
 
             if (! is_file($variants['w800']) || ! is_file($variants['w400'])) {
+                report(new \RuntimeException('WebP variants incomplete after conversion'));
+
                 return null;
             }
 
             return $variants;
         } catch (\Throwable $e) {
+            report($e);
+
             return null;
         }
     }
