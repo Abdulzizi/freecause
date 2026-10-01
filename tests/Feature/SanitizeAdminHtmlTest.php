@@ -15,7 +15,7 @@ class SanitizeAdminHtmlTest extends TestCase
 
     public function test_keeps_benign_formatting_byte_for_byte(): void
     {
-        $html = '<p>text <strong>bold</strong> <a href="https://x">link</a></p>';
+        $html = '<p>text <strong>bold</strong> <a href="https://x" rel="noopener">link</a></p>';
 
         $this->assertSame($html, sanitizeAdminHtml($html));
     }

@@ -359,7 +359,7 @@ if (! function_exists('adminHtmlKilledTags')) {
 }
 
 if (! function_exists('adminHtmlSafeUrl')) {
-    function adminHtmlSafeUrl(?string $url): bool
+    function adminHtmlSafeUrl(?string $url, array $schemes = ['http', 'https', 'mailto', 'tel']): bool
     {
         $url = trim((string) $url);
 
@@ -379,7 +379,7 @@ if (! function_exists('adminHtmlSafeUrl')) {
             return true; // relative path, fragment or query
         }
 
-        return in_array(strtolower($matches[1]), ['http', 'https', 'mailto', 'tel'], true);
+        return in_array(strtolower($matches[1]), $schemes, true);
     }
 }
 
@@ -433,7 +433,13 @@ if (! function_exists('adminHtmlSanitizeNode')) {
                         continue;
                     }
 
-                    if (in_array($name, ['href', 'src'], true) && ! adminHtmlSafeUrl($value)) {
+                    if ($name === 'href' && ! adminHtmlSafeUrl($value)) {
+                        $drop[] = $name;
+                    }
+
+                    // Images only ever load over https or a site-relative path;
+                    // plain http and any other scheme are refused outright.
+                    if ($name === 'src' && ! adminHtmlSafeUrl($value, $tag === 'img' ? ['https'] : ['http', 'https', 'mailto', 'tel'])) {
                         $drop[] = $name;
                     }
                 }
@@ -444,6 +450,16 @@ if (! function_exists('adminHtmlSanitizeNode')) {
 
                 foreach ($drop as $name) {
                     $child->removeAttribute($name);
+                }
+
+                // External links must never hand the opening window to the
+                // destination page.
+                if ($tag === 'a'
+                    && $child->hasAttribute('href')
+                    && preg_match('/^https?:/i', (string) $child->getAttribute('href'))
+                    && $child->getAttribute('rel') === ''
+                ) {
+                    $child->setAttribute('rel', 'noopener');
                 }
 
                 continue;
@@ -471,7 +487,7 @@ if (! function_exists('adminHtmlStripUnsafeUrls')) {
                     return '';
                 }
 
-                if (in_array($name, ['href', 'src'], true) && ! adminHtmlSafeUrl($attr[2])) {
+                if (in_array($name, ['href', 'src'], true) && ! adminHtmlSafeUrl($attr[2], $name === 'src' ? ['https'] : ['http', 'https', 'mailto', 'tel'])) {
                     return '';
                 }
 
