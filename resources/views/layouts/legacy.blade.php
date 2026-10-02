@@ -39,7 +39,11 @@
 
     <title>
         @hasSection('title')
-            @yield('title'){{ $metaSuffix }}
+            @php
+                $yieldedTitle = trim($__env->getSection('title'));
+                $finalSuffix = str_ends_with($yieldedTitle, $metaSuffix) ? '' : $metaSuffix;
+            @endphp
+            {{ $yieldedTitle }}{{ $finalSuffix }}
         @else
             FreeCause{{ $metaSuffix }}
         @endif
@@ -72,8 +76,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" integrity="sha384-cPa8kzsYWhqpAfWOLWYIw3V0BhPi/m3lrd8tBTPxr2NrYCHRVZ7xy1cEoRGOM/03" crossorigin="anonymous">
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('head')
@@ -101,7 +103,6 @@
     {!! \App\Services\ContentRenderer::render($footerExtra) !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" integrity="sha384-QUJ+ckWz1M+a7w0UfG1sEn4pPrbQwSxGm/1TIPyioqXBrwuT9l4f9gdHWLDLbVWI" crossorigin="anonymous"></script>
 
     @stack('scripts')
 

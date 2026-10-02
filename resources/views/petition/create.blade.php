@@ -25,6 +25,10 @@
 
 @section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
 
+@push('head')
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" integrity="sha384-cPa8kzsYWhqpAfWOLWYIw3V0BhPi/m3lrd8tBTPxr2NrYCHRVZ7xy1cEoRGOM/03" crossorigin="anonymous">
+@endpush
+
 @section('content')
     <section class="py-5 max-md:py-5!">
         <div class="container max-md:px-3!">
@@ -306,5 +310,6 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" integrity="sha384-QUJ+ckWz1M+a7w0UfG1sEn4pPrbQwSxGm/1TIPyioqXBrwuT9l4f9gdHWLDLbVWI" crossorigin="anonymous"></script>
     <script src="{{ asset('legacy/js-v2/petition-create.js') }}"></script>
 @endpush

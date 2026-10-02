@@ -321,3 +321,7 @@
     </section>
     @endif
 @endsection
+
+@push('head')
+    @include('partials.hreflang')
+@endpush

@@ -52,6 +52,10 @@
 @section('og_image', $petitionImg)
 @section('og_url', request()->url())
 
+@push('head')
+    @include('partials.hreflang')
+@endpush
+
 @section('content')
     <section class="py-5">
         <div class="container">

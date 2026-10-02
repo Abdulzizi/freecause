@@ -45,12 +45,13 @@
 
                 <div class="col-12 mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
-                            value="{{ old('comment', $defaultComment) }}">
+                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
+                            value="{{ old('comment', $defaultComment) }}" required>
                     @else
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
-                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
+                        <label for="sign_comment_auth_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
+                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                 </div>
 
@@ -142,21 +143,23 @@
 
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblName }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" value="{{ old('name') }}">
+                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
                 @else
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" value="{{ old('name') }}"
-                        placeholder="{{ $phName }}">
+                    <label for="sign_name_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblName }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
+                        placeholder="{{ $phName }}" required>
                 @endif
             </div>
 
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblEmail }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" value="{{ old('email') }}">
+                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}" required aria-required="true">
                 @else
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" value="{{ old('email') }}"
-                        placeholder="{{ $phEmail }}">
+                    <label for="sign_email_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblEmail }}</label>
+                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}"
+                        placeholder="{{ $phEmail }}" required aria-required="true">
                 @endif
             </div>
 
@@ -169,12 +172,13 @@
             <div class="fc-sign-advanced d-none">
                 <div class="col-12 mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
-                            value="{{ old('comment', $defaultComment) }}">
+                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
+                            value="{{ old('comment', $defaultComment) }}" required>
                     @else
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment"
-                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}">
+                        <label for="sign_comment_guest_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
+                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
+                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                 </div>
             </div>
