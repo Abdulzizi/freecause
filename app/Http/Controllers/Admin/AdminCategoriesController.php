@@ -35,7 +35,16 @@ class AdminCategoriesController extends Controller
 
     public function index(Request $request)
     {
-        $locale = $request->query('locale', 'en');
+        $locale = $request->query('locale', default_locale());
+
+        // Guard the locale before it reaches the query: a non-string or unknown
+        // code is bounced back to the default so no unvalidated value is used.
+        if (! is_string($locale) || ! is_valid_locale($locale)) {
+            return redirect()->route('admin.categories', array_merge(
+                $request->except('locale'),
+                ['locale' => default_locale()]
+            ));
+        }
 
         $filters = [
             'id' => trim((string) $request->query('id', '')),
@@ -57,10 +66,10 @@ class AdminCategoriesController extends Controller
             })
             ->select([
                 'categories.id',
-                DB::raw("'".$locale."' as locale"),
                 'ct.name',
                 'ct.slug',
-            ]);
+            ])
+            ->selectRaw('? as locale', [$locale]);
 
         if ($filters['id'] !== '') {
             $q->where('categories.id', (int) $filters['id']);

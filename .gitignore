@@ -18,6 +18,9 @@
 .env
 .env.backup
 .env.production
+.env.testing
+.env.bak*
+.env.sync*
 .phpactor.json
 .phpunit.result.cache
 /.fleet
