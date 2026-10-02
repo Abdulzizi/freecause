@@ -16,7 +16,8 @@ use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\App;
@@ -38,7 +39,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Builder::macro('withTranslation', function (array $config) {
+        // Eloquent builders return the Eloquent builder (so ->paginate() etc.
+        // hydrate models); base query builders (DB::table(...)) keep working too.
+        EloquentBuilder::macro('withTranslation', function (array $config) {
+            return TranslationJoin::apply($this, $config);
+        });
+
+        QueryBuilder::macro('withTranslation', function (array $config) {
             return TranslationJoin::apply($this, $config);
         });
 

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Services\PageContentService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -398,7 +397,6 @@ class LegacyImport extends Command
         $collisions = 0;
 
         $usedSlugs = [];
-        $affectedLocales = [];
         DB::table('petition_translations')
             ->where(function ($q) use ($minId, $maxId) {
                 $q->where('petition_id', '<', $minId)->orWhere('petition_id', '>', $maxId);
@@ -489,7 +487,6 @@ class LegacyImport extends Command
                 ];
 
                 $locale = $shortLocales[$this->prefixLocales[$row->prefix] ?? 'en_US'] ?? 'en';
-                $affectedLocales[$locale] = true;
                 $source = trim((string) $row->slug) !== '' ? $row->slug : $row->title;
                 $slug = $this->uniquePetitionSlug($locale, (string) $source, (int) $row->id, $usedSlugs, $collisions);
 
@@ -526,17 +523,6 @@ class LegacyImport extends Command
                     );
                 }
             });
-        }
-
-        if (! $dryRun && ! empty($affectedLocales)) {
-            $slot = (int) floor(time() / 60);
-            foreach (array_keys($affectedLocales) as $locale) {
-                Cache::forget('home:pool:v2:'.$locale);
-                Cache::forget('home:recent:v2:'.$locale);
-                for ($s = $slot - 1; $s <= $slot + 1; $s++) {
-                    Cache::forget('home:featured:v2:'.$locale.':'.$s);
-                }
-            }
         }
 
         $this->info(($dryRun ? '[dry-run] ' : '').'Petition import complete.');
@@ -1236,10 +1222,6 @@ class LegacyImport extends Command
                     );
                 }
             });
-
-            foreach (array_keys($settingUpdates) as $key) {
-                Cache::forget("setting:global:{$key}");
-            }
 
             $service = new PageContentService;
             foreach ($pagesLocales as [$page, $locale]) {

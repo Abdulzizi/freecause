@@ -23,7 +23,10 @@ class Locale
     }
 
     /**
-     * Convert full locale (en_US) → short (en)
+     * Convert full locale (en_US) → short (en).
+     *
+     * Idempotent: an already-short code ("en") is returned unchanged, so both
+     * legacy full-format rows and new short-format rows resolve correctly.
      */
     public static function toShort(?string $fullLocale): string
     {
@@ -33,8 +36,15 @@ class Locale
 
         $fullLocale = trim($fullLocale);
 
+        $flags = config('language_flags', []);
+
+        // Already a short code? Return it as-is.
+        if (array_key_exists($fullLocale, $flags)) {
+            return $fullLocale;
+        }
+
         // flip config: full => short
-        $map = array_flip(config('language_flags', []));
+        $map = array_flip($flags);
 
         return $map[$fullLocale] ?? self::default();
     }

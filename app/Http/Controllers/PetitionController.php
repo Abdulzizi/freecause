@@ -13,16 +13,15 @@ use App\Models\User;
 use App\Models\UserLevel;
 use App\Rules\SafeExternalImageUrl;
 use App\Support\AppLog;
-use App\Support\CacheVersion;
+use App\Support\CacheKeys;
 use App\Support\ImageVariants;
+use App\Support\PetitionCache;
 use App\Support\Settings;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -116,21 +115,10 @@ class PetitionController extends Controller
             $query->orderByDesc('petitions.signature_count');
             $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $cacheKey = "petitions:index:{$locale}:page:{$page}".':'.CacheVersion::get('list');
+            $cacheKey = CacheKeys::petitionsIndex($locale, $page);
             $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
                 return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
             });
-
-            if (is_array($petitions)) {
-                $items = collect(array_map(fn ($i) => is_array($i) ? (object) $i : $i, $petitions['data'] ?? []));
-                $petitions = new LengthAwarePaginator(
-                    $items,
-                    $petitions['total'] ?? 0,
-                    $petitions['per_page'] ?? 15,
-                    $petitions['current_page'] ?? $page,
-                    ['path' => Paginator::resolveCurrentPath()]
-                );
-            }
 
             $petitions = $petitions->withQueryString();
         }
@@ -432,7 +420,7 @@ class PetitionController extends Controller
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
                     DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                    cache()->forget("petition:latest_sigs:{$petition->id}");
+                    PetitionCache::touch($petition);
                 }
 
                 AppLog::info(
@@ -660,7 +648,7 @@ class PetitionController extends Controller
                     ]);
 
                     DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                    cache()->forget("petition:latest_sigs:{$petition->id}");
+                    PetitionCache::touch($petition);
                 }
 
                 toast('Petition created successfully.', 'success');
@@ -711,7 +699,7 @@ class PetitionController extends Controller
 
             if ($sig->wasRecentlyCreated) {
                 DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                cache()->forget("petition:latest_sigs:{$petition->id}");
+                PetitionCache::touch($petition);
             }
 
             session()->forget('sign');

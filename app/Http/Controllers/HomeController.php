@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use App\Services\PageContentService;
-use App\Support\CacheVersion;
+use App\Support\CacheKeys;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +28,7 @@ class HomeController extends Controller
             );
         }
 
-        $categories = cache()->remember('home:categories:'.CacheVersion::get('home').":{$locale}", 43200, function () use ($locale, $defaultLocale) {
+        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
             return Category::select(['categories.id', 'categories.sort_order'])
                 ->withTranslation([
                     'base' => 'categories',
@@ -47,15 +46,7 @@ class HomeController extends Controller
                 ->get();
         });
 
-        // phpredis can deserialize Eloquent collection as array — normalise back to collection of objects
-        if (is_array($categories)) {
-            $categories = collect($categories);
-        }
-        if ($categories instanceof Collection) {
-            $categories = collect(array_map(fn ($c) => is_array($c) ? (object) $c : $c, $categories->toArray()));
-        }
-
-        $recentActivities = cache()->remember('home:recent:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale) {
+        $recentActivities = cache()->remember(CacheKeys::homeRecent($locale), 300, function () use ($locale, $defaultLocale) {
             $tr = TranslationJoin::raw([
                 'base' => 'p',
                 'base_key' => 'id',
@@ -109,7 +100,7 @@ class HomeController extends Controller
 
         $slot = (int) floor(time() / 60);
 
-        $pool = cache()->remember('home:pool:'.CacheVersion::get('home').":{$locale}", 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember(CacheKeys::homePool($locale), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->withTranslation([
                     'base' => 'petitions',
@@ -138,7 +129,7 @@ class HomeController extends Controller
         $usingFallbackPool = false;
         if (empty($pool) && $locale !== $defaultLocale) {
             $usingFallbackPool = true;
-            $pool = cache()->remember('home:pool:'.CacheVersion::get('home').":{$defaultLocale}", 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
+            $pool = cache()->remember(CacheKeys::homePool($defaultLocale), 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
                 return Petition::select(['petitions.id'])
                     ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
                         $join->on('pt_default.petition_id', '=', 'petitions.id')
@@ -161,7 +152,7 @@ class HomeController extends Controller
         if (! empty($pool)) {
             $featuredId = $pool[$slot % count($pool)];
 
-            $featuredPetition = cache()->remember('home:featured:'.CacheVersion::get('home').":{$locale}:{$slot}", 65, function () use ($locale, $defaultLocale, $featuredId) {
+            $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale, $slot), 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select(['petitions.*'])
                     ->withTranslation([
                         'base' => 'petitions',
@@ -177,14 +168,9 @@ class HomeController extends Controller
                     ->where('petitions.id', $featuredId)
                     ->first();
             });
-
-            // phpredis can deserialize Eloquent models as arrays — normalise back to object
-            if (is_array($featuredPetition)) {
-                $featuredPetition = (object) $featuredPetition;
-            }
         }
 
-        $magazinePosts = cache()->remember('home:magazine_posts:'.CacheVersion::get('home'), 1800, function () {
+        $magazinePosts = cache()->remember(CacheKeys::homeMagazinePosts(), 1800, function () {
             try {
                 return DB::connection('magazine')->select("
                     SELECT

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
+use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\AppLog;
-use App\Support\Locale;
+use App\Support\PetitionCache;
 use App\Support\Settings;
 use App\Support\Spam;
 use App\Support\WpSso;
@@ -103,7 +104,7 @@ class AuthController extends Controller
             'last_name' => $data['surname'],
             'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
-            'locale' => Locale::toFull($locale),
+            'locale' => $locale,
             'ip' => $request->ip(),
             'level_id' => $userLevel?->id,
             'nickname' => $data['nickname'] ?? null,
@@ -396,7 +397,10 @@ class AuthController extends Controller
 
             foreach ($pending as $row) {
                 DB::table('petitions')->where('id', $row->petition_id)->increment('signature_count', $row->total);
-                cache()->forget("petition:latest_sigs:{$row->petition_id}");
+
+                if ($petition = Petition::find($row->petition_id)) {
+                    PetitionCache::touch($petition);
+                }
             }
         });
 

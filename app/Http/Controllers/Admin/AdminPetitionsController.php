@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Language;
+use App\Models\Petition;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
+use App\Support\PetitionCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -359,9 +361,7 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            CacheVersion::bump('home');
-            CacheVersion::bump('list');
-            CacheVersion::bump('sitemap');
+            PetitionCache::bump();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition bulk action: '.$e->getMessage());
         }
@@ -385,6 +385,10 @@ class AdminPetitionsController extends Controller
             ->where('id', $id)
             ->update(['signature_count' => $actualCount]);
 
+        if ($petition = Petition::find($id)) {
+            PetitionCache::touch($petition);
+        }
+
         Log::info("Signature count reconciled for petition {$id}: {$actualCount}");
 
         return response()->json([
@@ -396,7 +400,7 @@ class AdminPetitionsController extends Controller
 
     public function reconcileAll(Request $request)
     {
-        $petitions = DB::table('petitions')->select('id')->get();
+        $petitions = Petition::query()->select('id')->get();
         $total = 0;
 
         foreach ($petitions as $p) {
@@ -407,6 +411,8 @@ class AdminPetitionsController extends Controller
             DB::table('petitions')
                 ->where('id', $p->id)
                 ->update(['signature_count' => $actualCount]);
+
+            PetitionCache::touch($p);
 
             $total++;
         }

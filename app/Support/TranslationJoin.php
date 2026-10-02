@@ -40,7 +40,11 @@ class TranslationJoin
      */
     public static function apply($query, array $config)
     {
-        $query->leftJoin(
+        // For Eloquent builders, mutate the inner base query so the Eloquent
+        // builder (and its model hydration) is preserved and returned for chaining.
+        $target = $query instanceof EloquentBuilder ? $query->getQuery() : $query;
+
+        $target->leftJoin(
             "{$config['translation_table']} as {$config['locale_alias']}",
             function ($join) use ($config) {
                 $join->on(
@@ -51,7 +55,7 @@ class TranslationJoin
             }
         );
 
-        $query->leftJoin(
+        $target->leftJoin(
             "{$config['translation_table']} as {$config['default_alias']}",
             function ($join) use ($config) {
                 $join->on(
@@ -63,7 +67,7 @@ class TranslationJoin
         );
 
         foreach ($config['columns'] as $source => $alias) {
-            $query->selectRaw(
+            $target->selectRaw(
                 "COALESCE({$config['locale_alias']}.{$source}, {$config['default_alias']}.{$source}) as {$alias}"
             );
         }
