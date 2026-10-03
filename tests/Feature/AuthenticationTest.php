@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Mail\VerifyAccountMail;
+use App\Models\Language;
 use App\Models\User;
 use App\Providers\AppServiceProvider;
+use App\Support\Countries;
 use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -142,7 +144,7 @@ class AuthenticationTest extends TestCase
             ->assertSessionHas('oauth_ctx', [
                 'flow' => 'login',
                 'locale' => 'en',
-                'redirect' => '/en',
+                'redirect' => '',
             ])
             ->assertSessionMissing('oauth_state');
     }
@@ -205,6 +207,23 @@ class AuthenticationTest extends TestCase
             'password' => 'password123',
             'redirect' => '/en/create-petition',
         ])->assertRedirect('/en/create-petition');
+    }
+
+    public function test_password_login_uses_saved_preferred_language_without_explicit_destination(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'preferred-language@example.com',
+            'password' => Hash::make('password123'),
+            'locale' => 'fr_FR',
+            'verified' => true,
+        ]);
+
+        $this->post('/en/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect('/fr');
+
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_login_normalizes_email_case_and_spaces(): void
@@ -453,6 +472,88 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/en');
         $this->assertGuest();
+    }
+
+    public function test_profile_renders_complete_country_and_supported_language_selectors(): void
+    {
+        $user = User::factory()->create([
+            'country' => 'US',
+            'locale' => 'en_US',
+        ]);
+
+        $this->assertCount(249, Countries::all());
+
+        $this->actingAs($user)
+            ->get('/en/profile')
+            ->assertOk()
+            ->assertSee('id="country"', false)
+            ->assertSee('value="US" selected', false)
+            ->assertSee('United States')
+            ->assertSee('id="locale"', false)
+            ->assertSee('value="en" selected', false)
+            ->assertSee('Preferred language')
+            ->assertSee('Danish')
+            ->assertSee('Turkish');
+
+        $this->actingAs($user)
+            ->get('/da/profile')
+            ->assertOk()
+            ->assertSee('Foretrukket sprog');
+    }
+
+    public function test_user_can_update_country_and_preferred_language(): void
+    {
+        $user = User::factory()->create([
+            'first_name' => 'Profile',
+            'last_name' => 'User',
+            'country' => null,
+            'locale' => 'en',
+        ]);
+
+        $this->actingAs($user)
+            ->post('/en/profile', [
+                'first_name' => 'Profile',
+                'last_name' => 'User',
+                'identify_mode' => 'full',
+                'country' => 'FR',
+                'locale' => 'fr',
+            ])
+            ->assertRedirect('/fr/profile');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'country' => 'FR',
+            'locale' => 'fr_FR',
+        ]);
+    }
+
+    public function test_profile_rejects_unknown_country_and_inactive_language(): void
+    {
+        $user = User::factory()->create([
+            'first_name' => 'Profile',
+            'last_name' => 'User',
+            'country' => 'US',
+            'locale' => 'en',
+        ]);
+        Language::where('code', 'fr')->update(['is_active' => false]);
+
+        $this->actingAs($user)
+            ->from('/en/profile')
+            ->post('/en/profile', [
+                'first_name' => 'Profile',
+                'last_name' => 'User',
+                'identify_mode' => 'full',
+                'country' => 'XX',
+                'locale' => 'fr',
+            ])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHasErrors(['country', 'locale']);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'country' => 'US',
+            'locale' => 'en',
+        ]);
     }
 
     public function test_login_rate_limited(): void

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
+use App\Models\Language;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
+use App\Support\Countries;
+use App\Support\Locale;
 use App\Support\PetitionCache;
 use App\Support\Settings;
 use App\Support\Spam;
@@ -48,7 +51,15 @@ class AuthController extends Controller
 
     public function profile()
     {
-        return view('auth.profile');
+        $languages = Language::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['code', 'name']);
+
+        return view('auth.profile', [
+            'countries' => Countries::all(),
+            'languages' => $languages,
+        ]);
     }
 
     public function register(Request $request, string $locale)
@@ -228,7 +239,10 @@ class AuthController extends Controller
 
             $dest = self::sanitizeRedirectPath($request->input('redirect'), '');
             if ($dest === '') {
-                $dest = $request->session()->pull('url.intended', "/{$locale}");
+                $dest = $request->session()->pull('url.intended', '');
+            }
+            if ($dest === '') {
+                $dest = '/'.Locale::toShort($user->locale);
             }
 
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
@@ -258,6 +272,11 @@ class AuthController extends Controller
             'last_name' => ['required', 'string', 'max:60'],
             'nickname' => ['nullable', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:80'],
+            'country' => ['nullable', Rule::in(Countries::codes())],
+            'locale' => [
+                'required',
+                Rule::exists('languages', 'code')->where(fn ($query) => $query->where('is_active', true)),
+            ],
             'identify_mode' => ['nullable', Rule::in(['full', 'name', 'nick'])],
 
             'new_email' => ['nullable', 'email', 'max:190'],
@@ -276,6 +295,8 @@ class AuthController extends Controller
 
         $u->nickname = $data['nickname'] ?? null;
         $u->city = $data['city'] ?? null;
+        $u->country = $data['country'] ?? null;
+        $u->locale = Locale::toFull($data['locale']);
         $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
         $newEmail = strtolower(trim($data['new_email'] ?? ''));
@@ -332,7 +353,7 @@ class AuthController extends Controller
 
         toast('Profile updated successfully.', 'success');
 
-        return back();
+        return redirect()->to("/{$data['locale']}/profile");
     }
 
     public function delete(Request $request, string $locale)

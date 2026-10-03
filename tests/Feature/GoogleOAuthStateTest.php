@@ -90,6 +90,28 @@ class GoogleOAuthStateTest extends TestCase
         ]);
     }
 
+    public function test_existing_google_user_keeps_and_uses_saved_preferred_language(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => 'synthetic-google-user',
+            'locale' => 'fr_FR',
+            'verified' => true,
+        ]);
+
+        $state = $this->startGoogleLogin('/de/oauth/google?flow=login');
+        $this->queueGoogleUser();
+
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertRedirect('/fr');
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'locale' => 'fr_FR',
+        ]);
+    }
+
     public function test_google_callback_rejects_mismatched_state_before_contacting_google(): void
     {
         $this->startGoogleLogin('/en/oauth/google?flow=login');

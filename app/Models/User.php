@@ -24,6 +24,7 @@ class User extends Authenticatable
         'level_id',
         'identify_mode',
         'city',
+        'country',
         'nickname',
         'google_id',
         'password_changed_at',

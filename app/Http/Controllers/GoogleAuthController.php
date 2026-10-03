@@ -70,7 +70,7 @@ class GoogleAuthController extends Controller
                 'slug' => (string) $request->query('slug'),
             ]);
         } else {
-            $redirect = self::sanitizeRedirectPath($request->query('redirect'), "/{$locale}");
+            $redirect = self::sanitizeRedirectPath($request->query('redirect'), '');
 
             $request->session()->put('oauth_ctx', [
                 'flow' => in_array($flow, ['login', 'register'], true) ? $flow : 'register',
@@ -208,7 +208,6 @@ class GoogleAuthController extends Controller
         }
 
         $user->ip = $request->ip();
-        $user->locale = Locale::toFull($destLocale);
 
         if (! $user->first_name) {
             $user->first_name = $first;
@@ -248,7 +247,10 @@ class GoogleAuthController extends Controller
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        $dest = $ctx['redirect'] ?? "/{$destLocale}";
+        $dest = $ctx['redirect'] ?? '';
+        if ($dest === '') {
+            $dest = '/'.Locale::toShort($user->locale);
+        }
 
         return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }

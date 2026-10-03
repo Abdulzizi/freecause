@@ -175,6 +175,35 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3 align-items-center">
+                                <label class="col-sm-3 col-form-label" for="country">{{ __('profile.country') }}</label>
+                                <div class="col-sm-9">
+                                    <select class="form-select rounded-sm! h-[38px]!" id="country" name="country">
+                                        <option value="">{{ __('profile.select_country') }}</option>
+                                        @foreach ($countries as $countryCode => $countryName)
+                                            <option value="{{ $countryCode }}" @selected(old('country', $u->country) === $countryCode)>
+                                                {{ $countryName }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            @php $preferredLanguage = old('locale', \App\Support\Locale::toShort($u->locale)); @endphp
+
+                            <div class="row mb-4 align-items-center">
+                                <label class="col-sm-3 col-form-label" for="locale">{{ __('profile.preferred_language') }}</label>
+                                <div class="col-sm-9">
+                                    <select class="form-select rounded-sm! h-[38px]!" id="locale" name="locale" required>
+                                        @foreach ($languages as $language)
+                                            <option value="{{ $language->code }}" @selected($preferredLanguage === $language->code)>
+                                                {{ $language->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <hr>
 
                             <div class="mb-2"><strong>{{ __('profile.change_email') }}</strong></div>
