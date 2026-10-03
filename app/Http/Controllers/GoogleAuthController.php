@@ -50,10 +50,9 @@ class GoogleAuthController extends Controller
             ]);
         }
 
-        $state = Str::random(40);
-        $request->session()->put('oauth_state', $state);
-
-        return Socialite::driver('google')->with(['state' => $state])->redirect();
+        // Socialite must generate both the outgoing state and its session value.
+        // Overriding the URL parameter makes its callback validation fail.
+        return Socialite::driver('google')->redirect();
     }
 
     public function callback(Request $request, string $locale)
@@ -66,8 +65,6 @@ class GoogleAuthController extends Controller
         try {
             $google = Socialite::driver('google')->user();
         } catch (InvalidStateException $e) {
-            $request->session()->pull('oauth_state');
-
             AppLog::warning(
                 'Google OAuth state mismatch',
                 'Session expired or replay detected',
@@ -79,7 +76,6 @@ class GoogleAuthController extends Controller
             ]);
         }
 
-        $request->session()->pull('oauth_state');
         $email = strtolower(trim($google->getEmail() ?? ''));
 
         $fullName = trim((string) ($google->getName() ?: 'Google User'));
