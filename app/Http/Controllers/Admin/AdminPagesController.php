@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageTranslation;
+use App\Support\EdgeCachePurge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -119,6 +120,8 @@ class AdminPagesController extends Controller
             );
         });
 
+        EdgeCachePurge::listings();
+
         return redirect()->route('admin.pages')
             ->with('success', 'Page saved');
     }
@@ -149,6 +152,10 @@ class AdminPagesController extends Controller
                 // removes all their translations in every locale.
                 Page::whereIn('id', $ids)->delete();
                 break;
+        }
+
+        if (in_array($action, ['publish', 'unpublish', 'delete'], true)) {
+            EdgeCachePurge::listings();
         }
 
         return back()->with('success', 'Bulk action applied');

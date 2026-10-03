@@ -23,6 +23,10 @@ class CacheVersion
 
     public static function bump(string $group): void
     {
+        if ($group === 'list') {
+            EdgeCachePurge::listings();
+        }
+
         $key = "ver:{$group}";
 
         try {

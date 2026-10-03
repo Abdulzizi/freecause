@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PageContent;
+use App\Support\EdgeCachePurge;
 use Illuminate\Support\Facades\Cache;
 
 class PageContentService
@@ -35,5 +36,6 @@ class PageContentService
     public function clear(string $page, string $locale): void
     {
         Cache::forget("page_content_{$page}_{$locale}");
+        EdgeCachePurge::listings();
     }
 }

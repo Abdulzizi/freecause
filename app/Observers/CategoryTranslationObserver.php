@@ -10,12 +10,14 @@ class CategoryTranslationObserver
     public function saved(CategoryTranslation $translation): void
     {
         CacheVersion::bump('home');
+        CacheVersion::bump('list');
         CacheVersion::bump('sitemap');
     }
 
     public function deleted(CategoryTranslation $translation): void
     {
         CacheVersion::bump('home');
+        CacheVersion::bump('list');
         CacheVersion::bump('sitemap');
     }
 }
