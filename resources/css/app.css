@@ -41,3 +41,28 @@ ul:not([class]) {
 ol:not([class]) {
     list-style: decimal outside;
 }
+
+/* Native sign-form progress indicator; the legacy subset omits spinner styles. */
+.fc-sign-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-inline-end: 0.5em;
+    vertical-align: -0.125em;
+    border: 0.15em solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: fc-sign-spin 0.75s linear infinite;
+}
+
+@keyframes fc-sign-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fc-sign-spinner {
+        animation: none;
+    }
+}

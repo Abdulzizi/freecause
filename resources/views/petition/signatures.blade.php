@@ -29,13 +29,13 @@
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 400px, 100vw">
                                 <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
-                                    class="relative! z-[1]! w-full! h-40! object-contain!" loading="lazy" decoding="async">
+                                    class="relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $coverImg }}" alt="" aria-hidden="true"
                                 class="absolute! -inset-2.5! w-[calc(100%+20px)]! h-[calc(100%+20px)]! object-cover! blur-[14px]! opacity-[0.55]!" loading="lazy" decoding="async">
                             <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
-                                class="relative! z-[1]! w-full! h-40! object-contain!" loading="lazy" decoding="async">
+                                class="relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
                             @endif
                         </a>
                     </div>

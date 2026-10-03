@@ -22,8 +22,9 @@
                     {{ $h2Line2 }}
                 </h1>
 
-                <form action="{{ $signUrl }}" method="POST" class="d-inline-block">
+                <form action="{{ $signUrl }}" method="POST" data-sign-busy class="d-inline-block">
                     @csrf
+                    <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
 
                     <input type="hidden" name="agree1" value="{{ session('sign.agree1', '1') }}">
                     <input type="hidden" name="agree2" value="{{ session('sign.agree2', '1') }}">

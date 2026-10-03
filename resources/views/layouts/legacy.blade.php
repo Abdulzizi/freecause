@@ -104,6 +104,8 @@
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
 
+    <script src="{{ asset('legacy/js-v2/form-busy.js') }}" defer></script>
+
     @stack('scripts')
 
     @if (session('toast'))

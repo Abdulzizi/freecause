@@ -20,6 +20,7 @@ return [
     'claim_title' => 'Create your FreeCause account',
     'claim_verify_note' => 'Check your inbox to verify your email before logging in.',
     'city' => 'City',
+    'connection_error' => 'You are offline. Check your connection and try again.',
     'comment' => 'Comment (optional)',
     'default_comment' => 'I support this petition',
     'email' => 'Email',

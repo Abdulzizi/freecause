@@ -7,6 +7,17 @@
     $pageTitle = __('show.page_title', ['title' => $petitionTitle]);
 
     $petitionImg = $petition->coverUrl();
+    $coverVariants = \App\Support\ImageVariants::urls($petition->cover_image);
+    $hasCover = false;
+    foreach ([$petition->cover_image, $petition->image_url] as $index => $coverPath) {
+        if (!$coverPath) {
+            continue;
+        }
+        if (str_starts_with($coverPath, 'http://') || str_starts_with($coverPath, 'https://') || \Illuminate\Support\Facades\Storage::disk('public')->exists($index === 0 ? $coverPath : 'petitions/'.$coverPath)) {
+            $hasCover = true;
+            break;
+        }
+    }
     $petitionCredit = $petition->image_credit ?? '';
 
     $btnSignNow = __('show.btn_sign_now');
@@ -114,7 +125,7 @@
 
                 <div class="row g-4">
                     <div class="col-lg-8">
-                        @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
+                        @php $wv = $coverVariants; @endphp
                         <a href="#" class="relative! block! overflow-hidden! rounded-[10px]! bg-[#1a1a1a]! h-[380px]!" data-bs-toggle="modal" data-bs-target="#imgModal">
                             @if ($wv)
                             <picture>
@@ -123,11 +134,11 @@
                             </picture>
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 992px) 640px, 100vw">
-                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="lazy" decoding="async">
+                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $petitionImg }}" alt="" class="absolute! inset-[-15px]! w-[calc(100%+30px)]! h-[calc(100%+30px)]! object-cover! blur-[18px]! opacity-[0.55]! rounded-none!" aria-hidden="true" loading="lazy" decoding="async">
-                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="lazy" decoding="async">
+                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
                             @endif
                             @if ($petitionCredit)
                                 <span class="absolute! right-[10px]! bottom-[10px]! rounded-md! bg-black/55! px-2! py-1! text-xs! text-white! text-shadow-[0_1px_2px_rgba(0,0,0,0.6)]!">{{ $petitionCredit }}</span>
@@ -370,7 +381,7 @@
                                         <textarea class="form-control mb-3" rows="3" readonly>{{ $widgetCode }}</textarea>
                                         <div class="mb-4 overflow-auto">
                                             <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
-                                                alt="{{ $widgetType }} petition widget preview">
+                                                alt="{{ $widgetType }} petition widget preview" loading="lazy" decoding="async">
                                         </div>
                                     @endforeach
                                 </div>
@@ -415,7 +426,7 @@
                 <div class="modal-body p-0 position-relative">
                     <button type="button" class="btn-close position-absolute right-[10px]! top-[10px]! z-[2]!"
                         data-bs-dismiss="modal" aria-label="Close"></button>
-                    <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" alt="{{ $petitionTitle }}">
+                    <img src="{{ $petitionImg }}" class="img-fluid w-100" loading="lazy" decoding="async" alt="{{ $petitionTitle }}">
                 </div>
             </div>
         </div>
@@ -442,6 +453,18 @@
   }
 }
 </script>
+@endpush
+
+@push('head')
+    @if ($hasCover)
+        @if ($coverVariants)
+            <link rel="preload" as="image" href="{{ $coverVariants['800'] }}" type="image/webp"
+                imagesrcset="{{ $coverVariants['400'] }} 400w, {{ $coverVariants['800'] }} 800w"
+                imagesizes="(min-width: 992px) 640px, 100vw" fetchpriority="high">
+        @else
+            <link rel="preload" as="image" href="{{ $petitionImg }}" fetchpriority="high">
+        @endif
+    @endif
 @endpush
 
 @push('scripts')

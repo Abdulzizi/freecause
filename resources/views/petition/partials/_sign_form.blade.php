@@ -38,8 +38,9 @@
             {{ $tSignedAlready }}
         </p>
     @else
-        <form action="{{ $signPageUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+        <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
             @csrf
+            <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
 
             <div class="row g-2">
 
@@ -120,8 +121,9 @@
 
     @endif
 @else
-    <form action="{{ $signPageUrl }}" method="POST" class="fc-sign-form fc-sign-form--{{ $variant }}">
+    <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
+        <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
 
         <div class="row g-2">
 

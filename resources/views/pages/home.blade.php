@@ -85,11 +85,11 @@
                                                             <picture>
                                                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
                                                                 <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
-                                                                    loading="lazy" decoding="async" alt="{{ $featuredPetition->tr_title }}">
+                                                                    loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             </picture>
                                                             @else
                                                             <img src="{{ $featuredPetition->coverUrl() }}" class="img-fluid"
-                                                                loading="lazy" decoding="async" alt="{{ $featuredPetition->tr_title }}">
+                                                                loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             @endif
                                                         </div>
 
@@ -294,9 +294,9 @@
                             <div class="shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]! rounded-[15px]! overflow-hidden! hover:shadow-[rgba(149,157,165,0.2)_0px_8px_24px]!">
                                 <div>
                                     @if ($post->thumbnail_path)
-                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
                                     @else
-                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
                                     @endif
                                 </div>
                                 <div class="p-5! bg-white! min-h-[146px]!">
