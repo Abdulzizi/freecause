@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use GuzzleHttp\Handler\MockHandler;
@@ -20,6 +21,8 @@ class GoogleOAuthStateTest extends TestCase
     private MockHandler $googleResponses;
 
     private array $googleRequests = [];
+
+    private string $lastGoogleRedirect = '';
 
     protected function setUp(): void
     {
@@ -126,12 +129,64 @@ class GoogleOAuthStateTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
+    public function test_google_only_user_can_reauthenticate_for_account_deletion(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => 'synthetic-google-user',
+            'password_changed_at' => null,
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user);
+        $state = $this->startGoogleLogin('/en/account/delete/google');
+
+        parse_str(parse_url($this->lastGoogleRedirect, PHP_URL_QUERY), $query);
+        $this->assertSame('login', $query['prompt'] ?? null);
+        $this->assertSame([
+            'flow' => 'delete_account',
+            'locale' => 'en',
+            'user_id' => $user->id,
+        ], session('oauth_ctx'));
+
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHas('account_delete_google_verified', function (array $proof) use ($user) {
+                return $proof['user_id'] === $user->id && is_int($proof['verified_at']);
+            });
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_account_deletion_reauthentication_rejects_a_different_google_account(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => 'expected-google-user',
+            'password_changed_at' => null,
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user);
+        $state = $this->startGoogleLogin('/en/account/delete/google');
+        $this->queueGoogleUser();
+
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHasErrors('google_delete')
+            ->assertSessionMissing('account_delete_google_verified');
+
+        $this->assertAuthenticatedAs($user);
+    }
+
     private function startGoogleLogin(string $path): string
     {
         Socialite::forgetDrivers();
         $response = $this->get($path)->assertRedirect();
 
         $location = $response->headers->get('Location');
+        $this->lastGoogleRedirect = $location;
         $this->assertSame('accounts.google.com', parse_url($location, PHP_URL_HOST));
         parse_str(parse_url($location, PHP_URL_QUERY), $query);
 

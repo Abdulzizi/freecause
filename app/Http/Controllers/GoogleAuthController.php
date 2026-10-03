@@ -9,12 +9,41 @@ use App\Support\Locale;
 use App\Support\WpSso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 
 class GoogleAuthController extends Controller
 {
+    public function redirectForAccountDeletion(Request $request, string $locale)
+    {
+        $user = Auth::guard('web')->user();
+
+        if (! $user?->isGoogleOnly()) {
+            return redirect("/{$locale}/profile")->withErrors([
+                'google_delete' => 'Google verification is only available for Google-only accounts.',
+            ]);
+        }
+
+        if (! config('services.google.client_id') ||
+            ! config('services.google.client_secret') ||
+            ! config('services.google.redirect')) {
+            return redirect("/{$locale}/profile")->withErrors([
+                'google_delete' => 'Google verification is temporarily unavailable. Please try again later.',
+            ]);
+        }
+
+        $request->session()->forget('account_delete_google_verified');
+        $request->session()->put('oauth_ctx', [
+            'flow' => 'delete_account',
+            'locale' => $locale,
+            'user_id' => $user->id,
+        ]);
+
+        return Socialite::driver('google')
+            ->with(['prompt' => 'login'])
+            ->redirect();
+    }
+
     public function redirect(Request $request, string $locale)
     {
         if (! config('services.google.client_id') ||
@@ -71,7 +100,11 @@ class GoogleAuthController extends Controller
                 'auth.google'
             );
 
-            return redirect("/{$locale}/login")->withErrors([
+            $destination = ($ctx['flow'] ?? null) === 'delete_account' && Auth::check()
+                ? "/{$locale}/profile"
+                : "/{$locale}/login";
+
+            return redirect($destination)->withErrors([
                 'oauth' => 'Your session expired or the login was interrupted. Please try again.',
             ]);
         }
@@ -85,6 +118,31 @@ class GoogleAuthController extends Controller
         $last = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
 
         $destLocale = $ctx['locale'] ?? $locale;
+
+        if (($ctx['flow'] ?? null) === 'delete_account') {
+            $currentUser = Auth::guard('web')->user();
+            $matchesCurrentUser = $currentUser
+                && (int) ($ctx['user_id'] ?? 0) === (int) $currentUser->id
+                && filled($currentUser->google_id)
+                && hash_equals((string) $currentUser->google_id, (string) $google->getId())
+                && hash_equals(strtolower(trim((string) $currentUser->email)), $email);
+
+            if (! $matchesCurrentUser) {
+                $request->session()->forget('account_delete_google_verified');
+
+                return redirect("/{$destLocale}/profile")->withErrors([
+                    'google_delete' => 'That Google account does not match your FreeCause account.',
+                ]);
+            }
+
+            $request->session()->put('account_delete_google_verified', [
+                'user_id' => $currentUser->id,
+                'verified_at' => now()->timestamp,
+            ]);
+
+            return redirect("/{$destLocale}/profile")
+                ->with('success', 'Google identity verified. You can now confirm account deletion.');
+        }
 
         if (! $email) {
             AppLog::warning(
@@ -135,7 +193,7 @@ class GoogleAuthController extends Controller
                 'first_name' => $first,
                 'last_name' => $last,
                 'email' => $email,
-                'password' => bcrypt(Str::random(32)),
+                'password' => null,
                 'locale' => Locale::toFull($destLocale),
                 'ip' => $request->ip(),
                 'level_id' => $userLevel?->id,

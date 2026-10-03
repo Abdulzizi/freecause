@@ -201,7 +201,12 @@ Route::prefix('{locale}')
         Route::middleware('auth')->group(function () {
             Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
             Route::post('/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update')->middleware('throttle:10,1');
-            Route::post('/account/delete', [AuthController::class, 'delete'])->name('account.delete');
+            Route::post('/account/delete', [AuthController::class, 'delete'])
+                ->middleware('throttle:5,1')
+                ->name('account.delete');
+            Route::get('/account/delete/google', [GoogleAuthController::class, 'redirectForAccountDeletion'])
+                ->middleware('throttle:5,1')
+                ->name('account.delete.google');
             Route::get('/my-petitions', [PetitionController::class, 'myPetitions'])->name('account.petitions');
 
             Route::post('/account/unlink/google', [AuthController::class, 'unlinkGoogle'])->name('account.unlink.google');

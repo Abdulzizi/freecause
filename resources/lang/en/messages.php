@@ -199,6 +199,8 @@ return [
     'profile.enter_password'     => 'Enter your password to confirm',
     'profile.confirm_delete_lbl' => 'I agree with the account permanent deletion',
     'profile.delete'             => 'Delete',
+    'profile.verify_google_delete' => 'Verify your identity with Google before permanently deleting your account.',
+    'profile.verify_with_google' => 'Verify with Google',
     'profile.heading'            => 'Profile',
     'profile.first_name'         => 'First Name',
     'profile.last_name'          => 'Last Name',

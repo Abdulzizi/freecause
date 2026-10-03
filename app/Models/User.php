@@ -86,6 +86,16 @@ class User extends Authenticatable
         };
     }
 
+    public function hasLocalPassword(): bool
+    {
+        return $this->password_changed_at !== null;
+    }
+
+    public function isGoogleOnly(): bool
+    {
+        return filled($this->google_id) && ! $this->hasLocalPassword();
+    }
+
     public function isTwoFactorEnabled(): bool
     {
         return $this->two_factor_enabled && $this->two_factor_secret;

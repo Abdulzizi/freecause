@@ -3,7 +3,15 @@
 @section('title', 'Account - FreeCause')
 
 @section('content')
-    @php $u = auth()->user(); @endphp
+    @php
+        $u = auth()->user();
+        $googleOnly = $u->isGoogleOnly();
+        $googleDeleteProof = session('account_delete_google_verified');
+        $googleDeleteVerified = $googleOnly
+            && is_array($googleDeleteProof)
+            && (int) ($googleDeleteProof['user_id'] ?? 0) === (int) $u->id
+            && (int) ($googleDeleteProof['verified_at'] ?? 0) >= now()->subMinutes(5)->timestamp;
+    @endphp
 
     <section class="py-4">
         <div class="container">
@@ -61,13 +69,27 @@
 
                         <h2 class="text-[22px]! font-medium! mt-2! mb-2">{{ __('profile.account_deletion') }}</h2>
 
+                        @error('google_delete')
+                            <div class="alert alert-danger py-2" role="alert">{{ $message }}</div>
+                        @enderror
+
+                        @if ($googleOnly && ! $googleDeleteVerified)
+                            <p class="text-sm!">{{ __('profile.verify_google_delete') }}</p>
+                            <a href="{{ lroute('account.delete.google') }}" class="btn fc-google-btn fc-oauth-btn mb-3">
+                                <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
+                                {{ __('profile.verify_with_google') }}
+                            </a>
+                        @else
+
                         <form method="POST" action="{{ lroute('account.delete') }}">
                             @csrf
 
+                            @unless ($googleOnly)
                             <div class="mb-3">
                                 <label class="form-label">{{ __('profile.enter_password') }}</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
+                            @endunless
 
                             <label class="d-flex align-items-center gap-2 mb-3 text-sm!">
                                 <input type="checkbox" name="confirm_delete" value="1" required>
@@ -79,6 +101,7 @@
                                 {{ __('profile.delete') }} <span class="ms-3">»</span>
                             </button>
                         </form>
+                        @endif
 
                     </div>
                 </div>

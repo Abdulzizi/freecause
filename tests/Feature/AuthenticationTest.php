@@ -123,6 +123,7 @@ class AuthenticationTest extends TestCase
             'google_id' => 'google-user-id',
             'verified' => true,
         ]);
+        $this->assertNull(User::where('email', 'google@example.com')->value('password'));
     }
 
     public function test_google_oauth_rejects_external_return_path(): void
@@ -169,6 +170,26 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/en');
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_successful_password_login_backfills_password_timestamp_for_older_google_linked_user(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'older-linked@example.com',
+            'password' => Hash::make('password123'),
+            'password_changed_at' => null,
+            'google_id' => 'older-google-id',
+            'verified' => true,
+        ]);
+
+        $this->post('/en/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect('/en');
+
+        $user->refresh();
+        $this->assertNotNull($user->password_changed_at);
+        $this->assertTrue($user->hasLocalPassword());
     }
 
     public function test_embedded_login_returns_to_create_page(): void

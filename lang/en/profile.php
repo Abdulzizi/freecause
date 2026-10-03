@@ -23,4 +23,6 @@ return [
     'new_password' => 'New password',
     'reg_date' => 'Registration date:',
     'save_changes' => 'Save Changes',
+    'verify_google_delete' => 'Verify your identity with Google before permanently deleting your account.',
+    'verify_with_google' => 'Verify with Google',
 ];

@@ -6,6 +6,7 @@ use App\Mail\VerifyAccountMail;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\PetitionCache;
 use App\Support\Settings;
@@ -21,9 +22,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly WordPressUserDeletionService $wordPressUserDeletion) {}
+
     public function showLogin(string $locale)
     {
         if (Auth::check()) {
@@ -217,6 +221,9 @@ class AuthController extends Controller
 
             $user = Auth::user();
             $user->ip = $request->ip();
+            if (filled($user->password) && $user->password_changed_at === null) {
+                $user->password_changed_at = now();
+            }
             $user->save();
 
             $dest = self::sanitizeRedirectPath($request->input('redirect'), '');
@@ -331,11 +338,40 @@ class AuthController extends Controller
     public function delete(Request $request, string $locale)
     {
         $request->validate([
-            'password' => ['required', 'current_password:web'],
             'confirm_delete' => ['required', 'in:1'],
         ]);
 
         $u = Auth::guard('web')->user();
+
+        if ($u->isGoogleOnly()) {
+            $proof = $request->session()->pull('account_delete_google_verified');
+            $verifiedAt = is_array($proof) ? (int) ($proof['verified_at'] ?? 0) : 0;
+            $proofIsValid = is_array($proof)
+                && (int) ($proof['user_id'] ?? 0) === (int) $u->id
+                && $verifiedAt >= now()->subMinutes(5)->timestamp;
+
+            if (! $proofIsValid) {
+                throw ValidationException::withMessages([
+                    'google_delete' => 'Verify your identity with Google before deleting your account.',
+                ]);
+            }
+        } else {
+            $request->validate([
+                'password' => ['required', 'current_password:web'],
+            ]);
+        }
+
+        try {
+            $this->wordPressUserDeletion->delete($u);
+        } catch (\Throwable $e) {
+            Log::error('Account deletion aborted because WordPress cleanup failed: '.$e->getMessage());
+
+            return back()->withErrors([
+                'delete_account' => 'Account deletion could not be completed. Please try again later.',
+            ]);
+        }
+
+        User::query()->whereKey($u->getKey())->delete();
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();
@@ -346,35 +382,6 @@ class AuthController extends Controller
             'User ID: '.$u->id.' | Email: '.$u->email,
             'auth.delete'
         );
-
-        try {
-            // WP is integrated via wp-load.php ($wpdb), never via the Laravel
-            // database connection. Only attempt the lookup when WP bootstrap
-            // is actually available; otherwise skip with a log entry.
-            $wpLoad = base_path('public/magazine/wp-load.php');
-
-            if (is_file($wpLoad)) {
-                require_once $wpLoad;
-
-                $wpUserId = $GLOBALS['wpdb']->get_var(
-                    $GLOBALS['wpdb']->prepare(
-                        'SELECT ID FROM '.$GLOBALS['wpdb']->users.' WHERE user_email = %s OR user_login = %s',
-                        $u->email,
-                        $u->email
-                    )
-                );
-
-                if ($wpUserId) {
-                    wp_delete_user((int) $wpUserId);
-                }
-            } else {
-                Log::warning('WP user deletion skipped: wp-load.php not found');
-            }
-        } catch (\Throwable $e) {
-            Log::error('WP user deletion failed: '.$e->getMessage());
-        }
-
-        $u->delete();
 
         return redirect()->to("/{$locale}")->with('success', 'Account deleted successfully.');
     }
@@ -448,7 +455,7 @@ class AuthController extends Controller
     {
         $user = auth()->user();
 
-        if (! $user->password) {
+        if (! $user->hasLocalPassword()) {
             return back()->withErrors(['error' => 'Set a password before unlinking Google.']);
         }
 
