@@ -41,10 +41,7 @@ class GoogleAuthController extends Controller
                 'slug' => (string) $request->query('slug'),
             ]);
         } else {
-            $redirect = (string) $request->query('redirect', '');
-            if (! str_starts_with($redirect, '/') || str_starts_with($redirect, '//')) {
-                $redirect = "/{$locale}";
-            }
+            $redirect = self::sanitizeRedirectPath($request->query('redirect'), "/{$locale}");
 
             $request->session()->put('oauth_ctx', [
                 'flow' => in_array($flow, ['login', 'register'], true) ? $flow : 'register',
@@ -109,8 +106,9 @@ class GoogleAuthController extends Controller
         $newUser = false;
 
         if ($user && empty($user->google_id)) {
-            // If user has no real password (never set one via form)
-            // they registered via Google and then unlinked — re-link automatically
+            // Re-link is only safe when a real form password was never set:
+            // password_changed_at is NULL for "no password ever" (Google-only
+            // accounts), and is stamped at first password set/registration.
             $hasNoRealPassword = is_null($user->password_changed_at);
 
             if ($hasNoRealPassword) {

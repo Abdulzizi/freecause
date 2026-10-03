@@ -104,6 +104,8 @@ class AuthController extends Controller
             'last_name' => $data['surname'],
             'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
+            // Marks that a real (form-based) password exists at first set.
+            'password_changed_at' => now(),
             'locale' => $locale,
             'ip' => $request->ip(),
             'level_id' => $userLevel?->id,
@@ -152,10 +154,7 @@ class AuthController extends Controller
 
         toast('Account created successfully.', 'success');
 
-        $dest = $request->input('redirect');
-        if (! $dest || ! str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
-            $dest = "/{$locale}";
-        }
+        $dest = self::sanitizeRedirectPath($request->input('redirect'), "/{$locale}");
 
         return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
@@ -206,6 +205,7 @@ class AuthController extends Controller
             if (md5(md5($credentials['password']).$salt) === $hash) {
                 // Rehash to bcrypt and save
                 $user->password = Hash::make($credentials['password']);
+                $user->password_changed_at = now();
                 $user->save();
                 Auth::guard('web')->login($user, $remember);
                 $loggedIn = true;
@@ -219,8 +219,8 @@ class AuthController extends Controller
             $user->ip = $request->ip();
             $user->save();
 
-            $dest = $request->input('redirect');
-            if (! $dest || ! str_starts_with($dest, '/') || str_starts_with($dest, '//')) {
+            $dest = self::sanitizeRedirectPath($request->input('redirect'), '');
+            if ($dest === '') {
                 $dest = $request->session()->pull('url.intended', "/{$locale}");
             }
 
@@ -284,22 +284,28 @@ class AuthController extends Controller
                     ->withErrors(['new_email' => 'This email is already taken.']);
             }
 
+            if (! Settings::get('smtp_enabled', false)) {
+                // Without an active mail system we cannot verify the new
+                // address, which would allow taking over a Google account
+                // claiming that email. Reject the change instead.
+                return back()
+                    ->withInput()
+                    ->withErrors(['new_email' => 'Email changes require an active mail system. Please try again later.']);
+            }
+
             $u->email = $newEmail;
+            $u->verified = false;
+            $u->verification_token = Str::random(64);
+            $u->verification_token_sent_at = now();
 
-            if (Settings::get('smtp_enabled', false)) {
-                $u->verified = false;
-                $u->verification_token = Str::random(64);
-                $u->verification_token_sent_at = now();
-
-                try {
-                    Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
-                } catch (\Exception $e) {
-                    AppLog::error(
-                        'Mail sending failed (profile update)',
-                        $e->getMessage(),
-                        'auth.profile'
-                    );
-                }
+            try {
+                Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
+            } catch (\Exception $e) {
+                AppLog::error(
+                    'Mail sending failed (profile update)',
+                    $e->getMessage(),
+                    'auth.profile'
+                );
             }
         }
 
@@ -342,12 +348,29 @@ class AuthController extends Controller
         );
 
         try {
-            $wpUserId = DB::table('users')->where('user_login', $u->email)->value('ID');
-            if ($wpUserId) {
-                require_once base_path('public/magazine/wp-load.php');
-                wp_delete_user($wpUserId);
+            // WP is integrated via wp-load.php ($wpdb), never via the Laravel
+            // database connection. Only attempt the lookup when WP bootstrap
+            // is actually available; otherwise skip with a log entry.
+            $wpLoad = base_path('public/magazine/wp-load.php');
+
+            if (is_file($wpLoad)) {
+                require_once $wpLoad;
+
+                $wpUserId = $GLOBALS['wpdb']->get_var(
+                    $GLOBALS['wpdb']->prepare(
+                        'SELECT ID FROM '.$GLOBALS['wpdb']->users.' WHERE user_email = %s OR user_login = %s',
+                        $u->email,
+                        $u->email
+                    )
+                );
+
+                if ($wpUserId) {
+                    wp_delete_user((int) $wpUserId);
+                }
+            } else {
+                Log::warning('WP user deletion skipped: wp-load.php not found');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('WP user deletion failed: '.$e->getMessage());
         }
 
@@ -379,16 +402,26 @@ class AuthController extends Controller
         }
 
         DB::transaction(function () use ($user) {
+            // Lock the row and atomically gate on `verified` so concurrent
+            // double-clicks verify exactly once and claim pending signatures
+            // exactly once.
+            $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
+
+            if (! $locked) {
+                return;
+            }
+
             $pending = DB::table('signatures')
                 ->where('user_id', $user->id)
                 ->where('confirmed', false)
+                ->lockForUpdate()
                 ->selectRaw('petition_id, COUNT(*) as total')
                 ->groupBy('petition_id')
                 ->get();
 
-            $user->verified = true;
-            $user->verification_token = null;
-            $user->save();
+            $locked->verified = true;
+            $locked->verification_token = null;
+            $locked->save();
 
             DB::table('signatures')
                 ->where('user_id', $user->id)
@@ -465,6 +498,8 @@ class AuthController extends Controller
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user, $password) {
                     $user->password = Hash::make($password);
+                    // A set password implies password_changed_at is set (never NULL).
+                    $user->password_changed_at = now();
                     $user->save();
 
                     event(new PasswordReset($user));

@@ -144,7 +144,9 @@ class LanguageOptionsController extends Controller
 
         DB::transaction(function () use ($save, $existingHome, $existingGlobal, $existingLayout, $locale, $permittedGlobalKeys) {
             foreach ($this->homepageKeys as $key) {
-                $save('home', $key, $existingHome);
+                // Sanitize homepage keys exactly like the layout keys: same
+                // helper (sanitizeAdminHtml) preserves intentional HTML tags.
+                $save('home', $key, $existingHome, true);
             }
 
             foreach ($permittedGlobalKeys as $key) {

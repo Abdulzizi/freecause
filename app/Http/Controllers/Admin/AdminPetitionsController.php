@@ -244,7 +244,13 @@ class AdminPetitionsController extends Controller
                 $petitionUpdate['image_url'] = null;
             }
 
-            DB::transaction(function () use ($data, $petitionUpdate, $request) {
+            // Featured flags: global petitions.is_featured is the single source
+            // of truth for the admin list. Mirror it onto the edited locale's
+            // translation, and when un-featuring clear is_featured in ALL
+            // translations of the petition so admin and public stay in sync.
+            $isFeatured = $request->boolean('is_featured');
+
+            DB::transaction(function () use ($data, $petitionUpdate, $isFeatured) {
                 DB::table('petitions')
                     ->where('id', $data['id'])
                     ->update($petitionUpdate);
@@ -259,9 +265,15 @@ class AdminPetitionsController extends Controller
                             'title' => $data['title'],
                             'slug' => $data['slug'],
                             'description' => sanitizePetitionHtml($data['text'] ?? ''),
-                            'is_featured' => $request->boolean('is_featured'),
+                            'is_featured' => $isFeatured,
                         ]
                     );
+
+                if (! $isFeatured) {
+                    DB::table('petition_translations')
+                        ->where('petition_id', $data['id'])
+                        ->update(['is_featured' => 0]);
+                }
             });
         } catch (\Throwable $e) {
             if ($newImagePath) {
@@ -379,6 +391,7 @@ class AdminPetitionsController extends Controller
 
         $actualCount = DB::table('signatures')
             ->where('petition_id', $id)
+            ->where('confirmed', 1) // canonical count = confirmed signatures only
             ->count();
 
         $updated = DB::table('petitions')
@@ -406,6 +419,7 @@ class AdminPetitionsController extends Controller
         foreach ($petitions as $p) {
             $actualCount = DB::table('signatures')
                 ->where('petition_id', $p->id)
+                ->where('confirmed', 1) // canonical count = confirmed signatures only
                 ->count();
 
             DB::table('petitions')

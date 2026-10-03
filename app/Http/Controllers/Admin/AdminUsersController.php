@@ -144,8 +144,27 @@ class AdminUsersController extends Controller
 
         $isSelf = admin_user()?->id === $user->id;
 
+        $isSelf = admin_user()?->id === $user->id;
+
         if ($isSelf && $request->filled('level') && $data['level'] !== ($user->level->name ?? null)) {
             return back()->withErrors(['level' => 'You cannot change your own role.'])->withInput();
+        }
+
+        // Privilege-escalation guard: only system-level admins may change a
+        // user's level, and never for someone who already holds a system level
+        // (that includes other admins; the self case is excluded above).
+        $levelChangesRequested = $request->filled('level') && $data['level'] !== ($user->level->name ?? null);
+
+        if ($levelChangesRequested) {
+            $actorLevel = admin_user()?->loadMissing('level')?->level;
+
+            if (! ($actorLevel?->is_system ?? false)) {
+                return back()->withErrors(['level' => 'You do not have permission to change user roles.'])->withInput();
+            }
+
+            if ($user->level?->is_system) {
+                return back()->withErrors(['level' => 'You cannot change the role of a system-level user.'])->withInput();
+            }
         }
 
         if ($isSelf && ! $request->boolean('verified')) {
@@ -153,8 +172,8 @@ class AdminUsersController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $data, $user) {
-                if ($request->filled('level')) {
+            DB::transaction(function () use ($request, $data, $user, $levelChangesRequested) {
+                if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
                         $user->level_id = $level->id;

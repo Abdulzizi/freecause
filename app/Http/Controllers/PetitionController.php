@@ -291,15 +291,19 @@ class PetitionController extends Controller
 
     public function sign(Request $request, string $locale, string $slug, int $id)
     {
-        if ($request->session()->has('sign')) {
-            $request->merge($request->session()->get('sign'));
-        }
-
         $petition = Petition::query()
             ->where('id', $id)
             ->where('status', 'published')
             ->where('is_active', 1)
             ->firstOrFail();
+
+        // Guest confirm-form fields are scoped per petition; only merge when
+        // the stored petition matches, otherwise ignore the stale data.
+        $signSessionKey = "sign.{$petition->id}";
+
+        if ($request->session()->has($signSessionKey)) {
+            $request->merge($request->session()->get($signSessionKey));
+        }
 
         $defaultLocale = default_locale();
 
@@ -429,7 +433,7 @@ class PetitionController extends Controller
                     'petition.sign'
                 );
 
-                session()->forget('sign');
+                session()->forget("sign.{$petition->id}");
                 session()->flash('sign_claim', [
                     'email' => $email,
                     'is_new' => ! $existingUser,
@@ -681,28 +685,73 @@ class PetitionController extends Controller
 
         $u = auth()->user();
 
-        return DB::transaction(function () use ($data, $locale, $petition, $u) {
-            $sig = Signature::firstOrCreate(
-                ['petition_id' => $petition->id, 'email' => $u->email],
-                [
-                    'user_id' => $u->id,
-                    'name' => $u->name,
-                    'locale' => $locale,
-                    'text' => $data['comment'] ?? 'I support this petition',
-                    'ip_address' => request()->ip(),
-                ]
-            );
+        try {
+            return DB::transaction(function () use ($data, $locale, $petition, $u) {
+                $sig = Signature::firstOrCreate(
+                    ['petition_id' => $petition->id, 'email' => $u->email],
+                    [
+                        'user_id' => $u->id,
+                        'name' => $u->name,
+                        'locale' => $locale,
+                        'text' => $data['comment'] ?? 'I support this petition',
+                        'ip_address' => request()->ip(),
+                    ]
+                );
 
-            if (! $sig->wasRecentlyCreated) {
+                if (! $sig->wasRecentlyCreated) {
+                    toast('You already signed this petition.', 'info');
+                }
+
+                if ($sig->wasRecentlyCreated) {
+                    DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
+                    PetitionCache::touch($petition);
+                }
+
+                session()->forget("sign.{$petition->id}");
+
+                $tr = PetitionTranslation::query()
+                    ->where('petition_id', $petition->id)
+                    ->where('locale', $locale)
+                    ->first()
+                    ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+
+                abort_if(! $tr, 404);
+
+                AppLog::info(
+                    'Petition signed',
+                    'Petition ID: '.$petition->id.' | User: '.$u->email.' | IP: '.request()->ip(),
+                    'petition.sign'
+                );
+
+                if ($sig->wasRecentlyCreated) {
+                    toast('Thank you for signing!', 'success');
+                }
+
+                return redirect()->route('petition.thanks', [
+                    'locale' => $tr->locale,
+                    'slug' => $tr->slug,
+                    'id' => $petition->id,
+                    'status' => 1,
+                ]);
+            });
+        } catch (QueryException $e) {
+            // Concurrent duplicate sign (unique key race): treat as
+            // already signed instead of an uncaught 500.
+            if (($e->errorInfo[0] ?? null) !== '23000' && ! str_contains($e->getMessage(), 'UNIQUE')) {
+                throw $e;
+            }
+
+            $sig = Signature::where('petition_id', $petition->id)
+                ->where(function ($q) use ($u) {
+                    $q->where('email', $u->email)->orWhere('user_id', $u->id);
+                })
+                ->first();
+
+            if ($sig) {
                 toast('You already signed this petition.', 'info');
+            } else {
+                throw $e;
             }
-
-            if ($sig->wasRecentlyCreated) {
-                DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                PetitionCache::touch($petition);
-            }
-
-            session()->forget('sign');
 
             $tr = PetitionTranslation::query()
                 ->where('petition_id', $petition->id)
@@ -712,23 +761,13 @@ class PetitionController extends Controller
 
             abort_if(! $tr, 404);
 
-            AppLog::info(
-                'Petition signed',
-                'Petition ID: '.$petition->id.' | User: '.$u->email.' | IP: '.request()->ip(),
-                'petition.sign'
-            );
-
-            if ($sig->wasRecentlyCreated) {
-                toast('Thank you for signing!', 'success');
-            }
-
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
                 'status' => 1,
             ]);
-        });
+        }
     }
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
@@ -899,7 +938,7 @@ class PetitionController extends Controller
                 'agree3' => ['required', 'in:on,1'],
             ];
 
-        session(['sign' => $request->validate($rules)]);
+        session(["sign.{$petition->id}" => $request->validate($rules)]);
 
         $content = PageContent::where('page', 'petition_sign')
             ->where('locale', $locale)

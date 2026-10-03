@@ -144,7 +144,10 @@ class AdminPagesController extends Controller
                 break;
 
             case 'delete':
-                $q->delete();
+                // Checkboxes submit page_id (resources/views/admin/pages/index.blade.php),
+                // so deleting removes the parent pages rows — the FK cascade
+                // removes all their translations in every locale.
+                Page::whereIn('id', $ids)->delete();
                 break;
         }
 

@@ -177,6 +177,12 @@ class AdminSignaturesController extends Controller
 
         $ids = $data['ids'];
 
+        // The route only requires signatures:edit — delete must additionally be
+        // gated on the dedicated delete permission, as with bulkDelete's route.
+        if ($data['action'] === 'delete' && ! admin_can('signatures', 'delete')) {
+            return response()->json(['ok' => false, 'error' => 'You do not have permission to delete signatures.'], 403);
+        }
+
         $petitionIds = DB::table('signatures')->whereIn('id', $ids)->pluck('petition_id')->unique()->all();
 
         DB::transaction(function () use ($data, $ids, $petitionIds) {

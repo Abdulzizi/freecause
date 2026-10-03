@@ -51,7 +51,7 @@
             <span class="muted">
                 ({{ optional($sig->created_at)->format('Y-m-d') }})
             </span><br>
-            {{ $sig->comment ?? 'I support this petition' }}
+            {{ $sig->text ?? 'I support this petition' }}
         </div>
     @empty
         <p>No signatures yet.</p>

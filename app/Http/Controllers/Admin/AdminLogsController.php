@@ -87,22 +87,29 @@ class AdminLogsController extends Controller
             $q->where('context', $filters['context']);
         }
 
-        return response()->streamDownload(function () use ($q) {
+        // Collect the bounded id set first: a limit() on the streamed query is
+        // overridden by chunk(), which would paginate past the 10k cap.
+        $ids = $q->pluck('id')->all();
+
+        return response()->streamDownload(function () use ($ids) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['id', 'level', 'context', 'title', 'content', 'ip', 'created_at']);
-            $q->chunk(500, function ($rows) use ($handle) {
-                foreach ($rows as $row) {
-                    fputcsv($handle, [
-                        $row->id,
-                        $row->level,
-                        $row->context,
-                        $row->title,
-                        $row->content,
-                        $row->ip,
-                        $row->created_at,
-                    ]);
-                }
-            });
+            Log::query()
+                ->whereIn('id', $ids)
+                ->orderByDesc('id')
+                ->chunk(500, function ($rows) use ($handle) {
+                    foreach ($rows as $row) {
+                        fputcsv($handle, [
+                            $row->id,
+                            $row->level,
+                            $row->context,
+                            $row->title,
+                            $row->content,
+                            $row->ip,
+                            $row->created_at,
+                        ]);
+                    }
+                });
             fclose($handle);
         }, 'logs-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
     }
