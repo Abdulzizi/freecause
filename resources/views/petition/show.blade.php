@@ -160,9 +160,9 @@
 
                             @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                    <a class="btn inline-flex! items-center! gap-[10px]! rounded-md! border! border-[#ddd]! bg-white! px-4! py-2.5! text-sm! font-medium! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]! hover:no-underline!"
+                                    <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" class="w-[18px]! h-[18px]! block!" aria-hidden="true">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>
@@ -226,9 +226,9 @@
 
                             @if (!$isAuthed)
                                 <div class="d-flex gap-2 justify-content-center flex-wrap my-3">
-                                    <a class="btn inline-flex! items-center! gap-[10px]! rounded-md! border! border-[#ddd]! bg-white! px-4! py-2.5! text-sm! font-medium! text-[#444]! no-underline! hover:bg-[#f8f9fa]! hover:text-[#222]! hover:no-underline!"
+                                    <a class="btn fc-google-btn fc-oauth-btn"
                                         href="{{ lroute('oauth.google', ['flow' => 'petition', 'petition_id' => $petition->id, 'slug' => $tr->slug]) }}">
-                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" class="w-[18px]! h-[18px]! block!" aria-hidden="true">
+                                        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
                                         {{ $googleContinue }}
                                     </a>
                                 </div>

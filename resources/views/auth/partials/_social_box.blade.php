@@ -7,7 +7,7 @@
 
     <a href="{{ lroute('oauth.google', ['flow' => $flow ?? 'register', 'redirect' => $redirect]) }}"
         class="btn fc-google-btn fc-oauth-btn">
-        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true">
+        <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
         {{ __('auth.continue_google') }}
     </a>
 </div>

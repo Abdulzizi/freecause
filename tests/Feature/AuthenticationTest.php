@@ -31,11 +31,23 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_login_page_uses_current_google_icon(): void
+    public function test_login_page_renders_sized_google_button(): void
     {
         $this->get('/en/login')
             ->assertOk()
             ->assertSee('legacy/images-v2/google-g.svg', false)
+            ->assertSee('fc-google-btn fc-oauth-btn', false)
+            ->assertSee('width="18" height="18"', false)
+            ->assertDontSee('legacy/images-v2/google.png', false);
+    }
+
+    public function test_register_page_renders_sized_google_button(): void
+    {
+        $this->get('/en/register')
+            ->assertOk()
+            ->assertSee('legacy/images-v2/google-g.svg', false)
+            ->assertSee('fc-google-btn fc-oauth-btn', false)
+            ->assertSee('width="18" height="18"', false)
             ->assertDontSee('legacy/images-v2/google.png', false);
     }
 
