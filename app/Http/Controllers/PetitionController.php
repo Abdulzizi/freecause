@@ -883,10 +883,6 @@ class PetitionController extends Controller
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
-        if ($request->isMethod('get') && ! auth()->check()) {
-            return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
-        }
-
         $petition = Petition::query()
             ->whereKey($id)
             ->where('status', 'published')
@@ -920,6 +916,22 @@ class PetitionController extends Controller
                 'slug' => $tr->slug,
                 'id' => $petition->id,
             ]);
+        }
+
+        // GET renders the confirm form for already-authenticated users (the
+        // OAuth petition flow returns here after auth); validation and the
+        // session snapshot only apply to the actual POST. signAsAuthed()
+        // re-validates the agreed flags on the sign POST itself.
+        if ($request->isMethod('get')) {
+            if (auth()->check()) {
+                $content = PageContent::where('page', 'petition_sign')
+                    ->where('locale', $locale)
+                    ->pluck('value', 'key');
+
+                return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
+            }
+
+            return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
         }
 
         $rules = auth()->check()
