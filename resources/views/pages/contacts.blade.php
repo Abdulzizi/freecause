@@ -5,12 +5,12 @@
 
 @section('content')
     <section class="bg-[#fbfbfb]! py-[30px]!">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="flex! flex-wrap! -mx-3!">
+                <div class="w-full! shrink-0! grow-0! px-3!">
                     <h1 class="text-xl! mb-[5px]!">{{ __('contacts.title') }}</h1>
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
+                        <ol class="breadcrumb m-0! p-0!">
                             <li class="breadcrumb-item">
                                 <a href="{{ lroute('home') }}">{{ __('contacts.home') }}</a>
                             </li>
@@ -22,12 +22,12 @@
         </div>
     </section>
 
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-5">
+    <section class="py-12!">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="flex! flex-wrap! -mx-3! justify-center!">
+                <div class="w-full! md:w-[41.666667%]! shrink-0! grow-0! px-3!">
                     <x-ui.card>
-                        <div class="mb-4">
+                        <div class="mb-6!">
                             <h2 class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">{{ __('contacts.title') }}</h2>
 
                             @if ($errors->any())
@@ -46,7 +46,7 @@
                                 <fieldset>
                                     <input type="hidden" name="__contacts" value="1" />
 
-                                    <div class="mb-3">
+                                    <div class="mb-4!">
                                         <x-ui.input
                                             id="contact_name"
                                             name="name"
@@ -57,7 +57,7 @@
                                             :required="true" />
                                     </div>
 
-                                    <div class="mb-3">
+                                    <div class="mb-4!">
                                         <x-ui.input
                                             id="contact_email"
                                             name="email"
@@ -68,13 +68,13 @@
                                             :required="true" />
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="contact_text" class="form-label">{{ __('contacts.text_label') }}</label>
-                                        <textarea id="contact_text" name="text" class="form-control" rows="5"
+                                    <div class="mb-4!">
+                                        <label for="contact_text" class="block! mb-2!">{{ __('contacts.text_label') }}</label>
+                                        <textarea id="contact_text" name="text" class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25!" rows="5"
                                             placeholder="{{ __('contacts.text_placeholder') }}" required>{{ old('text') }}</textarea>
                                     </div>
 
-                                    <div class="mb-3">
+                                    <div class="mb-4!">
                                         <input type="submit" class="inline-flex! items-center! justify-center! bg-[#cc1f1f]! text-white! border! border-[#cc1f1f]! rounded-[0.625rem]! px-4! py-2! font-semibold! text-[0.9375rem]! cursor-pointer! no-underline! hover:bg-[#b31b1b]!" value="{{ __('contacts.submit') }}">
                                     </div>
                                 </fieldset>

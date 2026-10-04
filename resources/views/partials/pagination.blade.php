@@ -1,5 +1,5 @@
 @if (method_exists($paginator, 'hasPages') && $paginator->hasPages())
-    <div class="d-flex gap-1 mt-4 flex-wrap">
+    <div class="flex! gap-1! mt-4! flex-wrap!">
 
         @if ($paginator->onFirstPage())
             <span class="min-w-[32px]! h-[32px]! rounded-md! border! border-[#e9ecef]! inline-flex! items-center! justify-center! text-[13px]! text-[#999]! bg-[#f1f1f1]! no-underline! pointer-events-none! transition-colors! duration-150! ease-[ease]!">«</span>

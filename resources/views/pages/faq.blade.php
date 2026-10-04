@@ -164,21 +164,21 @@
 
 @section('content')
     <section class="py-16!">
-        <div class="container">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
 
             <div class="mb-6!">
-                <h1 class="mb-2 text-2xl! font-semibold!">Faq</h1>
-                <div class="text-sm">
-                    <a class="text-brand" href="/{{ app()->getLocale() }}">Home</a>
-                    <span class="text-gray-500"> / </span>
-                    <span class="text-gray-500">Faq</span>
+                <h1 class="mb-2! text-2xl! font-semibold!">Faq</h1>
+                <div class="text-sm!">
+                    <a class="text-brand!" href="/{{ app()->getLocale() }}">Home</a>
+                    <span class="text-gray-500!"> / </span>
+                    <span class="text-gray-500!">Faq</span>
                 </div>
             </div>
 
-            <div class="rounded-lg border border-gray-200 bg-white p-6! shadow-sm">
-                <div class="mb-2! font-bold">FAQs</div>
-                <div class="relative mb-6! h-0.5 bg-gray-200">
-                    <div class="absolute left-0 top-0 h-0.5 w-full bg-gradient-to-r from-black to-brand"></div>
+            <div class="rounded-lg! border! border-gray-200! bg-white! p-6! shadow-sm!">
+                <div class="mb-2! font-bold!">FAQs</div>
+                <div class="relative! mb-6! h-0.5! bg-gray-200!">
+                    <div class="absolute! left-0! top-0! h-0.5! w-full! bg-gradient-to-r! from-black! to-brand!"></div>
                 </div>
 
                 @php
@@ -198,7 +198,7 @@
                                 $hasAnswer = trim(strip_tags($item['a'] ?? '')) !== '';
                             @endphp
 
-                            <div class="accordion-item border border-gray-200">
+                            <div class="accordion-item border! border-gray-200!">
                                 <h2 class="accordion-header" id="{{ $headingId }}">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#{{ $collapseId }}" aria-expanded="false" aria-controls="{{ $collapseId }}">

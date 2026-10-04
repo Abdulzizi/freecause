@@ -30,13 +30,13 @@
 @endpush
 
 @section('content')
-    <section class="py-5 max-md:py-5!">
-        <div class="container max-md:px-3!">
+    <section class="py-12! max-md:py-5!">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]! max-md:px-3!">
 
             @auth
                 @if ($errors->any())
                     <x-ui.alert variant="error">
-                        <ul class="mb-0">
+                        <ul class="mb-0!">
                             @foreach ($errors->all() as $e)
                                 <li>{{ $e }}</li>
                             @endforeach
@@ -46,7 +46,7 @@
             @endauth
 
             @if(!$isEdit)
-                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_create') }}</h1>
+                <h1 class="text-center! mb-6! max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_create') }}</h1>
 
                 <div class="flex! flex-wrap! items-center! justify-center! gap-[60px]! mb-10! max-md:hidden!" aria-label="Petition creation progress">
                     <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
@@ -121,15 +121,15 @@
                     </div>
                 @endguest
             @else
-                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_edit') }}</h1>
+                <h1 class="text-center! mb-6! max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_edit') }}</h1>
             @endif
 
             @auth
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-6! max-md:p-4!">
+                <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! border-0! shadow-sm">
+                    <div class="grow! shrink! basis-auto! p-6! max-md:p-4!">
 
-                        <div class="mb-3">
-                            <div class="fw-semibold">{{ __('create.petition_data') }}</div>
+                        <div class="mb-4!">
+                            <div class="font-semibold!">{{ __('create.petition_data') }}</div>
                             <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
                         </div>
 
@@ -143,7 +143,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.description') }}</label>
+                                <label class="block! mb-2!">{{ __('form.description') }}</label>
 
                                 <div class="border! border-[#d9d9d9]! rounded! overflow-hidden!">
                                     <div id="fc-quill-toolbar" class="flex! items-center! gap-1.5! p-1.5! bg-[#f3f3f3]! border-b! border-[#d9d9d9]!">
@@ -161,7 +161,7 @@
 
                                     <div id="petition_editor" class="min-h-[260px]! text-sm! leading-[1.45]! [&_.ql-editor]:min-h-[260px]! [&_.ql-editor_ul]:list-disc! [&_.ql-editor_ul]:pl-[22px]! [&_.ql-editor_ol]:list-decimal! [&_.ql-editor_ol]:pl-[22px]! [&_.ql-editor_li]:list-item!"></div>
 
-                                    <textarea id="petition_description" class="d-none" name="description"
+                                    <textarea id="petition_description" class="hidden!" name="description"
                                         required>{!! $oldDesc !!}</textarea>
                                 </div>
 
@@ -171,7 +171,7 @@
                             <div class="row g-3 mb-3">
                                 @unless($isEdit)
                                     <div class="col-md-6">
-                                        <label class="form-label">{{ __('form.goal_signatures') }}</label>
+                                        <label class="block! mb-2!">{{ __('form.goal_signatures') }}</label>
 
                                         <select class="form-select" name="goal_signatures" required>
                                             <option value="">{{ __('create.select_one') }}</option>
@@ -191,7 +191,7 @@
                                 @endunless
 
                                 <div class="col-md-6">
-                                    <label class="form-label">{{ __('form.category') }}</label>
+                                    <label class="block! mb-2!">{{ __('form.category') }}</label>
                                     <select class="form-select" name="category_id" required>
                                         <option value="">{{ __('create.select_one') }}</option>
                                         @foreach ($categories as $c)
@@ -208,9 +208,9 @@
                             </div>
 
                             <div class="mb-3" data-image-field>
-                                <label class="form-label">{{ __('form.image') }}</label>
+                                <label class="block! mb-2!">{{ __('form.image') }}</label>
 
-                                <p class="text-muted small mb-2" data-image-instructions>
+                                <p class="text-[#6c757d]! text-[.875em]! mb-2!" data-image-instructions>
                                     {{ __('create.image_instructions') }}
                                 </p>
 
@@ -220,20 +220,20 @@
                                     name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                     data-image-input data-max-size="4194304">
 
-                                <small class="text-muted d-block mt-1" data-image-formats>
+                                <small class="text-[#6c757d]! block! mt-1!" data-image-formats>
                                     {{ __('create.image_formats') }}
                                 </small>
 
                                 @error('image')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <div class="invalid-feedback block!">{{ $message }}</div>
                                 @enderror
 
-                                <div class="mt-3 d-none" data-image-preview>
+                                <div class="mt-4! hidden!" data-image-preview>
                                     <img src="" alt="{{ __('create.image_preview_alt') }}" class="img-thumbnail max-h-[220px]! w-auto! h-auto! object-contain!" data-image-preview-img>
-                                    <div class="d-flex align-items-center justify-content-between mt-2">
-                                        <small class="text-muted">
+                                    <div class="flex! items-center! justify-between! mt-2!">
+                                        <small class="text-[#6c757d]!">
                                             <span data-image-name></span>
-                                            <span class="ms-1" data-image-size></span>
+                                            <span class="ms-1!" data-image-size></span>
                                         </small>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-image-remove>
                                             {{ __('create.remove') }}
@@ -242,9 +242,9 @@
                                 </div>
 
                                 @if($isEdit && ($petition->cover_image || $petition->image_url))
-                                    <div class="mt-3">
+                                    <div class="mt-4!">
                                         <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]!" alt="{{ $tr->title }}">
-                                        <div class="form-check mt-2">
+                                        <div class="block! min-h-6! pl-6! mb-0.5! mt-2!">
                                             <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
                                             <label class="form-check-label" for="remove-petition-image">{{ __('create.remove_current_image') }}</label>
                                         </div>
@@ -255,12 +255,12 @@
                                     <span>{{ __('create.or') }}</span>
                                 </div>
 
-                                <div class="mt-2">
-                                    <label class="form-label">{{ __('form.image_external') }}</label>
+                                <div class="mt-2!">
+                                    <label class="block! mb-2!">{{ __('form.image_external') }}</label>
                                     <input class="form-control @error('image_url') is-invalid @enderror"
                                         name="image_url" value="{{ $oldImageUrl }}" placeholder="https://" data-image-url>
                                     @error('image_url')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        <div class="invalid-feedback block!">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -281,12 +281,12 @@
                                 <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" />
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-6!">
                                 <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" />
                             </div>
 
                             <div class="text-center! max-md:[&_.fcui-btn]:w-full!">
-                                <x-ui.button type="submit" variant="danger" class="px-5"
+                                <x-ui.button type="submit" variant="danger" class="px-12!"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
                                 </x-ui.button>

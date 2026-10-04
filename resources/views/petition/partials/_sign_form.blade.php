@@ -1,6 +1,6 @@
 @php
     $variant = $variant ?? 'stack'; // stack | split
-    $col = $variant === 'split' ? 'col-md-6' : 'col-12';
+    $col = $variant === 'split' ? 'w-full! md:w-1/2! shrink-0! px-1!' : 'w-full! px-1!';
     $useLabels = $variant === 'split';
     $isAuthed = auth()->check();
 
@@ -33,18 +33,18 @@
 @if ($isAuthed)
     @if (!empty($hasSigned) && $hasSigned)
 
-        <p class="mb-0 text-[14px]!">
+        <p class="mb-0! text-[14px]!">
             {{ $tSignedAlready }}
         </p>
     @else
         <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
             @csrf
-            <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
+            <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
-            <div class="row g-2">
+            <div class="flex! flex-wrap! -mx-1!">
 
                 @if ($errors->any())
-                    <div class="col-12">
+                    <div class="w-full!">
                         <x-ui.alert variant="error">
                             <ul class="mb-0!">
                                 @foreach ($errors->all() as $e)
@@ -55,14 +55,14 @@
                     </div>
                 @endif
 
-                <div class="col-12 mb-[14px]!">
+                <div class="w-full! mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
+                        <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" required>
                     @else
                         <label for="sign_comment_auth_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                 </div>
@@ -73,13 +73,13 @@
                     <div class="font-bold!">
                         {!! $agree1Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="d-block text-[14px]!">
+                    <div class="mt-2!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree1" value="agree"
                                 {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block text-[14px]!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree1" value="no"
                                 {{ old('agree1') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
@@ -91,13 +91,13 @@
                     <div class="font-bold!">
                         {!! $agree2Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="d-block text-[14px]!">
+                    <div class="mt-2!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree2" value="agree"
                                 {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block text-[14px]!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree2" value="no"
                                 {{ old('agree2') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
@@ -109,13 +109,13 @@
                     <div class="font-bold!">
                         {!! $agree3Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="d-block text-[14px]!">
+                    <div class="mt-2!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree3" value="agree"
                                 {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="d-block text-[14px]!">
+                        <label class="block! text-[14px]!">
                             <input class="scale-90! mr-[6px]!" type="radio" name="agree3" value="no"
                                 {{ old('agree3') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
@@ -123,7 +123,7 @@
                     </div>
                 </div>
 
-                <div class="col-12">
+                <div class="w-full!">
                     <button class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[8px]! font-semibold! text-[14px]!" type="submit">{{ $tBtnSign }}</button>
                 </div>
 
@@ -134,14 +134,14 @@
 @else
     <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
-        <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
+        <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
-        <div class="row g-2">
+        <div class="flex! flex-wrap! -mx-1!">
 
             @if ($errors->any())
-                <div class="col-12">
+                <div class="w-full!">
                     <x-ui.alert variant="error">
-                        <ul class="mb-0">
+                        <ul class="mb-0!">
                             @foreach ($errors->all() as $e)
                                 <li>{{ $e }}</li>
                             @endforeach
@@ -156,64 +156,64 @@
 
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
+                    <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
                 @else
                     <label for="sign_name_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblName }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
                         placeholder="{{ $phName }}" required>
                 @endif
             </div>
 
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
-                    <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}" required aria-required="true">
+                    <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}" required aria-required="true">
                 @else
                     <label for="sign_email_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblEmail }}</label>
-                    <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}"
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}"
                         placeholder="{{ $phEmail }}" required aria-required="true">
                 @endif
             </div>
 
             @if ($variant === 'split')
-                <div class="col-12 text-[14px]!">
+                <div class="w-full! text-[14px]!">
                     {{ $privacyHint }}
                 </div>
             @endif
 
-            <div class="fc-sign-advanced d-none">
-                <div class="col-12 mb-[14px]!">
+            <div class="fc-sign-advanced hidden!">
+                <div class="w-full! mb-[14px]!">
                     @if ($useLabels)
-                        <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
+                        <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" required>
                     @else
                         <label for="sign_comment_guest_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="form-control h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                 </div>
             </div>
 
-            <div class="col-12">
+            <div class="w-full!">
                 @if ($variant === 'split')
-                    <p class="mt-2 text-[13px]! leading-[1.5]! mb-[14px]!">
+                    <p class="mt-2! text-[13px]! leading-[1.5]! mb-[14px]!">
                         {{ $emailWarning }}
                     </p>
                 @endif
 
                 {{-- agreements --}}
-                <div class="p-3 rounded bg-light border mb-[14px]!">
-                    <div class="form-check mb-2">
+                <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! border! mb-[14px]!">
+                    <div class="block! min-h-6! pl-6! mb-0.5! mb-2!">
                         <input class="form-check-input" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
                         <label class="form-check-label text-[14px]!" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
                     </div>
-                    <div class="form-check mb-2">
+                    <div class="block! min-h-6! pl-6! mb-0.5! mb-2!">
                         <input class="form-check-input" type="checkbox" id="agree2_{{ $variant }}" name="agree2" value="1" {{ old('agree2') ? 'checked' : '' }}>
                         <label class="form-check-label text-[14px]!" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
                     </div>
-                    <div class="form-check">
+                    <div class="block! min-h-6! pl-6! mb-0.5!">
                         <input class="form-check-input" type="checkbox" id="agree3_{{ $variant }}" name="agree3" value="1" {{ old('agree3') ? 'checked' : '' }}>
                         <label class="form-check-label text-[14px]!" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
                     </div>

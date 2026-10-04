@@ -5,12 +5,12 @@
 
 @section('content')
     <section class="bg-[#fbfbfb]! py-[30px]!">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="flex! flex-wrap! -mx-3!">
+                <div class="w-full! shrink-0! grow-0! px-3!">
                     <h1 class="text-xl! mb-[5px]!">{{ __('nav.magazine') }}</h1>
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
+                        <ol class="breadcrumb m-0! p-0!">
                             <li class="breadcrumb-item">
                                 <a href="{{ lroute('home') }}">{{ __('nav.home') }}</a>
                             </li>
@@ -22,17 +22,17 @@
         </div>
     </section>
 
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8 py-3">
+    <section class="py-12!">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="flex! flex-wrap! -mx-3! justify-center!">
+                <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3! py-4!">
                     <x-ui.alert variant="warning" class="mb-4">
                         <strong>{{ __('nav.magazine_notice_title') }}</strong>
                         {{ __('nav.magazine_notice_body') }}
                     </x-ui.alert>
-                    <div class="text-center py-4">
-                        <h2 class="mb-3 font-semibold!">{{ __('nav.magazine_coming_soon') }}</h2>
-                        <p class="text-muted text-base!">
+                    <div class="text-center! py-6!">
+                        <h2 class="mb-4! font-semibold!">{{ __('nav.magazine_coming_soon') }}</h2>
+                        <p class="text-[#6c757d]! text-base!">
                             {{ __('nav.magazine_body') }}
                         </p>
                         <x-ui.button :href="lroute('home')" variant="danger" class="mt-3">{{ __('nav.magazine_back_home') }}</x-ui.button>

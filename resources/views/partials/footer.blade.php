@@ -13,9 +13,9 @@
 
 
 <section class="bg-[#1f2024]! text-white! font-[Arial,sans-serif]!">
-    <div class="container max-w-[1300px]!">
-        <div class="row">
-            <div class="col-12">
+    <div class="mx-auto! w-full! px-3! max-w-[1300px]!">
+        <div class="flex! flex-wrap! -mx-3!">
+            <div class="w-full! shrink-0! grow-0! px-3!">
 
                 <div class="p-10! max-md:text-center!">
 

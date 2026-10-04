@@ -3,26 +3,26 @@
 @section('title', __('auth.resend_verification_title'))
 
 @section('content')
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 col-md-8">
-                    <div class="card shadow-lg border-0 rounded-xl!">
-                        <div class="card-body p-4 p-md-5">
-                            <h1 class="text-center mb-4 text-[28px]! font-medium!">{{ __('auth.resend_verification_heading') }}</h1>
+    <section class="py-12!">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="flex! flex-wrap! -mx-3! justify-center!">
+                <div class="w-full! shrink-0! grow-0! px-3! md:w-2/3! lg:w-1/2!">
+                    <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-[1rem]! shadow-[0_1rem_3rem_rgba(0,0,0,0.175)]!">
+                        <div class="grow! shrink! basis-auto! p-6! md:p-12!">
+                            <h1 class="text-center! mb-6! text-[28px]! font-medium!">{{ __('auth.resend_verification_heading') }}</h1>
 
                             @if (session('success'))
-                                <x-ui.alert variant="success" class="mb-3">{{ session('success') }}</x-ui.alert>
+                                <x-ui.alert variant="success" class="mb-4!">{{ session('success') }}</x-ui.alert>
                             @endif
 
                             @if ($errors->any())
-                                <x-ui.alert variant="error" class="mb-3">{{ $errors->first() }}</x-ui.alert>
+                                <x-ui.alert variant="error" class="mb-4!">{{ $errors->first() }}</x-ui.alert>
                             @endif
 
                             <form method="POST" action="{{ lroute('verification.resend') }}">
                                 @csrf
 
-                                <div class="mb-3">
+                                <div class="mb-4!">
                                     <x-ui.input
                                         type="email"
                                         id="resend_email"
@@ -35,10 +35,10 @@
                                     />
                                 </div>
 
-                                <x-ui.button type="submit" variant="danger" class="w-100">{{ __('auth.resend_email_btn') }}</x-ui.button>
+                                <x-ui.button type="submit" variant="danger" class="w-full!">{{ __('auth.resend_email_btn') }}</x-ui.button>
 
-                                <div class="text-center mt-3">
-                                    <a href="{{ lroute('login') }}" class="text-muted">{{ __('auth.back_login') }}</a>
+                                <div class="text-center! mt-4!">
+                                    <a href="{{ lroute('login') }}" class="text-[#6c757d]!">{{ __('auth.back_login') }}</a>
                                 </div>
                             </form>
                         </div>

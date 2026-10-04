@@ -12,13 +12,13 @@
 
 @section('content')
     <section class="py-16!">
-        <div class="container">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
 
-            <div class="bg-white shadow-sm rounded-3 p-4 mb-4 border border-[#eee]!">
-                <div class="row align-items-center g-4">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-[#eee]!">
+                <div class="flex! flex-wrap! items-center! -mx-3!">
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
-                    <div class="col-md-3 col-sm-4">
+                    <div class="w-full! md:w-1/4! shrink-0! sm:w-1/3! px-3!">
                         <a href="{{ $petitionUrl }}" class="rounded-lg! overflow-hidden! block! h-40! bg-[#1a1a1a]! relative!">
                             @if ($wv)
                             <picture>
@@ -40,28 +40,28 @@
                         </a>
                     </div>
 
-                    <div class="col-md-6 col-sm-8">
-                        <h1 class="mb-2 text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
-                            <a href="{{ $petitionUrl }}" class="text-dark text-decoration-none">
+                    <div class="w-full! md:w-1/2! shrink-0! sm:w-2/3! px-3!">
+                        <h1 class="mb-2! text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
+                            <a href="{{ $petitionUrl }}" class="text-[#212529]! no-underline!">
                                 {{ $petitionTitle }}
                             </a>
                         </h1>
 
-                        <p class="text-muted mb-3 text-sm! leading-[1.6]!">
+                        <p class="text-[#6c757d]! mb-4! text-sm! leading-[1.6]!">
                             {{ $shortDesc }}
                             <a href="{{ $petitionUrl }}" class="text-[#cc1f1f]! ms-1!">{{ __('sig.continue') }}</a>
                         </p>
 
-                        <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2">
+                        <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
                             <div class="h-1.5! bg-[#2ca02c]!" style="width: {{ $pct }}%;"></div>
                         </div>
-                        <div class="d-flex justify-content-between text-[13px]! text-[#666]!">
+                        <div class="flex! justify-between! text-[13px]! text-[#666]!">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
                     </div>
 
-                    <div class="col-md-3 text-md-end">
+                    <div class="w-full! md:w-1/4! shrink-0! md:text-right! px-3!">
                         <x-ui.button variant="danger" :href="$signUrl">
                             {{ __('sig.sign_link') }}
                         </x-ui.button>
@@ -70,11 +70,11 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]!">
 
-                <div class="font-bold! text-base! mb-3">
+                <div class="font-bold! text-base! mb-4!">
                     {{ __('sig.all_signatures') }}
-                    <span class="text-muted fw-normal text-sm!">
+                    <span class="text-[#6c757d]! font-normal! text-sm!">
                         ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
@@ -86,31 +86,31 @@
                 </div>
 
                 @forelse($signatures as $sig)
-                    <div class="d-flex align-items-start gap-3 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
-                        <div class="flex-shrink-0 text-muted text-[13px]! min-w-[32px]! pt-0.5!">
+                    <div class="flex! items-start! gap-4! py-4! {{ !$loop->last ? 'border-b!' : '' }}">
+                        <div class="shrink-0! text-[#6c757d]! text-[13px]! min-w-[32px]! pt-0.5!">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="grow!">
+                            <div class="flex! items-center! gap-2! flex-wrap!">
                                 <strong class="text-[15px]!">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
-                                    <span class="text-muted text-[13px]!">
+                                    <span class="text-[#6c757d]! text-[13px]!">
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
-                                <span class="text-muted ms-auto text-xs!">
+                                <span class="text-[#6c757d]! ms-auto! text-xs!">
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>
                             @if (!empty($sig->text) && $sig->text !== __('sig.default_comment'))
-                                <p class="mb-0 mt-1 text-muted text-sm!">
+                                <p class="mb-0! mt-1! text-[#6c757d]! text-sm!">
                                     "{{ $sig->text }}"
                                 </p>
                             @endif
                         </div>
                     </div>
                 @empty
-                    <div class="text-muted py-4 text-center text-sm!">
+                    <div class="text-[#6c757d]! py-6! text-center! text-sm!">
                         {{ __('sig.no_signatures') }}
                     </div>
                 @endforelse

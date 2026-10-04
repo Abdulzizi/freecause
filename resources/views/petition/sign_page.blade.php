@@ -16,17 +16,17 @@
 
 @section('content')
     <section class="py-16!">
-        <div class="container">
-            <div class="bg-white shadow-sm rounded-3 p-5 text-center border border-[#eee]! max-w-[900px]! mx-auto!">
+        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-12! text-center! border! border-[#eee]! max-w-[900px]! mx-auto!">
 
-                <h1 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium! break-words! [overflow-wrap:anywhere]!">
+                <h1 class="mb-6! text-[1.3rem]! md:text-[28px]! font-medium! break-words! [overflow-wrap:anywhere]!">
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
                 </h1>
 
-                <form action="{{ $signUrl }}" method="POST" data-sign-busy class="d-inline-block">
+                <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block!">
                     @csrf
-                    <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
+                    <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
                     @if ($errors->any())
                         <x-ui.alert variant="error" class="text-start! mt-2!">
