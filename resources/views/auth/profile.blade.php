@@ -72,10 +72,6 @@
                                     {{ __('profile.google_disconnect') }}
                                 </button>
 
-                                <button type="submit" class="{{ $btnBrand }} hidden!" data-google-disconnect-confirm>
-                                    {{ __('profile.google_disconnect') }}
-                                </button>
-
                                 <noscript>
                                     <p class="mt-2! text-[12px]! text-gray-500!">{{ __('profile.google_disconnect_needs_password') }}</p>
                                 </noscript>
@@ -99,10 +95,6 @@
                                 @csrf
 
                                 <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
-                                    {{ __('profile.google_disconnect') }}
-                                </button>
-
-                                <button type="submit" class="{{ $btnBrand }} hidden!" data-google-disconnect-confirm>
                                     {{ __('profile.google_disconnect') }}
                                 </button>
 
