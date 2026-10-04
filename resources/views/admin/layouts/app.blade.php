@@ -94,25 +94,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            /* #5: lazy-load CKEditor only when needed */
-            if (document.querySelector('textarea.fc-editor')) {
-                var s = document.createElement('script');
-                s.src = 'https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js';
-                s.onload = function() {
-                    CKEDITOR.replace('content', {
-                        toolbar: [
-                            { name: 'clipboard', items: ['Undo', 'Redo'] },
-                            { name: 'styles', items: ['Format'] },
-                            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline'] },
-                            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'] },
-                            { name: 'links', items: ['Link', 'Unlink'] },
-                            { name: 'insert', items: ['Image', 'Table'] },
-                            { name: 'tools', items: ['Source'] }
-                        ],
-                        height: 350
+            if (sidebar) {
+                sidebar.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function () {
+                        if (window.innerWidth <= 768) closeSidebar();
                     });
-                };
-                document.head.appendChild(s);
+                });
+
+                sidebar.querySelectorAll('.fc-group').forEach((group, i) => {
+                    const title = group.querySelector('.group-title');
+                    if (!title) return;
+                    const key = 'fc-group-' + i;
+                    if (localStorage.getItem(key) === '1') group.classList.add('collapsed');
+                    title.addEventListener('click', () => {
+                        group.classList.toggle('collapsed');
+                        localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
+                    });
+                });
             }
 
             document.addEventListener('keydown', function (e) {
@@ -121,24 +119,34 @@
                 }
             });
 
-            if (sidebar) {
-                sidebar.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function () {
-                        if (window.innerWidth <= 768) closeSidebar();
-                    });
-                });
+            /* lazy-load CKEditor only when an editor textarea is present */
+            var editorArea = document.querySelector('textarea.fc-editor');
+            if (editorArea) {
+                var s = document.createElement('script');
+                s.src = 'https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js';
+                s.onload = function () {
+                    try {
+                        if (window.CKEDITOR) {
+                            CKEDITOR.replace(editorArea.id || 'content', {
+                                toolbar: [
+                                    { name: 'clipboard', items: ['Undo', 'Redo'] },
+                                    { name: 'styles', items: ['Format'] },
+                                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline'] },
+                                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'] },
+                                    { name: 'links', items: ['Link', 'Unlink'] },
+                                    { name: 'insert', items: ['Image', 'Table'] },
+                                    { name: 'tools', items: ['Source'] }
+                                ],
+                                height: 350
+                            });
+                        }
+                    } catch (err) {
+                        /* keep the plain textarea usable if the editor fails */
+                    }
+                };
+                s.onerror = function () {};
+                document.head.appendChild(s);
             }
-
-            sidebar?.querySelectorAll('.fc-group').forEach((group, i) => {
-                const title = group.querySelector('.group-title');
-                if (!title) return;
-                const key = 'fc-group-' + i;
-                if (localStorage.getItem(key) === '1') group.classList.add('collapsed');
-                title.addEventListener('click', () => {
-                    group.classList.toggle('collapsed');
-                    localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
-                });
-            });
         });
     </script>
 

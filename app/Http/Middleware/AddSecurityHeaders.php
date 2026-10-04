@@ -38,11 +38,11 @@ class AddSecurityHeaders
                     'https://cdn.ckeditor.com; '.
                 "style-src 'self' 'unsafe-inline' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                    'https://ajax.googleapis.com; '.
+                    'https://ajax.googleapis.com https://cdn.ckeditor.com; '.
                 "img-src 'self' data: blob: https:; ".
-                "font-src 'self' https://cdnjs.cloudflare.com; ".
+                "font-src 'self' https://cdnjs.cloudflare.com https://cdn.ckeditor.com; ".
                 "frame-src 'self' https://accounts.google.com; ".
-                "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net; ".
+                "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net https://cdn.ckeditor.com; ".
                 "object-src 'none'; ".
                 "base-uri 'self';";
         } else {
