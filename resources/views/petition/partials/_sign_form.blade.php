@@ -204,18 +204,18 @@
                 @endif
 
                 {{-- agreements --}}
-                <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! mb-[14px]!">
-                    <div class="block! min-h-6! pl-6! mb-0.5! mb-2!">
-                        <input class="form-check-input" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
-                        <label class="form-check-label text-[14px]!" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
+                <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! border! border-[#dee2e6]! mb-[14px]!">
+                    <div class="flex! items-start! gap-2! mb-2!">
+                        <input class="form-check-input shrink-0! float-none! ml-0! mt-0.5!" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
+                        <label class="form-check-label text-[14px]! leading-snug!" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>
                     </div>
-                    <div class="block! min-h-6! pl-6! mb-0.5! mb-2!">
-                        <input class="form-check-input" type="checkbox" id="agree2_{{ $variant }}" name="agree2" value="1" {{ old('agree2') ? 'checked' : '' }}>
-                        <label class="form-check-label text-[14px]!" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
+                    <div class="flex! items-start! gap-2! mb-2!">
+                        <input class="form-check-input shrink-0! float-none! ml-0! mt-0.5!" type="checkbox" id="agree2_{{ $variant }}" name="agree2" value="1" {{ old('agree2') ? 'checked' : '' }}>
+                        <label class="form-check-label text-[14px]! leading-snug!" for="agree2_{{ $variant }}">{!! $agree2Title !!}</label>
                     </div>
-                    <div class="block! min-h-6! pl-6! mb-0.5!">
-                        <input class="form-check-input" type="checkbox" id="agree3_{{ $variant }}" name="agree3" value="1" {{ old('agree3') ? 'checked' : '' }}>
-                        <label class="form-check-label text-[14px]!" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
+                    <div class="flex! items-start! gap-2!">
+                        <input class="form-check-input shrink-0! float-none! ml-0! mt-0.5!" type="checkbox" id="agree3_{{ $variant }}" name="agree3" value="1" {{ old('agree3') ? 'checked' : '' }}>
+                        <label class="form-check-label text-[14px]! leading-snug!" for="agree3_{{ $variant }}">{!! $agree3Title !!}</label>
                     </div>
                 </div>
 
