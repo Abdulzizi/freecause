@@ -45,12 +45,12 @@ class ContentPagesTest extends TestCase
 
     public function test_non_english_locale_falls_back_to_english_with_notice_and_canonical(): void
     {
-        $response = $this->get('/de/donations');
+        $response = $this->get('/de/personal-data-processing');
 
         $response->assertOk()
             ->assertSee(__('pages.lang_fallback_notice'))
             ->assertSee('rel="canonical"', false)
-            ->assertSee(url('en/donations'), false);
+            ->assertSee(url('en/personal-data-processing'), false);
     }
 
     public function test_english_page_has_no_fallback_notice(): void
@@ -63,5 +63,23 @@ class ContentPagesTest extends TestCase
     public function test_unknown_slug_returns_404(): void
     {
         $this->get('/en/this-slug-does-not-exist')->assertNotFound();
+    }
+
+    public function test_translated_editorial_page_has_no_fallback_notice(): void
+    {
+        $this->get('/es/donations')
+            ->assertOk()
+            ->assertDontSee(__('pages.lang_fallback_notice'));
+
+        $this->get('/fr/how-to-write-a-petition')
+            ->assertOk()
+            ->assertDontSee(__('pages.lang_fallback_notice'));
+    }
+
+    public function test_untranslated_legal_page_still_shows_fallback_notice(): void
+    {
+        $this->get('/es/personal-data-processing')
+            ->assertOk()
+            ->assertSee(__('pages.lang_fallback_notice'));
     }
 }
