@@ -194,7 +194,7 @@
                 <tr class="hover:bg-[#fafafa]!">
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">#{{ $petition->id }}</td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">
-                        <span class="inline-block! py-0.5! px-2! rounded-[3px]! text-[11px]! font-semibold! uppercase! status-{{ $petition->status }}">{{ $petition->status }}</span>
+                        <span class="inline-block! py-0.5! px-2! rounded-[3px]! text-[11px]! font-semibold! uppercase! {{ $petition->status === 'published' ? 'bg-[#d4edda]! text-[#155724]!' : ($petition->status === 'draft' ? 'bg-[#fff3cd]! text-[#856404]!' : 'bg-[#f8d7da]! text-[#721c24]!') }}">{{ $petition->status }}</span>
                     </td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ $petition->created_at->diffForHumans() }}</td>
                 </tr>

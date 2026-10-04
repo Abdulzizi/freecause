@@ -120,14 +120,18 @@
             });
 
             /* lazy-load CKEditor only when an editor textarea is present */
-            var editorArea = document.querySelector('textarea.fc-editor');
-            if (editorArea) {
+            var editorAreas = document.querySelectorAll('textarea.fc-editor');
+            if (editorAreas.length) {
                 var s = document.createElement('script');
                 s.src = 'https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js';
                 s.onload = function () {
-                    try {
-                        if (window.CKEDITOR) {
-                            CKEDITOR.replace(editorArea.id || 'content', {
+                    if (!window.CKEDITOR) return;
+                    editorAreas.forEach(function (area, i) {
+                        try {
+                            if (!area.id) {
+                                area.id = 'fc-editor-' + i;
+                            }
+                            CKEDITOR.replace(area.id, {
                                 toolbar: [
                                     { name: 'clipboard', items: ['Undo', 'Redo'] },
                                     { name: 'styles', items: ['Format'] },
@@ -139,10 +143,10 @@
                                 ],
                                 height: 350
                             });
+                        } catch (err) {
+                            /* keep the plain textarea usable if the editor fails */
                         }
-                    } catch (err) {
-                        /* keep the plain textarea usable if the editor fails */
-                    }
+                    });
                 };
                 s.onerror = function () {};
                 document.head.appendChild(s);

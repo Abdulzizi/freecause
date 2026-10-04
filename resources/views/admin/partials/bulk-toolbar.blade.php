@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /* disable all action buttons when nothing selected */
-        document.querySelectorAll('.fc-toolbar-right .fc-icon-btn').forEach(btn => {
+        document.querySelectorAll('.fc-toolbar-right .bulk-action').forEach(btn => {
             btn.disabled = count === 0;
             btn.style.opacity = count === 0 ? '.35' : '1';
             btn.style.pointerEvents = count === 0 ? 'none' : 'auto';
