@@ -68,6 +68,30 @@ document.addEventListener('DOMContentLoaded', function () {
         showToast?.(flash.dataset.message);
     }
 
+    // Petition sharing: use the device share sheet when available. The link's
+    // mailto href remains a no-JavaScript fallback and never exposes contacts
+    // to FreeCause.
+    document.querySelectorAll('[data-share-petition]').forEach(function (shareLink) {
+        shareLink.addEventListener('click', async function (event) {
+            if (typeof navigator.share !== 'function') {
+                return;
+            }
+
+            event.preventDefault();
+
+            try {
+                await navigator.share({
+                    title: shareLink.dataset.shareTitle,
+                    url: shareLink.dataset.shareUrl,
+                });
+            } catch (error) {
+                if (error?.name !== 'AbortError') {
+                    window.location.assign(shareLink.href);
+                }
+            }
+        });
+    });
+
     // Contact form: submit over AJAX so the sender gets immediate feedback.
     const contactForm = document.getElementById('contactForm');
     if (!contactForm || !window.clientToast) return;

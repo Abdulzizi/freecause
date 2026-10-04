@@ -22,10 +22,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -441,7 +443,7 @@ class PetitionController extends Controller
                 ]);
 
                 return redirect()->route('petition.thanks', [
-                    'locale' => $locale,
+                    'locale' => $tr->locale,
                     'slug' => $tr->slug,
                     'id' => $petition->id,
                     'status' => $user->verified ? 1 : 0,
@@ -772,13 +774,13 @@ class PetitionController extends Controller
 
     public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
     {
-        $locale = normalize_locale($locale);
+        $requestedLocale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
         $petition = Petition::with('category')->findOrFail($id);
 
         $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $locale)
+            ->where('locale', $requestedLocale)
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)
                 ->where('locale', $defaultLocale)
@@ -789,7 +791,7 @@ class PetitionController extends Controller
 
         abort_if(! $tr, 404);
 
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
+        if ($tr->slug !== $slug || $tr->locale !== $requestedLocale) {
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
@@ -798,28 +800,30 @@ class PetitionController extends Controller
             ]);
         }
 
+        // The petition translation is authoritative for this page. This is
+        // especially important when an old or shared URL uses a locale for
+        // which the petition has no translation.
+        $locale = $tr->locale;
+        App::setLocale($locale);
+        URL::defaults(['locale' => $locale]);
+        $request->session()->put('locale', $locale);
+
         $mode = ((string) $status === 'created') ? 'created' : 'signed';
 
         $suggestions = Petition::query()
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
+                'pt_locale.title as tr_title',
+                'pt_locale.slug as tr_slug',
             ])
-            ->withTranslation([
-                'base' => 'petitions',
-                'base_key' => 'id',
-                'translation_table' => 'petition_translations',
-                'translation_key' => 'petition_id',
-                'locale_alias' => 'pt_locale',
-                'default_alias' => 'pt_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-            ])
-            ->where(function ($q) {
-                $q->whereNotNull('pt_locale.title')
-                    ->orWhereNotNull('pt_default.title');
+            ->join('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
             })
+            // Keep every recommendation in the language of the petition that
+            // was signed instead of falling back to a different translation.
+            ->whereNotNull('pt_locale.title')
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
             ->where('petitions.id', '!=', $petition->id)

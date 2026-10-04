@@ -5,22 +5,27 @@
     $requiresVerification = ! $isCreated && (string) ($status ?? '0') === '0';
 
     $pageTitle = $isCreated
-        ? __('thanks.title_created')
-        : __('thanks.title_signed');
+        ? __('petition.thanks.title_created')
+        : __('petition.thanks.title_signed');
 
     $h1Text = $isCreated
-        ? __('thanks.h1_created')
-        : __('thanks.h1_signed');
+        ? __('petition.thanks.h1_created')
+        : __('petition.thanks.h1_signed');
 
     $pText = $isCreated
-        ? __('thanks.p_created')
-        : __('thanks.p_signed');
+        ? __('petition.thanks.p_created')
+        : __('petition.thanks.p_signed');
 
-    $suggestionsTitle = __('thanks.suggestions');
-    $suggestionsEmpty = __('thanks.no_suggestions');
-    $inviteBtnText = __('thanks.invite');
+    $suggestionsTitle = __('petition.thanks.suggestions');
+    $suggestionsEmpty = __('petition.thanks.no_suggestions');
+    $inviteBtnText = __('petition.thanks.invite');
 
     $petitionUrl = isset($tr) && $tr ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
+    $petitionTitle = $tr->title ?? __('petition.thanks.petition_fallback');
+    $shareEmailUrl = 'mailto:?'.http_build_query([
+        'subject' => $petitionTitle,
+        'body' => $petitionTitle."\r\n\r\n".$petitionUrl,
+    ], '', '&', PHP_QUERY_RFC3986);
 @endphp
 
 @section('title', $pageTitle)
@@ -36,7 +41,7 @@
 
                 <div class="mb-3">
                     <a class="text-[#cc1f1f]!" href="{{ $petitionUrl }}">
-                        {{ $tr->title ?? __('thanks.petition_fallback') }}
+                        {{ $petitionTitle }}
                     </a>
                 </div>
 
@@ -88,7 +93,7 @@
                         <div class="mb-2">
                             <a class="d-block p-2 border border-[#f0caca]! rounded! bg-[#fff6f6]!"
                                 href="{{ $sUrl }}">
-                                {{ $p->tr_title ?? __('thanks.petition_fallback') }}
+                                {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty
@@ -99,7 +104,11 @@
                 </div>
 
                 <a class="btn btn-danger"
-                    href="{{ lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) }}">
+                    href="{{ $shareEmailUrl }}"
+                    data-share-petition
+                    data-share-title="{{ $petitionTitle }}"
+                    data-share-url="{{ $petitionUrl }}"
+                    aria-label="{{ $inviteBtnText }}">
                     {{ $inviteBtnText }}
                 </a>
             </div>

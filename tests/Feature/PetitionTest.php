@@ -295,6 +295,104 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
     }
 
+    public function test_thanks_page_uses_the_signed_petition_locale(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'pt',
+            'title' => 'Proteja a rede elétrica',
+            'slug' => 'proteja-a-rede-eletrica',
+            'description' => 'Descrição da petição em português.',
+        ]);
+
+        $suggestion = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+            'signature_count' => 50,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $suggestion->id,
+            'locale' => 'pt',
+            'title' => 'Melhore os transportes públicos',
+            'slug' => 'melhore-os-transportes-publicos',
+            'description' => 'Descrição da sugestão em português.',
+        ]);
+
+        $englishSuggestion = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+            'signature_count' => 100,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $englishSuggestion->id,
+            'locale' => 'en',
+            'title' => 'English-only recommendation',
+            'slug' => 'english-only-recommendation',
+            'description' => 'English description.',
+        ]);
+
+        $response = $this->post("/en/petition/proteja-a-rede-eletrica/{$petition->id}/sign", [
+            'name' => 'Visitante',
+            'email' => 'visitante-portugues@example.com',
+            'comment' => 'Apoio esta petição.',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ]);
+
+        $thanksUrl = "/pt/petition/proteja-a-rede-eletrica/{$petition->id}/thanksforsigning/1";
+
+        $response->assertRedirect($thanksUrl);
+
+        $this->get($thanksUrl)
+            ->assertOk()
+            ->assertSee('Obrigado por assinar:')
+            ->assertSee('Petições que poderão interessar-lhe')
+            ->assertSee('Melhore os transportes públicos')
+            ->assertDontSee('English-only recommendation')
+            ->assertDontSee('Thank you for having signed:')
+            ->assertDontSee('Petitions you might like');
+
+        $this->get("/en/petition/proteja-a-rede-eletrica/{$petition->id}/thanksforsigning/1")
+            ->assertRedirect($thanksUrl);
+    }
+
+    public function test_thanks_page_share_button_uses_mailto_fallback_with_petition_details(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Protect Trees & Rivers',
+            'slug' => 'protect-trees-rivers',
+            'description' => 'Description',
+        ]);
+
+        $petitionUrl = route('petition.show', [
+            'locale' => 'en',
+            'slug' => 'protect-trees-rivers',
+            'id' => $petition->id,
+        ]);
+        $mailUrl = 'mailto:?'.http_build_query([
+            'subject' => 'Protect Trees & Rivers',
+            'body' => "Protect Trees & Rivers\r\n\r\n{$petitionUrl}",
+        ], '', '&', PHP_QUERY_RFC3986);
+
+        $this->get("/en/petition/protect-trees-rivers/{$petition->id}/thanksforsigning/1")
+            ->assertOk()
+            ->assertSee('data-share-petition', false)
+            ->assertSee('data-share-title="Protect Trees &amp; Rivers"', false)
+            ->assertSee('data-share-url="'.e($petitionUrl).'"', false)
+            ->assertSee('href="'.e($mailUrl).'"', false);
+    }
+
     public function test_existing_email_sign_attributes_to_account(): void
     {
         $user = User::factory()->create([
