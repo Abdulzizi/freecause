@@ -60,7 +60,7 @@
 
                                     <p><strong class="text-muted">OFFLINE DONATIONS</strong></p>
 
-                                    <p class="text-muted">You can also send us a check or make a payment via bank transfer.<br />Write to us at <a href="mailto:donation@internetpetition.org">donation@internetpetition.org</a> and we will provide the necessary details.<br />We can provide, on request, documentation of your donation for tax purposes.</p>
+                                    <p class="text-muted">You can also send us a check or make a payment via bank transfer.<br />Write to us at <a href="mailto:hello@freecause.com">hello@freecause.com</a> and we will provide the necessary details.<br />We can provide, on request, documentation of your donation for tax purposes.</p>
                                 </div>
                             </div>
                         </div>

@@ -160,10 +160,16 @@ class GoogleAuthController extends Controller
         $newUser = false;
 
         if ($user && empty($user->google_id)) {
-            // Re-link is only safe when a real form password was never set:
-            // password_changed_at is NULL for "no password ever" (Google-only
-            // accounts), and is stamped at first password set/registration.
-            $hasNoRealPassword = is_null($user->password_changed_at);
+            // Re-link is only safe for a genuinely passwordless account.
+            // Require BOTH signals: no stored password hash AND no
+            // password_changed_at stamp. Checking password_changed_at alone is
+            // not enough — legacy-migrated accounts can carry a real (legacy)
+            // password hash while password_changed_at is still NULL because it
+            // is only stamped on the first new-site login/password set. Those
+            // accounts must log in first, not be silently claimable by whoever
+            // controls the matching Google email.
+            $hasNoRealPassword = is_null($user->password_changed_at)
+                && blank($user->password);
 
             if ($hasNoRealPassword) {
                 AppLog::info(

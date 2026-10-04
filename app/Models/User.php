@@ -39,8 +39,6 @@ class User extends Authenticatable
         'verification_token_sent_at' => 'datetime',
         'verified' => 'boolean',
         'banned_until' => 'datetime',
-        'two_factor_enabled' => 'boolean',
-        'two_factor_confirmed_at' => 'datetime',
     ];
 
     public function petitions()
@@ -95,34 +93,5 @@ class User extends Authenticatable
     public function isGoogleOnly(): bool
     {
         return filled($this->google_id) && ! $this->hasLocalPassword();
-    }
-
-    public function isTwoFactorEnabled(): bool
-    {
-        return $this->two_factor_enabled && $this->two_factor_secret;
-    }
-
-    public function enableTwoFactor(string $secret): void
-    {
-        $this->two_factor_secret = $secret;
-        $this->two_factor_enabled = true;
-        $this->save();
-    }
-
-    public function disableTwoFactor(): void
-    {
-        $this->two_factor_secret = null;
-        $this->two_factor_enabled = false;
-        $this->two_factor_confirmed_at = null;
-        $this->save();
-    }
-
-    public function verifyTwoFactorCode(string $code): bool
-    {
-        if (! $this->two_factor_secret) {
-            return false;
-        }
-
-        return $this->totp->verify($code, window: 1);
     }
 }

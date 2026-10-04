@@ -24,7 +24,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/magazine">
+                    <a class="nav-link" href="{{ url('/magazine') }}">
                         {{ $c['nav_magazine'] ?? __('nav.magazine') }}
                     </a>
                 </li>

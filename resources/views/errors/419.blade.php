@@ -6,9 +6,9 @@
     <section class="py-5">
         <div class="container">
             <div class="mb-4">
-                <h1 class="mb-2 text-2xl! font-semibold!">Session Expired</h1>
+                <h1 class="mb-2 text-2xl! font-semibold!">{{ __('errors.419_title') }}</h1>
                 <div class="text-sm!">
-                    <a class="text-brand!" href="{{ url('/'.app()->getLocale()) }}">Home</a>
+                    <a class="text-brand!" href="{{ url('/'.app()->getLocale()) }}">{{ __('errors.home') }}</a>
                     <span class="text-muted"> / </span>
                     <span class="text-muted">419</span>
                 </div>
@@ -18,13 +18,13 @@
                 <div class="mb-2 relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">419</div>
 
                 <p class="text-[15px]! text-[#555]! mb-1.5!">
-                    Error 419: Page expired.
+                    {{ __('errors.419_lead') }}
                 </p>
                 <p class="text-[15px]! text-[#555]! mb-5!">
-                    Your session has expired. Please refresh the page and try again.
+                    {{ __('errors.419_hint') }}
                 </p>
                 <p class="text-sm! text-[#555]! mb-5!">
-                    <a href="{{ url()->previous() }}" class="text-brand!">Click here</a> to go back to the previous page.
+                    <a href="{{ url()->previous() }}" class="text-brand!">{{ __('errors.419_back') }}</a>
                 </p>
             </div>
         </div>

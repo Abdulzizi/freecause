@@ -8,22 +8,13 @@
 
             @php
                 $locale = app()->getLocale();
-                $mostRead = \Illuminate\Support\Facades\DB::table('petitions as p')
-                    ->join('petition_translations as pt', function ($j) use ($locale) {
-                        $j->on('pt.petition_id', '=', 'p.id')->where('pt.locale', '=', $locale);
-                    })
-                    ->where('p.status', 'published')
-                    ->where('p.is_active', 1)
-                    ->select(['p.id', 'pt.title', 'pt.slug', 'p.signature_count'])
-                    ->orderByDesc('p.signature_count')
-                    ->limit(6)
-                    ->get();
+                $mostRead = \App\Support\ErrorPageData::mostReadPetitions();
             @endphp
 
             <div class="mb-4">
-                <h1 class="mb-2 text-2xl! font-semibold!">Page not found</h1>
+                <h1 class="mb-2 text-2xl! font-semibold!">{{ __('errors.404_title') }}</h1>
                 <div class="text-sm!">
-                    <a class="text-brand!" href="{{ url('/'.app()->getLocale()) }}">Home</a>
+                    <a class="text-brand!" href="{{ url('/'.app()->getLocale()) }}">{{ __('errors.home') }}</a>
                     <span class="text-muted"> / </span>
                     <span class="text-muted">404</span>
                 </div>
@@ -33,18 +24,18 @@
                 <div class="mb-2 relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">404</div>
 
                 <p class="text-[15px]! text-[#555]! mb-1.5!">
-                    Error 404: page not found.
+                    {{ __('errors.404_lead') }}
                 </p>
                 <p class="text-[15px]! text-[#555]! mb-5!">
-                    The requested page was not found.
+                    {{ __('errors.404_hint') }}
                 </p>
                 <p class="text-sm! text-[#555]! mb-5!">
-                    However you may find interesting the following petitions:
+                    {{ __('errors.404_suggestions') }}
                 </p>
 
                 @if ($mostRead->isNotEmpty())
                         <h2 class="text-lg! font-bold! mb-4!">
-                            Most Read Month Petitions
+                            {{ __('errors.404_most_read') }}
                         </h2>
 
                         <div class="row g-3">
@@ -60,7 +51,7 @@
                                             {{ $p->title }}
                                         </a>
                                         <div class="text-xs! text-[#999]! mt-1!">
-                                            {{ number_format($p->signature_count) }} signatures
+                                            {{ number_format($p->signature_count) }} {{ __('errors.signatures') }}
                                         </div>
                                     </div>
                                 </div>

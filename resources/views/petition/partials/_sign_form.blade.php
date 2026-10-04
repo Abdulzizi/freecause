@@ -28,7 +28,6 @@
     $agreeNo = __('sign.agree_no');
 
     $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
-    $signPostUrl = lroute('petition.sign', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
 @endphp
 
 @if ($isAuthed)

@@ -8,6 +8,8 @@
     $btnText = __('sign.btn');
 
     $signUrl = isset($tr) && $tr ? lroute('petition.sign', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
+
+    $signData = session('sign.'.$petition->id, []);
 @endphp
 
 @section('title', $pageTitle)
@@ -26,11 +28,11 @@
                     @csrf
                     <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
 
-                    <input type="hidden" name="agree1" value="{{ session('sign.agree1', '1') }}">
-                    <input type="hidden" name="agree2" value="{{ session('sign.agree2', '1') }}">
-                    <input type="hidden" name="agree3" value="{{ session('sign.agree3', '1') }}">
+                    <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', '1') }}">
+                    <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', '1') }}">
+                    <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', '1') }}">
 
-                    <input type="hidden" name="comment" value="{{ session('sign.comment', 'I support this petition') }}">
+                    <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
                     <button class="btn btn-danger px-5 py-3 text-[22px]!" type="submit">
                         {{ $btnText }} <span class="ml-4!">»</span>
                     </button>
