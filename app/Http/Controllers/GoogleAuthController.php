@@ -9,6 +9,7 @@ use App\Support\Locale;
 use App\Support\WpSso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 
@@ -62,7 +63,13 @@ class GoogleAuthController extends Controller
 
         $flow = $request->query('flow', 'register');
 
-        if ($flow === 'petition') {
+        if ($flow === 'link' && Auth::check()) {
+            $request->session()->put('oauth_ctx', [
+                'flow' => 'link',
+                'locale' => $locale,
+                'user_id' => Auth::id(),
+            ]);
+        } elseif ($flow === 'petition') {
             $request->session()->put('oauth_ctx', [
                 'flow' => 'petition',
                 'locale' => $locale,
@@ -142,6 +149,66 @@ class GoogleAuthController extends Controller
 
             return redirect("/{$destLocale}/profile")
                 ->with('success', 'Google identity verified. You can now confirm account deletion.');
+        }
+
+        if (($ctx['flow'] ?? null) === 'link') {
+            $currentUser = Auth::guard('web')->user();
+
+            if (! $currentUser || (int) ($ctx['user_id'] ?? 0) !== (int) $currentUser->id) {
+                return redirect("/{$destLocale}/login")->withErrors([
+                    'oauth' => __('profile.google_link_session_lost'),
+                ]);
+            }
+
+            if (! $email) {
+                return redirect("/{$destLocale}/profile")->withErrors([
+                    'google_link' => __('profile.google_link_no_email'),
+                ]);
+            }
+
+            $takenByOther = User::where('google_id', $google->getId())
+                ->where('id', '!=', $currentUser->id)
+                ->exists();
+
+            $emailOnOther = User::where('email', $email)
+                ->where('id', '!=', $currentUser->id)
+                ->exists();
+
+            if ($takenByOther || $emailOnOther) {
+                AppLog::warning(
+                    'Google link rejected — identity already in use',
+                    'User ID: '.$currentUser->id.' | Email: '.$email,
+                    'auth.google'
+                );
+
+                return redirect("/{$destLocale}/profile")->withErrors([
+                    'google_link' => __('profile.google_link_in_use'),
+                ]);
+            }
+
+            try {
+                $currentUser->google_id = $google->getId();
+                DB::transaction(fn () => $currentUser->save());
+            } catch (\Throwable $e) {
+                AppLog::error(
+                    'Google link failed to save',
+                    'User ID: '.$currentUser->id.' | '.$e->getMessage(),
+                    'auth.google'
+                );
+
+                return redirect("/{$destLocale}/profile")->withErrors([
+                    'google_link' => __('profile.google_link_failed'),
+                ]);
+            }
+
+            AppLog::info(
+                'Google account linked from profile',
+                'User ID: '.$currentUser->id.' | Email: '.$email,
+                'auth.google'
+            );
+
+            return redirect("/{$destLocale}/profile")
+                ->with('success', __('profile.google_link_success'));
         }
 
         if (! $email) {

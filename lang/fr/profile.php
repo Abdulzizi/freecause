@@ -64,4 +64,9 @@ return [
     'account_deleted_success' => 'Votre compte a été supprimé.',
     'account_delete_failed' => 'La suppression du compte n\'a pas pu être effectuée. Veuillez réessayer plus tard.',
     'account_delete_verify_google' => 'Vérifiez votre identité avec Google avant de supprimer votre compte.',
+    'google_link_success' => 'Votre compte Google est maintenant connecté.',
+    'google_link_in_use' => 'Ce compte Google est déjà lié à un autre compte FreeCause.',
+    'google_link_no_email' => 'Google n\'a pas partagé d\'adresse e-mail, nous n\'avons donc pas pu le connecter.',
+    'google_link_failed' => 'Nous n\'avons pas pu connecter Google. Veuillez réessayer.',
+    'google_link_session_lost' => 'Votre session a expiré. Veuillez vous connecter et réessayer de connecter Google.',
 ];

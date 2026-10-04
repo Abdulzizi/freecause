@@ -202,6 +202,59 @@ class GoogleOAuthStateTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_authenticated_user_can_link_google_from_profile(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'local-user@example.test',
+            'google_id' => null,
+            'password_changed_at' => now(),
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user);
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=link');
+
+        $this->assertSame([
+            'flow' => 'link',
+            'locale' => 'en',
+            'user_id' => $user->id,
+        ], session('oauth_ctx'));
+
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHas('success');
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame('synthetic-google-user', $user->fresh()->google_id);
+    }
+
+    public function test_linking_a_google_identity_already_used_by_another_account_is_rejected(): void
+    {
+        User::factory()->create([
+            'email' => 'owner@example.test',
+            'google_id' => 'synthetic-google-user',
+            'verified' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'local-user@example.test',
+            'google_id' => null,
+            'password_changed_at' => now(),
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user);
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=link');
+        $this->queueGoogleUser();
+
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHasErrors('google_link');
+
+        $this->assertNull($user->fresh()->google_id);
+    }
+
     private function startGoogleLogin(string $path): string
     {
         Socialite::forgetDrivers();

@@ -64,4 +64,9 @@ return [
     'account_deleted_success' => 'Tu cuenta ha sido eliminada.',
     'account_delete_failed' => 'No se pudo completar la eliminación de la cuenta. Inténtalo de nuevo más tarde.',
     'account_delete_verify_google' => 'Verifica tu identidad con Google antes de eliminar tu cuenta.',
+    'google_link_success' => 'Tu cuenta de Google ya está conectada.',
+    'google_link_in_use' => 'Esa cuenta de Google ya está vinculada a otra cuenta de FreeCause.',
+    'google_link_no_email' => 'Google no compartió una dirección de correo, por lo que no pudimos conectarla.',
+    'google_link_failed' => 'No pudimos conectar Google. Inténtalo de nuevo.',
+    'google_link_session_lost' => 'Tu sesión expiró. Inicia sesión e intenta conectar Google de nuevo.',
 ];

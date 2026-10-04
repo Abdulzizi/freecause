@@ -47,6 +47,12 @@
 
                         <hr class="my-5! border-gray-200!">
 
+                        @error('google_link')
+                            <div class="mb-3! rounded-md! border! border-red-300! bg-red-50! px-3! py-2! text-[12px]! text-red-800!" role="alert">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                         @if ($u->google_id && $googleOnly)
                             <div class="flex! items-start! gap-3!">
                                 <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true"
@@ -91,7 +97,7 @@
                                 data-confirm-title="{{ __('profile.confirm_disconnect_title') }}"
                                 data-confirm-text="{{ __('profile.confirm_disconnect_text') }}"
                                 data-confirm-ok="{{ __('profile.confirm_disconnect_ok') }}"
-                                data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-3! text-center!">
+                                data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-3!">
                                 @csrf
 
                                 <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
@@ -113,7 +119,7 @@
                                     <p class="mt-1! text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.google_help') }}</p>
                                 </div>
                             </div>
-                            <a href="{{ lroute('oauth.google') }}" class="{{ $btnOutline }} mt-3!">
+                            <a href="{{ lroute('oauth.google', ['flow' => 'link']) }}" class="{{ $btnOutline }} mt-3!">
                                 <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true"
                                     width="16" height="16" class="h-4! w-4! shrink-0!">
                                 {{ __('profile.google_connect') }}
