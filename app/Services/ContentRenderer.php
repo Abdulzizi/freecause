@@ -28,6 +28,10 @@ class ContentRenderer
 
             '{PRIVACY_POLICY_ROOT_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">Privacy Policy</a>',
 
+            '{PRIVACY_POLICY_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">Privacy Policy</a>',
+
+            '{PRIVACY_POLICY_URL}' => lroute('page.show', ['slug' => 'privacy-policy']),
+
             '{CREATE_PETITION_URL}' => lroute('petition.create'),
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
 
@@ -37,10 +41,12 @@ class ContentRenderer
             '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], app()->getLocale()).'</a>',
         ];
 
-        return str_replace(
+        $rendered = str_replace(
             array_keys($tokens),
             array_values($tokens),
             $html
         );
+
+        return preg_replace('/\{[A-Z0-9_]+\}/', '', $rendered);
     }
 }
