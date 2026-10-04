@@ -36,25 +36,25 @@
 
     <h1>{{ $tr->title }}</h1>
     <div class="muted">
-        URL: {{ url("/{$locale}/petition/{$tr->slug}/{$petition->id}") }}<br>
-        Total signatures: {{ $petition->signature_count }}
+        {{ __('pet.url') }} {{ url("/{$locale}/petition/{$tr->slug}/{$petition->id}") }}<br>
+        {{ __('pet.total_signatures') }} {{ $petition->signature_count }}
     </div>
 
-    <h2>Description</h2>
+    <h2>{{ __('pet.pdf_description') }}</h2>
     {!! $tr->description !!}
 
-    <h2>Latest Signatures</h2>
+    <h2>{{ __('pet.pdf_latest') }}</h2>
 
     @forelse($signatures as $sig)
         <div class="signature">
-            <strong>{{ $sig->name ?? 'Anonymous' }}</strong>
+            <strong>{{ $sig->name ?? __('pet.anonymous') }}</strong>
             <span class="muted">
                 ({{ optional($sig->created_at)->format('Y-m-d') }})
             </span><br>
-            {{ $sig->text ?? 'I support this petition' }}
+            {{ $sig->text ?? __('pet.default_comment') }}
         </div>
     @empty
-        <p>No signatures yet.</p>
+        <p>{{ __('pet.no_signatures') }}</p>
     @endforelse
 
 </body>

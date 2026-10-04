@@ -16,8 +16,8 @@
                             <input type="hidden" name="token" value="{{ $token }}">
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('auth.email') }}</label>
-                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                <label for="reset_email" class="form-label">{{ __('auth.email') }}</label>
+                                <input type="email" id="reset_email" name="email" class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email') }}" required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -25,16 +25,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('auth.new_password') }}</label>
-                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                                <label for="reset_password" class="form-label">{{ __('auth.new_password') }}</label>
+                                <input type="password" id="reset_password" name="password" class="form-control @error('password') is-invalid @enderror" required>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('auth.confirm_password') }}</label>
-                                <input type="password" name="password_confirmation" class="form-control" required>
+                                <label for="reset_password_confirmation" class="form-label">{{ __('auth.confirm_password') }}</label>
+                                <input type="password" id="reset_password_confirmation" name="password_confirmation" class="form-control" required>
                             </div>
 
                             <button class="btn btn-danger w-100">{{ __('auth.reset_submit') }}</button>

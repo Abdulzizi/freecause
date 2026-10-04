@@ -23,7 +23,7 @@
 
 @extends('layouts.legacy')
 
-@section('title', $isEdit ? 'Edit petition - FreeCause' : 'Create petition - FreeCause')
+@section('title', $isEdit ? __('create.title_edit') : __('create.title_create'))
 
 @push('head')
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" integrity="sha384-cPa8kzsYWhqpAfWOLWYIw3V0BhPi/m3lrd8tBTPxr2NrYCHRVZ7xy1cEoRGOM/03" crossorigin="anonymous">
@@ -46,7 +46,7 @@
             @endauth
 
             @if(!$isEdit)
-                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Start a free petition</h1>
+                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_create') }}</h1>
 
                 <div class="flex! flex-wrap! items-center! justify-center! gap-[60px]! mb-10! max-md:hidden!" aria-label="Petition creation progress">
                     <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
@@ -121,7 +121,7 @@
                     </div>
                 @endguest
             @else
-                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">Edit petition</h1>
+                <h1 class="text-center mb-4 max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_edit') }}</h1>
             @endif
 
             @auth
@@ -214,7 +214,7 @@
                                 <label class="form-label">{{ __('form.image') }}</label>
 
                                 <p class="text-muted small mb-2" data-image-instructions>
-                                    Upload an image or provide an external image link. Use only one option.
+                                    {{ __('create.image_instructions') }}
                                 </p>
 
                                 <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
@@ -224,7 +224,7 @@
                                     data-image-input data-max-size="4194304">
 
                                 <small class="text-muted d-block mt-1" data-image-formats>
-                                    Accepted formats: JPG, PNG, GIF, WebP — max 4 MB.
+                                    {{ __('create.image_formats') }}
                                 </small>
 
                                 @error('image')
@@ -232,14 +232,14 @@
                                 @enderror
 
                                 <div class="mt-3 d-none" data-image-preview>
-                                    <img src="" alt="Selected image preview" class="img-thumbnail max-h-[220px]! w-auto! h-auto! object-contain!" data-image-preview-img>
+                                    <img src="" alt="{{ __('create.image_preview_alt') }}" class="img-thumbnail max-h-[220px]! w-auto! h-auto! object-contain!" data-image-preview-img>
                                     <div class="d-flex align-items-center justify-content-between mt-2">
                                         <small class="text-muted">
                                             <span data-image-name></span>
                                             <span class="ms-1" data-image-size></span>
                                         </small>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" data-image-remove>
-                                            Remove
+                                            {{ __('create.remove') }}
                                         </button>
                                     </div>
                                 </div>
@@ -249,13 +249,13 @@
                                         <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]!" alt="{{ $tr->title }}">
                                         <div class="form-check mt-2">
                                             <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
-                                            <label class="form-check-label" for="remove-petition-image">Remove current image</label>
+                                            <label class="form-check-label" for="remove-petition-image">{{ __('create.remove_current_image') }}</label>
                                         </div>
                                     </div>
                                 @endif
 
                                 <div class="flex! items-center! text-center! gap-3! my-4! text-[#888]! font-semibold! text-sm! uppercase! tracking-[0.05em]! before:flex-1! before:h-px! before:bg-[#e0e0e0]! after:flex-1! after:h-px! after:bg-[#e0e0e0]! before:content-['']! after:content-['']!" role="separator" aria-label="or">
-                                    <span>OR</span>
+                                    <span>{{ __('create.or') }}</span>
                                 </div>
 
                                 <div class="mt-2">
@@ -295,7 +295,7 @@
 
                             <div class="text-center! max-md:[&_.btn]:w-full!">
                                 <button class="btn btn-danger px-5" data-submit-btn
-                                    data-submitting-text="{{ $isEdit ? __('create.update') : 'Creating petition…' }}">
+                                    data-submitting-text="{{ $isEdit ? __('create.update') : __('create.submitting') }}">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
                                 </button>
                             </div>

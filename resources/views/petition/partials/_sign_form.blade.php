@@ -43,6 +43,18 @@
 
             <div class="row g-2">
 
+                @if ($errors->any())
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            <ul class="mb-0!">
+                                @foreach ($errors->all() as $e)
+                                    <li>{{ $e }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="col-12 mb-[14px]!">
                     @if ($useLabels)
                         <label class="form-label text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>

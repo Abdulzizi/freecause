@@ -306,7 +306,7 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/en/create-petition');
 
         $response->assertOk();
-        $this->assertSame(1, substr_count($response->getContent(), 'invalid credentials'));
+        $this->assertSame(1, substr_count($response->getContent(), __('auth.err_invalid_credentials')));
     }
 
     public function test_login_fails_for_unverified_user(): void

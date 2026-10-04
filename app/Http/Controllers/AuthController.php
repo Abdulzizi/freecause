@@ -89,7 +89,7 @@ class AuthController extends Controller
                 'auth.register'
             );
 
-            toast('Spam detected.', 'error');
+            toast(__('auth.err_spam'), 'error');
 
             return back()->withInput();
         }
@@ -102,7 +102,7 @@ class AuthController extends Controller
                 'auth.register'
             );
 
-            toast('Too many attempts. Please try again later.', 'error');
+            toast(__('auth.err_throttled'), 'error');
 
             return back()->withInput();
         }
@@ -113,24 +113,36 @@ class AuthController extends Controller
         $needsVerif = (bool) $requireVerif;
         $token = $needsVerif ? Str::random(64) : null;
 
-        $user = User::create([
-            'name' => $fullName,
-            'first_name' => $data['name'],
-            'last_name' => $data['surname'],
-            'email' => strtolower(trim($data['email'])),
-            'password' => Hash::make($data['password']),
-            // Marks that a real (form-based) password exists at first set.
-            'password_changed_at' => now(),
-            'locale' => $locale,
-            'ip' => $request->ip(),
-            'level_id' => $userLevel?->id,
-            'nickname' => $data['nickname'] ?? null,
-            'city' => $data['city'] ?? null,
+        try {
+            $user = User::create([
+                'name' => $fullName,
+                'first_name' => $data['name'],
+                'last_name' => $data['surname'],
+                'email' => strtolower(trim($data['email'])),
+                'password' => Hash::make($data['password']),
+                // Marks that a real (form-based) password exists at first set.
+                'password_changed_at' => now(),
+                'locale' => $locale,
+                'ip' => $request->ip(),
+                'level_id' => $userLevel?->id,
+                'nickname' => $data['nickname'] ?? null,
+                'city' => $data['city'] ?? null,
 
-            'verified' => $needsVerif ? false : true,
-            'verification_token' => $token,
-            'verification_token_sent_at' => $needsVerif ? now() : null,
-        ]);
+                'verified' => $needsVerif ? false : true,
+                'verification_token' => $token,
+                'verification_token_sent_at' => $needsVerif ? now() : null,
+            ]);
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'User registration failed',
+                'Email: '.$data['email'].' | '.$e->getMessage(),
+                'auth.register'
+            );
+
+            return back()->withInput()->withErrors([
+                'email' => __('auth.register_failed'),
+            ]);
+        }
 
         AppLog::info(
             'User registered',
@@ -150,24 +162,24 @@ class AuthController extends Controller
 
                 return redirect()
                     ->to("/{$locale}/login")
-                    ->with('error', 'Registration failed. Please contact support or try again later.');
+                    ->with('error', __('auth.register_failed'));
             }
 
             return redirect()
                 ->to("/{$locale}/login")
-                ->with('success', 'Please check your email to verify your account.');
+                ->with('success', __('auth.register_check_email'));
         }
 
         if ($needsVerif && ! $smtpEnabled) {
             return redirect()
                 ->to("/{$locale}/login")
-                ->with('success', 'Your account is pending verification. Please contact support.');
+                ->with('success', __('auth.register_pending'));
         }
 
         auth()->login($user);
         $request->session()->regenerate();
 
-        toast('Account created successfully.', 'success');
+        toast(__('auth.register_success'), 'success');
 
         $dest = self::sanitizeRedirectPath($request->input('redirect'), "/{$locale}");
 
@@ -189,7 +201,7 @@ class AuthController extends Controller
 
         if ($user) {
             if (! $user->verified) {
-                return back()->withErrors(['email' => 'Please verify your email first.'])->onlyInput('email', 'auth_form');
+                return back()->withErrors(['email' => __('auth.err_verify_first')])->onlyInput('email', 'auth_form');
             }
 
             if ($user->hasLevel('banned')) {
@@ -198,7 +210,7 @@ class AuthController extends Controller
                     'User ID: '.$user->id.' | IP: '.$request->ip(),
                     'auth.login'
                 );
-                toast('Your account has been suspended.', 'error');
+                toast(__('auth.err_suspended'), 'error');
 
                 return back()->withInput();
             }
@@ -248,7 +260,7 @@ class AuthController extends Controller
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
-        return back()->withErrors(['email' => 'invalid credentials'])->onlyInput('email', 'auth_form');
+        return back()->withErrors(['email' => __('auth.err_invalid_credentials')])->onlyInput('email', 'auth_form');
     }
 
     public function logout(Request $request)
@@ -444,19 +456,19 @@ class AuthController extends Controller
         $user = User::where('verification_token', $token)->first();
 
         if (! $user) {
-            toast('Invalid or expired verification link.', 'error');
+            toast(__('auth.verify_invalid'), 'error');
 
             return redirect()->to("/{$locale}");
         }
 
         if ($user->verified) {
-            toast('Account is already verified.', 'info');
+            toast(__('auth.verify_already'), 'info');
 
             return redirect()->to("/{$locale}");
         }
 
         if ($user->verification_token_sent_at && $user->verification_token_sent_at->lt(now()->subHours(48))) {
-            toast('Verification link expired. Please request a new one.', 'error');
+            toast(__('auth.verify_expired'), 'error');
 
             return redirect()->to("/{$locale}/resend-verification");
         }
@@ -501,7 +513,7 @@ class AuthController extends Controller
         // Auth::login($user);
         // request()->session()->regenerate();
 
-        return redirect()->to("/{$locale}")->with('success', 'Your account has been verified.');
+        return redirect()->to("/{$locale}")->with('success', __('auth.verify_success'));
     }
 
     public function unlinkGoogle(Request $request)
@@ -597,19 +609,31 @@ class AuthController extends Controller
 
         if (! Settings::get('smtp_enabled', false)) {
             return back()->withErrors([
-                'email' => 'Email verification is not enabled.',
+                'email' => __('auth.resend_disabled'),
             ]);
         }
 
         $user = User::where('email', strtolower(trim($request->email)))->first();
 
         if (! $user || $user->verified) {
-            return back()->with('success', 'If the account needs activation, a new email has been sent.');
+            return back()->with('success', __('auth.resend_sent'));
         }
 
-        $user->verification_token = Str::random(64);
-        $user->verification_token_sent_at = now();
-        $user->save();
+        try {
+            $user->verification_token = Str::random(64);
+            $user->verification_token_sent_at = now();
+            $user->save();
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Verification token rotation failed',
+                'User ID: '.$user->id.' | '.$e->getMessage(),
+                'auth.verification'
+            );
+
+            return back()->withInput()->withErrors([
+                'email' => __('auth.update_failed'),
+            ]);
+        }
 
         try {
             Mail::to($user->email)->queue(
@@ -630,10 +654,10 @@ class AuthController extends Controller
             );
 
             return back()->withErrors([
-                'email' => 'Failed to send email. Please try again later.',
+                'email' => __('auth.resend_failed'),
             ]);
         }
 
-        return back()->with('success', 'If the account needs activation, a new email has been sent.');
+        return back()->with('success', __('auth.resend_sent'));
     }
 }

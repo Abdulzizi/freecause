@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', ($pageTitle ?? 'Petitions') . ' - FreeCause')
+@section('title', ($pageTitle ?? __('list.petitions')) . ' - FreeCause')
 
 @section('content')
     <section class="py-16!">
@@ -11,25 +11,25 @@
                     <li class="breadcrumb-item">
                         <a href="{{ lroute('home') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_home') }}</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $heading ?? 'Petitions' }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $heading ?? __('list.petitions') }}</li>
                 </ol>
             </nav>
 
-            <div class="bg-white shadow-sm rounded-3 p-4 border border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-3 p-4! border border-[#eee]!">
 
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                    <h1 class="text-base! leading-normal! m-0! font-bold!">{{ $heading ?? 'Petitions' }}</h1>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2!">
+                    <h1 class="text-base! leading-normal! m-0! font-bold! break-words!">{{ $heading ?? __('list.petitions') }}</h1>
                     <form method="GET" action="" class="d-flex gap-2 max-w-[300px]! w-full!">
                         <input type="text" name="q" value="{{ request('q') }}"
-                               placeholder="{{ __('Search petitions…') }}"
-                               aria-label="{{ __('Search petitions') }}"
+                               placeholder="{{ __('list.search_placeholder') }}"
+                               aria-label="{{ __('list.search') }}"
                                class="form-control form-control-sm">
-                        <button type="submit" class="btn btn-sm btn-danger" aria-label="{{ __('Search') }}">
-                            <i class="fa fa-search"></i>
+                        <button type="submit" class="btn btn-sm btn-danger" aria-label="{{ __('list.search') }}">
+                            <i class="fa fa-search" aria-hidden="true"></i>
                         </button>
                         @if(request('q'))
                             <a href="{{ request()->url() }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center"
-                               aria-label="{{ __('Clear search') }}" title="{{ __('Clear search') }}">
+                               aria-label="{{ __('list.clear') }}" title="{{ __('list.clear') }}">
                                 <i class="fa fa-times" aria-hidden="true"></i>
                             </a>
                         @endif
@@ -48,14 +48,14 @@
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
                         ]) }}" class="d-flex justify-content-between align-items-center px-3.5! py-2.5! border border-[#e9ecef]! rounded-md! text-[#cc1f1f]! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
-                            <span>{{ $petition->tr_title }}</span>
+                            <span class="break-words! min-w-0!">{{ $petition->tr_title }}</span>
                             <span class="text-muted ms-3 text-nowrap text-[13px]!">
-                                {{ number_format($petition->signature_count ?? 0) }} signatures
+                                {{ number_format($petition->signature_count ?? 0) }} {{ __('list.signatures') }}
                             </span>
                         </a>
                     @empty
                         <div class="text-muted">
-                            {{ __('No petitions found.') }}
+                            {{ __('list.none') }}
                         </div>
                     @endforelse
                 </div>

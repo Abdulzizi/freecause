@@ -20,9 +20,9 @@
     <div class="widget">
         <a class="logo" href="{{ url('/') }}" target="_blank" rel="noopener"></a>
         <a class="title" href="{{ lroute('petition.show', ['locale' => $translation->locale, 'slug' => $translation->slug, 'id' => $petition->id]) }}" target="_blank" rel="noopener">{{ $translation->title }}</a>
-        <div class="counts">Signatures: {{ number_format($petition->signature_count) }} / Goal: {{ number_format($petition->goal_signatures) }}</div>
+        <div class="counts">{{ __('pet.widget_signatures') }} {{ number_format($petition->signature_count) }} / {{ __('pet.widget_goal') }} {{ number_format($petition->goal_signatures) }}</div>
         <div class="progress"><span></span></div>
-        <a class="sign" href="{{ lroute('petition.show', ['locale' => $translation->locale, 'slug' => $translation->slug, 'id' => $petition->id]) }}" target="_blank" rel="noopener">Sign</a>
+        <a class="sign" href="{{ lroute('petition.show', ['locale' => $translation->locale, 'slug' => $translation->slug, 'id' => $petition->id]) }}" target="_blank" rel="noopener">{{ __('pet.widget_sign') }}</a>
     </div>
 </body>
 </html>

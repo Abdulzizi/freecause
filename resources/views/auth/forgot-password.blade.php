@@ -18,8 +18,8 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('auth.email') }}</label>
-                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                <label for="forgot_email" class="form-label">{{ __('auth.email') }}</label>
+                                <input type="email" id="forgot_email" name="email" class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email') }}" autocomplete="email" autofocus required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>

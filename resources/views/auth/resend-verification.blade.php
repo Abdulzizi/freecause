@@ -23,8 +23,8 @@
                                 @csrf
 
                                 <div class="mb-3">
-                                    <label class="form-label">{{ __('auth.email') }}</label>
-                                    <input type="email" name="email" value="{{ old('email') }}" class="form-control"
+                                    <label for="resend_email" class="form-label">{{ __('auth.email') }}</label>
+                                    <input type="email" id="resend_email" name="email" value="{{ old('email') }}" class="form-control"
                                         autocomplete="email" autofocus required>
                                 </div>
 

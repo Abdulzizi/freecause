@@ -48,14 +48,14 @@
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
-                                    <i class="fa fa-home"></i>
+                                    <i class="fa fa-home" aria-hidden="true"></i>
                                     {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
-                                    <i class="fa fa-clock-o"></i>
+                                    <i class="fa fa-clock-o" aria-hidden="true"></i>
                                     {{ __('home.tab_recent') }}
                                 </button>
                             </li>
@@ -124,7 +124,9 @@
                                                     @if ($featuredPetition)
                                                         <div class="mb-3">
                                                             <div class="progress mb-2">
-                                                                <div class="progress-bar" style="width: {{ $progress }}%;"></div>
+                                                                <div class="progress-bar" style="width: {{ $progress }}%;"
+                                                                    role="progressbar" aria-valuenow="{{ (int) $progress }}"
+                                                                    aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
                                                             <div class="d-flex justify-content-between text-muted">
                                                                 <span>{{ number_format($signatures) }} {{ __('home.signatures_label') }}</span>

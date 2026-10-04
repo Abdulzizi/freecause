@@ -19,7 +19,7 @@
         <div class="container">
             <div class="bg-white shadow-sm rounded-3 p-5 text-center border border-[#eee]! max-w-[900px]! mx-auto!">
 
-                <h1 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium!">
+                <h1 class="mb-4 text-[1.3rem]! md:text-[28px]! font-medium! break-words! [overflow-wrap:anywhere]!">
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
                 </h1>
@@ -27,6 +27,16 @@
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="d-inline-block">
                     @csrf
                     <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger text-start! mt-2!">
+                            <ul class="mb-0!">
+                                @foreach ($errors->all() as $e)
+                                    <li>{{ $e }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', '1') }}">
                     <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', '1') }}">

@@ -126,8 +126,8 @@ class PetitionController extends Controller
         }
 
         return view('pages.petitions-list', [
-            'pageTitle' => $search ? __('Search results for ":q"', ['q' => $search]) : 'All the petitions',
-            'heading' => $search ? __('Search: ":q"', ['q' => $search]) : 'Petitions',
+            'pageTitle' => $search ? __('list.search_results', ['q' => $search]) : __('list.all_petitions'),
+            'heading' => $search ? __('list.search_results', ['q' => $search]) : __('list.petitions'),
             'search' => $search,
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,
@@ -1133,14 +1133,12 @@ class PetitionController extends Controller
         ]);
 
         if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
-            toast('Please choose either upload or external image (not both).', 'error');
-
             return back()
-                // ->withErrors([
-                //     'image' => 'Please choose either upload an image OR use an external image link (not both).',
-                //     'image_url' => 'Please choose either upload an image OR use an external image link (not both).',
-                // ])
-                ->withInput();
+                ->withInput()
+                ->withErrors([
+                    'image' => __('create.err_image_conflict'),
+                    'image_url' => __('create.err_image_conflict'),
+                ]);
         }
 
         $oldCoverImage = $petition->cover_image;

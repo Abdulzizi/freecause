@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Registration - FreeCause - Online Petition')
+@section('title', __('auth.title_register'))
 
 @section('content')
     <section class="py-5">
@@ -33,7 +33,7 @@
                             </div>
 
                             @if ($errors->any())
-                                <div class="alert alert-danger">
+                                <div class="alert alert-danger" role="alert">
                                     <ul class="mb-0">
                                         @foreach ($errors->all() as $e)
                                             <li>{{ $e }}</li>
@@ -47,33 +47,33 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('auth.name') }}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" class="form-control" autocomplete="given-name" required>
+                                        <label for="register_name" class="form-label mb-1">{{ __('auth.name') }}</label>
+                                        <input type="text" id="register_name" name="name" value="{{ old('name') }}" class="form-control" autocomplete="given-name" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('auth.surname') }}</label>
-                                        <input type="text" name="surname" value="{{ old('surname') }}" class="form-control" autocomplete="family-name" required>
+                                        <label for="register_surname" class="form-label mb-1">{{ __('auth.surname') }}</label>
+                                        <input type="text" id="register_surname" name="surname" value="{{ old('surname') }}" class="form-control" autocomplete="family-name" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('auth.email') }}</label>
-                                        <input type="email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" required>
+                                        <label for="register_email" class="form-label mb-1">{{ __('auth.email') }}</label>
+                                        <input type="email" id="register_email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('auth.password') }}</label>
-                                        <input type="password" name="password" class="form-control" autocomplete="new-password" required>
+                                        <label for="register_password" class="form-label mb-1">{{ __('auth.password') }}</label>
+                                        <input type="password" id="register_password" name="password" class="form-control" autocomplete="new-password" required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('sign.nickname') }}</label>
-                                        <input type="text" name="nickname" value="{{ old('nickname') }}" class="form-control">
+                                        <label for="register_nickname" class="form-label mb-1">{{ __('sign.nickname') }}</label>
+                                        <input type="text" id="register_nickname" name="nickname" value="{{ old('nickname') }}" class="form-control">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label mb-1">{{ __('sign.city') }}</label>
-                                        <input type="text" name="city" value="{{ old('city') }}" class="form-control">
+                                        <label for="register_city" class="form-label mb-1">{{ __('sign.city') }}</label>
+                                        <input type="text" id="register_city" name="city" value="{{ old('city') }}" class="form-control">
                                     </div>
                                 </div>
 

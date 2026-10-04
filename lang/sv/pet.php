@@ -1,0 +1,16 @@
+<?php
+
+return [
+    'offline_title' => 'Denna namninsamling är för närvarande offline.',
+    'explore' => 'Utforska namninsamlingar',
+    'pdf_description' => 'Beskrivning',
+    'pdf_latest' => 'Senaste underskrifter',
+    'anonymous' => 'Anonym',
+    'default_comment' => 'Jag stöder denna namninsamling',
+    'no_signatures' => 'Inga underskrifter ännu.',
+    'url' => 'URL:',
+    'total_signatures' => 'Totalt antal underskrifter:',
+    'widget_signatures' => 'Underskrifter:',
+    'widget_goal' => 'Mål:',
+    'widget_sign' => 'Skriv under',
+];

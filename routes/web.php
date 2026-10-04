@@ -194,7 +194,7 @@ Route::prefix('{locale}')
         Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
         Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:6,1');
         Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:6,1');
         Route::get('/resend-verification', [AuthController::class, 'showResendVerification'])->name('verification.resend.form');
         Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:6,1');
 

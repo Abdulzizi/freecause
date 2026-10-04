@@ -88,7 +88,7 @@
 
             <div class="bg-white shadow-sm rounded-3 p-4 border! border-[#eee]!">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                    <h1 class="mb-0 text-[22px]! font-bold! leading-[1.3]!">
+                    <h1 class="mb-0 text-[22px]! font-bold! leading-[1.3]! break-words! [overflow-wrap:anywhere]!">
                         {{ $petitionTitle }}
                     </h1>
 

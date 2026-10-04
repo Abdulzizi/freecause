@@ -5,18 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use App\Support\CacheKeys;
-use Illuminate\Support\Facades\Log;
 
 class CategoryPetitionController extends Controller
 {
     public function index(string $locale, string $categorySlug, string $category)
     {
-        Log::info('CategoryPetitionController', [
-            'locale' => $locale,
-            'categorySlug' => $categorySlug,
-            'categoryId' => $category,
-        ]);
-
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
         $search = trim((string) request('q', ''));
@@ -37,12 +30,6 @@ class CategoryPetitionController extends Controller
             ?? $category->translations()
                 ->orderBy('id')
                 ->first();
-
-        Log::info('CategoryPetitionController translation', [
-            'tr' => $tr ? ['slug' => $tr->slug, 'locale' => $tr->locale] : 'null',
-            'categorySlug' => $categorySlug,
-            'locale' => $locale,
-        ]);
 
         abort_if(! $tr, 404);
 
@@ -102,7 +89,7 @@ class CategoryPetitionController extends Controller
 
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,
-            'heading' => $tr->name.' Petitions',
+            'heading' => __('list.category_petitions', ['name' => $tr->name]),
             'category' => $category,
             'categoryTr' => $tr,
             'search' => $search,

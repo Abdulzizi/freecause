@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Login - FreeCause - Online Petition')
+@section('title', __('auth.title_login'))
 
 @section('content')
     <section class="py-5">
@@ -58,15 +58,15 @@
                                 @endif
 
                                 <div class="mb-3">
-                                    <label class="form-label mb-1">{{ __('auth.email') }}</label>
-                                    <input type="email" name="email" value="{{ old('email') }}" class="form-control"
+                                    <label for="login_email" class="form-label mb-1">{{ __('auth.email') }}</label>
+                                    <input type="email" id="login_email" name="email" value="{{ old('email') }}" class="form-control"
                                         autocomplete="email" autofocus
                                         placeholder="{{ __('auth.email_placeholder') }}" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label mb-1">{{ __('auth.password') }}</label>
-                                    <input type="password" name="password" class="form-control" autocomplete="current-password"
+                                    <label for="login_password" class="form-label mb-1">{{ __('auth.password') }}</label>
+                                    <input type="password" id="login_password" name="password" class="form-control" autocomplete="current-password"
                                         placeholder="{{ __('auth.password_placeholder') }}" required>
                                 </div>
 
