@@ -413,6 +413,8 @@
                             @endif
                         @endauth
 
+                        <x-ad-unit placement="petition_sidebar" class="mt-6!" min-height="250px" />
+
                     </div>
                 </div>
             </div>

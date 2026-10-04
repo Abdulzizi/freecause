@@ -63,6 +63,8 @@
                 @include('partials.pagination', ['paginator' => $petitions])
             </div>
 
+            <x-ad-unit placement="listing_inline" class="mt-6!" />
+
         </div>
     </section>
 @endsection
