@@ -92,9 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Profile danger-zone: Google disconnect reveal. The real confirm button and
-    // the panel start hidden ('d-none' in markup) so that without JS the form
-    // still works; here we add the two-step confirm interaction.
     const disconnectForm = document.querySelector('[data-google-disconnect]');
     if (disconnectForm) {
         const trigger = disconnectForm.querySelector('[data-google-disconnect-trigger]');
@@ -102,34 +99,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const cancel = disconnectForm.querySelector('[data-google-disconnect-cancel]');
         const confirmBtn = disconnectForm.querySelector('[data-google-disconnect-confirm]');
 
-        // The google-only variant has no trigger/panel; skip it safely.
         if (trigger && panel) {
             trigger.addEventListener('click', function (event) {
                 event.preventDefault();
-                panel.classList.remove('d-none');
-                if (confirmBtn) confirmBtn.classList.remove('d-none');
-                if (cancel) cancel.classList.remove('d-none');
-                trigger.classList.add('d-none');
+                panel.classList.remove('hidden');
+                if (confirmBtn) confirmBtn.classList.remove('hidden');
+                if (cancel) cancel.classList.remove('hidden');
+                trigger.classList.add('hidden');
                 if (confirmBtn) confirmBtn.focus();
             });
 
             if (cancel) {
                 cancel.addEventListener('click', function (event) {
                     event.preventDefault();
-                    panel.classList.add('d-none');
-                    if (confirmBtn) confirmBtn.classList.add('d-none');
-                    cancel.classList.add('d-none');
-                    trigger.classList.remove('d-none');
+                    panel.classList.add('hidden');
+                    if (confirmBtn) confirmBtn.classList.add('hidden');
+                    cancel.classList.add('hidden');
+                    trigger.classList.remove('hidden');
                     trigger.focus();
                 });
             }
-            // confirmBtn is a normal submit button — leave its submit untouched.
         }
     }
 
-    // Profile danger-zone: account-deletion button gating. JS disables the
-    // submit until the user explicitly ticks the confirm box, so no-JS users
-    // keep a working button.
     const deleteForm = document.querySelector('[data-account-delete-form]');
     if (deleteForm) {
         const checkbox = deleteForm.querySelector('[data-account-delete-confirm]');
@@ -143,9 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Generic busy-submit guard: disable the button when its form submits to
-    // prevent double submission. The delete submit uses a different hook
-    // (data-account-delete-submit) so the two mechanisms stay independent.
     document.querySelectorAll('[data-busy-submit]').forEach(function (btn) {
         const form = btn.closest('form');
         if (!form) return;
