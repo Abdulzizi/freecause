@@ -204,7 +204,7 @@
                 @endif
 
                 {{-- agreements --}}
-                <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! border! mb-[14px]!">
+                <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! mb-[14px]!">
                     <div class="block! min-h-6! pl-6! mb-0.5! mb-2!">
                         <input class="form-check-input" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>
                         <label class="form-check-label text-[14px]!" for="agree1_{{ $variant }}">{!! $agree1Title !!}</label>

@@ -1,6 +1,6 @@
 {{-- expects: $locale, $redirect --}}
 @php($isRegisterSubmit = old('auth_form') === 'register')
-<div class="bg-white! rounded-[.5rem]! shadow-sm! p-4! border! border-[#eee]!">
+<div class="bg-white! rounded-[.5rem]! shadow-sm! p-4!">
     @include('auth.partials._social_box', ['redirect' => $redirect])
 
     <div class="mb-4!">

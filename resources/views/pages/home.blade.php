@@ -69,7 +69,7 @@
                                     <div class="flex! flex-wrap! -mx-3!">
                                         <div class="w-full! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
 
-                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! border! border-black/[.175]! rounded-md! shadow-none!">
+                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none!">
                                                 <div class="grow! shrink! basis-auto! p-0!">
 
                                                     <span class="bg-[#ffefef]! text-[#dc3545]! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">

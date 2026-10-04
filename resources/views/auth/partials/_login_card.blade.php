@@ -1,4 +1,4 @@
-<div class="bg-white! rounded-[.5rem]! shadow-sm! p-4! border! border-[#eee]!">
+<div class="bg-white! rounded-[.5rem]! shadow-sm! p-4!">
     @include('auth.partials._social_box', ['redirect' => $redirect, 'flow' => 'login'])
 
     <div class="mb-4!">
