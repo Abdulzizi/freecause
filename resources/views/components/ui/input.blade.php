@@ -25,12 +25,12 @@
     $describedBy = implode(' ', $describedBy);
 @endphp
 
-<div class="fc-field">
+<div class="fcui-field">
     @if ($label)
-        <label for="{{ $fieldId }}" class="fc-field__label">
+        <label for="{{ $fieldId }}" class="fcui-field__label">
             {{ $label }}
             @if ($required)
-                <span class="fc-field__required" aria-hidden="true">*</span>
+                <span class="fcui-field__required" aria-hidden="true">*</span>
             @endif
         </label>
     @endif
@@ -44,14 +44,14 @@
         @required($required)
         @if ($error) aria-invalid="true" @endif
         @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-        {{ $attributes->merge(['class' => 'fc-input' . ($error ? ' fc-input--error' : '')]) }}
+        {{ $attributes->merge(['class' => 'fcui-input' . ($error ? ' fcui-input--error' : '')]) }}
     >
 
     @if ($hint && ! $error)
-        <p id="{{ $hintId }}" class="fc-field__hint">{{ $hint }}</p>
+        <p id="{{ $hintId }}" class="fcui-field__hint">{{ $hint }}</p>
     @endif
 
     @if ($error)
-        <p id="{{ $errorId }}" class="fc-field__error">{{ $error }}</p>
+        <p id="{{ $errorId }}" class="fcui-field__error">{{ $error }}</p>
     @endif
 </div>

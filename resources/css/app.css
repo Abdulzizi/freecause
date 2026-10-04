@@ -68,7 +68,7 @@ ol:not([class]) {
 }
 
 @layer components {
-    .fc-btn {
+    .fcui-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -83,101 +83,101 @@ ol:not([class]) {
         transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
     }
 
-    .fc-btn:focus-visible {
+    .fcui-btn:focus-visible {
         outline: 2px solid transparent;
         outline-offset: 2px;
         box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand);
     }
 
-    .fc-btn:disabled,
-    .fc-btn[aria-busy='true'] {
+    .fcui-btn:disabled,
+    .fcui-btn[aria-busy='true'] {
         opacity: 0.65;
         cursor: not-allowed;
     }
 
-    .fc-btn--sm {
+    .fcui-btn--sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.8125rem;
     }
 
-    .fc-btn--md {
+    .fcui-btn--md {
         padding: 0.5rem 1rem;
         font-size: 0.9375rem;
     }
 
-    .fc-btn--lg {
+    .fcui-btn--lg {
         padding: 0.75rem 1.5rem;
         font-size: 1.0625rem;
     }
 
-    .fc-btn--primary {
+    .fcui-btn--primary {
         background-color: var(--color-brand);
         border-color: var(--color-brand);
         color: #ffffff;
     }
 
-    .fc-btn--primary:hover {
+    .fcui-btn--primary:hover {
         background-color: #b31b1b;
         border-color: #b31b1b;
     }
 
-    .fc-btn--danger {
+    .fcui-btn--danger {
         background-color: var(--color-brand);
         border-color: var(--color-brand);
         color: #ffffff;
     }
 
-    .fc-btn--danger:hover {
+    .fcui-btn--danger:hover {
         background-color: #a11818;
         border-color: #a11818;
     }
 
-    .fc-btn--secondary {
+    .fcui-btn--secondary {
         background-color: #f3f1ee;
         border-color: #ded8d0;
         color: #353027;
     }
 
-    .fc-btn--secondary:hover {
+    .fcui-btn--secondary:hover {
         background-color: #e9e5df;
     }
 
-    .fc-btn--ghost {
+    .fcui-btn--ghost {
         background-color: transparent;
         border-color: transparent;
         color: var(--color-brand);
     }
 
-    .fc-btn--ghost:hover {
+    .fcui-btn--ghost:hover {
         background-color: rgba(204, 31, 31, 0.08);
     }
 
-    .fc-btn__spinner {
+    .fcui-btn__spinner {
         display: none;
     }
 
-    .fc-btn[aria-busy='true'] .fc-btn__spinner {
+    .fcui-btn[aria-busy='true'] .fcui-btn__spinner {
         display: inline-block;
     }
 
-    .fc-field {
+    .fcui-field {
         display: flex;
         flex-direction: column;
         gap: 0.375rem;
     }
 
-    .fc-field__label {
+    .fcui-field__label {
         font-size: 0.875rem;
         font-weight: 600;
         color: #353027;
     }
 
-    .fc-field__required {
+    .fcui-field__required {
         color: var(--color-brand);
         margin-inline-start: 0.125rem;
     }
 
-    .fc-input {
+    .fcui-input {
         width: 100%;
         padding: 0.5rem 0.75rem;
         font-size: 0.9375rem;
@@ -189,36 +189,36 @@ ol:not([class]) {
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .fc-input::placeholder {
+    .fcui-input::placeholder {
         color: #9b9389;
     }
 
-    .fc-input:focus {
+    .fcui-input:focus {
         outline: none;
         border-color: var(--color-brand);
         box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.15);
     }
 
-    .fc-input--error {
+    .fcui-input--error {
         border-color: var(--color-brand);
     }
 
-    .fc-input--error:focus {
+    .fcui-input--error:focus {
         box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.2);
     }
 
-    .fc-field__hint {
+    .fcui-field__hint {
         font-size: 0.8125rem;
         color: #78716c;
     }
 
-    .fc-field__error {
+    .fcui-field__error {
         font-size: 0.8125rem;
         font-weight: 500;
         color: var(--color-brand);
     }
 
-    .fc-card {
+    .fcui-card {
         background-color: #ffffff;
         border: 1px solid #ede9e3;
         border-radius: 0.875rem;
@@ -226,18 +226,18 @@ ol:not([class]) {
         overflow: hidden;
     }
 
-    .fc-card__header {
+    .fcui-card__header {
         padding: 1rem 1.25rem;
         border-bottom: 1px solid #ede9e3;
         font-weight: 600;
         color: #353027;
     }
 
-    .fc-card__body {
+    .fcui-card__body {
         padding: 1.25rem;
     }
 
-    .fc-alert {
+    .fcui-alert {
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
@@ -249,22 +249,22 @@ ol:not([class]) {
         line-height: 1.45;
     }
 
-    .fc-alert__icon {
+    .fcui-alert__icon {
         flex: 0 0 auto;
         display: inline-flex;
     }
 
-    .fc-alert__icon svg {
+    .fcui-alert__icon svg {
         width: 1.25rem;
         height: 1.25rem;
     }
 
-    .fc-alert__content {
+    .fcui-alert__content {
         flex: 1 1 auto;
         min-width: 0;
     }
 
-    .fc-alert__dismiss {
+    .fcui-alert__dismiss {
         flex: 0 0 auto;
         display: inline-flex;
         align-items: center;
@@ -281,94 +281,94 @@ ol:not([class]) {
         transition: opacity 0.15s ease, background-color 0.15s ease;
     }
 
-    .fc-alert__dismiss:hover {
+    .fcui-alert__dismiss:hover {
         opacity: 1;
         background-color: rgba(0, 0, 0, 0.06);
     }
 
-    .fc-alert__dismiss svg {
+    .fcui-alert__dismiss svg {
         width: 1rem;
         height: 1rem;
     }
 
-    .fc-alert--success {
+    .fcui-alert--success {
         background-color: #f0fdf4;
         border-color: #bbf7d0;
         border-inline-start-color: #16a34a;
         color: #14532d;
     }
 
-    .fc-alert--success .fc-alert__icon {
+    .fcui-alert--success .fcui-alert__icon {
         color: #16a34a;
     }
 
-    .fc-alert--error {
+    .fcui-alert--error {
         background-color: #fef2f2;
         border-color: #fecaca;
         border-inline-start-color: var(--color-brand);
         color: #7f1d1d;
     }
 
-    .fc-alert--error .fc-alert__icon {
+    .fcui-alert--error .fcui-alert__icon {
         color: var(--color-brand);
     }
 
-    .fc-alert--warning {
+    .fcui-alert--warning {
         background-color: #fffbeb;
         border-color: #fde68a;
         border-inline-start-color: #f59e0b;
         color: #78350f;
     }
 
-    .fc-alert--warning .fc-alert__icon {
+    .fcui-alert--warning .fcui-alert__icon {
         color: #f59e0b;
     }
 
-    .fc-alert--info {
+    .fcui-alert--info {
         background-color: #eff6ff;
         border-color: #bfdbfe;
         border-inline-start-color: #3b82f6;
         color: #1e3a8a;
     }
 
-    .fc-alert--info .fc-alert__icon {
+    .fcui-alert--info .fcui-alert__icon {
         color: #3b82f6;
     }
 
-    .fc-alert[data-alert-hiding] {
+    .fcui-alert[data-alert-hiding] {
         opacity: 0;
         transition: opacity 0.2s ease;
     }
 
-    .fc-spinner {
+    .fcui-spinner {
         color: currentColor;
         animation: fc-spin 0.7s linear infinite;
     }
 
-    .fc-spinner--sm {
+    .fcui-spinner--sm {
         width: 1rem;
         height: 1rem;
     }
 
-    .fc-spinner--md {
+    .fcui-spinner--md {
         width: 1.25rem;
         height: 1.25rem;
     }
 
-    .fc-spinner--lg {
+    .fcui-spinner--lg {
         width: 1.75rem;
         height: 1.75rem;
     }
 
-    .fc-spinner__track {
+    .fcui-spinner__track {
         opacity: 0.25;
     }
 
-    .fc-spinner__head {
+    .fcui-spinner__head {
         opacity: 0.9;
     }
 
-    .fc-sr-only {
+    .fcui-sr-only {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -388,15 +388,15 @@ ol:not([class]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .fc-spinner {
+    .fcui-spinner {
         animation: none;
     }
 
-    .fc-btn {
+    .fcui-btn {
         transition: none;
     }
 
-    .fc-alert[data-alert-hiding] {
+    .fcui-alert[data-alert-hiding] {
         transition: none;
     }
 }

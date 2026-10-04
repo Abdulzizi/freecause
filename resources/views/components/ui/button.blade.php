@@ -9,20 +9,20 @@
 
 @php
     $variantClass = match ($variant) {
-        'secondary' => 'fc-btn--secondary',
-        'danger' => 'fc-btn--danger',
-        'ghost' => 'fc-btn--ghost',
-        default => 'fc-btn--primary',
+        'secondary' => 'fcui-btn--secondary',
+        'danger' => 'fcui-btn--danger',
+        'ghost' => 'fcui-btn--ghost',
+        default => 'fcui-btn--primary',
     };
 
     $sizeClass = match ($size) {
-        'sm' => 'fc-btn--sm',
-        'lg' => 'fc-btn--lg',
-        default => 'fc-btn--md',
+        'sm' => 'fcui-btn--sm',
+        'lg' => 'fcui-btn--lg',
+        default => 'fcui-btn--md',
     };
 
     $busyText = $loadingText ?? __('ui.working');
-    $classes = trim("fc-btn {$variantClass} {$sizeClass}");
+    $classes = trim("fcui-btn {$variantClass} {$sizeClass}");
 @endphp
 
 @if ($href)
@@ -30,7 +30,7 @@
         href="{{ $href }}"
         {{ $attributes->merge(['class' => $classes]) }}
     >
-        <span class="fc-btn__label">{{ $slot }}</span>
+        <span class="fcui-btn__label">{{ $slot }}</span>
     </a>
 @else
     <button
@@ -41,7 +41,7 @@
         data-loading
         data-loading-text="{{ $busyText }}"
     >
-        <x-ui.spinner class="fc-btn__spinner" />
-        <span class="fc-btn__label">{{ $slot }}</span>
+        <x-ui.spinner class="fcui-btn__spinner" />
+        <span class="fcui-btn__label">{{ $slot }}</span>
     </button>
 @endif

@@ -6,15 +6,15 @@
 @php
     $variant = in_array($variant, ['success', 'error', 'warning', 'info'], true) ? $variant : 'info';
     $role = in_array($variant, ['error', 'warning'], true) ? 'alert' : 'status';
-    $variantClass = "fc-alert--{$variant}";
+    $variantClass = "fcui-alert--{$variant}";
 @endphp
 
 <div
     role="{{ $role }}"
     data-alert
-    {{ $attributes->merge(['class' => "fc-alert {$variantClass}"]) }}
+    {{ $attributes->merge(['class' => "fcui-alert {$variantClass}"]) }}
 >
-    <span class="fc-alert__icon" aria-hidden="true">
+    <span class="fcui-alert__icon" aria-hidden="true">
         @switch($variant)
             @case('success')
                 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 .006 1.414l-7.07 7.14a1 1 0 0 1-1.42 0l-3.54-3.57a1 1 0 1 1 1.42-1.41l2.83 2.86 6.36-6.42a1 1 0 0 1 1.414-.014z" clip-rule="evenodd" /></svg>
@@ -30,14 +30,14 @@
         @endswitch
     </span>
 
-    <div class="fc-alert__content">
+    <div class="fcui-alert__content">
         {{ $slot }}
     </div>
 
     @if ($dismissible)
         <button
             type="button"
-            class="fc-alert__dismiss"
+            class="fcui-alert__dismiss"
             data-alert-dismiss
             aria-label="{{ __('ui.dismiss') }}"
         >

@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
             region.id = 'fc-live';
             region.setAttribute('aria-live', 'polite');
             region.setAttribute('aria-atomic', 'true');
-            region.className = 'fc-sr-only';
+            region.className = 'fcui-sr-only';
             document.body.appendChild(region);
         }
         return region;
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     el.setAttribute('aria-busy', 'true');
 
-                    const label = el.querySelector('.fc-btn__label');
+                    const label = el.querySelector('.fcui-btn__label');
                     const busyText = el.dataset.loadingText;
                     if (label && busyText) {
                         label.textContent = busyText;

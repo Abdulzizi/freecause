@@ -668,7 +668,7 @@ class PetitionTest extends TestCase
         $this->actingAs($this->user)->get('/en/create-petition')
             ->assertOk()
             ->assertSee('data-petition-form', false)
-            ->assertSee('class="text-center! max-md:[&_.fc-btn]:w-full!"', false)
+            ->assertSee('class="text-center! max-md:[&_.fcui-btn]:w-full!"', false)
             ->assertDontSee('position: fixed;', false)
             ->assertDontSee('id="create-login-tab"', false)
             ->assertDontSee('id="create-register-tab"', false);

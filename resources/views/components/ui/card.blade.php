@@ -2,14 +2,14 @@
     'header' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'fc-card']) }}>
+<div {{ $attributes->merge(['class' => 'fcui-card']) }}>
     @if ($header)
-        <div class="fc-card__header">
+        <div class="fcui-card__header">
             {{ $header }}
         </div>
     @endif
 
-    <div class="fc-card__body">
+    <div class="fcui-card__body">
         {{ $slot }}
     </div>
 </div>

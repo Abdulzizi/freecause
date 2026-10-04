@@ -285,7 +285,7 @@
                                 <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" />
                             </div>
 
-                            <div class="text-center! max-md:[&_.fc-btn]:w-full!">
+                            <div class="text-center! max-md:[&_.fcui-btn]:w-full!">
                                 <x-ui.button type="submit" variant="danger" class="px-5"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
