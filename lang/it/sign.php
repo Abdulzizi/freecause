@@ -2,11 +2,11 @@
 
 return [
     'agree1' => 'Accetto i Termini di Servizio',
-    'agree1_title' => 'Confermo la registrazione e accetto le <a class="red" href="#">Condizioni d’uso</a>',
+    'agree1_title' => 'Confermo la registrazione e accetto le <a class="red" href=":terms_url">Condizioni d’uso</a>',
     'agree2' => 'Accetto la Privacy Policy',
-    'agree2_title' => 'Confermo di aver letto la <a class="red" href="#">Privacy Policy</a>',
+    'agree2_title' => 'Confermo di aver letto la <a class="red" href=":privacy_url">Privacy Policy</a>',
     'agree3' => 'Firmo questa petizione per conto mio',
-    'agree3_title' => 'Accetto il <a class="red" href="#">Trattamento dei dati personali</a>',
+    'agree3_title' => 'Accetto il <a class="red" href=":privacy_url">Trattamento dei dati personali</a>',
     'agree_no' => 'Non accetto',
     'agree_yes' => 'Accetto',
     'already_signed' => 'Hai già firmato questa petizione.',

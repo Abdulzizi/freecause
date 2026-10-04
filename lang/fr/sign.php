@@ -2,11 +2,11 @@
 
 return [
     'agree1' => 'J\'accepte les Conditions d\'utilisation',
-    'agree1_title' => 'Je confirme l’inscription et j’accepte les <a class="red" href="#">Conditions d’utilisation</a>',
+    'agree1_title' => 'Je confirme l’inscription et j’accepte les <a class="red" href=":terms_url">Conditions d’utilisation</a>',
     'agree2' => 'J\'accepte la Politique de confidentialite',
-    'agree2_title' => 'Je confirme avoir lu la <a class="red" href="#">Politique de confidentialité</a>',
+    'agree2_title' => 'Je confirme avoir lu la <a class="red" href=":privacy_url">Politique de confidentialité</a>',
     'agree3' => 'Je signe cette petition en mon nom',
-    'agree3_title' => 'J’accepte le <a class="red" href="#">Traitement des données personnelles</a>',
+    'agree3_title' => 'J’accepte le <a class="red" href=":privacy_url">Traitement des données personnelles</a>',
     'agree_no' => 'Je n’accepte pas',
     'agree_yes' => 'J’accepte',
     'already_signed' => 'Vous avez deja signe cette petition.',

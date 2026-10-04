@@ -2,11 +2,11 @@
 
 return [
     'agree1' => 'I agree to the Terms of Service',
-    'agree1_title' => 'I confirm registration and I agree to <a class="red" href="#">Usage and Limitations of Services</a>',
+    'agree1_title' => 'I confirm registration and I agree to <a class="red" href=":terms_url">Usage and Limitations of Services</a>',
     'agree2' => 'I agree to the Privacy Policy',
-    'agree2_title' => 'I confirm that I have read the <a class="red" href="#">Privacy Policy</a>',
+    'agree2_title' => 'I confirm that I have read the <a class="red" href=":privacy_url">Privacy Policy</a>',
     'agree3' => 'I am signing this petition as myself',
-    'agree3_title' => 'I agree to the <a class="red" href="#">Personal Data Processing</a>',
+    'agree3_title' => 'I agree to the <a class="red" href=":privacy_url">Personal Data Processing</a>',
     'agree_no' => 'I do not agree',
     'agree_yes' => 'I agree',
     'already_signed' => 'You already signed this petition.',
