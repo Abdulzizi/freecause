@@ -300,8 +300,9 @@ class AuthController extends Controller
         $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
         $newEmail = strtolower(trim($data['new_email'] ?? ''));
+        $emailChanged = false;
 
-        if ($newEmail !== '') {
+        if ($newEmail !== '' && $newEmail !== strtolower((string) $u->email)) {
             $exists = User::where('email', $newEmail)
                 ->where('id', '!=', $u->id)
                 ->exists();
@@ -309,7 +310,7 @@ class AuthController extends Controller
             if ($exists) {
                 return back()
                     ->withInput()
-                    ->withErrors(['new_email' => 'This email is already taken.']);
+                    ->withErrors(['new_email' => __('profile.email_taken')]);
             }
 
             if (! Settings::get('smtp_enabled', false)) {
@@ -318,40 +319,56 @@ class AuthController extends Controller
                 // claiming that email. Reject the change instead.
                 return back()
                     ->withInput()
-                    ->withErrors(['new_email' => 'Email changes require an active mail system. Please try again later.']);
+                    ->withErrors(['new_email' => __('profile.email_needs_mail_system')]);
             }
 
             $u->email = $newEmail;
             $u->verified = false;
             $u->verification_token = Str::random(64);
             $u->verification_token_sent_at = now();
-
-            try {
-                Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
-            } catch (\Exception $e) {
-                AppLog::error(
-                    'Mail sending failed (profile update)',
-                    $e->getMessage(),
-                    'auth.profile'
-                );
-            }
+            $emailChanged = true;
         }
 
         if (! empty($data['new_password'])) {
-
             if ($u->hasLocalPassword() && ! Hash::check($data['current_password'] ?? '', $u->password)) {
                 return back()
                     ->withInput()
-                    ->withErrors(['current_password' => 'Current password is incorrect.']);
+                    ->withErrors(['current_password' => __('profile.current_password_incorrect')]);
             }
 
             $u->password = Hash::make($data['new_password']);
             $u->password_changed_at = now();
         }
 
-        $u->save();
+        try {
+            DB::transaction(fn () => $u->save());
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Profile update failed',
+                'User ID: '.$u->id.' | '.$e->getMessage(),
+                'auth.profile'
+            );
 
-        toast('Profile updated successfully.', 'success');
+            return back()
+                ->withInput()
+                ->withErrors(['profile' => __('profile.update_failed')]);
+        }
+
+        if ($emailChanged) {
+            try {
+                Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
+            } catch (\Throwable $e) {
+                AppLog::error(
+                    'Mail sending failed (profile update)',
+                    'User ID: '.$u->id.' | '.$e->getMessage(),
+                    'auth.profile'
+                );
+            }
+
+            toast(__('profile.email_change_pending'), 'info');
+        } else {
+            toast(__('profile.updated_success'), 'success');
+        }
 
         return redirect()->to("/{$data['locale']}/profile");
     }
@@ -373,7 +390,7 @@ class AuthController extends Controller
 
             if (! $proofIsValid) {
                 throw ValidationException::withMessages([
-                    'google_delete' => 'Verify your identity with Google before deleting your account.',
+                    'google_delete' => __('profile.account_delete_verify_google'),
                 ]);
             }
         } else {
@@ -382,17 +399,32 @@ class AuthController extends Controller
             ]);
         }
 
+        $userId = $u->id;
+        $userEmail = $u->email;
+
         try {
             $this->wordPressUserDeletion->delete($u);
         } catch (\Throwable $e) {
             Log::error('Account deletion aborted because WordPress cleanup failed: '.$e->getMessage());
 
             return back()->withErrors([
-                'delete_account' => 'Account deletion could not be completed. Please try again later.',
+                'delete_account' => __('profile.account_delete_failed'),
             ]);
         }
 
-        User::query()->whereKey($u->getKey())->delete();
+        try {
+            User::query()->whereKey($u->getKey())->delete();
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Account deletion failed at local delete step',
+                'User ID: '.$userId.' | '.$e->getMessage(),
+                'auth.delete'
+            );
+
+            return back()->withErrors([
+                'delete_account' => __('profile.account_delete_failed'),
+            ]);
+        }
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();
@@ -400,11 +432,11 @@ class AuthController extends Controller
 
         AppLog::warning(
             'User account deleted',
-            'User ID: '.$u->id.' | Email: '.$u->email,
+            'User ID: '.$userId.' | Email: '.$userEmail,
             'auth.delete'
         );
 
-        return redirect()->to("/{$locale}")->with('success', 'Account deleted successfully.');
+        return redirect()->to("/{$locale}")->with('success', __('profile.account_deleted_success'));
     }
 
     public function verify(string $locale, string $token)
@@ -477,13 +509,23 @@ class AuthController extends Controller
         $user = auth()->user();
 
         if (! $user->hasLocalPassword()) {
-            return back()->withErrors(['error' => 'Set a password before unlinking Google.']);
+            return back()->withErrors(['google_unlink' => __('profile.google_unlink_needs_password')]);
         }
 
-        $user->google_id = null;
-        $user->save();
+        try {
+            $user->google_id = null;
+            DB::transaction(fn () => $user->save());
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Google unlink failed',
+                'User ID: '.$user->id.' | '.$e->getMessage(),
+                'auth.google'
+            );
 
-        return back()->with('success', 'Google account unlinked.');
+            return back()->withErrors(['google_unlink' => __('profile.google_unlink_failed')]);
+        }
+
+        return back()->with('success', __('profile.google_unlinked_success'));
     }
 
     public function showForgotPassword(string $locale)

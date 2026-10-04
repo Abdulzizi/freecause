@@ -112,7 +112,7 @@ class AccountDeletionTest extends TestCase
 
         $this->actingAs($user)
             ->post('/en/account/unlink/google')
-            ->assertSessionHasErrors('error');
+            ->assertSessionHasErrors('google_unlink');
 
         $this->assertSame('google-account-id', $user->fresh()->google_id);
     }

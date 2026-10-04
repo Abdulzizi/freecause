@@ -187,4 +187,33 @@ class ProfileCrudTest extends TestCase
         $this->assertSame('fresh-address@example.com', $user->email);
         $this->assertFalse((bool) $user->verified);
     }
+
+    public function test_user_with_a_password_can_disconnect_google(): void
+    {
+        $user = $this->passwordUser(['google_id' => 'google-account-id']);
+
+        $this->actingAs($user)
+            ->post('/en/account/unlink/google')
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($user->fresh()->google_id);
+    }
+
+    public function test_resubmitting_the_same_email_does_not_trigger_a_change(): void
+    {
+        $user = $this->passwordUser(['email' => 'stable@example.com']);
+
+        $this->actingAs($user)
+            ->post('/en/profile', [
+                'first_name' => 'Ada',
+                'last_name' => 'Lovelace',
+                'locale' => 'en',
+                'new_email' => 'stable@example.com',
+                'new_email_confirmation' => 'stable@example.com',
+            ])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue((bool) $user->fresh()->verified);
+    }
 }
