@@ -26,16 +26,16 @@
 
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="d-inline-block">
                     @csrf
-                    <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
+                    <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
                     @if ($errors->any())
-                        <div class="alert alert-danger text-start! mt-2!">
+                        <x-ui.alert variant="error" class="text-start! mt-2!">
                             <ul class="mb-0!">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
                                 @endforeach
                             </ul>
-                        </div>
+                        </x-ui.alert>
                     @endif
 
                     <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', '1') }}">

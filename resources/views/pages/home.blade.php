@@ -28,9 +28,9 @@
                     </h2>
 
                     <div class="mb-3">
-                        <a href="{{ lroute('petition.create') }}" class="btn btn-primary text-lg! font-medium! inline-block! px-6! py-2.5!">
+                        <x-ui.button :href="lroute('petition.create')" variant="primary" size="lg">
                             {{ __('home.btn_create_petition') }}
-                        </a>
+                        </x-ui.button>
                     </div>
 
                 </div>
@@ -134,9 +134,9 @@
                                                             </div>
                                                         </div>
 
-                                                        <a href="{{ $featuredUrl }}" class="btn btn-primary">
+                                                        <x-ui.button :href="$featuredUrl" variant="primary">
                                                             {{ __('home.featured_read_more') }}
-                                                        </a>
+                                                        </x-ui.button>
                                                     @endif
 
                                                 </div>

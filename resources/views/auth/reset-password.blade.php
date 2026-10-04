@@ -16,28 +16,39 @@
                             <input type="hidden" name="token" value="{{ $token }}">
 
                             <div class="mb-3">
-                                <label for="reset_email" class="form-label">{{ __('auth.email') }}</label>
-                                <input type="email" id="reset_email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email') }}" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <x-ui.input
+                                    type="email"
+                                    id="reset_email"
+                                    name="email"
+                                    :label="__('auth.email')"
+                                    :value="old('email')"
+                                    :required="true"
+                                    :error="$errors->first('email')"
+                                />
                             </div>
 
                             <div class="mb-3">
-                                <label for="reset_password" class="form-label">{{ __('auth.new_password') }}</label>
-                                <input type="password" id="reset_password" name="password" class="form-control @error('password') is-invalid @enderror" required>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <x-ui.input
+                                    type="password"
+                                    id="reset_password"
+                                    name="password"
+                                    :label="__('auth.new_password')"
+                                    :required="true"
+                                    :error="$errors->first('password')"
+                                />
                             </div>
 
                             <div class="mb-3">
-                                <label for="reset_password_confirmation" class="form-label">{{ __('auth.confirm_password') }}</label>
-                                <input type="password" id="reset_password_confirmation" name="password_confirmation" class="form-control" required>
+                                <x-ui.input
+                                    type="password"
+                                    id="reset_password_confirmation"
+                                    name="password_confirmation"
+                                    :label="__('auth.confirm_password')"
+                                    :required="true"
+                                />
                             </div>
 
-                            <button class="btn btn-danger w-100">{{ __('auth.reset_submit') }}</button>
+                            <x-ui.button type="submit" variant="danger" class="w-100">{{ __('auth.reset_submit') }}</x-ui.button>
                         </form>
                     </div>
                 </div>

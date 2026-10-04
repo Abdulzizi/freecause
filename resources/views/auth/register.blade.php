@@ -33,13 +33,13 @@
                             </div>
 
                             @if ($errors->any())
-                                <div class="alert alert-danger" role="alert">
+                                <x-ui.alert variant="error" class="mb-3">
                                     <ul class="mb-0">
                                         @foreach ($errors->all() as $e)
                                             <li>{{ $e }}</li>
                                         @endforeach
                                     </ul>
-                                </div>
+                                </x-ui.alert>
                             @endif
 
                             <form method="POST" action="{{ url("/{$locale}/register") }}">
@@ -47,33 +47,76 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_name" class="form-label mb-1">{{ __('auth.name') }}</label>
-                                        <input type="text" id="register_name" name="name" value="{{ old('name') }}" class="form-control" autocomplete="given-name" required>
+                                        <x-ui.input
+                                            type="text"
+                                            id="register_name"
+                                            name="name"
+                                            :label="__('auth.name')"
+                                            :value="old('name')"
+                                            :required="true"
+                                            :error="$errors->first('name')"
+                                            autocomplete="given-name"
+                                        />
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_surname" class="form-label mb-1">{{ __('auth.surname') }}</label>
-                                        <input type="text" id="register_surname" name="surname" value="{{ old('surname') }}" class="form-control" autocomplete="family-name" required>
+                                        <x-ui.input
+                                            type="text"
+                                            id="register_surname"
+                                            name="surname"
+                                            :label="__('auth.surname')"
+                                            :value="old('surname')"
+                                            :required="true"
+                                            :error="$errors->first('surname')"
+                                            autocomplete="family-name"
+                                        />
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_email" class="form-label mb-1">{{ __('auth.email') }}</label>
-                                        <input type="email" id="register_email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" required>
+                                        <x-ui.input
+                                            type="email"
+                                            id="register_email"
+                                            name="email"
+                                            :label="__('auth.email')"
+                                            :value="old('email')"
+                                            :required="true"
+                                            :error="$errors->first('email')"
+                                            autocomplete="email"
+                                        />
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_password" class="form-label mb-1">{{ __('auth.password') }}</label>
-                                        <input type="password" id="register_password" name="password" class="form-control" autocomplete="new-password" required>
+                                        <x-ui.input
+                                            type="password"
+                                            id="register_password"
+                                            name="password"
+                                            :label="__('auth.password')"
+                                            :required="true"
+                                            :error="$errors->first('password')"
+                                            autocomplete="new-password"
+                                        />
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_nickname" class="form-label mb-1">{{ __('sign.nickname') }}</label>
-                                        <input type="text" id="register_nickname" name="nickname" value="{{ old('nickname') }}" class="form-control">
+                                        <x-ui.input
+                                            type="text"
+                                            id="register_nickname"
+                                            name="nickname"
+                                            :label="__('sign.nickname')"
+                                            :value="old('nickname')"
+                                            :error="$errors->first('nickname')"
+                                        />
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="register_city" class="form-label mb-1">{{ __('sign.city') }}</label>
-                                        <input type="text" id="register_city" name="city" value="{{ old('city') }}" class="form-control">
+                                        <x-ui.input
+                                            type="text"
+                                            id="register_city"
+                                            name="city"
+                                            :label="__('sign.city')"
+                                            :value="old('city')"
+                                            :error="$errors->first('city')"
+                                        />
                                     </div>
                                 </div>
 
@@ -85,9 +128,9 @@
                                 </div>
 
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-danger px-4 py-2 rounded-lg! min-w-[160px]!">
+                                    <x-ui.button type="submit" variant="danger" class="px-4 py-2 rounded-lg! min-w-[160px]!">
                                         {{ __('auth.submit') }}
-                                    </button>
+                                    </x-ui.button>
                                 </div>
 
                                 <div class="text-center mt-3">

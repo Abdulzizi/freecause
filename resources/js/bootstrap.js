@@ -68,6 +68,110 @@ document.addEventListener('DOMContentLoaded', function () {
         showToast?.(flash.dataset.message);
     }
 
+    const liveRegion = (function () {
+        let region = document.getElementById('fc-live');
+        if (!region) {
+            region = document.createElement('div');
+            region.id = 'fc-live';
+            region.setAttribute('aria-live', 'polite');
+            region.setAttribute('aria-atomic', 'true');
+            region.className = 'fc-sr-only';
+            document.body.appendChild(region);
+        }
+        return region;
+    })();
+
+    function announce(message) {
+        if (!message) return;
+        liveRegion.textContent = '';
+        window.setTimeout(function () {
+            liveRegion.textContent = message;
+        }, 50);
+    }
+
+    if (window.clientToast && !window.clientToast.__fcAnnounceWrapped) {
+        ['success', 'error', 'warning', 'info'].forEach(function (kind) {
+            const original = window.clientToast[kind];
+            if (typeof original !== 'function') return;
+            window.clientToast[kind] = function (msg) {
+                announce(msg);
+                return original(msg);
+            };
+        });
+        window.clientToast.__fcAnnounceWrapped = true;
+    }
+
+    if (flash && window.clientToast) {
+        announce(flash.dataset.message);
+    }
+
+    const flashSuccess = document.getElementById('flash-success');
+    if (flashSuccess && window.clientToast?.success) {
+        window.clientToast.success(flashSuccess.dataset.message);
+    }
+
+    const flashError = document.getElementById('flash-error');
+    if (flashError && window.clientToast?.error) {
+        window.clientToast.error(flashError.dataset.message);
+    }
+
+    const prefersReducedMotion = window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+
+    document.querySelectorAll('form').forEach(function (form) {
+        if (form.dataset.fcLoadingBound === '1') return;
+        if (!form.querySelector('[data-loading]')) return;
+        form.dataset.fcLoadingBound = '1';
+
+        form.addEventListener('submit', function (event) {
+            window.setTimeout(function () {
+                if (event.defaultPrevented) return;
+
+                form.querySelectorAll('[data-loading]').forEach(function (el) {
+                    if (el.dataset.fcLoadingActive === '1') return;
+                    el.dataset.fcLoadingActive = '1';
+
+                    if (typeof el.disabled === 'boolean') {
+                        el.disabled = true;
+                    }
+                    el.setAttribute('aria-busy', 'true');
+
+                    const label = el.querySelector('.fc-btn__label');
+                    const busyText = el.dataset.loadingText;
+                    if (label && busyText) {
+                        label.textContent = busyText;
+                    }
+                });
+            }, 0);
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-alert-dismiss]');
+        if (!trigger) return;
+
+        const alertBox = trigger.closest('[data-alert]');
+        if (!alertBox) return;
+
+        event.preventDefault();
+
+        if (prefersReducedMotion) {
+            alertBox.remove();
+            return;
+        }
+
+        alertBox.setAttribute('data-alert-hiding', '');
+        let removed = false;
+        const finish = function () {
+            if (removed) return;
+            removed = true;
+            alertBox.remove();
+        };
+        alertBox.addEventListener('transitionend', finish, { once: true });
+        window.setTimeout(finish, 300);
+    });
+
     // Petition sharing: use the device share sheet when available. The link's
     // mailto href remains a no-JavaScript fallback and never exposes contacts
     // to FreeCause.

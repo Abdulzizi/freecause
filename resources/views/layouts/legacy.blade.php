@@ -112,6 +112,14 @@
         <div id="toast-flash" data-type="{{ session('toast')['type'] }}" data-message="{{ session('toast')['message'] }}" hidden></div>
     @endif
 
+    @if (session('success'))
+        <div id="flash-success" data-message="{{ session('success') }}" hidden></div>
+    @endif
+
+    @if (session('error'))
+        <div id="flash-error" data-message="{{ session('error') }}" hidden></div>
+    @endif
+
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')

@@ -33,21 +33,21 @@
                             </div>
 
                             @if ($errors->any())
-                                <div class="alert alert-danger" role="alert">
+                                <x-ui.alert variant="error" class="mb-3">
                                     {{ $errors->first() }}
-                                </div>
+                                </x-ui.alert>
                             @endif
 
                             @if (session('success'))
-                                <div class="alert alert-success" role="status">
+                                <x-ui.alert variant="success" class="mb-3">
                                     {{ session('success') }}
-                                </div>
+                                </x-ui.alert>
                             @endif
 
                             @if (session('error'))
-                                <div class="alert alert-danger" role="alert">
+                                <x-ui.alert variant="error" class="mb-3">
                                     {{ session('error') }}
-                                </div>
+                                </x-ui.alert>
                             @endif
 
                             <form method="POST" action="{{ lroute('login.post') }}">
@@ -58,16 +58,29 @@
                                 @endif
 
                                 <div class="mb-3">
-                                    <label for="login_email" class="form-label mb-1">{{ __('auth.email') }}</label>
-                                    <input type="email" id="login_email" name="email" value="{{ old('email') }}" class="form-control"
-                                        autocomplete="email" autofocus
-                                        placeholder="{{ __('auth.email_placeholder') }}" required>
+                                    <x-ui.input
+                                        type="email"
+                                        id="login_email"
+                                        name="email"
+                                        :label="__('auth.email')"
+                                        :value="old('email')"
+                                        :placeholder="__('auth.email_placeholder')"
+                                        :required="true"
+                                        autocomplete="email"
+                                        autofocus
+                                    />
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="login_password" class="form-label mb-1">{{ __('auth.password') }}</label>
-                                    <input type="password" id="login_password" name="password" class="form-control" autocomplete="current-password"
-                                        placeholder="{{ __('auth.password_placeholder') }}" required>
+                                    <x-ui.input
+                                        type="password"
+                                        id="login_password"
+                                        name="password"
+                                        :label="__('auth.password')"
+                                        :placeholder="__('auth.password_placeholder')"
+                                        :required="true"
+                                        autocomplete="current-password"
+                                    />
                                 </div>
 
                                 <div class="form-check mb-3">
@@ -75,9 +88,9 @@
                                     <label class="form-check-label" for="remember">{{ __('auth.remember_me') }}</label>
                                 </div>
 
-                                <button type="submit" class="btn btn-danger w-100 py-2 rounded-lg!">
+                                <x-ui.button type="submit" variant="danger" class="w-100 py-2 rounded-lg!">
                                     {{ __('auth.login') }}
-                                </button>
+                                </x-ui.button>
 
                                 <div class="text-center mt-3">
                                     <a href="{{ lroute('password.request') }}" class="text-brand!">{{ __('auth.forgot_password') }}</a>

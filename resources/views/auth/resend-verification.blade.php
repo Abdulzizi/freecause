@@ -12,23 +12,30 @@
                             <h1 class="text-center mb-4 text-[28px]! font-medium!">{{ __('auth.resend_verification_heading') }}</h1>
 
                             @if (session('success'))
-                                <div class="alert alert-success" role="status">{{ session('success') }}</div>
+                                <x-ui.alert variant="success" class="mb-3">{{ session('success') }}</x-ui.alert>
                             @endif
 
                             @if ($errors->any())
-                                <div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>
+                                <x-ui.alert variant="error" class="mb-3">{{ $errors->first() }}</x-ui.alert>
                             @endif
 
                             <form method="POST" action="{{ lroute('verification.resend') }}">
                                 @csrf
 
                                 <div class="mb-3">
-                                    <label for="resend_email" class="form-label">{{ __('auth.email') }}</label>
-                                    <input type="email" id="resend_email" name="email" value="{{ old('email') }}" class="form-control"
-                                        autocomplete="email" autofocus required>
+                                    <x-ui.input
+                                        type="email"
+                                        id="resend_email"
+                                        name="email"
+                                        :label="__('auth.email')"
+                                        :value="old('email')"
+                                        :required="true"
+                                        autocomplete="email"
+                                        autofocus
+                                    />
                                 </div>
 
-                                <button class="btn btn-danger w-100">{{ __('auth.resend_email_btn') }}</button>
+                                <x-ui.button type="submit" variant="danger" class="w-100">{{ __('auth.resend_email_btn') }}</x-ui.button>
 
                                 <div class="text-center mt-3">
                                     <a href="{{ lroute('login') }}" class="text-muted">{{ __('auth.back_login') }}</a>

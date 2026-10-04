@@ -1,4 +1,5 @@
 {{-- expects: $locale, $redirect --}}
+@php($isRegisterSubmit = old('auth_form') === 'register')
 <div class="bg-white! rounded-3! shadow-sm! p-4! border! border-[#eee]!">
     @include('auth.partials._social_box', ['redirect' => $redirect])
 
@@ -7,13 +8,13 @@
     </div>
 
     @if (old('auth_form') === 'register' && $errors->any())
-        <div class="alert alert-danger">
+        <x-ui.alert variant="error" class="mb-3">
             <ul class="mb-0">
                 @foreach ($errors->all() as $e)
                     <li>{{ $e }}</li>
                 @endforeach
             </ul>
-        </div>
+        </x-ui.alert>
     @endif
 
     <form method="POST" action="{{ lroute('register.post') }}">
@@ -22,23 +23,46 @@
         <input type="hidden" name="redirect" value="{{ $redirect }}">
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.name') }}</label>
-            <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
+            <x-ui.input
+                type="text"
+                name="name"
+                :label="__('auth.name')"
+                :value="old('name')"
+                :required="true"
+                :error="$isRegisterSubmit ? $errors->first('name') : null"
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.surname') }}</label>
-            <input type="text" name="surname" value="{{ old('surname') }}" class="form-control" required>
+            <x-ui.input
+                type="text"
+                name="surname"
+                :label="__('auth.surname')"
+                :value="old('surname')"
+                :required="true"
+                :error="$isRegisterSubmit ? $errors->first('surname') : null"
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.email') }}</label>
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
+            <x-ui.input
+                type="email"
+                name="email"
+                :label="__('auth.email')"
+                :value="old('email')"
+                :required="true"
+                :error="$isRegisterSubmit ? $errors->first('email') : null"
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.password') }}</label>
-            <input type="password" name="password" class="form-control" required>
+            <x-ui.input
+                type="password"
+                name="password"
+                :label="__('auth.password')"
+                :required="true"
+                :error="$isRegisterSubmit ? $errors->first('password') : null"
+            />
         </div>
 
         <div class="mb-3 text-[14px]!">
@@ -46,13 +70,23 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('sign.nickname') }}</label>
-            <input type="text" name="nickname" value="{{ old('nickname') }}" class="form-control">
+            <x-ui.input
+                type="text"
+                name="nickname"
+                :label="__('sign.nickname')"
+                :value="old('nickname')"
+                :error="$isRegisterSubmit ? $errors->first('nickname') : null"
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('sign.city') }}</label>
-            <input type="text" name="city" value="{{ old('city') }}" class="form-control">
+            <x-ui.input
+                type="text"
+                name="city"
+                :label="__('sign.city')"
+                :value="old('city')"
+                :error="$isRegisterSubmit ? $errors->first('city') : null"
+            />
         </div>
 
         <div class="form-check mb-3">
@@ -62,6 +96,6 @@
             </label>
         </div>
 
-        <button class="btn btn-danger px-4 rounded-[6px]!">{{ __('auth.submit') }}</button>
+        <x-ui.button type="submit" variant="danger" class="px-4 rounded-[6px]!">{{ __('auth.submit') }}</x-ui.button>
     </form>
 </div>

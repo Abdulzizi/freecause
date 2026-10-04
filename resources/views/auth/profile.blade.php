@@ -48,9 +48,9 @@
                         <hr class="my-5! border-gray-200!">
 
                         @error('google_link')
-                            <div class="mb-3! rounded-md! border! border-red-300! bg-red-50! px-3! py-2! text-[12px]! text-red-800!" role="alert">
+                            <x-ui.alert variant="error" class="mb-3!">
                                 {{ $message }}
-                            </div>
+                            </x-ui.alert>
                         @enderror
 
                         @if ($u->google_id && $googleOnly)
@@ -133,9 +133,9 @@
                             <p class="mt-2! text-[12px]! leading-relaxed! text-gray-600!">{{ __('profile.delete_explain') }}</p>
 
                             @error('google_delete')
-                                <div class="mt-3! rounded-md! border! border-red-300! bg-red-100! px-3! py-2! text-[12px]! text-red-800!" role="alert">
+                                <x-ui.alert variant="error" class="mt-3!">
                                     {{ $message }}
-                                </div>
+                                </x-ui.alert>
                             @enderror
 
                             @if ($googleOnly && ! $googleDeleteVerified)
@@ -183,19 +183,19 @@
                         <h3 class="mb-6! text-center! text-[22px]! font-semibold! text-gray-900!">{{ __('profile.heading') }}</h3>
 
                         @if ($errors->any())
-                            <div class="mb-4! rounded-md! border! border-red-300! bg-red-50! px-4! py-3!">
-                                <ul class="m-0! list-disc! space-y-1! ps-5! text-[13px]! text-red-800!">
+                            <x-ui.alert variant="error" class="mb-4!">
+                                <ul class="m-0! list-disc! space-y-1! ps-5!">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
-                            </div>
+                            </x-ui.alert>
                         @endif
 
                         @if (session('success'))
-                            <div class="mb-4! rounded-md! border! border-green-300! bg-green-50! px-4! py-3! text-[13px]! text-green-800!">
+                            <x-ui.alert variant="success" class="mb-4!">
                                 {{ session('success') }}
-                            </div>
+                            </x-ui.alert>
                         @endif
 
                         <form method="POST" action="{{ lroute('account.profile.update') }}" class="space-y-4!">
@@ -302,7 +302,7 @@
                             </div>
 
                             <div class="pt-2! text-center!">
-                                <button type="submit" data-busy-submit class="{{ $btnBrand }} w-full! sm:w-auto! sm:min-w-40!">
+                                <button type="submit" data-busy-submit data-loading data-loading-text="{{ __('ui.saving') }}" class="{{ $btnBrand }} w-full! sm:w-auto! sm:min-w-40!">
                                     {{ __('profile.save_changes') }} <span aria-hidden="true">&raquo;</span>
                                 </button>
                             </div>

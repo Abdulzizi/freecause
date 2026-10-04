@@ -39,19 +39,19 @@
     @else
         <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
             @csrf
-            <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
+            <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
             <div class="row g-2">
 
                 @if ($errors->any())
                     <div class="col-12">
-                        <div class="alert alert-danger">
+                        <x-ui.alert variant="error">
                             <ul class="mb-0!">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
                                 @endforeach
                             </ul>
-                        </div>
+                        </x-ui.alert>
                     </div>
                 @endif
 
@@ -134,13 +134,13 @@
 @else
     <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
-        <p class="alert alert-danger mt-2" role="alert" data-sign-network-error hidden>{{ __('sign.connection_error') }}</p>
+        <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
         <div class="row g-2">
 
             @if ($errors->any())
                 <div class="col-12">
-                    <div class="alert alert-danger">
+                    <x-ui.alert variant="error">
                         <ul class="mb-0">
                             @foreach ($errors->all() as $e)
                                 <li>{{ $e }}</li>
@@ -150,7 +150,7 @@
                                 <li><a class="text-brand!" href="{{ session('login_url') }}">{{ __('auth.go_to_login') }}</a></li>
                             @endif
                         </ul>
-                    </div>
+                    </x-ui.alert>
                 </div>
             @endif
 

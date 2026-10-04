@@ -26,18 +26,16 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8 py-3">
-                    <div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
-                        <div>
-                            <strong>{{ __('nav.magazine_notice_title') }}</strong>
-                            {{ __('nav.magazine_notice_body') }}
-                        </div>
-                    </div>
+                    <x-ui.alert variant="warning" class="mb-4">
+                        <strong>{{ __('nav.magazine_notice_title') }}</strong>
+                        {{ __('nav.magazine_notice_body') }}
+                    </x-ui.alert>
                     <div class="text-center py-4">
                         <h2 class="mb-3 font-semibold!">{{ __('nav.magazine_coming_soon') }}</h2>
                         <p class="text-muted text-base!">
                             {{ __('nav.magazine_body') }}
                         </p>
-                        <a href="{{ lroute('home') }}" class="btn btn-danger mt-3">{{ __('nav.magazine_back_home') }}</a>
+                        <x-ui.button :href="lroute('home')" variant="danger" class="mt-3">{{ __('nav.magazine_back_home') }}</x-ui.button>
                     </div>
                 </div>
             </div>

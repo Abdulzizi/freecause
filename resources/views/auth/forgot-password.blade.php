@@ -11,22 +11,27 @@
                         <h1 class="mb-4 text-center text-2xl!">{{ __('auth.forgot_title') }}</h1>
 
                         @if (session('status'))
-                            <div class="alert alert-success" role="status">{{ session('status') }}</div>
+                            <x-ui.alert variant="success" class="mb-3">{{ session('status') }}</x-ui.alert>
                         @endif
 
                         <form method="POST" action="{{ lroute('password.email') }}">
                             @csrf
 
                             <div class="mb-3">
-                                <label for="forgot_email" class="form-label">{{ __('auth.email') }}</label>
-                                <input type="email" id="forgot_email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email') }}" autocomplete="email" autofocus required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <x-ui.input
+                                    type="email"
+                                    id="forgot_email"
+                                    name="email"
+                                    :label="__('auth.email')"
+                                    :value="old('email')"
+                                    :required="true"
+                                    :error="$errors->first('email')"
+                                    autocomplete="email"
+                                    autofocus
+                                />
                             </div>
 
-                            <button class="btn btn-danger w-100">{{ __('auth.send_reset') }}</button>
+                            <x-ui.button type="submit" variant="danger" class="w-100">{{ __('auth.send_reset') }}</x-ui.button>
 
                             <div class="text-center mt-3">
                                 <a href="{{ lroute('login') }}" class="text-muted text-sm!">{{ __('auth.back_login') }}</a>

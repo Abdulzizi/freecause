@@ -35,13 +35,13 @@
 
             @auth
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <x-ui.alert variant="error">
                         <ul class="mb-0">
                             @foreach ($errors->all() as $e)
                                 <li>{{ $e }}</li>
                             @endforeach
                         </ul>
-                    </div>
+                    </x-ui.alert>
                 @endif
             @endauth
 
@@ -139,8 +139,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.title') }}</label>
-                                <input class="form-control" name="title" value="{{ $oldTitle }}" required>
+                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required />
                             </div>
 
                             <div class="mb-3">
@@ -205,9 +204,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.tags') }}</label>
-                                <input class="form-control" name="tags" value="{{ $oldTags }}">
-                                <small class="text-muted">{{ __('create.tags_hint') }}</small>
+                                <x-ui.input name="tags" :label="__('form.tags')" :value="$oldTags" :hint="__('create.tags_hint')" />
                             </div>
 
                             <div class="mb-3" data-image-field>
@@ -269,35 +266,30 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.youtube') }}</label>
-                                <input class="form-control" name="youtube" value="{{ $oldYoutube }}">
+                                <x-ui.input name="youtube" :label="__('form.youtube')" :value="$oldYoutube" />
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.target') }}</label>
-                                <input class="form-control" name="target" value="{{ $oldTarget }}">
+                                <x-ui.input name="target" :label="__('form.target')" :value="$oldTarget" />
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.community') }}</label>
-                                <input class="form-control" name="community" value="{{ $oldCommunity }}">
+                                <x-ui.input name="community" :label="__('form.community')" :value="$oldCommunity" />
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">{{ __('form.community_url') }}</label>
-                                <input class="form-control" name="community_url" value="{{ $oldCommunityUrl }}">
+                                <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" />
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label">{{ __('form.city') }}</label>
-                                <input class="form-control" name="city" value="{{ $oldCity }}">
+                                <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" />
                             </div>
 
-                            <div class="text-center! max-md:[&_.btn]:w-full!">
-                                <button class="btn btn-danger px-5" data-submit-btn
-                                    data-submitting-text="{{ $isEdit ? __('create.update') : __('create.submitting') }}">
+                            <div class="text-center! max-md:[&_.fc-btn]:w-full!">
+                                <x-ui.button type="submit" variant="danger" class="px-5"
+                                    :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
-                                </button>
+                                </x-ui.button>
                             </div>
                         </form>
 

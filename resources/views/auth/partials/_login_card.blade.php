@@ -7,9 +7,9 @@
     </div>
 
     @if (old('auth_form') === 'login' && $errors->any())
-        <div class="alert alert-danger">
+        <x-ui.alert variant="error" class="mb-3">
             {{ $errors->first() }}
-        </div>
+        </x-ui.alert>
     @endif
 
     <form method="POST" action="{{ lroute('login.post') }}">
@@ -18,18 +18,27 @@
         <input type="hidden" name="redirect" value="{{ $redirect }}">
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.email') }}</label>
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
+            <x-ui.input
+                type="email"
+                name="email"
+                :label="__('auth.email')"
+                :value="old('email')"
+                :required="true"
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label mb-1">{{ __('auth.password') }}</label>
-            <input type="password" name="password" class="form-control" required>
+            <x-ui.input
+                type="password"
+                name="password"
+                :label="__('auth.password')"
+                :required="true"
+            />
         </div>
 
-        <button type="submit" class="btn btn-danger px-4 rounded-[6px]!">
+        <x-ui.button type="submit" variant="danger" class="px-4 rounded-[6px]!">
             {{ __('auth.login') }}
-        </button>
+        </x-ui.button>
 
         <div class="mt-3">
             <a href="{{ lroute('register') }}" class="text-brand! d-block fw-bold">{{ __('auth.not_member') }} {{ __('auth.sign_up_now') }}</a>
