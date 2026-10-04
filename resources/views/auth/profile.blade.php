@@ -91,7 +91,7 @@
                                 data-confirm-title="{{ __('profile.confirm_disconnect_title') }}"
                                 data-confirm-text="{{ __('profile.confirm_disconnect_text') }}"
                                 data-confirm-ok="{{ __('profile.confirm_disconnect_ok') }}"
-                                data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-3!">
+                                data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-3! text-center!">
                                 @csrf
 
                                 <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
