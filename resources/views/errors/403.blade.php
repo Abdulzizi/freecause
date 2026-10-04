@@ -45,7 +45,7 @@
                     <p class="text-[15px]! text-[#555]! mb-5!">
                         {{ __('errors.403_hint') }}
                     </p>
-                    <a class="btn btn-danger" href="{{ url('/'.$locale) }}">{{ __('errors.back_home') }}</a>
+                    <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.back_home') }}</x-ui.button>
                 </div>
 
             </div>

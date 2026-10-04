@@ -62,9 +62,9 @@
                     </div>
 
                     <div class="col-md-3 text-md-end">
-                        <a href="{{ $signUrl }}" class="btn btn-danger px-4 py-2 text-[15px]!">
+                        <x-ui.button variant="danger" :href="$signUrl">
                             {{ __('sig.sign_link') }}
-                        </a>
+                        </x-ui.button>
                     </div>
 
                 </div>

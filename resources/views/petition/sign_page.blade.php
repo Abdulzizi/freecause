@@ -43,8 +43,8 @@
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', '1') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
-                    <button class="btn btn-danger px-5 py-3 text-[22px]!" type="submit">
-                        {{ $btnText }} <span class="ml-4!">»</span>
+                    <button class="inline-flex! items-center! justify-center! gap-2! bg-[#cc1f1f]! text-white! border! border-[#cc1f1f]! rounded-[0.625rem]! px-5! py-3! text-[22px]! font-semibold! no-underline! hover:bg-[#b31b1b]! max-md:w-full! max-md:text-[18px]! max-md:px-4! max-md:py-2.5!" type="submit">
+                        {{ $btnText }} <span>»</span>
                     </button>
                 </form>
             </div>

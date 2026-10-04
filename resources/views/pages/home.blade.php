@@ -315,9 +315,9 @@
             </div>
 
             <div class="text-center mt-4">
-                <a href="/magazine" class="btn btn-outline-danger">
+                <x-ui.button variant="ghost" href="/magazine">
                     {{ __('home.blog_view_all') }}
-                </a>
+                </x-ui.button>
             </div>
         </div>
     </section>

@@ -75,7 +75,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <input type="submit" class="btn btn-primary" value="{{ __('contacts.submit') }}">
+                                        <input type="submit" class="inline-flex! items-center! justify-center! bg-[#cc1f1f]! text-white! border! border-[#cc1f1f]! rounded-[0.625rem]! px-4! py-2! font-semibold! text-[0.9375rem]! cursor-pointer! no-underline! hover:bg-[#b31b1b]!" value="{{ __('contacts.submit') }}">
                                     </div>
                                 </fieldset>
                             </form>

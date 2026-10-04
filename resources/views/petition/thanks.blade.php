@@ -64,7 +64,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <button class="btn btn-danger" type="submit">{{ __('sign.claim_btn') }}</button>
+                                    <x-ui.button type="submit" variant="danger">{{ __('sign.claim_btn') }}</x-ui.button>
                                 </form>
                                 <p class="mt-3 mb-0 text-muted text-[13px]!">
                                     {{ __('sign.claim_verify_note') }}
@@ -103,14 +103,14 @@
                     @endforelse
                 </div>
 
-                <a class="btn btn-danger"
-                    href="{{ $shareEmailUrl }}"
+                <x-ui.button variant="danger"
+                    :href="$shareEmailUrl"
                     data-share-petition
                     data-share-title="{{ $petitionTitle }}"
                     data-share-url="{{ $petitionUrl }}"
                     aria-label="{{ $inviteBtnText }}">
                     {{ $inviteBtnText }}
-                </a>
+                </x-ui.button>
             </div>
         </div>
     </section>

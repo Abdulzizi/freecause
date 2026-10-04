@@ -22,7 +22,7 @@
                 <p class="text-[15px]! text-[#555]! mb-5!">
                     {{ __('errors.503_hint') }}
                 </p>
-                <a class="btn btn-danger" href="{{ url('/'.$locale) }}">{{ __('errors.503_btn') }}</a>
+                <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.503_btn') }}</x-ui.button>
             </div>
 
         </div>

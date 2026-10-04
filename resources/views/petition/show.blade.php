@@ -93,7 +93,7 @@
                     </h1>
 
                     @if (!$hasSigned)
-                        <a href="#signFormTop" class="btn btn-danger rounded-md! bg-[#cc1f1f]! border-[#cc1f1f]! px-[14px]! py-[6px]! font-semibold!">{{ $btnSignNow }}</a>
+                        <x-ui.button variant="danger" href="#signFormTop">{{ $btnSignNow }}</x-ui.button>
                     @endif
                 </div>
 
@@ -286,8 +286,8 @@
                                     <div class="text-muted text-sm!">{{ $latestEmpty }}</div>
                                 @endforelse
 
-                                <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                    class="btn btn-sm btn-danger mt-2">{{ $latestBrowseAll }}</a>
+                                <x-ui.button variant="danger" size="sm" class="mt-2"
+                                    :href="lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id])">{{ $latestBrowseAll }}</x-ui.button>
                             </div>
                         </div>
 
