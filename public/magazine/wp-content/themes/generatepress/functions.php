@@ -401,3 +401,7 @@ function get_global_footer_html() {
         'time' => time() // 🔍 DEBUG: har hit pe change hona chahiye
     ];
 }
+
+add_action( 'wp_head', function () {
+	echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5636773008040262" crossorigin="anonymous"></script>' . "\n";
+}, 5 );
