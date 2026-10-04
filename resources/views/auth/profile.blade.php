@@ -203,20 +203,20 @@
                         <form method="POST" action="{{ lroute('account.profile.update') }}" class="space-y-4!">
                             @csrf
 
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="first_name">{{ __('profile.first_name') }}</label>
                                 <input class="{{ $input }}" id="first_name" name="first_name" value="{{ old('first_name', $u->first_name) }}">
                             </div>
 
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="last_name">{{ __('profile.last_name') }}</label>
                                 <input class="{{ $input }}" id="last_name" name="last_name" value="{{ old('last_name', $u->last_name) }}">
                             </div>
 
                             @php $idMode = old('identify_mode', $u->identify_mode ?? 'full'); @endphp
-                            <div class="grid! grid-cols-1! gap-2! sm:grid-cols-[160px_1fr]! sm:gap-4!">
-                                <span class="{{ $label }} sm:pt-2!">{{ __('profile.identify_as') }}</span>
-                                <div class="flex! flex-wrap! gap-x-6! gap-y-2! sm:pt-2!">
+                            <div class="grid! grid-cols-1! gap-2! md:grid-cols-[160px_1fr]! md:gap-4!">
+                                <span class="{{ $label }} md:pt-2!">{{ __('profile.identify_as') }}</span>
+                                <div class="flex! flex-wrap! gap-x-6! gap-y-2! md:pt-2!">
                                     <label class="inline-flex! items-center! gap-2! text-[13px]! text-gray-700!">
                                         <input type="radio" name="identify_mode" value="full" @checked($idMode === 'full')
                                             class="h-4! w-4! border-gray-300! text-brand! focus:ring-brand/40!"> {{ __('profile.id_full') }}
@@ -232,17 +232,17 @@
                                 </div>
                             </div>
 
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="nickname">{{ __('profile.id_nick') }}</label>
                                 <input class="{{ $input }}" id="nickname" name="nickname" value="{{ old('nickname', $u->nickname) }}">
                             </div>
 
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="city">{{ __('form.city') }}</label>
                                 <input class="{{ $input }}" id="city" name="city" value="{{ old('city', $u->city) }}">
                             </div>
 
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="country">{{ __('profile.country') }}</label>
                                 <select class="{{ $input }}" id="country" name="country">
                                     <option value="">{{ __('profile.select_country') }}</option>
@@ -255,7 +255,7 @@
                             </div>
 
                             @php $preferredLanguage = old('locale', \App\Support\Locale::toShort($u->locale)); @endphp
-                            <div class="grid! grid-cols-1! gap-1! sm:grid-cols-[160px_1fr]! sm:items-center! sm:gap-4!">
+                            <div class="grid! grid-cols-1! gap-1! md:grid-cols-[160px_1fr]! md:items-center! md:gap-4!">
                                 <label class="{{ $label }}" for="locale">{{ __('profile.preferred_language') }}</label>
                                 <select class="{{ $input }}" id="locale" name="locale" required>
                                     @foreach ($languages as $language)
@@ -269,8 +269,8 @@
                             <hr class="border-gray-200!">
 
                             <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.change_email') }}</p>
-                            <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
-                                <span class="hidden! sm:block!"></span>
+                            <div class="grid! grid-cols-1! gap-3! md:grid-cols-[160px_1fr]! md:gap-4!">
+                                <span class="hidden! md:block!"></span>
                                 <div class="space-y-3!">
                                     <input class="{{ $input }}" name="new_email" placeholder="{{ __('profile.new_email') }}" value="{{ old('new_email') }}">
                                     <input class="{{ $input }}" name="new_email_confirmation" placeholder="{{ __('profile.confirm_email') }}" value="{{ old('new_email_confirmation') }}">
@@ -282,8 +282,8 @@
                             <div id="password-section">
                                 @if ($u->hasLocalPassword())
                                     <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.change_password') }}</p>
-                                    <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
-                                        <span class="hidden! sm:block!"></span>
+                                    <div class="grid! grid-cols-1! gap-3! md:grid-cols-[160px_1fr]! md:gap-4!">
+                                        <span class="hidden! md:block!"></span>
                                         <div class="space-y-3!">
                                             <input type="password" class="{{ $input }}" name="current_password" placeholder="{{ __('profile.current_password') }}">
                                             <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
@@ -292,8 +292,8 @@
                                     </div>
                                 @else
                                     <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.set_password') }}</p>
-                                    <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
-                                        <span class="hidden! sm:block!"></span>
+                                    <div class="grid! grid-cols-1! gap-3! md:grid-cols-[160px_1fr]! md:gap-4!">
+                                        <span class="hidden! md:block!"></span>
                                         <div class="space-y-3!">
                                             <p class="text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.set_password_help') }}</p>
                                             <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
@@ -304,7 +304,7 @@
                             </div>
 
                             <div class="pt-2! text-center!">
-                                <button type="submit" data-busy-submit class="{{ $btnBrand }} min-w-40!">
+                                <button type="submit" data-busy-submit class="{{ $btnBrand }} w-full! sm:w-auto! sm:min-w-40!">
                                     {{ __('profile.save_changes') }} <span aria-hidden="true">&raquo;</span>
                                 </button>
                             </div>
