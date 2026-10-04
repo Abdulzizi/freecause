@@ -41,33 +41,70 @@
                         <div class="border-b! border-dotted! border-[#bbb]! my-3"></div>
 
                         <div class="mt-4">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="w-[130px]! h-10! rounded-md! border! border-[#ddd]! flex! items-center! justify-center! font-bold! bg-white! text-lg! text-[#1b4f9c]!">Google</div>
+                            @if ($u->google_id)
+                                <div class="d-flex align-items-start gap-3 mb-2">
+                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true" width="24" height="24" class="w-[24px]! h-[24px]! block! shrink-0! mt-[2px]!">
+                                    <div>
+                                        <div class="text-sm! text-[#222]!">
+                                            {{ __('profile.google_connected') }} <strong>{{ $u->email }}</strong>
+                                        </div>
+                                        <div class="mt-1 text-sm! text-muted">{{ __('profile.google_help') }}</div>
+                                    </div>
+                                </div>
 
-                                @if ($u->google_id)
-                                    <form method="POST" action="{{ lroute('account.unlink.google') }}">
-                                        @csrf
-                                        <button type="submit" class="relative! inline-block! w-[110px]! h-[34px]! rounded-md! border! border-[#cfcfcf]! bg-[#2d6cdf]! overflow-hidden!">
-                                            <span class="absolute! top-[1px]! left-[68px]! w-[40px]! h-[30px]! rounded-md! bg-white! shadow-md!"></span>
-                                            <span class="absolute! inset-0! flex! items-center! justify-center! font-bold! text-white!">ON</span>
-                                        </button>
-                                    </form>
+                                @if ($googleOnly)
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" disabled aria-disabled="true">
+                                        {{ __('profile.google_disconnect') }}
+                                    </button>
+                                    <div class="mt-2 text-sm! text-muted">{{ __('profile.google_disconnect_needs_password') }}</div>
                                 @else
-                                    <a href="{{ lroute('oauth.google') }}" class="relative! inline-block! w-[110px]! h-[34px]! rounded-md! border! border-[#cfcfcf]! bg-[#eee]! overflow-hidden! no-underline!">
-                                        <span class="absolute! top-[1px]! left-[1px]! w-[40px]! h-[30px]! rounded-md! bg-white! shadow-md!"></span>
-                                        <span class="absolute! inset-0! flex! items-center! justify-center! font-bold! text-[#555]!">OFF</span>
-                                    </a>
-                                @endif
-                            </div>
+                                    <form method="POST" action="{{ lroute('account.unlink.google') }}" data-google-disconnect class="mt-2">
+                                        @csrf
 
-                            <div class="mt-3 text-sm! text-muted">
-                                {{ $u->display_name }} ( <strong>{{ $u->email }}</strong> )
-                            </div>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-google-disconnect-trigger>
+                                            {{ __('profile.google_disconnect') }}
+                                        </button>
+
+                                        <div class="mt-2 d-none" data-google-disconnect-panel>
+                                            <p class="text-sm! mb-2">{{ __('profile.google_disconnect_confirm_q') }}</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <button type="submit" class="btn btn-danger btn-sm d-none" data-google-disconnect-confirm>
+                                                    {{ __('profile.google_disconnect_confirm') }}
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm d-none" data-google-disconnect-cancel>
+                                                    {{ __('common.cancel') }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <noscript>
+                                            <button type="submit" class="btn btn-danger btn-sm mt-2">
+                                                {{ __('profile.google_disconnect') }}
+                                            </button>
+                                        </noscript>
+                                    </form>
+                                @endif
+                            @else
+                                <div class="d-flex align-items-start gap-3 mb-2">
+                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true" width="24" height="24" class="w-[24px]! h-[24px]! block! shrink-0! mt-[2px]!">
+                                    <div>
+                                        <div class="text-sm! text-[#222]!">{{ __('profile.google_not_connected') }}</div>
+                                        <div class="mt-1 text-sm! text-muted">{{ __('profile.google_help') }}</div>
+                                    </div>
+                                </div>
+                                <a href="{{ lroute('oauth.google') }}" class="btn fc-google-btn fc-oauth-btn btn-sm mt-2">
+                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
+                                    {{ __('profile.google_connect') }}
+                                </a>
+                            @endif
 
                             <div class="border-b! border-dotted! border-[#bbb]! my-3"></div>
                         </div>
 
-                        <h2 class="text-[22px]! font-medium! mt-2! mb-2">{{ __('profile.account_deletion') }}</h2>
+                        <div class="border border-danger rounded-sm! p-3 mt-2">
+                        <h2 class="text-[22px]! font-medium! text-danger mt-0! mb-2">{{ __('profile.account_deletion') }}</h2>
+
+                        <p class="text-sm! text-[#333]!">{{ __('profile.delete_explain') }}</p>
 
                         @error('google_delete')
                             <div class="alert alert-danger py-2" role="alert">{{ $message }}</div>
@@ -75,13 +112,14 @@
 
                         @if ($googleOnly && ! $googleDeleteVerified)
                             <p class="text-sm!">{{ __('profile.verify_google_delete') }}</p>
+                            <p class="text-sm! text-muted">{{ __('profile.delete_google_why') }}</p>
                             <a href="{{ lroute('account.delete.google') }}" class="btn fc-google-btn fc-oauth-btn mb-3">
                                 <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px]! h-[18px]! block! shrink-0!" aria-hidden="true">
                                 {{ __('profile.verify_with_google') }}
                             </a>
                         @else
 
-                        <form method="POST" action="{{ lroute('account.delete') }}">
+                        <form method="POST" action="{{ lroute('account.delete') }}" data-account-delete-form>
                             @csrf
 
                             @unless ($googleOnly)
@@ -92,16 +130,17 @@
                             @endunless
 
                             <label class="d-flex align-items-center gap-2 mb-3 text-sm!">
-                                <input type="checkbox" name="confirm_delete" value="1" required>
+                                <input type="checkbox" name="confirm_delete" value="1" required data-account-delete-confirm>
                                 <span>{{ __('profile.confirm_delete_lbl') }}</span>
                             </label>
 
                             <button type="submit" class="btn bg-gradient-to-b! from-[#b30000]! to-[#7d0000]! text-white! border-0! rounded-sm! font-semibold! px-4"
-                                onclick="this.disabled=true;this.form.submit();">
+                                data-account-delete-submit>
                                 {{ __('profile.delete') }} <span class="ms-3">»</span>
                             </button>
                         </form>
                         @endif
+                        </div>
 
                     </div>
                 </div>
@@ -248,7 +287,7 @@
                             </div>
 
                             <div class="text-center">
-                                <button class="btn bg-gradient-to-b! from-[#b30000]! to-[#7d0000]! text-white! border-0! rounded-sm! font-semibold! min-w-[160px]! px-5" onclick="this.disabled=true;this.form.submit();">
+                                <button class="btn bg-gradient-to-b! from-[#b30000]! to-[#7d0000]! text-white! border-0! rounded-sm! font-semibold! min-w-[160px]! px-5" type="submit" data-busy-submit>
                                     {{ __('profile.save_changes') }} <span class="ms-3">»</span>
                                 </button>
                             </div>
