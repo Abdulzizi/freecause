@@ -125,6 +125,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    document.querySelectorAll('.fc-sign-form a[href]').forEach(function (link) {
+        if (link.dataset.fcPolicyBound === '1') return;
+        const href = link.getAttribute('href') || '';
+        if (href === '' || href.charAt(0) === '#' || href.toLowerCase().indexOf('javascript:') === 0) return;
+        link.dataset.fcPolicyBound = '1';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            window.open(link.href, '_blank', 'noopener,noreferrer');
+        });
+    });
+
     const prefersReducedMotion = window.matchMedia
         ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
         : false;
