@@ -95,30 +95,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const disconnectForm = document.querySelector('[data-google-disconnect]');
     if (disconnectForm) {
         const trigger = disconnectForm.querySelector('[data-google-disconnect-trigger]');
-        const panel = disconnectForm.querySelector('[data-google-disconnect-panel]');
-        const cancel = disconnectForm.querySelector('[data-google-disconnect-cancel]');
-        const confirmBtn = disconnectForm.querySelector('[data-google-disconnect-confirm]');
+        const needsPassword = disconnectForm.hasAttribute('data-google-disconnect-needs-password');
 
-        if (trigger && panel) {
+        if (trigger) {
             trigger.addEventListener('click', function (event) {
                 event.preventDefault();
-                panel.classList.remove('hidden');
-                if (confirmBtn) confirmBtn.classList.remove('hidden');
-                if (cancel) cancel.classList.remove('hidden');
-                trigger.classList.add('hidden');
-                if (confirmBtn) confirmBtn.focus();
-            });
+                const d = disconnectForm.dataset;
 
-            if (cancel) {
-                cancel.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    panel.classList.add('hidden');
-                    if (confirmBtn) confirmBtn.classList.add('hidden');
-                    cancel.classList.add('hidden');
-                    trigger.classList.remove('hidden');
-                    trigger.focus();
+                if (needsPassword) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: d.needTitle || 'Set a password first',
+                        text: d.needText || 'Please set an account password before disconnecting Google, so you can still sign in.',
+                        confirmButtonText: d.needOk || 'OK',
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: d.confirmTitle || 'Disconnect Google?',
+                    text: d.confirmText || 'You will no longer be able to sign in with Google.',
+                    showCancelButton: true,
+                    confirmButtonText: d.confirmOk || 'Disconnect',
+                    cancelButtonText: d.confirmCancel || 'Cancel',
+                    confirmButtonColor: '#cc1f1f',
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        disconnectForm.submit();
+                    }
                 });
-            }
+            });
         }
     }
 
@@ -132,7 +139,44 @@ document.addEventListener('DOMContentLoaded', function () {
             checkbox.addEventListener('change', function () {
                 submitBtn.disabled = !checkbox.checked;
             });
+
+            submitBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (!checkbox.checked) {
+                    return;
+                }
+
+                const d = deleteForm.dataset;
+                Swal.fire({
+                    icon: 'warning',
+                    title: d.confirmTitle || 'Delete your account?',
+                    text: d.confirmText || 'This permanently deletes your account and cannot be undone.',
+                    showCancelButton: true,
+                    confirmButtonText: d.confirmOk || 'Yes, delete my account',
+                    cancelButtonText: d.confirmCancel || 'Cancel',
+                    confirmButtonColor: '#b91c1c',
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        deleteForm.submit();
+                    }
+                });
+            });
         }
+    }
+
+    const scrollToPassword = document.querySelector('[data-scroll-to-password]');
+    const passwordSection = document.getElementById('password-section');
+    if (scrollToPassword && passwordSection) {
+        scrollToPassword.addEventListener('click', function (event) {
+            event.preventDefault();
+            passwordSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const firstField = passwordSection.querySelector('input[name="new_password"]');
+            if (firstField) {
+                window.setTimeout(function () {
+                    firstField.focus();
+                }, 400);
+            }
+        });
     }
 
     document.querySelectorAll('[data-busy-submit]').forEach(function (btn) {

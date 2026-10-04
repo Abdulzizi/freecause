@@ -47,49 +47,71 @@
 
                         <hr class="my-5! border-gray-200!">
 
-                        @if ($u->google_id)
+                        @if ($u->google_id && $googleOnly)
                             <div class="flex! items-start! gap-3!">
                                 <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true"
                                     width="22" height="22" class="mt-0.5! h-[22px]! w-[22px]! shrink-0!">
                                 <div class="min-w-0!">
                                     <p class="text-[13px]! text-gray-900!">{{ __('profile.google_connected') }}</p>
-                                    <p class="text-[13px]! font-semibold! break-all! text-gray-900!">{{ $u->email }}</p>
+                                    <strong class="block! text-[13px]! font-semibold! break-all! text-gray-900!">{{ $u->email }}</strong>
+                                    <p class="mt-1! text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.google_only_note') }}</p>
+                                </div>
+                            </div>
+
+                            <button type="button" class="{{ $btnBrand }} mt-3!" data-scroll-to-password>
+                                {{ __('profile.set_password_cta') }}
+                            </button>
+
+                            <form method="POST" action="{{ lroute('account.unlink.google') }}" data-google-disconnect data-google-disconnect-needs-password
+                                data-need-title="{{ __('profile.need_password_title') }}"
+                                data-need-text="{{ __('profile.need_password_text') }}"
+                                data-need-ok="{{ __('profile.need_password_ok') }}" class="mt-3!">
+                                @csrf
+
+                                <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
+                                    {{ __('profile.google_disconnect') }}
+                                </button>
+
+                                <button type="submit" class="{{ $btnBrand }} hidden!" data-google-disconnect-confirm>
+                                    {{ __('profile.google_disconnect') }}
+                                </button>
+
+                                <noscript>
+                                    <p class="mt-2! text-[12px]! text-gray-500!">{{ __('profile.google_disconnect_needs_password') }}</p>
+                                </noscript>
+                            </form>
+                        @elseif ($u->google_id && ! $googleOnly)
+                            <div class="flex! items-start! gap-3!">
+                                <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true"
+                                    width="22" height="22" class="mt-0.5! h-[22px]! w-[22px]! shrink-0!">
+                                <div class="min-w-0!">
+                                    <p class="text-[13px]! text-gray-900!">{{ __('profile.google_connected') }}</p>
+                                    <strong class="block! text-[13px]! font-semibold! break-all! text-gray-900!">{{ $u->email }}</strong>
                                     <p class="mt-1! text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.google_help') }}</p>
                                 </div>
                             </div>
 
-                            @if ($googleOnly)
-                                <button type="button" class="{{ $btnOutline }} mt-3!" disabled aria-disabled="true">
+                            <form method="POST" action="{{ lroute('account.unlink.google') }}" data-google-disconnect
+                                data-confirm-title="{{ __('profile.confirm_disconnect_title') }}"
+                                data-confirm-text="{{ __('profile.confirm_disconnect_text') }}"
+                                data-confirm-ok="{{ __('profile.confirm_disconnect_ok') }}"
+                                data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-3!">
+                                @csrf
+
+                                <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
                                     {{ __('profile.google_disconnect') }}
                                 </button>
-                                <p class="mt-2! text-[12px]! text-gray-500!">{{ __('profile.google_disconnect_needs_password') }}</p>
-                            @else
-                                <form method="POST" action="{{ lroute('account.unlink.google') }}" data-google-disconnect class="mt-3!">
-                                    @csrf
 
-                                    <button type="button" class="{{ $btnOutline }}" data-google-disconnect-trigger>
+                                <button type="submit" class="{{ $btnBrand }} hidden!" data-google-disconnect-confirm>
+                                    {{ __('profile.google_disconnect') }}
+                                </button>
+
+                                <noscript>
+                                    <button type="submit" class="{{ $btnBrand }} mt-3!">
                                         {{ __('profile.google_disconnect') }}
                                     </button>
-
-                                    <div class="mt-3! hidden! rounded-md! border! border-gray-200! bg-gray-50! p-3!" data-google-disconnect-panel>
-                                        <p class="mb-3! text-[13px]! text-gray-700!">{{ __('profile.google_disconnect_confirm_q') }}</p>
-                                        <div class="flex! flex-wrap! items-center! gap-2!">
-                                            <button type="submit" class="{{ $btnBrand }} hidden!" data-google-disconnect-confirm>
-                                                {{ __('profile.google_disconnect_confirm') }}
-                                            </button>
-                                            <button type="button" class="{{ $btnOutline }} hidden!" data-google-disconnect-cancel>
-                                                {{ __('common.cancel') }}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <noscript>
-                                        <button type="submit" class="{{ $btnBrand }} mt-3!">
-                                            {{ __('profile.google_disconnect') }}
-                                        </button>
-                                    </noscript>
-                                </form>
-                            @endif
+                                </noscript>
+                            </form>
                         @else
                             <div class="flex! items-start! gap-3!">
                                 <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" aria-hidden="true"
@@ -127,7 +149,11 @@
                                     {{ __('profile.verify_with_google') }}
                                 </a>
                             @else
-                                <form method="POST" action="{{ lroute('account.delete') }}" data-account-delete-form class="mt-4! space-y-3!">
+                                <form method="POST" action="{{ lroute('account.delete') }}" data-account-delete-form
+                                    data-confirm-title="{{ __('profile.confirm_delete_title') }}"
+                                    data-confirm-text="{{ __('profile.confirm_delete_text') }}"
+                                    data-confirm-ok="{{ __('profile.confirm_delete_ok') }}"
+                                    data-confirm-cancel="{{ __('profile.confirm_cancel') }}" class="mt-4! space-y-3!">
                                     @csrf
 
                                     @unless ($googleOnly)
@@ -253,14 +279,28 @@
 
                             <hr class="border-gray-200!">
 
-                            <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.change_password') }}</p>
-                            <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
-                                <span class="hidden! sm:block!"></span>
-                                <div class="space-y-3!">
-                                    <input type="password" class="{{ $input }}" name="current_password" placeholder="{{ __('profile.current_password') }}">
-                                    <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
-                                    <input type="password" class="{{ $input }}" name="new_password_confirmation" placeholder="{{ __('profile.confirm_new_password') }}">
-                                </div>
+                            <div id="password-section">
+                                @if ($u->hasLocalPassword())
+                                    <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.change_password') }}</p>
+                                    <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
+                                        <span class="hidden! sm:block!"></span>
+                                        <div class="space-y-3!">
+                                            <input type="password" class="{{ $input }}" name="current_password" placeholder="{{ __('profile.current_password') }}">
+                                            <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
+                                            <input type="password" class="{{ $input }}" name="new_password_confirmation" placeholder="{{ __('profile.confirm_new_password') }}">
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="text-[14px]! font-semibold! text-gray-900!">{{ __('profile.set_password') }}</p>
+                                    <div class="grid! grid-cols-1! gap-3! sm:grid-cols-[160px_1fr]! sm:gap-4!">
+                                        <span class="hidden! sm:block!"></span>
+                                        <div class="space-y-3!">
+                                            <p class="text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.set_password_help') }}</p>
+                                            <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
+                                            <input type="password" class="{{ $input }}" name="new_password_confirmation" placeholder="{{ __('profile.confirm_new_password') }}">
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="pt-2! text-center!">

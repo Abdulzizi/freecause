@@ -282,7 +282,7 @@ class AuthController extends Controller
             'new_email' => ['nullable', 'email', 'max:190'],
             'new_email_confirmation' => ['nullable', 'same:new_email'],
 
-            'current_password' => ['required_with:new_password'],
+            'current_password' => [Rule::requiredIf(fn () => filled($request->input('new_password')) && $u->hasLocalPassword())],
             'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
         ]);
 
@@ -339,7 +339,7 @@ class AuthController extends Controller
 
         if (! empty($data['new_password'])) {
 
-            if (! Hash::check($data['current_password'], $u->password)) {
+            if ($u->hasLocalPassword() && ! Hash::check($data['current_password'] ?? '', $u->password)) {
                 return back()
                     ->withInput()
                     ->withErrors(['current_password' => 'Current password is incorrect.']);
