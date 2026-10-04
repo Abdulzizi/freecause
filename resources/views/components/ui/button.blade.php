@@ -29,10 +29,7 @@
     <a
         href="{{ $href }}"
         {{ $attributes->merge(['class' => $classes]) }}
-        data-loading
-        data-loading-text="{{ $busyText }}"
     >
-        <x-ui.spinner class="fc-btn__spinner" />
         <span class="fc-btn__label">{{ $slot }}</span>
     </a>
 @else
