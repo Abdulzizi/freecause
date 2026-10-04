@@ -222,9 +222,9 @@ Route::prefix('{locale}')
 
         // static pages
         Route::view('/faqs', 'pages.faq')->name('faqs');
-        Route::view('/how-to-write-a-petition', 'pages.how-to-write-a-petition')->name('how-to-write-a-petition');
-        Route::view('/donations', 'pages.donations')->name('donations');
-        Route::view('/personal-data-processing', 'pages.personal-data-processing')->name('personal-data-processing');
+        Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))->name('how-to-write-a-petition');
+        Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))->name('donations');
+        Route::get('/personal-data-processing', fn (string $locale) => app(PageController::class)->showFixed($locale, 'personal-data-processing'))->name('personal-data-processing');
 
         Route::view('/contacts', 'pages.contacts')->name('contacts');
         Route::post('/contacts', [ContactController::class, 'send'])->name('contacts.submit')->middleware('throttle:6,1');
