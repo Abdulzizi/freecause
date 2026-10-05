@@ -54,6 +54,20 @@ class Locale
         return Language::where('is_active', true)->pluck('code')->toArray();
     }
 
+    /**
+     * Return active language names keyed by locale code, with the default first.
+     *
+     * @return array<string, string>
+     */
+    public static function options(): array
+    {
+        return Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->pluck('name', 'code')
+            ->toArray();
+    }
+
     public static function default(): string
     {
         return Language::where('is_default', true)->value('code') ?? config('locales.default', 'en');
