@@ -101,25 +101,32 @@
                     });
                 });
 
+                /* Collapse is applied as element-level !important so no
+                   stylesheet rule (e.g. Tailwind's block!) can override it.
+                   The .collapsed class stays for the caret CSS only. */
+                function setGroupCollapsed(group, collapsed) {
+                    group.classList.toggle('collapsed', collapsed);
+                    group.querySelectorAll(':scope > a').forEach(function (a) {
+                        if (collapsed) {
+                            a.style.setProperty('display', 'none', 'important');
+                        } else {
+                            a.style.removeProperty('display');
+                        }
+                    });
+                }
+
                 sidebar.querySelectorAll('.fc-group').forEach((group, i) => {
                     const title = group.querySelector('.group-title');
                     if (!title) return;
                     const label = (title.textContent || '').trim().toLowerCase().replace(/\s+/g, '-');
                     const key = 'fc-group-' + (label || i);
-                    if (localStorage.getItem(key) === '1') group.classList.add('collapsed');
-                });
-
-                sidebar.addEventListener('click', function (e) {
-                    const title = e.target.closest('.group-title');
-                    if (!title || !sidebar.contains(title)) return;
-                    const group = title.closest('.fc-group');
-                    if (!group) return;
-                    const label = (title.textContent || '').trim().toLowerCase().replace(/\s+/g, '-');
-                    const key = 'fc-group-' + label;
-                    group.classList.toggle('collapsed');
-                    try {
-                        localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
-                    } catch (err) {}
+                    if (localStorage.getItem(key) === '1') setGroupCollapsed(group, true);
+                    title.addEventListener('click', function () {
+                        setGroupCollapsed(group, !group.classList.contains('collapsed'));
+                        try {
+                            localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
+                        } catch (err) {}
+                    });
                 });
             }
 
