@@ -525,20 +525,20 @@ ol:not([class]) {
         background: transparent;
         border: 0;
         border-radius: 0.375rem;
-        color: #78716c;
-        opacity: 0.7;
+        color: #6b7280 !important;
+        opacity: 0.75;
         cursor: pointer;
-        transition: opacity 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+        transition: opacity 0.15s ease, background-color 0.15s ease;
     }
 
     .fcui-pwtoggle:hover {
         opacity: 1;
-        color: var(--color-brand);
-        background-color: rgba(204, 31, 31, 0.08);
+        color: #374151 !important;
+        background-color: rgba(0, 0, 0, 0.05);
     }
 
     .fcui-pwtoggle:focus-visible {
-        outline: 2px solid var(--color-brand);
+        outline: 2px solid #9ca3af;
         outline-offset: 1px;
         opacity: 1;
     }
