@@ -112,6 +112,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
         // * USERS
         Route::get('/users', [AdminUsersController::class, 'index'])->middleware('permission:users,view')->name('users');
+        Route::get('/users/export', [AdminUsersController::class, 'export'])->middleware('permission:users,view')->name('users.export');
         Route::post('/users/save', [AdminUsersController::class, 'save'])->middleware('permission:users,edit')->name('users.save');
         Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->middleware('permission:users,edit')->name('users.bulkBan');
         Route::post('/users/bulk-action', [AdminUsersController::class, 'bulkAction'])->middleware('permission:users,edit')->name('users.bulkAction');
@@ -123,6 +124,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         // * PETITIONS
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
+        Route::post('/petitions/create', [AdminPetitionsController::class, 'create'])->middleware('permission:petitions,edit')->name('petitions.create');
+        Route::post('/petitions/translate-missing', [AdminPetitionsController::class, 'translateMissing'])->middleware('permission:petitions,edit')->name('petitions.translateMissing');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->middleware('permission:petitions,edit')->name('petitions.bulkAction');
         Route::post('/petitions/reconcile', [AdminPetitionsController::class, 'reconcile'])->middleware('permission:petitions,edit')->name('petitions.reconcile');
         Route::post('/petitions/reconcile-all', [AdminPetitionsController::class, 'reconcileAll'])->middleware('permission:petitions,edit')->name('petitions.reconcileAll');
@@ -223,13 +226,14 @@ Route::prefix('{locale}')
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
         });
 
-        // static pages
-        Route::view('/faqs', 'pages.faq')->name('faqs');
+        // static pages — FAQ + contacts render from page_translations like the
+        // other editorial pages (admin/pages editable, no code deploy needed)
+        Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))->name('faqs');
         Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))->name('how-to-write-a-petition');
         Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))->name('donations');
         Route::get('/personal-data-processing', fn (string $locale) => app(PageController::class)->showFixed($locale, 'personal-data-processing'))->name('personal-data-processing');
 
-        Route::view('/contacts', 'pages.contacts')->name('contacts');
+        Route::get('/contacts', fn (string $locale) => app(PageController::class)->showFixed($locale, 'contacts'))->name('contacts');
         Route::post('/contacts', [ContactController::class, 'send'])->name('contacts.submit')->middleware('throttle:6,1');
 
         // home + petitions
