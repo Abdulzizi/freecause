@@ -3,7 +3,7 @@
         <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
         <form method="POST" action="{{ route('admin.logout') }}" class="inline!">
             @csrf
-            <button type="submit" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! mt-1.5! max-md:text-xs! max-md:px-3! max-md:py-1.5!">exit</button>
+            <x-ui.button type="submit" variant="secondary" size="sm" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! mt-1.5! max-md:text-xs! max-md:px-3! max-md:py-1.5!">exit</x-ui.button>
         </form>
     </div>
 

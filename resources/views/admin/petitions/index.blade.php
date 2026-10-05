@@ -38,7 +38,7 @@
     </svg>';
     @endphp
 
-    <h1>petitions ({{ number_format($approxTotal) }})</h1>
+    <x-admin.page-header title="petitions" :count="$approxTotal" />
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null && $v !== 'locale')->count();
@@ -53,7 +53,7 @@
 
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}">
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="category">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="category">
             <option value="">category...</option>
             @foreach ($categories as $cat)
                 <option value="{{ $cat->id }}" {{ (string) ($filters['category'] ?? '') === (string) $cat->id ? 'selected' : '' }}>
@@ -62,13 +62,13 @@
             @endforeach
         </select>
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
             <option value="">status...</option>
             <option value="published" {{ ($filters['status'] ?? '') === 'published' ? 'selected' : '' }}>published</option>
             <option value="draft" {{ ($filters['status'] ?? '') === 'draft' ? 'selected' : '' }}>draft</option>
         </select>
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[120px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="active">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[120px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="active">
             <option value="">active...</option>
             <option value="1" {{ ($filters['active'] ?? '') === '1' ? 'selected' : '' }}>active</option>
             <option value="0" {{ ($filters['active'] ?? '') === '0' ? 'selected' : '' }}>inactive</option>
@@ -81,7 +81,7 @@
         </label>
 
         @if (!empty($activeLanguages))
-            <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="missing_locale">
+            <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="missing_locale">
                 <option value="">missing locale...</option>
                 @foreach ($activeLanguages as $lang)
                     <option value="{{ $lang }}" {{ ($filters['missing_locale'] ?? '') === $lang ? 'selected' : '' }}>
@@ -93,11 +93,10 @@
     </x-admin.filter-box>
 
 
-    <x-admin.list-table-box emptyText="no petitions found" :p="$petitions" :bulk="[]">
+    <x-admin.data-table emptyText="no petitions found" :p="$petitions" :bulk="[]">
 
         <x-slot:thead>
-            <tr class="border-b! border-solid! border-[#ccc]!" onmouseover="this.style.background='#f7f7f7'"
-                onmouseout="this.style.background=''">
+            <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
                 <th>ID</th>
                 <th width="26" data-hide-mobile></th>
                 <th width="26">A</th>
@@ -113,7 +112,7 @@
 
         <x-slot:tbody>
             @foreach ($petitions as $p)
-                <tr class="border-b! border-solid! border-[#eee]!">
+                <tr class="border-b! border-solid! border-[#eee]!" data-admin-row-hover>
 
                     <td>
                         <a href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
@@ -128,13 +127,13 @@
                     {{-- ACTIVE --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <button type="button"
+                        <x-ui.button variant="secondary" type="button"
                             class="px-1.5! py-0.5! rounded! border! text-[10px]! cursor-pointer! {{ $p->is_active ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
                             data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
                             {{ $p->is_active ? 'Active' : 'Inactive' }}
-                        </button>
+                        </x-ui.button>
                         @else
                             <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
                         @endif
@@ -150,13 +149,13 @@
                     {{-- FEATURED --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <button type="button"
+                        <x-ui.button variant="secondary" type="button"
                             class="px-1.5! py-0.5! rounded! border! text-[10px]! cursor-pointer! {{ $p->is_featured ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_featured ? 'unfeature' : 'feature' }}"
                             data-kind="featured" aria-pressed="{{ $p->is_featured ? 'true' : 'false' }}">
                             {{ $p->is_featured ? 'Featured' : 'Feature' }}
-                        </button>
+                        </x-ui.button>
                         @else
                             <span class="text-xs! {{ $p->is_featured ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
                         @endif
@@ -193,44 +192,44 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 @if (admin_can('petitions', 'edit'))
-                    <button type="button" data-petition-bulk-ban
+                    <x-ui.button variant="danger" type="button" data-petition-bulk-ban
                         data-url="{{ route('admin.petitions.bulkAction') }}"
                         class="flex! flex-col! items-center! justify-center! gap-0.5! w-[52px]! h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-colors! hover:bg-[#fff0f0]! text-[#900]! max-md:w-10! max-md:h-[38px]!">
                         {!! $icoBan !!}
                         <span class="text-[10px]! leading-none! max-md:hidden!">Ban</span>
-                    </button>
+                    </x-ui.button>
                 @endif
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="publish" title="Publish">
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Publish</span>
-                    </button>
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="unpublish" title="Unpublish">
+                    </x-ui.button>
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unpublish</span>
-                    </button>
+                    </x-ui.button>
                 </div>
 
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="activate" title="Activate">
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="activate" title="Activate">
                         {!! $icoPublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Activate</span>
-                    </button>
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="deactivate" title="Deactivate">
+                    </x-ui.button>
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="deactivate" title="Deactivate">
                         {!! $icoUnpublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Deactivate</span>
-                    </button>
+                    </x-ui.button>
                 </div>
 
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="feature" title="Feature">
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="feature" title="Feature">
                         {!! $icoFeature !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Feature</span>
-                    </button>
-                    <button type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action" data-action="unfeature" title="Unfeature">
+                    </x-ui.button>
+                    <x-ui.button variant="secondary" type="button" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! bulk-action [&_.fcui-btn__label]:contents!" data-action="unfeature" title="Unfeature">
                         {!! $icoFeature !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unfeature</span>
-                    </button>
+                    </x-ui.button>
                 </div>
 
                 <a href="{{ route('admin.petitions', request()->except('select')) }}"
@@ -241,7 +240,7 @@
             </div>
         </x-slot:footer>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
 
     <x-admin.detail-panel title="petition" :closeRoute="route('admin.petitions', request()->except('select'))">
@@ -268,9 +267,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!">
+                    <x-ui.button variant="secondary" type="submit" class="border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!">
                         Open locale
-                    </button>
+                    </x-ui.button>
                 </form>
                 @if ($isCreatingTranslation)
                     <div class="text-xs! text-[#8a6d1e]!">
@@ -286,12 +285,12 @@
             </div>
 
             @if (admin_can('petitions', 'edit'))
-                <button type="button" class="mb-2! border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!"
+                <x-ui.button variant="secondary" type="button" class="mb-2! border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!"
                     data-reconcile-one
                     data-url="{{ route('admin.petitions.reconcile') }}"
                     data-id="{{ $selectedPetition->id }}">
                     Reconcile signature count for this petition
-                </button>
+                </x-ui.button>
             @endif
 
             <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
@@ -306,15 +305,14 @@
                         {{ $selectedPetition->is_active ? 'checked' : '' }}>
                 </div>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>status</label>
+                <x-admin.form-field label="status">
                     <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="status">
                         <option value="draft" {{ $selectedPetition->status === 'draft' ? 'selected' : '' }}>draft</option>
                         <option value="published" {{ $selectedPetition->status === 'published' ? 'selected' : '' }}>
                             published
                         </option>
                     </select>
-                </div>
+                </x-admin.form-field>
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>featured <span class="text-[11px]! text-[#888]!">(this locale)</span></label>
@@ -322,35 +320,23 @@
                         {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
                 </div>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>owner (user id)</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" type="number" name="user_id" value="{{ $selectedPetition->user_id }}"
-                            placeholder="user ID">
-                        @error('user_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+                <x-admin.form-field label="owner (user id)">
+                    <x-ui.input name="user_id" type="number" :value="$selectedPetition->user_id" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" placeholder="user ID" />
+                    @error('user_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>title</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="title" value="{{ $translationSource->title ?? '' }}">
+                <x-admin.form-field label="title">
+<x-ui.input name="title" :value="$translationSource->title ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('title') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>slug</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="slug" value="{{ $translationSource->slug ?? '' }}">
+                <x-admin.form-field label="slug">
+<x-ui.input name="slug" :value="$translationSource->slug ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('slug') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>signature goal</label>
-                    <div>
-                        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="goal_signatures">
+                <x-admin.form-field label="signature goal">
+<select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="goal_signatures">
                             @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
                                 <option value="{{ $goalOption }}" {{ (int) $selectedPetition->goal_signatures === $goalOption ? 'selected' : '' }}>
                                     {{ number_format($goalOption) }}
@@ -358,13 +344,10 @@
                             @endforeach
                         </select>
                         @error('goal_signatures') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>category</label>
-                    <div>
-                        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="category_id">
+                <x-admin.form-field label="category">
+<select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="category_id">
                             <option value="">—</option>
                             @foreach ($categories as $cat)
                                 <option value="{{ $cat->id }}"
@@ -374,74 +357,46 @@
                             @endforeach
                         </select>
                         @error('category_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>tags</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="tags" value="{{ $selectedPetition->tags ?? '' }}"
-                            placeholder="tag1, tag2">
+                <x-admin.form-field label="tags">
+<x-ui.input name="tags" :value="$selectedPetition->tags ?? ''" placeholder="tag1, tag2" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('tags') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>youtube</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="youtube_url"
-                            value="{{ $selectedPetition->youtube_url ?? '' }}">
+                <x-admin.form-field label="youtube">
+<x-ui.input name="youtube_url" :value="$selectedPetition->youtube_url ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('youtube_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>target</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="target" value="{{ $selectedPetition->target ?? '' }}">
+                <x-admin.form-field label="target">
+<x-ui.input name="target" :value="$selectedPetition->target ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('target') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>community</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="community"
-                            value="{{ $selectedPetition->community ?? '' }}">
+                <x-admin.form-field label="community">
+<x-ui.input name="community" :value="$selectedPetition->community ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('community') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>community url</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="community_url"
-                            value="{{ $selectedPetition->community_url ?? '' }}" placeholder="https://">
+                <x-admin.form-field label="community url">
+<x-ui.input name="community_url" :value="$selectedPetition->community_url ?? ''" placeholder="https://" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('community_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>location</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="city" value="{{ $selectedPetition->city ?? '' }}">
+                <x-admin.form-field label="location">
+<x-ui.input name="city" :value="$selectedPetition->city ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('city') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>date created</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="datetime-local" name="created_at"
-                            value="{{ $selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : '' }}">
+                <x-admin.form-field label="date created">
+<x-ui.input name="created_at" type="datetime-local" :value="$selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('created_at') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+</x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>text</label>
-                    <textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
-                </div>
+                <x-admin.form-field label="text">
+<textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
+</x-admin.form-field>
 
                 {{-- Image management --}}
                 <div class="flex! flex-col! items-start! gap-1.5! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:[&_label]:text-xs!">
@@ -477,12 +432,12 @@
                 </div>
 
                 <div class="flex! justify-end!">
-                    <button class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</button>
+                    <x-ui.button variant="secondary" class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</x-ui.button>
                 </div>
 
             </form>
         @else
-            <div class="text-[#777]!">select a petition to edit</div>
+            <x-admin.empty-state message="select a petition to edit" class="text-[#777]!" />
         @endif
     </x-admin.detail-panel>
 
@@ -494,105 +449,3 @@
     'noun' => 'petitions',
     'emptyMsg' => 'No petitions selected',
 ])
-
-@push('scripts')
-    <script>
-        document.addEventListener('click', async function (event) {
-            const toggle = event.target.closest('[data-petition-toggle]');
-            if (toggle) {
-                const action = toggle.dataset.action;
-                toggle.disabled = true;
-                try {
-                    const response = await fetch(toggle.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        },
-                        body: JSON.stringify({ action, ids: [toggle.dataset.id] }),
-                    });
-                    const result = await response.json();
-                    if (!response.ok || !result.ok) throw new Error(result.msg || 'Could not update petition.');
-
-                    const enabled = ['activate', 'feature'].includes(action);
-                    const isActive = toggle.dataset.kind === 'active';
-                    toggle.dataset.action = isActive
-                        ? (enabled ? 'deactivate' : 'activate')
-                        : (enabled ? 'unfeature' : 'feature');
-                    toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-                    toggle.textContent = isActive
-                        ? (enabled ? 'Active' : 'Inactive')
-                        : (enabled ? 'Featured' : 'Feature');
-                    toggle.classList.toggle('border-[#b7d7b7]!', enabled);
-                    toggle.classList.toggle('bg-[#e8f5e8]!', enabled);
-                    toggle.classList.toggle('text-[#2f6f2f]!', enabled);
-                    toggle.classList.toggle('border-[#e2baba]!', !enabled);
-                    toggle.classList.toggle('bg-[#fff0f0]!', !enabled);
-                    toggle.classList.toggle('text-[#900]!', !enabled);
-                    window.toast?.success?.('Petition updated.');
-                } catch (error) {
-                    window.toast?.error?.(error.message || 'Could not update petition.');
-                } finally {
-                    toggle.disabled = false;
-                }
-                return;
-            }
-
-            const ban = event.target.closest('[data-petition-bulk-ban]');
-            if (ban) {
-                const ids = Array.from(document.querySelectorAll('.bulk-checkbox:checked'))
-                    .filter((checkbox) => !checkbox.disabled)
-                    .map((checkbox) => checkbox.value);
-                if (!ids.length) {
-                    window.toast?.warning?.('Select at least one petition to ban.');
-                    return;
-                }
-                const reason = window.prompt('Ban reason (optional):');
-                if (reason === null) return;
-                if (!window.confirm('Ban ' + ids.length + ' selected petition(s)? This will unpublish and deactivate them.')) return;
-
-                ban.disabled = true;
-                try {
-                    const response = await fetch(ban.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        },
-                        body: JSON.stringify({ action: 'ban', ids, reason: reason.trim() || null }),
-                    });
-                    const result = await response.json();
-                    if (!response.ok || !result.ok) throw new Error(result.msg || 'Could not ban selected petitions.');
-                    window.toast?.success?.('Selected petitions were unpublished and deactivated.');
-                    window.setTimeout(() => window.location.reload(), 700);
-                } catch (error) {
-                    window.toast?.error?.(error.message || 'Could not ban selected petitions.');
-                    ban.disabled = false;
-                }
-                return;
-            }
-
-            const reconcile = event.target.closest('[data-reconcile-one]');
-            if (!reconcile) return;
-            if (!window.confirm('Recalculate the confirmed signature count for this petition?')) return;
-            reconcile.disabled = true;
-            try {
-                const response = await fetch(reconcile.dataset.url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    },
-                    body: JSON.stringify({ id: reconcile.dataset.id }),
-                });
-                const result = await response.json();
-                if (!response.ok || !result.ok) throw new Error(result.error || 'Could not reconcile petition count.');
-                window.toast?.success?.('Signature count reconciled: ' + result.actual_count + '.');
-            } catch (error) {
-                window.toast?.error?.(error.message || 'Could not reconcile petition count.');
-            } finally {
-                reconcile.disabled = false;
-            }
-        });
-    </script>
-@endpush

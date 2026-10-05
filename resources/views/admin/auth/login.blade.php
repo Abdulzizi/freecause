@@ -53,9 +53,9 @@
                     stay logged in
                 </label>
 
-                <button class="btn-login border! border-[#a7b6da]! bg-[#f2f2f2]! px-2.5! py-1.5! rounded-sm! cursor-pointer! text-xs! font-bold!" type="submit" id="btn-login-submit">
+                <x-ui.button variant="secondary" size="sm" class="btn-login border! border-[#a7b6da]! bg-[#f2f2f2]! px-2.5! py-1.5! rounded-sm! cursor-pointer! text-xs! font-bold!" type="submit" id="btn-login-submit">
                     sign in »
-                </button>
+                </x-ui.button>
             </div>
         </form>
     </div>

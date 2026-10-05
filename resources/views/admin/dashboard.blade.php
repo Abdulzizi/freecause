@@ -4,7 +4,7 @@
 
 
 @section('content')
-<h1 class="mb-0! max-md:text-[15px]!">Dashboard</h1>
+<x-admin.page-header title="Dashboard" />
 
 <div class="grid! grid-cols-[repeat(auto-fit,minmax(240px,1fr))]! gap-4! mb-6! max-sm:grid-cols-1! max-sm:gap-3!">
     <div class="bg-white! border! border-[#ddd]! rounded! p-5! border-l-4! border-l-[#3498db]! max-sm:p-[15px]!">
@@ -74,16 +74,16 @@
     <h2 class="m-0! mb-4! text-lg! text-[#333]! border-b! border-[#eee]! pb-2.5!">Quick Actions</h2>
     <div class="flex! gap-2.5! flex-wrap! max-sm:flex-col!">
         @if(admin_can('petitions', 'view'))
-        <a href="{{ route('admin.petitions') }}" class="py-2.5! px-5! bg-[#3498db]! text-white! no-underline! rounded! text-[13px]! hover:bg-[#2980b9]! max-sm:text-center!">Manage Petitions</a>
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.petitions')">Manage Petitions</x-ui.button>
         @endif
         @if(admin_can('users', 'view'))
-        <a href="{{ route('admin.users') }}" class="py-2.5! px-5! bg-[#3498db]! text-white! no-underline! rounded! text-[13px]! hover:bg-[#2980b9]! max-sm:text-center!">Manage Users</a>
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.users')">Manage Users</x-ui.button>
         @endif
         @if(admin_can('options', 'view'))
-        <a href="{{ route('admin.options.global') }}" class="py-2.5! px-5! bg-[#3498db]! text-white! no-underline! rounded! text-[13px]! hover:bg-[#2980b9]! max-sm:text-center!">Global Settings</a>
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.options.global')">Global Settings</x-ui.button>
         @endif
         @if(admin_can('stats', 'view'))
-        <a href="{{ route('admin.stats') }}" class="py-2.5! px-5! bg-[#3498db]! text-white! no-underline! rounded! text-[13px]! hover:bg-[#2980b9]! max-sm:text-center!">View Stats</a>
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.stats')">View Stats</x-ui.button>
         @endif
     </div>
 </div>
@@ -101,13 +101,13 @@
             </thead>
             <tbody>
                 @forelse($topPetitions as $petition)
-                <tr class="hover:bg-[#fafafa]!">
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!">
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">#{{ $petition->id }}</td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ number_format($petition->signature_count) }}</td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ number_format($petition->goal_signatures) }}</td>
                 </tr>
                 @empty
-                <tr class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No petitions yet</td></tr>
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No petitions yet</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -161,7 +161,7 @@
             </thead>
             <tbody>
                 @forelse($recentActivity['users'] as $user)
-                <tr class="hover:bg-[#fafafa]!">
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!">
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ $user->email }}</td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">
                         @if($user->verified)
@@ -173,7 +173,7 @@
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ $user->created_at->diffForHumans() }}</td>
                 </tr>
                 @empty
-                <tr class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No users yet</td></tr>
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No users yet</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -191,7 +191,7 @@
             </thead>
             <tbody>
                 @forelse($recentActivity['petitions'] as $petition)
-                <tr class="hover:bg-[#fafafa]!">
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!">
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">#{{ $petition->id }}</td>
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">
                         <span class="inline-block! py-0.5! px-2! rounded-[3px]! text-[11px]! font-semibold! uppercase! {{ $petition->status === 'published' ? 'bg-[#d4edda]! text-[#155724]!' : ($petition->status === 'draft' ? 'bg-[#fff3cd]! text-[#856404]!' : 'bg-[#f8d7da]! text-[#721c24]!') }}">{{ $petition->status }}</span>
@@ -199,7 +199,7 @@
                     <td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!">{{ $petition->created_at->diffForHumans() }}</td>
                 </tr>
                 @empty
-                <tr class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No petitions yet</td></tr>
+                <tr data-admin-row-hover class="hover:bg-[#fafafa]!"><td class="p-2.5! px-3! text-left! border-b! border-[#eee]! whitespace-nowrap!" colspan="3">No petitions yet</td></tr>
                 @endforelse
             </tbody>
         </table>

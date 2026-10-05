@@ -16,7 +16,7 @@
                     </svg>';
     @endphp
 
-    <h1>signatures ({{ number_format($approxTotal) }})</h1>
+    <x-admin.page-header title="signatures" :count="$approxTotal" />
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
@@ -37,7 +37,7 @@
         @endif
 
         {{-- BUG 3 FIX: locale options now come from $locales passed by controller --}}
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') == $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -45,7 +45,7 @@
             @endforeach
         </select>
 
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[320px]!" name="category_id">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[320px]!" name="category_id">
             <option value="">(Category)</option>
             @foreach ($categories as $c)
                 <option value="{{ $c->id }}" {{ ($filters['category_id'] ?? '') == $c->id ? 'selected' : '' }}>
@@ -55,14 +55,14 @@
         </select>
 
         @if ($hasConfirmed)
-            <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="confirmed">
+            <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="confirmed">
                 <option value="">all signatures</option>
                 <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
                 <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
             </select>
         @endif
 
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="spam">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="spam">
             <option value="">spam...</option>
             <option value="1" {{ ($filters['spam'] ?? '') === '1' ? 'selected' : '' }}>spam</option>
             <option value="0" {{ ($filters['spam'] ?? '') === '0' ? 'selected' : '' }}>not spam</option>
@@ -73,7 +73,7 @@
 
     </x-admin.filter-box>
 
-    <x-admin.list-table-box emptyText="no signatures found" :p="$signatures" :bulk="[]">
+    <x-admin.data-table emptyText="no signatures found" :p="$signatures" :bulk="[]">
 
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
@@ -168,20 +168,20 @@
                     @if ($hasConfirmed && admin_can('signatures', 'edit'))
                         <td data-hide-mobile>
                             <div class="flex! items-center! gap-1!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
-                                <button type="button" data-signature-action="approve"
+                                <x-ui.button variant="secondary" type="button" data-signature-action="approve"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    {{ $s->confirmed ? 'disabled' : '' }}
+                                    :disabled="$s->confirmed"
                                     title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}"
                                     class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
                                     Approve
-                                </button>
-                                <button type="button" data-signature-action="reject"
+                                </x-ui.button>
+                                <x-ui.button variant="secondary" type="button" data-signature-action="reject"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    {{ ! $s->confirmed ? 'disabled' : '' }}
+                                    :disabled="! $s->confirmed"
                                     title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}"
                                     class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
                                     Reject
-                                </button>
+                                </x-ui.button>
                             </div>
                         </td>
                     @endif
@@ -194,28 +194,28 @@
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if ($hasConfirmed)
                     <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                        <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="approve" title="Approve">
+                        <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="approve" title="Approve">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Approve</span>
-                        </button>
+                        </x-ui.button>
 
-                        <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="reject" title="Reject">
+                        <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="reject" title="Reject">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                                 <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                             <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Reject</span>
-                        </button>
+                        </x-ui.button>
                     </div>
                 @endif
 
                 @if (admin_can('signatures', 'delete'))
-                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
+                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
                         {!! $icoX !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
-                    </button>
+                    </x-ui.button>
                 @endif
 
                 <a href="{{ route('admin.signatures', request()->except('select')) }}"
@@ -226,65 +226,12 @@
             </div>
         </x-slot:footer>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
     @include('admin.partials.bulk-js', [
         'actionRoute' => route('admin.signatures.bulkAction'),
         'noun' => 'signatures',
         'emptyMsg' => 'No signatures selected',
     ])
-
-    @push('scripts')
-        <script>
-            document.addEventListener('click', async function (event) {
-                const button = event.target.closest('[data-signature-action]');
-                if (!button || button.disabled) return;
-                const action = button.dataset.signatureAction;
-                if (action === 'reject' && !window.confirm('Reject this signature?')) return;
-
-                const actions = button.closest('[data-signature-actions]');
-                button.disabled = true;
-                try {
-                    const response = await fetch(button.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        },
-                        body: JSON.stringify({ action }),
-                    });
-                    const result = await response.json().catch(() => ({}));
-                    if (!response.ok || !result.ok) {
-                        if (response.status === 409) {
-                            window.toast?.warning?.(result.msg || (action === 'approve' ? 'Already confirmed.' : 'Already rejected.'));
-                            window.setTimeout(() => window.location.reload(), 700);
-                            return;
-                        }
-                        throw new Error(result.error || 'Could not update signature.');
-                    }
-
-                    const confirmed = action === 'approve';
-                    actions.dataset.confirmed = confirmed ? '1' : '0';
-                    actions.querySelectorAll('[data-signature-action]').forEach((control) => {
-                        const isCurrent = (control.dataset.signatureAction === 'approve') === confirmed;
-                        control.disabled = isCurrent;
-                        control.title = isCurrent
-                            ? (confirmed ? 'Already confirmed' : 'Already rejected')
-                            : (confirmed ? 'Reject signature' : 'Approve signature');
-                    });
-                    const status = actions.closest('tr')?.querySelector('[data-signature-status]');
-                    if (status) {
-                        status.innerHTML = confirmed
-                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round" title="Rejected"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-                    }
-                    window.toast?.success?.(confirmed ? 'Signature approved.' : 'Signature rejected.');
-                } catch (error) {
-                    window.toast?.error?.(error.message || 'Could not update signature.');
-                    button.disabled = false;
-                }
-            });
-        </script>
-    @endpush
 
 @endsection

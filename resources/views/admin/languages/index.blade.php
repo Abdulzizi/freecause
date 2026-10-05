@@ -4,22 +4,19 @@
 
 @section('content')
 
-    <h1 class="m-0! mb-2! text-lg!">languages</h1>
+    <x-admin.page-header title="languages" />
 
-    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">add language</div>
-    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
+    <x-admin.section-panel title="add language">
         <form method="post" action="{{ route('admin.languages.store') }}">
             @csrf
 
-            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-sm! w-[120px]!">code</label>
-                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="code" placeholder="e.g. es" required>
-            </div>
+            <x-admin.form-field label="code">
+                <x-ui.input name="code" placeholder="e.g. es" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
-            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-sm! w-[120px]!">name</label>
-                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="name" placeholder="Spanish" required>
-            </div>
+            <x-admin.form-field label="name">
+                <x-ui.input name="name" placeholder="Spanish" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
             {{-- <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                 <label class="font-bold! text-sm!">flag filename</label>
@@ -27,13 +24,12 @@
             </div> --}}
 
             <div class="text-right! mt-2.5!">
-                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">create language</button>
+                <x-ui.button variant="secondary" size="sm">create language</x-ui.button>
             </div>
         </form>
-    </div>
+    </x-admin.section-panel>
 
-    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">existing languages</div>
-    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
+    <x-admin.section-panel title="existing languages">
 
         @forelse($languages as $lang)
             <div
@@ -64,7 +60,9 @@
                         @csrf
                         @method('PUT')
 
-                        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="name" value="{{ $lang->name }}">
+                        <x-admin.form-field label="name" class="min-w-0! flex-1!">
+                            <x-ui.input name="name" :value="$lang->name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" />
+                        </x-admin.form-field>
 
                         {{-- <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="flag" value="{{ $lang->flag }}"> --}}
 
@@ -73,7 +71,7 @@
                             active
                         </label>
 
-                        <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">save</button>
+                        <x-ui.button variant="secondary" size="sm">save</x-ui.button>
                     </form>
 
                     @if (!$lang->is_default)
@@ -81,9 +79,7 @@
 
                             <form method="post" action="{{ route('admin.languages.default', $lang) }}">
                                 @csrf
-                                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!" type="submit">
-                                    set default
-                                </button>
+                                <x-ui.button variant="secondary" size="sm" type="submit">set default</x-ui.button>
                             </form>
 
                         </div>
@@ -94,11 +90,9 @@
             </div>
 
         @empty
-            <div class="p-5! text-center! text-[#777]!">
-                no languages created yet
-            </div>
+            <x-admin.empty-state message="no languages created yet" class="p-5! text-center!" />
         @endforelse
 
-    </div>
+    </x-admin.section-panel>
 
 @endsection

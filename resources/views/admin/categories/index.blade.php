@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1>categories ({{ number_format($approxTotal) }})</h1>
+<x-admin.page-header title="categories" :count="$approxTotal" />
 
 @if (session('success'))
     <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-2! py-1.5! rounded! mt-1.5! mb-2.5!">{{ session('success') }}</div>
@@ -34,7 +34,7 @@
             <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
-            <button class="border! border-[#7d7d7d]! bg-[#2a7a2a]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">create</button>
+            <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#2a7a2a]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">create</x-ui.button>
         </div>
     </form>
 </div>
@@ -49,7 +49,7 @@
     :reset="route('admin.categories')"
     :activeCount="$activeFilterCount">
 
-    <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
+    <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
         @foreach ($locales as $k => $label)
             <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>
                 {{ $label }}
@@ -68,7 +68,7 @@
 </x-admin.filter-box>
 
 {{-- ── LIST ──────────────────────────────────────────────────────────────── --}}
-<x-admin.list-table-box emptyText="no categories found, try clearing filters"
+<x-admin.data-table empty-text="no categories found, try clearing filters"
     :p="$categories">
 
     <x-slot:thead>
@@ -86,7 +86,7 @@
                 $missing = empty($c->name);
             @endphp
 
-            <tr class="border-b! border-[#eee]!">
+            <tr class="border-b! border-[#eee]!" data-admin-row-hover>
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         {{ $c->id }}
@@ -116,7 +116,7 @@
         @endforeach
     </x-slot:tbody>
 
-</x-admin.list-table-box>
+</x-admin.data-table>
 
 {{-- ── DETAIL / EDIT PANEL ───────────────────────────────────────────────── --}}
 <x-admin.detail-panel title="category" :closeRoute="route('admin.categories', request()->except('select'))">
@@ -136,27 +136,14 @@
                 <div class="py-1.5! text-[#444]!">{{ $locale }}</div>
             </div>
 
-            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-xs! md:text-sm!">name *</label>
-                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
-                       type="text"
-                       name="name"
-                       value="{{ $selectedTranslation->name ?? '' }}"
-                       required>
-            </div>
+            <x-admin.form-field label="name *">
+                <x-ui.input name="name" :value="$selectedTranslation->name ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
+                       required />
+            </x-admin.form-field>
 
-            <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-xs! md:text-sm!">slug</label>
-                <div>
-                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
-                           type="text"
-                           name="slug"
-                           value="{{ $selectedTranslation->slug ?? '' }}">
-                    <div class="text-[11px]! text-[#777]! mt-1!">
-                        used in url: /petitions/category-<b>slug</b>-{{ $selectedCategory->id }}
-                    </div>
-                </div>
-            </div>
+            <x-admin.form-field label="slug" :hint="'used in url: /petitions/category-slug-' . $selectedCategory->id">
+                <x-ui.input name="slug" :value="$selectedTranslation->slug ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
             <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                 <label class="font-bold! text-xs! md:text-sm!">active</label>
@@ -171,7 +158,7 @@
             </div>
 
             <div class="flex! justify-end! mt-1.5!">
-                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!" type="submit">save</button>
+                <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!" type="submit">save</x-ui.button>
             </div>
         </form>
 
@@ -179,12 +166,12 @@
         <div class="mt-[18px]! pt-3.5! border-t! border-[#eee]!">
             @if ($selectedPetitionCount === 0)
                 <form method="post" action="{{ route('admin.categories.destroy') }}"
-                      onsubmit="return confirm('Delete category #{{ $selectedCategory->id }} and all its translations? This cannot be undone.')">
+                      data-admin-confirm="Delete category #{{ $selectedCategory->id }} and all its translations? This cannot be undone.">
                     @csrf
                     <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
                     <div class="flex! items-center! justify-between!">
                         <span class="text-xs! text-[#999]!">no petitions use this category</span>
-                        <button class="border! border-[#c00]! bg-[#c00]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">delete category</button>
+                        <x-ui.button variant="danger" class="border! border-[#c00]! bg-[#c00]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">delete category</x-ui.button>
                     </div>
                 </form>
             @else
@@ -194,7 +181,7 @@
             @endif
         </div>
     @else
-        <div class="text-[#777]!">select a category to edit</div>
+        <x-admin.empty-state message="select a category to edit" class="text-[#777]!" />
     @endif
 
 </x-admin.detail-panel>

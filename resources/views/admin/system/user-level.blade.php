@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h1 class="m-0! mb-2! text-lg!">user levels ({{ number_format($levels->total()) }})</h1>
+    <x-admin.page-header title="user levels" :count="$levels->total()" />
 
     @if (session('success'))
         <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-1.5! py-1! rounded! my-1.5! mb-[15px]!">
@@ -13,10 +13,10 @@
     @endif
 
 
-    <x-admin.list-table-box emptyText="no user levels found" :p="$levels">
+    <x-admin.data-table emptyText="no user levels found" :p="$levels">
 
         <x-slot:thead>
-            <tr class="border-b! border-[#ccc]! h-11!">
+            <tr data-admin-row-hover class="border-b! border-[#ccc]! h-11!">
                 <th class="w-[70px]! text-left!">ID</th>
                 <th class="w-10! text-left!"></th>
                 <th class="text-left!">Name (system key)</th>
@@ -28,7 +28,7 @@
 
         <x-slot:tbody>
             @foreach ($levels as $level)
-                <tr class="border-b! border-[#eee]! h-11!">
+                <tr class="border-b! border-[#eee]! h-11!" data-admin-row-hover>
 
                     <td class="text-left! align-middle!">
                         {{ $level->id }}
@@ -65,7 +65,7 @@
         <x-slot:footer>
             <div class="flex! gap-3! items-center!">
 
-                <button type="button" class="flex! flex-col! items-center! justify-center! w-[52px]! h-11! border! border-[#bbb]! bg-white! gap-0.5! cursor-pointer! transition-colors! transition-opacity! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! bulk-action" data-action="delete">
+                <x-ui.button type="button" variant="danger" size="sm" class="flex! flex-col! items-center! justify-center! w-[52px]! h-11! gap-0.5! max-md:w-10! max-md:h-[38px]! max-md:gap-px! bulk-action" data-action="delete">
 
                     <svg class="max-md:w-4! max-md:h-4!" width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
@@ -75,37 +75,32 @@
                     <div class="text-[11px]! text-[#666]! max-md:hidden!">
                         delete
                     </div>
-                </button>
+                </x-ui.button>
 
             </div>
         </x-slot:footer>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
-    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-[25px]! mr-0! mb-0! ml-0!">new level</div>
-    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-5!">
+    <x-admin.section-panel title="new level">
 
         <form method="post" action="{{ route('admin.system.user_levels.store') }}">
             @csrf
 
-            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-sm!">Name (system key)</label>
-                <input type="text" name="name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" required>
-            </div>
+            <x-admin.form-field label="Name (system key)">
+                <x-ui.input name="name" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
-            <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-sm!">Visible Name</label>
-                <input type="text" name="visible_name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" required>
-            </div>
+            <x-admin.form-field label="Visible Name">
+                <x-ui.input name="visible_name" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
             <div class="flex! justify-end! mt-[15px]!">
-                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">
-                    add
-                </button>
+                <x-ui.button variant="secondary" size="sm">add</x-ui.button>
             </div>
         </form>
 
-    </div>
+    </x-admin.section-panel>
 
 @endsection
 

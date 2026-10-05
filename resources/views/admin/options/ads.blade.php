@@ -3,7 +3,7 @@
 @section('title', 'ads.txt')
 
 @section('content')
-    <h1 class="m-0! mb-2! text-lg! max-md:text-base!">ads.txt</h1>
+    <x-admin.page-header title="ads.txt" />
 
     {{-- @if(session('success'))
         <div class="fc-success">{{ session('success') }}</div>
@@ -17,7 +17,7 @@
         </div>
 
         <div class="flex! justify-end! mt-1.5!">
-            <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit" title="save">save</button>
+            <x-ui.button variant="secondary" size="sm" type="submit" title="save">save</x-ui.button>
         </div>
     </form>
 @endsection

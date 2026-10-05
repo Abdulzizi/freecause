@@ -1,5 +1,7 @@
 {{--
     Admin bulk-selection toolbar. Preserves the existing fc-bulk-* selectors and ! utility classes.
+    Admin button mapping: danger is destructive red, secondary preserves white/grey toolbar controls,
+    and primary is brand red; legacy grey save buttons should use secondary or explicit grey utilities.
     Optional props: actionRoute, banRoute, deleteRoute, unbanRoute, noun, banLabel, banConfirm,
     banWithDetails, emptyMsg, checkboxSelector. The default slot may contain custom action controls
     such as existing .bulk-action buttons.

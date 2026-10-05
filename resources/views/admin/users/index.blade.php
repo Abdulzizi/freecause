@@ -22,7 +22,7 @@
         </svg>';
     @endphp
 
-    <h1>users ({{ number_format($approxTotal) }})</h1>
+    <x-admin.page-header title="users" :count="$approxTotal" />
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
@@ -35,13 +35,13 @@
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email" placeholder="Email" value="{{ $filters['email'] }}">
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email_mode" aria-label="Email search mode">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email_mode" aria-label="Email search mode">
             <option value="prefix" {{ ($filters['email_mode'] ?? 'prefix') === 'prefix' ? 'selected' : '' }}>email starts with</option>
             <option value="domain" {{ ($filters['email_mode'] ?? 'prefix') === 'domain' ? 'selected' : '' }}>email domain</option>
         </select>
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
             <option value="">status...</option>
             <option value="verified" {{ $filters['status'] === 'verified' ? 'selected' : '' }}>verified</option>
             <option value="unverified" {{ $filters['status'] === 'unverified' ? 'selected' : '' }}>unverified</option>
@@ -50,14 +50,14 @@
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="level">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="level">
             @foreach ($levels as $k => $label)
                 <option value="{{ $k }}" {{ $filters['level'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
             @endforeach
         </select>
 
-        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="locale">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ $filters['locale'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
@@ -65,15 +65,14 @@
         </select>
     </x-admin.filter-box>
 
-    <x-admin.list-table-box empty-text="no users found, try clearing filters" :p="$users" :bulk="[
+    <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :bulk="[
         'banRoute'        => route('admin.users.bulkBan'),
         'banLabel'        => 'Banned',
         'banConfirm'      => 'Ban selected users?',
         'banWithDetails'  => true,
     ]">
         <x-slot:thead>
-            <tr class="border-b! border-solid! border-[#ccc]!" onmouseover="this.style.background='#f7f7f7'"
-                onmouseout="this.style.background=''">
+            <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
                 <th class="text-left! w-[90px]!">id</th>
                 <th width="26" data-hide-mobile></th>
                 <th class="w-[26px]! text-left!" data-hide-mobile>v</th>
@@ -91,7 +90,7 @@
                 @php
                     $isBanned = $u->level?->name === 'banned';
                 @endphp
-                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}">
+                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}" data-admin-row-hover>
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
                             class="no-underline! text-black!">
@@ -159,15 +158,15 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <button type="button" id="bulk-unban" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Unban">
+                    <x-ui.button variant="secondary" type="button" id="bulk-unban" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Unban">
                         {!! $icoUnban !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unban</span>
-                    </button>
+                    </x-ui.button>
 
-                    <button type="button" id="bulk-delete" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Delete">
+                    <x-ui.button variant="secondary" type="button" id="bulk-delete" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Delete">
                         {!! $icoDelete !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Delete</span>
-                    </button>
+                    </x-ui.button>
                 </div>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}"
@@ -178,7 +177,7 @@
             </div>
         </x-slot:footer>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
     <x-admin.detail-panel title="user" :closeRoute="route('admin.users', request()->except('select'))">
         @if ($selectedUser)
@@ -189,17 +188,17 @@
             <div class="mb-2.5! flex! items-center! gap-2! flex-wrap!">
                 @if (! $selectedUserProtected)
                     @if ($selectedUserIsBanned)
-                        <button type="button" data-user-single-action="unban"
+                        <x-ui.button variant="secondary" type="button" data-user-single-action="unban"
                             data-url="{{ route('admin.users.unban', ['user' => $selectedUser->id]) }}"
                             class="border! border-[#6b8e23]! bg-white! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
                             Unban user
-                        </button>
+                        </x-ui.button>
                     @else
-                        <button type="button" data-user-single-action="ban"
+                        <x-ui.button variant="danger" type="button" data-user-single-action="ban"
                             data-url="{{ route('admin.users.ban', ['user' => $selectedUser->id]) }}"
                             class="border! border-[#b42318]! bg-white! text-[#b42318]! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
                             Ban user
-                        </button>
+                        </x-ui.button>
                     @endif
                 @else
                     <span class="text-[11px]! text-[#777]!">System accounts and your own account cannot be banned here.</span>
@@ -212,21 +211,15 @@
 
             <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-0! max-md:text-xs! max-md:px-2! max-md:py-1!">Access Data</div>
             <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>username</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="username" value="{{ $selectedUser->name ?? '' }}">
-                </div>
+                <x-admin.form-field label="username">
+                    <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>password</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="password" name="password" value="">
-                        @error('password') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+                <x-admin.form-field label="password" :error="$errors->first('password')">
+                    <x-ui.input name="password" type="password" value="" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>level</label>
+                <x-admin.form-field label="level">
                     <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="level">
                         @if ($selectedUser?->level?->name === 'banned')
                             <option value="" selected disabled>Banned — use the unban control above</option>
@@ -240,44 +233,35 @@
                             @endif
                         @endforeach
                     </select>
-                </div>
+                </x-admin.form-field>
             </div>
 
             <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">other</div>
             <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>first name</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="first_name"
-                        value="{{ $selectedUser->first_name ?? '' }}">
-                </div>
+                <x-admin.form-field label="first name">
+                    <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>last name</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="last_name"
-                        value="{{ $selectedUser->last_name ?? '' }}">
-                </div>
+                <x-admin.form-field label="last name">
+                    <x-ui.input name="last_name" :value="$selectedUser->last_name ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>nickname</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="nickname"
-                        value="{{ $selectedUser->nickname ?? '' }}">
-                </div>
+                <x-admin.form-field label="nickname">
+                    <x-ui.input name="nickname" :value="$selectedUser->nickname ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>location</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="city"
-                        value="{{ $selectedUser->city ?? '' }}">
-                </div>
+                <x-admin.form-field label="location">
+                    <x-ui.input name="city" :value="$selectedUser->city ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>identify as</label>
+                <x-admin.form-field label="identify as">
                     <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="identify_mode">
                         <option value="full" {{ ($selectedUser->identify_mode ?? 'full') === 'full' ? 'selected' : '' }}>full name</option>
                         <option value="name" {{ ($selectedUser->identify_mode ?? '') === 'name' ? 'selected' : '' }}>first name</option>
                         <option value="nick" {{ ($selectedUser->identify_mode ?? '') === 'nick' ? 'selected' : '' }}>nickname</option>
                     </select>
-                </div>
+                </x-admin.form-field>
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>verified</label>
@@ -285,13 +269,11 @@
                         {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
                 </div>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>email</label>
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email" value="{{ $selectedUser->email ?? '' }}">
-                </div>
+                <x-admin.form-field label="email">
+                    <x-ui.input name="email" :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>locale</label>
+                <x-admin.form-field label="locale">
                     <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="locale">
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
@@ -302,11 +284,11 @@
                             @endif
                         @endforeach
                     </select>
-                </div>
+                </x-admin.form-field>
             </div>
 
             <div class="flex! justify-end! mt-1.5!">
-                <button class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</button>
+                <x-ui.button variant="secondary" class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</x-ui.button>
             </div>
         </form>
     </x-admin.detail-panel>
@@ -319,53 +301,3 @@
     'noun' => 'users',
     'emptyMsg' => 'No users selected',
 ])
-
-@push('scripts')
-    <script>
-        document.addEventListener('click', async function (event) {
-            const button = event.target.closest('[data-user-single-action]');
-            if (!button) return;
-
-            const action = button.dataset.userSingleAction;
-            let payload = {};
-            if (action === 'ban') {
-                const reason = window.prompt('Ban reason (optional):');
-                if (reason === null) return;
-                const daysText = window.prompt('Ban duration in days (0 = permanent):', '0');
-                if (daysText === null) return;
-                if (!/^\d+$/.test(daysText.trim()) || Number(daysText) > 36500) {
-                    window.toast?.warning?.('Enter a whole number of days from 0 to 36500.');
-                    return;
-                }
-                if (!window.confirm('Ban this user?')) return;
-                payload = { reason: reason.trim() || null, days: Number(daysText) };
-            } else if (action === 'unban') {
-                if (!window.confirm('Unban this user?')) return;
-            } else {
-                return;
-            }
-
-            button.disabled = true;
-            try {
-                const response = await fetch(button.dataset.url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    },
-                    body: JSON.stringify(payload),
-                });
-                const result = await response.json().catch(() => ({}));
-                if (!response.ok || !result.ok) {
-                    const message = result.error || Object.values(result.errors || {}).flat()[0] || 'Could not update user status.';
-                    throw new Error(message);
-                }
-                window.toast?.success?.(action === 'ban' ? 'User banned.' : 'User unbanned.');
-                window.setTimeout(() => window.location.reload(), 700);
-            } catch (error) {
-                window.toast?.error?.(error.message || 'Could not update user status.');
-                button.disabled = false;
-            }
-        });
-    </script>
-@endpush

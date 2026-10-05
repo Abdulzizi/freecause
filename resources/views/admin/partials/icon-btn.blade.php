@@ -3,7 +3,10 @@
     $h = $h ?? 44;
 @endphp
 
-<button type="{{ $type ?? 'button' }}"
+<x-ui.button
+    type="{{ $type ?? 'button' }}"
+    variant="secondary"
+    size="sm"
     @if(!empty($id)) id="{{ $id }}" @endif
     @if(!empty($class)) class="border! border-[#bbb]! bg-white! p-0! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! {{ $class }}" @else class="border! border-[#bbb]! bg-white! p-0! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none!" @endif
     @if(!empty($data)) @foreach($data as $k => $v) data-{{ $k }}="{{ $v }}" @endforeach @endif
@@ -19,4 +22,4 @@
             {{ $label }}
         </div>
     @endif
-</button>
+</x-ui.button>

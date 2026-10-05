@@ -4,20 +4,20 @@
 
 @section('content')
 
-    <h1 class="m-0! mb-2! text-lg!">logs ({{ number_format($logs->total()) }})</h1>
+    <x-admin.page-header title="logs" :count="$logs->total()" />
 
     <x-admin.filter-box title="filter logs" :action="route('admin.logs')" :reset="route('admin.logs')">
 
         <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[260px]!" name="q" placeholder="type something..." value="{{ $filters['q'] ?? '' }}">
 
-        <select name="level" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!">
+        <select name="level" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" data-admin-autosubmit>
             <option value="">All levels</option>
             <option value="info" {{ request('level')=='info'?'selected':'' }}>Info</option>
             <option value="warning" {{ request('level')=='warning'?'selected':'' }}>Warning</option>
             <option value="error" {{ request('level')=='error'?'selected':'' }}>Error</option>
         </select>
 
-        <select name="context" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!">
+        <select name="context" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" data-admin-autosubmit>
             <option value="">All context</option>
             <option value="admin.audit" {{ request('context')=='admin.audit'?'selected':'' }}>Admin Audit</option>
             <option value="auth.register" {{ request('context')=='auth.register'?'selected':'' }}>Auth Register</option>
@@ -32,12 +32,9 @@
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
-        <a class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm! no-underline!" href="{{ route('admin.logs.export', request()->query()) }}">
-            export CSV
-        </a>
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.logs.export', request()->query())">export CSV</x-ui.button>
 
-        <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!"
-            onsubmit="return confirm('Delete all logs older than the selected number of days?')">
+        <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!" data-admin-confirm="Delete all logs older than the selected number of days?">
             @csrf
             <select name="days" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!">
                 <option value="30">30 days</option>
@@ -45,18 +42,18 @@
                 <option value="90" selected>90 days</option>
                 <option value="180">180 days</option>
             </select>
-            <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm! bg-[#c00]! text-white!" type="submit">prune old logs</button>
+            <x-ui.button variant="danger" size="sm" type="submit">prune old logs</x-ui.button>
         </form>
     </div>
 
-    <x-admin.list-table-box :p="$logs" :bulk="[
+    <x-admin.data-table :p="$logs" :bulk="[
             // 'banRoute' => route('admin.logs.bulkDelete'),
             // 'banLabel' => 'Delete',
             // 'banConfirm' => 'Delete selected logs?',
 ]">
 
         <x-slot:thead>
-            <tr class="border-b! border-[#ccc]!">
+            <tr data-admin-row-hover class="border-b! border-[#ccc]!">
                 <th class="w-[70px]!">ID</th>
                 <th class="w-[80px]!">Level</th>
                 <th>Content preview</th>
@@ -66,7 +63,7 @@
 
         <x-slot:tbody>
             @foreach ($logs as $log)
-                <tr class="border-b! border-[#eee]! hover:bg-[#f7f7f7]!">
+                <tr data-admin-row-hover class="border-b! border-[#eee]! hover:bg-[#f7f7f7]!">
 
                     <td>
                         <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline! text-black!">
@@ -97,25 +94,22 @@
             @endforeach
         </x-slot:tbody>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
     @if($selected)
-            <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">log</div>
-            <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5!">
+            <x-admin.section-panel title="log">
 
-                <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-sm!">date</label>
+                <x-admin.form-field label="date">
                     <div>{{ $selected->created_at }}</div>
-                </div>
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-sm!">content</label>
+                <x-admin.form-field label="content">
                     <textarea class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-h-[140px]! resize-y! font-[Consolas,_Courier_New,_monospace]! text-[13px]!" readonly>
                         {{ $selected->content }}
                     </textarea>
-                </div>
+                </x-admin.form-field>
 
-            </div>
+            </x-admin.section-panel>
     @endif
 
 @endsection

@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h1>spam</h1>
+    <x-admin.page-header title="spam" />
 
     <div class="border! border-[#9e9e9e]! rounded! p-[10px]! mb-[15px]!">
         <strong>{{ number_format($bannedCount) }}</strong> IP banned.
@@ -13,7 +13,7 @@
     <x-admin.filter-box title="filter spam" :action="route('admin.spam')" :reset="route('admin.spam')">
         <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="type">
+        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="type" data-admin-autosubmit>
             <option value="">type...</option>
             @foreach ($types as $t)
                 <option value="{{ $t }}" {{ ($filters['type'] ?? '') === $t ? 'selected' : '' }}>{{ $t }}</option>
@@ -24,17 +24,15 @@
         <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
-    <form method="post" action="{{ route('admin.spam.clear') }}" onsubmit="return confirmClear()" class="mb-[15px]!">
+    <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-[15px]!">
         @csrf
-        <button class="border! border-[#7d7d7d]! bg-[#dc3545]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
-            clear spam logs
-        </button>
+        <x-ui.button variant="danger" size="sm">clear spam logs</x-ui.button>
     </form>
 
-    <x-admin.list-table-box empty-text="no blocked activity" :p="$logs">
+    <x-admin.data-table empty-text="no blocked activity" :p="$logs">
 
         <x-slot:thead>
-            <tr class="border-b! border-[#ccc]!">
+            <tr data-admin-row-hover class="border-b! border-[#ccc]!">
                 <th class="w-[100px]!">type</th>
                 <th class="w-[150px]!">ip</th>
                 <th>payload</th>
@@ -45,7 +43,7 @@
 
         <x-slot:tbody>
             @forelse($logs as $log)
-                <tr
+                <tr data-admin-row-hover
                     class="border-b! border-[#eee]! @if (in_array($log->ip, $bannedIps)) bg-[#fff3f3]! @endif">
 
                     <td>{{ $log->type }}</td>
@@ -63,27 +61,21 @@
 
                     <td class="flex! gap-1.5! flex-wrap!">
 
-                        <button type="button" onclick="togglePayload({{ $log->id }})" class="border! border-[#7d7d7d]! bg-[#6c757d]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
-                            view
-                        </button>
+                        <x-ui.button type="button" variant="secondary" size="sm" data-payload-toggle="{{ $log->id }}">view</x-ui.button>
 
                         @if (in_array($log->ip, $bannedIps))
                             <form method="post" action="{{ route('admin.spam.unban') }}"
-                                onsubmit="return confirmUnban('{{ $log->ip }}')">
+                                data-admin-confirm="Unban this IP? {{ $log->ip }}">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="border! border-[#7d7d7d]! bg-[#dc3545]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!">
-                                    unban
-                                </button>
+                                <x-ui.button variant="danger" size="sm">unban</x-ui.button>
                             </form>
                         @else
                             <form method="post" action="{{ route('admin.spam.ban') }}"
-                                onsubmit="return confirmBan('{{ $log->ip }}')">
+                                data-admin-confirm="Are you sure you want to ban this IP? {{ $log->ip }} This will block access immediately.">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">
-                                    ban
-                                </button>
+                                <x-ui.button variant="danger" size="sm">ban</x-ui.button>
                             </form>
                         @endif
 
@@ -108,10 +100,7 @@
 
                         <div
                             class="bg-[#1e1e1e]! rounded-md! border! border-[#333]! mt-2.5! relative!">
-                            <button type="button" onclick="copyPayload({{ $log->id }})"
-                                class="absolute! top-2! right-2! bg-[#444]! text-white! border-none! py-1! px-2! text-xs! cursor-pointer! rounded!">
-                                copy
-                            </button>
+                            <x-ui.button type="button" variant="secondary" size="sm" data-payload-copy="{{ $log->id }}" class="absolute! top-2! right-2!">copy</x-ui.button>
 
                             <pre id="payload-content-{{ $log->id }}"
                                 class="m-0! p-[18px]! text-[#d4d4d4]! text-[13px]! leading-[1.5]! whitespace-pre-wrap! break-words! overflow-auto! max-h-[400px]!">{{ $payloadFormatted }}</pre>
@@ -130,38 +119,7 @@
             @endforelse
         </x-slot:tbody>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
-    <script>
-        function togglePayload(id) {
-            var row = document.getElementById('payload-' + id);
-            row.style.display = (row.style.display === 'none') ? '' : 'none';
-        }
-
-        function confirmBan(ip) {
-            return confirm(
-                "are you sure you want to ban this ip?\n\n" +
-                ip +
-                "\n\nthis will block access immediately."
-            );
-        }
-
-        function confirmUnban(ip) {
-            return confirm("unban this ip?\n\n" + ip);
-        }
-
-        function confirmClear() {
-            return confirm(
-                "you are about to permanently delete all spam logs.\n\n" +
-                "continue?"
-            );
-        }
-
-        function copyPayload(id) {
-            var text = document.getElementById('payload-content-' + id).innerText;
-            navigator.clipboard.writeText(text);
-            alert('payload copied');
-        }
-    </script>
 
 @endsection

@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <h1 class="m-0! mb-2! text-lg!">permissions</h1>
+    <x-admin.page-header title="permissions" />
 
     {{-- @if (session('success'))
         <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-1.5! py-1! rounded! my-1.5! mb-2.5!">
@@ -22,7 +22,7 @@
                     Module
                 </label>
 
-                <select name="module" onchange="this.form.submit()" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
+                <select name="module" data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
 
                     @foreach ($modules as $module => $actions)
                         <option value="{{ $module }}" {{ $selectedModule == $module ? 'selected' : '' }}>
@@ -38,7 +38,7 @@
                     Level
                 </label>
 
-                <select name="level" onchange="this.form.submit()" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
+                <select name="level" data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
 
                     @foreach ($levels as $level)
                         <option value="{{ $level->id }}" {{ $selectedLevel == $level->id ? 'selected' : '' }}>
@@ -84,9 +84,7 @@
             </div>
 
             <div class="flex! justify-end! mt-[25px]!">
-                <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-3! py-1.5! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! text-xs! md:py-1! md:px-2.5! md:text-sm!">
-                    save
-                </button>
+                <x-ui.button variant="secondary" size="sm">save</x-ui.button>
             </div>
 
         </form>

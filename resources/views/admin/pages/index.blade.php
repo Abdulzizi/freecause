@@ -29,7 +29,7 @@
     @endphp
 
 
-    <h1>pages ({{ number_format($approxTotal) }})</h1>
+    <x-admin.page-header title="pages" :count="$approxTotal" />
 
 
     @php
@@ -42,7 +42,7 @@
 
         <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}">
 
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="locale">
+        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') === $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -53,7 +53,7 @@
     </x-admin.filter-box>
 
 
-    <x-admin.list-table-box emptyText="no pages found" :p="$pages">
+    <x-admin.data-table emptyText="no pages found" :p="$pages">
 
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
@@ -69,7 +69,7 @@
 
         <x-slot:tbody>
             @foreach ($pages as $p)
-                <tr class="border-b! border-[#eee]!">
+                <tr class="border-b! border-[#eee]!" data-admin-row-hover>
 
                     <td class="text-center!">
                         <a
@@ -108,21 +108,21 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="publish" title="Publish">
+                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Publish</span>
-                    </button>
+                    </x-ui.button>
 
-                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="unpublish" title="Unpublish">
+                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Unpublish</span>
-                    </button>
+                    </x-ui.button>
                 </div>
 
-                <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
+                <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
                     {!! $icoX !!}
                     <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
-                </button>
+                </x-ui.button>
 
                 <a href="{{ route('admin.pages', request()->except('select')) }}"
                     title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
@@ -132,7 +132,7 @@
             </div>
         </x-slot:footer>
 
-    </x-admin.list-table-box>
+    </x-admin.data-table>
 
 
     <x-admin.detail-panel title="page" :closeRoute="route('admin.pages', request()->except('select'))">
@@ -149,31 +149,25 @@
                     <input type="checkbox" name="published" value="1" {{ $selectedPage->published ? 'checked' : '' }}>
                 </div>
 
-                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-xs! md:text-sm!">title</label>
-                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="title" value="{{ $selectedPage->title }}">
-                </div>
+                <x-admin.form-field label="title">
+                    <x-ui.input name="title" :value="$selectedPage->title" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-xs! md:text-sm!">slug</label>
-                    <div>
-                        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="slug" value="{{ $selectedPage->slug }}">
-                        @error('slug') <span class="text-[#c00]! text-xs!" role="alert">{{ $message }}</span> @enderror
-                    </div>
-                </div>
+                <x-admin.form-field label="slug" :error="$errors->first('slug')">
+                    <x-ui.input name="slug" :value="$selectedPage->slug" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                </x-admin.form-field>
 
-                <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-xs! md:text-sm!">content</label>
+                <x-admin.form-field label="content">
                     <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
-                </div>
+                </x-admin.form-field>
 
                 <div class="flex! justify-end!">
-                    <button class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">save</button>
+                    <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">save</x-ui.button>
                 </div>
 
             </form>
         @else
-            <div class="text-[#777]!">select a page to edit</div>
+            <x-admin.empty-state message="select a page to edit" class="text-[#777]!" />
         @endif
 
     </x-admin.detail-panel>

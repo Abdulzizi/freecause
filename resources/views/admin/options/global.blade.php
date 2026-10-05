@@ -3,19 +3,17 @@
 @section('title', 'Site Settings')
 
 @section('content')
-    <h1>Site Settings</h1>
+    <x-admin.page-header title="Site Settings" />
 
     <form method="post" action="{{ route('admin.options.global.update') }}">
         @csrf
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">general</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="general">
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>base url</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="base_url" value="{{ $base_url }}">
-            </div>
+            <x-admin.form-field label="base url">
+                <x-ui.input name="base_url" :value="$base_url" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
             @if ($base_url)
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
@@ -26,10 +24,9 @@
                 </div>
             @endif
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>short base url</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="short_base_url" value="{{ $short_base_url }}">
-            </div>
+            <x-admin.form-field label="short base url">
+                <x-ui.input name="short_base_url" :value="$short_base_url" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
             @if ($short_base_url)
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
@@ -40,20 +37,17 @@
                 </div>
             @endif
 
-        </div>
+        </x-admin.section-panel>
         @endif
 
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">email</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>to (staff)</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="email" name="email_to_staff" value="{{ $email_to_staff }}">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>from</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="email" name="email_from" value="{{ $email_from }}">
-            </div>
-        </div>
+        <x-admin.section-panel title="email">
+            <x-admin.form-field label="to (staff)">
+                <x-ui.input name="email_to_staff" type="email" :value="$email_to_staff" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="from">
+                <x-ui.input name="email_from" type="email" :value="$email_from" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
 
         @if ($is_system_admin)
         <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">inject html <span class="text-[0.75em]! text-[#c00]!">(system admin only)</span></div>
@@ -74,8 +68,7 @@
         @endif
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">oauth</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="oauth">
 
             <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                 <a href="https://console.cloud.google.com/apis/credentials" target="_blank"
@@ -87,19 +80,15 @@
                 <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="google_client_id" value="{{ $google_client_id }}">
             </div>
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>google client secret</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="password" name="google_client_secret" value=""
-                    autocomplete="new-password"
-                    placeholder="{{ $google_client_secret_set ? '•••••••• (leave blank to keep)' : 'not set' }}">
-            </div>
+            <x-admin.form-field label="google client secret">
+                <x-ui.input name="google_client_secret" type="password" value="" :placeholder="$google_client_secret_set ? '•••••••• (leave blank to keep)' : 'not set'" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" autocomplete="new-password" />
+            </x-admin.form-field>
 
-        </div>
+        </x-admin.section-panel>
         @endif
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">smtp</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="smtp">
             <input type="hidden" name="smtp_enabled" value="0">
             <input type="hidden" name="require_email_verification" value="0">
 
@@ -120,20 +109,15 @@
                 </label>
             </div>
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>smtp host</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="smtp_host" value="{{ $smtp_host }}">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>smtp user</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="smtp_user" value="{{ $smtp_user }}">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>smtp password</label>
+            <x-admin.form-field label="smtp host">
+                <x-ui.input name="smtp_host" :value="$smtp_host" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="smtp user">
+                <x-ui.input name="smtp_user" :value="$smtp_user" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="smtp password">
                 <div class="relative!">
-                    <input id="smtp_pass_input" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! pr-9!" type="password" name="smtp_pass"
-                        value="" autocomplete="new-password"
-                        placeholder="{{ $smtp_pass_set ? '•••••••• (leave blank to keep)' : 'not set' }}">
+                    <x-ui.input name="smtp_pass" type="password" value="" id="smtp_pass_input" :placeholder="$smtp_pass_set ? '•••••••• (leave blank to keep)' : 'not set'" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! pr-9!" autocomplete="new-password" />
 
                     <svg id="toggle_smtp_pass" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         class="absolute! right-2.5! top-1/2! -translate-y-1/2! cursor-pointer! text-[#777]!">
@@ -141,9 +125,8 @@
                         <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
                     </svg>
                 </div>
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>smtp encryption</label>
+            </x-admin.form-field>
+            <x-admin.form-field label="smtp encryption">
                 <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="smtp_encryption">
                     <option value="tls" {{ $smtp_encryption === 'tls' ? 'selected' : '' }}>
                         explicit tls (starttls – port 587)
@@ -155,35 +138,29 @@
                         none (not recommended)
                     </option>
                 </select>
-            </div>
-        </div>
+            </x-admin.form-field>
+        </x-admin.section-panel>
         @endif
 
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">miscellaneous</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>max featured petitions per country</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="number" name="max_featured_petitions_per_country"
-                    value="{{ $max_featured_petitions_per_country }}">
-            </div>
-        </div>
+        <x-admin.section-panel title="miscellaneous">
+            <x-admin.form-field label="max featured petitions per country">
+                <x-ui.input name="max_featured_petitions_per_country" type="number" :value="$max_featured_petitions_per_country" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">maintenance</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="maintenance">
             <p class="text-xs! text-[#666]! mb-2!">
                 your ip: <strong class="text-black!">{{ request()->ip() }}</strong>
             </p>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>special debug ip</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="special_debug_ip" value="{{ $special_debug_ip }}">
-            </div>
-        </div>
+            <x-admin.form-field label="special debug ip">
+                <x-ui.input name="special_debug_ip" :value="$special_debug_ip" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
         @endif
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">logging</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="logging">
             <input type="hidden" name="logging_enabled" value="0">
 
             <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
@@ -195,64 +172,48 @@
                 </label>
             </div>
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>cookie name</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="logging_cookie_name" value="{{ $logging_cookie_name }}">
-            </div>
+            <x-admin.form-field label="cookie name">
+                <x-ui.input name="logging_cookie_name" :value="$logging_cookie_name" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>cookie value</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="logging_cookie_value" value="{{ $logging_cookie_value }}">
-            </div>
-        </div>
+            <x-admin.form-field label="cookie value">
+                <x-ui.input name="logging_cookie_value" :value="$logging_cookie_value" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
         @endif
 
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">announcement banner</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="announcement banner">
             <p class="text-xs! text-[#666]! mb-2!">
                 Show a red banner at the top of every page for all visitors. Plain text only, no HTML.
             </p>
             <input type="hidden" name="announcement_active" value="0">
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>active</label>
+            <x-admin.form-field label="active">
                 <input type="checkbox" name="announcement_active" value="1" {{ $announcement_active ? 'checked' : '' }}>
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>message</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="announcement_text" value="{{ $announcement_text }}"
-                    placeholder="e.g. Site under maintenance from 14:00–15:00 UTC">
-            </div>
-        </div>
+            </x-admin.form-field>
+            <x-admin.form-field label="message">
+                <x-ui.input name="announcement_text" :value="$announcement_text" placeholder="e.g. Site under maintenance from 14:00–15:00 UTC" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
 
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">verify account email</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="verify account email">
             <p class="text-xs! text-[#666]! mb-2!">
                 Customize the verification email sent to new users. Leave blank to use the default text.
             </p>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>subject</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email_verify_subject" value="{{ $email_verify_subject }}"
-                    placeholder="Verify your account">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>greeting / heading</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email_verify_greeting" value="{{ $email_verify_greeting }}"
-                    placeholder="Welcome to FreeCause">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>button text</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email_verify_button_text" value="{{ $email_verify_button_text }}"
-                    placeholder="Verify My Account">
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>footer line</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email_verify_footer" value="{{ $email_verify_footer }}"
-                    placeholder="FreeCause – Online Petition Platform">
-            </div>
-        </div>
+            <x-admin.form-field label="subject">
+                <x-ui.input name="email_verify_subject" :value="$email_verify_subject" placeholder="Verify your account" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="greeting / heading">
+                <x-ui.input name="email_verify_greeting" :value="$email_verify_greeting" placeholder="Welcome to FreeCause" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="button text">
+                <x-ui.input name="email_verify_button_text" :value="$email_verify_button_text" placeholder="Verify My Account" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+            <x-admin.form-field label="footer line">
+                <x-ui.input name="email_verify_footer" :value="$email_verify_footer" placeholder="FreeCause – Online Petition Platform" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
 
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">contact email</div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="contact email">
             <p class="text-xs! text-[#666]! mb-2!">
                 Customize the contact form notification email sent to staff.
             </p>
@@ -264,38 +225,13 @@
                     enable contact form notifications
                 </label>
             </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>subject</label>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="email_contact_subject" value="{{ $email_contact_subject }}"
-                    placeholder="New contact form submission">
-            </div>
-        </div>
+            <x-admin.form-field label="subject">
+                <x-ui.input name="email_contact_subject" :value="$email_contact_subject" placeholder="New contact form submission" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+            </x-admin.form-field>
+        </x-admin.section-panel>
 
         <div class="mt-1.5! text-end!">
-            <button class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</button>
+            <x-ui.button variant="secondary" size="sm" type="submit">save</x-ui.button>
         </div>
     </form>
 @endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var input = document.getElementById('smtp_pass_input');
-        var toggle = document.getElementById('toggle_smtp_pass');
-
-        if (! input || ! toggle) {
-            return;
-        }
-
-        toggle.addEventListener('click', function() {
-            if (input.type === 'password') {
-                input.type = 'text';
-                toggle.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2" fill="none"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"/>';
-            } else {
-                input.type = 'password';
-                toggle.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>';
-            }
-        });
-    });
-</script>
-@endpush
