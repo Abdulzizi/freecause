@@ -31,40 +31,41 @@ class DashboardController extends Controller
         ));
     }
 
+    public function warm(): void
+    {
+        $this->getStats();
+        $this->getRecentActivity();
+        $this->getTopPetitions();
+        $this->getSystemHealth();
+        $this->getQuickStats();
+    }
+
     private function getStats(): array
     {
-        $todayStart = today()->startOfDay();
-        $todayEnd = today()->endOfDay();
-        $weekAgo = now()->subWeek();
+        return Cache::remember('admin:dashboard:stats:v2', 300, function () {
+            $todayStart = today()->startOfDay();
+            $todayEnd = today()->endOfDay();
+            $weekAgo = now()->subWeek();
 
-        return [
-            'users_total' => $this->approxTableRows('users'),
-            'users_verified' => Cache::remember('admin:stats:users_verified', 3600, fn () => User::where('verified', 1)->count()),
-            'users_new_today' => Cache::remember('admin:stats:users_today', 300, function () use ($todayStart, $todayEnd) {
-                return User::whereBetween('created_at', [$todayStart, $todayEnd])->count();
-            }),
-            'users_new_week' => Cache::remember('admin:stats:users_week', 300, function () use ($weekAgo) {
-                return User::where('created_at', '>=', $weekAgo)->count();
-            }),
+            return [
+                'users_total' => $this->approxTableRows('users'),
+                'users_verified' => User::where('verified', 1)->count(),
+                'users_new_today' => User::whereBetween('created_at', [$todayStart, $todayEnd])->count(),
+                'users_new_week' => User::where('created_at', '>=', $weekAgo)->count(),
 
-            'petitions_total' => $this->approxTableRows('petitions'),
-            'petitions_published' => Cache::remember('admin:stats:petitions_published', 600, fn () => Petition::where('status', 'published')->count()),
-            'petitions_draft' => Cache::remember('admin:stats:petitions_draft', 600, fn () => Petition::where('status', 'draft')->count()),
-            'petitions_pending' => Cache::remember('admin:stats:petitions_pending', 600, fn () => Petition::where('status', 'pending')->count()),
-            'petitions_new_today' => Cache::remember('admin:stats:petitions_today', 300, function () use ($todayStart, $todayEnd) {
-                return Petition::whereBetween('created_at', [$todayStart, $todayEnd])->count();
-            }),
+                'petitions_total' => $this->approxTableRows('petitions'),
+                'petitions_published' => Petition::where('status', 'published')->count(),
+                'petitions_draft' => Petition::where('status', 'draft')->count(),
+                'petitions_pending' => Petition::where('status', 'pending')->count(),
+                'petitions_new_today' => Petition::whereBetween('created_at', [$todayStart, $todayEnd])->count(),
 
-            'signatures_total' => $this->approxTableRows('signatures'),
-            'signatures_today' => Cache::remember('admin:stats:sigs_today', 300, function () use ($todayStart, $todayEnd) {
-                return Signature::whereBetween('created_at', [$todayStart, $todayEnd])->count();
-            }),
-            'signatures_week' => Cache::remember('admin:stats:sigs_week', 300, function () use ($weekAgo) {
-                return Signature::where('created_at', '>=', $weekAgo)->count();
-            }),
+                'signatures_total' => $this->approxTableRows('signatures'),
+                'signatures_today' => Signature::whereBetween('created_at', [$todayStart, $todayEnd])->count(),
+                'signatures_week' => Signature::where('created_at', '>=', $weekAgo)->count(),
 
-            'languages_active' => Cache::remember('admin:stats:languages', 3600, fn () => Language::where('is_active', 1)->count()),
-        ];
+                'languages_active' => Language::where('is_active', 1)->count(),
+            ];
+        });
     }
 
     private function getQuickStats()
@@ -109,25 +110,36 @@ class DashboardController extends Controller
 
     private function getSystemHealth(): array
     {
-        $dbSize = 0;
-        try {
-            if (config('database.default') === 'sqlite') {
-                $dbPath = database_path('database.sqlite');
-                if (file_exists($dbPath)) {
-                    $dbSize = round(filesize($dbPath) / 1024 / 1024, 2);
+        return Cache::remember('admin:dashboard:health', 300, function () {
+            $dbSize = 0;
+            try {
+                if (config('database.default') === 'sqlite') {
+                    $dbPath = database_path('database.sqlite');
+                    if (file_exists($dbPath)) {
+                        $dbSize = round(filesize($dbPath) / 1024 / 1024, 2);
+                    }
                 }
+            } catch (\Throwable) {
             }
-        } catch (\Throwable) {
-        }
 
-        return [
-            'php_version' => PHP_VERSION,
-            'laravel_version' => app()->version(),
-            'cache_driver' => config('cache.default'),
-            'queue_driver' => config('queue.default'),
-            'database_type' => config('database.default'),
-            'database_size' => $dbSize ? "{$dbSize} MB" : 'N/A',
-            'disk_free_space' => round(disk_free_space('.') / 1024 / 1024 / 1024, 2).' GB',
-        ];
+            $diskFree = 'N/A';
+            try {
+                $free = disk_free_space('.');
+                if ($free !== false) {
+                    $diskFree = round($free / 1024 / 1024 / 1024, 2).' GB';
+                }
+            } catch (\Throwable) {
+            }
+
+            return [
+                'php_version' => PHP_VERSION,
+                'laravel_version' => app()->version(),
+                'cache_driver' => config('cache.default'),
+                'queue_driver' => config('queue.default'),
+                'database_type' => config('database.default'),
+                'database_size' => $dbSize ? "{$dbSize} MB" : 'N/A',
+                'disk_free_space' => $diskFree,
+            ];
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Petition;
@@ -206,5 +207,10 @@ class WarmCache extends Command
                 ->get()
                 ->toArray();
         });
+
+        try {
+            app(DashboardController::class)->warm();
+        } catch (\Throwable) {
+        }
     }
 }
