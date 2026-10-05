@@ -138,8 +138,7 @@
                         @endif
 
                         @if ($isBanned)
-                            <span
-                                class="ml-1.5! text-[10px]! px-1.5! py-0.5! bg-[#c00]! text-white! rounded-[2px]!"
+                            <span class="ml-1.5!  px-1.5! py-0.5! bg-[#c00]! text-white! rounded-[2px]!"
                             title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
                                 BANNED
                             </span>
@@ -161,22 +160,22 @@
 
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
-                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <x-ui.button variant="secondary" type="button" id="bulk-unban" class="fc-abtn" title="Unban">
+                <div class="flex! gap-1! items-center!">
+                    <button type="button" id="bulk-unban" class="fc-abtn" title="Unban">
                         {!! $icoUnban !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unban</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Unban</span>
+                    </button>
 
-                    <x-ui.button variant="secondary" type="button" id="bulk-delete" class="fc-abtn" title="Delete">
+                    <button type="button" id="bulk-delete" class="fc-abtn" title="Delete">
                         {!! $icoDelete !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Delete</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Delete</span>
+                    </button>
                 </div>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Clear</span>
+                    <span class="max-md:hidden!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
@@ -192,20 +191,20 @@
             <div class="mb-2.5! flex! items-center! gap-2! flex-wrap!">
                 @if (! $selectedUserProtected)
                     @if ($selectedUserIsBanned)
-                        <x-ui.button variant="secondary" type="button" data-user-single-action="unban"
+                        <button type="button" data-user-single-action="unban"
                             data-url="{{ route('admin.users.unban', ['user' => $selectedUser->id]) }}"
                             class="border! border-[#6b8e23]! bg-white! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
                             Unban user
-                        </x-ui.button>
+                        </button>
                     @else
-                        <x-ui.button variant="danger" type="button" data-user-single-action="ban"
+                        <button type="button" data-user-single-action="ban"
                             data-url="{{ route('admin.users.ban', ['user' => $selectedUser->id]) }}"
                             class="border! border-[#b42318]! bg-white! text-[#b42318]! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
                             Ban user
-                        </x-ui.button>
+                        </button>
                     @endif
                 @else
-                    <span class="text-[11px]! text-[#777]!">System accounts and your own account cannot be banned here.</span>
+                    <span class="text-[#777]!">System accounts and your own account cannot be banned here.</span>
                 @endif
             </div>
         @endif

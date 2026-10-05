@@ -65,17 +65,17 @@
         <x-slot:footer>
             <div class="flex! gap-3! items-center!">
 
-                <x-ui.button type="button" variant="danger" size="sm" class="fc-abtn bulk-action" data-action="delete">
+                <button type="button" class="fc-abtn bulk-action" data-action="delete">
 
                     <svg class="max-md:w-4! max-md:h-4!" width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
                         <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
                     </svg>
 
-                    <div class="text-[11px]! text-[#666]! max-md:hidden!">
+                    <div class="max-md:hidden!">
                         delete
                     </div>
-                </x-ui.button>
+                </button>
 
             </div>
         </x-slot:footer>

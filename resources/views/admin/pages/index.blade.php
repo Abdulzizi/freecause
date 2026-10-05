@@ -108,26 +108,26 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
+                    <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Publish</span>
-                    </x-ui.button>
+                        <span class="hidden! md:inline!">Publish</span>
+                    </button>
 
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
+                    <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Unpublish</span>
-                    </x-ui.button>
+                        <span class="hidden! md:inline!">Unpublish</span>
+                    </button>
                 </div>
 
-                <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
+                <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
                     {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
-                </x-ui.button>
+                    <span class="hidden! md:inline!">Delete</span>
+                </button>
 
                 <a href="{{ route('admin.pages', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
+                    <span class="hidden! md:inline!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>

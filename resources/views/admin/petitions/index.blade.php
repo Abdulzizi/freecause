@@ -40,34 +40,39 @@
 
     <x-admin.page-header title="petitions" :count="$approxTotal">
         @if (admin_can('petitions', 'edit'))
-            <x-ui.button variant="secondary" type="button"
-                class="fc-abtn border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer! hover:bg-[#f5f5f5]!"
-                data-petition-create-toggle>
+            <button type="button" class="fc-abtn" data-petition-create-toggle aria-haspopup="dialog">
                 new petition
-            </x-ui.button>
+            </button>
+        @endif
+    </x-admin.page-header>
 
-            <form data-petition-create-form method="post" action="{{ route('admin.petitions.create') }}"
-                class="w-full! flex! items-end! gap-2! flex-wrap! mb-2! border! border-[#ddd]! rounded! p-2! bg-[#fafafa]!" style="display: none;">
+    @if (admin_can('petitions', 'edit'))
+        <x-admin.modal id="petition-create-modal" title="create petition">
+            <form data-petition-create-form method="post" action="{{ route('admin.petitions.create') }}" style="display: none;">
                 @csrf
-                <label class="text-xs! font-bold! flex! flex-col! gap-1!">title
+
+                <x-admin.form-field label="title">
                     <input name="title" required maxlength="255" class="fc-filter-field" placeholder="petition title">
-                </label>
-                <label class="text-xs! font-bold! flex! flex-col! gap-1!">locale
+                </x-admin.form-field>
+
+                <x-admin.form-field label="locale">
                     <select name="locale" class="fc-filter-field">
                         @foreach ($localeOptions as $code => $label)
                             <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
-                </label>
-                <label class="text-xs! font-bold! flex! flex-col! gap-1!">category
+                </x-admin.form-field>
+
+                <x-admin.form-field label="category">
                     <select name="category_id" class="fc-filter-field">
                         <option value="">—</option>
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->id }}">{{ $cat->name ?? ('#'.$cat->id) }}</option>
                         @endforeach
                     </select>
-                </label>
-                <label class="text-xs! font-bold! flex! flex-col! gap-1!">goal
+                </x-admin.form-field>
+
+                <x-admin.form-field label="goal">
                     <select name="goal_signatures" class="fc-filter-field">
                         @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
                             <option value="{{ $goalOption }}" {{ $goalOption === 1000 ? 'selected' : '' }}>
@@ -75,14 +80,15 @@
                             </option>
                         @endforeach
                     </select>
-                </label>
-                <x-ui.button variant="secondary" type="submit"
-                    class="fc-abtn border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">
-                    create
-                </x-ui.button>
+                </x-admin.form-field>
+
+                <div class="fc-filter-actions">
+                    <button type="submit" class="fc-abtn">create</button>
+                    <button type="button" class="fc-abtn fc-abtn--neutral" data-admin-modal-close>cancel</button>
+                </div>
             </form>
-        @endif
-    </x-admin.page-header>
+        </x-admin.modal>
+    @endif
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null && $v !== 'locale')->count();
@@ -171,8 +177,7 @@
                     {{-- ACTIVE --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <x-ui.button variant="secondary" type="button"
-                            class="px-1.5! py-0.5! rounded! border! text-[10px]! cursor-pointer! {{ $p->is_active ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
+                        <x-ui.button variant="secondary" type="button" class="px-1.5! py-0.5! rounded! border!  cursor-pointer! {{ $p->is_active ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
                             data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
@@ -193,8 +198,7 @@
                     {{-- FEATURED --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <x-ui.button variant="secondary" type="button"
-                            class="px-1.5! py-0.5! rounded! border! text-[10px]! cursor-pointer! {{ $p->is_featured ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
+                        <x-ui.button variant="secondary" type="button" class="px-1.5! py-0.5! rounded! border!  cursor-pointer! {{ $p->is_featured ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_featured ? 'unfeature' : 'feature' }}"
                             data-kind="featured" aria-pressed="{{ $p->is_featured ? 'true' : 'false' }}">
@@ -213,9 +217,9 @@
                         @endphp
                         @foreach ($activeLanguages as $lang)
                             @if (in_array($lang, $petitionLocales))
-                                <span class="inline-block! bg-[#d4edda]! text-[#155724]! rounded-[3px]! px-[5px]! py-px! text-[10px]! m-px!">{{ $lang }}</span>
+                                <span class="inline-block! bg-[#d4edda]! text-[#155724]! rounded-[3px]! px-[5px]! py-px!  m-px!">{{ $lang }}</span>
                             @else
-                                <span class="inline-block! bg-[#f8d7da]! text-[#721c24]! rounded-[3px]! px-[5px]! py-px! text-[10px]! m-px!">{{ $lang }}</span>
+                                <span class="inline-block! bg-[#f8d7da]! text-[#721c24]! rounded-[3px]! px-[5px]! py-px!  m-px!">{{ $lang }}</span>
                             @endif
                         @endforeach
                     </td>
@@ -236,50 +240,50 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 @if (admin_can('petitions', 'edit'))
-                    <x-ui.button variant="danger" type="button" data-petition-bulk-ban
+                    <button type="button" data-petition-bulk-ban
                         data-url="{{ route('admin.petitions.bulkAction') }}"
                         class="fc-abtn fc-abtn--danger">
                         {!! $icoBan !!}
-                        <span class="text-[10px]! leading-none! max-md:hidden!">Ban</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Ban</span>
+                    </button>
                 @endif
-                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
+                <div class="flex! gap-1! items-center!">
+                    <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Publish</span>
-                    </x-ui.button>
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
+                        <span class="max-md:hidden!">Publish</span>
+                    </button>
+                    <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unpublish</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Unpublish</span>
+                    </button>
                 </div>
 
-                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="activate" title="Activate">
+                <div class="flex! gap-1! items-center!">
+                    <button type="button" class="fc-abtn bulk-action" data-action="activate" title="Activate">
                         {!! $icoPublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Activate</span>
-                    </x-ui.button>
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="deactivate" title="Deactivate">
+                        <span class="max-md:hidden!">Activate</span>
+                    </button>
+                    <button type="button" class="fc-abtn bulk-action" data-action="deactivate" title="Deactivate">
                         {!! $icoUnpublish !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Deactivate</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Deactivate</span>
+                    </button>
                 </div>
 
-                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="feature" title="Feature">
+                <div class="flex! gap-1! items-center!">
+                    <button type="button" class="fc-abtn bulk-action" data-action="feature" title="Feature">
                         {!! $icoFeature !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Feature</span>
-                    </x-ui.button>
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="unfeature" title="Unfeature">
+                        <span class="max-md:hidden!">Feature</span>
+                    </button>
+                    <button type="button" class="fc-abtn bulk-action" data-action="unfeature" title="Unfeature">
                         {!! $icoFeature !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unfeature</span>
-                    </x-ui.button>
+                        <span class="max-md:hidden!">Unfeature</span>
+                    </button>
                 </div>
 
                 <a href="{{ route('admin.petitions', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Clear</span>
+                    <span class="max-md:hidden!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
@@ -303,7 +307,7 @@
                         @endif
                     @endforeach
                     <label for="petition-translation-locale" class="font-bold! text-xs!">Translation locale</label>
-                    <select id="petition-translation-locale" name="locale"class="fc-filter-field py-1! text-xs!">
+                    <select id="petition-translation-locale" name="locale" class="fc-filter-field py-1! text-xs!">
                         @foreach ($localeOptions as $localeCode => $localeLabel)
                             <option value="{{ $localeCode }}" {{ $locale === $localeCode ? 'selected' : '' }}>
                                 {{ $localeLabel }}
@@ -369,7 +373,7 @@
                 </x-admin.form-field>
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>featured <span class="text-[11px]! text-[#888]!">(this locale)</span></label>
+                    <label>featured <span class="text-[#888]!">(this locale)</span></label>
                     <input type="checkbox" name="is_featured" value="1"
                         {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
                 </div>

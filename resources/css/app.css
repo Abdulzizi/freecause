@@ -677,6 +677,115 @@ ol:not([class]) {
     display: none !important;
 }
 
+/* ===== Admin slide-over detail drawer + modal ===== */
+/* Right-side editing drawer — replaces the inline panel under the table. */
+.fc-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(620px, 94vw);
+    background: #fff;
+    z-index: 95;
+    box-shadow: -2px 0 14px rgba(0, 0, 0, 0.18);
+    transform: translateX(100%);
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.fc-drawer[data-open="1"] {
+    transform: translateX(0);
+}
+.fc-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #e2e2e2;
+    background: #f7f7f7;
+    font-weight: 700;
+    font-size: 13px;
+    flex: none;
+}
+.fc-drawer__close {
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 1;
+    color: #444;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.fc-drawer__close:hover {
+    background: #ececec;
+}
+.fc-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+}
+.fc-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 94;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.fc-drawer-backdrop[data-open="1"] {
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (max-width: 768px) {
+    .fc-drawer {
+        width: 100vw;
+    }
+}
+/* Centered confirmation-style modal (create petition etc.). */
+.fc-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.fc-modal[data-open="1"] {
+    display: flex;
+}
+.fc-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+}
+.fc-modal__panel {
+    position: relative;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+.fc-modal__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-bottom: 1px solid #e2e2e2;
+    background: #f7f7f7;
+    font-weight: 700;
+    font-size: 13px;
+}
+.fc-modal__body {
+    padding: 12px;
+}
+
 /* ===== Admin filter bar + bulk toolbar controls ===== */
 /* Uniform field control for admin filter bars. Width comes from the
    .fc-filter-form grid — no per-input max-width utilities. */

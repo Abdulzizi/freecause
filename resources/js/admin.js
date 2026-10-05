@@ -261,12 +261,38 @@ async function handleTranslateMissing(button) {
 }
 
 function togglePetitionCreateForm() {
-    const form = document.querySelector('[data-petition-create-form]');
-    if (!form) return;
-    const show = form.style.display === 'none';
-    form.style.display = show ? '' : 'none';
-    if (show) form.querySelector('input[name="title"]')?.focus();
+    // legacy no-op kept: the create form lives in the petition modal now
+    openAdminModal('petition-create-modal');
 }
+
+function openAdminModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.dataset.open = '1';
+    modal.setAttribute('aria-hidden', 'false');
+    const form = modal.querySelector('form');
+    if (form) form.style.display = '';
+    modal.querySelector('input:not([type="hidden"]), select, textarea')?.focus();
+}
+
+function closeAdminModal(modal) {
+    if (!modal) return;
+    modal.dataset.open = '0';
+    modal.setAttribute('aria-hidden', 'true');
+}
+
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    const modal = document.querySelector('.fc-modal[data-open="1"]');
+    if (modal) {
+        closeAdminModal(modal);
+        return;
+    }
+    const drawer = document.querySelector('.fc-drawer[data-open="1"]');
+    if (drawer) {
+        drawer.querySelector('.fc-drawer__close')?.click();
+    }
+});
 
 async function handleSignature(button) {
     if (!button || button.disabled) return;
@@ -512,7 +538,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const createToggle = event.target.closest('[data-petition-create-toggle]');
         if (createToggle) {
             event.preventDefault();
-            return togglePetitionCreateForm();
+            return openAdminModal('petition-create-modal');
+        }
+
+        const modalClose = event.target.closest('[data-admin-modal-close]');
+        if (modalClose) {
+            event.preventDefault();
+            const modal = modalClose.closest('.fc-modal');
+            if (modal) closeAdminModal(modal);
+            return;
         }
         const signature = event.target.closest('[data-signature-action]');
         if (signature) return handleSignature(signature);

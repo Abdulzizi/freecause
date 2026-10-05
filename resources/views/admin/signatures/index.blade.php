@@ -171,15 +171,13 @@
                                 <x-ui.button variant="secondary" type="button" data-signature-action="approve"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
                                     :disabled="$s->confirmed"
-                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}"
-                                    class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}" class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5!  cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
                                     Approve
                                 </x-ui.button>
                                 <x-ui.button variant="secondary" type="button" data-signature-action="reject"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
                                     :disabled="! $s->confirmed"
-                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}"
-                                    class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}" class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5!  cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
                                     Reject
                                 </x-ui.button>
                             </div>
@@ -194,34 +192,34 @@
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if ($hasConfirmed)
                     <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                        <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="approve" title="Approve">
+                        <button type="button" class="fc-abtn bulk-action" data-action="approve" title="Approve">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Approve</span>
-                        </x-ui.button>
+                            <span class="hidden! md:inline!">Approve</span>
+                        </button>
 
-                        <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="reject" title="Reject">
+                        <button type="button" class="fc-abtn bulk-action" data-action="reject" title="Reject">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                                 <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                             </svg>
-                            <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Reject</span>
-                        </x-ui.button>
+                            <span class="hidden! md:inline!">Reject</span>
+                        </button>
                     </div>
                 @endif
 
                 @if (admin_can('signatures', 'delete'))
-                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
+                    <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
                         {!! $icoX !!}
-                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
-                    </x-ui.button>
+                        <span class="hidden! md:inline!">Delete</span>
+                    </button>
                 @endif
 
                 <a href="{{ route('admin.signatures', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
+                    <span class="hidden! md:inline!">Clear</span>
                 </a>
             </div>
         </x-slot:footer>
