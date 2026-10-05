@@ -93,6 +93,27 @@ class AdminBackendFixesTest extends TestCase
     public function test_system_admin_can_change_level_of_regular_user(): void
     {
         $admin = $this->systemAdmin();
+        $moderator = UserLevel::create([
+            'name' => 'moderator',
+            'visible_name' => 'Moderator',
+            'is_system' => false,
+        ]);
+        $target = User::factory()->create([
+            'level_id' => UserLevel::where('name', 'user')->value('id'),
+            'verified' => true,
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'level' => 'moderator'])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertSame($moderator->id, $target->fresh()->level_id);
+    }
+
+    public function test_system_admin_cannot_assign_banned_level_through_profile_save(): void
+    {
+        $admin = $this->systemAdmin();
         $target = User::factory()->create([
             'level_id' => UserLevel::where('name', 'user')->value('id'),
             'verified' => true,
@@ -100,10 +121,9 @@ class AdminBackendFixesTest extends TestCase
 
         $this->actingAs($admin, 'admin')
             ->post('/admin/users/save', ['id' => $target->id, 'level' => 'banned'])
-            ->assertRedirect()
-            ->assertSessionHas('success');
+            ->assertSessionHasErrors('level');
 
-        $this->assertSame(UserLevel::where('name', 'banned')->value('id'), $target->fresh()->level_id);
+        $this->assertSame(UserLevel::where('name', 'user')->value('id'), $target->fresh()->level_id);
     }
 
     // ── 2. Reconcile counts confirmed signatures only ───────────────────

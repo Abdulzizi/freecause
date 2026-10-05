@@ -25,6 +25,7 @@ class AdminUsersController extends Controller
             'last_name' => trim((string) $request->query('last_name', '')),
             'nickname' => trim((string) $request->query('nickname', '')),
             'email' => trim((string) $request->query('email', '')),
+            'email_mode' => trim((string) $request->query('email_mode', 'prefix')),
             'ip' => trim((string) $request->query('ip', '')),
             'level' => trim((string) $request->query('level', '')),
             'locale' => trim((string) $request->query('locale', '')),
@@ -52,7 +53,18 @@ class AdminUsersController extends Controller
         }
 
         if ($filters['email'] !== '') {
-            $q->where('email', 'like', "{$filters['email']}%");
+            if ($filters['email_mode'] === 'domain') {
+                $domain = strtolower(trim($filters['email']));
+                $domain = ltrim(str_contains($domain, '@') ? substr($domain, strrpos($domain, '@') + 1) : $domain, '@');
+                if ($domain !== '') {
+                    $pattern = '%@'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $domain);
+                    $q->whereRaw("LOWER(email) LIKE ? ESCAPE '!'", [$pattern]);
+                } else {
+                    $q->where('email', 'like', "{$filters['email']}%");
+                }
+            } else {
+                $q->where('email', 'like', "{$filters['email']}%");
+            }
         }
 
         if ($filters['locale'] !== '') {
@@ -89,8 +101,12 @@ class AdminUsersController extends Controller
 
         $levels = UserLevel::pluck('name', 'name')->toArray();
         $levels = ['' => '(Level)'] + $levels;
+        $editableLevels = array_filter($levels, fn ($name, $code) => $code !== 'banned', ARRAY_FILTER_USE_BOTH);
 
-        $languages = Language::where('is_active', true)->get();
+        $languages = Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get();
 
         $locales = ['' => '(Language)'];
 
@@ -109,6 +125,7 @@ class AdminUsersController extends Controller
             'users',
             'filters',
             'levels',
+            'editableLevels',
             'locales',
             'approxTotal',
             'selectedUser'
@@ -130,7 +147,7 @@ class AdminUsersController extends Controller
             'city' => ['nullable', 'string', 'max:120'],
             'identify_mode' => ['nullable', 'in:full,name,nick'],
             'password' => ['nullable', 'string', 'min:8'],
-            'level' => ['nullable', 'string', 'exists:user_levels,name'],
+            'level' => ['nullable', 'string', 'exists:user_levels,name', 'not_in:banned'],
             'email' => ['nullable', 'email', 'max:190', 'unique:users,email,'.(int) $request->input('id')],
             'locale' => ['nullable', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
             'verified' => ['nullable'],
@@ -208,7 +225,14 @@ class AdminUsersController extends Controller
 
     public function bulkBan(Request $request)
     {
-        $ids = $this->validatedIds($request);
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:users,id'],
+            'reason' => ['nullable', 'string', 'max:255'],
+            'days' => ['nullable', 'integer', 'min:0', 'max:36500'],
+        ]);
+
+        $ids = array_map('intval', $data['ids']);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
@@ -218,14 +242,14 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false, 'error' => 'banned role missing']);
         }
 
-        $reason = $request->input('reason') ?: null;
-        $days = (int) $request->input('days', 0);
+        $days = (int) ($data['days'] ?? 0);
+        $reason = trim((string) ($data['reason'] ?? '')) ?: null;
         $until = $days > 0 ? now()->addDays($days) : null;
 
         User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
-            ->whereHas('level', function ($q) {
-                $q->where('name', '!=', 'admin');
+            ->whereDoesntHave('level', function ($q) {
+                $q->where('is_system', true);
             })
             ->update([
                 'level_id' => $bannedLevel->id,
@@ -254,6 +278,7 @@ class AdminUsersController extends Controller
         User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
             ->where('level_id', $bannedLevelId)
+            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true))
             ->where(function ($q) use ($adminLevelId) {
                 $q->whereNull('level_id')->orWhere('level_id', '!=', $adminLevelId);
             })
@@ -286,6 +311,7 @@ class AdminUsersController extends Controller
                 $q->whereNull('level_id')
                     ->orWhereNotIn('level_id', array_filter([$adminLevelId, $bannedLevelId]));
             })
+            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true))
             ->delete();
 
         return response()->json([
@@ -324,5 +350,61 @@ class AdminUsersController extends Controller
             'unban' => $this->bulkUnban($request),
             'delete' => $this->bulkDelete($request),
         };
+    }
+
+    public function ban(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:255'],
+            'days' => ['nullable', 'integer', 'min:0', 'max:36500'],
+        ]);
+
+        if ($this->isProtectedUser($user)) {
+            return response()->json(['ok' => false, 'error' => 'You cannot ban yourself or a system-level user.'], 403);
+        }
+
+        $bannedLevel = UserLevel::where('name', 'banned')->first();
+        if (! $bannedLevel) {
+            return response()->json(['ok' => false, 'error' => 'banned role missing'], 422);
+        }
+
+        $user->level_id = $bannedLevel->id;
+        $reason = trim((string) ($data['reason'] ?? '')) ?: null;
+        $days = (int) ($data['days'] ?? 0);
+        $user->banned_reason = $reason;
+        $user->banned_until = $days > 0 ? now()->addDays($days) : null;
+        $user->save();
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function unban(Request $request, User $user)
+    {
+        if ($this->isProtectedUser($user)) {
+            return response()->json(['ok' => false, 'error' => 'You cannot unban yourself or a system-level user.'], 403);
+        }
+
+        $userLevel = UserLevel::where('name', 'user')->first();
+        $bannedLevel = UserLevel::where('name', 'banned')->first();
+
+        if (! $userLevel || ! $bannedLevel) {
+            return response()->json(['ok' => false, 'error' => 'role missing'], 422);
+        }
+
+        if ($user->level_id === $bannedLevel->id) {
+            $user->level_id = $userLevel->id;
+            $user->banned_reason = null;
+            $user->banned_until = null;
+            $user->save();
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    private function isProtectedUser(User $user): bool
+    {
+        $user->loadMissing('level');
+
+        return $user->id === admin_user()?->id || (bool) ($user->level?->is_system ?? false);
     }
 }

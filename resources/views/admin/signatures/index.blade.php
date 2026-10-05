@@ -73,11 +73,7 @@
 
     </x-admin.filter-box>
 
-    <x-admin.list-table-box emptyText="no signatures found" :p="$signatures" :bulk="[
-        'banRoute' => route('admin.signatures.bulkDelete'),
-        'banLabel' => 'Delete',
-        'banConfirm' => 'Delete selected signatures?',
-    ]">
+    <x-admin.list-table-box emptyText="no signatures found" :p="$signatures" :bulk="[]">
 
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
@@ -94,6 +90,9 @@
                     <th data-hide-mobile>Text</th>
                 @endif
                 <th width="160">Date</th>
+                @if ($hasConfirmed && admin_can('signatures', 'edit'))
+                    <th data-hide-mobile>Actions</th>
+                @endif
             </tr>
         </x-slot:thead>
 
@@ -116,7 +115,7 @@
                     </td>
 
                     @if ($hasConfirmed)
-                        <td data-hide-mobile class="text-center!">
+                        <td data-hide-mobile class="text-center!" data-signature-status>
                             @if ($s->confirmed)
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             @else
@@ -166,6 +165,27 @@
 
                     <td>{{ $s->created_at }}</td>
 
+                    @if ($hasConfirmed && admin_can('signatures', 'edit'))
+                        <td data-hide-mobile>
+                            <div class="flex! items-center! gap-1!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
+                                <button type="button" data-signature-action="approve"
+                                    data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
+                                    {{ $s->confirmed ? 'disabled' : '' }}
+                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}"
+                                    class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    Approve
+                                </button>
+                                <button type="button" data-signature-action="reject"
+                                    data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
+                                    {{ ! $s->confirmed ? 'disabled' : '' }}
+                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}"
+                                    class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5! text-[10px]! cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    Reject
+                                </button>
+                            </div>
+                        </td>
+                    @endif
+
                 </tr>
             @endforeach
         </x-slot:tbody>
@@ -191,10 +211,12 @@
                     </div>
                 @endif
 
-                <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
-                    {!! $icoX !!}
-                    <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
-                </button>
+                @if (admin_can('signatures', 'delete'))
+                    <button type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action" data-action="delete" title="Delete">
+                        {!! $icoX !!}
+                        <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
+                    </button>
+                @endif
 
                 <a href="{{ route('admin.signatures', request()->except('select')) }}"
                     title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
@@ -211,5 +233,58 @@
         'noun' => 'signatures',
         'emptyMsg' => 'No signatures selected',
     ])
+
+    @push('scripts')
+        <script>
+            document.addEventListener('click', async function (event) {
+                const button = event.target.closest('[data-signature-action]');
+                if (!button || button.disabled) return;
+                const action = button.dataset.signatureAction;
+                if (action === 'reject' && !window.confirm('Reject this signature?')) return;
+
+                const actions = button.closest('[data-signature-actions]');
+                button.disabled = true;
+                try {
+                    const response = await fetch(button.dataset.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        },
+                        body: JSON.stringify({ action }),
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok || !result.ok) {
+                        if (response.status === 409) {
+                            window.toast?.warning?.(result.msg || (action === 'approve' ? 'Already confirmed.' : 'Already rejected.'));
+                            window.setTimeout(() => window.location.reload(), 700);
+                            return;
+                        }
+                        throw new Error(result.error || 'Could not update signature.');
+                    }
+
+                    const confirmed = action === 'approve';
+                    actions.dataset.confirmed = confirmed ? '1' : '0';
+                    actions.querySelectorAll('[data-signature-action]').forEach((control) => {
+                        const isCurrent = (control.dataset.signatureAction === 'approve') === confirmed;
+                        control.disabled = isCurrent;
+                        control.title = isCurrent
+                            ? (confirmed ? 'Already confirmed' : 'Already rejected')
+                            : (confirmed ? 'Reject signature' : 'Approve signature');
+                    });
+                    const status = actions.closest('tr')?.querySelector('[data-signature-status]');
+                    if (status) {
+                        status.innerHTML = confirmed
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round" title="Rejected"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+                    }
+                    window.toast?.success?.(confirmed ? 'Signature approved.' : 'Signature rejected.');
+                } catch (error) {
+                    window.toast?.error?.(error.message || 'Could not update signature.');
+                    button.disabled = false;
+                }
+            });
+        </script>
+    @endpush
 
 @endsection

@@ -35,6 +35,10 @@
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email" placeholder="Email" value="{{ $filters['email'] }}">
+        <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email_mode" aria-label="Email search mode">
+            <option value="prefix" {{ ($filters['email_mode'] ?? 'prefix') === 'prefix' ? 'selected' : '' }}>email starts with</option>
+            <option value="domain" {{ ($filters['email_mode'] ?? 'prefix') === 'domain' ? 'selected' : '' }}>email domain</option>
+        </select>
         <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
 
         <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
@@ -96,7 +100,6 @@
                     </td>
 
                     <td data-hide-mobile class="text-left!">
-                        {{-- <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}" data-level="{{ $u->level?->name }}" {{ $u->hasLevel('admin') ? 'disabled' : '' }}> --}}
                         <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
                             data-level="{{ $u->level?->name }}"
                             {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
@@ -178,6 +181,31 @@
     </x-admin.list-table-box>
 
     <x-admin.detail-panel title="user" :closeRoute="route('admin.users', request()->except('select'))">
+        @if ($selectedUser)
+            @php
+                $selectedUserIsBanned = $selectedUser->level?->name === 'banned';
+                $selectedUserProtected = $selectedUser->id === auth()->id() || ($selectedUser->level?->is_system ?? false);
+            @endphp
+            <div class="mb-2.5! flex! items-center! gap-2! flex-wrap!">
+                @if (! $selectedUserProtected)
+                    @if ($selectedUserIsBanned)
+                        <button type="button" data-user-single-action="unban"
+                            data-url="{{ route('admin.users.unban', ['user' => $selectedUser->id]) }}"
+                            class="border! border-[#6b8e23]! bg-white! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
+                            Unban user
+                        </button>
+                    @else
+                        <button type="button" data-user-single-action="ban"
+                            data-url="{{ route('admin.users.ban', ['user' => $selectedUser->id]) }}"
+                            class="border! border-[#b42318]! bg-white! text-[#b42318]! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
+                            Ban user
+                        </button>
+                    @endif
+                @else
+                    <span class="text-[11px]! text-[#777]!">System accounts and your own account cannot be banned here.</span>
+                @endif
+            </div>
+        @endif
         <form method="post" action="{{ route('admin.users.save') }}" class="m-0!">
             @csrf
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
@@ -200,7 +228,10 @@
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
                     <label>level</label>
                     <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="level">
-                        @foreach ($levels as $k => $label)
+                        @if ($selectedUser?->level?->name === 'banned')
+                            <option value="" selected disabled>Banned — use the unban control above</option>
+                        @endif
+                        @foreach ($editableLevels as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"
                                     {{ ($selectedUser?->level?->name ?? '') === $k ? 'selected' : '' }}>
@@ -288,3 +319,53 @@
     'noun' => 'users',
     'emptyMsg' => 'No users selected',
 ])
+
+@push('scripts')
+    <script>
+        document.addEventListener('click', async function (event) {
+            const button = event.target.closest('[data-user-single-action]');
+            if (!button) return;
+
+            const action = button.dataset.userSingleAction;
+            let payload = {};
+            if (action === 'ban') {
+                const reason = window.prompt('Ban reason (optional):');
+                if (reason === null) return;
+                const daysText = window.prompt('Ban duration in days (0 = permanent):', '0');
+                if (daysText === null) return;
+                if (!/^\d+$/.test(daysText.trim()) || Number(daysText) > 36500) {
+                    window.toast?.warning?.('Enter a whole number of days from 0 to 36500.');
+                    return;
+                }
+                if (!window.confirm('Ban this user?')) return;
+                payload = { reason: reason.trim() || null, days: Number(daysText) };
+            } else if (action === 'unban') {
+                if (!window.confirm('Unban this user?')) return;
+            } else {
+                return;
+            }
+
+            button.disabled = true;
+            try {
+                const response = await fetch(button.dataset.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) {
+                    const message = result.error || Object.values(result.errors || {}).flat()[0] || 'Could not update user status.';
+                    throw new Error(message);
+                }
+                window.toast?.success?.(action === 'ban' ? 'User banned.' : 'User unbanned.');
+                window.setTimeout(() => window.location.reload(), 700);
+            } catch (error) {
+                window.toast?.error?.(error.message || 'Could not update user status.');
+                button.disabled = false;
+            }
+        });
+    </script>
+@endpush

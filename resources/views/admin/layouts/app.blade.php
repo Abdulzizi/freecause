@@ -137,7 +137,7 @@
             });
 
             /* lazy-load CKEditor only when an editor textarea is present */
-            var editorAreas = document.querySelectorAll('textarea.fc-editor');
+            var editorAreas = document.querySelectorAll('textarea[data-ckeditor="rich"]');
             if (editorAreas.length) {
                 var s = document.createElement('script');
                 s.src = 'https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js';

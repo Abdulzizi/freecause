@@ -156,12 +156,15 @@
 
                 <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                     <label class="font-bold! text-xs! md:text-sm!">slug</label>
-                    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="slug" value="{{ $selectedPage->slug }}">
+                    <div>
+                        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="slug" value="{{ $selectedPage->slug }}">
+                        @error('slug') <span class="text-[#c00]! text-xs!" role="alert">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                     <label class="font-bold! text-xs! md:text-sm!">content</label>
-                    <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" rows="12">{{ $selectedPage->content }}</textarea>
+                    <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
                 </div>
 
                 <div class="flex! justify-end!">

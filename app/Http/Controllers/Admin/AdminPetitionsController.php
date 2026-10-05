@@ -9,11 +9,13 @@ use App\Models\Petition;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
+use App\Support\Locale;
 use App\Support\PetitionCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
@@ -123,6 +125,7 @@ class AdminPetitionsController extends Controller
         $selectedId = $request->query('select');
         $selectedPetition = null;
         $selectedTranslation = null;
+        $selectedDefaultTranslation = null;
 
         if ($selectedId) {
             $selectedPetition = DB::table('petitions')
@@ -133,9 +136,17 @@ class AdminPetitionsController extends Controller
                 ->where('petition_id', (int) $selectedId)
                 ->where('locale', $locale)
                 ->first();
+
+            if (! $selectedTranslation && $locale !== $defaultLocale) {
+                $selectedDefaultTranslation = DB::table('petition_translations')
+                    ->where('petition_id', (int) $selectedId)
+                    ->where('locale', $defaultLocale)
+                    ->first();
+            }
         }
 
-        $activeLanguages = Language::where('is_active', 1)->orderBy('code')->pluck('code')->toArray();
+        $localeOptions = Locale::options();
+        $activeLanguages = array_keys($localeOptions);
 
         $defaultLocale = default_locale();
         $categories = Category::query()
@@ -158,8 +169,10 @@ class AdminPetitionsController extends Controller
             'approxTotal',
             'selectedPetition',
             'selectedTranslation',
+            'selectedDefaultTranslation',
             'locale',
             'activeLanguages',
+            'localeOptions',
             'categories'
         ));
     }
@@ -168,7 +181,7 @@ class AdminPetitionsController extends Controller
     {
         $data = $request->validate([
             'id' => ['required', 'integer', 'exists:petitions,id'],
-            'locale' => ['required', 'string', 'exists:languages,code'],
+            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
             'status' => ['required', 'in:draft,published'],
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
@@ -309,7 +322,8 @@ class AdminPetitionsController extends Controller
         $data = $request->validate([
             'action' => ['required', 'string', 'in:publish,unpublish,activate,deactivate,feature,unfeature,ban'],
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:petitions,id'],
+            'ids.*' => ['integer', 'distinct', 'exists:petitions,id'],
+            'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
         $ids = $data['ids'];
@@ -383,11 +397,10 @@ class AdminPetitionsController extends Controller
 
     public function reconcile(Request $request)
     {
-        $id = $request->input('id');
-
-        if (! $id) {
-            return response()->json(['ok' => false, 'error' => 'Petition ID required']);
-        }
+        $data = $request->validate([
+            'id' => ['required', 'integer', 'exists:petitions,id'],
+        ]);
+        $id = (int) $data['id'];
 
         $actualCount = DB::table('signatures')
             ->where('petition_id', $id)

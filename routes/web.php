@@ -116,6 +116,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/users/bulk-banned', [AdminUsersController::class, 'bulkBan'])->middleware('permission:users,edit')->name('users.bulkBan');
         Route::post('/users/bulk-action', [AdminUsersController::class, 'bulkAction'])->middleware('permission:users,edit')->name('users.bulkAction');
         Route::post('/users/bulk-unban', [AdminUsersController::class, 'bulkUnban'])->middleware('permission:users,edit')->name('users.bulkUnban');
+        Route::post('/users/{user}/ban', [AdminUsersController::class, 'ban'])->middleware('permission:users,edit')->name('users.ban');
+        Route::post('/users/{user}/unban', [AdminUsersController::class, 'unban'])->middleware('permission:users,edit')->name('users.unban');
         Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->middleware('permission:users,delete')->name('users.bulkDelete');
 
         // * PETITIONS
@@ -135,6 +137,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
         Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
+        Route::post('/signatures/{signature}/action', [AdminSignaturesController::class, 'action'])->middleware('permission:signatures,edit')->name('signatures.action');
 
         // * PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');

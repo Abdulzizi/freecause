@@ -198,6 +198,45 @@ class AdminSignaturesController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    public function action(Request $request, int $signature)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'string', 'in:approve,reject'],
+        ]);
+
+        $targetConfirmed = $data['action'] === 'approve' ? 1 : 0;
+        $result = DB::transaction(function () use ($signature, $targetConfirmed) {
+            $row = DB::table('signatures')->where('id', $signature)->lockForUpdate()->first();
+
+            if (! $row) {
+                return ['status' => 'missing'];
+            }
+
+            if ((int) $row->confirmed === $targetConfirmed) {
+                return ['status' => $targetConfirmed ? 'confirmed' : 'rejected'];
+            }
+
+            DB::table('signatures')->where('id', $signature)->update(['confirmed' => $targetConfirmed]);
+            $this->recalculateSignatureCounts([(int) $row->petition_id]);
+
+            return ['status' => 'updated'];
+        });
+
+        if ($result['status'] === 'missing') {
+            return response()->json(['ok' => false, 'msg' => 'Signature not found'], 404);
+        }
+
+        if ($result['status'] === 'confirmed') {
+            return response()->json(['ok' => false, 'msg' => 'Already confirmed'], 409);
+        }
+
+        if ($result['status'] === 'rejected') {
+            return response()->json(['ok' => false, 'msg' => 'Already rejected'], 409);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     public function bulkDelete(Request $request)
     {
         $data = $request->validate([

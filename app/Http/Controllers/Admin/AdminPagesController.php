@@ -9,6 +9,7 @@ use App\Models\PageTranslation;
 use App\Support\EdgeCachePurge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -79,13 +80,27 @@ class AdminPagesController extends Controller
 
     public function save(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'page_id' => ['nullable', 'integer', 'exists:pages,id'],
             'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
             'title' => ['required', 'string', 'max:190'],
             'slug' => ['nullable', 'string', 'max:190'],
             'content' => ['nullable', 'string'],
         ]);
+
+        $redirectParams = array_filter([
+            'locale' => $request->input('locale'),
+            'select' => $request->input('page_id'),
+        ], fn ($value) => $value !== null && $value !== '');
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route('admin.pages', $redirectParams)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $validator->validated();
 
         $published = $request->has('published');
         $slug = $data['slug'] ? Str::slug($data['slug']) : Str::slug($data['title']);
@@ -98,10 +113,13 @@ class AdminPagesController extends Controller
         }
 
         if ($slugQuery->exists()) {
-            return back()->withErrors(['slug' => 'Slug already used for this locale.'])->withInput();
+            return redirect()
+                ->route('admin.pages', $redirectParams)
+                ->withErrors(['slug' => 'Slug already used for this locale.'])
+                ->withInput();
         }
 
-        DB::transaction(function () use ($data, $slug, $published) {
+        $pageId = DB::transaction(function () use ($data, $slug, $published) {
             $page = empty($data['page_id'])
                 ? Page::create()
                 : Page::findOrFail($data['page_id']);
@@ -118,11 +136,16 @@ class AdminPagesController extends Controller
                     'published' => $published,
                 ]
             );
+
+            return $page->id;
         });
 
         EdgeCachePurge::listings();
 
-        return redirect()->route('admin.pages')
+        return redirect()->route('admin.pages', [
+            'locale' => $data['locale'],
+            'select' => $pageId,
+        ])
             ->with('success', 'Page saved');
     }
 
