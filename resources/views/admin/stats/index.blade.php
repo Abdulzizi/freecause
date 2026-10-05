@@ -8,7 +8,7 @@
 
     <x-admin.filter-box title="statistics" :action="route('admin.stats')" :reset="route('admin.stats')">
 
-        <select name="locale" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[140px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!" data-admin-autosubmit>
+        <select name="locale" class="fc-filter-field" data-admin-autosubmit>
             <option value="">All locales</option>
             @foreach ($languages as $lang)
                 <option value="{{ $lang->code }}" {{ $filters['locale'] == $lang->code ? 'selected' : '' }}>
@@ -17,13 +17,13 @@
             @endforeach
         </select>
 
-        <select name="range" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[160px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!" data-admin-autosubmit>
+        <select name="range" class="fc-filter-field" data-admin-autosubmit>
             <option value="1d" {{ $filters['range'] == '1d' ? 'selected' : '' }}>Last day</option>
             <option value="7d" {{ $filters['range'] == '7d' ? 'selected' : '' }}>Last 7 days</option>
             <option value="30d" {{ $filters['range'] == '30d' ? 'selected' : '' }}>Last 30 days</option>
         </select>
 
-        <select name="type" class="w-full! box-border! border! border-[#bdbdbd]! rounded! py-1.5! px-2! text-sm! bg-white! max-w-[240px]! max-md:text-[13px]! max-md:p-1.5! max-md:px-2!" data-admin-autosubmit>
+        <select name="type" class="fc-filter-field" data-admin-autosubmit>
             <option value="">Select statistic</option>
             <option value="top_signers" {{ $filters['type'] == 'top_signers' ? 'selected' : '' }}>Top 20 signers</option>
             <option value="top_petitioners" {{ $filters['type'] == 'top_petitioners' ? 'selected' : '' }}>Top 20 petitioners

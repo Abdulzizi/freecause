@@ -23,7 +23,7 @@
         @csrf
         <div>
             <label class="block! text-xs! text-[#555]! mb-1!">locale</label>
-            <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="locale">
+            <select class="fc-filter-field" name="locale">
                 @foreach ($locales as $k => $label)
                     <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
@@ -49,7 +49,7 @@
     :reset="route('admin.categories')"
     :activeCount="$activeFilterCount">
 
-    <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
+    <select data-admin-autosubmit class="fc-filter-field" name="locale">
         @foreach ($locales as $k => $label)
             <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>
                 {{ $label }}
@@ -57,11 +57,11 @@
         @endforeach
     </select>
 
-    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]!" name="id"
+    <input class="fc-filter-field" name="id"
         placeholder="ID"
         value="{{ $filters['id'] ?? '' }}">
 
-    <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="name"
+    <input class="fc-filter-field" name="name"
         placeholder="Name"
         value="{{ $filters['name'] ?? '' }}">
 
@@ -153,7 +153,7 @@
 
             <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                 <label class="font-bold! text-xs! md:text-sm!">sort order</label>
-                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" type="number" name="sort_order" min="0"
+                <input class="fc-filter-field" type="number" name="sort_order" min="0"
                        value="{{ $selectedCategory->sort_order ?? 0 }}">
             </div>
 

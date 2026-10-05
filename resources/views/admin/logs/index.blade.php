@@ -8,16 +8,16 @@
 
     <x-admin.filter-box title="filter logs" :action="route('admin.logs')" :reset="route('admin.logs')">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[260px]!" name="q" placeholder="type something..." value="{{ $filters['q'] ?? '' }}">
+        <input class="fc-filter-field" name="q" placeholder="type something..." value="{{ $filters['q'] ?? '' }}">
 
-        <select name="level" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" data-admin-autosubmit>
+        <select name="level" class="fc-filter-field" data-admin-autosubmit>
             <option value="">All levels</option>
             <option value="info" {{ request('level')=='info'?'selected':'' }}>Info</option>
             <option value="warning" {{ request('level')=='warning'?'selected':'' }}>Warning</option>
             <option value="error" {{ request('level')=='error'?'selected':'' }}>Error</option>
         </select>
 
-        <select name="context" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" data-admin-autosubmit>
+        <select name="context" class="fc-filter-field" data-admin-autosubmit>
             <option value="">All context</option>
             <option value="admin.audit" {{ request('context')=='admin.audit'?'selected':'' }}>Admin Audit</option>
             <option value="auth.register" {{ request('context')=='auth.register'?'selected':'' }}>Auth Register</option>
@@ -26,9 +26,9 @@
             <option value="petition.sign" {{ request('context')=='petition.sign'?'selected':'' }}>Petition Signed</option>
         </select>
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
+        <input class="fc-filter-field" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
@@ -36,7 +36,7 @@
 
         <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!" data-admin-confirm="Delete all logs older than the selected number of days?">
             @csrf
-            <select name="days" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!">
+            <select name="days" class="fc-filter-field">
                 <option value="30">30 days</option>
                 <option value="60">60 days</option>
                 <option value="90" selected>90 days</option>

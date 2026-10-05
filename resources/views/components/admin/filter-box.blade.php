@@ -12,12 +12,13 @@
     @endif
 </div>
 <div class="fc-box">
-    <form method="get" action="{{ $action }}"
-        style="margin:0; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+    <form method="get" action="{{ $action }}" class="fc-filter-form" style="margin:0;">
 
         {{ $slot }}
 
-        <button class="fc-btn" type="submit">apply</button>
-        <a class="fc-btn" href="{{ $reset }}" style="text-decoration:none;">reset</a>
+        <div class="fc-filter-actions">
+            <button class="fc-abtn" type="submit">apply</button>
+            <a class="fc-abtn fc-abtn--neutral" href="{{ $reset }}" style="text-decoration:none;">reset</a>
+        </div>
     </form>
 </div>

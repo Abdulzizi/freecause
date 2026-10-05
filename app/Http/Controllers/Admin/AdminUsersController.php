@@ -100,7 +100,7 @@ class AdminUsersController extends Controller
         $approxTotal = $this->approxTableRows('users');
 
         $levels = UserLevel::pluck('name', 'name')->toArray();
-        $levels = ['' => '(Level)'] + $levels;
+        $levels = ['' => 'any level'] + $levels;
         $editableLevels = array_filter($levels, fn ($name, $code) => $code !== 'banned', ARRAY_FILTER_USE_BOTH);
 
         $languages = Language::where('is_active', true)
@@ -108,7 +108,7 @@ class AdminUsersController extends Controller
             ->orderBy('name')
             ->get();
 
-        $locales = ['' => '(Language)'];
+        $locales = ['' => 'any language'];
 
         foreach ($languages as $lang) {
             $locales[$lang->code] = $lang->name;

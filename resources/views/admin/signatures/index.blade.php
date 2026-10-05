@@ -24,20 +24,20 @@
 
     <x-admin.filter-box title="filter signatures" :action="route('admin.signatures')" :reset="route('admin.signatures')" :activeCount="$activeFilterCount">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[120px]!" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}">
+        <input class="fc-filter-field" name="petition_id" placeholder="Petition ID" value="{{ $filters['petition_id'] ?? '' }}">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[100px]!" name="user_id" placeholder="User ID" value="{{ $filters['user_id'] ?? '' }}">
+        <input class="fc-filter-field" name="user_id" placeholder="User ID" value="{{ $filters['user_id'] ?? '' }}">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="email" placeholder="Email" value="{{ $filters['email'] ?? '' }}">
+        <input class="fc-filter-field" name="email" placeholder="Email" value="{{ $filters['email'] ?? '' }}">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
+        <input class="fc-filter-field" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
         @if ($hasText)
-            <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
+            <input class="fc-filter-field" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
         @endif
 
         {{-- BUG 3 FIX: locale options now come from $locales passed by controller --}}
-        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="locale">
+        <select data-admin-autosubmit class="fc-filter-field" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') == $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -45,7 +45,7 @@
             @endforeach
         </select>
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[320px]!" name="category_id">
+        <select data-admin-autosubmit class="fc-filter-field" name="category_id">
             <option value="">(Category)</option>
             @foreach ($categories as $c)
                 <option value="{{ $c->id }}" {{ ($filters['category_id'] ?? '') == $c->id ? 'selected' : '' }}>
@@ -55,21 +55,21 @@
         </select>
 
         @if ($hasConfirmed)
-            <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="confirmed">
+            <select data-admin-autosubmit class="fc-filter-field" name="confirmed">
                 <option value="">all signatures</option>
                 <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
                 <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
             </select>
         @endif
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]!" name="spam">
+        <select data-admin-autosubmit class="fc-filter-field" name="spam">
             <option value="">spam...</option>
             <option value="1" {{ ($filters['spam'] ?? '') === '1' ? 'selected' : '' }}>spam</option>
             <option value="0" {{ ($filters['spam'] ?? '') === '0' ? 'selected' : '' }}>not spam</option>
         </select>
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
 
     </x-admin.filter-box>
 
@@ -194,14 +194,14 @@
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if ($hasConfirmed)
                     <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                        <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="approve" title="Approve">
+                        <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="approve" title="Approve">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M5 13l4 4L19 7" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Approve</span>
                         </x-ui.button>
 
-                        <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="reject" title="Reject">
+                        <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="reject" title="Reject">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
                                 <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
@@ -212,14 +212,14 @@
                 @endif
 
                 @if (admin_can('signatures', 'delete'))
-                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
+                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
                         {!! $icoX !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
                     </x-ui.button>
                 @endif
 
                 <a href="{{ route('admin.signatures', request()->except('select')) }}"
-                    title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
+                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
                     <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
                 </a>

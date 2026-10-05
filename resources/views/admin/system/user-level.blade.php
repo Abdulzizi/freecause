@@ -65,7 +65,7 @@
         <x-slot:footer>
             <div class="flex! gap-3! items-center!">
 
-                <x-ui.button type="button" variant="danger" size="sm" class="flex! flex-col! items-center! justify-center! w-[52px]! h-11! gap-0.5! max-md:w-10! max-md:h-[38px]! max-md:gap-px! bulk-action" data-action="delete">
+                <x-ui.button type="button" variant="danger" size="sm" class="fc-abtn bulk-action" data-action="delete">
 
                     <svg class="max-md:w-4! max-md:h-4!" width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />

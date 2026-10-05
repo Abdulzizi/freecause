@@ -38,11 +38,11 @@
 
     <x-admin.filter-box title="filter pages" :action="route('admin.pages')" :reset="route('admin.pages')" :activeCount="$activeFilterCount">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]!" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}">
+        <input class="fc-filter-field" name="id" placeholder="ID" value="{{ $filters['id'] ?? '' }}">
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]!" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}">
+        <input class="fc-filter-field" name="title" placeholder="Title" value="{{ $filters['title'] ?? '' }}">
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="locale">
+        <select data-admin-autosubmit class="fc-filter-field" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') === $k ? 'selected' : '' }}>
                     {{ $label }}
@@ -108,24 +108,24 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
+                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="publish" title="Publish">
                         {!! $icoPublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Publish</span>
                     </x-ui.button>
 
-                    <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
+                    <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="unpublish" title="Unpublish">
                         {!! $icoUnpublish !!}
                         <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Unpublish</span>
                     </x-ui.button>
                 </div>
 
-                <x-ui.button variant="secondary" type="button" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-[0.35]! disabled:pointer-events-none! bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
+                <x-ui.button variant="secondary" type="button" class="fc-abtn bulk-action [&_.fcui-btn__label]:contents!" data-action="delete" title="Delete">
                     {!! $icoX !!}
                     <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Delete</span>
                 </x-ui.button>
 
                 <a href="{{ route('admin.pages', request()->except('select')) }}"
-                    title="Clear selection" class="flex! flex-col! items-center! justify-center! gap-0.5! w-10! h-[38px]! md:w-[52px]! md:h-[44px]! border! border-[#bbb]! bg-white! cursor-pointer! transition-[background,opacity]! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! text-[#666]! no-underline!">
+                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
                     <span class="text-[10px]! text-[#666]! leading-none! hidden! md:inline!">Clear</span>
                 </a>

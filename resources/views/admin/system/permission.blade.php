@@ -22,7 +22,7 @@
                     Module
                 </label>
 
-                <select name="module" data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
+                <select name="module" data-admin-autosubmitclass="fc-filter-field min-w-[220px]!">
 
                     @foreach ($modules as $module => $actions)
                         <option value="{{ $module }}" {{ $selectedModule == $module ? 'selected' : '' }}>
@@ -38,7 +38,7 @@
                     Level
                 </label>
 
-                <select name="level" data-admin-autosubmit class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-w-[220px]!">
+                <select name="level" data-admin-autosubmitclass="fc-filter-field min-w-[220px]!">
 
                     @foreach ($levels as $level)
                         <option value="{{ $level->id }}" {{ $selectedLevel == $level->id ? 'selected' : '' }}>

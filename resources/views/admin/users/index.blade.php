@@ -30,34 +30,34 @@
 
     <x-admin.filter-box title="filter users" :action="route('admin.users')" :reset="route('admin.users')" :activeCount="$activeFilterCount">
 
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[90px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="id" placeholder="ID" value="{{ $filters['id'] }}">
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[220px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email" placeholder="Email" value="{{ $filters['email'] }}">
-        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="email_mode" aria-label="Email search mode">
+        <input class="fc-filter-field" name="id" placeholder="ID" value="{{ $filters['id'] }}">
+        <input class="fc-filter-field" name="first_name" placeholder="First name" value="{{ $filters['first_name'] }}">
+        <input class="fc-filter-field" name="last_name" placeholder="Last name"value="{{ $filters['last_name'] }}">
+        <input class="fc-filter-field" name="nickname" placeholder="Nickname" value="{{ $filters['nickname'] }}">
+        <input class="fc-filter-field" name="email" placeholder="Email" value="{{ $filters['email'] }}">
+        <select data-admin-autosubmit class="fc-filter-field" name="email_mode" aria-label="Email search mode">
             <option value="prefix" {{ ($filters['email_mode'] ?? 'prefix') === 'prefix' ? 'selected' : '' }}>email starts with</option>
             <option value="domain" {{ ($filters['email_mode'] ?? 'prefix') === 'domain' ? 'selected' : '' }}>email domain</option>
         </select>
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
+        <input class="fc-filter-field" name="ip" placeholder="IP" value="{{ $filters['ip'] }}">
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[130px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="status">
-            <option value="">status...</option>
+        <select data-admin-autosubmit class="fc-filter-field" name="status">
+            <option value="">any status</option>
             <option value="verified" {{ $filters['status'] === 'verified' ? 'selected' : '' }}>verified</option>
             <option value="unverified" {{ $filters['status'] === 'unverified' ? 'selected' : '' }}>unverified</option>
         </select>
 
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
-        <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
+        <input class="fc-filter-field" type="date" name="registered_from" value="{{ $filters['registered_from'] }}">
+        <input class="fc-filter-field" type="date" name="registered_to" value="{{ $filters['registered_to'] }}">
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="level">
+        <select data-admin-autosubmit class="fc-filter-field" name="level">
             @foreach ($levels as $k => $label)
                 <option value="{{ $k }}" {{ $filters['level'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
             @endforeach
         </select>
 
-        <select data-admin-autosubmit class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[140px]! max-md:max-w-none! max-md:flex-[1_1_140px]!" name="locale">
+        <select data-admin-autosubmit class="fc-filter-field" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ $filters['locale'] === $k ? 'selected' : '' }}>{{ $label }}
                 </option>
@@ -67,7 +67,7 @@
 
     <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :bulk="[
         'banRoute'        => route('admin.users.bulkBan'),
-        'banLabel'        => 'Banned',
+        'banLabel'        => 'Ban',
         'banConfirm'      => 'Ban selected users?',
         'banWithDetails'  => true,
     ]">
@@ -158,19 +158,19 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-solid! border-[#eee]! rounded! max-md:gap-px!">
-                    <x-ui.button variant="secondary" type="button" id="bulk-unban" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Unban">
+                    <x-ui.button variant="secondary" type="button" id="bulk-unban" class="fc-abtn" title="Unban">
                         {!! $icoUnban !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Unban</span>
                     </x-ui.button>
 
-                    <x-ui.button variant="secondary" type="button" id="bulk-delete" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4!" title="Delete">
+                    <x-ui.button variant="secondary" type="button" id="bulk-delete" class="fc-abtn" title="Delete">
                         {!! $icoDelete !!}
                         <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Delete</span>
                     </x-ui.button>
                 </div>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}"
-                    title="Clear selection" class="w-[52px]! h-[44px]! border! border-solid! border-[#bbb]! bg-white! flex! flex-col! items-center! justify-center! gap-0.5! cursor-pointer! transition-colors! transition-opacity! duration-150! hover:bg-[#f7f7f7]! active:bg-[#dcdcdc]! disabled:opacity-35! disabled:pointer-events-none! max-md:w-10! max-md:h-[38px]! max-md:gap-px! max-md:[&_svg]:w-4! max-md:[&_svg]:h-4! no-underline! text-[#666]!">
+                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
                     {!! $icoX !!}
                     <span class="text-[10px]! text-[#666]! leading-none! max-md:hidden!">Clear</span>
                 </a>
@@ -220,7 +220,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="level">
-                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="level">
+                    <select class="fc-filter-field" name="level">
                         @if ($selectedUser?->level?->name === 'banned')
                             <option value="" selected disabled>Banned — use the unban control above</option>
                         @endif
@@ -256,7 +256,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="identify as">
-                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="identify_mode">
+                    <select class="fc-filter-field" name="identify_mode">
                         <option value="full" {{ ($selectedUser->identify_mode ?? 'full') === 'full' ? 'selected' : '' }}>full name</option>
                         <option value="name" {{ ($selectedUser->identify_mode ?? '') === 'name' ? 'selected' : '' }}>first name</option>
                         <option value="nick" {{ ($selectedUser->identify_mode ?? '') === 'nick' ? 'selected' : '' }}>nickname</option>
@@ -274,7 +274,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="locale">
-                    <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="locale">
+                    <select class="fc-filter-field" name="locale">
                         @foreach ($locales as $k => $label)
                             @if ($k !== '')
                                 <option value="{{ $k }}"

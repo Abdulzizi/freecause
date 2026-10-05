@@ -676,3 +676,98 @@ ol:not([class]) {
 .fc-group.collapsed > a {
     display: none !important;
 }
+
+/* ===== Admin filter bar + bulk toolbar controls ===== */
+/* Uniform field control for admin filter bars. Width comes from the
+   .fc-filter-form grid — no per-input max-width utilities. */
+.fc-filter-field {
+    width: 100%;
+    box-sizing: border-box;
+    height: 32px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    background: #fff;
+    padding: 4px 9px;
+    font-size: 13px;
+    color: #222;
+}
+.fc-filter-field:focus {
+    outline: none;
+    border-color: #7fa6cc;
+    box-shadow: 0 0 0 2px rgba(127, 166, 204, 0.25);
+}
+select.fc-filter-field {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 9px center;
+    padding-right: 26px;
+}
+/* Filter form grid: equal flexible cells, no ragged wraps. */
+.fc-filter-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    align-items: center;
+}
+.fc-filter-form .fc-span-2 {
+    grid-column: span 2;
+}
+.fc-filter-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+/* Compact toolbar action button (bulk bars, clear-selection, single actions).
+   Horizontal icon+label, one height for every toolbar. */
+.fc-abtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 11px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    background: #fff;
+    color: #444;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s;
+}
+.fc-abtn:hover {
+    background: #f4f4f4;
+}
+.fc-abtn:active {
+    background: #e4e4e4;
+}
+.fc-abtn[disabled],
+.fc-abtn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+.fc-abtn svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+}
+.fc-abtn--danger {
+    color: #a11;
+    border-color: #d2a0a0;
+}
+.fc-abtn--danger:hover {
+    background: #fdf2f2;
+}
+.fc-abtn--success {
+    color: #2a7a2a;
+    border-color: #a9c8a9;
+}
+.fc-abtn--success:hover {
+    background: #f2f9f2;
+}
+.fc-abtn--neutral {
+    color: #555;
+}

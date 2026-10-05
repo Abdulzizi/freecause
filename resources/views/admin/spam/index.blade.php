@@ -11,17 +11,17 @@
     </div>
 
     <x-admin.filter-box title="filter spam" :action="route('admin.spam')" :reset="route('admin.spam')">
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
+        <input class="fc-filter-field" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
-        <select class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[160px]!" name="type" data-admin-autosubmit>
+        <select class="fc-filter-field" name="type" data-admin-autosubmit>
             <option value="">type...</option>
             @foreach ($types as $t)
                 <option value="{{ $t }}" {{ ($filters['type'] ?? '') === $t ? 'selected' : '' }}>{{ $t }}</option>
             @endforeach
         </select>
 
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
-        <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[150px]!" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}">
+        <input class="fc-filter-field" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
     <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-[15px]!">

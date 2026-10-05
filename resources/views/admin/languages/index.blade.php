@@ -61,10 +61,10 @@
                         @method('PUT')
 
                         <x-admin.form-field label="name" class="min-w-0! flex-1!">
-                            <x-ui.input name="name" :value="$lang->name" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" />
+                            <x-ui.input name="name" :value="$lang->name" class="fc-filter-field" />
                         </x-admin.form-field>
 
-                        {{-- <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! max-w-[180px]!" name="flag" value="{{ $lang->flag }}"> --}}
+                        {{-- <input class="fc-filter-field" name="flag" value="{{ $lang->flag }}"> --}}
 
                         <label class="flex! items-center! gap-[5px]!">
                             <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>

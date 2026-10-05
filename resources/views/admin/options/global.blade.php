@@ -127,7 +127,7 @@
                 </div>
             </x-admin.form-field>
             <x-admin.form-field label="smtp encryption">
-                <select class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="smtp_encryption">
+                <selectclass="fc-filter-field" name="smtp_encryption">
                     <option value="tls" {{ $smtp_encryption === 'tls' ? 'selected' : '' }}>
                         explicit tls (starttls – port 587)
                     </option>
