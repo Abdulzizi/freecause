@@ -739,19 +739,20 @@ document.addEventListener('DOMContentLoaded', function () {
         input.insertAdjacentElement('afterend', meter);
 
         const score = function (value) {
-            if (!value) return 0;
+            if (!value) return -1;
             let s = 0;
             if (value.length >= 8) s++;
             if (/[a-z]/.test(value) && /[A-Z]/.test(value)) s++;
             if (/\d/.test(value)) s++;
             if (/[^A-Za-z0-9]/.test(value)) s++;
-            return s;
+            if (value.length >= 12 && s >= 3) s++;
+            if (value.length < 6) s = Math.min(s, 1);
+            return Math.max(0, Math.min(4, s));
         };
 
         const update = function () {
             const value = input.value || '';
-            const s = score(value);
-            const idx = value === '' ? -1 : Math.max(0, s - 1);
+            const idx = score(value);
             if (idx < 0) {
                 bar.style.width = '0%';
                 bar.style.backgroundColor = 'transparent';

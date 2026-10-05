@@ -508,7 +508,7 @@ ol:not([class]) {
     }
 
     .fcui-pwwrap > input {
-        padding-inline-end: 2.5rem;
+        padding-inline-end: 2.75rem !important;
     }
 
     .fcui-pwtoggle {
