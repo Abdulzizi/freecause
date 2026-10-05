@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
+use App\Models\Permission;
+use App\Models\UserLevel;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -157,12 +160,69 @@ class GlobalOptionsController extends Controller
 
     public function clearCache(Request $request)
     {
-        try {
-            Cache::flush();
+        // System-only: without the gate any admin could trigger this.
+        $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
+        if (! $isSystemAdmin) {
+            abort(403);
+        }
 
-            return back()->with('success', 'All cache cleared successfully.');
+        try {
+            // Targeted forgets only: a Cache::flush() on the shared Redis
+            // store wiped public-site caches and re-triggered the cold
+            // dashboard 524 incident for the whole site at once.
+            $flatKeys = [
+                // settings snapshot + locale helpers
+                'settings:all',
+                'default_language',
+                'languages:codes',
+                'active_languages',
+                'active_languages_full',
+
+                // dashboard + stats aggregates
+                'admin:dashboard:stats:v2',
+                'admin:dashboard:quick',
+                'admin:dashboard:recent',
+                'admin:dashboard:top_petitions',
+                'admin:dashboard:health',
+                'admin:stats:totals',
+                'level:user_counts',
+
+                // stat type pages (top signers/petitioners etc.) carry
+                // type:locale:range:page keys — they expire in 600s on their
+                // own; enumerating every combination here is not worth it.
+            ];
+
+            foreach ($flatKeys as $key) {
+                Cache::forget($key);
+            }
+
+            foreach (['users', 'petitions', 'signatures', 'categories', 'pages', 'logs', 'banned_ips'] as $table) {
+                Cache::forget("approx_rows:{$table}");
+            }
+
+            // Cache-version integers: forget, they re-seed to 1 on next use.
+            foreach (['home', 'list', 'sitemap'] as $group) {
+                Cache::forget("ver:{$group}");
+            }
+
+            // Per-level permission lookups (short TTL, bounded matrix).
+            $modules = Permission::matrix();
+            foreach (UserLevel::pluck('id') as $levelId) {
+                foreach ($modules as $module => $actions) {
+                    foreach ($actions as $action) {
+                        Cache::forget("permissions:{$levelId}:{$module}:{$action}");
+                    }
+                }
+            }
+
+            // Per-locale category lists.
+            foreach (Language::where('is_active', true)->pluck('code') as $loc) {
+                Cache::forget("categories:list:{$loc}");
+            }
+
+            return back()->with('success', 'Cache rebuilt: targeted keys flushed; snapshots reload lazily.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Cache clear failed: '.$e->getMessage());
+            return back()->with('error', 'Cache rebuild failed: '.$e->getMessage());
         }
     }
 }

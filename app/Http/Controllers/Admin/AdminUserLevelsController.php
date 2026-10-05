@@ -14,10 +14,21 @@ class AdminUserLevelsController extends Controller
 {
     public function index()
     {
-        // $levels = UserLevel::orderBy('id')->get();
-        $levels = UserLevel::withCount('users')
-            ->orderBy('id')
-            ->paginate(20);
+        $levels = UserLevel::orderBy('id')->paginate(20);
+
+        // A correlated withCount() scans the 18M-row users table once per
+        // level on every render; one grouped pass cached for an hour instead.
+        $counts = Cache::remember('level:user_counts', 3600, function () {
+            return DB::table('users')
+                ->selectRaw('level_id, COUNT(*) as n')
+                ->whereNotNull('level_id')
+                ->groupBy('level_id')
+                ->pluck('n', 'level_id');
+        });
+
+        $levels->getCollection()->each(function ($level) use ($counts) {
+            $level->users_count = (int) ($counts[$level->id] ?? 0);
+        });
 
         return view('admin.system.user-level', compact('levels'));
     }
@@ -36,6 +47,8 @@ class AdminUserLevelsController extends Controller
             'visible_name' => $data['visible_name'],
             'is_system' => false,
         ]);
+
+        Cache::forget('level:user_counts');
 
         return back()->with('success', 'Level created successfully.');
     }
@@ -70,6 +83,8 @@ class AdminUserLevelsController extends Controller
                     }
                 }
             }
+
+            Cache::forget('level:user_counts');
         }
 
         return back()->with('success', 'Selected levels deleted.');

@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Log;
+use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminLogsController extends Controller
 {
+    use ApproxRows;
+
     public function index(Request $request)
     {
         $filters = [
@@ -23,10 +26,10 @@ class AdminLogsController extends Controller
         $q = Log::query()->orderByDesc('id');
 
         if ($filters['q']) {
-            $q->where(function ($sub) use ($filters) {
-                $sub->where('title', 'like', "%{$filters['q']}%")
-                    ->orWhere('content', 'like', "%{$filters['q']}%");
-            });
+            // Prefix match on the title (and log text starts-with) only: a
+            // leading-wildcard LIKE over longText/long tables is a full scan.
+            $like = str_replace(['%', '_'], ['\%', '\_'], $filters['q']).'%';
+            $q->where('title', 'like', $like);
         }
 
         if ($filters['level']) {
@@ -49,7 +52,11 @@ class AdminLogsController extends Controller
             $q->whereDate('created_at', '<=', $filters['date_to']);
         }
 
-        $logs = $q->paginate(25)->withQueryString();
+        // simplePaginate: a full paginate() COUNT(*) over an unbounded logs
+        // table ran on every view. The header count comes from the approx
+        // table-rows estimate instead.
+        $logs = $q->simplePaginate(25)->withQueryString();
+        $logTotal = $this->approxTableRows('logs');
 
         $selected = null;
 
@@ -60,6 +67,7 @@ class AdminLogsController extends Controller
         return view('admin.logs.index', compact(
             'filters',
             'logs',
+            'logTotal',
             'selected'
         ));
     }

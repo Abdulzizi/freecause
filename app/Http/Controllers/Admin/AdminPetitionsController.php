@@ -44,81 +44,119 @@ class AdminPetitionsController extends Controller
         );
 
         $driver = DB::connection()->getDriverName();
-        $localesExpr = ($driver === 'mysql' || $driver === 'mariadb')
+        $isMysql = $driver === 'mysql' || $driver === 'mariadb';
+        $localesExpr = $isMysql
             ? 'GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",")'
             : 'GROUP_CONCAT(locale, ",")';
 
-        $localesSub = DB::table('petition_translations')
-            ->select('petition_id', DB::raw($localesExpr.' as translation_locales'))
-            ->groupBy('petition_id');
-
-        $q = DB::table('petitions')
-            ->leftJoinSub($localesSub, 'pt_locales', 'pt_locales.petition_id', '=', 'petitions.id')
-            ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
-                $j->on('pt.petition_id', '=', 'petitions.id')
-                    ->where('pt.locale', '=', $locale);
-            })
-            ->leftJoin('petition_translations as pt_default', function ($j) use ($defaultLocale) {
-                $j->on('pt_default.petition_id', '=', 'petitions.id')
-                    ->where('pt_default.locale', '=', $defaultLocale);
-            })
-            ->select([
-                'petitions.id',
-                'petitions.signature_count',
-                'petitions.goal_signatures',
-                'petitions.status',
-                'petitions.is_active',
-                'petitions.is_featured',
-                'petitions.created_at',
-                DB::raw('COALESCE(pt.title, pt_default.title) as title'),
-                DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
-                'pt_locales.translation_locales',
-            ]);
+        // Stage 1: id-only page query. The old whole-table GROUP_CONCAT
+        // derived join materialized ~2x table every render; filters that need
+        // translations run as EXISTS subqueries over the unique
+        // (petition_id, locale) index instead.
+        $idQuery = DB::table('petitions')->select('petitions.id');
 
         if ($filters['id'] !== '') {
-            $q->where('petitions.id', (int) $filters['id']);
+            $idQuery->where('petitions.id', (int) $filters['id']);
         }
 
         if ($filters['title'] !== '') {
-            $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $filters['title']).'%';
-            $q->where(function ($sub) use ($like) {
-                $sub->where('pt.title', 'like', $like)
-                    ->orWhere('pt_default.title', 'like', $like);
+            // Leading-wildcard LIKE cannot use the fulltext index; scope the
+            // search to the locales the editor is working with.
+            $searchTerm = $filters['title'];
+            $searchLocales = array_values(array_unique([$locale, $defaultLocale]));
+            $idQuery->whereIn('petitions.id', function ($sub) use ($searchTerm, $searchLocales, $isMysql) {
+                $sub->from('petition_translations')
+                    ->select('petition_id')
+                    ->whereIn('locale', $searchLocales);
+                if ($isMysql) {
+                    $sub->whereRaw('MATCH (title) AGAINST (? IN BOOLEAN MODE)', [$searchTerm]);
+                } else {
+                    $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $searchTerm).'%';
+                    $sub->where('title', 'like', $like);
+                }
             });
         }
 
         if ($filters['owner'] !== '') {
-            $q->where('petitions.user_id', (int) $filters['owner']);
+            $idQuery->where('petitions.user_id', (int) $filters['owner']);
         }
 
         if ($filters['category'] !== '') {
-            $q->where('petitions.category_id', (int) $filters['category']);
+            $idQuery->where('petitions.category_id', (int) $filters['category']);
         }
 
         if (in_array($filters['status'], ['draft', 'published'], true)) {
-            $q->where('petitions.status', $filters['status']);
+            $idQuery->where('petitions.status', $filters['status']);
         }
 
         if ($filters['active'] !== '') {
-            $q->where('petitions.is_active', $filters['active'] === '1' ? 1 : 0);
+            $idQuery->where('petitions.is_active', $filters['active'] === '1' ? 1 : 0);
         }
 
         if ($filters['featured'] !== '') {
-            $q->where('petitions.is_featured', 1);
+            $idQuery->where('petitions.is_featured', 1);
         }
 
         if ($filters['missing_locale'] !== '') {
             $ml = $filters['missing_locale'];
-            $q->leftJoin('petition_translations as pt_ml', function ($j) use ($ml) {
-                $j->on('pt_ml.petition_id', '=', 'petitions.id')
-                    ->where('pt_ml.locale', '=', $ml);
-            })
-                ->whereNull('pt_ml.petition_id');
+            $idQuery->whereNotExists(function ($sub) use ($ml) {
+                $sub->select(DB::raw(1))
+                    ->from('petition_translations as pt_ml')
+                    ->whereColumn('pt_ml.petition_id', 'petitions.id')
+                    ->where('pt_ml.locale', $ml);
+            });
         }
 
-        $q->orderByDesc('petitions.id');
+        $idPage = $idQuery->orderByDesc('petitions.id')->simplePaginate(25)->withQueryString();
 
-        $petitions = $q->simplePaginate(25)->withQueryString();
+        // Stage 2: hydrate the 25 page rows (titles, slugs, locale chips)
+        // with narrow whereIn queries — never the whole table.
+        $pageIds = collect($idPage->items())->pluck('id')->all();
+
+        if ($pageIds !== []) {
+            $rows = DB::table('petitions')
+                ->leftJoin('petition_translations as pt', function ($j) use ($locale) {
+                    $j->on('pt.petition_id', '=', 'petitions.id')
+                        ->where('pt.locale', '=', $locale);
+                })
+                ->leftJoin('petition_translations as pt_default', function ($j) use ($defaultLocale) {
+                    $j->on('pt_default.petition_id', '=', 'petitions.id')
+                        ->where('pt_default.locale', '=', $defaultLocale);
+                })
+                ->whereIn('petitions.id', $pageIds)
+                ->select([
+                    'petitions.id',
+                    'petitions.signature_count',
+                    'petitions.goal_signatures',
+                    'petitions.status',
+                    'petitions.is_active',
+                    'petitions.is_featured',
+                    'petitions.created_at',
+                    DB::raw('COALESCE(pt.title, pt_default.title) as title'),
+                    DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
+                ])
+                ->get()
+                ->keyBy('id');
+
+            $chips = DB::table('petition_translations')
+                ->select('petition_id', DB::raw($localesExpr.' as translation_locales'))
+                ->whereIn('petition_id', $pageIds)
+                ->groupBy('petition_id')
+                ->pluck('translation_locales', 'petition_id');
+
+            $idPage->setCollection(
+                collect($pageIds)->map(fn ($id) => (function () use ($rows, $chips, $id) {
+                    $row = $rows->get($id);
+                    if ($row) {
+                        $row->translation_locales = $chips[$id] ?? null;
+                    }
+
+                    return $row;
+                })())->filter()->values()
+            );
+        }
+
+        $petitions = $idPage;
 
         $approxTotal = $this->approxTableRows('petitions');
 

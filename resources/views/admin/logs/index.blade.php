@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <x-admin.page-header title="logs" :count="$logs->total()" />
+    <x-admin.page-header title="logs" :count="$logTotal" />
 
     <x-admin.filter-box title="filter logs" :action="route('admin.logs')" :reset="route('admin.logs')">
 

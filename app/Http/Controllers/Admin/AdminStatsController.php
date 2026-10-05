@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +17,7 @@ class AdminStatsController extends Controller
             'locale' => $request->query('locale', ''),
             'range' => $request->query('range', '30d'),
             'type' => $request->query('type', ''),
+            'page' => max(1, (int) $request->query('page', 1)),
         ];
 
         $from = $this->resolveRange($filters['range']);
@@ -26,10 +28,11 @@ class AdminStatsController extends Controller
         $results = null;
 
         if ($filters['type']) {
-            [$columns, $results] = $this->resolveStat(
+            [$columns, $results] = $this->cachedStat(
                 $filters['type'],
                 $filters['locale'],
-                $from
+                $filters['range'],
+                $filters['page']
             );
         }
 
@@ -57,15 +60,19 @@ class AdminStatsController extends Controller
 
     private function summaryStats($locale, $from)
     {
-        $totals = DB::table('users')
-            ->selectRaw('
-                COUNT(*) as users_total,
-                SUM(verified) as users_verified,
-                (SELECT COUNT(*) FROM petitions) as petitions_total,
-                (SELECT COUNT(*) FROM petitions WHERE status = "published") as petitions_published,
-                (SELECT COUNT(*) FROM signatures) as signatures_total
-            ')
-            ->first();
+        // The exact totals cost full index scans on prod-scale tables
+        // (18.45M users / 18.65M signatures); run them at most every 15 min.
+        $totals = Cache::remember('admin:stats:totals', 900, function () {
+            return DB::table('users')
+                ->selectRaw('
+                    COUNT(*) as users_total,
+                    SUM(verified) as users_verified,
+                    (SELECT COUNT(*) FROM petitions) as petitions_total,
+                    (SELECT COUNT(*) FROM petitions WHERE status = "published") as petitions_published,
+                    (SELECT COUNT(*) FROM signatures) as signatures_total
+                ')
+                ->first();
+        });
 
         // Recent counts: cache 5 min keyed by range + locale
         $rangeKey = $from->toDateString().':'.($locale ?: 'all');
@@ -99,7 +106,35 @@ class AdminStatsController extends Controller
         ];
     }
 
-    private function resolveStat(string $type, string $locale, $from)
+    /**
+     * Heavy grouped aggregates (top signers scans millions of signature rows)
+     * are cached per type/locale/range/page so paging stays cheap.
+     */
+    private function cachedStat(string $type, string $locale, string $range, int $page): array
+    {
+        $key = 'admin:stat:type:'.$type.':'.($locale ?: 'all').':'.$range.':page:'.$page;
+
+        $cached = Cache::remember($key, 600, function () use ($type, $locale, $range, $page) {
+            $from = $this->resolveRange($range);
+            [$columns, $query] = $this->resolveStat($type, $locale, $from);
+
+            // Fetch one page plus one row to detect a next page cheaply.
+            $items = (clone $query)->forPage($page, 25)->limit(26)->get();
+
+            return [
+                'columns' => $columns,
+                'items' => $items->take(25)->all(),
+                'hasMore' => $items->count() > 25,
+            ];
+        });
+
+        $paginator = new Paginator($cached['items'], 25, $page);
+        $paginator->hasMorePages = $cached['hasMore'];
+
+        return [$cached['columns'], $paginator->withQueryString()];
+    }
+
+    private function resolveStat(string $type, string $locale, $from): array
     {
         switch ($type) {
 
@@ -135,7 +170,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Email', 'Total Signatures'],
-            $q->simplePaginate(25)->withQueryString(),
+            $q,
         ];
     }
 
@@ -153,7 +188,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Email', 'Total Petitions'],
-            $q->simplePaginate(25)->withQueryString(),
+            $q,
         ];
     }
 
@@ -166,7 +201,7 @@ class AdminStatsController extends Controller
 
         return [
             ['ID', 'Status', 'Created At'],
-            $q->simplePaginate(25)->withQueryString(),
+            $q,
         ];
     }
 
@@ -179,7 +214,7 @@ class AdminStatsController extends Controller
 
         return [
             ['Verified Emails'],
-            $q->simplePaginate(25)->withQueryString(),
+            $q,
         ];
     }
 }
