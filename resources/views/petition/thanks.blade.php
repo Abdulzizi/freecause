@@ -78,11 +78,11 @@
                     </div>
                 @endif
 
-                <h2 class="mb-4! text-[1.3rem]! md:text-[22px]!">
+                <h2 class="mt-10! mb-4! text-[1.3rem]! md:text-[22px]!">
                     {{ $suggestionsTitle }}
                 </h2>
 
-                <div class="mb-6!">
+                <div class="mb-8!">
                     @forelse($suggestions as $p)
                         @php
                             $sUrl = !empty($p->tr_slug)
@@ -90,8 +90,8 @@
                                 : '#';
                         @endphp
 
-                        <div class="mb-2!">
-                            <a class="block! p-2! border border-[#f0caca]! rounded! bg-[#fff6f6]!"
+                        <div class="mb-2.5!">
+                            <a class="block! px-3.5! py-2.5! border! border-[#f0caca]! rounded-md! bg-[#fff6f6]! text-[#cc1f1f]! no-underline! transition! duration-150! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]!"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
                             </a>
