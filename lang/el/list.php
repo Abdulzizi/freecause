@@ -10,4 +10,7 @@ return [
     'search' => 'Αναζήτηση',
     'clear' => 'Καθαρισμός αναζήτησης',
     'none' => 'Δεν βρέθηκαν αναφορές.',
+    'sort_by' => 'Sort',
+    'sort_newest' => 'Newest',
+    'sort_signed' => 'Most signed',
 ];

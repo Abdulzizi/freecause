@@ -10,4 +10,7 @@ return [
     'search' => 'Search',
     'clear' => 'Clear search',
     'none' => 'No petitions found.',
+    'sort_by' => 'Sort',
+    'sort_newest' => 'Newest',
+    'sort_signed' => 'Most signed',
 ];

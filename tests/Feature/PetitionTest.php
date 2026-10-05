@@ -76,6 +76,42 @@ class PetitionTest extends TestCase
             ->assertDontSee('Improve Public Transit');
     }
 
+    public function test_listing_sort_by_most_signed_orders_by_signature_count(): void
+    {
+        $low = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'signature_count' => 5]);
+        $high = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'signature_count' => 9000]);
+
+        PetitionTranslation::create([
+            'petition_id' => $low->id,
+            'locale' => 'en',
+            'title' => 'Lowly Signed Cause',
+            'slug' => 'lowly-signed-cause',
+            'description' => 'Description',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $high->id,
+            'locale' => 'en',
+            'title' => 'Hugely Signed Cause',
+            'slug' => 'hugely-signed-cause',
+            'description' => 'Description',
+        ]);
+
+        $html = $this->get('/en/petitions?sort=signed')->assertOk()->getContent();
+
+        $this->assertLessThan(
+            strpos($html, 'Lowly Signed Cause'),
+            strpos($html, 'Hugely Signed Cause'),
+            'Most-signed petition should appear before the less-signed one when sort=signed'
+        );
+    }
+
+    public function test_listing_rejects_invalid_sort_and_still_loads(): void
+    {
+        Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->get('/en/petitions?sort=nonsense')->assertOk();
+    }
+
     public function test_category_search_filters_only_that_category(): void
     {
         $matching = Petition::factory()->create([

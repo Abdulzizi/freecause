@@ -117,18 +117,29 @@ class PetitionController extends Controller
             $query->orderByDesc('petitions.signature_count');
             $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $cacheKey = CacheKeys::petitionsIndex($locale, $page);
-            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
-            });
+            $sort = in_array(request('sort'), ['signed', 'newest'], true) ? request('sort') : 'newest';
 
-            $petitions = $petitions->withQueryString();
+            if ($sort === 'signed') {
+                $petitions = $query
+                    ->orderByDesc('petitions.signature_count')
+                    ->orderByDesc('petitions.id')
+                    ->paginate(15, ['*'], 'page', $page)
+                    ->withQueryString();
+            } else {
+                $cacheKey = CacheKeys::petitionsIndex($locale, $page);
+                $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
+                    return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
+                });
+
+                $petitions = $petitions->withQueryString();
+            }
         }
 
         return view('pages.petitions-list', [
             'pageTitle' => $search ? __('list.search_results', ['q' => $search]) : __('list.all_petitions'),
             'heading' => $search ? __('list.search_results', ['q' => $search]) : __('list.petitions'),
             'search' => $search,
+            'sort' => $search ? null : (in_array(request('sort'), ['signed', 'newest'], true) ? request('sort') : 'newest'),
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,
             'petitionUrl' => fn ($row) => lroute('petition.show', [
@@ -244,6 +255,48 @@ class PetitionController extends Controller
             ->paginate(10, ['*'], 'shoutbox', $shoutboxPage)
             ->withQueryString();
 
+        $recentSignatureCount = cache()->remember(
+            "petition:recent24h:{$petition->id}",
+            now()->addMinutes(10),
+            fn () => Signature::where('petition_id', $petition->id)
+                ->where('confirmed', true)
+                ->where('is_spam', false)
+                ->where('created_at', '>=', now()->subDay())
+                ->count()
+        );
+
+        $related = cache()->remember(
+            "petition:related:{$petition->id}:{$locale}",
+            now()->addMinutes(10),
+            function () use ($petition, $locale, $defaultLocale) {
+                if (! $petition->category_id) {
+                    return collect();
+                }
+
+                return Petition::query()
+                    ->select(['petitions.id', 'petitions.signature_count', 'petitions.cover_image'])
+                    ->withTranslation([
+                        'base' => 'petitions',
+                        'base_key' => 'id',
+                        'translation_table' => 'petition_translations',
+                        'translation_key' => 'petition_id',
+                        'locale_alias' => 'pt_locale',
+                        'default_alias' => 'pt_default',
+                        'locale' => $locale,
+                        'default_locale' => $defaultLocale,
+                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
+                    ])
+                    ->where('petitions.category_id', $petition->category_id)
+                    ->where('petitions.id', '!=', $petition->id)
+                    ->where('petitions.status', 'published')
+                    ->where('petitions.is_active', 1)
+                    ->where(fn ($q) => $q->whereNotNull('pt_locale.title')->orWhereNotNull('pt_default.title'))
+                    ->orderByDesc('petitions.signature_count')
+                    ->limit(3)
+                    ->get();
+            }
+        );
+
         return view('petition.show', compact(
             'petition',
             'tr',
@@ -256,7 +309,9 @@ class PetitionController extends Controller
             'hasSigned',
             'content',
             'formContent',
-            'shoutbox'
+            'shoutbox',
+            'recentSignatureCount',
+            'related'
         ));
     }
 

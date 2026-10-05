@@ -134,11 +134,11 @@
                             </picture>
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 992px) 640px, 100vw">
-                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
+                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $petitionImg }}" alt="" class="absolute! inset-[-15px]! w-[calc(100%+30px)]! h-[calc(100%+30px)]! object-cover! blur-[18px]! opacity-[0.55]! rounded-none!" aria-hidden="true" loading="lazy" decoding="async">
-                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" class="relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
+                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative! z-10! block! w-full! h-[380px]! object-contain!" loading="eager" fetchpriority="high" decoding="async">
                             @endif
                             @if ($petitionCredit)
                                 <span class="absolute! right-[10px]! bottom-[10px]! rounded-md! bg-black/55! px-2! py-1! text-xs! text-white! text-shadow-[0_1px_2px_rgba(0,0,0,0.6)]!">{{ $petitionCredit }}</span>
@@ -248,21 +248,31 @@
                             ])
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <h2 class="font-bold! text-base!">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
                             <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-4!">
-                                <div class="h-1.5! bg-[#2ca02c]!" style="width: {{ $pct }}%;"></div>
+                                <div class="h-1.5! bg-[#2ca02c]!" data-progress-bar data-progress-pct="{{ $pct }}" style="width: {{ $pct }}%;"></div>
                             </div>
 
                             <div class="flex! justify-between! mt-2! text-sm!">
-                                <div>{{ $goalSignaturesText }}</div>
+                                <div><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
                                 <div class="text-[#6c757d]!">{{ $goalLabelText }}</div>
                             </div>
+
+                            @if (($recentSignatureCount ?? 0) > 0)
+                                <div class="mt-3! flex! items-center! gap-2! text-[13px]! text-[#2ca02c]! font-medium!">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    <span>{{ __('show.social_proof', ['count' => number_format($recentSignatureCount)]) }}</span>
+                                </div>
+                            @endif
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <div class="font-bold! text-base! flex! items-center! justify-between!">
                                 <span>{{ $boxLatest }}</span>
                             </div>
@@ -283,7 +293,15 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-[#6c757d]! text-sm!">{{ $latestEmpty }}</div>
+                                    <div class="flex! flex-col! items-center! justify-center! text-center! py-6! text-[#6c757d]!">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mb-2! opacity-70!">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <line x1="19" y1="8" x2="19" y2="14"></line>
+                                            <line x1="22" y1="11" x2="16" y2="11"></line>
+                                        </svg>
+                                        <div class="text-sm!">{{ $latestEmpty }}</div>
+                                    </div>
                                 @endforelse
 
                                 <x-ui.button variant="danger" size="sm" class="mt-2!"
@@ -291,7 +309,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <h2 class="font-bold! text-base!">{{ $boxInformation }}</h2>
                             @include('partials.gradient-divider')
 
@@ -323,7 +341,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <h2 class="font-bold! text-base!">{{ $boxTags }}</h2>
                             @include('partials.gradient-divider')
                             <div class="mt-4! text-sm!">
@@ -339,7 +357,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <h2 class="font-bold! text-base!">{{ $boxEmbed }}</h2>
                             @include('partials.gradient-divider')
 
@@ -359,7 +377,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! border! border-[#eee]!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                             <button id="widgetsToggle" class="w-full! border-0! bg-transparent! p-0! inline-flex! items-center! cursor-pointer! focus:outline-none! focus:shadow-none!" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#widgetsBody" aria-expanded="false"
                                 aria-controls="widgetsBody">
@@ -390,7 +408,7 @@
 
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
-                                <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! my-6! border! border-[#eee]!">
+                                <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! my-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
                                     <h2 class="font-bold! text-base!">{{ __('show.operations') }}</h2>
                                     @include('partials.gradient-divider')
 
@@ -419,8 +437,42 @@
                 </div>
             </div>
 
+            @if (($related ?? collect())->isNotEmpty())
+                <div class="mt-10!">
+                    <h2 class="text-[18px]! font-bold! mb-4!">{{ __('show.related') }}</h2>
+                    <div class="flex! flex-wrap! -mx-3!">
+                        @foreach ($related as $rel)
+                            <div class="w-full! md:w-1/3! shrink-0! px-3! mb-6!">
+                                <a href="{{ lroute('petition.show', ['slug' => $rel->tr_slug, 'id' => $rel->id]) }}"
+                                   class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-[#eee]! shadow-sm! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
+                                    <div class="p-4!">
+                                        <div class="text-[#222]! font-semibold! text-sm! leading-snug! break-words! [overflow-wrap:anywhere]!">{{ $rel->tr_title }}</div>
+                                        <div class="mt-2! text-[13px]! text-[#6c757d]!">
+                                            <span data-countup data-countup-to="{{ (int) ($rel->signature_count ?? 0) }}">{{ number_format($rel->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <button type="button" class="fcui-scrolltop" data-scroll-top aria-label="Back to top">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                    <polyline points="5 12 12 5 19 12"></polyline>
+                </svg>
+            </button>
+
         </div>
     </section>
+
+    @if (!$hasSigned)
+        <div class="fcui-sticky-signbar">
+            <a href="#signFormTop" class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[10px]! font-semibold! text-[14px]! block! text-center! w-full! text-white! no-underline!">{{ $btnSignNow }}</a>
+        </div>
+    @endif
 
     <div class="modal fade" id="imgModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">

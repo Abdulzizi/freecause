@@ -28,14 +28,14 @@
                             </picture>
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 400px, 100vw">
-                                <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
-                                    class="relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
+                                <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}" data-blurup
+                                    class="fcui-blurup relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $coverImg }}" alt="" aria-hidden="true"
                                 class="absolute! -inset-2.5! w-[calc(100%+20px)]! h-[calc(100%+20px)]! object-cover! blur-[14px]! opacity-[0.55]!" loading="lazy" decoding="async">
-                            <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}"
-                                class="relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
+                            <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}" data-blurup
+                                class="fcui-blurup relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
                             @endif
                         </a>
                     </div>
@@ -110,8 +110,12 @@
                         </div>
                     </div>
                 @empty
-                    <div class="text-[#6c757d]! py-6! text-center! text-sm!">
-                        {{ __('sig.no_signatures') }}
+                    <div class="flex! flex-col! items-center! justify-center! text-center! py-10! px-4!">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#cc1f1f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mb-4! opacity-80!">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                        </svg>
+                        <p class="text-[#6c757d]! text-sm! mb-0!">{{ __('sig.no_signatures') }}</p>
                     </div>
                 @endforelse
 
@@ -121,4 +125,6 @@
 
         </div>
     </section>
+
+    <button type="button" class="fcui-scrolltop" data-scroll-top aria-label="Back to top">↑</button>
 @endsection

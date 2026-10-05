@@ -315,6 +315,272 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    window.fcDebounce = function (fn, wait) {
+        let timer = null;
+        return function () {
+            const ctx = this;
+            const args = arguments;
+            window.clearTimeout(timer);
+            timer = window.setTimeout(function () {
+                fn.apply(ctx, args);
+            }, wait);
+        };
+    };
+
+    const scrollTopBtn = document.querySelector('[data-scroll-top]');
+    if (scrollTopBtn) {
+        const toggleScrollTop = function () {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('is-visible');
+            } else {
+                scrollTopBtn.classList.remove('is-visible');
+            }
+        };
+        toggleScrollTop();
+        window.addEventListener('scroll', toggleScrollTop, { passive: true });
+        scrollTopBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        });
+    }
+
+    (function () {
+        if (document.getElementById('fcui-topbar')) return;
+        const bar = document.createElement('div');
+        bar.id = 'fcui-topbar';
+        bar.className = 'fcui-topbar';
+        document.body.appendChild(bar);
+
+        let active = false;
+        let settleTimer = null;
+
+        const start = function () {
+            if (active) return;
+            active = true;
+            window.clearTimeout(settleTimer);
+            if (prefersReducedMotion) {
+                bar.style.transition = 'none';
+                bar.classList.add('is-active');
+                bar.style.width = '90%';
+                return;
+            }
+            bar.classList.add('is-active');
+            bar.style.width = '0%';
+            window.requestAnimationFrame(function () {
+                window.requestAnimationFrame(function () {
+                    bar.style.transition = '';
+                    bar.style.width = '90%';
+                });
+            });
+        };
+
+        const done = function () {
+            if (!active) return;
+            active = false;
+            bar.style.width = '100%';
+            settleTimer = window.setTimeout(function () {
+                bar.classList.remove('is-active');
+                bar.style.transition = 'none';
+                bar.style.width = '0%';
+                window.requestAnimationFrame(function () {
+                    bar.style.transition = '';
+                });
+            }, prefersReducedMotion ? 0 : 220);
+        };
+
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('a[href]');
+            if (!link) return;
+            if (link.hasAttribute('data-no-progress')) return;
+            if (link.target === '_blank') return;
+            const href = link.getAttribute('href') || '';
+            if (href === '' || href.charAt(0) === '#' || href.toLowerCase().indexOf('javascript:') === 0) return;
+            let url;
+            try {
+                url = new URL(link.href, window.location.href);
+            } catch (error) {
+                return;
+            }
+            if (url.origin !== window.location.origin) return;
+            if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+            start();
+        });
+
+        document.addEventListener('submit', function () {
+            start();
+        });
+
+        window.addEventListener('pagehide', done);
+    })();
+
+    const easeOut = function (t) {
+        return 1 - Math.pow(1 - t, 3);
+    };
+
+    document.querySelectorAll('[data-countup]').forEach(function (el) {
+        const target = Number(el.dataset.countupTo);
+        if (!Number.isFinite(target)) return;
+        const formatter = new Intl.NumberFormat();
+        if (prefersReducedMotion) {
+            el.textContent = formatter.format(target);
+            return;
+        }
+        const duration = 900;
+        let startTime = null;
+        const step = function (now) {
+            if (startTime === null) startTime = now;
+            const progress = Math.min((now - startTime) / duration, 1);
+            const value = Math.round(target * easeOut(progress));
+            el.textContent = formatter.format(value);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                el.textContent = formatter.format(target);
+            }
+        };
+        window.requestAnimationFrame(step);
+    });
+
+    document.querySelectorAll('[data-progress-bar]').forEach(function (el) {
+        const pct = Number(el.dataset.progressPct);
+        if (!Number.isFinite(pct)) return;
+        const clamped = Math.max(0, Math.min(100, pct));
+        if (prefersReducedMotion) {
+            el.style.width = clamped + '%';
+            return;
+        }
+        const duration = 900;
+        let startTime = null;
+        el.style.width = '0%';
+        const step = function (now) {
+            if (startTime === null) startTime = now;
+            const progress = Math.min((now - startTime) / duration, 1);
+            el.style.width = (clamped * easeOut(progress)) + '%';
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                el.style.width = clamped + '%';
+            }
+        };
+        window.requestAnimationFrame(step);
+    });
+
+    document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-copy], [data-url]');
+        if (!trigger) return;
+        if (!trigger.hasAttribute('data-copy') && !trigger.hasAttribute('data-url')) return;
+        const value = trigger.getAttribute('data-copy') || trigger.getAttribute('data-url');
+        if (!value) return;
+
+        event.preventDefault();
+
+        const label = trigger.dataset.copiedLabel || 'Copied!';
+        const onSuccess = function () {
+            window.clientToast?.success?.(label);
+        };
+        const onFailure = function () {
+            window.clientToast?.error?.(trigger.dataset.copyFailedLabel || 'Copy failed');
+        };
+
+        const fallbackCopy = function () {
+            try {
+                const temp = document.createElement('textarea');
+                temp.value = value;
+                temp.setAttribute('readonly', '');
+                temp.style.position = 'absolute';
+                temp.style.left = '-9999px';
+                document.body.appendChild(temp);
+                temp.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(temp);
+                if (ok) {
+                    onSuccess();
+                } else {
+                    onFailure();
+                }
+            } catch (error) {
+                onFailure();
+            }
+        };
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(value).then(onSuccess).catch(fallbackCopy);
+        } else {
+            fallbackCopy();
+        }
+    });
+
+    document.querySelectorAll('form[data-validate]').forEach(function (form) {
+        if (form.dataset.fcValidateBound === '1') return;
+        form.dataset.fcValidateBound = '1';
+        const msgRequired = form.dataset.msgRequired || 'This field is required';
+        const msgEmail = form.dataset.msgEmail || 'Enter a valid email';
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const fields = form.querySelectorAll('input[name], textarea[name], select[name]');
+        fields.forEach(function (field) {
+            const name = field.getAttribute('name');
+            if (!name) return;
+            const errorEl = form.querySelector('[data-error-for="' + name + '"]');
+
+            const setError = function (message) {
+                if (message) {
+                    field.classList.add('fcui-field-invalid');
+                    if (errorEl) {
+                        errorEl.textContent = message;
+                        errorEl.hidden = false;
+                    }
+                } else {
+                    field.classList.remove('fcui-field-invalid');
+                    if (errorEl) {
+                        errorEl.textContent = '';
+                        errorEl.hidden = true;
+                    }
+                }
+            };
+
+            const validate = function () {
+                const value = (field.value || '').trim();
+                if (field.hasAttribute('required') && value === '') {
+                    setError(msgRequired);
+                    return;
+                }
+                const type = (field.getAttribute('type') || '').toLowerCase();
+                if (type === 'email' && value !== '' && !emailPattern.test(value)) {
+                    setError(msgEmail);
+                    return;
+                }
+                setError('');
+            };
+
+            field.addEventListener('blur', validate);
+            field.addEventListener('input', validate);
+        });
+    });
+
+    document.querySelectorAll('img[data-blurup]').forEach(function (img) {
+        const markLoaded = function () {
+            img.classList.add('is-loaded');
+        };
+        if (img.complete && img.naturalWidth > 0) {
+            markLoaded();
+        } else {
+            img.addEventListener('load', markLoaded, { once: true });
+            img.addEventListener('error', markLoaded, { once: true });
+        }
+    });
+
+    document.querySelectorAll('form[data-live-search]').forEach(function (form) {
+        const input = form.querySelector('input[name="q"]');
+        if (!input) return;
+        const submit = window.fcDebounce(function () {
+            form.submit();
+        }, 450);
+        input.addEventListener('input', function () {
+            submit();
+        });
+    });
+
     // Contact form: submit over AJAX so the sender gets immediate feedback.
     const contactForm = document.getElementById('contactForm');
     if (!contactForm || !window.clientToast) return;

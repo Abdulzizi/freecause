@@ -10,4 +10,7 @@ return [
     'search' => 'Zoeken',
     'clear' => 'Zoekopdracht wissen',
     'none' => 'Geen petities gevonden.',
+    'sort_by' => 'Sort',
+    'sort_newest' => 'Newest',
+    'sort_signed' => 'Most signed',
 ];

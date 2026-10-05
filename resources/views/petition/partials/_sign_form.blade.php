@@ -37,7 +37,7 @@
             {{ $tSignedAlready }}
         </p>
     @else
-        <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
+        <form action="{{ $signPageUrl }}" method="POST" data-sign-busy data-validate data-msg-required="{{ __('common.required') }}" data-msg-email="{{ __('sign.email_warning') }}" class="fc-sign-form fc-sign-form--{{ $variant }}">
             @csrf
             <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
@@ -65,6 +65,7 @@
                         <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
+                    <span data-error-for="comment" hidden class="text-[13px]! text-[#cc1f1f]! mt-1! block!"></span>
                 </div>
 
                 {{-- @include('petition.partials._agreements') --}}
@@ -132,7 +133,7 @@
 
     @endif
 @else
-    <form action="{{ $signPageUrl }}" method="POST" data-sign-busy class="fc-sign-form fc-sign-form--{{ $variant }}">
+    <form action="{{ $signPageUrl }}" method="POST" data-sign-busy data-validate data-msg-required="{{ __('common.required') }}" data-msg-email="{{ __('sign.email_warning') }}" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
         <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
@@ -163,6 +164,7 @@
                     <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
                         placeholder="{{ $phName }}" required>
                 @endif
+                <span data-error-for="name" hidden class="text-[13px]! text-[#cc1f1f]! mt-1! block!"></span>
             </div>
 
             <div class="{{ $col }} mb-[14px]!">
@@ -174,6 +176,7 @@
                     <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" value="{{ old('email') }}"
                         placeholder="{{ $phEmail }}" required aria-required="true">
                 @endif
+                <span data-error-for="email" hidden class="text-[13px]! text-[#cc1f1f]! mt-1! block!"></span>
             </div>
 
             @if ($variant === 'split')
@@ -193,6 +196,7 @@
                         <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
+                    <span data-error-for="comment" hidden class="text-[13px]! text-[#cc1f1f]! mt-1! block!"></span>
                 </div>
             </div>
 

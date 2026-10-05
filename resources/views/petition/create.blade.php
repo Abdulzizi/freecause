@@ -133,7 +133,7 @@
                             <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
                         </div>
 
-                        <form data-petition-form class="max-md:[&_.row]:[--bs-gutter-y:0.75rem]! max-md:[&_.mb-3]:mb-[0.85rem]! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full!" method="POST" action="{{ $isEdit
+                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem]! max-md:[&_.mb-3]:mb-[0.85rem]! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full!" method="POST" action="{{ $isEdit
                             ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
@@ -286,6 +286,7 @@
                             </div>
 
                             <div class="text-center! max-md:[&_.fcui-btn]:w-full!">
+                                <span data-autosave-status class="text-[13px]! text-[#6c757d]! me-3!"></span>
                                 <x-ui.button type="submit" variant="danger" class="px-12!"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
@@ -304,4 +305,5 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" integrity="sha384-QUJ+ckWz1M+a7w0UfG1sEn4pPrbQwSxGm/1TIPyioqXBrwuT9l4f9gdHWLDLbVWI" crossorigin="anonymous"></script>
     <script src="{{ asset('legacy/js-v2/petition-create.js') }}"></script>
+    <script src="{{ asset('legacy/js-v2/petition-autosave.js') }}"></script>
 @endpush
