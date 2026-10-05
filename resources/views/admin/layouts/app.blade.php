@@ -93,7 +93,7 @@
             else openSidebar();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        function fcAdminInit() {
             if (sidebar) {
                 sidebar.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', function () {
@@ -104,12 +104,22 @@
                 sidebar.querySelectorAll('.fc-group').forEach((group, i) => {
                     const title = group.querySelector('.group-title');
                     if (!title) return;
-                    const key = 'fc-group-' + i;
+                    const label = (title.textContent || '').trim().toLowerCase().replace(/\s+/g, '-');
+                    const key = 'fc-group-' + (label || i);
                     if (localStorage.getItem(key) === '1') group.classList.add('collapsed');
-                    title.addEventListener('click', () => {
-                        group.classList.toggle('collapsed');
+                });
+
+                sidebar.addEventListener('click', function (e) {
+                    const title = e.target.closest('.group-title');
+                    if (!title || !sidebar.contains(title)) return;
+                    const group = title.closest('.fc-group');
+                    if (!group) return;
+                    const label = (title.textContent || '').trim().toLowerCase().replace(/\s+/g, '-');
+                    const key = 'fc-group-' + label;
+                    group.classList.toggle('collapsed');
+                    try {
                         localStorage.setItem(key, group.classList.contains('collapsed') ? '1' : '0');
-                    });
+                    } catch (err) {}
                 });
             }
 
@@ -151,7 +161,13 @@
                 s.onerror = function () {};
                 document.head.appendChild(s);
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fcAdminInit);
+        } else {
+            fcAdminInit();
+        }
     </script>
 
     <button class="hidden! fixed! bottom-5! left-5! w-10! h-10! rounded-full! bg-[#333]! text-white! border-0! cursor-pointer! text-lg! items-center! justify-center! z-[90]! shadow-[0_2px_8px_rgba(0,0,0,0.2)]! transition-colors! hover:bg-[#555]! max-md:flex!" id="fc-back-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
