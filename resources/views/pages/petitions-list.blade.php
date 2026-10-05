@@ -62,19 +62,24 @@
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-[#e9ecef]! rounded-md! text-[#cc1f1f]! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
+                        ]) }}" data-prefetch class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-[#e9ecef]! rounded-md! text-[#cc1f1f]! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
                             <span class="break-words! min-w-0!">{{ $petition->tr_title }}</span>
                             <span class="text-[#6c757d]! ms-4! text-nowrap! text-[13px]!">
-                                <span data-countup data-countup-to="{{ (int) ($petition->signature_count ?? 0) }}">{{ number_format($petition->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
+                                <span data-abbr data-abbr-value="{{ (int) ($petition->signature_count ?? 0) }}">{{ number_format($petition->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                             </span>
                         </a>
                     @empty
                         <div class="flex! flex-col! items-center! justify-center! text-center! py-12! px-4!">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#cc1f1f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mb-4! opacity-80!">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <path d="M14 2v6h6"></path>
-                                <line x1="12" y1="18" x2="12" y2="12"></line>
-                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4!">
+                                <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
+                                <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
+                                <rect x="38" y="30" width="44" height="56" rx="4" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
+                                <path d="M66 30v12h12" fill="#fff5f5" stroke="#cc1f1f" stroke-width="2.5" stroke-linejoin="round"></path>
+                                <line x1="46" y1="52" x2="74" y2="52" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                <line x1="46" y1="62" x2="74" y2="62" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                <line x1="46" y1="72" x2="62" y2="72" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                <circle cx="80" cy="82" r="16" fill="#cc1f1f"></circle>
+                                <path d="M74 82h12M80 76v12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"></path>
                             </svg>
                             <p class="text-[#6c757d]! mb-4!">{{ __('list.none') }}</p>
                             <a href="{{ lroute('petition.create') }}" class="inline-flex! items-center! justify-center! px-4! py-2! bg-[#cc1f1f]! text-white! border! border-[#cc1f1f]! rounded-md! no-underline! hover:bg-[#b31b1b]! hover:no-underline!">

@@ -19,7 +19,7 @@
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
                     <div class="w-full! md:w-1/4! shrink-0! sm:w-1/3! px-3!">
-                        <a href="{{ $petitionUrl }}" class="rounded-lg! overflow-hidden! block! h-40! bg-[#1a1a1a]! relative!">
+                        <a href="{{ $petitionUrl }}" data-prefetch class="rounded-lg! overflow-hidden! block! h-40! bg-[#1a1a1a]! relative!">
                             @if ($wv)
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="100vw">
@@ -42,14 +42,14 @@
 
                     <div class="w-full! md:w-1/2! shrink-0! sm:w-2/3! px-3!">
                         <h1 class="mb-2! text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
-                            <a href="{{ $petitionUrl }}" class="text-[#212529]! no-underline!">
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-[#212529]! no-underline!">
                                 {{ $petitionTitle }}
                             </a>
                         </h1>
 
                         <p class="text-[#6c757d]! mb-4! text-sm! leading-[1.6]!">
                             {{ $shortDesc }}
-                            <a href="{{ $petitionUrl }}" class="text-[#cc1f1f]! ms-1!">{{ __('sig.continue') }}</a>
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-[#cc1f1f]! ms-1!">{{ __('sig.continue') }}</a>
                         </p>
 
                         <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
@@ -111,9 +111,13 @@
                     </div>
                 @empty
                     <div class="flex! flex-col! items-center! justify-center! text-center! py-10! px-4!">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#cc1f1f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mb-4! opacity-80!">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4!">
+                            <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
+                            <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
+                            <rect x="34" y="40" width="52" height="40" rx="6" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
+                            <line x1="44" y1="54" x2="76" y2="54" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                            <line x1="44" y1="64" x2="64" y2="64" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                            <path d="M70 72l5 5 11-11" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
                         </svg>
                         <p class="text-[#6c757d]! text-sm! mb-0!">{{ __('sig.no_signatures') }}</p>
                     </div>

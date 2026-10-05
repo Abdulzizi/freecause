@@ -139,7 +139,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required />
+                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required data-maxcount="120" />
                             </div>
 
                             <div class="mb-3">

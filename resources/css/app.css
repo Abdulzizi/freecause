@@ -501,6 +501,116 @@ ol:not([class]) {
         filter: blur(0);
         transform: scale(1);
     }
+
+    .fcui-pwwrap {
+        position: relative;
+        display: block;
+    }
+
+    .fcui-pwwrap > input {
+        padding-inline-end: 2.5rem;
+    }
+
+    .fcui-pwtoggle {
+        position: absolute;
+        top: 50%;
+        inset-inline-end: 0.5rem;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0.375rem;
+        color: #78716c;
+        opacity: 0.7;
+        cursor: pointer;
+        transition: opacity 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .fcui-pwtoggle:hover {
+        opacity: 1;
+        color: var(--color-brand);
+        background-color: rgba(204, 31, 31, 0.08);
+    }
+
+    .fcui-pwtoggle:focus-visible {
+        outline: 2px solid var(--color-brand);
+        outline-offset: 1px;
+        opacity: 1;
+    }
+
+    .fcui-pwtoggle svg {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    .fcui-pwmeter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.375rem;
+    }
+
+    .fcui-pwmeter__track {
+        flex: 1 1 auto;
+        height: 0.375rem;
+        background-color: #e8e3dc;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .fcui-pwmeter__bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 9999px;
+        transition: width 0.25s ease, background-color 0.25s ease;
+    }
+
+    .fcui-pwmeter__label {
+        flex: 0 0 auto;
+        font-size: 0.75rem;
+        font-weight: 600;
+        min-width: 4.5rem;
+        text-align: end;
+    }
+
+    .fcui-charcount {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: #78716c !important;
+        text-align: end;
+    }
+
+    .fcui-charcount.is-over {
+        color: var(--color-brand) !important;
+        font-weight: 600;
+    }
+
+    .fcui-email-suggest {
+        margin-top: 0.375rem;
+        font-size: 0.8125rem;
+        color: #78716c !important;
+    }
+
+    .fcui-email-suggest__btn {
+        padding: 0;
+        background: transparent;
+        border: 0;
+        color: inherit;
+        font-size: inherit;
+        cursor: pointer;
+        text-align: start;
+    }
+
+    .fcui-email-suggest__btn strong {
+        color: var(--color-brand) !important;
+        font-weight: 600;
+        text-decoration: underline;
+    }
 }
 
 @keyframes fcui-skeleton-shimmer {
@@ -551,6 +661,14 @@ ol:not([class]) {
     }
 
     .fcui-blurup {
+        transition: none;
+    }
+
+    .fcui-pwtoggle {
+        transition: none;
+    }
+
+    .fcui-pwmeter__bar {
         transition: none;
     }
 }

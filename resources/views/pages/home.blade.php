@@ -115,7 +115,7 @@
                                                         </div>
 
                                                         @if ($featuredPetition)
-                                                            <a href="{{ $featuredUrl }}" class="absolute! inset-0! z-[2]! text-[0px]! bg-transparent!">
+                                                            <a href="{{ $featuredUrl }}" data-prefetch class="absolute! inset-0! z-[2]! text-[0px]! bg-transparent!">
                                                                 {{ __('home.featured_read_more') }}
                                                             </a>
                                                         @endif
@@ -172,7 +172,7 @@
                                                         @endphp
 
                                                         <li class="group">
-                                                            <a href="{{ $url }}">
+                                                            <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif>
 
                                                                 <div
                                                                     class="flex! justify-between! mb-1!">

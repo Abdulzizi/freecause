@@ -87,7 +87,19 @@
             </nav>
 
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]!">
-                <div class="flex! items-center! justify-between! flex-wrap! gap-2! mb-4!">
+                <div data-confetti-on-load data-confetti-threshold="{{ in_array(true, [$pct>=100, $pct>=75, $pct>=50, $pct>=25], true) ? 1 : 0 }}" hidden></div>
+                @if ($pct >= 80 && $pct < 100 && !$hasSigned)
+                    <div class="flex! items-center! gap-2! bg-[#fff5f5]! border! border-[#cc1f1f]! text-[#cc1f1f]! rounded-[.5rem]! px-4! py-3! mb-4! text-[14px]! font-semibold!" role="status">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
+                            <path d="M12 9v4"></path>
+                            <path d="M12 17h.01"></path>
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        </svg>
+                        <span>Only {{ number_format(max(0, $goalTotal - $goalCurrent)) }} signatures to go!</span>
+                    </div>
+                @endif
+
+                <div class="flex! items-center! justify-between! flex-wrap! gap-2! mb-2!">
                     <h1 class="mb-0! text-[22px]! font-bold! leading-[1.3]! break-words! [overflow-wrap:anywhere]!">
                         {{ $petitionTitle }}
                     </h1>
@@ -96,6 +108,41 @@
                         <x-ui.button variant="danger" href="#signFormTop">{{ $btnSignNow }}</x-ui.button>
                     @endif
                 </div>
+
+                <div class="flex! flex-wrap! items-center! gap-2! mb-4!">
+                    @if ($petition->is_active)
+                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-[#e6f4ea]! text-[#1e7a34]! border! border-[#bfe3c8]! px-2.5! py-[3px]! text-[12px]! font-semibold!">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Active
+                        </span>
+                    @endif
+                    @if ($petition->is_featured)
+                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-[#fff5f5]! text-[#cc1f1f]! border! border-[#f3c6c6]! px-2.5! py-[3px]! text-[12px]! font-semibold!">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            Featured
+                        </span>
+                    @endif
+                    @if ($petition->category?->name)
+                        <span class="inline-flex! items-center! rounded-full! bg-[#f1f1f1]! text-[#555]! border! border-[#e0e0e0]! px-2.5! py-[3px]! text-[12px]! font-medium!">
+                            {{ $petition->category->name }}
+                        </span>
+                    @endif
+                </div>
+
+                @if ($latest->isNotEmpty())
+                    @php $tickerName = trim((string) ($latest->first()->name ?? '')); @endphp
+                    <div class="inline-flex! items-center! gap-2! rounded-full! bg-[#f8f9fa]! border! border-[#eee]! px-3! py-[5px]! text-[13px]! text-[#444]! mb-4! max-w-full!">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ca02c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span class="truncate!"><strong>{{ $tickerName !== '' ? e($tickerName) : 'Someone' }}</strong> just signed</span>
+                    </div>
+                @endif
 
                 {{-- Share buttons --}}
                 <div class="flex! flex-wrap! items-center! gap-2! mb-4!">
@@ -258,7 +305,8 @@
 
                             <div class="flex! justify-between! mt-2! text-sm!">
                                 <div><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
-                                <div class="text-[#6c757d]!">{{ $goalLabelText }}</div>
+                                @php $goalLabelPrefix = trim(str_replace(number_format($goalTotal), '', $goalLabelText)); @endphp
+                                <div class="text-[#6c757d]!">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
                             </div>
 
                             @if (($recentSignatureCount ?? 0) > 0)

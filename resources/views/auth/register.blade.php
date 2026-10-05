@@ -82,6 +82,7 @@
                                             :required="true"
                                             :error="$errors->first('email')"
                                             autocomplete="email"
+                                            data-email-suggest
                                         />
                                     </div>
 
@@ -94,6 +95,8 @@
                                             :required="true"
                                             :error="$errors->first('password')"
                                             autocomplete="new-password"
+                                            data-strength
+                                            data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
                                         />
                                     </div>
 

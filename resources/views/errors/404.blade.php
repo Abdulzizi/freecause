@@ -21,6 +21,20 @@
             </div>
 
             <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-[#eee]!">
+                <div class="flex! justify-center! mb-6!">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none" aria-hidden="true">
+                        <ellipse cx="100" cy="132" rx="70" ry="8" fill="#f6d4d4"></ellipse>
+                        <circle cx="100" cy="66" r="52" fill="#fff5f5"></circle>
+                        <circle cx="100" cy="66" r="52" stroke="#f6d4d4" stroke-width="2"></circle>
+                        <text x="100" y="84" text-anchor="middle" font-family="sans-serif" font-size="46" font-weight="700" fill="#cc1f1f">404</text>
+                        <circle cx="46" cy="34" r="6" fill="#ce2020"></circle>
+                        <circle cx="158" cy="40" r="4" fill="#f6a5a5"></circle>
+                        <circle cx="150" cy="96" r="5" fill="#ce2020"></circle>
+                        <path d="M40 104c6-6 14-6 20 0" stroke="#f6a5a5" stroke-width="3" stroke-linecap="round" fill="none"></path>
+                        <path d="M74 48l10 10M84 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
+                        <path d="M116 48l10 10M126 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
+                    </svg>
+                </div>
                 <div class="mb-2! relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">404</div>
 
                 <p class="text-[15px]! text-[#555]! mb-1.5!">
@@ -42,7 +56,7 @@
                             @foreach ($mostRead as $p)
                                 <div class="shrink-0! grow-0! mt-4! px-2! w-full! md:w-1/2!">
                                     <div class="p-2.5! border! border-[#f0f0f0]! rounded-md!">
-                                        <a class="text-brand! text-sm! font-medium! no-underline!"
+                                        <a class="text-brand! text-sm! font-medium! no-underline!" data-prefetch
                                             href="{{ route('petition.show', [
                                                 'locale' => $locale,
                                                 'slug' => $p->slug,

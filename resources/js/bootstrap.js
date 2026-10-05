@@ -581,6 +581,378 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    const brandConfettiColors = ['#cc1f1f', '#ff4b4b', '#f6c343', '#2f9e44', '#1971c2', '#ffffff'];
+
+    window.fcConfetti = function (opts) {
+        if (prefersReducedMotion) return;
+        const options = opts || {};
+        const count = Math.max(20, Math.min(120, Number(options.count) || 60));
+        const duration = Number(options.duration) || 1200;
+
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '2147483001';
+        const dpr = window.devicePixelRatio || 1;
+        const resize = function () {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+        };
+        resize();
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            canvas.remove();
+            return;
+        }
+        ctx.scale(dpr, dpr);
+
+        const originX = window.innerWidth / 2;
+        const originY = 0;
+        const particles = [];
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI / 2) + (Math.random() - 0.5) * Math.PI * 0.9;
+            const speed = 4 + Math.random() * 6;
+            particles.push({
+                x: originX + (Math.random() - 0.5) * 120,
+                y: originY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed + 2,
+                size: 5 + Math.random() * 6,
+                rot: Math.random() * Math.PI,
+                vr: (Math.random() - 0.5) * 0.3,
+                color: brandConfettiColors[Math.floor(Math.random() * brandConfettiColors.length)],
+            });
+        }
+
+        let startTime = null;
+        const gravity = 0.18;
+        const step = function (now) {
+            if (startTime === null) startTime = now;
+            const elapsed = now - startTime;
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            const fade = Math.max(0, 1 - elapsed / duration);
+            particles.forEach(function (p) {
+                p.vy += gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rot += p.vr;
+                ctx.save();
+                ctx.globalAlpha = fade;
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                ctx.restore();
+            });
+            if (elapsed < duration) {
+                window.requestAnimationFrame(step);
+            } else {
+                canvas.remove();
+            }
+        };
+        window.requestAnimationFrame(step);
+    };
+
+    (function () {
+        const trigger = document.querySelector('[data-confetti-on-load]');
+        if (!trigger) return;
+        if (trigger.dataset.fcConfettiFired === '1') return;
+        const threshold = Number(trigger.dataset.confettiThreshold);
+        if (Number.isFinite(threshold) && threshold <= 0) return;
+        trigger.dataset.fcConfettiFired = '1';
+        window.fcConfetti();
+    })();
+
+    const eyeOpenSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const eyeOffSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+    document.querySelectorAll('input[type="password"]').forEach(function (input) {
+        if (input.hasAttribute('data-no-toggle')) return;
+        if (input.dataset.fcPwToggle === '1') return;
+        input.dataset.fcPwToggle = '1';
+
+        const parent = input.parentElement;
+        if (!parent) return;
+        let wrapper;
+        if (parent.classList.contains('fcui-pwwrap')) {
+            wrapper = parent;
+        } else {
+            wrapper = document.createElement('span');
+            wrapper.className = 'fcui-pwwrap';
+            parent.insertBefore(wrapper, input);
+            wrapper.appendChild(input);
+        }
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'fcui-pwtoggle';
+        btn.setAttribute('aria-label', 'Show password');
+        btn.setAttribute('aria-pressed', 'false');
+        btn.innerHTML = eyeOpenSvg;
+        wrapper.appendChild(btn);
+
+        btn.addEventListener('click', function () {
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            btn.innerHTML = show ? eyeOffSvg : eyeOpenSvg;
+        });
+    });
+
+    const strengthFallbackLabels = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    const strengthColors = ['#cc1f1f', '#f97316', '#f6c343', '#84cc16', '#2f9e44'];
+
+    document.querySelectorAll('input[type="password"][data-strength]').forEach(function (input) {
+        if (input.dataset.fcStrength === '1') return;
+        input.dataset.fcStrength = '1';
+
+        let labels = strengthFallbackLabels;
+        if (input.dataset.strengthLabels) {
+            try {
+                const parsed = JSON.parse(input.dataset.strengthLabels);
+                if (Array.isArray(parsed) && parsed.length === 5) {
+                    labels = parsed;
+                }
+            } catch (error) {
+                labels = strengthFallbackLabels;
+            }
+        }
+
+        const meter = document.createElement('div');
+        meter.className = 'fcui-pwmeter';
+        const barWrap = document.createElement('div');
+        barWrap.className = 'fcui-pwmeter__track';
+        const bar = document.createElement('div');
+        bar.className = 'fcui-pwmeter__bar';
+        barWrap.appendChild(bar);
+        const text = document.createElement('span');
+        text.className = 'fcui-pwmeter__label';
+        meter.appendChild(barWrap);
+        meter.appendChild(text);
+        input.insertAdjacentElement('afterend', meter);
+
+        const score = function (value) {
+            if (!value) return 0;
+            let s = 0;
+            if (value.length >= 8) s++;
+            if (/[a-z]/.test(value) && /[A-Z]/.test(value)) s++;
+            if (/\d/.test(value)) s++;
+            if (/[^A-Za-z0-9]/.test(value)) s++;
+            return s;
+        };
+
+        const update = function () {
+            const value = input.value || '';
+            const s = score(value);
+            const idx = value === '' ? -1 : Math.max(0, s - 1);
+            if (idx < 0) {
+                bar.style.width = '0%';
+                bar.style.backgroundColor = 'transparent';
+                text.textContent = '';
+                return;
+            }
+            bar.style.width = ((idx + 1) / 5 * 100) + '%';
+            bar.style.backgroundColor = strengthColors[idx];
+            text.textContent = labels[idx];
+            text.style.color = strengthColors[idx];
+        };
+
+        input.addEventListener('input', update);
+        update();
+    });
+
+    document.querySelectorAll('textarea[data-maxcount], input[data-maxcount]').forEach(function (field) {
+        if (field.dataset.fcCharcount === '1') return;
+        const max = Number(field.dataset.maxcount);
+        if (!Number.isFinite(max) || max <= 0) return;
+        field.dataset.fcCharcount = '1';
+
+        const counter = document.createElement('div');
+        counter.className = 'fcui-charcount';
+        field.insertAdjacentElement('afterend', counter);
+
+        const update = function () {
+            const used = (field.value || '').length;
+            counter.textContent = used + '/' + max;
+            if (used >= max) {
+                counter.classList.add('is-over');
+            } else {
+                counter.classList.remove('is-over');
+            }
+        };
+
+        field.addEventListener('input', update);
+        update();
+    });
+
+    const emailProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com', 'protonmail.com'];
+    const levenshtein = function (a, b) {
+        const m = a.length;
+        const n = b.length;
+        if (m === 0) return n;
+        if (n === 0) return m;
+        const row = [];
+        for (let j = 0; j <= n; j++) row[j] = j;
+        for (let i = 1; i <= m; i++) {
+            let prev = row[0];
+            row[0] = i;
+            for (let j = 1; j <= n; j++) {
+                const temp = row[j];
+                row[j] = Math.min(
+                    row[j] + 1,
+                    row[j - 1] + 1,
+                    prev + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1)
+                );
+                prev = temp;
+            }
+        }
+        return row[n];
+    };
+
+    document.querySelectorAll('input[type="email"][data-email-suggest]').forEach(function (input) {
+        if (input.dataset.fcEmailSuggest === '1') return;
+        input.dataset.fcEmailSuggest = '1';
+
+        const box = document.createElement('div');
+        box.className = 'fcui-email-suggest';
+        box.setAttribute('data-email-suggest-box', '');
+        box.hidden = true;
+        input.insertAdjacentElement('afterend', box);
+
+        const hide = function () {
+            box.hidden = true;
+            box.innerHTML = '';
+        };
+
+        input.addEventListener('blur', function () {
+            const value = (input.value || '').trim();
+            const at = value.lastIndexOf('@');
+            if (at < 1 || at === value.length - 1) {
+                hide();
+                return;
+            }
+            const local = value.slice(0, at);
+            const domain = value.slice(at + 1).toLowerCase();
+            if (emailProviders.indexOf(domain) !== -1) {
+                hide();
+                return;
+            }
+            let best = null;
+            let bestDist = 3;
+            emailProviders.forEach(function (provider) {
+                const dist = levenshtein(domain, provider);
+                if (dist > 0 && dist <= 2 && dist < bestDist) {
+                    bestDist = dist;
+                    best = provider;
+                }
+            });
+            if (!best) {
+                hide();
+                return;
+            }
+            const suggestion = local + '@' + best;
+            box.innerHTML = '';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'fcui-email-suggest__btn';
+            btn.innerHTML = (input.dataset.emailSuggestPrefix || 'Did you mean') + ' <strong>' + suggestion.replace(/[<>&]/g, '') + '</strong>?';
+            btn.addEventListener('click', function () {
+                input.value = suggestion;
+                hide();
+                input.focus();
+            });
+            box.appendChild(btn);
+            box.hidden = false;
+        });
+
+        input.addEventListener('input', hide);
+    });
+
+    (function () {
+        const connection = navigator.connection || {};
+        if (connection.saveData === true) return;
+        const prefetched = new Set();
+        const doPrefetch = function (anchor) {
+            if (!anchor || !anchor.hasAttribute('data-prefetch')) return;
+            let url;
+            try {
+                url = new URL(anchor.href, window.location.href);
+            } catch (error) {
+                return;
+            }
+            if (url.origin !== window.location.origin) return;
+            if (prefetched.has(url.href)) return;
+            prefetched.add(url.href);
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url.href;
+            document.head.appendChild(link);
+        };
+        document.addEventListener('mouseover', function (event) {
+            const anchor = event.target.closest('a[data-prefetch]');
+            if (anchor) doPrefetch(anchor);
+        }, { passive: true });
+        document.addEventListener('focusin', function (event) {
+            const anchor = event.target.closest('a[data-prefetch]');
+            if (anchor) doPrefetch(anchor);
+        });
+    })();
+
+    window.fcAbbreviate = function (n) {
+        const num = Number(n);
+        if (!Number.isFinite(num)) return String(n);
+        const abs = Math.abs(num);
+        const sign = num < 0 ? '-' : '';
+        const units = [
+            { v: 1e9, s: 'B' },
+            { v: 1e6, s: 'M' },
+            { v: 1e3, s: 'K' },
+        ];
+        for (let i = 0; i < units.length; i++) {
+            if (abs >= units[i].v) {
+                let str = (abs / units[i].v).toFixed(1);
+                if (str.slice(-2) === '.0') str = str.slice(0, -2);
+                return sign + str + units[i].s;
+            }
+        }
+        return sign + String(abs);
+    };
+
+    document.querySelectorAll('[data-abbr]').forEach(function (el) {
+        const value = Number(el.dataset.abbrValue);
+        if (!Number.isFinite(value)) return;
+        el.textContent = window.fcAbbreviate(value);
+        el.setAttribute('title', new Intl.NumberFormat().format(value));
+        if (el.hasAttribute('data-aria-announce')) {
+            announce(el.textContent);
+        }
+    });
+
+    document.querySelectorAll('[data-countup][data-aria-announce]').forEach(function (el) {
+        const target = Number(el.dataset.countupTo);
+        if (!Number.isFinite(target)) return;
+        announce(new Intl.NumberFormat().format(target));
+    });
+
+    document.querySelectorAll('[data-skeleton-until-load]').forEach(function (container) {
+        if (container.dataset.fcSkeleton === '1') return;
+        container.dataset.fcSkeleton = '1';
+        container.querySelectorAll('.fcui-skeleton').forEach(function (sk) {
+            sk.remove();
+        });
+        container.querySelectorAll('[data-skeleton-content]').forEach(function (content) {
+            content.hidden = false;
+            content.removeAttribute('hidden');
+        });
+    });
+
     // Contact form: submit over AJAX so the sender gets immediate feedback.
     const contactForm = document.getElementById('contactForm');
     if (!contactForm || !window.clientToast) return;

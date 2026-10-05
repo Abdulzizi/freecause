@@ -294,7 +294,7 @@
                                         <span class="hidden! md:block!"></span>
                                         <div class="space-y-3!">
                                             <p class="text-[12px]! leading-relaxed! text-gray-500!">{{ __('profile.set_password_help') }}</p>
-                                            <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}">
+                                            <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}" data-strength data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'>
                                             <input type="password" class="{{ $input }}" name="new_password_confirmation" placeholder="{{ __('profile.confirm_new_password') }}">
                                         </div>
                                     </div>

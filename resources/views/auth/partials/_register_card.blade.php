@@ -52,6 +52,7 @@
                 :value="old('email')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('email') : null"
+                data-email-suggest
             />
         </div>
 
@@ -62,6 +63,8 @@
                 :label="__('auth.password')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('password') : null"
+                data-strength
+                data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
             />
         </div>
 

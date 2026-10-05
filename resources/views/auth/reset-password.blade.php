@@ -35,6 +35,8 @@
                                     :label="__('auth.new_password')"
                                     :required="true"
                                     :error="$errors->first('password')"
+                                    data-strength
+                                    data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
                                 />
                             </div>
 
