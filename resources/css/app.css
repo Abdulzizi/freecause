@@ -672,3 +672,7 @@ ol:not([class]) {
         transition: none;
     }
 }
+
+.fc-group.collapsed > a {
+    display: none !important;
+}
