@@ -16,12 +16,9 @@
             </x-admin.form-field>
 
             @if ($base_url)
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label></label>
-                    <span class="text-[11px]! text-[#b7791f]!">
+                <x-admin.form-field label=""><span class="text-[11px]! text-[#b7791f]!">
                         Active: all urls forced to <strong>{{ $base_url }}</strong>. Clear to disable.
-                    </span>
-                </div>
+                    </span></x-admin.form-field>
             @endif
 
             <x-admin.form-field label="short base url">
@@ -29,12 +26,9 @@
             </x-admin.form-field>
 
             @if ($short_base_url)
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label></label>
-                    <span class="text-[11px]! text-[#666]!">
+                <x-admin.form-field label=""><span class="text-[11px]! text-[#666]!">
                         Used for share links, e.g. <strong>{{ $short_base_url }}/en/petition/...</strong>
-                    </span>
-                </div>
+                    </span></x-admin.form-field>
             @endif
 
         </x-admin.section-panel>
@@ -50,35 +44,28 @@
         </x-admin.section-panel>
 
         @if ($is_system_admin)
-        <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">inject html <span class="text-[0.75em]! text-[#c00]!">(system admin only)</span></div>
-        <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+        <x-admin.section-panel title="inject html (system admin only)">
             <p class="text-xs! text-[#666]! mb-2!">
                 These fields are rendered verbatim on every page, for analytics scripts, tracking pixels, etc.
                 Only super-admin accounts can save changes here.
             </p>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>in &lt;head&gt; ... &lt;/head&gt;</label>
+            <x-admin.form-field label="in <head> ... </head>">
                 <textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]!" name="inject_head_html">{{ $inject_head_html }}</textarea>
-            </div>
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label>in &lt;body&gt; ... &lt;/body&gt;</label>
+            </x-admin.form-field>
+
+            <x-admin.form-field label="in <body> ... </body>">
                 <textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]!" name="inject_body_html">{{ $inject_body_html }}</textarea>
-            </div>
-        </div>
+            </x-admin.form-field>
+        </x-admin.section-panel>
         @endif
 
         @if ($is_system_admin)
         <x-admin.section-panel title="oauth">
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <a href="https://console.cloud.google.com/apis/credentials" target="_blank"
-                    class="no-underline! cursor-pointer!">
-                    <label class="cursor-pointer! text-[#1a0dab]!">
-                        google client id
-                    </label>
-                </a>
-                <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="google_client_id" value="{{ $google_client_id }}">
-            </div>
+            <x-admin.form-field label="google client id">
+                <input class="fc-filter-field" style="width: 100%;" type="text" name="google_client_id" value="{{ $google_client_id }}" aria-label="google client id">
+            </x-admin.form-field>
+            <p class="text-[11px]! text-[#777]! mt-1! mb-0!">get it at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="no-underline! text-[#1a0dab]!">console.cloud.google.com — credentials</a></p>
 
             <x-admin.form-field label="google client secret">
                 <x-ui.input name="google_client_secret" type="password" value="" :placeholder="$google_client_secret_set ? '•••••••• (leave blank to keep)' : 'not set'" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" autocomplete="new-password" />
@@ -92,22 +79,16 @@
             <input type="hidden" name="smtp_enabled" value="0">
             <input type="hidden" name="require_email_verification" value="0">
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label></label>
-                <label class="font-normal!">
+            <x-admin.form-field label=""><label class="font-normal!">
                     <input type="checkbox" name="smtp_enabled" value="1" {{ $smtp_enabled ? 'checked' : '' }}>
                     enable smtp
-                </label>
-            </div>
+                </label></x-admin.form-field>
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label></label>
-                <label class="font-normal!">
+            <x-admin.form-field label=""><label class="font-normal!">
                     <input type="checkbox" name="require_email_verification" value="1" {{ $require_email_verification ? 'checked' : '' }}>
                     require email verification for new accounts
                     <span class="text-[11px]! text-[#666]!">(if smtp disabled, account is pending until manually verified)</span>
-                </label>
-            </div>
+                </label></x-admin.form-field>
 
             <x-admin.form-field label="smtp host">
                 <x-ui.input name="smtp_host" :value="$smtp_host" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
@@ -163,14 +144,11 @@
         <x-admin.section-panel title="logging">
             <input type="hidden" name="logging_enabled" value="0">
 
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label></label>
-                <label class="font-normal!">
+            <x-admin.form-field label=""><label class="font-normal!">
                     <input type="checkbox" name="logging_enabled" value="1"
                         {{ $logging_enabled ? 'checked' : '' }}>
                     enable logging
-                </label>
-            </div>
+                </label></x-admin.form-field>
 
             <x-admin.form-field label="cookie name">
                 <x-ui.input name="logging_cookie_name" :value="$logging_cookie_name" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
@@ -218,13 +196,10 @@
                 Customize the contact form notification email sent to staff.
             </p>
             <input type="hidden" name="email_contact_enabled" value="0">
-            <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                <label></label>
-                <label class="font-normal!">
+            <x-admin.form-field label=""><label class="font-normal!">
                     <input type="checkbox" name="email_contact_enabled" value="1" {{ $email_contact_enabled ? 'checked' : '' }}>
                     enable contact form notifications
-                </label>
-            </div>
+                </label></x-admin.form-field>
             <x-admin.form-field label="subject">
                 <x-ui.input name="email_contact_subject" :value="$email_contact_subject" placeholder="New contact form submission" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>

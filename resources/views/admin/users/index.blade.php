@@ -212,8 +212,7 @@
             @csrf
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
 
-            <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-0! max-md:text-xs! max-md:px-2! max-md:py-1!">Access Data</div>
-            <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+            <x-admin.section-panel title="Access Data">
                 <x-admin.form-field label="username">
                     <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
@@ -237,10 +236,9 @@
                         @endforeach
                     </select>
                 </x-admin.form-field>
-            </div>
+            </x-admin.section-panel>
 
-            <div class="inline-block! bg-[#e6e6e6]! border! border-solid! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! max-md:text-xs! max-md:px-2! max-md:py-1!">other</div>
-            <div class="border! border-solid! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! max-md:p-2!">
+            <x-admin.section-panel title="other">
 
                 <x-admin.form-field label="first name">
                     <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
@@ -266,11 +264,10 @@
                     </select>
                 </x-admin.form-field>
 
-                <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>verified</label>
+                <x-admin.form-field label="verified">
                     <input type="checkbox" name="verified" value="1"
                         {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
-                </div>
+                </x-admin.form-field>
 
                 <x-admin.form-field label="email">
                     <x-ui.input name="email" :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
@@ -288,10 +285,10 @@
                         @endforeach
                     </select>
                 </x-admin.form-field>
-            </div>
+            </x-admin.section-panel>
 
             <div class="flex! justify-end! mt-1.5!">
-                <x-ui.button variant="secondary" class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</x-ui.button>
+                <x-ui.button variant="secondary" type="submit">save</x-ui.button>
             </div>
         </form>
     </x-admin.detail-panel>

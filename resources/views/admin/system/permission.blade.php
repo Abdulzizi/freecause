@@ -53,19 +53,14 @@
 
     </div>
 
-    <div class="inline-block! bg-[#e6e6e6]! border! border-[#9e9e9e]! border-b-0! px-2.5! py-[3px]! rounded-tl! rounded-tr! font-bold! text-sm! mt-2.5! mr-0! mb-0! ml-0!">
-        privileges for <strong>{{ ucfirst($selectedModule) }}</strong>
-    </div>
-    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-[25px]!">
-
+    <x-admin.section-panel title="privileges for {{ ucfirst($selectedModule) }}">
         <form method="post" action="{{ route('admin.system.permissions.store') }}">
             @csrf
 
             <input type="hidden" name="module" value="{{ $selectedModule }}">
             <input type="hidden" name="level_id" value="{{ $selectedLevel }}">
 
-            <div
-                class="grid! gap-3! grid-cols-[repeat(auto-fill,minmax(200px,1fr))]!">
+            <div class="grid! gap-3! grid-cols-[repeat(auto-fill,minmax(200px,1fr))]!">
 
                 @foreach ($modules[$selectedModule] as $action)
                     <label
@@ -84,11 +79,10 @@
             </div>
 
             <div class="flex! justify-end! mt-[25px]!">
-                <x-ui.button variant="secondary" size="sm">save</x-ui.button>
+                <button type="submit" class="fc-abtn">save</button>
             </div>
 
         </form>
-
-    </div>
+    </x-admin.section-panel>
 
 @endsection
