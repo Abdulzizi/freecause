@@ -38,7 +38,51 @@
     </svg>';
     @endphp
 
-    <x-admin.page-header title="petitions" :count="$approxTotal" />
+    <x-admin.page-header title="petitions" :count="$approxTotal">
+        @if (admin_can('petitions', 'edit'))
+            <x-ui.button variant="secondary" type="button"
+                class="fc-abtn border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer! hover:bg-[#f5f5f5]!"
+                data-petition-create-toggle>
+                new petition
+            </x-ui.button>
+
+            <form data-petition-create-form method="post" action="{{ route('admin.petitions.create') }}"
+                class="w-full! flex! items-end! gap-2! flex-wrap! mb-2! border! border-[#ddd]! rounded! p-2! bg-[#fafafa]!" style="display: none;">
+                @csrf
+                <label class="text-xs! font-bold! flex! flex-col! gap-1!">title
+                    <input name="title" required maxlength="255" class="fc-filter-field" placeholder="petition title">
+                </label>
+                <label class="text-xs! font-bold! flex! flex-col! gap-1!">locale
+                    <select name="locale" class="fc-filter-field">
+                        @foreach ($localeOptions as $code => $label)
+                            <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="text-xs! font-bold! flex! flex-col! gap-1!">category
+                    <select name="category_id" class="fc-filter-field">
+                        <option value="">—</option>
+                        @foreach ($categories as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->name ?? ('#'.$cat->id) }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="text-xs! font-bold! flex! flex-col! gap-1!">goal
+                    <select name="goal_signatures" class="fc-filter-field">
+                        @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
+                            <option value="{{ $goalOption }}" {{ $goalOption === 1000 ? 'selected' : '' }}>
+                                {{ number_format($goalOption) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </label>
+                <x-ui.button variant="secondary" type="submit"
+                    class="fc-abtn border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">
+                    create
+                </x-ui.button>
+            </form>
+        @endif
+    </x-admin.page-header>
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null && $v !== 'locale')->count();
@@ -290,6 +334,17 @@
                     data-id="{{ $selectedPetition->id }}">
                     Reconcile signature count for this petition
                 </x-ui.button>
+
+                @if ($missingTranslationCount > 0)
+                    <x-ui.button variant="secondary" type="button" class="mb-2! border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!"
+                        data-translate-missing
+                        data-url="{{ route('admin.petitions.translateMissing') }}"
+                        data-id="{{ $selectedPetition->id }}"
+                        data-source="{{ $translationSource?->locale ?? $locale }}"
+                        data-count="{{ $missingTranslationCount }}">
+                        translate to missing locales ({{ $missingTranslationCount }})
+                    </x-ui.button>
+                @endif
             @endif
 
             <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">

@@ -185,6 +185,8 @@ class GlobalOptionsController extends Controller
                 'admin:dashboard:top_petitions',
                 'admin:dashboard:health',
                 'admin:stats:totals',
+                'admin:users:verified_count',
+                'admin:petitions:status_counts',
                 'level:user_counts',
 
                 // stat type pages (top signers/petitioners etc.) carry

@@ -42,21 +42,25 @@ class DashboardController extends Controller
 
     private function getStats(): array
     {
-        return Cache::remember('admin:dashboard:stats:v2', 300, function () {
+        return Cache::remember('admin:dashboard:stats:v2', 900, function () {
             $todayStart = today()->startOfDay();
             $todayEnd = today()->endOfDay();
             $weekAgo = now()->subWeek();
 
+            $statusCounts = Cache::remember('admin:petitions:status_counts', 900, fn () => Petition::selectRaw('status, COUNT(*) as n')->groupBy('status')->pluck('n', 'status')->map(fn ($n) => (int) $n));
+
             return [
                 'users_total' => $this->approxTableRows('users'),
-                'users_verified' => User::where('verified', 1)->count(),
+                // Exact verified COUNT() scans ~15M index entries on prod;
+                // cache it for an hour instead of the block TTL.
+                'users_verified' => Cache::remember('admin:users:verified_count', 3600, fn () => User::where('verified', 1)->count()),
                 'users_new_today' => User::whereBetween('created_at', [$todayStart, $todayEnd])->count(),
                 'users_new_week' => User::where('created_at', '>=', $weekAgo)->count(),
 
                 'petitions_total' => $this->approxTableRows('petitions'),
-                'petitions_published' => Petition::where('status', 'published')->count(),
-                'petitions_draft' => Petition::where('status', 'draft')->count(),
-                'petitions_pending' => Petition::where('status', 'pending')->count(),
+                'petitions_published' => $statusCounts['published'] ?? 0,
+                'petitions_draft' => $statusCounts['draft'] ?? 0,
+                'petitions_pending' => $statusCounts['pending'] ?? 0,
                 'petitions_new_today' => Petition::whereBetween('created_at', [$todayStart, $todayEnd])->count(),
 
                 'signatures_total' => $this->approxTableRows('signatures'),

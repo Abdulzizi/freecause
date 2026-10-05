@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Petition;
+use App\Models\PetitionTranslation;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
 use App\Support\Locale;
 use App\Support\PetitionCache;
+use App\Support\Slug;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -186,6 +188,15 @@ class AdminPetitionsController extends Controller
         $localeOptions = Locale::options();
         $activeLanguages = array_keys($localeOptions);
 
+        $missingTranslationCount = 0;
+        if ($selectedPetition) {
+            $existingLocales = DB::table('petition_translations')
+                ->where('petition_id', $selectedPetition->id)
+                ->pluck('locale')
+                ->all();
+            $missingTranslationCount = count(array_diff($activeLanguages, $existingLocales));
+        }
+
         $defaultLocale = default_locale();
         $categories = Category::query()
             ->select(['categories.id'])
@@ -211,7 +222,8 @@ class AdminPetitionsController extends Controller
             'locale',
             'activeLanguages',
             'localeOptions',
-            'categories'
+            'categories',
+            'missingTranslationCount'
         ));
     }
 
@@ -341,6 +353,10 @@ class AdminPetitionsController extends Controller
         }
 
         try {
+            if ($petition = Petition::find($data['id'])) {
+                PetitionCache::touch($petition);
+            }
+
             CacheVersion::bump('home');
             CacheVersion::bump('list');
             CacheVersion::bump('sitemap');
@@ -351,6 +367,131 @@ class AdminPetitionsController extends Controller
         return redirect()
             ->route('admin.petitions', ['select' => $data['id'], 'locale' => $data['locale']])
             ->with('success', 'saved');
+    }
+
+    public function create(Request $request)
+    {
+        // Mirrors save()'s rules: goal whitelist, title length, active-language
+        // locales, category / goal typing.
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
+        ]);
+
+        $locale = $data['locale'];
+
+        // Slugs are unique per (locale, slug) — dedupe against that scope.
+        $slug = Slug::dedupe(
+            $data['title'],
+            fn (string $candidate) => DB::table('petition_translations')
+                ->where('locale', $locale)
+                ->where('slug', $candidate)
+                ->exists(),
+            'petition'
+        );
+
+        $petitionId = DB::transaction(function () use ($data, $locale, $slug) {
+            $now = now();
+
+            $id = DB::table('petitions')->insertGetId([
+                'user_id' => admin_user()->id,
+                'goal_signatures' => $data['goal_signatures'] ?? 1000,
+                'status' => 'draft', // petitions always start unpublished
+                'category_id' => $data['category_id'] ?? null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('petition_translations')->insert([
+                'petition_id' => $id,
+                'locale' => $locale,
+                'title' => $data['title'],
+                'slug' => $slug,
+                'description' => '',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            return (int) $id;
+        });
+
+        try {
+            if ($petition = Petition::find($petitionId)) {
+                PetitionCache::touch($petition);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Cache bump failed after petition create: '.$e->getMessage());
+        }
+
+        return redirect()
+            ->route('admin.petitions', ['select' => $petitionId, 'locale' => $locale])
+            ->with('success', 'petition #'.$petitionId.' created');
+    }
+
+    public function translateMissing(Request $request)
+    {
+        $data = $request->validate([
+            'id' => ['required', 'integer', 'exists:petitions,id'],
+            'locale' => ['nullable', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
+        ]);
+
+        $id = (int) $data['id'];
+        $sourceLocale = $data['locale'] ?? default_locale();
+
+        $source = DB::table('petition_translations')
+            ->where('petition_id', $id)
+            ->where('locale', $sourceLocale)
+            ->first();
+
+        if (! $source) {
+            return response()->json(['ok' => false, 'error' => 'no source translation'], 404);
+        }
+
+        $existing = DB::table('petition_translations')
+            ->where('petition_id', $id)
+            ->pluck('locale')
+            ->all();
+
+        $targets = Language::where('is_active', 1)
+            ->pluck('code')
+            ->reject(fn (string $code) => in_array($code, $existing, true))
+            ->values();
+
+        if ($targets->isEmpty()) {
+            return response()->json(['ok' => true, 'created' => 0, 'missing' => 0]);
+        }
+
+        // slug is unique per (locale, slug), so the source slug can be
+        // reused verbatim for every new locale.
+        $created = DB::transaction(function () use ($source, $targets, $id) {
+            foreach ($targets as $code) {
+                PetitionTranslation::updateOrCreate(
+                    ['petition_id' => $id, 'locale' => $code],
+                    [
+                        'title' => $source->title,
+                        'slug' => $source->slug,
+                        'description' => $source->description,
+                        'is_featured' => false, // drafts seed the copy, publishing stays manual
+                    ]
+                );
+            }
+
+            return count($targets);
+        });
+
+        try {
+            if ($petition = Petition::find($id)) {
+                PetitionCache::touch($petition);
+            }
+
+            CacheVersion::bump('list'); // also purges the edge listing cache
+        } catch (\Throwable $e) {
+            Log::warning('Cache bump failed after translate-missing: '.$e->getMessage());
+        }
+
+        return response()->json(['ok' => true, 'created' => $created, 'missing' => 0]);
     }
 
     public function bulkAction(Request $request)

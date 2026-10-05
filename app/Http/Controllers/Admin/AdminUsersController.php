@@ -8,10 +8,12 @@ use App\Models\User;
 use App\Models\UserLevel;
 use App\Support\ApproxRows;
 use App\Support\Locale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminUsersController extends Controller
 {
@@ -19,7 +21,93 @@ class AdminUsersController extends Controller
 
     public function index(Request $request)
     {
-        $filters = [
+        $filters = $this->filters($request);
+
+        $users = $this->filteredQuery(User::with('level'), $filters)
+            ->orderByDesc('id')
+            ->simplePaginate(25)
+            ->withQueryString();
+        $approxTotal = $this->approxTableRows('users');
+
+        $levels = UserLevel::pluck('name', 'name')->toArray();
+        $levels = ['' => 'any level'] + $levels;
+        $editableLevels = array_filter($levels, fn ($name, $code) => $code !== 'banned', ARRAY_FILTER_USE_BOTH);
+
+        $languages = Language::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get();
+
+        $locales = ['' => 'any language'];
+
+        foreach ($languages as $lang) {
+            $locales[$lang->code] = $lang->name;
+        }
+
+        $selectedUser = null;
+
+        if ($request->query('select')) {
+            $selectedUser = User::with('level')
+                ->find((int) $request->query('select'));
+        }
+
+        return view('admin.users.index', compact(
+            'users',
+            'filters',
+            'levels',
+            'editableLevels',
+            'locales',
+            'approxTotal',
+            'selectedUser'
+        ));
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $filters = $this->filters($request);
+
+        // Collect the bounded id set first: a limit() on the streamed query is
+        // overridden by chunk(), which would paginate past the 10k cap.
+        $ids = $this->filteredQuery(User::query(), $filters)
+            ->orderByDesc('id')
+            ->limit(10000)
+            ->pluck('id')
+            ->all();
+
+        return response()->streamDownload(function () use ($ids) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['id', 'email', 'name', 'locale', 'level', 'verified', 'created_at']);
+            User::query()
+                ->whereIn('id', $ids)
+                ->orderByDesc('id')
+                ->chunk(500, function ($rows) use ($handle) {
+                    // One query per chunk batch instead of lazy-loading each
+                    // row's level (N+1).
+                    $levelNames = UserLevel::whereIn('id', $rows->pluck('level_id')->filter()->unique()->all())
+                        ->pluck('name', 'id');
+
+                    foreach ($rows as $row) {
+                        fputcsv($handle, [
+                            $row->id,
+                            $row->email,
+                            $row->name,
+                            $row->locale,
+                            $levelNames[$row->level_id] ?? '',
+                            $row->verified ? 1 : 0,
+                            $row->created_at,
+                        ]);
+                    }
+                });
+            fclose($handle);
+        }, 'users-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    /**
+     * Normalise the request's filter query string into a single array.
+     */
+    private function filters(Request $request): array
+    {
+        return [
             'id' => trim((string) $request->query('id', '')),
             'first_name' => trim((string) $request->query('first_name', '')),
             'last_name' => trim((string) $request->query('last_name', '')),
@@ -33,9 +121,14 @@ class AdminUsersController extends Controller
             'registered_from' => trim((string) $request->query('registered_from', '')),
             'registered_to' => trim((string) $request->query('registered_to', '')),
         ];
+    }
 
-        $q = User::with('level');
-
+    /**
+     * Apply the user-list filters to a query. Shared by index() and export()
+     * so the exported CSV always matches the on-screen listing.
+     */
+    private function filteredQuery(Builder $q, array $filters): Builder
+    {
         if ($filters['id'] !== '') {
             $q->where('id', (int) $filters['id']);
         }
@@ -96,40 +189,7 @@ class AdminUsersController extends Controller
             $q->whereDate('created_at', '<=', $filters['registered_to']);
         }
 
-        $users = $q->orderByDesc('id')->simplePaginate(25)->withQueryString();
-        $approxTotal = $this->approxTableRows('users');
-
-        $levels = UserLevel::pluck('name', 'name')->toArray();
-        $levels = ['' => 'any level'] + $levels;
-        $editableLevels = array_filter($levels, fn ($name, $code) => $code !== 'banned', ARRAY_FILTER_USE_BOTH);
-
-        $languages = Language::where('is_active', true)
-            ->orderByDesc('is_default')
-            ->orderBy('name')
-            ->get();
-
-        $locales = ['' => 'any language'];
-
-        foreach ($languages as $lang) {
-            $locales[$lang->code] = $lang->name;
-        }
-
-        $selectedUser = null;
-
-        if ($request->query('select')) {
-            $selectedUser = User::with('level')
-                ->find((int) $request->query('select'));
-        }
-
-        return view('admin.users.index', compact(
-            'users',
-            'filters',
-            'levels',
-            'editableLevels',
-            'locales',
-            'approxTotal',
-            'selectedUser'
-        ));
+        return $q;
     }
 
     public function save(Request $request)

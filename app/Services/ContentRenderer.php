@@ -35,6 +35,10 @@ class ContentRenderer
             '{CREATE_PETITION_URL}' => lroute('petition.create'),
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
 
+            '{RECOVER_URL}' => lroute('password.request'),
+            '{DONATIONS_LINK}' => '<a href="'.lroute('donations').'">Donations</a>',
+            '{HOW_TO_CREATE_LINK}' => '<a href="'.lroute('how-to-write-a-petition').'">how to write a petition</a>',
+
             '{FAQ_URL}' => lroute('faqs'),
             '{CONTACTS_URL}' => lroute('contacts'),
             '{FAQ_LINK}' => '<a href="'.lroute('faqs').'">FAQ</a>',

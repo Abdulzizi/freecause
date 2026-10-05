@@ -65,6 +65,10 @@
         </select>
     </x-admin.filter-box>
 
+    <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
+        <x-ui.button variant="secondary" size="sm" :href="route('admin.users.export', request()->query())">export CSV</x-ui.button>
+    </div>
+
     <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :bulk="[
         'banRoute'        => route('admin.users.bulkBan'),
         'banLabel'        => 'Ban',

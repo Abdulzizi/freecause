@@ -243,6 +243,31 @@ async function handleReconcile(button) {
     }
 }
 
+async function handleTranslateMissing(button) {
+    const message = `Create draft translations for all ${button.dataset.count || ''} missing active locale(s), seeded from the source translation?`;
+    if (!(await confirmAction(message, 'Translate to missing locales'))) return;
+    button.disabled = true;
+    try {
+        const result = await jsonPost(button.dataset.url, {
+            id: button.dataset.id,
+            locale: button.dataset.source || undefined,
+        });
+        notify('success', `Created ${result.created} draft translation(s).`);
+        window.setTimeout(() => window.location.reload(), 700);
+    } catch (error) {
+        notify('error', error.message || 'Could not create missing translations.');
+        button.disabled = false;
+    }
+}
+
+function togglePetitionCreateForm() {
+    const form = document.querySelector('[data-petition-create-form]');
+    if (!form) return;
+    const show = form.style.display === 'none';
+    form.style.display = show ? '' : 'none';
+    if (show) form.querySelector('input[name="title"]')?.focus();
+}
+
 async function handleSignature(button) {
     if (!button || button.disabled) return;
     const action = button.dataset.signatureAction;
@@ -364,7 +389,7 @@ function setupSidebar() {
 }
 
 function loadRichEditors() {
-    const areas = document.querySelectorAll('textarea[data-ckeditor="rich"]');
+    const areas = document.querySelectorAll('textarea.fc-editor[data-ckeditor="rich"]');
     if (!areas.length) return;
     const activate = () => areas.forEach((area, index) => {
         try {
@@ -482,6 +507,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (petitionBan) return handlePetitionBan(petitionBan, config);
         const reconcile = event.target.closest('[data-reconcile-one]');
         if (reconcile) return handleReconcile(reconcile);
+        const translateMissing = event.target.closest('[data-translate-missing]');
+        if (translateMissing) return handleTranslateMissing(translateMissing);
+        const createToggle = event.target.closest('[data-petition-create-toggle]');
+        if (createToggle) {
+            event.preventDefault();
+            return togglePetitionCreateForm();
+        }
         const signature = event.target.closest('[data-signature-action]');
         if (signature) return handleSignature(signature);
         const userAction = event.target.closest('[data-user-single-action]');
