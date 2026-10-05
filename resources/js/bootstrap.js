@@ -736,7 +736,8 @@ document.addEventListener('DOMContentLoaded', function () {
         text.className = 'fcui-pwmeter__label';
         meter.appendChild(barWrap);
         meter.appendChild(text);
-        input.insertAdjacentElement('afterend', meter);
+        const meterAnchor = input.closest('.fcui-pwwrap') || input;
+        meterAnchor.insertAdjacentElement('afterend', meter);
 
         const score = function (value) {
             if (!value) return -1;
