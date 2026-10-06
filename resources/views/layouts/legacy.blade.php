@@ -89,7 +89,7 @@
 
     @stack('head')
 
-    {!! \App\Support\Settings::get('inject_head_html', '') !!}
+    @include('partials.analytics')
 </head>
 
 <body class="@yield('body_class', '')">
