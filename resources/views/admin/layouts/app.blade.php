@@ -14,8 +14,8 @@
 <body>
     <div class="flex! items-center! justify-between! flex-wrap! gap-2! px-3.5! py-2.5! text-sm! border-b! border-[#cfcfcf]! bg-white! min-h-[48px]! box-border! max-md:px-2.5! max-md:py-1.5! max-md:text-[13px]! max-md:gap-1!">
         <div class="flex! items-center! gap-2! flex-wrap! max-md:order-1!">
-            <button type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="fc-menu" data-admin-sidebar-toggle>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg class="fc-abtn">
+            <button type="button" class="fc-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="fc-menu" data-admin-sidebar-toggle>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
                 Menu
             </button>
         </div>

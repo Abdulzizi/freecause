@@ -830,6 +830,35 @@ ol:not([class]) {
     padding: 12px;
 }
 
+/* Small screens: hide the flagged secondary columns entirely so tables
+   stay width-limited instead of h-scrolling. */
+@media (max-width: 768px) {
+    [data-hide-mobile] {
+        display: none !important;
+    }
+}
+
+/* Small screens: hide the flagged secondary columns entirely so tables
+   stay width-limited instead of h-scrolling. */
+@media (max-width: 768px) {
+    [data-hide-mobile] {
+        display: none !important;
+    }
+    .fc-modal {
+        padding: 8px;
+    }
+    .fc-drawer__body {
+        padding: 10px;
+    }
+    .fc-drawer-savebar {
+        padding: 8px 0 4px;
+    }
+    .fc-abtn {
+        padding: 0 9px;
+        font-size: 12px;
+    }
+}
+
 /* ===== Admin sidebar ===== */
 /* Normalized rhythm: consistent paddings, group gaps, hover + active states.
    The markup has no per-link utilities; spacing lives here. */

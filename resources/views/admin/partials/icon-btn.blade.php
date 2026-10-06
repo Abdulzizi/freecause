@@ -18,6 +18,6 @@
     @if(!empty($label))
         <div>
             {{ $label }}
-        </div class="fc-abtn">
+        </div>
     @endif
 </button>
