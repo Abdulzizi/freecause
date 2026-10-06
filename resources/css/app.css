@@ -155,13 +155,14 @@ ol:not([class]) {
     .fcui-btn--ghost:link,
     .fcui-btn--ghost:visited {
         background-color: transparent !important;
-        border-color: transparent !important;
+        border-color: var(--color-brand) !important;
         color: var(--color-brand) !important;
     }
 
     .fcui-btn--ghost:hover {
-        background-color: rgba(204, 31, 31, 0.08) !important;
-        color: var(--color-brand) !important;
+        background-color: var(--color-brand) !important;
+        border-color: var(--color-brand) !important;
+        color: #ffffff !important;
     }
 
     .fcui-btn__spinner {
