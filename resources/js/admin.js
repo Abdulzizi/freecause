@@ -335,7 +335,11 @@ async function handleSignature(button) {
             control.title = isCurrent ? (confirmed ? 'Already confirmed' : 'Already rejected') : (confirmed ? 'Reject signature' : 'Approve signature');
         });
         const status = group.closest('tr')?.querySelector('[data-signature-status]');
-        if (status) status.textContent = confirmed ? 'Confirmed' : 'Rejected';
+        if (status) {
+            status.innerHTML = confirmed
+                ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round" title="Rejected"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+        }
         notify('success', confirmed ? 'Signature approved.' : 'Signature rejected.');
     } catch (error) {
         notify('error', error.message || 'Could not update signature.');
