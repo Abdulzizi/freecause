@@ -13,7 +13,6 @@ class AdminJsWiringTest extends TestCase
         'data-detail-row',
         'fc-row-open',
         'data-live-search',
-        'data-prefetch',
         'Undo',
     ];
 
@@ -24,6 +23,9 @@ class AdminJsWiringTest extends TestCase
         foreach (self::HOOKS as $hook) {
             $this->assertStringContainsString($hook, $source, "admin.js should wire {$hook}.");
         }
+
+        $this->assertStringNotContainsString('prefetchTarget', $source);
+        $this->assertStringNotContainsString('prefetchUrl', $source);
     }
 
     public function test_built_admin_bundle_contains_client_hooks(): void

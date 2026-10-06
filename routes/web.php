@@ -139,13 +139,13 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
-        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
+        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->name('signatures.bulkAction');
         Route::post('/signatures/{signature}/action', [AdminSignaturesController::class, 'action'])->middleware('permission:signatures,edit')->name('signatures.action');
 
         // * PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
-        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->middleware('permission:pages,edit')->name('pages.bulkAction');
+        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
 
         // * SPAM
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
@@ -162,7 +162,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/logs/prune', [AdminLogsController::class, 'prune'])->middleware('permission:logs,delete')->name('logs.prune');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->middleware('permission:logs,delete')->name('logs.bulkDelete');
         Route::post('/logs/restore', [AdminLogsController::class, 'restore'])->middleware('permission:logs,delete')->name('logs.restore');
-        Route::get('/logs/restore-all', [AdminLogsController::class, 'restoreAll'])->middleware('permission:logs,delete')->name('logs.restoreAll');
+        Route::post('/logs/restore-all', [AdminLogsController::class, 'restoreAll'])->middleware('permission:logs,delete')->name('logs.restoreAll');
 
         // * LANGUAGES
         Route::get('/languages', [AdminLanguagesController::class, 'index'])->middleware('permission:languages,view')->name('languages.index');

@@ -5,10 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+
+    protected static function booted(): void
+    {
+        static::created(fn (self $user) => Cache::forget('level:user_counts'));
+        static::updated(function (self $user) {
+            if ($user->wasChanged('level_id')) {
+                Cache::forget('level:user_counts');
+            }
+        });
+        static::deleted(function (self $user) {
+            if ($user->level_id) {
+                Cache::forget('level:user_counts');
+            }
+        });
+    }
 
     protected $fillable = [
         'name',

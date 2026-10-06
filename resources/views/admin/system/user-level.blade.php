@@ -35,7 +35,7 @@
                     </td>
 
                     <td class="text-left! align-middle!">
-                        @if (!$level->is_system && $level->users_count == 0)
+                        @if (! $level->is_system && ! in_array($level->name, ['user', 'banned'], true) && $level->users_count == 0)
                             <input type="checkbox" class="bulk-checkbox" value="{{ $level->id }}">
                         @endif
                     </td>

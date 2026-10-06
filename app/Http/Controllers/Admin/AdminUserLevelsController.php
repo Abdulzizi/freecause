@@ -59,20 +59,29 @@ class AdminUserLevelsController extends Controller
             'ids' => ['required', 'array'],
             'ids.*' => ['integer', 'exists:user_levels,id'],
         ])['ids'];
+        $ids = array_values(array_unique(array_map('intval', $ids)));
 
         $ownLevelId = admin_user()?->level_id;
 
-        $deletable = UserLevel::whereIn('id', $ids)
-            ->where('is_system', false)
-            ->when($ownLevelId, fn ($q) => $q->where('id', '!=', $ownLevelId))
-            ->pluck('id')
-            ->all();
+        $deletable = DB::transaction(function () use ($ids, $ownLevelId) {
+            $deletable = UserLevel::whereIn('id', $ids)
+                ->where('is_system', false)
+                ->whereNotIn('name', ['user', 'banned'])
+                ->whereDoesntHave('users')
+                ->when($ownLevelId, fn ($q) => $q->where('id', '!=', $ownLevelId))
+                ->lockForUpdate()
+                ->pluck('id')
+                ->all();
 
-        if (! empty($deletable)) {
-            DB::transaction(function () use ($deletable) {
+            if (! empty($deletable)) {
                 Permission::whereIn('level_id', $deletable)->delete();
                 UserLevel::whereIn('id', $deletable)->delete();
-            });
+            }
+
+            return $deletable;
+        });
+
+        if (! empty($deletable)) {
 
             $modules = Permission::matrix();
 
@@ -87,6 +96,11 @@ class AdminUserLevelsController extends Controller
             Cache::forget('level:user_counts');
         }
 
-        return back()->with('success', 'Selected levels deleted.');
+        $skipped = count($ids) - count($deletable);
+        $message = count($deletable)
+            ? 'Deleted '.count($deletable).' level(s). '.$skipped.' protected, assigned, or current level(s) were kept.'
+            : 'No levels were deleted; protected, assigned, and your current level cannot be deleted.';
+
+        return back()->with($deletable ? 'success' : 'warning', $message);
     }
 }

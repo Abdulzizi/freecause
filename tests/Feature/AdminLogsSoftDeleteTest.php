@@ -67,4 +67,52 @@ class AdminLogsSoftDeleteTest extends TestCase
             ->assertOk()
             ->assertJson(['ok' => true, 'restored' => 0]);
     }
+
+    public function test_csv_export_includes_soft_deleted_rows_shown_in_the_log_list(): void
+    {
+        $log = Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'trashed export', 'content' => 'c']);
+        $log->delete();
+
+        $content = $this->actingAs($this->admin(), 'admin')
+            ->get(route('admin.logs.export'))
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringContainsString('trashed export', $content);
+    }
+
+    public function test_restore_all_is_post_only_and_redirects_with_a_result(): void
+    {
+        $log = Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'recent', 'content' => 'c']);
+        $log->delete();
+
+        $this->actingAs($this->admin(), 'admin')
+            ->get(route('admin.logs.restoreAll'))
+            ->assertMethodNotAllowed();
+
+        $this->actingAs($this->admin(), 'admin')
+            ->from(route('admin.logs'))
+            ->post(route('admin.logs.restoreAll'))
+            ->assertRedirect(route('admin.logs'))
+            ->assertSessionHas('success', 'Restored 1 recently deleted log entries.');
+
+        $this->assertDatabaseHas('logs', ['id' => $log->id, 'deleted_at' => null]);
+    }
+
+    public function test_log_page_uses_a_csrf_protected_post_form_for_restore_all(): void
+    {
+        Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'visible', 'content' => 'c']);
+
+        $response = $this->actingAs($this->admin(), 'admin')
+            ->get(route('admin.logs'))
+            ->assertOk();
+
+        $document = new \DOMDocument;
+        @$document->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($document);
+        $forms = $xpath->query('//form[@method="post" and @action="'.route('admin.logs.restoreAll').'"]');
+
+        $this->assertSame(1, $forms->length);
+        $this->assertSame(1, $xpath->query('.//input[@name="_token"]', $forms->item(0))->length);
+    }
 }

@@ -68,6 +68,40 @@ class AdminPanelRevampB1Test extends TestCase
         ]);
     }
 
+    public function test_page_save_view_url_uses_translation_for_saved_page_and_locale(): void
+    {
+        $page = Page::create();
+        $otherPage = Page::create();
+        PageTranslation::create([
+            'page_id' => $otherPage->id,
+            'locale' => 'fr',
+            'title' => 'Other French page',
+            'slug' => 'other-french-page',
+            'content' => '',
+            'published' => true,
+        ]);
+        PageTranslation::create([
+            'page_id' => $otherPage->id,
+            'locale' => 'es',
+            'title' => 'Other Spanish page',
+            'slug' => 'other-spanish-page',
+            'content' => '',
+            'published' => true,
+        ]);
+
+        $response = $this->post(route('admin.pages.save'), [
+            'page_id' => $page->id,
+            'locale' => 'en',
+            'title' => 'Saved page',
+            'slug' => 'saved-page',
+            'content' => '',
+            'published' => '1',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('view_url', url('en/saved-page'));
+    }
+
     public function test_page_save_rejects_duplicate_slug_for_same_locale(): void
     {
         $existingPage = Page::create();

@@ -10,6 +10,7 @@ use App\Support\ApproxRows;
 use App\Support\Locale;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -150,8 +151,7 @@ class AdminUsersController extends Controller
                 $domain = strtolower(trim($filters['email']));
                 $domain = ltrim(str_contains($domain, '@') ? substr($domain, strrpos($domain, '@') + 1) : $domain, '@');
                 if ($domain !== '') {
-                    $pattern = '%@'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $domain);
-                    $q->whereRaw("LOWER(email) LIKE ? ESCAPE '!'", [$pattern]);
+                    $q->where('email_domain', $domain);
                 } else {
                     $q->where('email', 'like', "{$filters['email']}%");
                 }
@@ -276,6 +276,10 @@ class AdminUsersController extends Controller
             return back()->withInput()->withErrors(['id' => 'Could not save user.']);
         }
 
+        if ($user->wasChanged('level_id')) {
+            Cache::forget('level:user_counts');
+        }
+
         return redirect()
             ->route('admin.users', ['select' => $user->id])
             ->with('success', 'saved');
@@ -306,6 +310,9 @@ class AdminUsersController extends Controller
 
         $banned = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
+            ->where(function ($q) use ($bannedLevel) {
+                $q->whereNull('level_id')->orWhere('level_id', '!=', $bannedLevel->id);
+            })
             ->whereDoesntHave('level', function ($q) {
                 $q->where('is_system', true);
             })
@@ -315,6 +322,10 @@ class AdminUsersController extends Controller
                 'banned_until' => $until,
             ]);
 
+        if ($banned > 0) {
+            Cache::forget('level:user_counts');
+        }
+
         $skipped = count($ids) - $banned;
 
         // The banned set may contain admin/system/own accounts which are
@@ -323,7 +334,7 @@ class AdminUsersController extends Controller
         if ($banned === 0) {
             return response()->json([
                 'ok' => false,
-                'error' => 'No eligible accounts: your own, admin and system-level accounts cannot be banned.',
+                'error' => 'No eligible accounts: already banned, your own, admin and system-level accounts cannot be banned.',
                 'skipped' => $skipped,
             ]);
         }
@@ -353,7 +364,7 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false, 'error' => 'role missing']);
         }
 
-        User::whereIn('id', $ids)
+        $unbanned = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
             ->where('level_id', $bannedLevelId)
             ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true))
@@ -366,11 +377,19 @@ class AdminUsersController extends Controller
                 'banned_until' => null,
             ]);
 
+        if ($unbanned > 0) {
+            Cache::forget('level:user_counts');
+        }
+
         return response()->json(['ok' => true]);
     }
 
     public function bulkDelete(Request $request)
     {
+        if (! admin_can('users', 'delete')) {
+            return response()->json(['ok' => false, 'error' => 'You do not have permission to delete users.'], 403);
+        }
+
         $ids = $this->validatedIds($request);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
@@ -402,6 +421,10 @@ class AdminUsersController extends Controller
         }
 
         $deleted = $query->delete();
+
+        if ($deleted > 0) {
+            Cache::forget('level:user_counts');
+        }
 
         return response()->json([
             'ok' => true,
@@ -459,12 +482,20 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false, 'error' => 'banned role missing'], 422);
         }
 
+        if ((int) $user->level_id === (int) $bannedLevel->id) {
+            return response()->json(['ok' => false, 'error' => 'User is already banned.'], 409);
+        }
+
         $user->level_id = $bannedLevel->id;
         $reason = trim((string) ($data['reason'] ?? '')) ?: null;
         $days = (int) ($data['days'] ?? 0);
         $user->banned_reason = $reason;
         $user->banned_until = $days > 0 ? now()->addDays($days) : null;
         $user->save();
+
+        if ($user->wasChanged('level_id')) {
+            Cache::forget('level:user_counts');
+        }
 
         return response()->json(['ok' => true]);
     }
@@ -487,6 +518,10 @@ class AdminUsersController extends Controller
             $user->banned_reason = null;
             $user->banned_until = null;
             $user->save();
+
+            if ($user->wasChanged('level_id')) {
+                Cache::forget('level:user_counts');
+            }
         }
 
         return response()->json(['ok' => true]);

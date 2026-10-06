@@ -25,8 +25,7 @@ class AdminAuditLog
             $path = $request->path();
             $method = $request->method();
 
-            // Exclude password fields from logged input
-            $input = $request->except(['password', 'password_confirmation', 'smtp_pass', 'google_client_secret']);
+            $input = $this->redactSensitiveInput($request->all());
             // Truncate large inputs to keep logs manageable
             array_walk($input, function (&$v) {
                 if (is_string($v) && mb_strlen($v) > 300) {
@@ -46,5 +45,28 @@ class AdminAuditLog
         }
 
         return $response;
+    }
+
+    private function redactSensitiveInput(array $input): array
+    {
+        foreach ($input as $key => $value) {
+            if (is_string($key) && $this->isSensitiveKey($key)) {
+                $input[$key] = '[REDACTED]';
+            } elseif (is_array($value)) {
+                $input[$key] = $this->redactSensitiveInput($value);
+            }
+        }
+
+        return $input;
+    }
+
+    private function isSensitiveKey(string $key): bool
+    {
+        $normalized = strtolower(preg_replace('/[^a-z0-9]/i', '', $key));
+
+        return preg_match('/password|passwd|passphrase|secret|token|authorization|credential|apikey|privatekey|otp|onetimecode|codeverifier|authcode|clientassertion/', $normalized) === 1
+            || $normalized === 'pass'
+            || preg_match('/(?:^|[_-])pass(?:$|[_-])/i', $key) === 1
+            || preg_match('/[a-z]Pass$/', $key) === 1;
     }
 }

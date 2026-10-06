@@ -78,7 +78,7 @@
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
                 <th width="70">ID</th>
-                <th width="26" data-hide-mobile title="Bulk selection" aria-label="Bulk selection"></th>
+                <th width="26" title="Bulk selection" aria-label="Bulk selection"></th>
                 <th width="26" data-hide-mobile title="User email verified" aria-label="User email verified">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </th>
@@ -108,8 +108,10 @@
 
                     <td>{{ $s->id }}</td>
 
-                    <td data-hide-mobile>
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $s->id }}">
+                    <td>
+                        @if (admin_can('signatures', 'edit') || admin_can('signatures', 'delete'))
+                            <input type="checkbox" class="bulk-checkbox" value="{{ $s->id }}" aria-label="Select signature {{ $s->id }}">
+                        @endif
                     </td>
 
                     <td data-hide-mobile class="text-center!">
@@ -196,7 +198,7 @@
 
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
-                @if ($hasConfirmed)
+                @if ($hasConfirmed && admin_can('signatures', 'edit'))
                     <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
                         <button type="button" class="fc-abtn bulk-action" data-action="approve" title="Approve">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

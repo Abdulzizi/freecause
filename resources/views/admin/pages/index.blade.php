@@ -58,7 +58,7 @@
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
                 <th width="70">ID</th>
-                <th width="26" data-hide-mobile></th>
+                <th width="26"></th>
                 <th width="26">P</th>
                 <th width="26" data-hide-mobile></th>
                 <th class="text-start!">Title</th>
@@ -79,8 +79,10 @@
                         </a>
                     </td>
 
-                    <td data-hide-mobile>
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $p->page_id }}">
+                    <td>
+                        @if (admin_can('pages', 'edit') || admin_can('pages', 'delete'))
+                            <input type="checkbox" class="bulk-checkbox" value="{{ $p->page_id }}" aria-label="Select page {{ $p->page_id }}">
+                        @endif
                     </td>
 
                     <td class="text-center!">
@@ -113,22 +115,26 @@
 
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
-                <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
-                    <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
-                        {!! $icoPublish !!}
-                        <span class="hidden! md:inline!">Publish</span>
-                    </button>
+                @if (admin_can('pages', 'edit'))
+                    <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
+                        <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
+                            {!! $icoPublish !!}
+                            <span class="hidden! md:inline!">Publish</span>
+                        </button>
 
-                    <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
-                        {!! $icoUnpublish !!}
-                        <span class="hidden! md:inline!">Unpublish</span>
-                    </button>
-                </div>
+                        <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
+                            {!! $icoUnpublish !!}
+                            <span class="hidden! md:inline!">Unpublish</span>
+                        </button>
+                    </div>
+                @endif
 
-                <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
-                    {!! $icoX !!}
-                    <span class="hidden! md:inline!">Delete</span>
-                </button>
+                @if (admin_can('pages', 'delete'))
+                    <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
+                        {!! $icoX !!}
+                        <span class="hidden! md:inline!">Delete</span>
+                    </button>
+                @endif
 
                 <a href="{{ route('admin.pages', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
@@ -144,6 +150,7 @@
     <x-admin.detail-panel title="page" :closeRoute="route('admin.pages', request()->except('select'))">
 
         @if ($selectedPage)
+            @if (admin_can('pages', 'edit'))
             <form method="POST" action="{{ route('admin.pages.save') }}">
                 @csrf
 
@@ -184,6 +191,19 @@
                 </div>
 
             </form>
+            @else
+                <p class="text-sm! text-[#777]!">View-only access</p>
+                <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
+                    <dt class="font-bold!">Title</dt><dd>{{ $selectedPage->title }}</dd>
+                    <dt class="font-bold!">Slug</dt><dd>{{ $selectedPage->slug }}</dd>
+                    <dt class="font-bold!">Locale</dt><dd>{{ $selectedPage->locale }}</dd>
+                    <dt class="font-bold!">Published</dt><dd>{{ $selectedPage->published ? 'Yes' : 'No' }}</dd>
+                </dl>
+                <div class="mt-3!">
+                    <h3 class="font-bold! text-sm! mb-1!">Content</h3>
+                    <div class="whitespace-pre-wrap! break-words! text-sm!">{{ $selectedPage->content }}</div>
+                </div>
+            @endif
         @else
             <x-admin.empty-state message="select a page to edit" class="text-[#777]!" />
         @endif

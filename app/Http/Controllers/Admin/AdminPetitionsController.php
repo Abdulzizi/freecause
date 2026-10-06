@@ -618,23 +618,30 @@ class AdminPetitionsController extends Controller
 
     public function reconcileAll(Request $request)
     {
-        $petitions = Petition::query()->select('id')->get();
-        $total = 0;
+        $total = Petition::count();
 
-        foreach ($petitions as $p) {
-            $actualCount = DB::table('signatures')
-                ->where('petition_id', $p->id)
-                ->where('confirmed', 1) // canonical count = confirmed signatures only
-                ->count();
-
-            DB::table('petitions')
-                ->where('id', $p->id)
-                ->update(['signature_count' => $actualCount]);
-
-            PetitionCache::touch($p);
-
-            $total++;
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            DB::statement(<<<'SQL'
+                UPDATE petitions AS p
+                LEFT JOIN (
+                    SELECT petition_id, COUNT(*) AS actual_count
+                    FROM signatures
+                    WHERE confirmed = 1
+                    GROUP BY petition_id
+                ) AS s ON s.petition_id = p.id
+                SET p.signature_count = COALESCE(s.actual_count, 0)
+            SQL);
+        } else {
+            DB::table('petitions')->update([
+                'signature_count' => DB::raw(
+                    '(SELECT COUNT(*) FROM signatures WHERE signatures.petition_id = petitions.id AND signatures.confirmed = 1)'
+                ),
+            ]);
         }
+
+        // Counts are derived from confirmed signatures; invalidate shared
+        // listing caches once instead of dispatching one purge per petition.
+        PetitionCache::bump();
 
         Log::info("All signature counts reconciled: {$total} petitions");
 

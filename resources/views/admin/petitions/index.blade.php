@@ -148,7 +148,7 @@
         <x-slot:thead>
             <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
                 <th>ID</th>
-                <th width="26" data-hide-mobile></th>
+                <th width="26"></th>
                 <th width="26">A</th>
                 <th width="26">P</th>
                 <th width="26">F</th>
@@ -170,8 +170,10 @@
                         </a>
                     </td>
 
-                    <td data-hide-mobile>
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $p->id }}">
+                    <td>
+                        @if (admin_can('petitions', 'edit'))
+                            <input type="checkbox" class="bulk-checkbox" value="{{ $p->id }}" aria-label="Select petition {{ $p->id }}">
+                        @endif
                     </td>
 
                     {{-- ACTIVE --}}
@@ -250,38 +252,40 @@
                         <span class="max-md:hidden!">Ban</span>
                     </button>
                 @endif
-                <div class="flex! gap-1! items-center!">
-                    <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
-                        {!! $icoPublish !!}
-                        <span class="max-md:hidden!">Publish</span>
-                    </button>
-                    <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
-                        {!! $icoUnpublish !!}
-                        <span class="max-md:hidden!">Unpublish</span>
-                    </button>
-                </div>
+                @if (admin_can('petitions', 'edit'))
+                    <div class="flex! gap-1! items-center!">
+                        <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
+                            {!! $icoPublish !!}
+                            <span class="max-md:hidden!">Publish</span>
+                        </button>
+                        <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
+                            {!! $icoUnpublish !!}
+                            <span class="max-md:hidden!">Unpublish</span>
+                        </button>
+                    </div>
 
-                <div class="flex! gap-1! items-center!">
-                    <button type="button" class="fc-abtn bulk-action" data-action="activate" title="Activate">
-                        {!! $icoPublish !!}
-                        <span class="max-md:hidden!">Activate</span>
-                    </button>
-                    <button type="button" class="fc-abtn bulk-action" data-action="deactivate" title="Deactivate">
-                        {!! $icoUnpublish !!}
-                        <span class="max-md:hidden!">Deactivate</span>
-                    </button>
-                </div>
+                    <div class="flex! gap-1! items-center!">
+                        <button type="button" class="fc-abtn bulk-action" data-action="activate" title="Activate">
+                            {!! $icoPublish !!}
+                            <span class="max-md:hidden!">Activate</span>
+                        </button>
+                        <button type="button" class="fc-abtn bulk-action" data-action="deactivate" title="Deactivate">
+                            {!! $icoUnpublish !!}
+                            <span class="max-md:hidden!">Deactivate</span>
+                        </button>
+                    </div>
 
-                <div class="flex! gap-1! items-center!">
-                    <button type="button" class="fc-abtn bulk-action" data-action="feature" title="Feature">
-                        {!! $icoFeature !!}
-                        <span class="max-md:hidden!">Feature</span>
-                    </button>
-                    <button type="button" class="fc-abtn bulk-action" data-action="unfeature" title="Unfeature">
-                        {!! $icoFeature !!}
-                        <span class="max-md:hidden!">Unfeature</span>
-                    </button>
-                </div>
+                    <div class="flex! gap-1! items-center!">
+                        <button type="button" class="fc-abtn bulk-action" data-action="feature" title="Feature">
+                            {!! $icoFeature !!}
+                            <span class="max-md:hidden!">Feature</span>
+                        </button>
+                        <button type="button" class="fc-abtn bulk-action" data-action="unfeature" title="Unfeature">
+                            {!! $icoFeature !!}
+                            <span class="max-md:hidden!">Unfeature</span>
+                        </button>
+                    </div>
+                @endif
 
                 <a href="{{ route('admin.petitions', request()->except('select')) }}"
                     title="Clear selection" class="fc-abtn fc-abtn--neutral">
@@ -354,7 +358,8 @@
                 @endif
             @endif
 
-            <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
+            @if (admin_can('petitions', 'edit'))
+                <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" name="id" value="{{ $selectedPetition->id }}">
@@ -515,7 +520,18 @@
                     <button type="submit" class="fc-abtn">save</button>
                 </div>
 
-            </form>
+                </form>
+            @else
+                <p class="text-sm! text-[#777]!">View-only access</p>
+                <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
+                    <dt class="font-bold!">Title</dt><dd>{{ $translationSource->title ?? '—' }}</dd>
+                    <dt class="font-bold!">Status</dt><dd>{{ $selectedPetition->status }}</dd>
+                    <dt class="font-bold!">Active</dt><dd>{{ $selectedPetition->is_active ? 'Yes' : 'No' }}</dd>
+                    <dt class="font-bold!">Signatures</dt><dd>{{ $selectedPetition->signature_count }} / {{ $selectedPetition->goal_signatures }}</dd>
+                    <dt class="font-bold!">Locale</dt><dd>{{ $localeOptions[$locale] ?? $locale }}</dd>
+                    <dt class="font-bold!">Slug</dt><dd>{{ $translationSource->slug ?? '—' }}</dd>
+                </dl>
+            @endif
         @else
             <x-admin.empty-state message="select a petition to edit" class="text-[#777]!" />
         @endif

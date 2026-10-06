@@ -102,7 +102,7 @@ class AdminLogsController extends Controller
         return response()->streamDownload(function () use ($ids) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['id', 'level', 'context', 'title', 'content', 'ip', 'created_at']);
-            Log::query()
+            Log::withTrashed()
                 ->whereIn('id', $ids)
                 ->orderByDesc('id')
                 ->chunk(500, function ($rows) use ($handle) {
@@ -134,7 +134,12 @@ class AdminLogsController extends Controller
     {
         $restored = Log::onlyTrashed()->where('deleted_at', '>=', now()->subMinutes(5))->restore();
 
-        return response()->json(['ok' => true, 'restored' => $restored]);
+        return back()->with(
+            'success',
+            $restored
+                ? "Restored {$restored} recently deleted log entries."
+                : 'No recently deleted log entries were eligible for restoration.'
+        );
     }
 
     public function bulkDelete(Request $request)

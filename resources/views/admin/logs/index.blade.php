@@ -107,9 +107,14 @@
                     <span class="max-md:hidden!">delete selected</span>
                 </button>
             @endif
-            <a href="{{ route('admin.logs.restoreAll') }}" class="fc-abtn fc-abtn--neutral" title="Restore soft-deleted entries (5-minute window)">
-                <span class="max-md:hidden!">undo last delete</span>
-            </a>
+            @if (admin_can('logs', 'delete'))
+                <form method="post" action="{{ route('admin.logs.restoreAll') }}" data-admin-confirm="Restore log entries deleted in the last five minutes?">
+                    @csrf
+                    <button type="submit" class="fc-abtn fc-abtn--neutral" title="Restore soft-deleted entries (5-minute window)">
+                        <span class="max-md:hidden!">undo last delete</span>
+                    </button>
+                </form>
+            @endif
         </x-slot:footer>
     </x-admin.data-table>
 

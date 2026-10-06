@@ -33,13 +33,31 @@ async function confirmAction(message, title = 'Please confirm') {
 }
 
 async function jsonPost(url, payload = {}) {
+    if (!url) throw new Error('This action is unavailable. Refresh the page and try again.');
+
     const response = await fetch(url || '', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf() },
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf() },
         body: JSON.stringify(payload),
     });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.ok === false) {
+
+    const contentType = response.headers.get('content-type') || '';
+    if (response.redirected || !/^application\/(?:[\w.-]+\+)?json\b/i.test(contentType)) {
+        throw new Error(response.redirected || /text\/html/i.test(contentType)
+            ? 'Your session may have expired. Refresh the page and sign in again.'
+            : 'The server returned an unexpected response. Please try again.');
+    }
+
+    let data;
+    try {
+        data = await response.json();
+    } catch (_) {
+        throw new Error('The server returned an invalid response. Please try again.');
+    }
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('The server returned an invalid response. Please try again.');
+    }
+    if (!response.ok || data.ok !== true) {
         const message = data.error || data.msg || Object.values(data.errors || {}).flat()[0] || 'The action could not be completed.';
         throw new Error(message);
     }
@@ -95,15 +113,17 @@ function updateBulkState(config) {
     });
     document.querySelectorAll('.bulk-action, #bulk-delete, #bulk-unban').forEach((button) => {
         button.disabled = selected.length === 0;
+        button.setAttribute('aria-disabled', selected.length === 0 ? 'true' : 'false');
         button.style.opacity = selected.length === 0 ? '.4' : '1';
         button.style.pointerEvents = selected.length === 0 ? 'none' : 'auto';
     });
-    const banButton = document.querySelector('[data-bulk="ban"]');
-    if (banButton) {
+    document.querySelectorAll('[data-bulk="ban"], [data-petition-bulk-ban]').forEach((banButton) => {
         const disabled = !selected.length || selected.every((box) => box.dataset.level === 'banned');
+        banButton.disabled = disabled;
+        banButton.setAttribute('aria-disabled', disabled ? 'true' : 'false');
         banButton.style.opacity = disabled ? '.35' : '1';
         banButton.style.pointerEvents = disabled ? 'none' : 'auto';
-    }
+    });
 }
 
 function setLoading(button, loading) {
@@ -123,7 +143,6 @@ function setLoading(button, loading) {
     button.style.opacity = '';
 }
 
-const prefetchedUrls = new Map();
 const liveSearchTimers = new WeakMap();
 
 const slugTranslit = {
@@ -216,30 +235,6 @@ function applySlugConflict(target, slug) {
     target.removeAttribute('title');
 }
 
-function prefetchUrl(href) {
-    if (!href || navigator.connection?.saveData) return;
-    let url;
-    try {
-        url = new URL(href, window.location.href);
-    } catch (_) {
-        return;
-    }
-    if (url.origin !== window.location.origin || prefetchedUrls.has(url.href)) return;
-    prefetchedUrls.set(url.href, true);
-    fetch(url.href, { priority: 'low' }).catch(() => {});
-}
-
-function prefetchTarget(event) {
-    if (!(event.target instanceof Element)) return;
-    const row = event.target.closest('tr[data-detail-row]');
-    if (row?.dataset.detailHref) {
-        prefetchUrl(row.dataset.detailHref);
-        return;
-    }
-    const link = event.target.closest('a[data-prefetch]');
-    if (link?.href) prefetchUrl(link.href);
-}
-
 function markRowOpen(row) {
     document.querySelectorAll('tr[data-detail-row].fc-row-open').forEach((open) => {
         open.classList.remove('fc-row-open');
@@ -295,11 +290,16 @@ async function notifyUndoDelete(message, route, ids) {
         timer: 6000,
         timerProgressBar: true,
     });
-    return Boolean(result.isConfirmed);
+    if (!result.isConfirmed) return false;
+
+    const restored = await jsonPost(route, { ids });
+    const count = Number(restored.restored) || 0;
+    if (count < 1) throw new Error('The selected records could not be restored.');
+    notify('success', `Restored ${count} item${count === 1 ? '' : 's'}.`);
+    return true;
 }
 
 window.notifyWithAction = notifyWithAction;
-window.hasDirtyDrawerForm = hasDirtyDrawerForm;
 
 async function runBulkAction(button, config) {
     const ids = selectedBoxes(config.checkboxSelector).map((box) => box.value);
@@ -334,9 +334,10 @@ async function runBulkNamedAction(button, config, action) {
         const result = await jsonPost(action === 'delete' ? config.deleteRoute : config.unbanRoute, { ids });
         if (action === 'delete' && [true, 1, '1'].includes(result.restorable)) {
             setLoading(button, false);
-            const undone = await notifyUndoDelete(result.msg || `${result.deleted ?? ids.length} deleted.`, result.restorable_route || result.restoreRoute || config.restoreRoute, ids);
-            if (undone) {
-                notify('success', 'Restored.');
+            try {
+                await notifyUndoDelete(result.msg || `${result.deleted ?? ids.length} deleted.`, result.restorable_route || result.restoreRoute || config.restoreRoute, ids);
+            } catch (error) {
+                notify('error', `Deleted, but restore failed: ${error.message}`);
             }
         } else {
             notify('success', result.msg || (action === 'delete' ? 'Deleted.' : 'Unbanned.'));
@@ -403,12 +404,10 @@ async function handlePetitionBan(button, config) {
         notify('warning', 'Select at least one petition to ban.');
         return;
     }
-    const details = await banDetails();
-    if (!details) return;
     if (!(await confirmAction(`Ban ${ids.length} selected petition(s)? This will unpublish and deactivate them.`))) return;
     setLoading(button, true);
     try {
-        await jsonPost(button.dataset.url, { action: 'ban', ids, reason: details.reason });
+        await jsonPost(button.dataset.url, { action: 'ban', ids });
         notify('success', 'Selected petitions were unpublished and deactivated.');
         window.setTimeout(() => window.location.reload(), 700);
     } catch (error) {
@@ -445,11 +444,6 @@ async function handleTranslateMissing(button) {
         notify('error', error.message || 'Could not create missing translations.');
         button.disabled = false;
     }
-}
-
-function togglePetitionCreateForm() {
-    // legacy no-op kept: the create form lives in the petition modal now
-    openAdminModal('petition-create-modal');
 }
 
 function openAdminModal(id) {
@@ -595,9 +589,6 @@ document.addEventListener('click', async (event) => {
     clearDirtyDrawerForms();
     window.location.href = closeLink.href;
 }, true);
-
-document.addEventListener('pointerenter', prefetchTarget, { capture: true, passive: true });
-document.addEventListener('focusin', prefetchTarget);
 
 window.addEventListener('beforeunload', (event) => {
     if (!hasDirtyDrawerForm()) return;
@@ -871,11 +862,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const selection = event.target.closest('[data-bulk], #bulk-all, #bulk-none, #bulk-invert');
         if (selection) {
+            if (selection.matches('[aria-disabled="true"], :disabled')) {
+                event.preventDefault();
+                return;
+            }
             const action = selection.dataset.bulk || selection.id.replace('bulk-', '');
             if (['all', 'none', 'invert'].includes(action)) {
                 event.preventDefault();
                 const boxes = Array.from(document.querySelectorAll(config.checkboxSelector || '.bulk-checkbox'));
                 boxes.forEach((box) => {
+                    if (box.disabled) return;
                     if (action === 'all') box.checked = true;
                     else if (action === 'none') box.checked = false;
                     else box.checked = !box.checked;

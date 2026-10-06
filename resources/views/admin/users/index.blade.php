@@ -69,16 +69,16 @@
         <a href="{{ route('admin.users.export', request()->query()) }}" class="fc-abtn" :href="route('admin.users.export', request()->query())">export CSV</a>
     </div>
 
-    <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :emptyClearRoute="route('admin.users')" :bulk="[
+    <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :emptyClearRoute="route('admin.users')" :bulk="admin_can('users', 'edit') ? [
         'banRoute'        => route('admin.users.bulkBan'),
         'banLabel'        => 'Ban',
         'banConfirm'      => 'Ban selected users?',
         'banWithDetails'  => true,
-    ]">
+    ] : null">
         <x-slot:thead>
             <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
                 <th class="text-left! w-[90px]!">id</th>
-                <th width="26" data-hide-mobile></th>
+                <th width="26"></th>
                 <th class="w-[26px]! text-left!" data-hide-mobile>v</th>
                 <th class="text-left!">email</th>
                 <th class="text-left!">username</th>
@@ -102,10 +102,13 @@
                         </a>
                     </td>
 
-                    <td data-hide-mobile class="text-left!">
-                        <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
-                            data-level="{{ $u->level?->name }}"
-                            {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
+                    <td class="text-left!">
+                        @if (admin_can('users', 'edit') || admin_can('users', 'delete'))
+                            <input type="checkbox" class="bulk-checkbox" value="{{ $u->id }}"
+                                data-level="{{ $u->level?->name }}"
+                                aria-label="Select user {{ $u->id }}"
+                                {{ $u->hasLevel('admin') || $u->id === auth()->id() ? 'disabled' : '' }}>
+                        @endif
                     </td>
 
                     <td data-hide-mobile class="text-left!">
@@ -161,15 +164,19 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 <div class="flex! gap-1! items-center!">
-                    <button type="button" id="bulk-unban" class="fc-abtn" title="Unban">
-                        {!! $icoUnban !!}
-                        <span class="max-md:hidden!">Unban</span>
-                    </button>
+                    @if (admin_can('users', 'edit'))
+                        <button type="button" id="bulk-unban" class="fc-abtn" title="Unban">
+                            {!! $icoUnban !!}
+                            <span class="max-md:hidden!">Unban</span>
+                        </button>
+                    @endif
 
-                    <button type="button" id="bulk-delete" class="fc-abtn" title="Delete">
-                        {!! $icoDelete !!}
-                        <span class="max-md:hidden!">Delete</span>
-                    </button>
+                    @if (admin_can('users', 'delete'))
+                        <button type="button" id="bulk-delete" class="fc-abtn" title="Delete">
+                            {!! $icoDelete !!}
+                            <span class="max-md:hidden!">Delete</span>
+                        </button>
+                    @endif
                 </div>
 
                 <a href="{{ route('admin.users', request()->except('select')) }}"
@@ -188,6 +195,7 @@
                 $selectedUserIsBanned = $selectedUser->level?->name === 'banned';
                 $selectedUserProtected = $selectedUser->id === auth()->id() || ($selectedUser->level?->is_system ?? false);
             @endphp
+            @if (admin_can('users', 'edit'))
             <div class="mb-2.5! flex! items-center! gap-2! flex-wrap!">
                 @if (! $selectedUserProtected)
                     @if ($selectedUserIsBanned)
@@ -207,7 +215,9 @@
                     <span class="text-[#777]!">System accounts and your own account cannot be banned here.</span>
                 @endif
             </div>
+            @endif
         @endif
+        @if ($selectedUser && admin_can('users', 'edit'))
         <form method="post" action="{{ route('admin.users.save') }}" class="m-0!">
             @csrf
             <input type="hidden" name="id" value="{{ $selectedUser->id ?? '' }}">
@@ -294,6 +304,18 @@
                 <button type="submit" class="fc-abtn">save</button>
             </div>
         </form>
+        @elseif ($selectedUser)
+            <p class="text-sm! text-[#777]!">View-only access</p>
+            <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
+                <dt class="font-bold!">Email</dt><dd>{{ $selectedUser->email }}</dd>
+                <dt class="font-bold!">Username</dt><dd>{{ $selectedUser->username ?? $selectedUser->name }}</dd>
+                <dt class="font-bold!">Level</dt><dd>{{ $selectedUser->level?->name ?? '—' }}</dd>
+                <dt class="font-bold!">First name</dt><dd>{{ $selectedUser->first_name ?? '—' }}</dd>
+                <dt class="font-bold!">Last name</dt><dd>{{ $selectedUser->last_name ?? '—' }}</dd>
+                <dt class="font-bold!">Locale</dt><dd>{{ $locales[\App\Support\Locale::toShort($selectedUser->locale)] ?? $selectedUser->locale }}</dd>
+                <dt class="font-bold!">Registered</dt><dd>{{ $selectedUser->created_at }}</dd>
+            </dl>
+        @endif
     </x-admin.detail-panel>
 @endsection
 

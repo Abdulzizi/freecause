@@ -142,14 +142,13 @@ class AdminPagesController extends Controller
 
         EdgeCachePurge::listings();
 
-        $viewUrl = null;
-        try {
-            $row = DB::table('page_translations')->find($pageId);
-            if ($row?->slug) {
-                $viewUrl = url(($row->locale ?: $data['locale']).'/'.$row->slug);
-            }
-        } catch (\Throwable $e) {
-        }
+        $translation = PageTranslation::query()
+            ->where('page_id', $pageId)
+            ->where('locale', $data['locale'])
+            ->first(['locale', 'slug']);
+        $viewUrl = $translation?->slug
+            ? url(($translation->locale ?: $data['locale']).'/'.$translation->slug)
+            : null;
 
         return redirect()->route('admin.pages', [
             'locale' => $data['locale'],
@@ -161,36 +160,30 @@ class AdminPagesController extends Controller
 
     public function bulkAction(Request $request)
     {
-        $ids = $request->input('ids', []);
-        $action = $request->input('action');
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer'],
+            'action' => ['required', 'string', 'in:publish,unpublish,delete'],
+        ]);
+        $ids = $data['ids'];
+        $action = $data['action'];
 
-        if (! is_array($ids) || empty($ids)) {
-            return back()->with('error', 'No pages selected');
+        $permission = $action === 'delete' ? 'delete' : 'edit';
+        if (! admin_can('pages', $permission)) {
+            return response()->json(['ok' => false, 'error' => "You do not have permission to {$permission} pages."], 403);
         }
 
         $q = PageTranslation::whereIn('page_id', $ids);
 
-        switch ($action) {
-            case 'publish':
-                $q->update(['published' => 1]);
-                break;
+        $affected = match ($action) {
+            'publish' => $q->update(['published' => 1]),
+            'unpublish' => $q->update(['published' => 0]),
+            // Checkboxes submit page_id; the FK cascade removes every translation.
+            'delete' => Page::whereIn('id', $ids)->delete(),
+        };
 
-            case 'unpublish':
-                $q->update(['published' => 0]);
-                break;
+        EdgeCachePurge::listings();
 
-            case 'delete':
-                // Checkboxes submit page_id (resources/views/admin/pages/index.blade.php),
-                // so deleting removes the parent pages rows — the FK cascade
-                // removes all their translations in every locale.
-                Page::whereIn('id', $ids)->delete();
-                break;
-        }
-
-        if (in_array($action, ['publish', 'unpublish', 'delete'], true)) {
-            EdgeCachePurge::listings();
-        }
-
-        return back()->with('success', 'Bulk action applied');
+        return response()->json(['ok' => true, 'action' => $action, 'affected' => $affected]);
     }
 }
