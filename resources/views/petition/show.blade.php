@@ -133,17 +133,6 @@
                     @endif
                 </div>
 
-                @if ($latest->isNotEmpty())
-                    @php $tickerName = trim((string) ($latest->first()->name ?? '')); @endphp
-                    <div class="inline-flex! items-center! gap-2! rounded-full! bg-[#f8f9fa]! border! border-[#eee]! px-3! py-[5px]! text-[13px]! text-[#444]! mb-4! max-w-full!">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ca02c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        <span class="truncate!"><strong>{{ $tickerName !== '' ? e($tickerName) : 'Someone' }}</strong> just signed</span>
-                    </div>
-                @endif
-
                 {{-- Share buttons --}}
                 <div class="flex! flex-wrap! items-center! gap-2! mb-4!">
                     <span class="text-[13px]! font-semibold! text-[#555]!">{{ __('show.share') }}:</span>
