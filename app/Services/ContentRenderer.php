@@ -45,6 +45,12 @@ class ContentRenderer
             '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], app()->getLocale()).'</a>',
         ];
 
+        foreach ($tokens as $key => $value) {
+            if (str_starts_with($key, '{') && str_ends_with($key, '}')) {
+                $tokens['%7B'.substr($key, 1, -1).'%7D'] = $value;
+            }
+        }
+
         $rendered = str_replace(
             array_keys($tokens),
             array_values($tokens),

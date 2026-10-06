@@ -60,6 +60,19 @@ class ContentRendererTest extends TestCase
         $this->assertSame('', ContentRenderer::render(''));
     }
 
+    public function test_url_encoded_tokens_are_replaced_with_links(): void
+    {
+        app()->setLocale('en');
+
+        $out = ContentRenderer::render('<a href="%7BETHICAL_CODE_LINK%7D">Ethical Code</a> %7BCONTACTS_URL%7D %7BSITE_NAME%7D');
+
+        $this->assertStringContainsString('>Ethical Code</a>', $out);
+        $this->assertStringContainsString('/ethical-code', $out);
+        $this->assertStringContainsString('/contacts', $out);
+        $this->assertStringContainsString(config('app.name'), $out);
+        $this->assertStringNotContainsString('%7B', $out);
+    }
+
     public function test_non_token_braces_are_preserved(): void
     {
         app()->setLocale('en');
