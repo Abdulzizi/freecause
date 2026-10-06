@@ -78,13 +78,19 @@
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
                 <th width="70">ID</th>
-                <th width="26" data-hide-mobile></th>
-                <th width="26" data-hide-mobile></th>
+                <th width="26" data-hide-mobile title="Bulk selection" aria-label="Bulk selection"></th>
+                <th width="26" data-hide-mobile title="User email verified" aria-label="User email verified">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </th>
                 @if ($hasConfirmed)
-                    <th width="26" title="Confirmed" data-hide-mobile>C</th>
+                    <th width="26" title="Signature confirmed" data-hide-mobile>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </th>
                 @endif
                 <th>User</th>
-                <th width="26" data-hide-mobile></th>
+                <th width="26" data-hide-mobile title="Open petition on site">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1"/><path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1"/></svg>
+                </th>
                 <th>Title</th>
                 @if ($hasText)
                     <th data-hide-mobile>Text</th>
