@@ -2,6 +2,7 @@
     'p' => null,
     'bulk' => null,
     'emptyText' => 'no results',
+    'emptyClearRoute' => null,
 ])
 
 @php
@@ -19,6 +20,9 @@
     @if ($isEmpty)
         <div style="padding:12px 10px; color:#777; font-size:12px;">
             {{ $emptyText }}
+            @if ($emptyClearRoute)
+                <a href="{{ $emptyClearRoute }}" class="fc-abtn fc-abtn--neutral" style="margin-left:6px;">clear filters</a>
+            @endif
         </div>
     @else
         <div class="fc-table-wrap">

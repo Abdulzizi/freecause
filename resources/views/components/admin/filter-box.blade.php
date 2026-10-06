@@ -12,7 +12,7 @@
     @endif
 </div>
 <div class="fc-box">
-    <form method="get" action="{{ $action }}" class="fc-filter-form" style="margin:0;">
+    <form method="get" action="{{ $action }}" class="fc-filter-form" data-live-search style="margin:0;">
 
         {{ $slot }}
 

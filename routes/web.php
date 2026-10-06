@@ -162,6 +162,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/logs/prune', [AdminLogsController::class, 'prune'])->middleware('permission:logs,delete')->name('logs.prune');
         Route::post('/logs/bulk-delete', [AdminLogsController::class, 'bulkDelete'])->middleware('permission:logs,delete')->name('logs.bulkDelete');
         Route::post('/logs/restore', [AdminLogsController::class, 'restore'])->middleware('permission:logs,delete')->name('logs.restore');
+        Route::get('/logs/restore-all', [AdminLogsController::class, 'restoreAll'])->middleware('permission:logs,delete')->name('logs.restoreAll');
 
         // * LANGUAGES
         Route::get('/languages', [AdminLanguagesController::class, 'index'])->middleware('permission:languages,view')->name('languages.index');

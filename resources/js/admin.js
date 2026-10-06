@@ -123,6 +123,184 @@ function setLoading(button, loading) {
     button.style.opacity = '';
 }
 
+const prefetchedUrls = new Map();
+const liveSearchTimers = new WeakMap();
+
+const slugTranslit = {
+    'ø': 'o', 'æ': 'ae', 'œ': 'oe', 'ß': 'ss', 'đ': 'd', 'ð': 'd', 'þ': 'th',
+    'ł': 'l', 'ħ': 'h', 'ı': 'i', 'ĸ': 'k', 'ŋ': 'n', 'ſ': 's',
+};
+
+function isEditableTarget(node) {
+    if (!(node instanceof Element)) return false;
+    return !!node.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]');
+}
+
+function dirtyForm(node) {
+    if (!(node instanceof Element)) return null;
+    return node.closest('.fc-drawer form');
+}
+
+function markDrawerDirty(form) {
+    if (form) form.dataset.fcDirty = '1';
+}
+
+function clearDrawerDirty(form) {
+    if (form) delete form.dataset.fcDirty;
+}
+
+function clearDirtyDrawerForms() {
+    document.querySelectorAll('.fc-drawer form[data-fc-dirty]').forEach((form) => {
+        delete form.dataset.fcDirty;
+    });
+}
+
+function hasDirtyDrawerForm() {
+    return !!document.querySelector('.fc-drawer form[data-fc-dirty]');
+}
+
+function setFieldError(field, message) {
+    if (!field) return;
+    field.classList.add('fc-input-error');
+    const host = field.parentElement;
+    if (!host) return;
+    let note = host.querySelector('[data-fc-field-error]');
+    if (!note) {
+        note = document.createElement('div');
+        note.setAttribute('data-fc-field-error', '');
+        note.className = 'fc-field-error';
+        note.style.color = '#b00020';
+        note.style.fontSize = '12px';
+        note.style.marginTop = '4px';
+        field.insertAdjacentElement('afterend', note);
+    }
+    note.textContent = message;
+}
+
+function clearFieldError(field) {
+    if (!field) return;
+    field.classList.remove('fc-input-error');
+    field.parentElement?.querySelector('[data-fc-field-error]')?.remove();
+}
+
+function slugify(value) {
+    const normalized = String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    return normalized
+        .replace(/[øæœßđðþłħıĸŋſ]/gi, (char) => slugTranslit[char.toLowerCase()] || char)
+        .toLowerCase()
+        .replace(/['’`]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function slugTarget(source) {
+    const scope = source.closest('form') || source.closest('.fc-drawer') || document;
+    return scope.querySelector('input[data-slug-target]') || document.querySelector('input[data-slug-target]');
+}
+
+function applySlugConflict(target, slug) {
+    let list = [];
+    try {
+        list = JSON.parse(document.getElementById('existing-slugs')?.textContent || '[]');
+    } catch (_) {
+        list = [];
+    }
+    if (Array.isArray(list) && list.map(String).includes(slug)) {
+        target.classList.add('fc-input-error');
+        target.title = 'This slug is already in use.';
+        return;
+    }
+    target.classList.remove('fc-input-error');
+    target.removeAttribute('title');
+}
+
+function prefetchUrl(href) {
+    if (!href || navigator.connection?.saveData) return;
+    let url;
+    try {
+        url = new URL(href, window.location.href);
+    } catch (_) {
+        return;
+    }
+    if (url.origin !== window.location.origin || prefetchedUrls.has(url.href)) return;
+    prefetchedUrls.set(url.href, true);
+    fetch(url.href, { priority: 'low' }).catch(() => {});
+}
+
+function prefetchTarget(event) {
+    if (!(event.target instanceof Element)) return;
+    const row = event.target.closest('tr[data-detail-row]');
+    if (row?.dataset.detailHref) {
+        prefetchUrl(row.dataset.detailHref);
+        return;
+    }
+    const link = event.target.closest('a[data-prefetch]');
+    if (link?.href) prefetchUrl(link.href);
+}
+
+function markRowOpen(row) {
+    document.querySelectorAll('tr[data-detail-row].fc-row-open').forEach((open) => {
+        open.classList.remove('fc-row-open');
+    });
+    row?.classList.add('fc-row-open');
+}
+
+function markRowOpenFromUrl() {
+    const current = new URL(window.location.href);
+    const select = current.searchParams.get('select');
+    if (!select) return;
+    const locale = current.searchParams.get('locale');
+    const row = Array.from(document.querySelectorAll('tr[data-detail-row]')).find((candidate) => {
+        if (!candidate.dataset.detailHref) return false;
+        let url;
+        try {
+            url = new URL(candidate.dataset.detailHref, window.location.href);
+        } catch (_) {
+            return false;
+        }
+        if (url.searchParams.get('select') !== select) return false;
+        return !locale || url.searchParams.get('locale') === locale;
+    });
+    if (row) markRowOpen(row);
+}
+
+function notifyWithAction(kind, message, url, label = 'view on site') {
+    if (!url) return notify(kind, message);
+    return Swal.fire({
+        toast: true,
+        position: 'top',
+        icon: kind,
+        title: message,
+        showConfirmButton: true,
+        confirmButtonText: label,
+        confirmButtonColor: '#1a57c8',
+        timer: 6000,
+        timerProgressBar: true,
+    }).then((result) => {
+        if (result.isConfirmed) window.open(url, '_blank', 'noopener');
+    });
+}
+
+async function notifyUndoDelete(message, route, ids) {
+    const result = await Swal.fire({
+        toast: true,
+        position: 'top',
+        icon: 'success',
+        title: message,
+        showConfirmButton: true,
+        confirmButtonText: 'Undo',
+        confirmButtonColor: '#1a57c8',
+        timer: 6000,
+        timerProgressBar: true,
+    });
+    return Boolean(result.isConfirmed);
+}
+
+window.notifyWithAction = notifyWithAction;
+window.hasDirtyDrawerForm = hasDirtyDrawerForm;
+
 async function runBulkAction(button, config) {
     const ids = selectedBoxes(config.checkboxSelector).map((box) => box.value);
     if (!ids.length) {
@@ -153,7 +331,16 @@ async function runBulkNamedAction(button, config, action) {
     if (!(await confirmAction(`${action === 'delete' ? 'Delete' : 'Unban'} ${ids.length} selected ${noun}?`))) return;
     setLoading(button, true);
     try {
-        await jsonPost(action === 'delete' ? config.deleteRoute : config.unbanRoute, { ids });
+        const result = await jsonPost(action === 'delete' ? config.deleteRoute : config.unbanRoute, { ids });
+        if (action === 'delete' && [true, 1, '1'].includes(result.restorable)) {
+            setLoading(button, false);
+            const undone = await notifyUndoDelete(result.msg || `${result.deleted ?? ids.length} deleted.`, result.restorable_route || result.restoreRoute || config.restoreRoute, ids);
+            if (undone) {
+                notify('success', 'Restored.');
+            }
+        } else {
+            notify('success', result.msg || (action === 'delete' ? 'Deleted.' : 'Unbanned.'));
+        }
         window.location.reload();
     } catch (error) {
         notify('error', error.message);
@@ -282,29 +469,140 @@ function closeAdminModal(modal) {
 }
 
 document.addEventListener('keydown', function (event) {
-    if (event.key !== 'Escape') return;
-    const modal = document.querySelector('.fc-modal[data-open="1"]');
-    if (modal) {
-        closeAdminModal(modal);
+    if (event.key === 'Escape') {
+        const modal = document.querySelector('.fc-modal[data-open="1"]');
+        if (modal) {
+            closeAdminModal(modal);
+            return;
+        }
+        const drawer = document.querySelector('.fc-drawer[data-open="1"]');
+        if (drawer) {
+            drawer.querySelector('.fc-drawer__close')?.click();
+        }
         return;
     }
-    const drawer = document.querySelector('.fc-drawer[data-open="1"]');
-    if (drawer) {
-        drawer.querySelector('.fc-drawer__close')?.click();
+    if ((event.key === 's' || event.key === 'S') && !event.ctrlKey && !event.metaKey && !event.altKey && !isEditableTarget(event.target)) {
+        const drawer = document.querySelector('.fc-drawer[data-open="1"]');
+        if (!drawer) return;
+        const submit = Array.from(drawer.querySelectorAll('button[type="submit"], input[type="submit"]'))
+            .find((control) => control.offsetParent !== null && !control.disabled);
+        if (!submit) return;
+        event.preventDefault();
+        submit.click();
     }
 });
 
 /* Any click on a list row opens that row's detail drawer, the standard
    ?select= navigation. Interactive elements inside the row keep their own
    behavior (checkboxes, buttons, links, selects, labels). */
-document.addEventListener('click', function (event) {
+document.addEventListener('click', async function (event) {
     if (event.defaultPrevented || event.button !== 0) return;
     if (event.target.closest('a, button, input, select, textarea, label')) return;
     if (event.target.closest('[data-detail-row-ignore]')) return;
     const row = event.target.closest('[data-detail-row]');
     if (!row || !row.dataset.detailHref) return;
     event.preventDefault();
+    if (hasDirtyDrawerForm() && !(await confirmAction('Discard unsaved changes?', 'Unsaved changes'))) {
+        event.stopPropagation();
+        return;
+    }
+    clearDirtyDrawerForms();
+    markRowOpen(row);
     window.location.href = row.dataset.detailHref;
+});
+
+function handleDrawerInput(event) {
+    if (!(event.target instanceof Element)) return;
+    const form = dirtyForm(event.target);
+    if (form) markDrawerDirty(form);
+
+    const liveField = event.target.closest('[data-live-validate]');
+    if (liveField?.classList.contains('fc-input-error')) clearFieldError(liveField);
+
+    const touchedSlug = event.target.closest('input[data-slug-target]');
+    if (touchedSlug) {
+        touchedSlug.dataset.slugTouched = '1';
+        touchedSlug.classList.remove('fc-input-error');
+        touchedSlug.removeAttribute('title');
+        return;
+    }
+
+    const source = event.target.closest('[data-slug-source]');
+    if (source) {
+        const output = slugTarget(source);
+        if (!output || output.dataset.slugTouched === '1') return;
+        const slug = slugify(source.value);
+        if (!slug) return;
+        output.value = slug;
+        applySlugConflict(output, slug);
+        return;
+    }
+
+    const liveInput = event.target.closest('.fc-filter-form input');
+    if (!liveInput) return;
+    const type = liveInput.getAttribute('type') || 'text';
+    if (['hidden', 'checkbox', 'date'].includes(type)) return;
+    const filterForm = liveInput.closest('form.fc-filter-form');
+    if (!filterForm || !filterForm.hasAttribute('data-live-search')) return;
+    const pending = liveSearchTimers.get(filterForm);
+    if (pending) window.clearTimeout(pending);
+    const value = liveInput.value;
+    const timer = window.setTimeout(() => {
+        if (filterForm.dataset.fcLastSearch === value) return;
+        filterForm.dataset.fcLastSearch = value;
+        filterForm.requestSubmit();
+    }, 450);
+    liveSearchTimers.set(filterForm, timer);
+}
+
+function handleDrawerChange(event) {
+    if (!(event.target instanceof Element)) return;
+    const form = dirtyForm(event.target);
+    if (form) markDrawerDirty(form);
+}
+
+function handleFieldBlur(event) {
+    if (!(event.target instanceof Element)) return;
+    const field = event.target.closest('input[data-live-validate][name="email"]');
+    if (!field) return;
+    const value = field.value.trim();
+    if (value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        clearFieldError(field);
+        return;
+    }
+    setFieldError(field, 'Enter a valid email address.');
+}
+
+document.addEventListener('input', handleDrawerInput, true);
+document.addEventListener('change', handleDrawerChange, true);
+document.addEventListener('focusout', handleFieldBlur);
+document.addEventListener('submit', (event) => {
+    const form = dirtyForm(event.target);
+    if (form) clearDrawerDirty(form);
+}, true);
+document.addEventListener('reset', (event) => {
+    const form = dirtyForm(event.target);
+    if (form) clearDrawerDirty(form);
+}, true);
+
+document.addEventListener('click', async (event) => {
+    if (!(event.target instanceof Element)) return;
+    const closeLink = event.target.closest('a.fc-drawer__close');
+    if (!closeLink || !hasDirtyDrawerForm()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!(await confirmAction('Discard unsaved changes?', 'Unsaved changes'))) return;
+    clearDirtyDrawerForms();
+    window.location.href = closeLink.href;
+}, true);
+
+document.addEventListener('pointerenter', prefetchTarget, { capture: true, passive: true });
+document.addEventListener('focusin', prefetchTarget);
+
+window.addEventListener('beforeunload', (event) => {
+    if (!hasDirtyDrawerForm()) return;
+    event.preventDefault();
+    event.returnValue = '';
 });
 
 async function handleSignature(button) {
@@ -493,6 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     setupSidebar();
     loadRichEditors();
+    markRowOpenFromUrl();
     const backTop = document.getElementById('fc-back-top');
     if (backTop) backTop.style.display = window.scrollY > 400 ? 'flex' : 'none';
     updateBulkState(config);

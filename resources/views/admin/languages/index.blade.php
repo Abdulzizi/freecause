@@ -67,7 +67,10 @@
                         {{-- <input class="fc-filter-field" name="flag" value="{{ $lang->flag }}"> --}}
 
                         <label class="flex! items-center! gap-[5px]!">
-                            <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
+                            <span class="fc-switch">
+                                <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
+                                <span class="fc-switch__track" aria-hidden="true"></span>
+                            </span>
                             active
                         </label>
 

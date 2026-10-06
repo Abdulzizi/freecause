@@ -80,7 +80,7 @@ class AdminLogsController extends Controller
             'context' => trim($request->query('context', '')),
         ];
 
-        $q = Log::query()->orderByDesc('id')->limit(10000);
+        $q = Log::withTrashed()->orderByDesc('id')->limit(10000);
 
         if ($filters['q']) {
             $q->where(function ($sub) use ($filters) {
@@ -146,7 +146,7 @@ class AdminLogsController extends Controller
 
         $deleted = Log::whereIn('id', $ids)->delete();
 
-        return response()->json(['ok' => true, 'deleted' => $deleted]);
+        return response()->json(['ok' => true, 'deleted' => $deleted, 'restorable' => 1]);
     }
 
     public function restore(Request $request)

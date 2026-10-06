@@ -6,4 +6,5 @@
     :ban-with-details="$banWithDetails ?? false"
     :empty-msg="$emptyMsg ?? 'No items selected'"
     :checkbox-selector="$checkboxSelector ?? '.bulk-checkbox'"
+    :restore-route="$restoreRoute ?? null"
 />

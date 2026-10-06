@@ -73,7 +73,7 @@
 
     </x-admin.filter-box>
 
-    <x-admin.data-table emptyText="no signatures found" :p="$signatures" :bulk="[]">
+    <x-admin.data-table emptyText="no signatures found" :p="$signatures" :emptyClearRoute="route('admin.signatures')" :bulk="[]">
 
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">

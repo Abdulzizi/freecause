@@ -143,7 +143,7 @@
     </x-admin.filter-box>
 
 
-    <x-admin.data-table emptyText="no petitions found" :p="$petitions" :bulk="[]">
+    <x-admin.data-table emptyText="no petitions found" :p="$petitions" :emptyClearRoute="route('admin.petitions')" :bulk="[]">
 
         <x-slot:thead>
             <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
@@ -162,7 +162,7 @@
 
         <x-slot:tbody>
             @foreach ($petitions as $p)
-                <tr class="border-b! border-solid! border-[#eee]!" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
+                <tr class="border-b! border-solid! border-[#eee]! {{ ($p->status === 'draft' || ! $p->is_active) ? 'fc-row-muted' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
 
                     <td>
                         <a href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
@@ -185,6 +185,9 @@
                         </button>
                         @else
                             <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
+                        @endif
+                        @if ($p->status === 'draft')
+                            <span class="inline-block! ml-1! bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>
                         @endif
                     </td>
 
@@ -358,9 +361,12 @@
                 <input type="hidden" name="locale" value="{{ $locale }}">
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>active</label>
-                    <input type="checkbox" name="is_active" value="1"
-                        {{ $selectedPetition->is_active ? 'checked' : '' }}>
+                    <label for="petition-active">active</label>
+                    <span class="fc-switch">
+                        <input id="petition-active" type="checkbox" name="is_active" value="1"
+                            {{ $selectedPetition->is_active ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                 </div>
 
                 <x-admin.form-field label="status">
@@ -373,9 +379,12 @@
                 </x-admin.form-field>
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label>featured <span class="text-[#888]!">(this locale)</span></label>
-                    <input type="checkbox" name="is_featured" value="1"
-                        {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
+                    <label for="petition-featured">featured <span class="text-[#888]!">(this locale)</span></label>
+                    <span class="fc-switch">
+                        <input id="petition-featured" type="checkbox" name="is_featured" value="1"
+                            {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                 </div>
 
                 <x-admin.form-field label="owner (user id)">
@@ -384,14 +393,27 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="title">
-<x-ui.input name="title" :value="$translationSource->title ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+<x-ui.input name="title" data-slug-source :value="$translationSource->title ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('title') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="slug">
-<x-ui.input name="slug" :value="$translationSource->slug ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+<x-ui.input name="slug" data-slug-target :value="$translationSource->slug ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                         @error('slug') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
+
+                @if ($selectedPetition)
+                    @php
+                        $existingSlugs = \Illuminate\Support\Facades\DB::table('petition_translations')
+                            ->where('petition_id', $selectedPetition->id)
+                            ->where('locale', '!=', $locale)
+                            ->pluck('slug')
+                            ->filter()
+                            ->values()
+                            ->all();
+                    @endphp
+                    <script type="application/json" id="existing-slugs">{!! json_encode($existingSlugs) !!}</script>
+                @endif
 
                 <x-admin.form-field label="signature goal">
 <select class="fc-filter-field" name="goal_signatures">
@@ -489,7 +511,7 @@
                     <span class="text-[#888]! text-[0.8em]!">upload new image to replace current (max 4 MB)</span>
                 </div>
 
-                <div class="flex! justify-end!">
+                <div class="flex! justify-end! fc-drawer-savebar">
                     <button type="submit" class="fc-abtn">save</button>
                 </div>
 

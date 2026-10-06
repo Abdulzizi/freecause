@@ -29,7 +29,7 @@
         <button class="fc-abtn fc-abtn--danger">clear spam logs</button>
     </form>
 
-    <x-admin.data-table empty-text="no blocked activity" :p="$logs">
+    <x-admin.data-table empty-text="no blocked activity" :p="$logs" :emptyClearRoute="route('admin.spam')">
 
         <x-slot:thead>
             <tr data-admin-row-hover class="border-b! border-[#ccc]!">

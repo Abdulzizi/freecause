@@ -53,7 +53,7 @@
     </x-admin.filter-box>
 
 
-    <x-admin.data-table emptyText="no pages found" :p="$pages">
+    <x-admin.data-table emptyText="no pages found" :p="$pages" :emptyClearRoute="route('admin.pages')">
 
         <x-slot:thead>
             <tr class="border-b! border-[#ccc]!">
@@ -69,7 +69,7 @@
 
         <x-slot:tbody>
             @foreach ($pages as $p)
-                <tr class="border-b! border-[#eee]!" data-admin-row-hover
+                <tr class="border-b! border-[#eee]! {{ $p->published ? '' : 'fc-row-muted' }}" data-admin-row-hover
                     data-detail-row data-detail-href="{{ route('admin.pages', array_merge(request()->query(), ['select' => $p->page_id, 'locale' => $p->locale])) }}">
 
                     <td class="text-center!">
@@ -97,7 +97,12 @@
                         </a>
                     </td>
 
-                    <td>{{ $p->title }}</td>
+                    <td>
+                        {{ $p->title }}
+                        @if (! $p->published)
+                            <span class="inline-block! ml-1! bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">unpublished</span>
+                        @endif
+                    </td>
                     <td data-hide-mobile class="text-center!">{{ $p->slug }}</td>
                     <td data-hide-mobile class="text-center!">{{ $p->locale }}</td>
 
@@ -146,23 +151,35 @@
                 <input type="hidden" name="locale" value="{{ $selectedPage->locale }}">
 
                 <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                    <label class="font-bold! text-xs! md:text-sm!">published</label>
-                    <input type="checkbox" name="published" value="1" {{ $selectedPage->published ? 'checked' : '' }}>
+                    <label class="font-bold! text-xs! md:text-sm!" for="page-published">published</label>
+                    <span class="fc-switch">
+                        <input id="page-published" type="checkbox" name="published" value="1" {{ $selectedPage->published ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                 </div>
 
                 <x-admin.form-field label="title">
-                    <x-ui.input name="title" :value="$selectedPage->title" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="title" data-slug-source :value="$selectedPage->title" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="slug" :error="$errors->first('slug')">
-                    <x-ui.input name="slug" :value="$selectedPage->slug" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="slug" data-slug-target :value="$selectedPage->slug" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
+
+                @php
+                    $existingSlugs = \Illuminate\Support\Facades\DB::table('page_translations')
+                        ->pluck('slug')
+                        ->filter()
+                        ->values()
+                        ->all();
+                @endphp
+                <script type="application/json" id="existing-slugs">{!! json_encode($existingSlugs) !!}</script>
 
                 <x-admin.form-field label="content">
                     <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
                 </x-admin.form-field>
 
-                <div class="flex! justify-end!">
+                <div class="flex! justify-end! fc-drawer-savebar">
                     <button class="fc-abtn">save</button>
                 </div>
 

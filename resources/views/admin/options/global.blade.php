@@ -79,13 +79,19 @@
             <input type="hidden" name="smtp_enabled" value="0">
             <input type="hidden" name="require_email_verification" value="0">
 
-            <x-admin.form-field label=""><label class="font-normal!">
-                    <input type="checkbox" name="smtp_enabled" value="1" {{ $smtp_enabled ? 'checked' : '' }}>
+            <x-admin.form-field label=""><label class="font-normal! flex! items-center! gap-2!">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="smtp_enabled" value="1" {{ $smtp_enabled ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                     enable smtp
                 </label></x-admin.form-field>
 
-            <x-admin.form-field label=""><label class="font-normal!">
-                    <input type="checkbox" name="require_email_verification" value="1" {{ $require_email_verification ? 'checked' : '' }}>
+            <x-admin.form-field label=""><label class="font-normal! flex! items-center! gap-2!">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="require_email_verification" value="1" {{ $require_email_verification ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                     require email verification for new accounts
                     <span class="text-[11px]! text-[#666]!">(if smtp disabled, account is pending until manually verified)</span>
                 </label></x-admin.form-field>
@@ -144,9 +150,12 @@
         <x-admin.section-panel title="logging">
             <input type="hidden" name="logging_enabled" value="0">
 
-            <x-admin.form-field label=""><label class="font-normal!">
-                    <input type="checkbox" name="logging_enabled" value="1"
-                        {{ $logging_enabled ? 'checked' : '' }}>
+            <x-admin.form-field label=""><label class="font-normal! flex! items-center! gap-2!">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="logging_enabled" value="1"
+                            {{ $logging_enabled ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                     enable logging
                 </label></x-admin.form-field>
 
@@ -165,8 +174,11 @@
                 Show a red banner at the top of every page for all visitors. Plain text only, no HTML.
             </p>
             <input type="hidden" name="announcement_active" value="0">
-            <x-admin.form-field label="active">
-                <input type="checkbox" name="announcement_active" value="1" {{ $announcement_active ? 'checked' : '' }}>
+            <x-admin.form-field label="active" for="announcement-active">
+                <span class="fc-switch">
+                    <input id="announcement-active" type="checkbox" name="announcement_active" value="1" {{ $announcement_active ? 'checked' : '' }}>
+                    <span class="fc-switch__track" aria-hidden="true"></span>
+                </span>
             </x-admin.form-field>
             <x-admin.form-field label="message">
                 <x-ui.input name="announcement_text" :value="$announcement_text" placeholder="e.g. Site under maintenance from 14:00–15:00 UTC" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
@@ -196,8 +208,11 @@
                 Customize the contact form notification email sent to staff.
             </p>
             <input type="hidden" name="email_contact_enabled" value="0">
-            <x-admin.form-field label=""><label class="font-normal!">
-                    <input type="checkbox" name="email_contact_enabled" value="1" {{ $email_contact_enabled ? 'checked' : '' }}>
+            <x-admin.form-field label=""><label class="font-normal! flex! items-center! gap-2!">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="email_contact_enabled" value="1" {{ $email_contact_enabled ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                     enable contact form notifications
                 </label></x-admin.form-field>
             <x-admin.form-field label="subject">

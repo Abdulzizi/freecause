@@ -69,7 +69,7 @@
 
 {{-- ── LIST ──────────────────────────────────────────────────────────────── --}}
 <x-admin.data-table empty-text="no categories found, try clearing filters"
-    :p="$categories">
+    :p="$categories" :emptyClearRoute="route('admin.categories')">
 
     <x-slot:thead>
         <tr class="border-b! border-[#ccc]!">
@@ -137,18 +137,31 @@
             </div>
 
             <x-admin.form-field label="name *">
-                <x-ui.input name="name" :value="$selectedTranslation->name ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
+                <x-ui.input name="name" data-slug-source :value="$selectedTranslation->name ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
                        required />
             </x-admin.form-field>
 
             <x-admin.form-field label="slug" :hint="'used in url: /petitions/category-slug-' . $selectedCategory->id">
-                <x-ui.input name="slug" :value="$selectedTranslation->slug ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="slug" data-slug-target :value="$selectedTranslation->slug ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
+            @php
+                $existingSlugs = \Illuminate\Support\Facades\DB::table('category_translations')
+                    ->where('category_id', $selectedCategory->id)
+                    ->pluck('slug')
+                    ->filter()
+                    ->values()
+                    ->all();
+            @endphp
+            <script type="application/json" id="existing-slugs">{!! json_encode($existingSlugs) !!}</script>
+
             <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-xs! md:text-sm!">active</label>
-                <input type="checkbox" name="is_active" value="1"
-                       {{ ($selectedCategory->is_active ?? 1) ? 'checked' : '' }}>
+                <label class="font-bold! text-xs! md:text-sm!" for="category-active">active</label>
+                <span class="fc-switch">
+                    <input id="category-active" type="checkbox" name="is_active" value="1"
+                           {{ ($selectedCategory->is_active ?? 1) ? 'checked' : '' }}>
+                    <span class="fc-switch__track" aria-hidden="true"></span>
+                </span>
             </div>
 
             <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
@@ -157,7 +170,7 @@
                        value="{{ $selectedCategory->sort_order ?? 0 }}">
             </div>
 
-            <div class="flex! justify-end! mt-1.5!">
+            <div class="flex! justify-end! mt-1.5! fc-drawer-savebar">
                 <button type="submit" class="fc-abtn">save</button>
             </div>
         </form>
@@ -171,7 +184,7 @@
                     <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
                     <div class="flex! items-center! justify-between!">
                         <span class="text-xs! text-[#999]!">no petitions use this category</span>
-                        <x-ui.button variant="danger" class="border! border-[#c00]! bg-[#c00]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">delete category</x-ui.button>
+                        <button type="submit" class="fc-abtn fc-abtn--danger">delete category</button>
                     </div>
                 </form>
             @else

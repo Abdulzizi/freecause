@@ -37,7 +37,7 @@
         <x-admin.section-panel title="misc">
 
             <x-admin.form-field label="email">
-                <x-ui.input name="email" type="email" :value="old('email', $admin->email)" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="email" type="email" data-live-validate :value="old('email', $admin->email)" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 {{-- @error('email')
                     <div class="fc-error">{{ $message }}</div>
                 @enderror --}}

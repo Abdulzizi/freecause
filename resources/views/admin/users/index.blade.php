@@ -69,7 +69,7 @@
         <a href="{{ route('admin.users.export', request()->query()) }}" class="fc-abtn" :href="route('admin.users.export', request()->query())">export CSV</a>
     </div>
 
-    <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :bulk="[
+    <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :emptyClearRoute="route('admin.users')" :bulk="[
         'banRoute'        => route('admin.users.bulkBan'),
         'banLabel'        => 'Ban',
         'banConfirm'      => 'Ban selected users?',
@@ -264,13 +264,16 @@
                     </select>
                 </x-admin.form-field>
 
-                <x-admin.form-field label="verified">
-                    <input type="checkbox" name="verified" value="1"
-                        {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
+                <x-admin.form-field label="verified" for="user-verified">
+                    <span class="fc-switch">
+                        <input id="user-verified" type="checkbox" name="verified" value="1"
+                            {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
                 </x-admin.form-field>
 
                 <x-admin.form-field label="email">
-                    <x-ui.input name="email" :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="email" data-live-validate :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="locale">
@@ -287,7 +290,7 @@
                 </x-admin.form-field>
             </x-admin.section-panel>
 
-            <div class="flex! justify-end! mt-1.5!">
+            <div class="flex! justify-end! mt-1.5! fc-drawer-savebar">
                 <button type="submit" class="fc-abtn">save</button>
             </div>
         </form>

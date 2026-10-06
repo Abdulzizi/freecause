@@ -221,8 +221,6 @@ class AdminUsersController extends Controller
 
         $isSelf = admin_user()?->id === $user->id;
 
-        $isSelf = admin_user()?->id === $user->id;
-
         if ($isSelf && $request->filled('level') && $data['level'] !== ($user->level->name ?? null)) {
             return back()->withErrors(['level' => 'You cannot change your own role.'])->withInput();
         }

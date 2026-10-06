@@ -46,15 +46,17 @@
         </form>
     </div>
 
-    <x-admin.data-table :p="$logs" :bulk="[
-            // 'banRoute' => route('admin.logs.bulkDelete'),
-            // 'banLabel' => 'Delete',
-            // 'banConfirm' => 'Delete selected logs?',
+    <x-admin.data-table :p="$logs" :emptyClearRoute="route('admin.logs')" :bulk="[
+        'deleteRoute' => route('admin.logs.bulkDelete'),
+        'restoreRoute' => route('admin.logs.restore'),
+        'noun' => 'logs',
+        'emptyMsg' => 'No logs selected',
 ]">
 
         <x-slot:thead>
             <tr data-admin-row-hover class="border-b! border-[#ccc]!">
                 <th class="w-[70px]!">ID</th>
+                <th width="26" title="Bulk selection"></th>
                 <th class="w-[80px]!">Level</th>
                 <th>Content preview</th>
                 <th class="w-[160px]!">Date</th>
@@ -69,6 +71,10 @@
                         <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline! text-black!">
                             {{ $log->id }}
                         </a>
+                    </td>
+
+                    <td>
+                        <input type="checkbox" class="bulk-checkbox" value="{{ $log->id }}">
                     </td>
 
                     <td class="text-left!">
@@ -94,6 +100,17 @@
             @endforeach
         </x-slot:tbody>
 
+        <x-slot:footer>
+            @if (admin_can('logs', 'delete'))
+                <button type="button" id="bulk-delete" class="fc-abtn fc-abtn--danger" title="Delete selected logs">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a11" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    <span class="max-md:hidden!">delete selected</span>
+                </button>
+            @endif
+            <a href="{{ route('admin.logs.restoreAll') }}" class="fc-abtn fc-abtn--neutral" title="Restore soft-deleted entries (5-minute window)">
+                <span class="max-md:hidden!">undo last delete</span>
+            </a>
+        </x-slot:footer>
     </x-admin.data-table>
 
     @if($selected)
