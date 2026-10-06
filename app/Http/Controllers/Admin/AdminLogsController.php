@@ -55,13 +55,13 @@ class AdminLogsController extends Controller
         // simplePaginate: a full paginate() COUNT(*) over an unbounded logs
         // table ran on every view. The header count comes from the approx
         // table-rows estimate instead.
-        $logs = $q->simplePaginate(25)->withQueryString();
+        $logs = $q->withTrashed()->orderByDesc('id')->simplePaginate(25)->withQueryString();
         $logTotal = $this->approxTableRows('logs');
 
         $selected = null;
 
         if ($request->query('select')) {
-            $selected = Log::find($request->query('select'));
+            $selected = Log::withTrashed()->find($request->query('select'));
         }
 
         return view('admin.logs.index', compact(
@@ -127,7 +127,14 @@ class AdminLogsController extends Controller
         $days = max(1, (int) $request->input('days', 90));
         $deleted = Log::where('created_at', '<', now()->subDays($days))->delete();
 
-        return back()->with('success', "Deleted {$deleted} log entries older than {$days} days.");
+        return back()->with('success', "Deleted {$deleted} log entries older than {$days} days (restorable for 5 minutes).");
+    }
+
+    public function restoreAll()
+    {
+        $restored = Log::onlyTrashed()->where('deleted_at', '>=', now()->subMinutes(5))->restore();
+
+        return response()->json(['ok' => true, 'restored' => $restored]);
     }
 
     public function bulkDelete(Request $request)
@@ -137,8 +144,20 @@ class AdminLogsController extends Controller
             'ids.*' => ['integer'],
         ])['ids'];
 
-        Log::whereIn('id', $ids)->delete();
+        $deleted = Log::whereIn('id', $ids)->delete();
 
-        return response()->json(['ok' => true]);
+        return response()->json(['ok' => true, 'deleted' => $deleted]);
+    }
+
+    public function restore(Request $request)
+    {
+        $ids = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer'],
+        ])['ids'];
+
+        $restored = Log::onlyTrashed()->whereIn('id', $ids)->restore();
+
+        return response()->json(['ok' => true, 'restored' => $restored]);
     }
 }

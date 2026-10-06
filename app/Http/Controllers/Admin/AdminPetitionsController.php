@@ -364,9 +364,22 @@ class AdminPetitionsController extends Controller
             Log::warning('Cache bump failed after petition save: '.$e->getMessage());
         }
 
+        $viewUrl = null;
+        try {
+            $row = DB::table('petition_translations')
+                ->where('petition_id', $data['id'])
+                ->where('locale', $data['locale'])
+                ->first();
+            if ($row?->slug) {
+                $viewUrl = route('petition.show', ['locale' => $data['locale'], 'slug' => $row->slug, 'id' => $data['id']]);
+            }
+        } catch (\Throwable $e) {
+        }
+
         return redirect()
             ->route('admin.petitions', ['select' => $data['id'], 'locale' => $data['locale']])
-            ->with('success', 'saved');
+            ->with('success', 'saved')
+            ->with('view_url', $viewUrl);
     }
 
     public function create(Request $request)

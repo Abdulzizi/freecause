@@ -33,6 +33,18 @@ Schedule::call(function () {
 })->daily();
 
 Schedule::call(function () {
+    $finalized = Log::onlyTrashed()->where('deleted_at', '<', now()->subDays(7))->forceDelete();
+
+    if ($finalized > 0) {
+        AppLog::info(
+            'Soft-deleted logs finalized',
+            "Removed {$finalized} logs",
+            'system.logs'
+        );
+    }
+})->daily();
+
+Schedule::call(function () {
     $deleted = DB::table('spam_logs')
         ->where('created_at', '<', now()->subDays(7))
         ->delete();

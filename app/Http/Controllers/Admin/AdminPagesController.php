@@ -142,11 +142,21 @@ class AdminPagesController extends Controller
 
         EdgeCachePurge::listings();
 
+        $viewUrl = null;
+        try {
+            $row = DB::table('page_translations')->find($pageId);
+            if ($row?->slug) {
+                $viewUrl = url(($row->locale ?: $data['locale']).'/'.$row->slug);
+            }
+        } catch (\Throwable $e) {
+        }
+
         return redirect()->route('admin.pages', [
             'locale' => $data['locale'],
             'select' => $pageId,
         ])
-            ->with('success', 'Page saved');
+            ->with('success', 'Page saved')
+            ->with('view_url', $viewUrl);
     }
 
     public function bulkAction(Request $request)
