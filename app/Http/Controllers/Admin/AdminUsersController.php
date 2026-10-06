@@ -306,7 +306,7 @@ class AdminUsersController extends Controller
         $reason = trim((string) ($data['reason'] ?? '')) ?: null;
         $until = $days > 0 ? now()->addDays($days) : null;
 
-        User::whereIn('id', $ids)
+        $banned = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
             ->whereDoesntHave('level', function ($q) {
                 $q->where('is_system', true);
@@ -317,7 +317,27 @@ class AdminUsersController extends Controller
                 'banned_until' => $until,
             ]);
 
-        return response()->json(['ok' => true]);
+        $skipped = count($ids) - $banned;
+
+        // The banned set may contain admin/system/own accounts which are
+        // always protected; reporting success with zero changes explains
+        // "why is the user still here" instead of a silent no-op.
+        if ($banned === 0) {
+            return response()->json([
+                'ok' => false,
+                'error' => 'No eligible accounts: your own, admin and system-level accounts cannot be banned.',
+                'skipped' => $skipped,
+            ]);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'banned' => $banned,
+            'skipped' => $skipped,
+            'msg' => $skipped > 0
+                ? "Banned {$banned} user(s); {$skipped} skipped (admin/system accounts)."
+                : "Banned {$banned} user(s).",
+        ]);
     }
 
     public function bulkUnban(Request $request)
@@ -365,18 +385,31 @@ class AdminUsersController extends Controller
 
         $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
 
-        $deleted = User::whereIn('id', $ids)
+        $query = User::whereIn('id', $ids)
             ->where('id', '!=', admin_user()?->id)
             ->where(function ($q) use ($adminLevelId, $bannedLevelId) {
                 $q->whereNull('level_id')
                     ->orWhereNotIn('level_id', array_filter([$adminLevelId, $bannedLevelId]));
             })
-            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true))
-            ->delete();
+            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true));
+
+        $eligible = (clone $query)->count();
+
+        if ($eligible === 0) {
+            return response()->json([
+                'ok' => false,
+                'error' => 'No eligible accounts: banned, admin and system-level users cannot be deleted here.',
+                'requested' => count($ids),
+            ]);
+        }
+
+        $deleted = $query->delete();
 
         return response()->json([
-            'ok' => $deleted > 0,
+            'ok' => true,
             'deleted' => $deleted,
+            'skipped' => count($ids) - $deleted,
+            'msg' => "Deleted {$deleted} user(s)".(count($ids) > $deleted ? '; protected accounts (banned/admin/system) were skipped' : ''),
         ]);
     }
 
