@@ -34,6 +34,7 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString('frame-src', $csp);
         $this->assertStringContainsString('tpc.googlesyndication.com', $csp);
         $this->assertStringContainsString('connect-src', $csp);
+        $this->assertStringContainsString('adtrafficquality.google', $csp);
     }
 
     public function test_object_src_none_still_enforced(): void
