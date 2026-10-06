@@ -869,6 +869,15 @@ ol:not([class]) {
 tr[data-detail-row] {
     cursor: pointer;
 }
+/* ID cells render consistently black, no bootstrap link color */
+tr[data-detail-row] td:first-child a {
+    color: #111;
+    text-decoration: none;
+}
+tr[data-detail-row] td:first-child a:hover {
+    color: #111;
+    text-decoration: underline;
+}
 tr[data-detail-row] td a[href*="select="] {
     cursor: pointer;
 }
