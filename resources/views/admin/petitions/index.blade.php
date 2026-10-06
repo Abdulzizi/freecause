@@ -162,7 +162,7 @@
 
         <x-slot:tbody>
             @foreach ($petitions as $p)
-                <tr class="border-b! border-solid! border-[#eee]!" data-admin-row-hover>
+                <tr class="border-b! border-solid! border-[#eee]!" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
 
                     <td>
                         <a href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
@@ -177,12 +177,12 @@
                     {{-- ACTIVE --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <x-ui.button variant="secondary" type="button" class="px-1.5! py-0.5! rounded! border!  cursor-pointer! {{ $p->is_active ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
+                        <button type="button" class="fc-abtn {{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
                             data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
                             {{ $p->is_active ? 'Active' : 'Inactive' }}
-                        </x-ui.button>
+                        </button>
                         @else
                             <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
                         @endif
@@ -198,12 +198,12 @@
                     {{-- FEATURED --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <x-ui.button variant="secondary" type="button" class="px-1.5! py-0.5! rounded! border!  cursor-pointer! {{ $p->is_featured ? 'border-[#b7d7b7]! bg-[#e8f5e8]! text-[#2f6f2f]!' : 'border-[#e2baba]! bg-[#fff0f0]! text-[#900]!' }}"
+                        <button type="button" class="fc-abtn {{ $p->is_featured ? 'fc-abtn--success' : '' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_featured ? 'unfeature' : 'feature' }}"
                             data-kind="featured" aria-pressed="{{ $p->is_featured ? 'true' : 'false' }}">
                             {{ $p->is_featured ? 'Featured' : 'Feature' }}
-                        </x-ui.button>
+                        </button>
                         @else
                             <span class="text-xs! {{ $p->is_featured ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
                         @endif
@@ -314,9 +314,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <x-ui.button variant="secondary" type="submit" class="border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!">
+                    <button type="submit" class="fc-abtn">
                         Open locale
-                    </x-ui.button>
+                    </button>
                 </form>
                 @if ($isCreatingTranslation)
                     <div class="text-xs! text-[#8a6d1e]!">
@@ -332,22 +332,22 @@
             </div>
 
             @if (admin_can('petitions', 'edit'))
-                <x-ui.button variant="secondary" type="button" class="mb-2! border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!"
+                <button type="button"
                     data-reconcile-one
                     data-url="{{ route('admin.petitions.reconcile') }}"
-                    data-id="{{ $selectedPetition->id }}">
+                    data-id="{{ $selectedPetition->id }}" class="fc-abtn">
                     Reconcile signature count for this petition
-                </x-ui.button>
+                </button>
 
                 @if ($missingTranslationCount > 0)
-                    <x-ui.button variant="secondary" type="button" class="mb-2! border! border-[#bbb]! bg-white! px-2! py-1! rounded! text-xs! cursor-pointer!"
+                    <button type="button"
                         data-translate-missing
                         data-url="{{ route('admin.petitions.translateMissing') }}"
                         data-id="{{ $selectedPetition->id }}"
                         data-source="{{ $translationSource?->locale ?? $locale }}"
-                        data-count="{{ $missingTranslationCount }}">
+                        data-count="{{ $missingTranslationCount }}" class="fc-abtn">
                         translate to missing locales ({{ $missingTranslationCount }})
-                    </x-ui.button>
+                    </button>
                 @endif
             @endif
 
@@ -490,7 +490,7 @@
                 </div>
 
                 <div class="flex! justify-end!">
-                    <x-ui.button variant="secondary" class="border! border-solid! border-[#7d7d7d]! bg-[#e6e6e6]! px-2.5! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]! max-md:text-xs! max-md:px-3! max-md:py-1.5!" type="submit">save</x-ui.button>
+                    <button type="submit" class="fc-abtn">save</button>
                 </div>
 
             </form>

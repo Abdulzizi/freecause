@@ -74,16 +74,16 @@
     <h2 class="m-0! mb-4! text-lg! text-[#333]! border-b! border-[#eee]! pb-2.5!">Quick Actions</h2>
     <div class="flex! gap-2.5! flex-wrap! max-sm:flex-col!">
         @if(admin_can('petitions', 'view'))
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.petitions')">Manage Petitions</x-ui.button>
+        <a href="{{ route('admin.petitions') }}" class="fc-abtn">Manage Petitions</a>
         @endif
         @if(admin_can('users', 'view'))
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.users')">Manage Users</x-ui.button>
+        <a href="{{ route('admin.users') }}" class="fc-abtn">Manage Users</a>
         @endif
         @if(admin_can('options', 'view'))
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.options.global')">Global Settings</x-ui.button>
+        <a href="{{ route('admin.options.global') }}" class="fc-abtn">Global Settings</a>
         @endif
         @if(admin_can('stats', 'view'))
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.stats')">View Stats</x-ui.button>
+        <a href="{{ route('admin.stats') }}" class="fc-abtn">View Stats</a>
         @endif
     </div>
 </div>

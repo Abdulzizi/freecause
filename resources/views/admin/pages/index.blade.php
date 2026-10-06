@@ -69,7 +69,8 @@
 
         <x-slot:tbody>
             @foreach ($pages as $p)
-                <tr class="border-b! border-[#eee]!" data-admin-row-hover>
+                <tr class="border-b! border-[#eee]!" data-admin-row-hover
+                    data-detail-row data-detail-href="{{ route('admin.pages', array_merge(request()->query(), ['select' => $p->page_id, 'locale' => $p->locale])) }}">
 
                     <td class="text-center!">
                         <a
@@ -162,7 +163,7 @@
                 </x-admin.form-field>
 
                 <div class="flex! justify-end!">
-                    <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!">save</x-ui.button>
+                    <button class="fc-abtn">save</button>
                 </div>
 
             </form>

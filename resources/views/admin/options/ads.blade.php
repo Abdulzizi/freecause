@@ -17,7 +17,7 @@
         </div>
 
         <div class="flex! justify-end! mt-1.5!">
-            <x-ui.button variant="secondary" size="sm" type="submit" title="save">save</x-ui.button>
+            <button type="submit" title="save" class="fc-abtn">save</button>
         </div>
     </form>
 @endsection

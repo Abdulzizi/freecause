@@ -66,7 +66,7 @@
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.users.export', request()->query())">export CSV</x-ui.button>
+        <a href="{{ route('admin.users.export', request()->query()) }}" class="fc-abtn" :href="route('admin.users.export', request()->query())">export CSV</a>
     </div>
 
     <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :bulk="[
@@ -94,7 +94,7 @@
                 @php
                     $isBanned = $u->level?->name === 'banned';
                 @endphp
-                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}" data-admin-row-hover>
+                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
                             class="no-underline! text-black!">
@@ -288,7 +288,7 @@
             </x-admin.section-panel>
 
             <div class="flex! justify-end! mt-1.5!">
-                <x-ui.button variant="secondary" type="submit">save</x-ui.button>
+                <button type="submit" class="fc-abtn">save</button>
             </div>
         </form>
     </x-admin.detail-panel>

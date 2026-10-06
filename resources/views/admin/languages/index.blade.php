@@ -24,7 +24,7 @@
             </div> --}}
 
             <div class="text-right! mt-2.5!">
-                <x-ui.button variant="secondary" size="sm">create language</x-ui.button>
+                <button class="fc-abtn">create language</button>
             </div>
         </form>
     </x-admin.section-panel>
@@ -71,7 +71,7 @@
                             active
                         </label>
 
-                        <x-ui.button variant="secondary" size="sm">save</x-ui.button>
+                        <button class="fc-abtn">save</button>
                     </form>
 
                     @if (!$lang->is_default)
@@ -79,7 +79,7 @@
 
                             <form method="post" action="{{ route('admin.languages.default', $lang) }}">
                                 @csrf
-                                <x-ui.button variant="secondary" size="sm" type="submit">set default</x-ui.button>
+                                <button type="submit" class="fc-abtn">set default</button>
                             </form>
 
                         </div>

@@ -22,7 +22,7 @@
                     Module
                 </label>
 
-                <select name="module" data-admin-autosubmitclass="fc-filter-field min-w-[220px]!">
+                <select name="module" class="fc-filter-field" style="min-width:220px;" data-admin-autosubmit>
 
                     @foreach ($modules as $module => $actions)
                         <option value="{{ $module }}" {{ $selectedModule == $module ? 'selected' : '' }}>
@@ -38,7 +38,7 @@
                     Level
                 </label>
 
-                <select name="level" data-admin-autosubmitclass="fc-filter-field min-w-[220px]!">
+                <select name="level" class="fc-filter-field" style="min-width:220px;" data-admin-autosubmit>
 
                     @foreach ($levels as $level)
                         <option value="{{ $level->id }}" {{ $selectedLevel == $level->id ? 'selected' : '' }}>

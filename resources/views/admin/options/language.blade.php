@@ -94,7 +94,7 @@
             @endif
 
             <div class="text-right! mt-2.5!">
-                <x-ui.button variant="secondary" size="sm" type="submit">save</x-ui.button>
+                <button type="submit" class="fc-abtn">save</button>
             </div>
 
         </form>

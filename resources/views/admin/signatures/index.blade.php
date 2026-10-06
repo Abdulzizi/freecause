@@ -168,18 +168,18 @@
                     @if ($hasConfirmed && admin_can('signatures', 'edit'))
                         <td data-hide-mobile>
                             <div class="flex! items-center! gap-1!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
-                                <x-ui.button variant="secondary" type="button" data-signature-action="approve"
+                                <button type="button" data-signature-action="approve"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    :disabled="$s->confirmed"
-                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}" class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5!  cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    @disabled($s->confirmed)
+                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}" class="fc-abtn">
                                     Approve
-                                </x-ui.button>
-                                <x-ui.button variant="secondary" type="button" data-signature-action="reject"
+                                </button>
+                                <button type="button" data-signature-action="reject"
                                     data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    :disabled="! $s->confirmed"
-                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}" class="border! border-[#bbb]! rounded! bg-white! px-1.5! py-0.5!  cursor-pointer! disabled:opacity-40! disabled:cursor-not-allowed!">
+                                    @disabled(! $s->confirmed)
+                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}" class="fc-abtn">
                                     Reject
-                                </x-ui.button>
+                                </button>
                             </div>
                         </td>
                     @endif

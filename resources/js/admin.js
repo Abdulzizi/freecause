@@ -294,6 +294,19 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
+/* Any click on a list row opens that row's detail drawer, the standard
+   ?select= navigation. Interactive elements inside the row keep their own
+   behavior (checkboxes, buttons, links, selects, labels). */
+document.addEventListener('click', function (event) {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.target.closest('a, button, input, select, textarea, label')) return;
+    if (event.target.closest('[data-detail-row-ignore]')) return;
+    const row = event.target.closest('[data-detail-row]');
+    if (!row || !row.dataset.detailHref) return;
+    event.preventDefault();
+    window.location.href = row.dataset.detailHref;
+});
+
 async function handleSignature(button) {
     if (!button || button.disabled) return;
     const action = button.dataset.signatureAction;

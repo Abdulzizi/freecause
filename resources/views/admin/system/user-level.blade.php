@@ -96,7 +96,7 @@
             </x-admin.form-field>
 
             <div class="flex! justify-end! mt-[15px]!">
-                <x-ui.button variant="secondary" size="sm">add</x-ui.button>
+                <button class="fc-abtn">add</button>
             </div>
         </form>
 

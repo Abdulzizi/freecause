@@ -865,6 +865,14 @@ ol:not([class]) {
     margin-top: 0;
 }
 
+/* list rows that open the detail drawer */
+tr[data-detail-row] {
+    cursor: pointer;
+}
+tr[data-detail-row] td a[href*="select="] {
+    cursor: pointer;
+}
+
 /* ===== Admin filter bar + bulk toolbar controls ===== */
 /* Uniform field control for admin filter bars. Width comes from the
    .fc-filter-form grid — no per-input max-width utilities. */

@@ -45,7 +45,7 @@
         </x-admin.section-panel>
 
         <div class="mt-5!">
-            <x-ui.button variant="secondary" size="sm">save</x-ui.button>
+            <button class="fc-abtn">save</button>
         </div>
 
     </form>

@@ -26,7 +26,7 @@
 
     <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-[15px]!">
         @csrf
-        <x-ui.button variant="danger" size="sm">clear spam logs</x-ui.button>
+        <button class="fc-abtn fc-abtn--danger">clear spam logs</button>
     </form>
 
     <x-admin.data-table empty-text="no blocked activity" :p="$logs">
@@ -61,21 +61,21 @@
 
                     <td class="flex! gap-1.5! flex-wrap!">
 
-                        <x-ui.button type="button" variant="secondary" size="sm" data-payload-toggle="{{ $log->id }}">view</x-ui.button>
+                        <button type="button" data-payload-toggle="{{ $log->id }}" class="fc-abtn">view</button>
 
                         @if (in_array($log->ip, $bannedIps))
                             <form method="post" action="{{ route('admin.spam.unban') }}"
                                 data-admin-confirm="Unban this IP? {{ $log->ip }}">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <x-ui.button variant="danger" size="sm">unban</x-ui.button>
+                                <button class="fc-abtn fc-abtn--danger">unban</button>
                             </form>
                         @else
                             <form method="post" action="{{ route('admin.spam.ban') }}"
                                 data-admin-confirm="Are you sure you want to ban this IP? {{ $log->ip }} This will block access immediately.">
                                 @csrf
                                 <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <x-ui.button variant="danger" size="sm">ban</x-ui.button>
+                                <button class="fc-abtn fc-abtn--danger">ban</button>
                             </form>
                         @endif
 
@@ -100,7 +100,7 @@
 
                         <div
                             class="bg-[#1e1e1e]! rounded-md! border! border-[#333]! mt-2.5! relative!">
-                            <x-ui.button type="button" variant="secondary" size="sm" data-payload-copy="{{ $log->id }}" class="absolute! top-2! right-2!">copy</x-ui.button>
+                            <button type="button" data-payload-copy="{{ $log->id }}" class="fc-abtn absolute! top-2! right-2!">copy</button>
 
                             <pre id="payload-content-{{ $log->id }}"
                                 class="m-0! p-[18px]! text-[#d4d4d4]! text-[13px]! leading-[1.5]! whitespace-pre-wrap! break-words! overflow-auto! max-h-[400px]!">{{ $payloadFormatted }}</pre>

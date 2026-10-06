@@ -32,7 +32,7 @@
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
-        <x-ui.button variant="secondary" size="sm" :href="route('admin.logs.export', request()->query())">export CSV</x-ui.button>
+        <a href="{{ route('admin.logs.export', request()->query()) }}" class="fc-abtn">export CSV</a>
 
         <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!" data-admin-confirm="Delete all logs older than the selected number of days?">
             @csrf
@@ -42,7 +42,7 @@
                 <option value="90" selected>90 days</option>
                 <option value="180">180 days</option>
             </select>
-            <x-ui.button variant="danger" size="sm" type="submit">prune old logs</x-ui.button>
+            <button type="submit" class="fc-abtn fc-abtn--danger">prune old logs</button>
         </form>
     </div>
 
