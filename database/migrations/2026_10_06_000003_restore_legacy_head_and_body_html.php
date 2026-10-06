@@ -18,13 +18,6 @@ return new class extends Migration
 </script>
 HTML;
 
-    private const GTM_BODY = <<<'HTML'
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-9CYCSY3PWD"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-HTML;
-
     public function up(): void
     {
         $existing = DB::table('settings')
@@ -36,13 +29,6 @@ HTML;
             DB::table('settings')->updateOrInsert(
                 ['key' => 'inject_head_html', 'group' => 'global'],
                 ['value' => self::GA_HEAD]
-            );
-        }
-
-        if ($existing->get('inject_body_html') === null || trim((string) $existing->get('inject_body_html')) === '') {
-            DB::table('settings')->updateOrInsert(
-                ['key' => 'inject_body_html', 'group' => 'global'],
-                ['value' => self::GTM_BODY]
             );
         }
 

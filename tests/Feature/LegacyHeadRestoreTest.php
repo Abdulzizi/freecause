@@ -18,7 +18,7 @@ class LegacyHeadRestoreTest extends TestCase
             ->assertOk()
             ->assertSee('googletagmanager.com/gtag/js?id=G-9CYCSY3PWD', false)
             ->assertSee("gtag('config', 'G-9CYCSY3PWD')", false)
-            ->assertSee('ns.html?id=GTM-9CYCSY3PWD', false);
+            ->assertDontSee('ns.html?id=GTM-9CYCSY3PWD', false);
 
         $csp = $this->get('/en')->headers->get('Content-Security-Policy');
         $this->assertStringContainsString('www.googletagmanager.com', (string) $csp);
