@@ -79,6 +79,7 @@ if (!$wpUser) {
 }
 
 // Set WordPress auth cookies (persistent = true so it survives browser restarts).
+update_user_meta($wpUser->ID, 'fc_sso_account', 1);
 wp_set_current_user($wpUser->ID);
 wp_set_auth_cookie($wpUser->ID, true);
 
