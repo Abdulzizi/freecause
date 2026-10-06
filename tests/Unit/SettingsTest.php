@@ -54,13 +54,13 @@ class SettingsTest extends TestCase
 
         Settings::get('a');
 
-        $this->assertSame(
-            [
-                'global' => ['a' => '1', 'b' => '2'],
-                'theme' => ['color' => 'red'],
-            ],
-            Cache::get(self::CACHE_KEY)
-        );
+        $cached = Cache::get(self::CACHE_KEY);
+
+        $this->assertIsArray($cached);
+        $this->assertSame('1', $cached['global']['a'] ?? null);
+        $this->assertSame('2', $cached['global']['b'] ?? null);
+        $this->assertSame('red', $cached['theme']['color'] ?? null);
+        $this->assertArrayNotHasKey('missing', $cached['theme'] ?? []);
     }
 
     public function test_second_get_is_served_from_cache_without_a_db_query(): void

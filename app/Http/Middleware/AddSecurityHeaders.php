@@ -53,16 +53,21 @@ class AddSecurityHeaders
                     'https://ajax.googleapis.com https://accounts.google.com '.
                     'https://pagead2.googlesyndication.com https://partner.googleadservices.com '.
                     'https://tpc.googlesyndication.com https://www.googletagservices.com '.
-                    'https://googleads.g.doubleclick.net; '.
+                    'https://googleads.g.doubleclick.net '.
+                    'https://www.googletagmanager.com '.
+                    "'sha256-a9fiG5Dd+nzVWrO5ISr5+CiHxazh5G3oV04LxZcsEfU='; ".
                 "style-src 'self' 'unsafe-inline' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                     'https://ajax.googleapis.com; '.
                 "img-src 'self' data: blob: https:; ".
                 "font-src 'self' https://cdnjs.cloudflare.com; ".
                 "frame-src 'self' https://accounts.google.com ".
-                    'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; '.
+                    'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com '.
+                    'https://www.googletagmanager.com; '.
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net ".
-                    'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; '.
+                    'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
+                    'https://www.googletagmanager.com https://www.google-analytics.com '.
+                    'https://*.analytics.google.com; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
