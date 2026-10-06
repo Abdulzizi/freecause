@@ -11,7 +11,7 @@
 @section('title', 'Signatures: ' . $petitionTitle)
 
 @section('content')
-    <section class="py-16!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
 
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-[#eee]!">

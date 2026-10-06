@@ -30,7 +30,7 @@
 @endpush
 
 @section('content')
-    <section class="py-12! max-md:py-5!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]! max-md:px-3!">
 
             @auth
@@ -235,7 +235,7 @@
                                             <span data-image-name></span>
                                             <span class="ms-1!" data-image-size></span>
                                         </small>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-image-remove>
+                                        <button type="button" class="fcui-btn fcui-btn--sm fcui-btn--secondary" data-image-remove>
                                             {{ __('create.remove') }}
                                         </button>
                                     </div>

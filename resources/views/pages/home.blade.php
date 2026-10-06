@@ -14,7 +14,7 @@
 
 @section('content')
 
-    <section id="welcomes" class="bg-[#f8f9fa]! pt-20! pb-20! md:pt-12! md:pb-12!">
+    <section id="welcomes" class="bg-[#f8f9fa]! pt-14! pb-16! md:pt-24! md:pb-20!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3! items-center! justify-center!">
                 <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3! text-center!">
@@ -23,11 +23,11 @@
                         {{ $content['h1'] ?? __('home.h1') }}
                     </h1>
 
-                    <h2 class="text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.2]!">
+                    <h2 class="text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.45]!">
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
-                    <div class="mb-4!">
+                    <div class="mt-7! mb-4!">
                         <x-ui.button :href="lroute('petition.create')" variant="primary" size="lg">
                             {{ __('home.btn_create_petition') }}
                         </x-ui.button>
@@ -38,11 +38,11 @@
         </div>
     </section>
 
-    <section class="bg-[#f9fafb]! py-15! md:py-6!">
+    <section class="bg-[#f9fafb]! py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <div class="shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]! bg-white! rounded-[10px]!">
+                    <div class="fcui-card">
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
@@ -226,14 +226,14 @@
         </div>
     </section>
 
-    <section class="py-16!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3!">
 
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
                     <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
+                        <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.what_title') }}
                         </h2>
 
@@ -245,7 +245,7 @@
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3!">
                     <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
+                        <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
                             {{ __('home.create_box_title') }}
                         </h2>
 
@@ -258,11 +258,11 @@
         </div>
     </section>
 
-    <section class="py-16!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3! mb-6!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <h2 class="capitalize! text-[1.3rem]! md:text-lg! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">{{ __('home.categories_title') }}</h2>
+                    <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
@@ -281,7 +281,7 @@
     </section>
 
     @if (count($magazinePosts) > 0)
-    <section class="bg-[#f9fafb]! py-15!">
+    <section class="bg-[#f9fafb]! py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="text-center! mb-6!">
                 <h2 class="mb-2!">{{ __('home.blog_title') }}</h2>

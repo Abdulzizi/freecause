@@ -55,7 +55,7 @@
                 @endif
 
                 <li class="nav-item mt-2 mt-lg-0 ms-lg-3">
-                    <a class="btn btn-primary w-100 w-lg-auto px-[15px]! py-[6px]! rounded-lg!" href="{{ lroute('petition.create') }}">
+                    <a class="fcui-btn fcui-btn--md fcui-btn--primary w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
                         {{ $c['nav_startfree'] ?? __('nav.startfree') }}
                     </a>
                 </li>

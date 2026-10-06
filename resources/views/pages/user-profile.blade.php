@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <section class="py-12!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
 
             <div class="mb-6!">
@@ -20,7 +20,7 @@
 
             <div class="bg-white! shadow-sm! rounded-lg! p-4! border! border-[#eee]!">
 
-                <div class="relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0! font-bold! break-words!">{{ $user->display_name }}</div>
+                <div class="relative! capitalize! text-[1.3rem]! md:text-[1.5rem]! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0! font-bold! break-words!">{{ $user->display_name }}</div>
 
                 <div class="flex! flex-wrap! -mx-3!">
 

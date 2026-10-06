@@ -19,7 +19,7 @@
         $btnOutline = 'inline-flex! items-center! justify-center! gap-2! rounded-md! border! border-gray-300! bg-white! px-4! py-2! text-[13px]! font-medium! text-gray-700! no-underline! transition! hover:bg-gray-50! focus:outline-none! disabled:cursor-not-allowed! disabled:opacity-60!';
     @endphp
 
-    <section class="py-8! bg-[#f7f7f8]!">
+    <section class="py-14! md:py-24! bg-[#f7f7f8]!">
         <div class="mx-auto! max-w-5xl! px-4!">
             <div class="grid! grid-cols-1! items-start! gap-6! lg:grid-cols-12!">
 

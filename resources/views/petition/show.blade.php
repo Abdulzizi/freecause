@@ -68,7 +68,7 @@
 @endpush
 
 @section('content')
-    <section class="py-12!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
 
             {{-- Breadcrumb --}}
@@ -190,7 +190,7 @@
                         <div class="border-t-[2px_dotted_#ccc]! border-b-[1px_dotted_#bbb]! my-6!"></div>
 
                         <div id="signFormBottom" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! border! border-[#eee]!">
-                            <h2 class="font-bold! text-base!">{{ $boxSignTitle }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxSignTitle }}</h2>
 
                             @include('partials.gradient-divider')
 
@@ -219,7 +219,7 @@
                         </div>
 
                         <div class="mt-6!">
-                            <h2 class="font-bold! text-base!">{{ $boxShoutbox }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxShoutbox }}</h2>
                             @include('partials.gradient-divider')
 
                             <div>
@@ -257,7 +257,7 @@
 
                     <div class="w-full! lg:w-1/3! shrink-0! px-3!">
                         <div id="signFormTop" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! mb-6! border! border-[#eee]!">
-                            <h2 class="font-bold! text-base!">{{ $boxSignTitle }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxSignTitle }}</h2>
                             @include('partials.gradient-divider')
 
                             @if (!$isAuthed)
@@ -285,7 +285,7 @@
                         </div>
 
                         <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
-                            <h2 class="font-bold! text-base!">{{ $boxGoal }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
                             <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-4!">
@@ -347,7 +347,7 @@
                         </div>
 
                         <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
-                            <h2 class="font-bold! text-base!">{{ $boxInformation }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxInformation }}</h2>
                             @include('partials.gradient-divider')
 
                             <div class="mt-4! text-sm! leading-[1.8]!">
@@ -379,7 +379,7 @@
                         </div>
 
                         <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
-                            <h2 class="font-bold! text-base!">{{ $boxTags }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxTags }}</h2>
                             @include('partials.gradient-divider')
                             <div class="mt-4! text-sm!">
                                 @if ($petition->tags)
@@ -395,7 +395,7 @@
                         </div>
 
                         <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
-                            <h2 class="font-bold! text-base!">{{ $boxEmbed }}</h2>
+                            <h2 class="text-lg! font-semibold!">{{ $boxEmbed }}</h2>
                             @include('partials.gradient-divider')
 
                             <div class="mt-4! text-[13px]!">
@@ -446,7 +446,7 @@
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
                                 <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! my-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
-                                    <h2 class="font-bold! text-base!">{{ __('show.operations') }}</h2>
+                                    <h2 class="text-lg! font-semibold!">{{ __('show.operations') }}</h2>
                                     @include('partials.gradient-divider')
 
                                     <div class="text-sm! leading-[1.9]!">
@@ -507,7 +507,7 @@
 
     @if (!$hasSigned)
         <div class="fcui-sticky-signbar">
-            <a href="#signFormTop" class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[10px]! font-semibold! text-[14px]! block! text-center! w-full! text-white! no-underline!">{{ $btnSignNow }}</a>
+            <a href="#signFormTop" class="fcui-btn fcui-btn--md fcui-btn--danger block! text-center! w-full!">{{ $btnSignNow }}</a>
         </div>
     @endif
 

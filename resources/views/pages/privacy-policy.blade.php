@@ -22,12 +22,12 @@
         </div>
     </section> --}}
 
-    <section class="py-16!">
+    <section class="py-14! md:py-24!">
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! border! border-black/[.175]! rounded-md!">
-                        <div class="grow! shrink! basis-auto! p-4!">
+                    <div class="fcui-card relative! flex! flex-col! min-w-0!">
+                        <div class="grow! shrink! basis-auto! p-6!">
                             <div class="mb-6!">
                                 {{-- <h4>Privacy Policy</h4>
 

@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="w-full!">
-                    <button class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[8px]! font-semibold! text-[14px]!" type="submit">{{ $tBtnSign }}</button>
+                    <button class="fcui-btn fcui-btn--md fcui-btn--danger" type="submit">{{ $tBtnSign }}</button>
                 </div>
 
             </div>
@@ -223,7 +223,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-danger bg-[#cc1f1f]! border-[#cc1f1f]! rounded-[6px]! px-[20px]! py-[8px]! font-semibold! text-[14px]!" type="submit">{{ $tBtnSign }}</button>
+                <button class="fcui-btn fcui-btn--md fcui-btn--danger" type="submit">{{ $tBtnSign }}</button>
             </div>
         </div>
     </form>

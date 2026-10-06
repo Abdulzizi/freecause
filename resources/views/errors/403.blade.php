@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-[#eee]!">
-                    <div class="mb-2! relative! capitalize! text-lg! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">403</div>
+                    <div class="mb-2! relative! capitalize! text-[1.3rem]! md:text-[1.5rem]! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">403</div>
                     <p class="text-[15px]! text-[#555]! mb-1.5!">
                         {{ __('errors.403_lead') }}
                     </p>
