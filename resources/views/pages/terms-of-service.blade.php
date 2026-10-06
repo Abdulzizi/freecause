@@ -27,7 +27,7 @@
                 <div class="w-full! shrink-0! grow-0! px-3!">
 
                     <div class="fcui-card relative! flex! flex-col! min-w-0!">
-                        <div class="grow! shrink! basis-auto! p-6!">
+                        <div class="fcui-prose grow! shrink! basis-auto! p-6!">
 
                             <div class="mb-6!">
                                 {{-- <h4>Terms of Service</h4>

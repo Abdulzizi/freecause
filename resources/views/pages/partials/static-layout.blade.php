@@ -37,7 +37,7 @@
 
                         <h2 class="relative! capitalize! text-[18px]! pb-[10px]! mb-[20px]! font-semibold! after:absolute! after:content-['']! after:h-[1px]! after:w-full! after:left-0! after:bottom-0! after:bg-gradient-to-r! after:from-black! after:from-30%! after:to-[#ce2020]!">{{ $title }}</h2>
 
-                        <div class="[&_h1]:text-[18px]! [&_h1]:mt-[30px]! [&_h1]:font-semibold! [&_h2]:text-[18px]! [&_h2]:mt-[30px]! [&_h2]:font-semibold! [&_h3]:text-[18px]! [&_h3]:mt-[30px]! [&_h3]:font-semibold! [&_ul]:pl-[20px]! [&_ul]:mb-[15px]!">
+                        <div class="fcui-prose [&_h1]:text-[18px]! [&_h1]:mt-[30px]! [&_h1]:font-semibold! [&_h2]:text-[18px]! [&_h2]:mt-[30px]! [&_h2]:font-semibold! [&_h3]:text-[18px]! [&_h3]:mt-[30px]! [&_h3]:font-semibold! [&_ul]:pl-[20px]! [&_ul]:mb-[15px]!">
                             {!! \App\Services\ContentRenderer::render($content) !!}
                         </div>
 

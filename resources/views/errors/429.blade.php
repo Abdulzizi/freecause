@@ -26,6 +26,7 @@
                 <p class="text-sm! text-[#555]! mb-5!">
                     {{ __('errors.429_support') }}
                 </p>
+                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())">{{ __('errors.back_home') }}</x-ui.button>
             </div>
         </div>
     </section>

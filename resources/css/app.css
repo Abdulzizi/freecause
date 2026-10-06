@@ -14,6 +14,11 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+:root {
+    --fc-shadow-sm: 0 1px 2px rgba(48, 42, 34, 0.04), 0 8px 24px rgba(48, 42, 34, 0.06);
+    --fc-shadow-md: 0 4px 12px rgba(48, 42, 34, 0.08), 0 16px 40px rgba(48, 42, 34, 0.1);
+}
+
 @theme {
     --color-brand: #cc1f1f;
     --color-brand-light: #ff4b4b;
@@ -40,6 +45,84 @@ ul:not([class]) {
 }
 ol:not([class]) {
     list-style: decimal outside;
+}
+
+::selection {
+    background: rgba(204, 31, 31, 0.16);
+}
+
+h1,
+h2 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+}
+
+[data-countup],
+[data-abbr] {
+    font-variant-numeric: tabular-nums;
+}
+
+nav.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+@supports (animation-timeline: scroll()) {
+    nav.navbar {
+        animation: fc-nav-scroll linear both;
+        animation-timeline: scroll(root);
+    }
+}
+
+@keyframes fc-nav-scroll {
+    from {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    to {
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.14);
+    }
+}
+
+.fcui-prose {
+    max-width: 72ch;
+    margin-inline: auto;
+    line-height: 1.7;
+}
+
+.fcui-prose :where(h2, h3, h4) {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+}
+
+.fcui-prose :where(h2, h3, h4):not(:first-child) {
+    margin-top: 1.75em;
+}
+
+.fcui-prose :where(p, ul, ol, blockquote) {
+    margin-bottom: 1em;
+}
+
+.fcui-prose :where(img) {
+    border-radius: 0.75rem;
+}
+
+.fcui-prose p > a,
+.fcui-prose li > a {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    transition: background-size 0.2s ease, color 0.15s ease;
+}
+
+.fcui-prose p > a:hover,
+.fcui-prose p > a:focus-visible,
+.fcui-prose li > a:hover,
+.fcui-prose li > a:focus-visible {
+    color: #a11818;
+    background-size: 100% 1px;
 }
 
 /* Native sign-form progress indicator; the legacy subset omits spinner styles. */
@@ -122,6 +205,7 @@ ol:not([class]) {
         background-color: #b31b1b !important;
         border-color: #b31b1b !important;
         color: #ffffff !important;
+        box-shadow: 0 6px 16px rgba(204, 31, 31, 0.28);
     }
 
     .fcui-btn--danger,
@@ -235,8 +319,17 @@ ol:not([class]) {
         background-color: #ffffff !important;
         border: 1px solid #ede9e3;
         border-radius: 0.875rem;
-        box-shadow: 0 1px 2px rgba(48, 42, 34, 0.04), 0 8px 24px rgba(48, 42, 34, 0.06);
+        box-shadow: var(--fc-shadow-sm);
         overflow: hidden;
+    }
+
+    .fcui-card--interactive {
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .fcui-card--interactive:hover {
+        box-shadow: var(--fc-shadow-md);
+        transform: translateY(-2px);
     }
 
     .fcui-card__header {
@@ -630,8 +723,21 @@ ol:not([class]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    nav.navbar {
+        animation: none;
+    }
+
+    .fcui-prose p > a,
+    .fcui-prose li > a {
+        transition: none;
+    }
+
     .fcui-spinner {
         animation: none;
+    }
+
+    .fcui-card--interactive {
+        transition: none;
     }
 
     .fcui-btn {

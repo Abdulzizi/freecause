@@ -652,7 +652,6 @@ textarea.form-control-lg{min-height:calc(1.5em + 1rem + 2px)}
 .breadcrumb{ background: none; padding: 0; }
 .breadcrumb-item + .breadcrumb-item::before{ color: #aaa; }
 :root{
-    --primary-gradient: linear-gradient(90deg, #cc1f1f 0%, #ff4b4b 100%);
     --text-dark: #1a1a1a;
     --text-muted: #6c757d;
 }
@@ -721,22 +720,8 @@ a:hover{
 }
 @font-face{
     font-family: "Inter";
-    src: url("/legacy/fonts/Inter_18pt-Regular.ttf") format("truetype");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face{
-    font-family: "Inter";
-    src: url("/legacy/fonts/Inter_18pt-Medium.ttf") format("truetype");
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face{
-    font-family: "Inter";
-    src: url("/legacy/fonts/Inter_18pt-Bold.ttf") format("truetype");
-    font-weight: 700;
+    src: url("/fonts/Inter/InterVariable.woff2") format("woff2");
+    font-weight: 100 900;
     font-style: normal;
     font-display: swap;
 }
@@ -744,46 +729,50 @@ a{
     color: #cc1f1f;
 }
 .btn-primary{
-    background: linear-gradient(90deg, #cc1f1f 0%, #ff4b4b 100%);
+    background-color: #cc1f1f;
     border: none;
-    transition: transform 0.3s ease;
-    border-radius: 6px;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 0.625rem;
 }
 .btn-primary:hover{
-    transform: scale(1.05);
+    background-color: #a11818;
+    transform: none;
 }
 .nav-tabs .nav-link{
     color: #666 !important;
     border: none;
 }
 .nav-tabs .nav-link.active{
-    background: var(--primary-gradient);
+    background: #cc1f1f;
     color: white !important;
     border: none;
 }
 .progress{
-    height: 0.5rem;
+    height: 0.375rem;
     background-color: #e9ecef;
+    border-radius: 999px;
+    box-shadow: none;
 }
 .progress-bar{
-    background: var(--primary-gradient);
+    background: #2ca02c;
+    border-radius: 999px;
 }
 .card{
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    border: 1px solid #ede9e3;
+    box-shadow: var(--fc-shadow-sm);
+    transition: box-shadow 0.2s ease;
 }
 input{
     color: #333;
 }
 input::placeholder{
-    color: #abb5b3 !important;
+    color: #9b9389 !important;
 }
 textarea{
     color: #333;
 }
 textarea::placeholder{
-    color: #abb5b3 !important;
+    color: #9b9389 !important;
 }
 .form-control:focus{
     box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.15);
@@ -956,9 +945,6 @@ ul.footer-link a:hover{
 .py-5{
     padding-top: 4rem !important;
     padding-bottom: 4rem !important;
-}
-.progress-bar{
-    background: #28a745;
 }
 .accordion-button{
     padding: 10px 15px;

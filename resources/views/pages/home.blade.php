@@ -42,7 +42,7 @@
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <div class="fcui-card">
+                    <div class="fcui-card fcui-card--interactive">
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
@@ -84,11 +84,11 @@
                                                             @if ($wv)
                                                             <picture>
                                                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid" data-blurup
+                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full! aspect-[16/9]! object-cover!" data-blurup
                                                                     loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             </picture>
                                                             @else
-                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid" data-blurup
+                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full! aspect-[16/9]! object-cover!" data-blurup
                                                                 loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             @endif
                                                         </div>
@@ -293,12 +293,12 @@
                 @foreach ($magazinePosts as $post)
                     <div class="w-full! md:w-1/3! shrink-0! grow-0! px-3! mb-6!">
                         <a class="block! h-full! no-underline!" href="/magazine/{{ $post->post_name }}">
-                            <div class="shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]! rounded-[15px]! overflow-hidden! hover:shadow-[rgba(149,157,165,0.2)_0px_8px_24px]! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
+                            <div class="shadow-[var(--fc-shadow-sm)]! rounded-[15px]! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-[var(--fc-shadow-md)]!">
                                 <div>
                                     @if ($post->thumbnail_path)
-                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup w-full! aspect-[16/9]! object-cover!">
                                     @else
-                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="fcui-blurup h-auto! w-auto! object-cover! md:h-[220px]! md:w-full!">
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="fcui-blurup w-full! aspect-[16/9]! object-cover!">
                                     @endif
                                 </div>
                                 <div class="p-5! bg-white! min-h-[146px]!">

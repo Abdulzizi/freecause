@@ -72,6 +72,8 @@
                             @endforeach
                         </div>
                 @endif
+
+                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="mt-6!">{{ __('errors.back_home') }}</x-ui.button>
             </div>
 
         </div>
