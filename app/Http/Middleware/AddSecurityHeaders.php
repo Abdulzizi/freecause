@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Settings;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +47,22 @@ class AddSecurityHeaders
                 "object-src 'none'; ".
                 "base-uri 'self';";
         } else {
+            $inlineHashes = '';
+
+            foreach (['inject_head_html', 'inject_body_html'] as $key) {
+                $html = (string) Settings::get($key, '');
+
+                if ($html === '') {
+                    continue;
+                }
+
+                if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', $html, $matches)) {
+                    foreach ($matches[1] as $body) {
+                        $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
+                    }
+                }
+            }
+
             $csp =
                 "default-src 'self'; ".
                 "script-src 'self' ".
@@ -55,7 +72,7 @@ class AddSecurityHeaders
                     'https://tpc.googlesyndication.com https://www.googletagservices.com '.
                     'https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com '.
-                    "'sha256-a9fiG5Dd+nzVWrO5ISr5+CiHxazh5G3oV04LxZcsEfU='; ".
+                    $inlineHashes.'; '.
                 "style-src 'self' 'unsafe-inline' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                     'https://ajax.googleapis.com; '.
@@ -66,7 +83,7 @@ class AddSecurityHeaders
                     'https://www.googletagmanager.com; '.
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net ".
                     'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
-                    'https://www.googletagmanager.com https://www.google-analytics.com '.
+                    'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.
                     'https://*.analytics.google.com; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".

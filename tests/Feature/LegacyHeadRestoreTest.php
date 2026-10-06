@@ -22,7 +22,7 @@ class LegacyHeadRestoreTest extends TestCase
 
         $csp = $this->get('/en')->headers->get('Content-Security-Policy');
         $this->assertStringContainsString('www.googletagmanager.com', (string) $csp);
-        $this->assertStringContainsString('sha256-a9fiG5Dd', (string) $csp);
+        $this->assertStringContainsString('sha256-Jl5oaPOv', (string) $csp);
         $this->assertStringContainsString('google-analytics.com', (string) $csp);
     }
 }
