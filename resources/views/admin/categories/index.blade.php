@@ -34,7 +34,7 @@
             <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
-            <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#2a7a2a]! text-white! px-[10px]! py-1! rounded-[3px]! cursor-pointer!" type="submit">create</x-ui.button>
+            <button type="submit" class="fc-abtn fc-abtn--success">create</button>
         </div>
     </form>
 </div>
@@ -86,7 +86,7 @@
                 $missing = empty($c->name);
             @endphp
 
-            <tr class="border-b! border-[#eee]!" data-admin-row-hover>
+            <tr class="border-b! border-[#eee]!" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         {{ $c->id }}
@@ -158,7 +158,7 @@
             </div>
 
             <div class="flex! justify-end! mt-1.5!">
-                <x-ui.button variant="secondary" class="border! border-[#7d7d7d]! bg-[#e6e6e6]! px-[10px]! py-1! rounded-[3px]! cursor-pointer! hover:bg-[#dcdcdc]!" type="submit">save</x-ui.button>
+                <button type="submit" class="fc-abtn">save</button>
             </div>
         </form>
 
