@@ -10,7 +10,7 @@ return [
     'search' => 'Suchen',
     'clear' => 'Suche löschen',
     'none' => 'Keine Petitionen gefunden.',
-    'sort_by' => 'Sort',
-    'sort_newest' => 'Newest',
-    'sort_signed' => 'Most signed',
+    'sort_by' => 'Sortieren',
+    'sort_newest' => 'Neueste',
+    'sort_signed' => 'Meistsigniert',
 ];

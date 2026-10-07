@@ -10,7 +10,7 @@ return [
     'search' => 'Søg',
     'clear' => 'Ryd søgning',
     'none' => 'Ingen underskriftsindsamlinger fundet.',
-    'sort_by' => 'Sort',
-    'sort_newest' => 'Newest',
-    'sort_signed' => 'Most signed',
+    'sort_by' => 'Sortér',
+    'sort_newest' => 'Nyeste',
+    'sort_signed' => 'Mest signeret',
 ];

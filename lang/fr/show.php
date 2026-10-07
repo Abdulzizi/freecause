@@ -14,7 +14,7 @@ return [
     'goal_label' => 'Objectif : :count',
     'box_latest' => 'Dernières signatures',
     'latest_empty' => 'aucune signature pour l\'instant',
-    'latest_browse_all' => 'voir toutes les signatures »',
+    'latest_browse_all' => 'parcourir toutes les signatures »',
     'box_information' => 'Informations',
     'info_by' => 'Par :',
     'info_in' => 'Dans :',

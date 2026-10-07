@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'home' => 'Home',
+    'home' => 'Startpagina',
     'registration_date' => 'Registratiedatum :',
     'petitions' => 'Petities :',
     'signatures' => 'Handtekeningen :',

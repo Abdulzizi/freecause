@@ -2,7 +2,7 @@
 
 return [
     'email_label' => 'Email (обязательно)',
-    'email_placeholder' => 'Email',
+    'email_placeholder' => 'Почта',
     'home' => 'Главная',
     'intro' => 'Если вы хотите связаться с командой FreeCause по вопросам о петиции, сообщить о контенте, нарушающем закон, попросить удалить ваше имя из списка подписавшихся или разместить вашу петицию на главной странице, напишите нам на <a href="mailto:hello@freecause.com">hello@freecause.com</a>.',
     'name_label' => 'Имя (обязательно)',

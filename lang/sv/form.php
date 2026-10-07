@@ -5,7 +5,7 @@ return [
     'category' => 'Kategori (obligatoriskt)',
     'city' => 'Stad',
     'community' => 'Petitionsgemenskap',
-    'community_url' => 'URL for gemenskapen',
+    'community_url' => 'Petition community-URL',
     'description' => 'Text (obligatoriskt)',
     'goal_signatures' => 'Mal (obligatoriskt)',
     'image' => 'Bild (Max 4MB, JPG/PNG)',

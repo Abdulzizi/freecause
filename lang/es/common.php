@@ -8,7 +8,7 @@ return [
     'export' => 'Exportar',
     'filter' => 'Filtrar',
     'loading' => 'Cargando...',
-    'no' => 'No',
+    'no' => 'Nu',
     'no_results' => 'No se encontraron resultados.',
     'optional' => 'Opcional',
     'petition' => 'Petición',

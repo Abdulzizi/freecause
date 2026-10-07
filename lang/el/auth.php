@@ -7,7 +7,7 @@ return [
     'confirm_password' => 'Επιβεβαίωση κωδικού',
     'continue_google' => 'Συνέχεια με Google',
     'create_account' => 'Δημιουργήστε τον λογαριασμό σας',
-    'email' => 'Email',
+    'email' => 'E-mail',
     'email_placeholder' => 'Εισάγετε το email σας',
     'forgot_password' => 'Ksihate kodiko?',
     'forgot_title' => 'Ξεχάσατε τον κωδικό;',

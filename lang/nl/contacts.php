@@ -3,8 +3,8 @@
 return [
     'email_label' => 'E-mail (verplicht)',
     'email_placeholder' => 'E-mail',
-    'home' => 'Home',
-    'intro' => 'Als u het FreeCause-team wilt contacteren over een petitie, om inhoud te melden die de wet overtreedt, om te vragen dat uw naam van een ondertekenaarslijst wordt verwijderd of om uw petitie op de startpagina te laten plaatsen, schrijf ons dan naar <a href="mailto:hello@freecause.com">hello@freecause.com</a>.',
+    'home' => 'Startpagina',
+    'intro' => 'Als u contact wilt opnemen met het FreeCause team voor vragen over een verzoekschrift, om inhoud te rapporteren die de wet schendt. om te vragen om je naam te verwijderen uit een lijst van ondertekenaars, of om uw petitie op de startpagina te laten staan, schrijf ons op <a href="mailto:hello@freecause.com">hello@freecause. om</a>.',
     'name_label' => 'Naam (verplicht)',
     'name_placeholder' => 'Naam',
     'submit' => 'Versturen',

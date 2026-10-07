@@ -26,7 +26,7 @@ return [
     'embed_html' => 'länk för html',
     'embed_forum_no_title' => 'länk för forum utan titel',
     'embed_forum_with_title' => 'länk för forum med titel',
-    'box_widgets' => 'Widgets',
+    'box_widgets' => 'Widgetar',
     'download_signatures' => 'Ladda ner underskrifter',
     'share' => 'Dela',
     'copy_link' => 'Kopiera länk',

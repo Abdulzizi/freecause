@@ -42,7 +42,7 @@ return [
     'err_suspended' => 'Din konto er blevet suspenderet.',
     'err_invalid_credentials' => 'Ugyldige legitimationsoplysninger.',
     'err_spam' => 'Spam registreret.',
-    'err_throttled' => 'For mange forsøg. Prøv venligst igen senere.',
+    'err_throttled' => 'For mange forsøg. Prøv igen senere.',
     'register_failed' => 'Registrering mislykkedes. Kontakt venligst support eller prøv igen senere.',
     'register_check_email' => 'Tjek venligst din e-mail for at bekræfte din konto.',
     'register_pending' => 'Din konto afventer bekræftelse. Kontakt venligst support.',

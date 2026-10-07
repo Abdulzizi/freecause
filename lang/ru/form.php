@@ -15,5 +15,5 @@ return [
     'tags' => 'Tegi',
     'target' => 'Celi peticii',
     'title' => 'Nazvanie (obyazatelno)',
-    'youtube' => 'URL Youtube video',
+    'youtube' => 'URL видео на Youtube',
 ];

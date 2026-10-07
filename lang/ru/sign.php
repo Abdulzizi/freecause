@@ -35,7 +35,7 @@ return [
     'lbl_password' => 'Выберите пароль (обязательно)',
     'lbl_surname' => 'Фамилия (обязательно)',
     'name' => 'Imya',
-    'nickname' => 'Nickname',
+    'nickname' => 'Ник',
     'page_title' => 'Подписать - :title',
     'password' => 'Parol',
     'ph_city' => 'Город (необязательно)',

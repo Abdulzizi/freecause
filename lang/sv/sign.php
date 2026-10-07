@@ -50,5 +50,5 @@ return [
     'signed_hint' => 'Stöd och dela din sak. Klicka på "gilla"-knappen och skriv under namnlistan',
     'submit' => 'Skriv under petition',
     'surname' => 'Efternamn',
-    'thanks' => 'Tack for att du skrev under!',
+    'thanks' => 'Tack för att du undertecknade!',
 ];

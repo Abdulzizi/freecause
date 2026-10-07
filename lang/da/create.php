@@ -6,7 +6,7 @@ return [
     'signatures_sfx' => 'underskrifter',
     'tags_hint' => 'Maks 10 nøgleord, adskilt af komma',
     'update' => 'Opdater',
-    'login_required' => 'Log venligst ind eller registrer dig ovenfor for at indsende.',
+    'login_required' => 'Log ind eller registrer dig ovenfor for at indsende.',
     'markup_hint' => 'tilladt: br, p, strong, em, u, ul, ol, li',
     'title_create' => 'Opret underskriftsindsamling - FreeCause',
     'title_edit' => 'Rediger underskriftsindsamling - FreeCause',

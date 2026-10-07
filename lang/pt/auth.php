@@ -7,7 +7,7 @@ return [
     'confirm_password' => 'Confirmar senha',
     'continue_google' => 'Continuar com o Google',
     'create_account' => 'Crie a sua conta',
-    'email' => 'Email',
+    'email' => 'e-mail',
     'email_placeholder' => 'Digite o seu e-mail',
     'forgot_password' => 'Esqueceu a palavra-passe?',
     'forgot_title' => 'Esqueceu a senha',

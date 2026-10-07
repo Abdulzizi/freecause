@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'home' => 'Home',
+    'home' => 'Startpagina',
     'back_home' => 'Terug naar home',
     '403_title' => 'Toegang geweigerd',
     '403_lead' => 'Je hebt geen toestemming om deze pagina te openen.',
@@ -25,9 +25,9 @@ return [
     '429_support' => 'Als je denkt dat dit een fout is, neem dan contact op met de ondersteuning.',
     '500_title' => 'Serverfout',
     '500_lead' => 'Er is iets misgegaan aan onze kant.',
-    '500_hint' => 'We werken aan een oplossing. Probeer het over een paar momenten opnieuw.',
+    '500_hint' => 'We werken eraan om het probleem op te lossen. Probeer het over een paar ogenblikken opnieuw.',
     '503_title' => 'In onderhoud',
     '503_lead' => 'FreeCause ondergaat momenteel gepland onderhoud.',
-    '503_hint' => 'We zijn snel weer terug. Bedankt voor je geduld.',
+    '503_hint' => 'We zullen zo dadelijk weer terugkomen. Dank u voor uw geduld.',
     '503_btn' => 'Opnieuw proberen',
 ];

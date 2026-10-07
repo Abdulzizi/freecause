@@ -7,7 +7,7 @@ return [
     'confirm_password' => 'Confirmare parolă',
     'continue_google' => 'Continuați cu Google',
     'create_account' => 'Creează-ți contul',
-    'email' => 'Email',
+    'email' => 'E-mail',
     'email_placeholder' => 'Introduceți emailul',
     'forgot_password' => 'Ai uitat parola?',
     'forgot_title' => 'Parolă uitată',

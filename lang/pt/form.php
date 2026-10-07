@@ -12,7 +12,7 @@ return [
     'image_external' => 'Ou forneca um link externo:',
     'preview' => 'Pre-visualizar',
     'submit' => 'Submeter',
-    'tags' => 'Tags',
+    'tags' => 'Etiquetas',
     'target' => 'Alvo da peticao',
     'title' => 'Titulo (obrigatorio)',
     'youtube' => 'URL do video do Youtube',

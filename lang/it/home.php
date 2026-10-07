@@ -32,7 +32,7 @@ return [
     'nav_help' => 'Aiuto',
     'nav_login' => 'Accedi',
     'nav_logout' => 'Esci',
-    'nav_magazine' => 'Magazine',
+    'nav_magazine' => 'Rivista',
     'nav_startfree' => 'Inizia gratis',
     'recent_empty' => 'nessuna attività recente',
     'btn_browse_petitions' => 'Sfoglia le petizioni',

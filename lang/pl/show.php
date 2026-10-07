@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'page_title' => ':title - FreeCause',
+    'page_title' => ':title - Darmowa przyczyna',
     'btn_sign_now' => 'Podpisz teraz',
     'google_continue' => 'Kontynuuj z Google',
     'or' => 'LUB',

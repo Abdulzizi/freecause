@@ -27,7 +27,7 @@ return [
     'embed_forum_no_title' => 'link til forum uden titel',
     'embed_forum_with_title' => 'link til forum med titel',
     'box_widgets' => 'Widgets',
-    'download_signatures' => 'Download underskrifter',
+    'download_signatures' => 'Download Signaturer',
     'share' => 'Del',
     'copy_link' => 'Kopier link',
     'link_copied' => 'Kopieret!',

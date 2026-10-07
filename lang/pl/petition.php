@@ -71,7 +71,7 @@ return [
     'show.latest_empty' => 'brak podpisów',
     'show.operations' => 'Operacje',
     'show.or' => 'LUB',
-    'show.page_title' => ':title - FreeCause',
+    'show.page_title' => ':title - Darmowa przyczyna',
     'show.tags_empty' => 'Brak tagów',
     'sig.all_signatures' => 'Wszystkie podpisy',
     'sig.anonymous' => 'Anonimowy',
@@ -98,7 +98,7 @@ return [
     'thanks.suggestions' => 'Petycje, które mogą Cię zainteresować',
     'thanks.title_created' => 'Dziękujemy! - FreeCause',
     'thanks.title_signed' => 'Dziękujemy za podpisanie - FreeCause',
-    'title' => ':title - FreeCause',
+    'title' => ':title - Darmowa przyczyna',
     'title_created' => 'Dziękujemy! - FreeCause',
     'title_signed' => 'Dziękujemy za podpisanie - FreeCause',
 ];

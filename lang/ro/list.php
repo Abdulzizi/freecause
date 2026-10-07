@@ -10,7 +10,7 @@ return [
     'search' => 'Caută',
     'clear' => 'Șterge căutarea',
     'none' => 'Nu s-au găsit petiții.',
-    'sort_by' => 'Sort',
-    'sort_newest' => 'Newest',
-    'sort_signed' => 'Most signed',
+    'sort_by' => 'Sortează',
+    'sort_newest' => 'Cele mai noi',
+    'sort_signed' => 'Cele mai semnate',
 ];

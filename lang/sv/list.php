@@ -10,7 +10,7 @@ return [
     'search' => 'Sök',
     'clear' => 'Rensa sökning',
     'none' => 'Inga namninsamlingar hittades.',
-    'sort_by' => 'Sort',
-    'sort_newest' => 'Newest',
-    'sort_signed' => 'Most signed',
+    'sort_by' => 'Sortera',
+    'sort_newest' => 'Nyaste',
+    'sort_signed' => 'Mest signerade',
 ];

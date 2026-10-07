@@ -81,7 +81,7 @@ return [
     'sig.no_signatures' => 'Nenhuma assinatura ainda. Seja o primeiro a assinar!',
     'sig.sign_link' => 'Assine esta petição »',
     'sig.signatures' => 'assinaturas',
-    'sig.total' => 'total',
+    'sig.total' => 'Total',
     'step_change' => 'Mude o mundo!',
     'step_create' => 'Crie a sua peticao',
     'step_share' => 'Partilhe com amigos',

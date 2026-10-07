@@ -2,7 +2,7 @@
 
 return [
     'all_signatures' => 'Todas as assinaturas',
-    'total' => 'total',
+    'total' => 'Total',
     'sign_link' => 'Assine esta petição »',
     'no_signatures' => 'Nenhuma assinatura ainda. Seja o primeiro a assinar!',
     'no_comments' => 'Ainda sem comentários.',

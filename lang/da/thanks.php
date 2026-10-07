@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'petition_fallback' => 'petition',
+    'petition_fallback' => 'andragende',
     'title_created' => 'Tak! - FreeCause',
     'title_signed' => 'Tak fordi du underskrev - FreeCause',
     'h1_created' => 'Tak!',

@@ -23,7 +23,7 @@ return [
     'connection_error' => 'Você está offline. Verifique sua conexão e tente novamente.',
     'comment' => 'Comentario (opcional)',
     'default_comment' => 'Apoio esta petição',
-    'email' => 'Email',
+    'email' => 'e-mail',
     'email_warning' => 'Atenção, o endereço de email fornecido deve ser válido para validar a assinatura, caso contrário será eliminada.',
     'h2_line1' => 'Apoie e partilhe a sua causa.',
     'h2_line2' => 'Clique em "gosto" e assine a petição',

@@ -10,7 +10,7 @@ return [
     'loading' => 'Se incarca...',
     'no' => 'Nu',
     'no_results' => 'Nu s-au gasit rezultate.',
-    'optional' => 'Optional',
+    'optional' => 'Opţional',
     'petition' => 'Petiție',
     'required' => 'Obligatoriu',
     'save' => 'Salveaza',
