@@ -33,7 +33,6 @@
             ($homeMeta['head_additional_html'] ??
             ($globalMetaDefault['head_additional_html'] ??
             ($homeMetaDefault['head_additional_html'] ?? '')));
-        $footerExtra = $globalMeta['footer_additional_html'] ?? ($globalMetaDefault['footer_additional_html'] ?? '');
         $canonicalPageUrl = canonical_url().(request()->getQueryString() ? '?'.request()->getQueryString() : '');
     @endphp
 
@@ -108,8 +107,6 @@
     <main>
         @yield('content')
     </main>
-
-    {!! \App\Services\ContentRenderer::render($footerExtra) !!}
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
 
