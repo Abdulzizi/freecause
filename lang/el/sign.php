@@ -43,4 +43,13 @@ return [
     'surname' => 'Epitheto',
     'thanks' => 'Sas eyxaristo gia tin ypografi!',
     'title' => 'Ypograpse tin aiti',
+    'btn_sign' => 'Υπογραφή',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Δημιουργία λογαριασμού',
+    'claim_existing' => 'Αυτό το email ανήκει ήδη σε λογαριασμό FreeCause — συνδεθείτε για να τον διαχειριστείτε.',
+    'claim_password' => 'Επιλέξτε έναν κωδικό πρόσβασης',
+    'claim_title' => 'Δημιουργήστε τον λογαριασμό σας στο FreeCause',
+    'claim_verify_note' => 'Ελέγξτε τα εισερχόμενά σας για να επιβεβαιώσετε το email σας πριν συνδεθείτε.',
+    'connection_error' => 'Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.',
+    'signed_already' => 'Έχετε υπογράψει αυτή την αναφορά.',
 ];

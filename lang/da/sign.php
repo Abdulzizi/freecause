@@ -43,4 +43,13 @@ return [
     'surname' => 'Efternavn',
     'thanks' => 'Tak fordi du underskrev!',
     'title' => 'Underskriv denne petition',
+    'btn_sign' => 'Underskriv',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Opret min konto',
+    'claim_existing' => 'Denne e-mail tilhører allerede en FreeCause-konto — log ind for at administrere den.',
+    'claim_password' => 'Vælg en adgangskode',
+    'claim_title' => 'Opret din FreeCause-konto',
+    'claim_verify_note' => 'Tjek din indbakke for at bekræfte din e-mail, før du logger ind.',
+    'connection_error' => 'Du er offline. Tjek din forbindelse, og prøv igen.',
+    'signed_already' => 'Du har underskrevet denne underskriftsindsamling.',
 ];

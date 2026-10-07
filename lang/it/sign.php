@@ -46,4 +46,10 @@ return [
     'surname' => 'Cognome',
     'thanks' => 'Grazie per aver firmato!',
     'title' => 'Firma - :title',
+    'claim_btn' => 'Crea il mio account',
+    'claim_existing' => 'Questa email appartiene già a un account FreeCause — accedi per gestirlo.',
+    'claim_password' => 'Scegli una password',
+    'claim_title' => 'Crea il tuo account FreeCause',
+    'claim_verify_note' => 'Controlla la tua casella di posta per verificare la tua email prima di accedere.',
+    'connection_error' => 'Sei offline. Controlla la connessione e riprova.',
 ];

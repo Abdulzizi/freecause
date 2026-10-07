@@ -43,4 +43,13 @@ return [
     'surname' => 'Nazwisko',
     'thanks' => 'Dziekuje za podpisanie!',
     'title' => 'Podpisz te petycje',
+    'btn_sign' => 'Podpisz',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Utwórz moje konto',
+    'claim_existing' => 'Ten e-mail należy już do konta FreeCause — zaloguj się, aby nim zarządzać.',
+    'claim_password' => 'Wybierz hasło',
+    'claim_title' => 'Utwórz swoje konto FreeCause',
+    'claim_verify_note' => 'Sprawdź skrzynkę odbiorczą, aby zweryfikować swój e-mail przed zalogowaniem.',
+    'connection_error' => 'Jesteś offline. Sprawdź połączenie i spróbuj ponownie.',
+    'signed_already' => 'Podpisałeś tę petycję.',
 ];

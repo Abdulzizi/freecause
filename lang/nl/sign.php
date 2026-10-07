@@ -43,4 +43,13 @@ return [
     'surname' => 'Achternaam',
     'thanks' => 'Bedankt voor het tekenen!',
     'title' => 'Teken deze petitie',
+    'btn_sign' => 'Ondertekenen',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Account aanmaken',
+    'claim_existing' => 'Deze e-mail hoort al bij een FreeCause-account — log in om het te beheren.',
+    'claim_password' => 'Kies een wachtwoord',
+    'claim_title' => 'Maak je FreeCause-account aan',
+    'claim_verify_note' => 'Controleer je inbox om je e-mail te verifiëren voordat je inlogt.',
+    'connection_error' => 'Je bent offline. Controleer je verbinding en probeer het opnieuw.',
+    'signed_already' => 'Je hebt deze petitie ondertekend.',
 ];

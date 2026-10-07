@@ -43,4 +43,13 @@ return [
     'surname' => 'Efternamn',
     'thanks' => 'Tack for att du skrev under!',
     'title' => 'Skriv under denna petition',
+    'btn_sign' => 'Skriv under',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Skapa mitt konto',
+    'claim_existing' => 'Den här e-posten tillhör redan ett FreeCause-konto — logga in för att hantera det.',
+    'claim_password' => 'Välj ett lösenord',
+    'claim_title' => 'Skapa ditt FreeCause-konto',
+    'claim_verify_note' => 'Kolla din inkorg för att verifiera din e-post innan du loggar in.',
+    'connection_error' => 'Du är offline. Kontrollera din anslutning och försök igen.',
+    'signed_already' => 'Du har skrivit under den här namninsamlingen.',
 ];

@@ -43,4 +43,13 @@ return [
     'surname' => 'Soyad',
     'thanks' => 'Imzaladiginiz icin tesekkurler!',
     'title' => 'Bu petitionsi imzalayin',
+    'btn_sign' => 'İmzala',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Hesabımı oluştur',
+    'claim_existing' => 'Bu e-posta zaten bir FreeCause hesabına ait — yönetmek için giriş yapın.',
+    'claim_password' => 'Bir şifre seçin',
+    'claim_title' => 'FreeCause hesabınızı oluşturun',
+    'claim_verify_note' => 'Giriş yapmadan önce e-postanızı doğrulamak için gelen kutunuzu kontrol edin.',
+    'connection_error' => 'Çevrimdışısınız. Bağlantınızı kontrol edin ve tekrar deneyin.',
+    'signed_already' => 'Bu dilekçeyi imzaladınız.',
 ];

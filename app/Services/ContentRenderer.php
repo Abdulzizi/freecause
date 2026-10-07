@@ -129,15 +129,15 @@ class ContentRenderer
 
             '{SITE_NAME_LINK}' => '<span class="red"><a href="'.url('/').'">'.config('app.name').'</a></span>',
 
-            '{CONTACTS_LINK}' => '<a href="'.lroute('contacts').'">Contacts</a>',
+            '{CONTACTS_LINK}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], $locale).'</a>',
 
-            '{ETHICAL_CODE_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'ethical-code']).'">Ethical Code</a>',
+            '{ETHICAL_CODE_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'ethical-code']).'">'.__('pages.ethical_code', [], $locale).'</a>',
 
-            '{TOS_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'terms-of-service']).'">Terms of Service</a>',
+            '{TOS_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'terms-of-service']).'">'.__('pages.terms_of_service', [], $locale).'</a>',
 
-            '{PRIVACY_POLICY_ROOT_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">Privacy Policy</a>',
+            '{PRIVACY_POLICY_ROOT_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">'.__('pages.privacy_policy', [], $locale).'</a>',
 
-            '{PRIVACY_POLICY_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">Privacy Policy</a>',
+            '{PRIVACY_POLICY_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">'.__('pages.privacy_policy', [], $locale).'</a>',
 
             '{PRIVACY_POLICY_URL}' => lroute('page.show', ['slug' => 'privacy-policy']),
 
@@ -145,13 +145,13 @@ class ContentRenderer
             '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
 
             '{RECOVER_URL}' => lroute('password.request'),
-            '{DONATIONS_LINK}' => '<a href="'.lroute('donations').'">Donations</a>',
-            '{HOW_TO_CREATE_LINK}' => '<a href="'.lroute('how-to-write-a-petition').'">how to write a petition</a>',
+            '{DONATIONS_LINK}' => '<a href="'.lroute('donations').'">'.__('pages.donations', [], $locale).'</a>',
+            '{HOW_TO_CREATE_LINK}' => '<a href="'.lroute('how-to-write-a-petition').'">'.__('pages.how_to_write_a_petition', [], $locale).'</a>',
 
             '{FAQ_URL}' => lroute('faqs'),
             '{CONTACTS_URL}' => lroute('contacts'),
-            '{FAQ_LINK}' => '<a href="'.lroute('faqs').'">FAQ</a>',
-            '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], app()->getLocale()).'</a>',
+            '{FAQ_LINK}' => '<a href="'.lroute('faqs').'">'.__('pages.faqs', [], $locale).'</a>',
+            '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], $locale).'</a>',
         ];
 
         foreach ($tokens as $key => $value) {

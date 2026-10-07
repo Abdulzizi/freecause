@@ -43,4 +43,13 @@ return [
     'surname' => 'Prenume',
     'thanks' => 'Multumim pentru semnatura!',
     'title' => 'Semneaza aceasta petitie',
+    'btn_sign' => 'Semnează',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Creează-mi contul',
+    'claim_existing' => 'Acest e-mail aparține deja unui cont FreeCause — autentificați-vă pentru a-l gestiona.',
+    'claim_password' => 'Alegeți o parolă',
+    'claim_title' => 'Creează-ți contul FreeCause',
+    'claim_verify_note' => 'Verificați căsuța poștală pentru a confirma e-mailul înainte de a vă autentifica.',
+    'connection_error' => 'Sunteți offline. Verificați conexiunea și încercați din nou.',
+    'signed_already' => 'Ați semnat această petiție.',
 ];

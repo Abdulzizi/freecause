@@ -43,4 +43,13 @@ return [
     'surname' => 'Apellido',
     'thanks' => '¡Gracias por firmar!',
     'title' => 'Firma esta petición',
+    'btn_sign' => 'Firmar',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Crear mi cuenta',
+    'claim_existing' => 'Este correo ya pertenece a una cuenta de FreeCause: inicia sesión para administrarla.',
+    'claim_password' => 'Elige una contraseña',
+    'claim_title' => 'Crea tu cuenta de FreeCause',
+    'claim_verify_note' => 'Revisa tu bandeja de entrada para verificar tu correo antes de iniciar sesión.',
+    'connection_error' => 'Estás sin conexión. Comprueba tu conexión e inténtalo de nuevo.',
+    'signed_already' => 'Ya has firmado esta petición.',
 ];

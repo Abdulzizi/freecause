@@ -43,4 +43,13 @@ return [
     'surname' => 'Familiya',
     'thanks' => 'Spasibo za podpis!',
     'title' => 'Podpisat etu peticiyu',
+    'btn_sign' => 'Подписать',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Создать аккаунт',
+    'claim_existing' => 'Этот email уже привязан к аккаунту FreeCause — войдите, чтобы управлять им.',
+    'claim_password' => 'Выберите пароль',
+    'claim_title' => 'Создайте аккаунт FreeCause',
+    'claim_verify_note' => 'Проверьте почту, чтобы подтвердить email перед входом.',
+    'connection_error' => 'Вы офлайн. Проверьте соединение и попробуйте снова.',
+    'signed_already' => 'Вы подписали эту петицию.',
 ];

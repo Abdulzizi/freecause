@@ -43,4 +43,13 @@ return [
     'surname' => 'Apelido',
     'thanks' => 'Obrigado por assinar!',
     'title' => 'Assine esta peticao',
+    'btn_sign' => 'Assinar',
+    'btn_sign_arrow' => '»',
+    'claim_btn' => 'Criar minha conta',
+    'claim_existing' => 'Este e-mail já pertence a uma conta FreeCause — entre para gerenciá-la.',
+    'claim_password' => 'Escolha uma senha',
+    'claim_title' => 'Crie sua conta FreeCause',
+    'claim_verify_note' => 'Verifique sua caixa de entrada para confirmar seu e-mail antes de entrar.',
+    'connection_error' => 'Você está offline. Verifique sua conexão e tente novamente.',
+    'signed_already' => 'Você assinou esta petição.',
 ];
