@@ -962,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function () {
     contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const btn = contactForm.querySelector('input[type="submit"]');
+        const btn = contactForm.querySelector('button[type="submit"], input[type="submit"]');
         const original = btn.value;
         btn.disabled = true;
         btn.value = contactForm.dataset.sending;

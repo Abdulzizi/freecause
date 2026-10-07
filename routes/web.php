@@ -228,14 +228,15 @@ Route::prefix('{locale}')
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
         });
 
-        // static pages — FAQ + contacts render from page_translations like the
-        // other editorial pages (admin/pages editable, no code deploy needed)
+        // static pages — FAQ renders from page_translations like the other
+        // editorial pages (admin/pages editable, no code deploy needed);
+        // contacts is a fully static Blade + translations template.
         Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))->name('faqs');
         Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))->name('how-to-write-a-petition');
         Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))->name('donations');
         Route::get('/personal-data-processing', fn (string $locale) => app(PageController::class)->showFixed($locale, 'personal-data-processing'))->name('personal-data-processing');
 
-        Route::get('/contacts', fn (string $locale) => app(PageController::class)->showFixed($locale, 'contacts'))->name('contacts');
+        Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
         Route::post('/contacts', [ContactController::class, 'send'])->name('contacts.submit')->middleware('throttle:6,1');
 
         // home + petitions

@@ -41,11 +41,32 @@ class AdminContentPagesFaqContactsTest extends TestCase
             ->assertSee('Are online petitions useful?', false);
     }
 
+    public function test_faq_page_renders_the_accordion_dropdowns(): void
+    {
+        $this->get('/en/faqs')
+            ->assertOk()
+            ->assertSee('aria-label="breadcrumb"', false)
+            ->assertSee('accordion-button collapsed', false)
+            ->assertSee('data-bs-toggle="collapse"', false);
+    }
+
     public function test_contacts_page_loads_in_english(): void
     {
         $this->get('/en/contacts')
             ->assertOk()
             ->assertSee(__('contacts.title', [], 'en'));
+    }
+
+    public function test_contacts_page_renders_the_contact_form(): void
+    {
+        $this->get('/en/contacts')
+            ->assertOk()
+            ->assertSee('id="contactForm"', false)
+            ->assertSee('action="'.route('contacts.submit', 'en').'"', false)
+            ->assertSee('name="name"', false)
+            ->assertSee('name="email"', false)
+            ->assertSee('name="text"', false)
+            ->assertSee('data-sending="', false);
     }
 
     public function test_admin_pages_list_shows_the_seeded_slugs(): void
