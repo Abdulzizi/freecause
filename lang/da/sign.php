@@ -42,7 +42,6 @@ return [
     'submit' => 'Underskriv petition',
     'surname' => 'Efternavn',
     'thanks' => 'Tak fordi du underskrev!',
-    'title' => 'Underskriv denne petition',
     'btn_sign' => 'Underskriv',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Opret min konto',

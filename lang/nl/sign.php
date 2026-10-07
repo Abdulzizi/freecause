@@ -42,7 +42,6 @@ return [
     'submit' => 'Teken petitie',
     'surname' => 'Achternaam',
     'thanks' => 'Bedankt voor het tekenen!',
-    'title' => 'Teken deze petitie',
     'btn_sign' => 'Ondertekenen',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Account aanmaken',

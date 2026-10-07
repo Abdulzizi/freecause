@@ -51,5 +51,4 @@ return [
     'submit' => 'Sign Petition',
     'surname' => 'Surname',
     'thanks' => 'Thank you for signing!',
-    'title' => 'Sign - :title',
 ];

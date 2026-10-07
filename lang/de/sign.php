@@ -42,7 +42,6 @@ return [
     'submit' => 'Petition unterschreiben',
     'surname' => 'Nachname',
     'thanks' => 'Vielen Dank für Ihre Unterschrift!',
-    'title' => 'Diese Petition unterschreiben',
     'btn_sign' => 'Unterzeichnen',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Konto erstellen',

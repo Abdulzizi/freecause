@@ -42,7 +42,6 @@ return [
     'submit' => 'Semneaza petitia',
     'surname' => 'Prenume',
     'thanks' => 'Multumim pentru semnatura!',
-    'title' => 'Semneaza aceasta petitie',
     'btn_sign' => 'Semnează',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Creează-mi contul',

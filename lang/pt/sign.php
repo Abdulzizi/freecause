@@ -42,7 +42,6 @@ return [
     'submit' => 'Assinar peticao',
     'surname' => 'Apelido',
     'thanks' => 'Obrigado por assinar!',
-    'title' => 'Assine esta peticao',
     'btn_sign' => 'Assinar',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Criar minha conta',

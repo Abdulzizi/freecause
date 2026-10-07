@@ -42,7 +42,6 @@ return [
     'submit' => 'Ypograpi',
     'surname' => 'Epitheto',
     'thanks' => 'Sas eyxaristo gia tin ypografi!',
-    'title' => 'Ypograpse tin aiti',
     'btn_sign' => 'Υπογραφή',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Δημιουργία λογαριασμού',

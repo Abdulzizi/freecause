@@ -42,7 +42,6 @@ return [
     'submit' => 'Skriv under petition',
     'surname' => 'Efternamn',
     'thanks' => 'Tack for att du skrev under!',
-    'title' => 'Skriv under denna petition',
     'btn_sign' => 'Skriv under',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Skapa mitt konto',

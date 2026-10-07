@@ -45,7 +45,6 @@ return [
     'submit' => 'Signer la petition',
     'surname' => 'Nom',
     'thanks' => 'Merci pour votre signature!',
-    'title' => 'Signer - :title',
     'claim_btn' => 'Créer mon compte',
     'claim_existing' => 'Cet e-mail appartient déjà à un compte FreeCause — connectez-vous pour le gérer.',
     'claim_password' => 'Choisissez un mot de passe',

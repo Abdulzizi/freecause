@@ -42,7 +42,6 @@ return [
     'submit' => 'Podpisat peticiyu',
     'surname' => 'Familiya',
     'thanks' => 'Spasibo za podpis!',
-    'title' => 'Podpisat etu peticiyu',
     'btn_sign' => 'Подписать',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Создать аккаунт',

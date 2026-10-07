@@ -42,7 +42,6 @@ return [
     'submit' => 'Podpisz petycje',
     'surname' => 'Nazwisko',
     'thanks' => 'Dziekuje za podpisanie!',
-    'title' => 'Podpisz te petycje',
     'btn_sign' => 'Podpisz',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Utwórz moje konto',

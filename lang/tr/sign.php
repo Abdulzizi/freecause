@@ -42,7 +42,6 @@ return [
     'submit' => 'Petitionsi imzala',
     'surname' => 'Soyad',
     'thanks' => 'Imzaladiginiz icin tesekkurler!',
-    'title' => 'Bu petitionsi imzalayin',
     'btn_sign' => 'İmzala',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Hesabımı oluştur',

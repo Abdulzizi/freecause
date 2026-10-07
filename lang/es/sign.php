@@ -42,7 +42,6 @@ return [
     'submit' => 'Firmar petición',
     'surname' => 'Apellido',
     'thanks' => '¡Gracias por firmar!',
-    'title' => 'Firma esta petición',
     'btn_sign' => 'Firmar',
     'btn_sign_arrow' => '»',
     'claim_btn' => 'Crear mi cuenta',
