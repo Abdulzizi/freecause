@@ -11,4 +11,7 @@ return [
     'text_label' => 'Text (obligatorisk)',
     'text_placeholder' => 'Text',
     'title' => 'Kontakt',
+    'sending' => 'Skickar ditt meddelande…',
+    'sent' => 'Ditt meddelande har skickats. Vi återkommer snart.',
+    'failed' => 'Meddelandet kunde inte skickas. Försök igen senare.',
 ];

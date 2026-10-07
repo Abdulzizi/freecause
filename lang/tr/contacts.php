@@ -11,4 +11,7 @@ return [
     'text_label' => 'Metin (zorunlu)',
     'text_placeholder' => 'Metin',
     'title' => 'İletişim',
+    'sending' => 'Mesajınız gönderiliyor…',
+    'sent' => 'Mesajınız gönderildi. En kısa sürede size dönüş yapacağız.',
+    'failed' => 'Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.',
 ];

@@ -11,4 +11,7 @@ return [
     'text_label' => 'Text (Pflichtfeld)',
     'text_placeholder' => 'Text',
     'title' => 'Kontakt',
+    'sending' => 'Ihre Nachricht wird gesendet…',
+    'sent' => 'Ihre Nachricht wurde gesendet. Wir melden uns bald bei Ihnen.',
+    'failed' => 'Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.',
 ];

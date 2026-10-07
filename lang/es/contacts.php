@@ -11,4 +11,7 @@ return [
     'text_label' => 'Texto (obligatorio)',
     'text_placeholder' => 'Texto',
     'title' => 'Contacto',
+    'sending' => 'Enviando tu mensaje…',
+    'sent' => 'Tu mensaje se ha enviado. Nos pondremos en contacto contigo pronto.',
+    'failed' => 'No se pudo enviar el mensaje. Inténtalo de nuevo más tarde.',
 ];

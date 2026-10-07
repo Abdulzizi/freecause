@@ -11,4 +11,7 @@ return [
     'text_label' => 'Tekst (verplicht)',
     'text_placeholder' => 'Tekst',
     'title' => 'Contact',
+    'sending' => 'Uw bericht wordt verzonden…',
+    'sent' => 'Uw bericht is verzonden. Wij nemen spoedig contact met u op.',
+    'failed' => 'Het verzenden van het bericht is mislukt. Probeer het later opnieuw.',
 ];

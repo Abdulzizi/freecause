@@ -45,4 +45,6 @@ return [
     'what_p3' => 'Sans espace pour s’exprimer, même les causes les plus simples restent invisibles.',
     'what_p4' => 'C’est pourquoi FreeCause est gratuit, indépendant et conçu pour vous.',
     'what_title' => 'Qu’est-ce qu’une pétition en ligne',
+    'blog_view_all' => 'Voir tous les articles',
+    'btn_browse_petitions' => 'Explorer les pétitions',
 ];

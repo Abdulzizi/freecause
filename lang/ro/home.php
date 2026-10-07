@@ -45,4 +45,6 @@ return [
     'what_p3' => 'Without a space to champion our causes, no matter how small or everyday they may seem, true freedom feels out of reach.',
     'what_p4' => 'That’s why we built <span class="red">FreeCause - Online Petition</span>—free, independent, and made for you.',
     'what_title' => 'What is online petition',
+    'blog_view_all' => 'Vezi toate articolele',
+    'btn_browse_petitions' => 'Explorează petiții',
 ];
