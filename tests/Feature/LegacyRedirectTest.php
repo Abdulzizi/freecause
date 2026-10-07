@@ -216,4 +216,24 @@ class LegacyRedirectTest extends TestCase
         $this->get('/en/referers/qualcosa/1')->assertStatus(404);
         $this->get('/en/invite-friends/1')->assertStatus(404);
     }
+
+    public function test_hashed_canonical_petition_url_redirects_to_base(): void
+    {
+        $this->get('/en/petition/support-nkf/122285/340a6d1488c454a893e14e13ccc2abb9')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/en/petition/support-nkf/122285');
+    }
+
+    public function test_hashed_localized_petition_word_redirects_to_canonical_petition(): void
+    {
+        $this->get('/it/petizione/salute/122285/340a6d1488c454a893e14e13ccc2abb9')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/it/petition/salute/122285');
+    }
+
+    public function test_canonical_petition_without_hash_segment_passes_through(): void
+    {
+        $this->get('/en/petition/support-nkf/122285')
+            ->assertHeaderMissing('Location');
+    }
 }

@@ -252,6 +252,14 @@ class LegacyWordRedirect
     private function petition(Request $request, Closure $next, string $locale, array $tail, bool $canonical)
     {
         $page = $this->popPage($tail);
+
+        // Legacy hashed petition URLs: /{locale}/petition/{slug}/{id}/{hex}.
+        // The trailing hex token is not a real route segment, so strip it with a
+        // permanent redirect to the canonical petition URL.
+        if ($page === null && count($tail) === 3 && ctype_digit($tail[1]) && preg_match('/^[0-9a-f]{16,}$/i', $tail[2])) {
+            return $this->redirectWithQuery($request, "/$locale/petition/{$tail[0]}/{$tail[1]}");
+        }
+
         $rest = implode('/', $tail);
 
         if ($canonical && $page === null) {
