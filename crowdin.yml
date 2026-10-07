@@ -10,3 +10,7 @@ files:
   - source: /crowdin-content/source.json
     translation: /crowdin-content/%two_letters_code%.json
     update_option: update_as_unapproved
+
+  - source: /crowdin-content/pages-source.json
+    translation: /crowdin-content/pages-%two_letters_code%.json
+    update_option: update_as_unapproved
