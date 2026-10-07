@@ -81,4 +81,56 @@ class ContentRendererTest extends TestCase
 
         $this->assertStringContainsString('{color:red}', $out);
     }
+
+    public function test_faq_accordion_builds_bootstrap_collapse_markup(): void
+    {
+        app()->setLocale('en');
+
+        $out = ContentRenderer::renderFaqAccordion(
+            '<h2>General Information</h2><h3>Are online petitions useful?</h3><p>Yes they are.</p><h3>Second question</h3><p>Answer two.</p>'
+        );
+
+        $this->assertStringContainsString('<h2 class="mb-4! text-xl! font-bold!">General Information</h2>', $out);
+        $this->assertStringContainsString('class="accordion-button collapsed"', $out);
+        $this->assertStringContainsString('data-bs-toggle="collapse" data-bs-target="#faqCollapse1"', $out);
+        $this->assertStringContainsString('<p>Yes they are.</p>', $out);
+        $this->assertStringContainsString('data-bs-parent="#faqAcc-general-information"', $out);
+        $this->assertStringContainsString('id="faqCollapse2"', $out);
+        $this->assertStringContainsString('Second question', $out);
+    }
+
+    public function test_faq_accordion_falls_back_to_plain_render_without_questions(): void
+    {
+        app()->setLocale('en');
+
+        $out = ContentRenderer::renderFaqAccordion('<h2>Heading</h2><p>Just a paragraph.</p>');
+
+        $this->assertStringNotContainsString('accordion', $out);
+        $this->assertStringContainsString('<h2>Heading</h2>', $out);
+    }
+
+    public function test_faq_accordion_replaces_tokens_in_answers(): void
+    {
+        app()->setLocale('en');
+
+        $out = ContentRenderer::renderFaqAccordion('<h2>Info</h2><h3>Q</h3><p>{CONTACTS_LINK}</p>');
+
+        $this->assertStringContainsString('>Contacts</a>', $out);
+        $this->assertStringNotContainsString('{CONTACTS_LINK}', $out);
+    }
+
+    public function test_faq_accordion_renders_placeholder_for_empty_answer(): void
+    {
+        app()->setLocale('en');
+
+        $out = ContentRenderer::renderFaqAccordion('<h2>Info</h2><h3>Q</h3><p>   </p>');
+
+        $this->assertStringContainsString('text-gray-500!">...</p>', $out);
+    }
+
+    public function test_faq_accordion_handles_null_and_empty_input(): void
+    {
+        $this->assertSame('', ContentRenderer::renderFaqAccordion(null));
+        $this->assertSame('', ContentRenderer::renderFaqAccordion(''));
+    }
 }

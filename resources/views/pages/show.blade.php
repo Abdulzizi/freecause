@@ -13,6 +13,7 @@
     @include('pages.partials.static-layout', [
         'title' => $tr->title,
         'content' => $tr->content,
+        'slug' => $tr->slug,
         'fallback' => $fallback
     ])
 @endsection
