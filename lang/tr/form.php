@@ -4,7 +4,7 @@ return [
     'cancel' => 'Iptal',
     'category' => 'Kategori (zorunlu)',
     'city' => 'Sehir',
-    'community' => 'Petitions toplulugu',
+    'community' => 'Petition topluluğu',
     'community_url' => 'Topluluk URLsi',
     'description' => 'Metin (zorunlu)',
     'goal_signatures' => 'Hedef (zorunlu)',
@@ -13,7 +13,7 @@ return [
     'preview' => 'Onizleme',
     'submit' => 'Gonder',
     'tags' => 'Etiketler',
-    'target' => 'Petitions hedefi',
+    'target' => 'Dilekçe hedefi',
     'title' => 'Baslik (zorunlu)',
     'youtube' => 'Youtube video URLsi',
 ];

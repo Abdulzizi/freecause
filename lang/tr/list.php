@@ -10,7 +10,7 @@ return [
     'search' => 'Ara',
     'clear' => 'Aramayı temizle',
     'none' => 'Kampanya bulunamadı.',
-    'sort_by' => 'Sort',
-    'sort_newest' => 'Newest',
-    'sort_signed' => 'Most signed',
+    'sort_by' => 'Sırala',
+    'sort_newest' => 'En yeni',
+    'sort_signed' => 'En çok imzalanan',
 ];
