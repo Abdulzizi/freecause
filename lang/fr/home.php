@@ -20,6 +20,7 @@ return [
     'petition_target_label' => 'destinataire pétition',
     'signatures_label' => 'signatures',
     'goal_label' => 'objectif',
+    'blog_view_all' => 'Voir tous les articles',
     'featured_none_sub' => 'aucune pétition pour cette langue',
     'featured_none_title' => 'aucune pétition mise en avant',
     'featured_read_more' => 'lire la suite',
@@ -34,6 +35,7 @@ return [
     'nav_magazine' => 'Magazine',
     'nav_startfree' => 'Commencer gratuitement',
     'recent_empty' => 'aucune activité récente',
+    'btn_browse_petitions' => 'Explorer les pétitions',
     'recent_has_signed' => 'a signé',
     'tab_featured' => 'Pétition à la une',
     'tab_recent' => 'Activités récentes',
@@ -45,6 +47,4 @@ return [
     'what_p3' => 'Sans espace pour s’exprimer, même les causes les plus simples restent invisibles.',
     'what_p4' => 'C’est pourquoi FreeCause est gratuit, indépendant et conçu pour vous.',
     'what_title' => 'Qu’est-ce qu’une pétition en ligne',
-    'blog_view_all' => 'Voir tous les articles',
-    'btn_browse_petitions' => 'Explorer les pétitions',
 ];

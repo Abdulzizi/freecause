@@ -20,6 +20,7 @@ return [
     'petition_target_label' => 'Petitions - Empfänger',
     'signatures_label' => 'Unterschriften',
     'goal_label' => 'Ziel',
+    'blog_view_all' => 'Alle Artikel anzeigen',
     'featured_none_sub' => 'no petitions yet for this locale',
     'featured_none_title' => 'no featured petition yet',
     'featured_read_more' => 'read more',
@@ -34,6 +35,7 @@ return [
     'nav_magazine' => 'Magazine',
     'nav_startfree' => 'Start Free',
     'recent_empty' => 'no recent activity yet',
+    'btn_browse_petitions' => 'Petitionen durchsuchen',
     'recent_has_signed' => 'has signed',
     'tab_featured' => 'Featured Petition',
     'tab_recent' => 'Recent activities',
@@ -45,6 +47,4 @@ return [
     'what_p3' => 'Without a space to champion our causes, no matter how small or everyday they may seem, true freedom feels out of reach.',
     'what_p4' => 'That’s why we built <span class="red">FreeCause - Online Petition</span>—free, independent, and made for you.',
     'what_title' => 'What is online petition',
-    'blog_view_all' => 'Alle Artikel anzeigen',
-    'btn_browse_petitions' => 'Petitionen durchsuchen',
 ];

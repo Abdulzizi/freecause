@@ -2,6 +2,9 @@
 
 return [
     'explore' => 'Esplora petizioni',
+    'footer_about' => '\n                    <div class="footer-logo">\n                        <img src="/legacy/images/logo7footer.png" alt="Freecause">\n                    </div>\n\n                    <p>\n                        Freecause Magazine è la tua risorsa di riferimento per storie che ispirano l\'azione e alimentano il cambiamento.\n                        Ti portiamo le ultime novità su attivismo, movimenti di comunità e cause globali,\n                        insieme a consigli di esperti su come fare la differenza con petizioni e campagne dal basso.\n                    </p>\n\n                    <p>\n                        I nostri contenuti coprono una varietà di argomenti, tra cui giustizia sociale, attivismo ambientale,\n                        diritti civili e tecnologie emergenti che stanno plasmando l\'attivismo moderno.\n                    </p>\n\n                    <p>\n                        Per domande, feedback o per segnalare imprecisioni,\n                        contattaci all\'indirizzo <a href="mailto:hello@freecause.com">hello@freecause.com</a>.\n                    </p>',
+    'footer_bottom' => '© 2026 Freecause – Freedom in Sharing™ – Freecause LLC, Albuquerque, NM, USA – Tutti i diritti riservati',
+    'footer_links' => '\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}',
     'help' => 'Aiuto',
     'home' => 'Home',
     'logout' => 'Esci',
@@ -13,7 +16,4 @@ return [
     'magazine_notice_body' => 'Questa sezione è in fase di sviluppo e sarà presto disponibile.',
     'magazine_notice_title' => 'Non ancora implementato.',
     'startfree' => 'Inizia gratis',
-    'footer_about' => '\n                    <div class="footer-logo">\n                        <img src="/legacy/images/logo7footer.png" alt="Freecause">\n                    </div>\n\n                    <p>\n                        Freecause Magazine è la tua risorsa di riferimento per storie che ispirano l\'azione e alimentano il cambiamento.\n                        Ti portiamo le ultime novità su attivismo, movimenti di comunità e cause globali,\n                        insieme a consigli di esperti su come fare la differenza con petizioni e campagne dal basso.\n                    </p>\n\n                    <p>\n                        I nostri contenuti coprono una varietà di argomenti, tra cui giustizia sociale, attivismo ambientale,\n                        diritti civili e tecnologie emergenti che stanno plasmando l\'attivismo moderno.\n                    </p>\n\n                    <p>\n                        Per domande, feedback o per segnalare imprecisioni,\n                        contattaci all\'indirizzo <a href="mailto:hello@freecause.com">hello@freecause.com</a>.\n                    </p>',
-    'footer_bottom' => '© 2026 Freecause – Freedom in Sharing™ – Freecause LLC, Albuquerque, NM, USA – Tutti i diritti riservati',
-    'footer_links' => '\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}',
 ];
