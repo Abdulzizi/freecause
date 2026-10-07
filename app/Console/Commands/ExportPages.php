@@ -38,8 +38,21 @@ class ExportPages extends Command
 
     private function blocks(string $content): array
     {
-        $parts = preg_split('/(?<=<\/p>|<\/li>|<\/h[1-6]>|<\/div>|<\/ul>|<\/ol>|<br\s*\/?>)/i', $content);
+        if (preg_match_all('/.*?(?:<\/p>|<\/li>|<\/h[1-6]>|<\/div>|<\/ul>|<\/ol>|<br\s*\/?>)/is', $content, $m) && $m[0] !== []) {
+            $blocks = [];
+            foreach ($m[0] as $block) {
+                if (trim($block) !== '') {
+                    $blocks[] = $block;
+                }
+            }
+            $tail = substr($content, strlen(implode('', $m[0])));
+            if (trim($tail) !== '') {
+                $blocks[] = $tail;
+            }
 
-        return array_values(array_filter($parts, fn ($p) => trim($p) !== ''));
+            return $blocks;
+        }
+
+        return trim($content) === '' ? [] : [$content];
     }
 }
