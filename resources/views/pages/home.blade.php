@@ -42,7 +42,7 @@
         <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <div class="fcui-card fcui-card--interactive">
+                    <div class="fcui-card">
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
@@ -69,7 +69,7 @@
                                     <div class="flex! flex-wrap! -mx-3!">
                                         <div class="w-full! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
 
-                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
+                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none! transition! duration-150! hover:shadow-lg!">
                                                 <div class="grow! shrink! basis-auto! p-5! max-sm:p-4!">
 
                                                     <span class="bg-[#ffefef]! text-[#dc3545]! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">

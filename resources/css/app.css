@@ -282,15 +282,6 @@ nav.navbar {
         overflow: hidden;
     }
 
-    .fcui-card--interactive {
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-
-    .fcui-card--interactive:hover {
-        box-shadow: var(--fc-shadow-md);
-        transform: translateY(-2px);
-    }
-
     .fcui-card__header {
         padding: 1.125rem 1.5rem;
         border-bottom: 1px solid #ede9e3;
@@ -688,10 +679,6 @@ nav.navbar {
 
     .fcui-spinner {
         animation: none;
-    }
-
-    .fcui-card--interactive {
-        transition: none;
     }
 
     .fcui-btn {
