@@ -7,6 +7,7 @@ use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\BlockBannedUser;
 use App\Http\Middleware\CanonicalHost;
 use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\ConditionalLogging;
 use App\Http\Middleware\DebugForIp;
 use App\Http\Middleware\EdgeCacheHeaders;
 use App\Http\Middleware\LegacyWordRedirect;
@@ -44,6 +45,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => CheckPermission::class,
             'no.cache' => NoCacheHeaders::class,
         ]);
+
+        $middleware->prepend(ConditionalLogging::class);
 
         $middleware->append(DebugForIp::class);
         $middleware->append(BlockBannedIp::class);
