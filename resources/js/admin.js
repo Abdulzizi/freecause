@@ -261,23 +261,6 @@ function markRowOpenFromUrl() {
     if (row) markRowOpen(row);
 }
 
-function notifyWithAction(kind, message, url, label = 'view on site') {
-    if (!url) return notify(kind, message);
-    return Swal.fire({
-        toast: true,
-        position: 'top',
-        icon: kind,
-        title: message,
-        showConfirmButton: true,
-        confirmButtonText: label,
-        confirmButtonColor: '#1a57c8',
-        timer: 6000,
-        timerProgressBar: true,
-    }).then((result) => {
-        if (result.isConfirmed) window.open(url, '_blank', 'noopener');
-    });
-}
-
 async function notifyUndoDelete(message, route, ids) {
     const result = await Swal.fire({
         toast: true,
@@ -298,8 +281,6 @@ async function notifyUndoDelete(message, route, ids) {
     notify('success', `Restored ${count} item${count === 1 ? '' : 's'}.`);
     return true;
 }
-
-window.notifyWithAction = notifyWithAction;
 
 async function runBulkAction(button, config) {
     const ids = selectedBoxes(config.checkboxSelector).map((box) => box.value);

@@ -45,13 +45,7 @@
         </div>
     </div>
 
-    @if (session('success') && session('view_url'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                window.notifyWithAction?.('success', {!! json_encode(session('success')) !!}, {!! json_encode(session('view_url')) !!});
-            });
-        </script>
-    @elseif (session('success'))
+    @if (session('success'))
         <div hidden data-admin-flash="success" data-message="{{ session('success') }}"></div>
     @elseif (session('warning'))
         <div hidden data-admin-flash="warning" data-message="{{ session('warning') }}"></div>

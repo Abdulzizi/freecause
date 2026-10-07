@@ -41,7 +41,9 @@
                                 {!! __('contacts.intro') !!}
                             </div>
 
-                            @include('pages.partials.contacts-form')
+                            <div class="w-full! max-w-[440px]!">
+                                @include('pages.partials.contacts-form')
+                            </div>
 
                         </div>
                     </div>
