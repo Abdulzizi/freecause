@@ -28,24 +28,26 @@ class ImportPages extends Command
 
         foreach ($data['pages'] ?? [] as $enSlug => $values) {
             $en = PageTranslation::where('locale', 'en')->where('slug', $enSlug)->first();
-
             if (! $en) {
                 continue;
             }
 
-            $exists = PageTranslation::where('page_id', $en->page_id)->where('locale', $locale)->exists();
-
-            if ($exists) {
+            if (PageTranslation::where('page_id', $en->page_id)->where('locale', $locale)->exists()) {
                 $skipped++;
 
                 continue;
             }
 
             $title = $values['title'] ?? $en->title;
-            $content = $values['content'] ?? null;
-
             if (! is_string($title) || trim($title) === '') {
                 $title = $en->title;
+            }
+
+            $content = $values['content'] ?? null;
+            if (is_array($content)) {
+                $content = array_filter($content, 'is_string');
+                ksort($content);
+                $content = implode('', $content);
             }
 
             PageTranslation::create([
