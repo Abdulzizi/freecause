@@ -49,17 +49,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download translations from Crowdin
-        uses: crowdin/github-action@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          config: crowdin.yml
-          upload_sources: false
-          download_translations: true
-          localization_branch_name: l10n_crowdin
-          create_pull_request: true
-          pull_request_title: 'chore(i18n): new Crowdin translations'
-          commit_message: 'chore(i18n): new Crowdin translations'
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Download translations from Crowdin
+        run: npx --yes @crowdin/cli@5 download translations
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CROWDIN_PROJECT_ID: '936363'
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Format translations
+        run: ./vendor/bin/pint lang
+
+      - name: Validate lang files
+        run: php scripts/lang-audit.php
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: l10n_crowdin
+          base: main
+          title: 'chore(i18n): new Crowdin translations'
+          commit-message: 'chore(i18n): new Crowdin translations'
+          delete-branch: true
+          body: |
+            Automated Crowdin translation sync.
+
+            - `pint lang` applied
+            - `scripts/lang-audit.php` passed
