@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Twórz wpływające petycje online i popychaj zmiany od podstaw. Rozpocznij swoją walkę już dzisiaj!",
+            "meta_keywords": "Twórz petycje, petycje online, twórz petycję, zbieranie podpisów, zbieranie znaków, petycje i przyczyny",
+            "meta_title_suffix": " - Darmowa przyczyna"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "Zmień świat!",
+            "h2": "Witaj w {SITE_NAME_LINK}, najlepszym miejscu, aby wyrzucić twoją petycję online—zróbmy kilka fali!",
+            "meta_description": "Twórz i wspieraj petycje online z FreeCause.",
+            "meta_keywords": "petycje, aktywacja, petycja online, darmowa przyczyna",
+            "text_index_left": "<p>Witaj na {SITE_NAME_LINK}, najlepszej platformie do uruchamiania petycji online. Czempion ma swoją przyczynę i sprawi, że głos będzie słyszalny!</p>\r\n<p>W dniu {SITE_NAME_LINK} wierzymy, że prawdziwa zmiana zaczyna się od osób takich jak Ty - na tyle odważnych, aby podzielić się swoimi pomysłami i zainspirować innych do podjęcia działań.</p>\r\n<p>Bez przestrzeni do walki z naszymi przyczynami, bez względu na to, jak małe czy codzienne mogą się wydawać, prawdziwa wolność czuje się pozbawiona zasięgu.</p>\r\n<p>Dlatego zbudowaliśmy {SITE_NAME_LINK}—darmowe, niezależne i stworzone dla Ciebie.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- Platforma <i>#1</i> do zbierania podpisów</li>\r\n<li>- Zawsze <i>za darmo </i> do użycia, bez dołączonych ciągów</li>\r\n<li>- Z łatwością podziel się swoją petycją we wszystkich platformach społecznościowych</li>\r\n<li>- Pobierz podpisy w <i>PDF</i> lub <i>Format DOC</i> - idealny do drukowania lub osobistego dostarczenia</li>\r\n<li>- Uzyskaj <i>maksymalną widoczność </i>, aby zwiększyć swój wpływ</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Darmowe czasopismo jest twoim zasobem dla opowieści, które inspirują akcje i wzmacniają zmianę.\n                        Dostajemy Ci najnowsze informacje na temat rzecznictwa, ruchy społeczności i przyczyny globalne,\n                        wraz z ekspertyzami dotyczącymi tego, jak można zmienić wyniki poprzez petycje i kampanie oddolne.</p>\n\n                    <p> Nasza treść obejmuje różne tematy, w tym sprawiedliwość społeczną, ochronę środowiska, prawa obywatelskie\n                        oraz nowe technologie kształtujące nowoczesną aktywizację.</p>\n\n                    <p> Dla zapytań, informacji zwrotnej lub zgłaszania niedokładności,\n                        skontaktuj się z <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Freedom in SharingTM – Freecause LLC, Albuquerque, NM, USA – Wszystkie prawa zastrzeżone",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Przeglądaj petycje",
+            "nav_help": "Pomoc",
+            "nav_login": "Logowanie",
+            "nav_logout": "Wyloguj się",
+            "nav_magazine": "Magazyn",
+            "nav_startfree": "Rozpocznij za darmo"
+        },
+        "petition_show": {
+            "auth_hint_split": "Jeśli masz już konto <a class=\"red\" href=\":login_url\">zaloguj się na</a>, , w przeciwnym razie <strong>zarejestruj konto</strong> za darmo, a następnie podpisz petycję wypełniającą poniższe pola.<br>E-mail i hasło będą danymi Twojego konta, będziesz mógł podpisać inne petycje po zalogowaniu.",
+            "auth_hint_stack": "Jeśli masz już konto <a class=\"red\" href=\":login_url\"><em>zaloguj się na</em></a>",
+            "box_embed": "Osadź kody",
+            "box_goal": "Cel",
+            "box_information": "Informacje",
+            "box_latest": "Najnowsze podpisy",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Podpisz petycję",
+            "box_tags": "Tagi",
+            "box_widgets": "Widgety",
+            "btn_sign_now": "Podpisz teraz",
+            "embed_direct": "bezpośredni link",
+            "embed_forum_no_title": "link do forum bez tytułu",
+            "embed_forum_with_title": "link do forum z tytułem",
+            "embed_html": "link do html",
+            "goal_label": "Cel: :count",
+            "goal_signatures": ":count podpisy",
+            "google_continue": "Kontynuuj z Google",
+            "info_by": "Przez:",
+            "info_in": "Do:",
+            "info_target": "Cel petycji:",
+            "latest_browse_all": "przeglądaj wszystkie podpisy »",
+            "latest_empty": "brak podpisów",
+            "or": "LUB",
+            "tags_empty": "Brak tagów",
+            "title": ":title - Darmowa przyczyna"
+        },
+        "petition_sign": {
+            "btn_sign": "Podpis",
+            "h2_line1": "Wesprzyj i podziel się swoją sprawą.",
+            "h2_line2": "Kliknij przycisk \"polubienie\" i podpisz petycję",
+            "title": "Znak - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "Nie zgadzam się",
+            "agree_yes": "Zgadzam się",
+            "agree1_title": "Potwierdzam rejestrację i zgadzam się z <a class=\"red\" href=\"#\">Użycie i Ograniczenia Usług</a>",
+            "agree2_title": "Potwierdzam, że przeczytałem <a class=\"red\" href=\"#\">Politykę prywatności</a>",
+            "agree3_title": "Zgadzam się z <a class=\"red\" href=\"#\">przetwarzaniem danych osobowych</a>",
+            "btn_sign": "Podpis",
+            "btn_sign_arrow": "»",
+            "default_comment": "Popieram tę petycję",
+            "email_warning": "Uwaga, podany adres e-mail musi być ważny w celu weryfikacji podpisu, w przeciwnym razie zostanie usunięty.",
+            "lbl_city": "Miasto (opcjonalnie)",
+            "lbl_comment": "Komentarz",
+            "lbl_email": "E-mail (obowiązkowy)",
+            "lbl_name": "Nazwa (obowiązkowa)",
+            "lbl_nickname": "Pseudonim (opcjonalnie)",
+            "lbl_password": "Wybierz hasło (obowiązkowe)",
+            "lbl_surname": "Imię (obowiązkowe)",
+            "ph_city": "Miasto (opcjonalnie)",
+            "ph_comment": "Komentarz",
+            "ph_email": "E-mail (obowiązkowy)",
+            "ph_name": "Nazwa (obowiązkowa)",
+            "ph_nickname": "Pseudonim (opcjonalnie)",
+            "ph_password": "Wybierz hasło (obowiązkowe)",
+            "ph_surname": "Imię (obowiązkowe)",
+            "privacy_hint": "Prywatność w wyszukiwarkach? Możesz użyć pseudonimu:",
+            "signed_already": "Podpisałeś tę petycję.",
+            "signed_hint": "Wesprzyj i podziel się swoją sprawą. Kliknij przycisk \"polubienie\" i podpisz petycję"
+        },
+        "petition_thanks": {
+            "h1_created": "Dzięki!",
+            "h1_signed": "Dziękujemy za podpisanie:",
+            "invite_btn": "Zaproś znajomych z książki adresowej »",
+            "p_created": "Twoja petycja została pomyślnie utworzona. Możesz ją teraz otworzyć za pomocą powyższego linku.",
+            "p_signed": "Rejestracja zakończyła się pomyślnie, jednak nadal musisz aktywować swoje konto, klikając w link, który otrzymasz wkrótce na podany adres e-mail.",
+            "suggestions_empty": "Brak sugestii.",
+            "suggestions_h2": "Petycje, które możesz polubić",
+            "title_created": "Dzięki! - Darmowa przyczyna",
+            "title_signed": "Dziękujemy za podpisanie - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Zwierzęta",
+        "c2": "Przedsiębiorstwa i przedsiębiorstwa",
+        "c3": "Życie w mieście",
+        "c4": "Kultura i społeczeństwo",
+        "c5": "Edukacja",
+        "c6": "Środowisko",
+        "c7": "Zdrowie i dobrostan",
+        "c8": "Prawa człowieka",
+        "c9": "Polityka",
+        "c10": "Nauka i technika",
+        "c11": "Sport",
+        "c12": "Podróże i turystyka",
+        "c13": "Transport",
+        "c14": "Praca i zatrudnienie",
+        "c15": "Młodzież i rodzina"
+    }
+}

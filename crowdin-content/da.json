@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Opret effektfulde online andragender og drive skifte fra bunden op. Stå op for dine årsager og samle støtte til at gøre en forskel. Start din kamp i dag!",
+            "meta_keywords": "Opret andragender, Online andragender, Opret andragende, Sign indsamling, Skilte indsamling, Underskrifter indsamling, andragender, årsager",
+            "meta_title_suffix": " - FreeCause"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "Skift verden!",
+            "h2": "Velkommen til {SITE_NAME_LINK}, det ultimative sted at sparke din online underskriftsindsamling, lad os lave nogle bølger!",
+            "meta_description": "Opret og støtte online underskriftsindsamlinger nemt med FreeCause.",
+            "meta_keywords": "andragender, aktivisme, online andragender, fritid",
+            "text_index_left": "<p>Velkommen til {SITE_NAME_LINK}, den ultimative platform for at lancere dine online andragender. Champion din årsag og gøre din stemme hørt!</p>\r\n<p>Ved {SITE_NAME_LINK} mener vi, at virkelige forandringer starter med individer som dig – dristige nok til at dele dine ideer og inspirere andre til at handle.</p>\r\n<p>Uden plads til at kæmpe for vores årsager, uanset hvor små eller daglige de måtte synes, føler virkelig frihed sig ude af rækkevidde.</p>\r\n<p>Derfor byggede vi {SITE_NAME_LINK}—gratis, uafhængig og lavet til dig.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- Platformen <i>#1</i> for at indsamle underskrifter</li>\r\n<li>- Altid <i>fri </i> at bruge, ingen strenge vedhæftet</li>\r\n<li>- Del nemt dit andragende på tværs af alle sociale platforme</li>\r\n<li>- Download signaturer i <i>PDF</i> eller <i>DOC</i> format—perfekt til udskrivning eller levering personligt</li>\r\n<li>- Få <i>maksimal synlighed</i> for at øge din effekt</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Freecause Magazine er dit foretrukne sted for historier, der inspirerer til handling og skaber forandring. Vi giver dig de nyeste indsigter om fortalervirksomhed, fællesskabsbevægelser og globale sager – samt ekspertråd om, hvordan du gør en forskel gennem underskriftindsamlinger og græsrodsbevægelser.</p>\n\n                    <p> Vores indhold dækker en række emner, herunder social retfærdighed, miljøengagement, borgerrettigheder og nye teknologier, der former moderne aktivisme.</p>\n\n                    <p> For henvendelser, feedback eller rapportering af unøjagtigheder kan du kontakte os på <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Frihed i SharingTM – Freecause LLC, Albuquerque, NM, USA – Alle rettigheder forbeholdes",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Udforsk andragender",
+            "nav_help": "Hjælp",
+            "nav_login": "Login",
+            "nav_logout": "Log Ud",
+            "nav_magazine": "Magasin",
+            "nav_startfree": "Start Gratis"
+        },
+        "petition_show": {
+            "auth_hint_split": "Hvis du allerede har en konto <a class=\"red\" href=\":login_url\">bedes du logge ind</a>, ellers <strong>registrere en konto</strong> gratis, og derefter underskrive andragendet udfylde felterne nedenfor.<br>E-mail og adgangskode vil være dine kontodata, du vil være i stand til at underskrive andre underskriftsindsamlinger efter indlogning.",
+            "auth_hint_stack": "Hvis du allerede har en konto <a class=\"red\" href=\":login_url\"><em>bedes du logge ind</em></a>",
+            "box_embed": "Indlejret Koder",
+            "box_goal": "Mål",
+            "box_information": "Information",
+            "box_latest": "Seneste Signaturer",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Underskriv Andragelsen",
+            "box_tags": "Mærker",
+            "box_widgets": "Widgets",
+            "btn_sign_now": "Log Nu",
+            "embed_direct": "direkte link",
+            "embed_forum_no_title": "link til forum uden titel",
+            "embed_forum_with_title": "link til forum med titel",
+            "embed_html": "link til html",
+            "goal_label": "Mål: :count",
+            "goal_signatures": ":count signaturer",
+            "google_continue": "Fortsæt med Google",
+            "info_by": "Af:",
+            "info_in": "Ind:",
+            "info_target": "Mål for andragende:",
+            "latest_browse_all": "gennemse alle underskrifter »",
+            "latest_empty": "ingen signaturer endnu",
+            "or": "ELLER",
+            "tags_empty": "Ingen tags",
+            "title": ":title - FreeCause"
+        },
+        "petition_sign": {
+            "btn_sign": "Underskriv",
+            "h2_line1": "Støt og del din sag.",
+            "h2_line2": "Klik venligst på \"like\" knappen og underskriv underskriftsindsamlingen",
+            "title": "Log - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "Jeg er ikke enig",
+            "agree_yes": "Jeg er enig",
+            "agree1_title": "Jeg bekræfter registrering, og jeg accepterer <a class=\"red\" href=\"#\">Usage and Limitations of Services</a>",
+            "agree2_title": "Jeg bekræfter, at jeg har læst <a class=\"red\" href=\"#\">Privacy Policy</a>",
+            "agree3_title": "Jeg accepterer <a class=\"red\" href=\"#\">Persondatabehandling</a>",
+            "btn_sign": "Underskriv",
+            "btn_sign_arrow": "»",
+            "default_comment": "Jeg støtter dette andragende",
+            "email_warning": "Opmærksomhed, den e-mail-adresse, du leverer, skal være gyldig for at validere signaturen, ellers vil den blive slettet.",
+            "lbl_city": "By (valgfri)",
+            "lbl_comment": "Kommentar",
+            "lbl_email": "E-mail (obligatorisk)",
+            "lbl_name": "Navn (obligatorisk)",
+            "lbl_nickname": "Kaldenavn (valgfrit)",
+            "lbl_password": "Vælg en adgangskode (obligatorisk)",
+            "lbl_surname": "Efternavn (obligatorisk)",
+            "ph_city": "By (valgfri)",
+            "ph_comment": "Kommentar",
+            "ph_email": "E-mail (obligatorisk)",
+            "ph_name": "Navn (obligatorisk)",
+            "ph_nickname": "Kaldenavn (valgfrit)",
+            "ph_password": "Vælg en adgangskode (obligatorisk)",
+            "ph_surname": "Efternavn (obligatorisk)",
+            "privacy_hint": "Privatliv i søgemaskinerne? Du kan bruge et kaldenavn:",
+            "signed_already": "De underskrev dette andragende.",
+            "signed_hint": "Støt og del din årsag. Klik venligst på \"som\" knappen og underskriv underskriftsindsamlingen"
+        },
+        "petition_thanks": {
+            "h1_created": "Tak!",
+            "h1_signed": "Tak fordi du har underskrevet:",
+            "invite_btn": "Inviter venner fra din adressebog »",
+            "p_created": "Din underskriftsindsamling er blevet oprettet. Du kan åbne den nu ved hjælp af linket ovenfor.",
+            "p_signed": "Registrering er vellykket, men du skal stadig aktivere din konto ved at klikke på et link, du modtager snart på den angivne e-mailadresse.",
+            "suggestions_empty": "Ingen forslag endnu.",
+            "suggestions_h2": "Andragender du måske kan lide",
+            "title_created": "Tak! - FreeCause",
+            "title_signed": "Tak fordi du har underskrevet - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Dyr",
+        "c2": "Forretning og virksomheder",
+        "c3": "City Life",
+        "c4": "Kultur og samfund",
+        "c5": "Uddannelse",
+        "c6": "Miljø",
+        "c7": "Sundhed og wellness",
+        "c8": "Menneskerettigheder",
+        "c9": "Politik",
+        "c10": "Videnskab og teknologi",
+        "c11": "Sport",
+        "c12": "Rejser og turisme",
+        "c13": "Transport",
+        "c14": "Arbejde og beskæftigelse",
+        "c15": "Unge og familie"
+    }
+}

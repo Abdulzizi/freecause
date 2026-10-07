@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Skapa effektfulla online petitioner och driva förändring från grunden Stå upp för dina orsaker och samla stöd för att göra skillnad. Starta din kamp idag!",
+            "meta_keywords": "Skapa petitioner, Upprop, Skapa petition, Signera insamling, Tecken som samlar, petitioner, orsaker",
+            "meta_title_suffix": " - FreeCause"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "Ändra världen!",
+            "h2": "Välkommen till {SITE_NAME_LINK}, den ultimata platsen att sparka igång din online petition – låt oss göra några vågor!",
+            "meta_description": "Skapa och stödja petitioner på nätet enkelt med FreeCause.",
+            "meta_keywords": "petitioner, aktivism, online petition, freecause",
+            "text_index_left": "<p>Välkommen till {SITE_NAME_LINK}, den ultimata plattformen för att lansera dina online-petitioner. Mästare din sak och göra din röst hörd!</p>\r\n<p>På {SITE_NAME_LINK} tror vi att verkliga förändringar börjar med individer som ni – djärva nog att dela med sig av era idéer och inspirera andra att vidta åtgärder.</p>\r\n<p>Utan ett utrymme att kämpa för våra orsaker, oavsett hur små eller vardagliga de än verkar, känns sann frihet utom räckhåll.</p>\r\n<p>Det är därför vi byggde {SITE_NAME_LINK}—fri, oberoende och gjord för dig.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- Plattformen <i>#1</i> för att samla signaturer</li>\r\n<li>- Alltid <i>free</i> att använda, inga bifogade strängar</li>\r\n<li>- Dela enkelt din petition på alla sociala plattformar</li>\r\n<li>- Ladda ner signaturer i <i>PDF</i> eller <i>DOC</i> -format – perfekt för att skriva ut eller leverera personligen</li>\r\n<li>- Få <i>maximal synlighet</i> för att öka din påverkan</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Freecause Magazine är din go-to resurs för berättelser som inspirerar till handling och ger förändring.\n                        Vi ger dig de senaste insikterna om opinionsbildning, samhällsrörelser och globala orsaker,\n                        tillsammans med expertråd om hur man kan göra skillnad genom petitioner och gräsrotskampanjer.</p>\n\n                    <p> Vårt innehåll spänner över en rad olika ämnen, inklusive social rättvisa, miljöpåverkan,\n                        medborgerliga rättigheter och ny teknik som formar modern aktivism.</p>\n\n                    <p> För frågor, feedback, eller för att rapportera felaktigheter,\n                        vänligen nå ut på <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Freedom in SharingTM – Freecause LLC, Albuquerque, NM, USA – Alla rättigheter förbehållna",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Utforska petitioner",
+            "nav_help": "Hjälp",
+            "nav_login": "Inloggning",
+            "nav_logout": "Utloggning",
+            "nav_magazine": "Tidning",
+            "nav_startfree": "Starta gratis"
+        },
+        "petition_show": {
+            "auth_hint_split": "Om du redan har ett konto <a class=\"red\" href=\":login_url\">vänligen logga in</a>, annars <strong>registrera ett konto</strong> gratis och sedan underteckna petitionen fylla i fälten nedan.<br>E-post och lösenord kommer att vara dina kontouppgifter, du kommer att kunna signera andra petitioner efter inloggning.",
+            "auth_hint_stack": "Om du redan har ett konto <a class=\"red\" href=\":login_url\"><em>vänligen logga in</em></a>",
+            "box_embed": "Bädda in koder",
+            "box_goal": "Mål",
+            "box_information": "Information",
+            "box_latest": "Senaste signaturer",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Signera framställningen",
+            "box_tags": "Taggar",
+            "box_widgets": "Widgetar",
+            "btn_sign_now": "Logga in nu",
+            "embed_direct": "direkt länk",
+            "embed_forum_no_title": "länk för forum utan titel",
+            "embed_forum_with_title": "länk för forum med titel",
+            "embed_html": "länk för html",
+            "goal_label": "Mål: :count",
+            "goal_signatures": ":count signaturer",
+            "google_continue": "Fortsätt med Google",
+            "info_by": "Av:",
+            "info_in": "I:",
+            "info_target": "Petition mål:",
+            "latest_browse_all": "bläddra bland alla signaturer »",
+            "latest_empty": "inga signaturer ännu",
+            "or": "ELLER",
+            "tags_empty": "Inga taggar",
+            "title": ":title - FreeCause"
+        },
+        "petition_sign": {
+            "btn_sign": "Signera",
+            "h2_line1": "Stöd och dela din sak.",
+            "h2_line2": "Klicka på \"gilla\" knappen och underteckna petitionen",
+            "title": "Signera - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "Jag håller inte med",
+            "agree_yes": "Jag godkänner",
+            "agree1_title": "Jag bekräftar registreringen och godkänner <a class=\"red\" href=\"#\">användning och begränsningar av tjänster</a>",
+            "agree2_title": "Jag bekräftar att jag har läst <a class=\"red\" href=\"#\">sekretesspolicy</a>",
+            "agree3_title": "Jag godkänner <a class=\"red\" href=\"#\">behandling av personuppgifter</a>",
+            "btn_sign": "Signera",
+            "btn_sign_arrow": "»",
+            "default_comment": "Jag stöder denna framställning",
+            "email_warning": "Uppmärksamhet, den e-postadress du anger måste vara giltig för att validera signaturen, annars kommer den att raderas.",
+            "lbl_city": "Stad (valfritt)",
+            "lbl_comment": "Kommentar",
+            "lbl_email": "E-post (obligatoriskt)",
+            "lbl_name": "Namn (obligatoriskt)",
+            "lbl_nickname": "Smeknamn (valfritt)",
+            "lbl_password": "Välj ett lösenord (obligatorisk)",
+            "lbl_surname": "Efternamn (obligatoriskt)",
+            "ph_city": "Stad (valfritt)",
+            "ph_comment": "Kommentar",
+            "ph_email": "E-post (obligatoriskt)",
+            "ph_name": "Namn (obligatoriskt)",
+            "ph_nickname": "Smeknamn (valfritt)",
+            "ph_password": "Välj ett lösenord (obligatorisk)",
+            "ph_surname": "Efternamn (obligatoriskt)",
+            "privacy_hint": "Sekretess i sökmotorerna? Du kan använda ett smeknamn:",
+            "signed_already": "Du undertecknade denna ansökan.",
+            "signed_hint": "Stöd och dela din sak. Klicka på \"gilla\" knappen och underteckna petitionen"
+        },
+        "petition_thanks": {
+            "h1_created": "Tack!",
+            "h1_signed": "Tack för att ni har undertecknat:",
+            "invite_btn": "Bjud in vänner från din adressbok »",
+            "p_created": "Din petition har skapats. Du kan nu öppna den via länken ovan.",
+            "p_signed": "Registreringen har lyckats, men du måste fortfarande aktivera ditt konto genom att klicka på en länk som du får snart på den angivna e-postadressen.",
+            "suggestions_empty": "Inga förslag än.",
+            "suggestions_h2": "Framställningar som du kanske gillar",
+            "title_created": "Tack! - FreeCause",
+            "title_signed": "Tack för att du har undertecknat - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Djur",
+        "c2": "Företag och företag",
+        "c3": "Stad Liv",
+        "c4": "Kultur och samhälle",
+        "c5": "Utbildning",
+        "c6": "Miljö",
+        "c7": "Hälsa och hälsa",
+        "c8": "Mänskliga rättigheter",
+        "c9": "Politik",
+        "c10": "Vetenskap och teknik",
+        "c11": "Sport",
+        "c12": "Resor och turism",
+        "c13": "Transport",
+        "c14": "Arbete och sysselsättning",
+        "c15": "Ungdom och familj"
+    }
+}

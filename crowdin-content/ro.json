@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Creează petiții online cu impact și schimbare de direcție de la zero. Stai în picioare pentru cauzele tale și adună sprijin pentru a face diferența. Începe lupta astăzi!",
+            "meta_keywords": "Crează petiții, petiții online, creează petiții, Colectează Semne, colectează semne, petiții, cauze",
+            "meta_title_suffix": " - FreeCauză"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "Schimbă lumea!",
+            "h2": "Bine ai venit la {SITE_NAME_LINK}, cel mai bun loc pentru a începe petiția ta online — hai să facem niște valuri!",
+            "meta_description": "Creează și sprijină petițiile online cu ușurință cu FreeCause.",
+            "meta_keywords": "petiții, activism, petiții online, pauză",
+            "text_index_left": "<p>Bine ai venit la {SITE_NAME_LINK}, cea mai bună platformă pentru lansarea petițiilor tale online. Campion cauza ta și a-ți face vocea auzită!</p>\r\n<p>La {SITE_NAME_LINK}, credem că schimbarea reală începe cu indivizi ca tine — suficient de curajoasă pentru a-ți împărtăși ideile și pentru a-i inspira pe alții să ia măsuri.</p>\r\n<p>Fără un spaţiu pentru a ne apăra cauzele, oricât de mici sau de zilnic ar putea părea, adevărata libertate se simte în afara razii.</p>\r\n<p>De aceea am construit {SITE_NAME_LINK}—liber, independent și făcut pentru tine.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- Platforma <i>#1</i> pentru a aduna semnături</li>\r\n<li>- Întotdeauna <i>free</i> de utilizat, fără șiruri atașate</li>\r\n<li>- Împărtășește cu ușurință petiția pe toate platformele sociale</li>\r\n<li>- Descărcați semnăturile în <i>PDF</i> sau <i>DOC[[Q3]– perfect pentru tipărirea sau livrarea în persoană</li>\r\n<li>- Obțineți <i>maximum vizibilitate </i> pentru a vă spori impactul</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Freecause Magazine este resursa ta de referință pentru povești care inspiră acțiunea și încurajează schimbarea. Îți oferim cele mai recente perspective despre advocacy, mișcări comunitare și cauze globale, împreună cu sfaturi de specialitate despre cum poți face o diferență prin petiții și campanii de bază.</p>\n\n                    <p> Conținutul nostru acoperă o varietate de subiecte, inclusiv justiția socială, protecția mediului, drepturile civile și tehnologiile emergente care modelează activismul modern.</p>\n\n                    <p> Pentru întrebări, feedback sau pentru a raporta inexactități, scrie-ne la <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Freedom in SharingTM – Freecause LLC, Albuquerque, NM, SUA – Toate drepturile rezervate",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Explorează petiții",
+            "nav_help": "Ajutor",
+            "nav_login": "Autentificare",
+            "nav_logout": "Deconectare",
+            "nav_magazine": "Revista",
+            "nav_startfree": "Pornește gratuit"
+        },
+        "petition_show": {
+            "auth_hint_split": "Dacă ai deja un cont <a class=\"red\" href=\":login_url\">te rugăm să te autentifici cu</a>, În caz contrar, <strong>înregistrează un cont</strong> gratuit, apoi semnează petiția completând câmpurile de mai jos.<br>E-mailul și parola vor fi datele contului tău, vei putea semna alte petiții după autentificare.",
+            "auth_hint_stack": "Dacă aveți deja un cont <a class=\"red\" href=\":login_url\"><em>vă rugăm să vă conectați la</em></a>",
+            "box_embed": "Încorporează coduri",
+            "box_goal": "Obiectiv",
+            "box_information": "Informare",
+            "box_latest": "Ultimele semnături",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Semnează petiția",
+            "box_tags": "Etichete",
+            "box_widgets": "Widget-uri",
+            "btn_sign_now": "Semnează acum",
+            "embed_direct": "link direct",
+            "embed_forum_no_title": "link pentru forum fără titlu",
+            "embed_forum_with_title": "link pentru forum cu titlu",
+            "embed_html": "link pentru html",
+            "goal_label": "Obiectiv: :count",
+            "goal_signatures": ":count semnături",
+            "google_continue": "Continuă cu Google",
+            "info_by": "Da:",
+            "info_in": "În:",
+            "info_target": "Obiectivul petiției:",
+            "latest_browse_all": "răsfoiește toate semnăturile”",
+            "latest_empty": "nicio semnătură încă",
+            "or": "SAU",
+            "tags_empty": "Nici o etichetă",
+            "title": ":title - FreeCause"
+        },
+        "petition_sign": {
+            "btn_sign": "Semnare",
+            "h2_line1": "Ajută-ți și partajează-ți cauza.",
+            "h2_line2": "Vă rugăm să faceţi clic pe butonul \"like\" şi să semnaţi petiţia",
+            "title": "Semn - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "Nu sunt de acord",
+            "agree_yes": "Sunt de acord",
+            "agree1_title": "Confirm înregistrarea şi sunt de acord cu <a class=\"red\" href=\"#\">Utilizarea şi Limitările serviciilor</a>",
+            "agree2_title": "Confirm că am citit <a class=\"red\" href=\"#\">Politica de confidenţialitate</a>",
+            "agree3_title": "Sunt de acord cu <a class=\"red\" href=\"#\">Procesarea datelor personale</a>",
+            "btn_sign": "Semnare",
+            "btn_sign_arrow": "»",
+            "default_comment": "Susţin această petiţie",
+            "email_warning": "Atenție, adresa de e-mail pe care o furnizați trebuie să fie valabilă pentru a valida semnătura, altfel aceasta va fi ștearsă.",
+            "lbl_city": "Oraș (opțional)",
+            "lbl_comment": "Comentariu",
+            "lbl_email": "E-mail (obligatoriu)",
+            "lbl_name": "Nume (obligatoriu)",
+            "lbl_nickname": "Porecla (opţional)",
+            "lbl_password": "Alegeți o parolă (obligatoriu)",
+            "lbl_surname": "Nume (obligatoriu)",
+            "ph_city": "Oraș (opțional)",
+            "ph_comment": "Comentariu",
+            "ph_email": "E-mail (obligatoriu)",
+            "ph_name": "Nume (obligatoriu)",
+            "ph_nickname": "Porecla (opţional)",
+            "ph_password": "Alegeți o parolă (obligatoriu)",
+            "ph_surname": "Nume (obligatoriu)",
+            "privacy_hint": "Confidențialitate în motoarele de căutare? Poți folosi o porecla:",
+            "signed_already": "Ați semnat această petiție.",
+            "signed_hint": "Susține și partajează-ți cauza. Te rugăm să dai click pe butonul \"like\" și să semnezi petiția"
+        },
+        "petition_thanks": {
+            "h1_created": "Mulțumesc!",
+            "h1_signed": "Vă mulțumim că v-ați semnat:",
+            "invite_btn": "Invită-ți prietenii din agendă»",
+            "p_created": "Petiția ta a fost creată cu succes. Poți să o deschizi acum folosind link-ul de mai sus.",
+            "p_signed": "Înregistrarea a reușit, dar încă trebuie să activați contul apăsând un link pe care îl veți primi în curând la adresa de e-mail furnizată.",
+            "suggestions_empty": "Nici o sugestie încă.",
+            "suggestions_h2": "Petiții care s-ar putea să-ți placă",
+            "title_created": "Mulțumesc! - Pauză liberă",
+            "title_signed": "Vă mulțumim că ați semnat - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Animale",
+        "c2": "Întreprinderi și întreprinderi",
+        "c3": "Viața Orașului",
+        "c4": "Cultură și societate",
+        "c5": "Educaţia",
+        "c6": "Mediul",
+        "c7": "Sănătate și bunăstare",
+        "c8": "Drepturile omului",
+        "c9": "Politică",
+        "c10": "Ştiinţă şi tehnologie",
+        "c11": "Sport",
+        "c12": "Călătorii și turism",
+        "c13": "Transporturi",
+        "c14": "Munca şi ocuparea forţei de muncă",
+        "c15": "Tineret și familie"
+    }
+}

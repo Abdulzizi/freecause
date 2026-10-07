@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Crea peticiones en línea impactantes e impulsa el cambio desde cero. Prepárate para tus causas y recoge apoyo para marcar la diferencia. ¡Empieza tu lucha hoy!",
+            "meta_keywords": "Crear peticiones, Peticiones en línea, Crear petición, Recopilación de firmas, Recopilación de letras, Peticiones, causas",
+            "meta_title_suffix": " - FreeCause"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "¡Cambia el mundo!",
+            "h2": "Bienvenido a {SITE_NAME_LINK}, el punto final para iniciar tu petición en línea: ¡Hagamos algunas oldas!",
+            "meta_description": "Crea y apoya peticiones en línea fácilmente con FreeCause.",
+            "meta_keywords": "peticiones, activismo, petición en línea, freecause",
+            "text_index_left": "<p>Bienvenido a {SITE_NAME_LINK}, la plataforma definitiva para lanzar sus peticiones en línea. ¡Campeone su causa y haga oír su voz!</p>\r\n<p>En {SITE_NAME_LINK}, creemos que el cambio real comienza con individuos como tú—audaces para compartir tus ideas e inspirar a otros para que tomen medidas.</p>\r\n<p>Sin un espacio para defender nuestras causas, no importa cuán pequeñas o diarias puedan parecer, la verdadera libertad se siente fuera de alcance.</p>\r\n<p>Por eso construimos {SITE_NAME_LINK}—gratis, independientes y hechos para ti.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- La plataforma <i>#1</i> para recoger firmas</li>\r\n<li>- Siempre <i>libre</i> para usar, no hay cadenas adjuntas</li>\r\n<li>- Comparte fácilmente tu petición en todas las plataformas sociales</li>\r\n<li>- Descargar firmas en formato <i>PDF</i> o <i>DOC</i>, perfecto para imprimir o entregar en persona</li>\r\n<li>- Obtén <i>visibilidad máxima</i> para mejorar tu impacto</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Freecause Magazine es tu recurso de referencia para historias que inspiran a la acción y fomentan el cambio. Te ofrecemos las últimas perspectivas sobre la defensa de causas, los movimientos comunitarios y las causas globales, junto con consejos de expertos sobre cómo marcar la diferencia mediante peticiones y campañas ciudadanas.</p>\n\n                    <p> Nuestros contenidos abarcan diversos temas, como la justicia social, la defensa del medio ambiente, los derechos civiles y las tecnologías emergentes que configuran el activismo moderno.</p>\n\n                    <p> Para consultas, comentarios o para informar de inexactitudes, escríbenos a <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Freedom in SharingTM – Freecause LLC, Albuquerque, NM, USA – Todos los derechos reservados",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Explorar peticiones",
+            "nav_help": "Ayuda",
+            "nav_login": "Ingresar",
+            "nav_logout": "Cerrar sesión",
+            "nav_magazine": "Revista",
+            "nav_startfree": "Iniciar Gratis"
+        },
+        "petition_show": {
+            "auth_hint_split": "Si ya tienes una cuenta <a class=\"red\" href=\":login_url\">inicia sesión </a>, de lo contrario <strong>registrar una cuenta</strong> gratuitamente, luego firme la petición rellenando los campos a continuación.<br>El correo electrónico y la contraseña serán los datos de tu cuenta, podrás firmar otras peticiones después de iniciar sesión.",
+            "auth_hint_stack": "Si ya tienes una cuenta <a class=\"red\" href=\":login_url\"><em>por favor inicia sesión en</em></a>",
+            "box_embed": "Insertar códigos",
+            "box_goal": "Objetivo",
+            "box_information": "Información",
+            "box_latest": "Últimas firmas",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Firma la Petición",
+            "box_tags": "Etiquetas",
+            "box_widgets": "Widgets",
+            "btn_sign_now": "Firmar ahora",
+            "embed_direct": "enlace directo",
+            "embed_forum_no_title": "enlace para el foro sin título",
+            "embed_forum_with_title": "enlace para el foro con título",
+            "embed_html": "enlace para html",
+            "goal_label": "Objetivo: :count",
+            "goal_signatures": ":count firmas",
+            "google_continue": "Continuar con Google",
+            "info_by": "Por:",
+            "info_in": "En:",
+            "info_target": "Objetivo de la Petición:",
+            "latest_browse_all": "buscar todas las firmas »",
+            "latest_empty": "aún no hay firmas",
+            "or": "O",
+            "tags_empty": "Sin etiquetas",
+            "title": ":title - FreeCause"
+        },
+        "petition_sign": {
+            "btn_sign": "Signo",
+            "h2_line1": "Apoyar y compartir su causa.",
+            "h2_line2": "Por favor, haga clic en el botón \"Me gusta\" y firme la petición",
+            "title": "Firma - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "No estoy de acuerdo",
+            "agree_yes": "Estoy de acuerdo",
+            "agree1_title": "Confirmo el registro y acepto <a class=\"red\" href=\"#\">Uso y limitaciones de servicios</a>",
+            "agree2_title": "Confirmo que he leído la <a class=\"red\" href=\"#\">Política de Privacidad</a>",
+            "agree3_title": "Estoy de acuerdo con el <a class=\"red\" href=\"#\">procesamiento de datos personales</a>",
+            "btn_sign": "Signo",
+            "btn_sign_arrow": "»",
+            "default_comment": "Apoyo esta petición",
+            "email_warning": "Atención, la dirección de correo electrónico que usted proporciona debe ser válida para validar la firma, de lo contrario se eliminará.",
+            "lbl_city": "Ciudad (opcional)",
+            "lbl_comment": "Comentario",
+            "lbl_email": "Email (obligatorio)",
+            "lbl_name": "Nombre (obligatorio)",
+            "lbl_nickname": "Apodo (opcional)",
+            "lbl_password": "Elija una contraseña (obligatoria)",
+            "lbl_surname": "Apellido (obligatorio)",
+            "ph_city": "Ciudad (opcional)",
+            "ph_comment": "Comentario",
+            "ph_email": "Email (obligatorio)",
+            "ph_name": "Nombre (obligatorio)",
+            "ph_nickname": "Apodo (opcional)",
+            "ph_password": "Elija una contraseña (obligatoria)",
+            "ph_surname": "Apellido (obligatorio)",
+            "privacy_hint": "¿Privacidad en los buscadores? Puedes usar un apodo:",
+            "signed_already": "Has firmado esta petición.",
+            "signed_hint": "Apoyar y compartir su causa. Por favor haga clic en el botón \"Me gusta\" y firme la petición"
+        },
+        "petition_thanks": {
+            "h1_created": "¡Gracias!",
+            "h1_signed": "Gracias por haber firmado:",
+            "invite_btn": "Invita a amigos de tu libreta de direcciones »",
+            "p_created": "Tu petición ha sido creada con éxito. Puedes abrirla ahora usando el enlace de arriba.",
+            "p_signed": "El registro ha sido exitoso, sin embargo todavía tienes que activar tu cuenta haciendo clic en un enlace que recibirás pronto en la dirección de correo electrónico suministrada.",
+            "suggestions_empty": "Aún no hay sugerencias.",
+            "suggestions_h2": "Peticiones que te puedan gustar",
+            "title_created": "¡Gracias! - FreeCause",
+            "title_signed": "Gracias por haber firmado - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Animales",
+        "c2": "Negocios y empresas",
+        "c3": "Vida de Ciudad",
+        "c4": "Cultura y sociedad",
+        "c5": "Educación",
+        "c6": "Entorno",
+        "c7": "Salud y bienestar",
+        "c8": "Derechos humanos",
+        "c9": "Política",
+        "c10": "Ciencia y tecnología",
+        "c11": "Deportes",
+        "c12": "Viajes y turismo",
+        "c13": "Transportación",
+        "c14": "Trabajo y empleo",
+        "c15": "Juventud y Familia"
+    }
+}

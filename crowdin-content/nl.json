@@ -1,0 +1,122 @@
+{
+    "page_contents": {
+        "global": {
+            "head_additional_html": "<meta name=\"google-site-verification\" content=\"UtT2QeEZ3xhAhygN7_ip0aRgxYNFJQ41pPzwSWZazwc\" />",
+            "meta_description": "Maak impactvolle online petities en drijf veranderingen van de basis. Sta op voor je oorzaken en verzamel ondersteuning om het verschil te maken. Begin je gevecht vandaag!",
+            "meta_keywords": "Maak petities, Online petities, Maken van een petitie, Sign collecting, borden met verzamelingen, petities, oorzaken",
+            "meta_title_suffix": " - FreeCause"
+        },
+        "home": {
+            "exclude_most_read": "65112,65113,65114,65115,65116,65117,65118,65119,65120,65121",
+            "h1": "Verander de wereld!",
+            "h2": "Welkom bij {SITE_NAME_LINK}, de ultieme plek om je online petitie af te schaffen!",
+            "meta_description": "Online petities eenvoudig maken en ondersteunen met FreeCause.",
+            "meta_keywords": "petities, activisme, online petitie, freecause",
+            "text_index_left": "<p>Welkom bij {SITE_NAME_LINK}, het ultieme platform voor het lanceren van uw online petities. Kampioen uw oorzaak en laat uw stem horen!</p>\r\n<p>Bij {SITE_NAME_LINK} geloven we dat echte veranderingen beginnen met individuen zoals jijzelf — moedig genoeg om je ideeën te delen en anderen te inspireren om actie te ondernemen.</p>\r\n<p>Zonder ruimte om onze oorzaken te bepleiten, hoe klein of dagelijks ze ook lijken, voelt echte vrijheid zich onbereikbaar.</p>\r\n<p>Daarom hebben we {SITE_NAME_LINK}—gratis, onafhankelijk en voor je gemaakt.</p>\r\n<p style=\"margin-bottom:0\" class=\"how-to-create\"><a href=\"{HOW_TO_CREATE_URL}\">Learn how to start your petition &raquo;</a></p>",
+            "text_index_right": "<p><strong>Supercharge your cause!</strong></p>\r\n<ul>\r\n<li>- Het <i>#1</i> platform om handtekeningen te verzamelen</li>\r\n<li>- Altijd <i>free</i> om te gebruiken, geen strings verbonden</li>\r\n<li>- Deel eenvoudig uw petitie op alle sociale platforms</li>\r\n<li>- Download handtekeningen in <i>PDF</i> of <i>DOC</i> formaat—perfect voor persoonlijk drukken of leveren</li>\r\n<li>- Krijg <i>maximale zichtbaarheid</i> om uw impact te vergroten</li>\r\n<li>- {ETHICAL_CODE_LINK}</li>\r\n</ul>\r\n<p><strong>Let’s build change together from the ground up!</strong></p>\r\n<p style=\"margin-bottom:0\"><a href=\"{CREATE_PETITION_URL}\">Launch your first petition now &raquo;</a></p>"
+        },
+        "layout": {
+            "footer_about": "\n                    <div class=\"footer-logo\">\n                        <img src=\"/legacy/images/logo7footer.png\" alt=\"Freecause\">\n                    </div>\n\n                    <p> Freecause Magazine is je go-to resource voor verhalen die actie inspireren en verandering stimuleren.\n                        Wij brengen je de nieuwste inzichten over advocaten, beweging van de gemeenschap en globale oorzaken,\n                        samen met deskundig advies over hoe we een verschil kunnen maken door middel van verzoekschriften en volkscampagnes.</p>\n\n                    <p> Onze inhoud omspant een verscheidenheid aan onderwerpen, waaronder sociale gerechtigheid, milieubescherming,\n                        burgerrechten en opkomende technologieën die modern activisme vormgeven.</p>\n\n                    <p> Voor vragen, feedback of om onnauwkeurigheden te melden,\n                        ga naar <a href=\"mailto:hello@freecause.com\">hello@freecause.com</a>.</p>",
+            "footer_bottom": "©️ 2026 Freecause – Vrijheid in SharingTM – Freecause LC, Albuquerque, NM, Verenigde Staten – Alle rechten voorbehouden",
+            "footer_links": "\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}"
+        },
+        "navbar": {
+            "nav_explore": "Verken petities",
+            "nav_help": "Hulp",
+            "nav_login": "Aanmelden",
+            "nav_logout": "Afmelden",
+            "nav_magazine": "Tijdschrift",
+            "nav_startfree": "Start Gratis"
+        },
+        "petition_show": {
+            "auth_hint_split": "Als je al een account hebt <a class=\"red\" href=\":login_url\">log dan in</a>, anders <strong>registreer je gratis een account</strong> en teken dan de petitie die de onderstaande velden invult.<br>E-mail en wachtwoord zullen uw accountgegevens zijn, u kunt andere petities ondertekenen na het inloggen.",
+            "auth_hint_stack": "Als je al een account hebt <a class=\"red\" href=\":login_url\"><em>log dan in</em></a>",
+            "box_embed": "Ingesloten codes",
+            "box_goal": "Doelpunt",
+            "box_information": "Informatie",
+            "box_latest": "Nieuwste handtekeningen",
+            "box_shoutbox": "Shoutbox",
+            "box_sign_title": "Onderteken de petitie",
+            "box_tags": "Labels",
+            "box_widgets": "Widgets",
+            "btn_sign_now": "Nu ondertekenen",
+            "embed_direct": "directe link",
+            "embed_forum_no_title": "link naar forum zonder titel",
+            "embed_forum_with_title": "link naar het forum met titel",
+            "embed_html": "link voor html",
+            "goal_label": "Doel: :count",
+            "goal_signatures": ":count handtekeningen",
+            "google_continue": "Ga verder met Google",
+            "info_by": "Door:",
+            "info_in": "In:",
+            "info_target": "Petitie doel:",
+            "latest_browse_all": "blader door alle handtekeningen »",
+            "latest_empty": "nog geen handtekeningen",
+            "or": "of",
+            "tags_empty": "Geen labels",
+            "title": ":title - FreeCause"
+        },
+        "petition_sign": {
+            "btn_sign": "Ondertekenen",
+            "h2_line1": "Ondersteun en deel je zaak.",
+            "h2_line2": "Klik op de \"like\" knop en onderteken de petitie",
+            "title": "Teken - :title"
+        },
+        "petition_sign_form": {
+            "agree_no": "Ik ga niet akkoord",
+            "agree_yes": "Ik ga akkoord",
+            "agree1_title": "Ik bevestig registratie en ga akkoord met <a class=\"red\" href=\"#\">gebruik en beperkingen van diensten</a>",
+            "agree2_title": "Ik bevestig dat ik het <a class=\"red\" href=\"#\">Privacybeleid</a> heb gelezen",
+            "agree3_title": "Ik ga akkoord met de <a class=\"red\" href=\"#\">Persoonlijke Data Processing</a>",
+            "btn_sign": "Ondertekenen",
+            "btn_sign_arrow": "»",
+            "default_comment": "Ik steun deze petitie",
+            "email_warning": "Let op, het e-mailadres dat u verstrekt moet geldig zijn om de handtekening te valideren, anders wordt het verwijderd.",
+            "lbl_city": "Stad (optioneel)",
+            "lbl_comment": "Opmerking",
+            "lbl_email": "E-mail (verplicht)",
+            "lbl_name": "Naam (verplicht)",
+            "lbl_nickname": "Bijnaam (optioneel)",
+            "lbl_password": "Kies een wachtwoord (verplicht)",
+            "lbl_surname": "Achternaam (verplicht)",
+            "ph_city": "Stad (optioneel)",
+            "ph_comment": "Opmerking",
+            "ph_email": "E-mail (verplicht)",
+            "ph_name": "Naam (verplicht)",
+            "ph_nickname": "Bijnaam (optioneel)",
+            "ph_password": "Kies een wachtwoord (verplicht)",
+            "ph_surname": "Achternaam (verplicht)",
+            "privacy_hint": "Privacy in de zoekmachines? Je kunt een bijnaam gebruiken:",
+            "signed_already": "Je hebt deze petitie ondertekend.",
+            "signed_hint": "Ondersteun en deel uw oorzaak. Klik op de \"like\" knop en onderteken de petitie"
+        },
+        "petition_thanks": {
+            "h1_created": "Bedankt!",
+            "h1_signed": "Bedankt voor het ondertekenen:",
+            "invite_btn": "Nodig vrienden uit vanuit uw adresboek »",
+            "p_created": "Uw petitie is succesvol aangemaakt. U kunt deze nu openen door gebruik te maken van de link hierboven.",
+            "p_signed": "Registratie is gelukt, maar u moet uw account nog steeds activeren door op een link te klikken die u binnenkort op het opgegeven e-mailadres zult ontvangen.",
+            "suggestions_empty": "Nog geen suggesties.",
+            "suggestions_h2": "Verzoekschriften die u misschien leuk vinden",
+            "title_created": "Bedankt! - FreeCause",
+            "title_signed": "Bedankt voor het ondertekenen - FreeCause"
+        }
+    },
+    "categories": {
+        "c1": "Dieren",
+        "c2": "Zakelijk en zakelijk",
+        "c3": "Stad leven",
+        "c4": "Cultuur en samenleving",
+        "c5": "Opleiding",
+        "c6": "Milieu",
+        "c7": "Gezondheid en welheid",
+        "c8": "Mensenrechten",
+        "c9": "Politiek",
+        "c10": "Wetenschap en technologie",
+        "c11": "Sport",
+        "c12": "Reizen en toerisme",
+        "c13": "Vervoer",
+        "c14": "Werk en werkgelegenheid",
+        "c15": "Jongeren en familie"
+    }
+}
