@@ -12,7 +12,7 @@ class Slug
      * The callback receives each candidate slug and must return true when that
      * slug is already in use. The first available candidate is returned.
      */
-    public static function dedupe(string $value, callable $exists, string $fallback = 'item'): string
+    public static function dedupe(string $value, callable $exists, string $fallback = 'item', ?int $maxLength = null): string
     {
         $base = Str::slug($value);
 
@@ -20,11 +20,21 @@ class Slug
             $base = Str::slug($fallback) ?: 'item';
         }
 
+        if ($maxLength !== null && Str::length($base) > $maxLength) {
+            $base = rtrim(Str::substr($base, 0, $maxLength), '-');
+        }
+
         $slug = $base;
         $suffix = 1;
 
         while ($exists($slug)) {
-            $slug = $base.'-'.$suffix++;
+            $suffixText = '-'.$suffix++;
+
+            $candidate = $maxLength !== null && Str::length($base) + Str::length($suffixText) > $maxLength
+                ? rtrim(Str::substr($base, 0, $maxLength - Str::length($suffixText)), '-').$suffixText
+                : $base.$suffixText;
+
+            $slug = $candidate;
         }
 
         return $slug;

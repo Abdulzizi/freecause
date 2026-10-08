@@ -88,13 +88,20 @@ class Petition extends Model
         return $this->translations()->where('locale', $locale)->first();
     }
 
-    public function translationOrFallback(?string $locale = null): ?PetitionTranslation
+    public function translationOrFallback(?string $locale = null, ?string $fallbackLocale = null): ?PetitionTranslation
     {
         $locale ??= app()->getLocale();
 
         $t = $this->translation($locale);
         if ($t) {
             return $t;
+        }
+
+        if ($fallbackLocale !== null && $fallbackLocale !== $locale) {
+            $t = $this->translation($fallbackLocale);
+            if ($t) {
+                return $t;
+            }
         }
 
         if ($this->relationLoaded('translations')) {

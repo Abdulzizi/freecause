@@ -11,17 +11,22 @@ use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Rules\MinCharacters;
+use App\Rules\MinWords;
 use App\Rules\SafeExternalImageUrl;
+use App\Rules\TagList;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\ImageVariants;
 use App\Support\PetitionCache;
 use App\Support\Settings;
+use App\Support\Slug;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -53,13 +58,7 @@ class PetitionController extends Controller
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
     {
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first() ?? PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->orderBy('id')
-            ->first();
+        $tr = $petition->translationOrFallback($locale);
 
         abort_if(! $tr, 404);
 
@@ -72,6 +71,96 @@ class PetitionController extends Controller
         }
 
         return $tr;
+    }
+
+    /**
+     * Shared validation rules for the create and edit petition forms. Callers
+     * add the context-only keys (goal_signatures on create, remove_image on
+     * update) and the image_url rules.
+     */
+    private function petitionRules(bool $creating): array
+    {
+        $image = $creating
+            ? ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp']
+            : ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'];
+
+        return [
+            'title' => ['required', 'string', 'max:255', new MinWords(3, 'Title')],
+            'description' => ['required', 'string', new MinCharacters(30, 'Text')],
+            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
+            'tags' => ['nullable', 'string', 'max:255', new TagList(10, 30)],
+            'image' => $image,
+            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
+            'target' => ['nullable', 'string', 'max:255'],
+            'community' => ['nullable', 'string', 'max:255'],
+            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
+            'city' => ['nullable', 'string', 'max:120'],
+        ] + ($creating
+            ? ['goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000']]
+            : ['remove_image' => ['nullable', 'boolean']]);
+    }
+
+    private function imageUrlRules(Request $request, ?string $currentUrl = null): array
+    {
+        $rules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
+
+        if (! $request->hasFile('image')
+            && filled($request->input('image_url'))
+            && $request->input('image_url') !== $currentUrl) {
+            $rules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        }
+
+        return $rules;
+    }
+
+    private function normalizeTags(?string $tags): ?string
+    {
+        $normalized = collect(explode(',', (string) $tags))
+            ->map(fn ($tag) => trim($tag))
+            ->filter()
+            ->take(10)
+            ->implode(',');
+
+        return $normalized ?: null;
+    }
+
+    /**
+     * Store and downscale an uploaded cover image, returning its public-disk
+     * path. Throws a validation error when the file cannot be processed.
+     */
+    private function storeCoverImage(UploadedFile $file): string
+    {
+        $path = $file->store('petitions', 'public');
+        $absolute = Storage::disk('public')->path($path);
+
+        try {
+            Image::read($absolute)->scaleDown(width: 800, height: 800)->save($absolute);
+            ImageVariants::ensure($absolute);
+
+            if (! Storage::disk('public')->exists($path)) {
+                throw ValidationException::withMessages([
+                    'image' => 'The image failed to save. Please try again.',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Storage::disk('public')->delete($path);
+            ImageVariants::purge($path);
+
+            if ($e instanceof ValidationException) {
+                throw $e;
+            }
+
+            throw ValidationException::withMessages([
+                'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
+            ]);
+        }
+
+        return $path;
+    }
+
+    private function imageConflict(Request $request, array $data): bool
+    {
+        return $request->hasFile('image') && filled($data['image_url'] ?? null);
     }
 
     public function index(string $locale)
@@ -172,18 +261,7 @@ class PetitionController extends Controller
             $this->recordView($request, $petition);
         }
 
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        $tr = $petition->translationOrFallback($locale, $defaultLocale);
 
         abort_if(! $tr, 404);
 
@@ -364,18 +442,7 @@ class PetitionController extends Controller
 
         $defaultLocale = default_locale();
 
-        $tr = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        $tr = $petition->translationOrFallback($locale, $defaultLocale);
 
         abort_if(! $tr, 404);
 
@@ -553,74 +620,11 @@ class PetitionController extends Controller
                 ->withInput();
         }
 
-        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
-        if (! $request->hasFile('image') && filled($request->input('image_url'))) {
-            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
-        }
-
-        $data = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-                function ($attr, $value, $fail) {
-                    $words = preg_split('/\s+/', trim((string) $value));
-                    $words = array_values(array_filter($words, fn ($w) => $w !== ''));
-                    if (count($words) < 3) {
-                        $fail('Title must contain at least 3 words.');
-                    }
-                },
-            ],
-
-            'description' => [
-                'required',
-                'string',
-                function ($attr, $value, $fail) {
-                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
-                    if (mb_strlen($text) < 30) {
-                        $fail('Text must contain at least 30 characters of meaningful content.');
-                    }
-                },
-            ],
-
-            'goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
-
-            'tags' => [
-                'nullable',
-                'string',
-                'max:255',
-                function ($attr, $value, $fail) {
-                    $tags = collect(explode(',', (string) $value))
-                        ->map(fn ($t) => trim($t))
-                        ->filter()
-                        ->values();
-
-                    if ($tags->count() > 10) {
-                        $fail('Tags: maximum 10 keywords.');
-                    }
-
-                    if ($tags->contains(fn ($t) => mb_strlen($t) > 30)) {
-                        $fail('Tags: each keyword must be 30 characters or less.');
-                    }
-                },
-            ],
-
-            'image' => ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => $imageUrlRules,
-
-            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
-
-            'target' => ['nullable', 'string', 'max:255'],
-            'community' => ['nullable', 'string', 'max:255'],
-            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
-            'city' => ['nullable', 'string', 'max:120'],
-        ], [
-            'image.prohibited_with' => 'Please choose either upload an image OR use an external image link (not both).',
-            'image_url.prohibited_with' => 'Please choose either upload an image OR use an external image link (not both).',
+        $data = $request->validate($this->petitionRules(true) + [
+            'image_url' => $this->imageUrlRules($request),
         ]);
 
-        if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
+        if ($this->imageConflict($request, $data)) {
             $conflict = 'Please choose either upload an image OR use an external image link (not both).';
 
             return back()
@@ -636,11 +640,7 @@ class PetitionController extends Controller
         try {
             return DB::transaction(function () use ($request, $data, $locale, &$newCoverImage) {
 
-                $tags = collect(explode(',', $data['tags'] ?? ''))
-                    ->map(fn ($t) => trim($t))
-                    ->filter()
-                    ->take(10)
-                    ->implode(',');
+                $tags = $this->normalizeTags($data['tags'] ?? null);
 
                 $petition = new Petition;
                 $petition->user_id = auth()->id();
@@ -648,7 +648,7 @@ class PetitionController extends Controller
                 $petition->goal_signatures = $data['goal_signatures'];
                 $petition->category_id = $data['category_id'];
                 $petition->target = $data['target'] ?? null;
-                $petition->tags = $tags ?: null;
+                $petition->tags = $tags;
                 $petition->city = $data['city'] ?? null;
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
@@ -656,26 +656,8 @@ class PetitionController extends Controller
                 $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
-                    $path = $request->file('image')->store('petitions', 'public');
-                    $newCoverImage = $path;
-                    $abs = Storage::disk('public')->path($path);
-
-                    try {
-                        Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
-                        ImageVariants::ensure($abs);
-                    } catch (\Throwable $e) {
-                        throw ValidationException::withMessages([
-                            'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
-                        ]);
-                    }
-
-                    if (! Storage::disk('public')->exists($path)) {
-                        throw ValidationException::withMessages([
-                            'image' => 'The image failed to save. Please try again.',
-                        ]);
-                    }
-
-                    $petition->cover_image = $path;
+                    $newCoverImage = $this->storeCoverImage($request->file('image'));
+                    $petition->cover_image = $newCoverImage;
                 }
 
                 $petition->save();
@@ -766,11 +748,7 @@ class PetitionController extends Controller
 
                 session()->forget("sign.{$petition->id}");
 
-                $tr = PetitionTranslation::query()
-                    ->where('petition_id', $petition->id)
-                    ->where('locale', $locale)
-                    ->first()
-                    ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+                $tr = $petition->translationOrFallback($locale);
 
                 abort_if(! $tr, 404);
 
@@ -834,15 +812,7 @@ class PetitionController extends Controller
 
         $petition = Petition::with('category')->findOrFail($id);
 
-        $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $requestedLocale)
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        $tr = $petition->translationOrFallback($requestedLocale, $defaultLocale);
 
         abort_if(! $tr, 404);
 
@@ -1120,74 +1090,11 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
-        $imageUrlRules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
-        $submittedUrl = $request->input('image_url');
-        if (! $request->hasFile('image')
-            && filled($submittedUrl)
-            && $submittedUrl !== $petition->image_url) {
-            $imageUrlRules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
-        }
-
-        $data = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-                function ($attr, $value, $fail) {
-                    $words = preg_split('/\s+/', trim((string) $value));
-                    $words = array_values(array_filter($words, fn ($w) => $w !== ''));
-                    if (count($words) < 3) {
-                        $fail('Title must contain at least 3 words.');
-                    }
-                },
-            ],
-
-            'description' => [
-                'required',
-                'string',
-                function ($attr, $value, $fail) {
-                    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
-                    if (mb_strlen($text) < 30) {
-                        $fail('Text must contain at least 30 characters of meaningful content.');
-                    }
-                },
-            ],
-
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
-
-            'tags' => [
-                'nullable',
-                'string',
-                'max:255',
-                function ($attr, $value, $fail) {
-                    $tags = collect(explode(',', (string) $value))
-                        ->map(fn ($t) => trim($t))
-                        ->filter()
-                        ->values();
-
-                    if ($tags->count() > 10) {
-                        $fail('Tags: maximum 10 keywords.');
-                    }
-                    if ($tags->contains(fn ($t) => mb_strlen($t) > 30)) {
-                        $fail('Tags: each keyword must be 30 characters or less.');
-                    }
-                },
-            ],
-
-            'image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'image_url' => $imageUrlRules,
-
-            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
-
-            'remove_image' => ['nullable', 'boolean'],
-
-            'target' => ['nullable', 'string', 'max:255'],
-            'community' => ['nullable', 'string', 'max:255'],
-            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
-            'city' => ['nullable', 'string', 'max:120'],
+        $data = $request->validate($this->petitionRules(false) + [
+            'image_url' => $this->imageUrlRules($request, $petition->image_url),
         ]);
 
-        if ($request->hasFile('image') && filled($data['image_url'] ?? null)) {
+        if ($this->imageConflict($request, $data)) {
             return back()
                 ->withInput()
                 ->withErrors([
@@ -1202,15 +1109,11 @@ class PetitionController extends Controller
         try {
             $response = DB::transaction(function () use ($request, $data, $petition, $tr, &$newCoverImage) {
 
-                $tags = collect(explode(',', $data['tags'] ?? ''))
-                    ->map(fn ($t) => trim($t))
-                    ->filter()
-                    ->take(10)
-                    ->implode(',');
+                $tags = $this->normalizeTags($data['tags'] ?? null);
 
                 $petition->category_id = $data['category_id'];
                 $petition->target = $data['target'] ?? null;
-                $petition->tags = $tags ?: null;
+                $petition->tags = $tags;
                 $petition->city = $data['city'] ?? null;
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
@@ -1220,15 +1123,9 @@ class PetitionController extends Controller
                 $petition->image_url = $data['image_url'] ?? null;
 
                 if ($request->hasFile('image')) {
-                    $path = $request->file('image')->store('petitions', 'public');
-                    $newCoverImage = $path;
-                    $abs = Storage::disk('public')->path($path);
-
-                    Image::read($abs)->scaleDown(width: 800, height: 800)->save($abs);
-                    ImageVariants::ensure($abs);
+                    $newCoverImage = $this->storeCoverImage($request->file('image'));
 
                     $petition->cover_image = $newCoverImage;
-
                     $petition->image_url = null;
                 } elseif ($request->boolean('remove_image') || filled($petition->image_url)) {
                     $petition->cover_image = null;
@@ -1353,28 +1250,15 @@ class PetitionController extends Controller
 
     private function makeUniqueSlug(string $title, string $locale, ?int $ignoreTranslationId = null): string
     {
-        $base = Str::slug($title);
-        $base = $base ?: 'petition';
-
-        if (Str::length($base) > 255) {
-            $base = rtrim(Str::substr($base, 0, 255), '-');
-        }
-
-        $slug = $base;
-        $i = 1;
-
-        while (PetitionTranslation::where('locale', $locale)
-            ->where('slug', $slug)
-            ->when($ignoreTranslationId, fn ($query) => $query->whereKeyNot($ignoreTranslationId))
-            ->exists()) {
-            $suffix = '-'.$i++;
-            $trimmed = Str::length($base) + Str::length($suffix) > 255
-                ? rtrim(Str::substr($base, 0, 255 - Str::length($suffix)), '-')
-                : $base;
-            $slug = $trimmed.$suffix;
-        }
-
-        return $slug;
+        return Slug::dedupe(
+            $title,
+            fn (string $slug) => PetitionTranslation::where('locale', $locale)
+                ->where('slug', $slug)
+                ->when($ignoreTranslationId, fn ($query) => $query->whereKeyNot($ignoreTranslationId))
+                ->exists(),
+            'petition',
+            255
+        );
     }
 
     private function youtubeId(?string $value): ?string
