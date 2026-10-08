@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Support\EdgeCachePurge;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
  * afterCommit (from the Queueable trait) keeps purge semantics: the job is
  * only pushed once the triggering DB transaction commits.
  */
-class PurgeEdgeListings implements ShouldQueue
+class PurgeEdgeListings implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -27,6 +28,8 @@ class PurgeEdgeListings implements ShouldQueue
 
     /** @var array<int, int> Sleep between attempts (seconds): 10s, 30s, 60s. */
     public $backoff = [10, 30, 60];
+
+    public int $uniqueFor = 60;
 
     public function __construct()
     {

@@ -33,7 +33,7 @@ class AddSecurityHeaders
         if ($request->is('admin') || $request->is('admin/*')) {
             $csp =
                 "default-src 'self'; ".
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".
+                "script-src 'self' 'unsafe-inline' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                     'https://ajax.googleapis.com https://accounts.google.com '.
                     'https://cdn.ckeditor.com; '.
