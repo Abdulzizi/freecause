@@ -32,7 +32,12 @@ use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\SetLocale;
 use App\Support\Settings;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::pattern('id', '[0-9]+');
 Route::pattern('slug', '[^/]+');
@@ -180,6 +185,30 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 });
 
 Route::prefix('{locale}')
+    ->middleware(['optional.session', 'setLocale', 'block.banned.ip', 'block.banned.user'])
+    ->group(function () {
+        $withoutSession = [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            ValidateCsrfToken::class,
+        ];
+
+        Route::get('/petitions', [PetitionController::class, 'index'])
+            ->withoutMiddleware($withoutSession)
+            ->name('petitions.index');
+
+        Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])
+            ->where([
+                'categorySlug' => '[^/]+',
+                'category' => '[0-9]+',
+            ])
+            ->withoutMiddleware($withoutSession)
+            ->name('petitions.byCategory');
+    });
+
+Route::prefix('{locale}')
     ->middleware(['setLocale', 'block.banned.ip', 'block.banned.user'])
     ->group(function () {
         // auth + oauth
@@ -238,12 +267,6 @@ Route::prefix('{locale}')
 
         // home + petitions
         Route::get('/', [HomeController::class, 'index'])->name('home');
-        Route::get('/petitions', [PetitionController::class, 'index'])->name('petitions.index');
-        Route::get('/petitions/category-{categorySlug}-{category}', [CategoryPetitionController::class, 'index'])
-            ->where([
-                'categorySlug' => '[^/]+',
-                'category' => '[0-9]+',
-            ])->name('petitions.byCategory');
 
         // petition creation
         Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');

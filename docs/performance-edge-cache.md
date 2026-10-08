@@ -1,30 +1,29 @@
-# Anonymous HTML edge cache: not implemented
+# Anonymous HTML edge cache
 
-The origin never made listings cacheable. `EdgeCacheHeaders` unconditionally
-sends `Cache-Control: private, no-store` with `X-FreeCause-Edge-Cache: bypass`
-for the candidate listing routes (`petitions.index`, `petitions.byCategory`).
-The on-request `edge_cache_stateless_render` marker and the `EDGE_CACHE_ENABLED`
-/ `EDGE_CACHE_TTL` origin flags were removed as unreachable scaffolding: no
-renderer ever set the marker, so the eligibility branch could not run.
+The origin renders the two listing routes (`petitions.index`,
+`petitions.byCategory`) through a stateless path when the request allows it.
 
-Only `EDGE_CACHE_PURGE_ENABLED` remains. It drives `EdgeCachePurge`, which
-targets canonical, queryless listing and category URLs in active locales.
-List cache-version bumps cover signatures, petition changes and raw-write
-invalidation paths; category translations also bump the list version. Admin page
-writes purge these listings because layout metadata may change. Purges are
-deferred until transaction commit and failures are isolated from user writes.
-The transport is synchronous after commit, bounded to five seconds per batch of
-30 URLs, and disabled by default. Implement queued, coalesced purges before any
-future activation to avoid adding write latency.
+## Origin behaviour
 
-## Why listings bypass
+`OptionalSession` runs first on the two listing routes. If the request has no
+cookies, no Authorization header and `auth()->guest()`, it sets the request
+attribute `stateless_render = true` and skips EncryptCookies,
+AddQueuedCookiesToResponse, StartSession, ShareErrorsFromSession and
+ValidateCsrfToken. Otherwise it runs those five around the rest of the stack,
+so cookie-bearing and authenticated requests keep full session, CSRF and flash
+behaviour.
 
-Laravel's web middleware runs EncryptCookies, AddQueuedCookiesToResponse,
-StartSession, ShareErrorsFromSession, ValidateCsrfToken, then SubstituteBindings.
-SetLocale subsequently stores the locale in that session. The global
-EdgeCacheHeaders middleware evaluates the final response, including cookies,
-without deleting or rewriting them, so it always marks the candidate listing
-routes `private, no-store`.
+`EdgeCacheHeaders` evaluates the final response on those routes. It sends
+`Cache-Control: public, max-age=0, s-maxage={ttl}` and
+`X-FreeCause-Edge-Cache: eligible` only when `stateless_render === true` AND
+GET AND no query string AND 200 AND text/html AND zero response cookies AND
+no Vary header. The ttl is `config('edge-cache.ttl', 600)` seconds, capped to
+1..900. Every other response gets `Cache-Control: private, no-store` and
+`X-FreeCause-Edge-Cache: bypass`. The marker is an internal request attribute
+only, never a client-controlled header; cookies are never stripped to become
+eligible.
+
+## Why the other routes bypass
 
 Home is excluded because even `/{locale}` can redirect according to
 Accept-Language, `locale_redirected_to`, user agent and prefetch headers.
@@ -32,30 +31,24 @@ Petition detail is excluded because guest sign forms contain session CSRF
 tokens, errors and old input, and recordView uses session deduplication. Navbar
 authentication, remember-me cookies and toast flash data are also personalized.
 Removing Set-Cookie after rendering would share CSRF tokens and break native POST
-signing. Skipping StartSession would break these consumers. The root, auth,
-OAuth, admin, confirmation, thanks, owner and sitemap routes are excluded.
+signing. The root, auth, OAuth, admin, confirmation, thanks, owner and sitemap
+routes are excluded.
 
-## Prerequisites for a future activation
+## Purge
 
-Implement and separately verify a stateless list/category renderer before adding
-any cache marker back. It must avoid starting or attaching any session, reading
-authentication or flash data, generating CSRF tokens or queuing cookies. Requests
-with any Cookie or Authorization header must use the normal web stack. Keep
-existing native form POST CSRF validation intact. Supporting detail later needs
-a private session/CSRF bootstrap or private form endpoint plus separate view
-tracking, with explicit review of the behavior change and JavaScript failure
-fallback. Home requires preserving its browser-language redirect behavior before
-any cache lookup can serve HTML.
+Only `EDGE_CACHE_PURGE_ENABLED` remains. It drives `EdgeCachePurge`, which
+targets canonical, queryless listing and category URLs in active locales.
+List cache-version bumps already run purges for signatures, petition changes,
+category translations and raw-write invalidation paths; admin page writes purge
+these listings because layout metadata may change. Purges are deferred until
+transaction commit and failures are isolated from user writes. The transport is
+synchronous after commit, bounded to five seconds per batch of 30 URLs, and
+disabled by default.
 
-A reintroduced origin gate would additionally require GET, no query, 200
-text/html, no Vary, no response cookies and no token markup, with TTL capped at
-900 seconds and the marker kept as an internal server attribute, never a
-client-controlled header.
+## Cloudflare rule (review before mutation)
 
-## Proposed Cloudflare rule (review before mutation)
-
-Use the existing host and the 14 supported locale paths. Do not enable this
-record unless a stateless renderer is deployed and verified:
+Cache only queryless, cookie-less, Authorization-less listing GETs on the
+existing host and the 14 supported locale paths:
 
 ```json
 {
@@ -91,12 +84,12 @@ and [default cache behavior](https://developers.cloudflare.com/cache/concepts/de
 Confirm all active locales, invalid locales and legacy redirects; first browser
 language visits must retain existing redirects. Confirm guest, session,
 remember-me, admin, OAuth, query, failed and non-HTML responses bypass. Confirm
-new stateless pages have no token, flash, account data or Set-Cookie. Apply only
-after explicit rollout authorization, then verify MISS followed by HIT for
-anonymous listings and bypass for personalized requests. Check sign, publish,
-feature, category, translation and page edits invalidate affected pages after
-transaction commit; rollback transactions must never send purge requests.
-Failures must not interrupt the user's write. Query variants stay uncached.
+new stateless pages have no token, flash, account data or Set-Cookie. Verify
+MISS followed by HIT for anonymous listings and bypass for personalized
+requests. Check sign, publish, feature, category, translation and page edits
+invalidate affected pages after transaction commit; rollback transactions must
+never send purge requests. Failures must not interrupt the user's write. Query
+variants stay uncached.
 
 Rollback is: disable the Cloudflare rule and purge any existing edge copies. No
 deployment, push, remote mutation or credentials read is part of local work.

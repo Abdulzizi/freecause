@@ -19,20 +19,24 @@ class EdgeCacheApplicationTest extends TestCase
         $this->seed([LanguageSeeder::class, UserLevelSeeder::class]);
     }
 
-    public function test_real_anonymous_listings_bypass_in_every_active_locale(): void
+    public function test_real_anonymous_listings_are_eligible_in_every_active_locale(): void
     {
         foreach (Language::where('is_active', true)->pluck('code') as $locale) {
             $response = $this->get('/'.$locale.'/petitions')->assertOk();
-            $response->assertHeader('X-FreeCause-Edge-Cache', 'bypass');
-            $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+            $response->assertHeader('X-FreeCause-Edge-Cache', 'eligible');
+            $cacheControl = $response->headers->get('Cache-Control');
+            $this->assertStringContainsString('s-maxage', $cacheControl);
+            $this->assertStringNotContainsString('no-store', $cacheControl);
+            $response->assertHeaderMissing('Set-Cookie');
         }
     }
 
     public function test_authenticated_listing_preserves_user_state_and_bypasses(): void
     {
         $user = User::factory()->create(['verified' => true]);
-        $this->actingAs($user)->get('/en/petitions')
-            ->assertOk()->assertHeader('X-FreeCause-Edge-Cache', 'bypass');
+        $response = $this->actingAs($user)->get('/en/petitions')->assertOk();
+        $response->assertHeader('X-FreeCause-Edge-Cache', 'bypass');
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $this->assertAuthenticatedAs($user);
     }
 

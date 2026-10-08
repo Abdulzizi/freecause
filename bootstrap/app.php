@@ -12,6 +12,7 @@ use App\Http\Middleware\DebugForIp;
 use App\Http\Middleware\EdgeCacheHeaders;
 use App\Http\Middleware\LegacyWordRedirect;
 use App\Http\Middleware\NoCacheHeaders;
+use App\Http\Middleware\OptionalSession;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'block.banned.user' => BlockBannedUser::class,
             'permission' => CheckPermission::class,
             'no.cache' => NoCacheHeaders::class,
+            'optional.session' => OptionalSession::class,
         ]);
 
         $middleware->prepend(ConditionalLogging::class);
