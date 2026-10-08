@@ -34,6 +34,8 @@ Without reviewers, `environment: production` is a no-op.
 
 - Host `production`: `DEPLOY_HOST`, `DEPLOY_USER` (default `root`),
   `DEPLOY_PATH` (default `/var/www/freecause`), `DEPLOY_IDENTITY`.
+  The workflow pins `DEPLOY_PATH=/var/www/freecause`; the legacy `DEPLOY_PATH`
+  repo variable (old release dir) is no longer read and should be deleted.
 - Host `rehearsal`: a throwaway layout with `manage_services=false` so it cannot
   touch live supervisor/PHP-FPM.
 - `bin/php` = `php8.3`; FPM service `php8.3-fpm`; `keep_releases` = 5.
