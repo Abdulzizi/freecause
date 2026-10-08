@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PetitionRequest;
 use App\Mail\VerifyAccountMail;
 use App\Models\Category;
 use App\Models\Language;
@@ -11,10 +12,6 @@ use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
-use App\Rules\MinCharacters;
-use App\Rules\MinWords;
-use App\Rules\SafeExternalImageUrl;
-use App\Rules\TagList;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
@@ -34,7 +31,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -71,46 +67,6 @@ class PetitionController extends Controller
         }
 
         return $tr;
-    }
-
-    /**
-     * Shared validation rules for the create and edit petition forms. Callers
-     * add the context-only keys (goal_signatures on create, remove_image on
-     * update) and the image_url rules.
-     */
-    private function petitionRules(bool $creating): array
-    {
-        $image = $creating
-            ? ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp']
-            : ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'];
-
-        return [
-            'title' => ['required', 'string', 'max:255', new MinWords(3, 'Title')],
-            'description' => ['required', 'string', new MinCharacters(30, 'Text')],
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
-            'tags' => ['nullable', 'string', 'max:255', new TagList(10, 30)],
-            'image' => $image,
-            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
-            'target' => ['nullable', 'string', 'max:255'],
-            'community' => ['nullable', 'string', 'max:255'],
-            'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
-            'city' => ['nullable', 'string', 'max:120'],
-        ] + ($creating
-            ? ['goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000']]
-            : ['remove_image' => ['nullable', 'boolean']]);
-    }
-
-    private function imageUrlRules(Request $request, ?string $currentUrl = null): array
-    {
-        $rules = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
-
-        if (! $request->hasFile('image')
-            && filled($request->input('image_url'))
-            && $request->input('image_url') !== $currentUrl) {
-            $rules[] = new SafeExternalImageUrl(4 * 1024 * 1024);
-        }
-
-        return $rules;
     }
 
     private function normalizeTags(?string $tags): ?string
@@ -432,8 +388,6 @@ class PetitionController extends Controller
             ->where('is_active', 1)
             ->firstOrFail();
 
-        // Guest confirm-form fields are scoped per petition; only merge when
-        // the stored petition matches, otherwise ignore the stale data.
         $signSessionKey = "sign.{$petition->id}";
 
         if ($request->session()->has($signSessionKey)) {
@@ -605,7 +559,7 @@ class PetitionController extends Controller
         return view('petition.create', compact('locale', 'categories'));
     }
 
-    public function store(Request $request, string $locale)
+    public function store(PetitionRequest $request, string $locale)
     {
         $uploaded = $request->file('image');
         if ($uploaded !== null && ! $uploaded->isValid()) {
@@ -619,9 +573,7 @@ class PetitionController extends Controller
                 ->withInput();
         }
 
-        $data = $request->validate($this->petitionRules(true) + [
-            'image_url' => $this->imageUrlRules($request),
-        ]);
+        $data = $request->validated();
 
         if ($this->imageConflict($request, $data)) {
             $conflict = 'Please choose either upload an image OR use an external image link (not both).';
@@ -1076,7 +1028,7 @@ class PetitionController extends Controller
         return view('petition.create', compact('petition', 'tr', 'locale', 'categories', 'mode'));
     }
 
-    public function update(Request $request, string $locale, string $slug, int $id)
+    public function update(PetitionRequest $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
         $this->requireEditable($petition);
@@ -1087,9 +1039,7 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
-        $data = $request->validate($this->petitionRules(false) + [
-            'image_url' => $this->imageUrlRules($request, $petition->image_url),
-        ]);
+        $data = $request->validated();
 
         if ($this->imageConflict($request, $data)) {
             return back()

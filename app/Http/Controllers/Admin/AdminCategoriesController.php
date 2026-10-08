@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminCategorySaveRequest;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
@@ -126,16 +127,9 @@ class AdminCategoriesController extends Controller
         ));
     }
 
-    public function save(Request $request)
+    public function save(AdminCategorySaveRequest $request)
     {
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:categories,id'],
-            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'name' => ['required', 'string', 'max:150'],
-            'slug' => ['nullable', 'string', 'max:150'],
-            'is_active' => ['nullable'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         $slug = $data['slug']
             ? Str::slug($data['slug'])

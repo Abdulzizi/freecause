@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminUserSaveRequest;
 use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
@@ -13,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminUsersController extends Controller
@@ -192,26 +192,9 @@ class AdminUsersController extends Controller
         return $q;
     }
 
-    public function save(Request $request)
+    public function save(AdminUserSaveRequest $request)
     {
-        if ($request->has('email')) {
-            $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
-        }
-
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:users,id'],
-            'username' => ['nullable', 'string', 'max:120'],
-            'first_name' => ['nullable', 'string', 'max:120'],
-            'last_name' => ['nullable', 'string', 'max:120'],
-            'nickname' => ['nullable', 'string', 'max:120'],
-            'city' => ['nullable', 'string', 'max:120'],
-            'identify_mode' => ['nullable', 'in:full,name,nick'],
-            'password' => ['nullable', 'string', 'min:8'],
-            'level' => ['nullable', 'string', 'exists:user_levels,name', 'not_in:banned'],
-            'email' => ['nullable', 'email', 'max:190', 'unique:users,email,'.(int) $request->input('id')],
-            'locale' => ['nullable', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'verified' => ['nullable'],
-        ]);
+        $data = $request->validated();
 
         $user = User::with('level')->find($data['id']);
 

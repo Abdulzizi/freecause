@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminPetitionCreateRequest;
+use App\Http\Requests\Admin\AdminPetitionSaveRequest;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Petition;
@@ -228,30 +230,9 @@ class AdminPetitionsController extends Controller
         ));
     }
 
-    public function save(Request $request)
+    public function save(AdminPetitionSaveRequest $request)
     {
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:petitions,id'],
-            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'status' => ['required', 'in:draft,published'],
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255'],
-            'text' => ['nullable', 'string'],
-            'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
-            'is_active' => ['nullable'],
-            'is_featured' => ['nullable'],
-            'user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'tags' => ['nullable', 'string', 'max:255'],
-            'youtube_url' => ['nullable', 'string', 'max:200'],
-            'target' => ['nullable', 'string', 'max:255'],
-            'community' => ['nullable', 'string', 'max:255'],
-            'community_url' => ['nullable', 'url', 'max:500'],
-            'city' => ['nullable', 'string', 'max:120'],
-            'created_at' => ['nullable', 'date'],
-            'cover_image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
-            'remove_image' => ['nullable'],
-        ]);
+        $data = $request->validated();
 
         $slugTaken = DB::table('petition_translations')
             ->where('slug', $data['slug'])
@@ -377,16 +358,9 @@ class AdminPetitionsController extends Controller
             ->with('view_url', $viewUrl);
     }
 
-    public function create(Request $request)
+    public function create(AdminPetitionCreateRequest $request)
     {
-        // Mirrors save()'s rules: goal whitelist, title length, active-language
-        // locales, category / goal typing.
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
-        ]);
+        $data = $request->validated();
 
         $locale = $data['locale'];
 
