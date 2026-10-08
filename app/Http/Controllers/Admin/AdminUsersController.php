@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\InteractsWithAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserBanRequest;
 use App\Http\Requests\Admin\AdminUserBulkRequest;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class AdminUsersController extends Controller
 {
     use ApproxRows;
+    use InteractsWithAdminLists;
 
     public function index(Request $request)
     {
@@ -274,7 +276,7 @@ class AdminUsersController extends Controller
     {
         $data = $request->validated();
 
-        $ids = $this->validatedIds($request);
+        $ids = $this->adminBulkIds($request, 'users');
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
@@ -331,7 +333,7 @@ class AdminUsersController extends Controller
 
     public function bulkUnban(Request $request)
     {
-        $ids = $this->validatedIds($request);
+        $ids = $this->adminBulkIds($request, 'users');
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
@@ -370,7 +372,7 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false, 'error' => 'You do not have permission to delete users.'], 403);
         }
 
-        $ids = $this->validatedIds($request);
+        $ids = $this->adminBulkIds($request, 'users');
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }
@@ -412,23 +414,6 @@ class AdminUsersController extends Controller
             'skipped' => count($ids) - $deleted,
             'msg' => "Deleted {$deleted} user(s)".(count($ids) > $deleted ? '; protected accounts (banned/admin/system) were skipped' : ''),
         ]);
-    }
-
-    private function validatedIds(Request $request): array
-    {
-        $validator = validator(
-            ['ids' => $request->input('ids', [])],
-            [
-                'ids' => ['required', 'array'],
-                'ids.*' => ['integer', 'exists:users,id'],
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [];
-        }
-
-        return array_map('intval', $validator->validated()['ids']);
     }
 
     public function bulkAction(AdminUserBulkRequest $request)
