@@ -22,15 +22,15 @@ class SanitizeAdminHtmlTest extends TestCase
 
     public function test_keeps_relative_links_and_anchors(): void
     {
-        $this->assertSame('<a href="/en/foo">x</a>', sanitizeAdminHtml('<a href="/en/foo">x</a>'));
-        $this->assertSame('<a href="foo/bar">x</a>', sanitizeAdminHtml('<a href="foo/bar">x</a>'));
-        $this->assertSame('<a href="#top">x</a>', sanitizeAdminHtml('<a href="#top">x</a>'));
+        $this->assertSame('<a href="/en/foo" rel="noopener">x</a>', sanitizeAdminHtml('<a href="/en/foo">x</a>'));
+        $this->assertSame('<a href="foo/bar" rel="noopener">x</a>', sanitizeAdminHtml('<a href="foo/bar">x</a>'));
+        $this->assertSame('<a href="#top" rel="noopener">x</a>', sanitizeAdminHtml('<a href="#top">x</a>'));
     }
 
     public function test_keeps_mailto_and_tel_links(): void
     {
-        $this->assertSame('<a href="mailto:a@b.com">m</a>', sanitizeAdminHtml('<a href="mailto:a@b.com">m</a>'));
-        $this->assertSame('<a href="tel:+123">t</a>', sanitizeAdminHtml('<a href="tel:+123">t</a>'));
+        $this->assertSame('<a href="mailto:a&#64;b.com" rel="noopener">m</a>', sanitizeAdminHtml('<a href="mailto:a@b.com">m</a>'));
+        $this->assertSame('<a href="tel:&#43;123" rel="noopener">t</a>', sanitizeAdminHtml('<a href="tel:+123">t</a>'));
     }
 
     public function test_removes_script_element_and_its_contents(): void
@@ -57,7 +57,7 @@ class SanitizeAdminHtmlTest extends TestCase
 
         $this->assertStringNotContainsString('onerror', $out);
         $this->assertStringNotContainsString('alert(1)', $out);
-        $this->assertSame('<img src="/a.png" alt="a">', $out);
+        $this->assertSame('<img src="/a.png" alt="a" />', $out);
     }
 
     public function test_removes_style_attribute(): void
@@ -73,7 +73,7 @@ class SanitizeAdminHtmlTest extends TestCase
         $out = sanitizeAdminHtml('<a href="javascript:alert(1)">x</a>');
 
         $this->assertStringNotContainsString('javascript', $out);
-        $this->assertSame('<a>x</a>', $out);
+        $this->assertSame('<a rel="noopener">x</a>', $out);
     }
 
     public function test_removes_encoded_javascript_href(): void
@@ -81,7 +81,7 @@ class SanitizeAdminHtmlTest extends TestCase
         $out = sanitizeAdminHtml('<a href="jav&#x61;script:alert(1)">x</a>');
 
         $this->assertStringNotContainsString('script', $out);
-        $this->assertSame('<a>x</a>', $out);
+        $this->assertSame('<a rel="noopener">x</a>', $out);
     }
 
     public function test_removes_whitespace_split_javascript_href(): void
@@ -89,7 +89,7 @@ class SanitizeAdminHtmlTest extends TestCase
         $out = sanitizeAdminHtml("<a href=\"java\tscript:alert(1)\">x</a>");
 
         $this->assertStringNotContainsString('script', $out);
-        $this->assertSame('<a>x</a>', $out);
+        $this->assertSame('<a rel="noopener">x</a>', $out);
     }
 
     public function test_removes_data_uri_src(): void
@@ -97,13 +97,13 @@ class SanitizeAdminHtmlTest extends TestCase
         $out = sanitizeAdminHtml('<img src="data:text/html;base64,PHNjcmlwdD4=" alt="x">');
 
         $this->assertStringNotContainsString('data:', $out);
-        $this->assertSame('<img alt="x">', $out);
+        $this->assertSame('<img alt="x" />', $out);
     }
 
     public function test_removes_protocol_relative_urls(): void
     {
-        $this->assertSame('<a>x</a>', sanitizeAdminHtml('<a href="//evil.test/x">x</a>'));
-        $this->assertSame('<img alt="x">', sanitizeAdminHtml('<img src="//evil.test/x.png" alt="x">'));
+        $this->assertSame('<a rel="noopener">x</a>', sanitizeAdminHtml('<a href="//evil.test/x">x</a>'));
+        $this->assertSame('<img alt="x" />', sanitizeAdminHtml('<img src="//evil.test/x.png" alt="x">'));
     }
 
     public function test_removes_srcset(): void
@@ -111,7 +111,7 @@ class SanitizeAdminHtmlTest extends TestCase
         $out = sanitizeAdminHtml('<img src="/a.png" srcset="data:text/html,<script>alert(1)</script>">');
 
         $this->assertStringNotContainsString('srcset', $out);
-        $this->assertSame('<img src="/a.png">', $out);
+        $this->assertSame('<img src="/a.png" />', $out);
     }
 
     public function test_removes_svg_with_onload(): void
@@ -142,16 +142,16 @@ class SanitizeAdminHtmlTest extends TestCase
         $this->assertSame('<p>ok</p>', $out);
     }
 
-    public function test_unwraps_unknown_tag_keeping_text(): void
+    public function test_drops_unknown_tags_with_their_contents(): void
     {
-        $this->assertSame('bar', sanitizeAdminHtml('<foo>bar</foo>'));
-        $this->assertSame('<p>a b</p>', sanitizeAdminHtml('<p>a <marquee>b</marquee></p>'));
+        $this->assertSame('', sanitizeAdminHtml('<foo>bar</foo>'));
+        $this->assertSame('<p>a </p>', sanitizeAdminHtml('<p>a <marquee>b</marquee></p>'));
     }
 
     public function test_keeps_layout_containers_with_class_only(): void
     {
         $this->assertSame(
-            '<div class="footer-logo"><img src="/legacy/images/logo7footer.png" alt="Freecause"></div>',
+            '<div class="footer-logo"><img src="/legacy/images/logo7footer.png" alt="Freecause" /></div>',
             sanitizeAdminHtml('<div class="footer-logo" style="display:none"><img src="/legacy/images/logo7footer.png" alt="Freecause" onload="x()"></div>')
         );
         $this->assertSame('<section class="a">t</section>', sanitizeAdminHtml('<section class="a">t</section>'));
@@ -167,15 +167,15 @@ class SanitizeAdminHtmlTest extends TestCase
         $this->assertStringContainsString('<h3>Title</h3>', $out);
         $this->assertStringContainsString('<li><strong>a</strong> <em>b</em></li>', $out);
         $this->assertStringContainsString('<td colspan="2">c</td>', $out);
-        $this->assertStringContainsString('<hr>', $out);
+        $this->assertStringContainsString('<hr />', $out);
         $this->assertStringNotContainsString('border', $out);
     }
 
     public function test_neutralizes_class_attribute(): void
     {
         $this->assertSame('<p class="a b">x</p>', sanitizeAdminHtml('<p class="a b" onclick="alert(1)">x</p>'));
-        $this->assertSame('<p class="ab">x</p>', sanitizeAdminHtml('<p class="a&quot;b">x</p>'));
-        $this->assertSame('<p class="abc">x</p>', sanitizeAdminHtml('<p class="a<b>c">x</p>'));
+        $this->assertSame('<p class="a&#34;b">x</p>', sanitizeAdminHtml('<p class="a&quot;b">x</p>'));
+        $this->assertSame('<p class="a&lt;b&gt;c">x</p>', sanitizeAdminHtml('<p class="a<b>c">x</p>'));
     }
 
     public function test_removes_comments_and_keeps_surrounding_text(): void

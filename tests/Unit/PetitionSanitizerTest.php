@@ -16,13 +16,11 @@ class PetitionSanitizerTest extends TestCase
             '<ul><li>a</li></ul><ol><li>b</li></ol>',
             sanitizePetitionHtml('<ul><li>a</li></ul><ol><li>b</li></ol>')
         );
-        $this->assertSame('<br>one<br>two', sanitizePetitionHtml('<br>one<br>two'));
+        $this->assertSame('<br />one<br />two', sanitizePetitionHtml('<br>one<br>two'));
     }
 
     public function test_b_and_i_tags_are_unwrapped_keeping_text(): void
     {
-        // b/i sit outside the allowlist, so sanitizeDomNode unwraps them before
-        // the str_ireplace pass can ever see a <b>/<i> element.
         $this->assertSame('x', sanitizePetitionHtml('<b>x</b>'));
         $this->assertSame('y', sanitizePetitionHtml('<i>y</i>'));
         $this->assertSame('<p>axc</p>', sanitizePetitionHtml('<p>a<b>x</b>c</p>'));
@@ -33,10 +31,10 @@ class PetitionSanitizerTest extends TestCase
         $this->assertSame('<p>t</p>', sanitizePetitionHtml('<p class="x" onclick="y()">t</p>'));
     }
 
-    public function test_unwraps_unknown_tags_keeping_text(): void
+    public function test_drops_unknown_tags_with_their_contents(): void
     {
-        $this->assertSame('bar', sanitizePetitionHtml('<foo>bar</foo>'));
-        $this->assertSame('bar', sanitizePetitionHtml('<foo bar="1">bar</foo>'));
+        $this->assertSame('', sanitizePetitionHtml('<foo>bar</foo>'));
+        $this->assertSame('', sanitizePetitionHtml('<foo bar="1">bar</foo>'));
     }
 
     public function test_nested_unknown_elements_do_not_leak_unsafe_content(): void

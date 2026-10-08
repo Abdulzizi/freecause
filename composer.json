@@ -15,7 +15,8 @@
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.24",
         "predis/predis": "^3.4",
-        "spatie/laravel-backup": "^10.2"
+        "spatie/laravel-backup": "^10.2",
+        "symfony/html-sanitizer": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
