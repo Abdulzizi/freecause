@@ -4,7 +4,7 @@
 
 @section('content')
     <section class="py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! justify-center!">
                 <div class="w-full! shrink-0! grow-0! px-3! md:w-2/3! lg:w-1/2!">
                     <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-[1rem]! shadow-[0_1rem_3rem_rgba(0,0,0,0.175)]!">
@@ -45,6 +45,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </x-ui.container>
     </section>
 @endsection

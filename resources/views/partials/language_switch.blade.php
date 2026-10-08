@@ -14,7 +14,7 @@
     </button>
 
     <div class="dropdown-menu w-full! shadow-sm! border-0! mt-2! rounded-xl! start-0! end-0! top-full! min-w-0! m-0! block! opacity-0! -translate-y-2.5! pointer-events-none! transition-[opacity,transform]! duration-[220ms]! ease-[cubic-bezier(0.4,0,0.2,1)]! [&.show]:opacity-100! [&.show]:translate-y-0! [&.show]:pointer-events-auto!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]! py-4!">
+        <x-ui.container class="py-4!">
             <div class="flex! flex-wrap! gap-2!">
                 @foreach ($languages as $lang)
                     <a class="flex! items-center! gap-2! px-[10px]! py-[6px]! rounded-[10px]! bg-white! border! border-[#eee]! text-sm! text-[#cc1f1f]! focus-visible:outline-none! focus-visible:ring-2! focus-visible:ring-[#cc1f1f]! {{ $lang->code === $locale ? 'border-[#cc1f1f]! bg-[#fff5f5]!' : '' }}"
@@ -28,6 +28,6 @@
                     </a>
                 @endforeach
             </div>
-        </div>
+        </x-ui.container>
     </div>
 </div>

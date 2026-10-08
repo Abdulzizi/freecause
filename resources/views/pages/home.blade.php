@@ -15,7 +15,7 @@
 @section('content')
 
     <section id="welcomes" class="bg-[#f8f9fa]! pt-14! pb-16! md:pt-24! md:pb-20!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! items-center! justify-center!">
                 <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3! text-center!">
 
@@ -35,11 +35,11 @@
 
                 </div>
             </div>
-        </div>
+        </x-ui.container>
     </section>
 
     <section class="bg-[#f9fafb]! py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
                     <div class="fcui-card">
@@ -48,14 +48,14 @@
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
-                                    <i class="fa fa-home" aria-hidden="true"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                                     {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
-                                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ __('home.tab_recent') }}
                                 </button>
                             </li>
@@ -72,7 +72,7 @@
                                             <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none! transition! duration-150! hover:shadow-lg!">
                                                 <div class="grow! shrink! basis-auto! p-5! max-sm:p-4!">
 
-                                                    <span class="bg-[#ffefef]! text-[#dc3545]! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
+                                                    <span class="bg-[#ffefef]! text-danger! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
@@ -186,7 +186,7 @@
                                                                         </strong>
                                                                     </p>
 
-                                                                    <span class="text-[#cc1f1f]! text-sm! group-hover:text-white!">
+                                                                    <span class="text-brand! text-sm! group-hover:text-white!">
                                                                         {{ $sig->created_at ? \Carbon\Carbon::parse($sig->created_at)->diffForHumans() : '' }}
                                                                     </span>
                                                                 </div>
@@ -204,7 +204,7 @@
                                                             <div class="text-[#6c757d]! p-2!">
                                                                 {{ __('home.recent_empty') }}
                                                                 &mdash;
-                                                                <a href="{{ lroute('petitions.index') }}" class="text-[#cc1f1f]! group-hover:text-white!">
+                                                                <a href="{{ lroute('petitions.index') }}" class="text-brand! group-hover:text-white!">
                                                                     {{ __('home.btn_browse_petitions') }}
                                                                 </a>
                                                             </div>
@@ -223,11 +223,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </x-ui.container>
     </section>
 
     <section class="py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
 
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
@@ -255,11 +255,11 @@
                 </div>
 
             </div>
-        </div>
+        </x-ui.container>
     </section>
 
     <section class="py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! mb-6!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
                     <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">{{ __('home.categories_title') }}</h2>
@@ -270,19 +270,19 @@
                 @foreach ($categories as $cat)
                     <div class="w-full! lg:w-1/4! sm:w-1/2! shrink-0! grow-0! px-3! mb-4!">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                            class="bg-white! border! border-[#eee]! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! block!">
+                            class="bg-white! border! border-border! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! block!">
                             <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
                             <h3 class="text-base! md:text-base!">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
                 @endforeach
             </div>
-        </div>
+        </x-ui.container>
     </section>
 
     @if (count($magazinePosts) > 0)
     <section class="bg-[#f9fafb]! py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="text-center! mb-6!">
                 <h2 class="mb-2!">{{ __('home.blog_title') }}</h2>
                 <p class="text-[#6c757d]!">{{ __('home.blog_subtitle') }}
@@ -303,7 +303,7 @@
                                 </div>
                                 <div class="p-5! bg-white! min-h-[146px]!">
                                     <h3 class="text-base! md:text-base! mb-2.5! text-black!">{{ $post->post_title }}</h3>
-                                    <span class="text-[#cc1f1f]!">
+                                    <span class="text-brand!">
                                     {{ __('home.blog_read_more') }}
                                     <span class="ml-1.5!">›</span>
                                     </span>
@@ -319,7 +319,7 @@
                     {{ __('home.blog_view_all') }}
                 </x-ui.button>
             </div>
-        </div>
+        </x-ui.container>
     </section>
     @endif
 @endsection

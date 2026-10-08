@@ -8,7 +8,7 @@
 
 @section('content')
     <section class="py-12!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
 
             <div class="mb-6!">
                 <h1 class="mb-2! text-2xl! font-semibold!">{{ __('errors.503_title') }}</h1>
@@ -25,6 +25,6 @@
                 <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.503_btn') }}</x-ui.button>
             </div>
 
-        </div>
+        </x-ui.container>
     </section>
 @endsection

@@ -32,7 +32,7 @@
 
 @section('content')
     <section class="py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]! max-w-[820px]! mx-auto!">
 
                 <h1 class="mb-4! text-2xl! md:text-[28px]!">
@@ -112,6 +112,6 @@
                     {{ $inviteBtnText }}
                 </x-ui.button>
             </div>
-        </div>
+        </x-ui.container>
     </section>
 @endsection

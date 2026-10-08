@@ -69,16 +69,16 @@
 
 @section('content')
     <section class="py-14! md:py-24!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
 
             {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="mb-4!">
                 <ol class="breadcrumb text-[13px]! mb-0!">
                     <li class="breadcrumb-item">
-                        <a href="{{ lroute('home') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_home') }}</a>
+                        <a href="{{ lroute('home') }}" class="text-brand!">{{ __('show.breadcrumb_home') }}</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ lroute('petitions.index') }}" class="text-[#cc1f1f]!">{{ __('show.breadcrumb_petitions') }}</a>
+                        <a href="{{ lroute('petitions.index') }}" class="text-brand!">{{ __('show.breadcrumb_petitions') }}</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         {{ \Illuminate\Support\Str::limit($petitionTitle, 55) }}
@@ -86,10 +86,10 @@
                 </ol>
             </nav>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border!">
                 <div data-confetti-on-load data-confetti-threshold="{{ in_array(true, [$pct>=100, $pct>=75, $pct>=50, $pct>=25], true) ? 1 : 0 }}" hidden></div>
                 @if ($pct >= 80 && $pct < 100 && !$hasSigned)
-                    <div class="flex! items-center! gap-2! bg-[#fff5f5]! border! border-[#cc1f1f]! text-[#cc1f1f]! rounded-[.5rem]! px-4! py-3! mb-4! text-[14px]! font-semibold!" role="status">
+                    <div class="flex! items-center! gap-2! bg-[#fff5f5]! border! border-brand! text-brand! rounded-[.5rem]! px-4! py-3! mb-4! text-[14px]! font-semibold!" role="status">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
                             <path d="M12 9v4"></path>
                             <path d="M12 17h.01"></path>
@@ -119,7 +119,7 @@
                         </span>
                     @endif
                     @if ($petition->is_featured)
-                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-[#fff5f5]! text-[#cc1f1f]! border! border-[#f3c6c6]! px-2.5! py-[3px]! text-[12px]! font-semibold!">
+                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-[#fff5f5]! text-brand! border! border-[#f3c6c6]! px-2.5! py-[3px]! text-[12px]! font-semibold!">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
@@ -139,23 +139,23 @@
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-[#1877f2]! text-white!"
                        aria-label="Share on Facebook">
-                        <i class="fa fa-facebook"></i> Facebook
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg> Facebook
                     </a>
                     <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-black! text-white!"
                        aria-label="Share on Twitter">
-                        <i class="fa fa-twitter"></i> Twitter
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.953 4.57a10 10 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723 9.86 9.86 0 0 1-3.127 1.184 4.92 4.92 0 0 0-8.384 4.482A13.94 13.94 0 0 1 1.64 3.162a4.822 4.822 0 0 0-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 0 1-2.228-.616v.06a4.923 4.923 0 0 0 3.946 4.827 4.996 4.996 0 0 1-2.212.085 4.936 4.936 0 0 0 4.604 3.417A9.867 9.867 0 0 1 2 20.126a13.995 13.995 0 0 0 7.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0 0 24 4.59z"/></svg> Twitter
                     </a>
                     <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.request()->url()) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-[#25d366]! text-white!"
                        aria-label="Share on WhatsApp">
-                        <i class="fa fa-whatsapp"></i> WhatsApp
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp
                     </a>
                     <button type="button" id="copyPetitionLink" class="fc-share-copy inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline!"
                             data-url="{{ request()->url() }}"
                             data-copied-label="{{ __('show.link_copied') }}"
                             aria-label="Copy link">
-                        <i class="fa fa-link"></i> {{ __('show.copy_link') }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> {{ __('show.copy_link') }}
                     </button>
                 </div>
 
@@ -189,7 +189,7 @@
 
                         <div class="border-t-[2px_dotted_#ccc]! border-b-[1px_dotted_#bbb]! my-6!"></div>
 
-                        <div id="signFormBottom" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! border! border-[#eee]!">
+                        <div id="signFormBottom" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! border! border-border!">
                             <h2 class="text-lg! font-semibold!">{{ $boxSignTitle }}</h2>
 
                             @include('partials.gradient-divider')
@@ -203,7 +203,7 @@
                                     </a>
                                 </div>
 
-                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-[#ddd]!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
+                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-border!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
 
                                 <p class="mb-4!">{!! $authHintSplit !!}</p>
                             @endif
@@ -228,7 +228,7 @@
                                         <div class="grow!">
                                             <div class="flex! items-center! gap-2! flex-wrap!">
                                                 @if ($comment->user)
-                                                    <a class="font-semibold! text-[15px]! text-[#cc1f1f]!"
+                                                    <a class="font-semibold! text-[15px]! text-brand!"
                                                         href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($comment->user->name ?? 'user') ?: 'user', 'id' => $comment->user_id]) }}">
                                                         {{ $comment->name ?? $comment->user->name ?? __('sig.anonymous') }}
                                                     </a>
@@ -256,7 +256,7 @@
                     </div>
 
                     <div class="w-full! lg:w-1/3! shrink-0! px-3!">
-                        <div id="signFormTop" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! mb-6! border! border-[#eee]!">
+                        <div id="signFormTop" class="bg-[#f8f9fa]! rounded-[.5rem]! p-6! mb-6! border! border-border!">
                             <h2 class="text-lg! font-semibold!">{{ $boxSignTitle }}</h2>
                             @include('partials.gradient-divider')
 
@@ -269,7 +269,7 @@
                                     </a>
                                 </div>
 
-                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-[#ddd]!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
+                                <div class="relative! text-center! my-3! before:absolute! before:left-0! before:right-0! before:top-1/2! before:h-px! before:bg-border!"><span class="relative! bg-[#f8f9fa]! px-2.5! font-bold!">{{ $orText }}</span></div>
 
                                 <p class="mb-4!">{!! $authHintStack !!}</p>
                             @endif
@@ -284,7 +284,7 @@
                             ])
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-border! transition! duration-150! hover:shadow-md!">
                             <h2 class="text-lg! font-semibold!">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
@@ -309,7 +309,7 @@
                             @endif
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-border! transition! duration-150! hover:shadow-md!">
                             <div class="font-bold! text-base! flex! items-center! justify-between!">
                                 <span>{{ $boxLatest }}</span>
                             </div>
@@ -324,7 +324,7 @@
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                                class="text-[#cc1f1f]!">{{ $sig->name ?? __('sig.anonymous') }}</a>
+                                                class="text-brand!">{{ $sig->name ?? __('sig.anonymous') }}</a>
                                             <span class="text-[#6c757d]!">|</span>
                                             <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>
@@ -346,7 +346,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-border! transition! duration-150! hover:shadow-md!">
                             <h2 class="text-lg! font-semibold!">{{ $boxInformation }}</h2>
                             @include('partials.gradient-divider')
 
@@ -355,7 +355,7 @@
                                     <strong>{{ $infoBy }}</strong>
                                     @if ($petition->user)
                                         <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($petition->user->name ?? 'user') ?: 'user', 'id' => $petition->user_id]) }}"
-                                            class="text-[#cc1f1f]!">
+                                            class="text-brand!">
                                             {{ $petition->user->name }}
                                         </a>
                                     @else
@@ -366,7 +366,7 @@
                                 <div class="flex! justify-between! gap-2!">
                                     <strong>{{ $infoIn }}</strong>
                                     <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $petition->category?->slug ?? '-', 'category' => $petition->category?->id ?? 0]) }}"
-                                        class="text-[#cc1f1f]!">
+                                        class="text-brand!">
                                         {{ $petition->category?->name ?? '-' }}
                                     </a>
                                 </div>
@@ -378,7 +378,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-border! transition! duration-150! hover:shadow-md!">
                             <h2 class="text-lg! font-semibold!">{{ $boxTags }}</h2>
                             @include('partials.gradient-divider')
                             <div class="mt-4! text-sm!">
@@ -394,33 +394,33 @@
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! mb-6! border! border-border! transition! duration-150! hover:shadow-md!">
                             <h2 class="text-lg! font-semibold!">{{ $boxEmbed }}</h2>
                             @include('partials.gradient-divider')
 
                             <div class="mt-4! text-[13px]!">
                                 <div class="mb-2!"><strong>{{ $embedDirect }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value="{{ $directLink }}" readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value="{{ $directLink }}" readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedHtml }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!"
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!"
                                     value='<a href="{{ $directLink }}">{{ $petitionTitle }}</a>' readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedForumNoTitle }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value='[URL="{{ $directLink }}"][/URL]' readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value='[URL="{{ $directLink }}"][/URL]' readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedForumWithTitle }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25!" value='[URL]{{ $directLink }}[/URL]' readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25!" value='[URL]{{ $directLink }}[/URL]' readonly>
                             </div>
                         </div>
 
-                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                        <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! border! border-border! transition! duration-150! hover:shadow-md!">
                             <button id="widgetsToggle" class="w-full! border-0! bg-transparent! p-0! inline-flex! items-center! cursor-pointer! focus:outline-none! focus:shadow-none!" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#widgetsBody" aria-expanded="false"
                                 aria-controls="widgetsBody">
                                 <span class="font-bold! text-base! mb-0! flex! items-center! gap-2!">
                                     {{ $boxWidgets }}
-                                    <i class="fa fa-angle-down leading-none! cursor-pointer" aria-hidden="true"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="leading-none! cursor-pointer"><path d="m6 9 6 6 6-6"/></svg>
                                 </span>
                             </button>
 
@@ -433,7 +433,7 @@
                                             $widgetCode = '<script src="'.url("/widgets/pbadge/{$petition->id}/{$widgetType}").'"></script>';
                                         @endphp
                                         <div class="mb-2!"><strong>{{ str_replace('x', '×', $widgetType) }}</strong></div>
-                                        <textarea class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" rows="3" readonly>{{ $widgetCode }}</textarea>
+                                        <textarea class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" rows="3" readonly>{{ $widgetCode }}</textarea>
                                         <div class="mb-6! overflow-auto">
                                             <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
                                                 alt="{{ $widgetType }} petition widget preview" loading="lazy" decoding="async">
@@ -445,22 +445,22 @@
 
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
-                                <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! my-6! border! border-[#eee]! transition! duration-150! hover:shadow-md!">
+                                <div class="bg-white! rounded-[.5rem]! p-6! shadow-sm! my-6! border! border-border! transition! duration-150! hover:shadow-md!">
                                     <h2 class="text-lg! font-semibold!">{{ __('show.operations') }}</h2>
                                     @include('partials.gradient-divider')
 
                                     <div class="text-sm! leading-[1.9]!">
                                         <div>
-                                            <a class="text-[#cc1f1f]!"
+                                            <a class="text-brand!"
                                                 href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}">{{ __('show.edit') }}</a>
                                         </div>
 
                                         <div class="mt-2!">
                                             {{ __('show.download_signatures') }} :
-                                            <a class="text-[#cc1f1f]!"
+                                            <a class="text-brand!"
                                                 href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
                                             <span class="text-[#6c757d]!"> </span>
-                                            <a class="text-[#cc1f1f]!"
+                                            <a class="text-brand!"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
                                     </div>
@@ -481,7 +481,7 @@
                         @foreach ($related as $rel)
                             <div class="w-full! md:w-1/3! shrink-0! px-3! mb-6!">
                                 <a href="{{ lroute('petition.show', ['slug' => $rel->tr_slug, 'id' => $rel->id]) }}"
-                                   class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-[#eee]! shadow-sm! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
+                                   class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-border! shadow-sm! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
                                     <div class="p-4!">
                                         <div class="text-[#222]! font-semibold! text-sm! leading-snug! break-words! [overflow-wrap:anywhere]!">{{ $rel->tr_title }}</div>
                                         <div class="mt-2! text-[13px]! text-[#6c757d]!">
@@ -502,7 +502,7 @@
                 </svg>
             </button>
 
-        </div>
+        </x-ui.container>
     </section>
 
     @if (!$hasSigned)

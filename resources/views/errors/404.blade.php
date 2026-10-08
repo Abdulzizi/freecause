@@ -4,7 +4,7 @@
 
 @section('content')
     <section class="py-12!">
-        <div class="mx-auto! w-full! px-3! max-w-[540px]! md:max-w-[720px]! lg:max-w-[960px]! xl:max-w-[1140px]! 2xl:max-w-[1320px]!">
+        <x-ui.container>
 
             @php
                 $locale = app()->getLocale();
@@ -76,6 +76,6 @@
                 <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="mt-6!">{{ __('errors.back_home') }}</x-ui.button>
             </div>
 
-        </div>
+        </x-ui.container>
     </section>
 @endsection
