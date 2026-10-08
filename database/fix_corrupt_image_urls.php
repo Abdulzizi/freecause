@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * FreeCause — Fix Corrupt image_url Entries
  *
@@ -17,30 +18,33 @@
  *
  * Run from the Laravel project root.
  */
-
 $dryRun = in_array('--dry-run', $argv ?? []);
 if ($dryRun) {
     echo "[DRY RUN] No changes will be made.\n\n";
 }
 
 // Load .env
-$envFile = __DIR__ . '/../.env';
+$envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
     $line = trim($line);
-    if (!$line || str_starts_with($line, '#')) continue;
+    if (! $line || str_starts_with($line, '#')) {
+        continue;
+    }
     [$k, $v] = array_pad(explode('=', $line, 2), 2, '');
     $env[trim($k)] = trim($v, '"\'');
 }
 
 $db = new mysqli(
-    $env['DB_HOST']     ?? '127.0.0.1',
+    $env['DB_HOST'] ?? '127.0.0.1',
     $env['DB_USERNAME'] ?? 'root',
     $env['DB_PASSWORD'] ?? '',
     $env['DB_DATABASE'] ?? 'freecause',
-    (int)($env['DB_PORT'] ?? 3306)
+    (int) ($env['DB_PORT'] ?? 3306)
 );
-if ($db->connect_error) die("DB connection failed: " . $db->connect_error . "\n");
+if ($db->connect_error) {
+    exit('DB connection failed: '.$db->connect_error."\n");
+}
 $db->set_charset('utf8mb4');
 
 // Find all image_url values where the part after "locale/" is an external URL.
@@ -53,12 +57,12 @@ $result = $db->query("
 ");
 
 $byLocale = [];
-$ids      = [];
+$ids = [];
 
 while ($row = $result->fetch_assoc()) {
     $locale = explode('/', $row['image_url'])[0] ?? 'unknown';
     $byLocale[$locale] = ($byLocale[$locale] ?? 0) + 1;
-    $ids[] = (int)$row['id'];
+    $ids[] = (int) $row['id'];
 }
 
 $total = count($ids);
@@ -74,13 +78,13 @@ ksort($byLocale);
 foreach ($byLocale as $locale => $count) {
     printf("  %-10s %6d\n", $locale, $count);
 }
-echo "  " . str_repeat('-', 18) . "\n";
+echo '  '.str_repeat('-', 18)."\n";
 printf("  %-10s %6d\n\n", 'TOTAL', $total);
 
-if (!$dryRun) {
+if (! $dryRun) {
     // Batch update in chunks to avoid giant IN() queries
     $chunks = array_chunk($ids, 500);
-    $fixed  = 0;
+    $fixed = 0;
     foreach ($chunks as $chunk) {
         $inList = implode(',', $chunk);
         $db->query("UPDATE petitions SET image_url = NULL WHERE id IN ({$inList})");

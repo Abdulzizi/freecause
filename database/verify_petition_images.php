@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * FreeCause — Petition Image Verification
  *
@@ -13,39 +14,43 @@
  */
 
 // Load .env
-$envFile = __DIR__ . '/../.env';
+$envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
     $line = trim($line);
-    if (!$line || str_starts_with($line, '#')) continue;
+    if (! $line || str_starts_with($line, '#')) {
+        continue;
+    }
     [$k, $v] = array_pad(explode('=', $line, 2), 2, '');
     $env[trim($k)] = trim($v, '"\'');
 }
 
 $db = new mysqli(
-    $env['DB_HOST']     ?? '127.0.0.1',
+    $env['DB_HOST'] ?? '127.0.0.1',
     $env['DB_USERNAME'] ?? 'root',
     $env['DB_PASSWORD'] ?? '',
     $env['DB_DATABASE'] ?? 'freecause',
-    (int)($env['DB_PORT'] ?? 3306)
+    (int) ($env['DB_PORT'] ?? 3306)
 );
-if ($db->connect_error) die("DB connection failed: " . $db->connect_error . "\n");
+if ($db->connect_error) {
+    exit('DB connection failed: '.$db->connect_error."\n");
+}
 $db->set_charset('utf8mb4');
 
-$storageBase = __DIR__ . '/../storage/app/public/petitions/';
+$storageBase = __DIR__.'/../storage/app/public/petitions/';
 
 $result = $db->query("SELECT id, image_url FROM petitions WHERE image_url IS NOT NULL AND image_url != ''");
 
-$total       = 0;
-$present     = 0;
-$missing     = 0;
-$byLocale    = [];
+$total = 0;
+$present = 0;
+$missing = 0;
+$byLocale = [];
 $missingList = [];
 
 while ($row = $result->fetch_assoc()) {
     $total++;
-    $fullPath = $storageBase . $row['image_url'];
-    $locale   = explode('/', $row['image_url'])[0] ?? 'unknown';
+    $fullPath = $storageBase.$row['image_url'];
+    $locale = explode('/', $row['image_url'])[0] ?? 'unknown';
 
     if (file_exists($fullPath)) {
         $present++;
@@ -61,7 +66,7 @@ while ($row = $result->fetch_assoc()) {
 
 echo "\n=== Petition Image Coverage ===\n\n";
 printf("  %-10s %8s %8s %8s\n", 'Locale', 'Present', 'Missing', 'Total');
-echo "  " . str_repeat('-', 40) . "\n";
+echo '  '.str_repeat('-', 40)."\n";
 
 ksort($byLocale);
 foreach ($byLocale as $locale => $counts) {
@@ -70,7 +75,7 @@ foreach ($byLocale as $locale => $counts) {
     printf("  %-10s %8d %8d %8d\n", $locale, $p, $m, $p + $m);
 }
 
-echo "  " . str_repeat('-', 40) . "\n";
+echo '  '.str_repeat('-', 40)."\n";
 printf("  %-10s %8d %8d %8d\n", 'TOTAL', $present, $missing, $total);
 
 $pct = $total > 0 ? round(100 * $present / $total, 1) : 0;

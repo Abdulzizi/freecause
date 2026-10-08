@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -11,13 +11,13 @@ return new class extends Migration
     {
         Schema::table('petitions', function (Blueprint $table) {
 
-            if (!Schema::hasColumn('petitions', 'is_active')) {
+            if (! Schema::hasColumn('petitions', 'is_active')) {
                 $table->boolean('is_active')
                     ->default(true)
                     ->after('status');
             }
 
-            if (!Schema::hasColumn('petitions', 'is_featured')) {
+            if (! Schema::hasColumn('petitions', 'is_featured')) {
                 $table->boolean('is_featured')
                     ->default(false)
                     ->after('is_active');

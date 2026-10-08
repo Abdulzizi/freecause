@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Signature;
 use App\Models\Petition;
+use App\Models\Signature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SignatureFactory extends Factory
@@ -27,6 +27,6 @@ class SignatureFactory extends Factory
 
     public function locale(string $locale): self
     {
-        return $this->state(fn() => ['locale' => $locale]);
+        return $this->state(fn () => ['locale' => $locale]);
     }
 }

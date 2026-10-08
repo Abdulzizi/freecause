@@ -15,7 +15,7 @@ return new class extends Migration
         if (Schema::hasTable('language_lines')) {
             $rows = DB::table('language_lines')->get()->toArray();
             File::put(
-                "{$backupDir}/language_lines-backup-" . date('Y-m-d') . ".json",
+                "{$backupDir}/language_lines-backup-".date('Y-m-d').'.json',
                 json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
             );
             Schema::dropIfExists('language_lines');
@@ -24,7 +24,7 @@ return new class extends Migration
         if (Schema::hasTable('translations')) {
             $rows = DB::table('translations')->get()->toArray();
             File::put(
-                "{$backupDir}/translations-backup-" . date('Y-m-d') . ".json",
+                "{$backupDir}/translations-backup-".date('Y-m-d').'.json',
                 json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
             );
             Schema::dropIfExists('translations');

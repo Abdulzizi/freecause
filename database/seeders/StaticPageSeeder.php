@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Page;
 use App\Models\PageTranslation;
+use Illuminate\Database\Seeder;
 
 class StaticPageSeeder extends Seeder
 {
@@ -13,15 +13,15 @@ class StaticPageSeeder extends Seeder
         $pages = [
             'terms-of-service' => [
                 'title' => 'Terms of Service',
-                'view'  => 'pages.terms-of-service',
+                'view' => 'pages.terms-of-service',
             ],
             'ethical-code' => [
                 'title' => 'Ethical Code',
-                'view'  => 'pages.ethical-code',
+                'view' => 'pages.ethical-code',
             ],
             'privacy-policy' => [
                 'title' => 'Privacy Policy',
-                'view'  => 'pages.privacy-policy',
+                'view' => 'pages.privacy-policy',
             ],
         ];
 
@@ -32,12 +32,12 @@ class StaticPageSeeder extends Seeder
             $content = view($data['view'])->render();
 
             PageTranslation::create([
-                'page_id'  => $page->id,
-                'locale'   => 'en',
-                'title'    => $data['title'],
-                'slug'     => $slug,
-                'content'  => $content,
-                'published'=> true,
+                'page_id' => $page->id,
+                'locale' => 'en',
+                'title' => $data['title'],
+                'slug' => $slug,
+                'content' => $content,
+                'published' => true,
             ]);
         }
     }
