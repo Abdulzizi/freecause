@@ -251,4 +251,12 @@ class AdminSmokeTest extends TestCase
 
         $this->assertSame('published', $petition->fresh()->status);
     }
+
+    public function test_logs_bulk_config_exposes_delete_route(): void
+    {
+        $this->actingAs($this->admin, 'admin')
+            ->get('/admin/logs')
+            ->assertOk()
+            ->assertDontSee('deleteRoute\u0022:null', false);
+    }
 }

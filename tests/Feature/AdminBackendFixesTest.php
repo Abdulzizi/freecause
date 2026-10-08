@@ -198,6 +198,23 @@ class AdminBackendFixesTest extends TestCase
         $this->assertDatabaseMissing('user_levels', ['id' => $unusedLevel->id]);
     }
 
+    public function test_user_level_delete_returns_json_for_async_clients(): void
+    {
+        $admin = $this->systemAdmin();
+        $level = UserLevel::create([
+            'name' => 'json_delete_role',
+            'visible_name' => 'Json delete role',
+            'is_system' => false,
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->postJson('/admin/system/user-levels/delete', ['ids' => [$level->id]])
+            ->assertOk()
+            ->assertJson(['ok' => true, 'deleted' => 1]);
+
+        $this->assertDatabaseMissing('user_levels', ['id' => $level->id]);
+    }
+
     public function test_user_level_count_cache_is_cleared_after_membership_mutations(): void
     {
         $admin = $this->systemAdmin();

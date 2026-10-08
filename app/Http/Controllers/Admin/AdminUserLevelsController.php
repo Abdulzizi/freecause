@@ -93,6 +93,10 @@ class AdminUserLevelsController extends Controller
             ? 'Deleted '.count($deletable).' level(s). '.$skipped.' protected, assigned, or current level(s) were kept.'
             : 'No levels were deleted; protected, assigned, and your current level cannot be deleted.';
 
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'deleted' => count($deletable), 'msg' => $message]);
+        }
+
         return back()->with($deletable ? 'success' : 'warning', $message);
     }
 }

@@ -19,7 +19,7 @@
 <div class="flex! gap-1! items-center! text-xs! max-md:gap-1.5!">
     @if($current > 1)
         <a href="{{ $p->url($current - 1) }}"
-            class="py-0.5! px-1.5! border! border-border! bg-[#f7f7f7]! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
+            class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
             «
         </a>
     @endif
@@ -27,7 +27,7 @@
     @if($lastPage)
         @if($start > 1)
             <a href="{{ $p->url(1) }}"
-                class="py-0.5! px-1.5! border! border-border! bg-[#f7f7f7]! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
+                class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
                 1
             </a>
             @if($start > 2)
@@ -37,12 +37,12 @@
 
         @for($i = $start; $i <= $end; $i++)
             @if($i === $current)
-                <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-[#ddd]! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
+                <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-border! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
                     {{ $i }}
                 </span>
             @else
                 <a href="{{ $p->url($i) }}"
-                    class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-[#f7f7f7]! no-underline! text-ink! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
+                    class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
                     {{ $i }}
                 </a>
             @endif
@@ -53,20 +53,20 @@
                 <span class="px-1!">…</span>
             @endif
             <a href="{{ $p->url($lastPage) }}"
-                class="py-0.5! px-1.5! border! border-border! bg-[#f7f7f7]! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
+                class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
                 {{ $lastPage }}
             </a>
         @endif
     @else
         {{-- simplePaginate: just show current page number --}}
-        <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-[#ddd]! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
+        <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-border! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
             {{ $current }}
         </span>
     @endif
 
     @if($hasMore)
         <a href="{{ $p->url($current + 1) }}"
-            class="py-0.5! px-1.5! border! border-border! bg-[#f7f7f7]! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
+            class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
             »
         </a>
     @endif

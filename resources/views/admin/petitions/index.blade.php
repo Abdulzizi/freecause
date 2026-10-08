@@ -212,7 +212,7 @@
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
-                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-[#e0e0e0]! text-ink! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
+                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-border! text-ink! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
                     <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];

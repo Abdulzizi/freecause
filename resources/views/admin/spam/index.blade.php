@@ -44,7 +44,7 @@
         <x-slot:tbody>
             @forelse($logs as $log)
                 <tr data-admin-row-hover
-                    class="border-b! border-border! @if (in_array($log->ip, $bannedIps)) bg-[#fff3f3]! @endif">
+                    class="border-b! border-border! @if (in_array($log->ip, $bannedIps)) bg-danger/5! @endif">
 
                     <td>{{ $log->type }}</td>
 

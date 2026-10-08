@@ -28,6 +28,7 @@
     --color-surface: #ffffff;
     --color-danger: #dc3545;
     --color-success: #198754;
+    --color-surface-muted: #f9fafb;
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
@@ -784,7 +785,7 @@ nav.navbar {
     gap: 8px;
     padding: 9px 12px;
     border-bottom: 1px solid var(--color-border);
-    background: #f7f7f7;
+    background: var(--color-surface-muted);
     font-weight: 700;
     font-size: 13px;
     flex: none;
@@ -798,7 +799,7 @@ nav.navbar {
     border-radius: 4px;
 }
 .fc-drawer__close:hover {
-    background: #ececec;
+    background: var(--color-border);
 }
 .fc-drawer__body {
     flex: 1;
@@ -878,7 +879,7 @@ nav.navbar {
     justify-content: space-between;
     padding: 9px 12px;
     border-bottom: 1px solid var(--color-border);
-    background: #f7f7f7;
+    background: var(--color-surface-muted);
     font-weight: 700;
     font-size: 13px;
 }
@@ -974,7 +975,7 @@ nav.navbar {
     transform: scale(0.98);
 }
 .fc-menu a.fc-side-link.active {
-    background: var(--color-surface);
+    background: rgba(204, 31, 31, 0.07);
     border-color: var(--color-border);
     color: var(--color-brand);
     font-weight: 600;
@@ -982,6 +983,20 @@ nav.navbar {
 .fc-menu a.fc-side-link:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand-light);
+}
+
+.fc-box {
+    border-color: var(--color-border);
+}
+.fc-tab {
+    background: var(--color-surface-muted);
+    border-color: var(--color-border);
+    color: var(--color-ink);
+}
+.fc-menu-toggle {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-ink);
 }
 @media (max-width: 768px) {
     .fc-menu a.fc-side-link {
@@ -1015,7 +1030,7 @@ tr[data-detail-row] {
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 tr.fc-row-open {
-    background-color: rgba(127, 166, 204, 0.08);
+    background-color: rgba(204, 31, 31, 0.05);
     box-shadow: inset 3px 0 0 var(--color-brand-light);
 }
 tr.fc-row-muted td {
@@ -1036,11 +1051,11 @@ tr[data-detail-row] td a[href*="select="] {
 
 .fc-input-error {
     border-color: var(--color-danger);
-    box-shadow: 0 0 0 2px rgba(176, 0, 32, 0.2);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
 }
 .fc-input-error:focus {
     border-color: var(--color-danger);
-    box-shadow: 0 0 0 2px rgba(176, 0, 32, 0.25);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
 }
 
 /* ===== Admin filter bar + bulk toolbar controls ===== */
@@ -1060,7 +1075,7 @@ tr[data-detail-row] td a[href*="select="] {
 .fc-filter-field:focus {
     outline: none;
     border-color: var(--color-brand-light);
-    box-shadow: 0 0 0 2px rgba(127, 166, 204, 0.25);
+    box-shadow: 0 0 0 2px rgba(204, 31, 31, 0.2);
 }
 select.fc-filter-field {
     cursor: pointer;
@@ -1105,10 +1120,10 @@ select.fc-filter-field {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 .fc-abtn:hover {
-    background: #f4f4f4;
+    background: var(--color-surface-muted);
 }
 .fc-abtn:active {
-    background: #e4e4e4;
+    background: var(--color-border);
     transform: scale(0.98);
 }
 .fc-abtn:focus-visible {
@@ -1127,18 +1142,18 @@ select.fc-filter-field {
 }
 .fc-abtn--danger {
     color: var(--color-danger);
-    border-color: #d2a0a0;
+    border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-surface));
     min-width: 6rem;
 }
 .fc-abtn--danger:hover {
-    background: #fdf2f2;
+    background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface));
 }
 .fc-abtn--success {
     color: var(--color-success);
-    border-color: #a9c8a9;
+    border-color: color-mix(in srgb, var(--color-success) 40%, var(--color-surface));
 }
 .fc-abtn--success:hover {
-    background: #f2f9f2;
+    background: color-mix(in srgb, var(--color-success) 6%, var(--color-surface));
 }
 .fc-abtn--neutral {
     color: var(--color-muted);

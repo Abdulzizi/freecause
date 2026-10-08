@@ -65,7 +65,7 @@
 
         <x-slot:tbody>
             @foreach ($logs as $log)
-                <tr data-admin-row-hover class="border-b! border-border! hover:bg-[#f7f7f7]!">
+                <tr data-admin-row-hover class="border-b! border-border! hover:bg-surface-muted!">
 
                     <td>
                         <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline! text-black!">

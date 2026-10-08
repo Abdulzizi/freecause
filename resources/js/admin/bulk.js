@@ -143,12 +143,8 @@ async function handlePetitionToggle(button) {
         button.dataset.action = isActive ? (enabled ? 'deactivate' : 'activate') : (enabled ? 'unfeature' : 'feature');
         button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
         button.textContent = isActive ? (enabled ? 'Active' : 'Inactive') : (enabled ? 'Featured' : 'Feature');
-        button.classList.toggle('border-[#b7d7b7]!', enabled);
-        button.classList.toggle('bg-[#e8f5e8]!', enabled);
-        button.classList.toggle('text-[#2f6f2f]!', enabled);
-        button.classList.toggle('border-[#e2baba]!', !enabled);
-        button.classList.toggle('bg-[#fff0f0]!', !enabled);
-        button.classList.toggle('text-[#900]!', !enabled);
+        button.classList.toggle('fc-abtn--success', enabled);
+        button.classList.toggle('fc-abtn--danger', isActive && !enabled);
         notify('success', result.msg || 'Petition updated.');
     } catch (error) {
         notify('error', error.message || 'Could not update petition.');

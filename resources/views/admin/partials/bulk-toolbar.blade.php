@@ -7,4 +7,8 @@
     :empty-msg="$emptyMsg ?? 'No items selected'"
     :checkbox-selector="$checkboxSelector ?? '.bulk-checkbox'"
     :restore-route="$restoreRoute ?? null"
+    :delete-route="$deleteRoute ?? null"
+    :action-route="$actionRoute ?? null"
+    :unban-route="$unbanRoute ?? null"
+    :noun="$noun ?? 'items'"
 />

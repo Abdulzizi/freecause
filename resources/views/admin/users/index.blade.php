@@ -94,7 +94,7 @@
                 @php
                     $isBanned = $u->level?->name === 'banned';
                 @endphp
-                <tr class="border-b! border-solid! border-border! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-danger!' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
+                <tr class="border-b! border-solid! border-border! {{ $isBanned ? 'bg-danger/5! [&_td]:text-danger!' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
                             class="no-underline! text-black!">

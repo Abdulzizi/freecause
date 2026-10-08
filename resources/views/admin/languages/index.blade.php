@@ -42,7 +42,7 @@
 
                         @if ($lang->is_default)
                             <span
-                                class="bg-[#28a745]! text-white! px-1.5! py-0.5! rounded! text-xs! ml-1.5!">
+                                class="bg-success! text-white! px-1.5! py-0.5! rounded! text-xs! ml-1.5!">
                                 default
                             </span>
                         @endif
