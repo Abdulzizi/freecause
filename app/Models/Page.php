@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
 {
+    use HasTranslations;
+
     protected $fillable = [];
 
-    public function translations()
+    protected function translationTable(): string
     {
-        return $this->hasMany(PageTranslation::class);
+        return 'page_translations';
     }
 
-    public function translation($locale = null)
+    protected function translationForeignKey(): string
     {
-        $locale = $locale ?: app()->getLocale();
+        return 'page_id';
+    }
 
-        return $this->hasOne(PageTranslation::class)
-            ->where('locale', $locale);
+    protected function translationModel(): string
+    {
+        return PageTranslation::class;
     }
 }

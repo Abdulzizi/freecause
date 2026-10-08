@@ -30,17 +30,7 @@ class HomeController extends Controller
 
         $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
             return Category::select(['categories.id', 'categories.sort_order'])
-                ->withTranslation([
-                    'base' => 'categories',
-                    'base_key' => 'id',
-                    'translation_table' => 'category_translations',
-                    'translation_key' => 'category_id',
-                    'locale_alias' => 'ct_locale',
-                    'default_alias' => 'ct_default',
-                    'locale' => $locale,
-                    'default_locale' => $defaultLocale,
-                    'columns' => ['name' => 'tr_name', 'slug' => 'tr_slug'],
-                ])
+                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
                 ->where('categories.is_active', true)
                 ->orderBy('categories.sort_order')
                 ->get();
@@ -102,17 +92,7 @@ class HomeController extends Controller
 
         $pool = cache()->remember(CacheKeys::homePool($locale), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
-                ->withTranslation([
-                    'base' => 'petitions',
-                    'base_key' => 'id',
-                    'translation_table' => 'petition_translations',
-                    'translation_key' => 'petition_id',
-                    'locale_alias' => 'pt_locale',
-                    'default_alias' => 'pt_default',
-                    'locale' => $locale,
-                    'default_locale' => $defaultLocale,
-                    'columns' => [],
-                ])
+                ->translated($locale, 'pt_locale', 'pt_default', [], $defaultLocale)
                 ->whereNotNull('pt_locale.title')
                 ->where('pt_locale.is_featured', 1)
                 ->where('petitions.status', 'published')
@@ -154,17 +134,7 @@ class HomeController extends Controller
 
             $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale, $slot), 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select(['petitions.*'])
-                    ->withTranslation([
-                        'base' => 'petitions',
-                        'base_key' => 'id',
-                        'translation_table' => 'petition_translations',
-                        'translation_key' => 'petition_id',
-                        'locale_alias' => 'pt_locale',
-                        'default_alias' => 'pt_default',
-                        'locale' => $locale,
-                        'default_locale' => $defaultLocale,
-                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug', 'description' => 'tr_description'],
-                    ])
+                    ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug', 'description' => 'tr_description'], $defaultLocale)
                     ->where('petitions.id', $featuredId)
                     ->first();
             });

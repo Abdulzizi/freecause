@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Petition extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'goal_signatures',
@@ -38,9 +39,19 @@ class Petition extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function translations()
+    protected function translationTable(): string
     {
-        return $this->hasMany(PetitionTranslation::class);
+        return 'petition_translations';
+    }
+
+    protected function translationForeignKey(): string
+    {
+        return 'petition_id';
+    }
+
+    protected function translationModel(): string
+    {
+        return PetitionTranslation::class;
     }
 
     public function coverUrl(): string
@@ -75,40 +86,6 @@ class Petition extends Model
         }
 
         return asset('legacy/images/demo-featured.jpg');
-    }
-
-    public function translation(?string $locale = null): ?PetitionTranslation
-    {
-        $locale ??= app()->getLocale();
-
-        if ($this->relationLoaded('translations')) {
-            return $this->translations->firstWhere('locale', $locale);
-        }
-
-        return $this->translations()->where('locale', $locale)->first();
-    }
-
-    public function translationOrFallback(?string $locale = null, ?string $fallbackLocale = null): ?PetitionTranslation
-    {
-        $locale ??= app()->getLocale();
-
-        $t = $this->translation($locale);
-        if ($t) {
-            return $t;
-        }
-
-        if ($fallbackLocale !== null && $fallbackLocale !== $locale) {
-            $t = $this->translation($fallbackLocale);
-            if ($t) {
-                return $t;
-            }
-        }
-
-        if ($this->relationLoaded('translations')) {
-            return $this->translations->sortBy('id')->first();
-        }
-
-        return $this->translations()->orderBy('id')->first();
     }
 
     public function scopeVisible($q)

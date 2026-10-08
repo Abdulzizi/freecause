@@ -52,17 +52,7 @@ class CategoryPetitionController extends Controller
                 'petitions.category_id',
                 'petitions.cover_image',
             ])
-            ->withTranslation([
-                'base' => 'petitions',
-                'base_key' => 'id',
-                'translation_table' => 'petition_translations',
-                'translation_key' => 'petition_id',
-                'locale_alias' => 'pt_locale',
-                'default_alias' => 'pt_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-            ])
+            ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
             ->where(function ($q) {
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');

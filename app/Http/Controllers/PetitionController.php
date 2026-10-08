@@ -136,17 +136,7 @@ class PetitionController extends Controller
                 'petitions.category_id',
                 'petitions.cover_image',
             ])
-            ->withTranslation([
-                'base' => 'petitions',
-                'base_key' => 'id',
-                'translation_table' => 'petition_translations',
-                'translation_key' => 'petition_id',
-                'locale_alias' => 'pt_locale',
-                'default_alias' => 'pt_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-            ])
+            ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
             ->where(function ($q) {
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
@@ -310,17 +300,7 @@ class PetitionController extends Controller
 
                 return Petition::query()
                     ->select(['petitions.id', 'petitions.signature_count', 'petitions.cover_image'])
-                    ->withTranslation([
-                        'base' => 'petitions',
-                        'base_key' => 'id',
-                        'translation_table' => 'petition_translations',
-                        'translation_key' => 'petition_id',
-                        'locale_alias' => 'pt_locale',
-                        'default_alias' => 'pt_default',
-                        'locale' => $locale,
-                        'default_locale' => $defaultLocale,
-                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-                    ])
+                    ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
                     ->where('petitions.category_id', $petition->category_id)
                     ->where('petitions.id', '!=', $petition->id)
                     ->where('petitions.status', 'published')
@@ -542,17 +522,7 @@ class PetitionController extends Controller
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->withTranslation([
-                'base' => 'categories',
-                'base_key' => 'id',
-                'translation_table' => 'category_translations',
-                'translation_key' => 'category_id',
-                'locale_alias' => 'ct_locale',
-                'default_alias' => 'ct_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['name' => 'name', 'slug' => 'slug'],
-            ])
+            ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'name', 'slug' => 'slug'], $defaultLocale)
             ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();
@@ -945,17 +915,7 @@ class PetitionController extends Controller
         $tab = $request->query('tab');
 
         $withTr = function ($q) use ($locale, $defaultLocale) {
-            $q->withTranslation([
-                'base' => 'petitions',
-                'base_key' => 'id',
-                'translation_table' => 'petition_translations',
-                'translation_key' => 'petition_id',
-                'locale_alias' => 'pt_locale',
-                'default_alias' => 'pt_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-            ])
+            $q->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
                 ->where(function ($q) {
                     $q->whereNotNull('pt_locale.title')
                         ->orWhereNotNull('pt_default.title');
@@ -1007,17 +967,7 @@ class PetitionController extends Controller
 
         $categories = Category::query()
             ->select(['categories.id'])
-            ->withTranslation([
-                'base' => 'categories',
-                'base_key' => 'id',
-                'translation_table' => 'category_translations',
-                'translation_key' => 'category_id',
-                'locale_alias' => 'ct_locale',
-                'default_alias' => 'ct_default',
-                'locale' => $locale,
-                'default_locale' => $defaultLocale,
-                'columns' => ['name' => 'name', 'slug' => 'slug'],
-            ])
+            ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'name', 'slug' => 'slug'], $defaultLocale)
             ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();

@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminCategoryCreateRequest;
 use App\Http\Requests\Admin\AdminCategoryDeleteRequest;
 use App\Http\Requests\Admin\AdminCategorySaveRequest;
+use App\Models\Category;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
-use App\Support\Slug;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -185,14 +185,7 @@ class AdminCategoriesController extends Controller
                 'sort_order' => 0,
             ]);
 
-            $slug = Slug::dedupe(
-                $data['name'],
-                fn (string $candidate) => DB::table('category_translations')
-                    ->where('locale', $data['locale'])
-                    ->where('slug', $candidate)
-                    ->exists(),
-                'category'
-            );
+            $slug = (new Category)->uniqueTranslationSlug($data['name'], $data['locale']);
 
             DB::table('category_translations')->insert([
                 'category_id' => $categoryId,
