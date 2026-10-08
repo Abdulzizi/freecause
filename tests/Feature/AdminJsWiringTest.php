@@ -20,6 +20,10 @@ class AdminJsWiringTest extends TestCase
     {
         $source = (string) file_get_contents(resource_path('js/admin.js'));
 
+        foreach (glob(resource_path('js/admin/*.js')) ?: [] as $module) {
+            $source .= (string) file_get_contents($module);
+        }
+
         foreach (self::HOOKS as $hook) {
             $this->assertStringContainsString($hook, $source, "admin.js should wire {$hook}.");
         }
