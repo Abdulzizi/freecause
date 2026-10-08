@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Settings;
 use DOMDocument;
 use Illuminate\Support\Str;
 
@@ -121,37 +122,44 @@ class ContentRenderer
     {
         $locale = app()->getLocale();
 
+        $siteName = config('app.name');
+        $privacyPolicyUrl = lroute('page.show', ['slug' => 'privacy-policy']);
+        $privacyPolicyLink = '<a href="'.$privacyPolicyUrl.'">'.__('pages.privacy_policy', [], $locale).'</a>';
+        $createPetitionUrl = lroute('petition.create');
+        $contactsUrl = lroute('contacts');
+        $contactsLink = '<a href="'.$contactsUrl.'">'.__('contacts.title', [], $locale).'</a>';
+        $faqUrl = lroute('faqs');
+
         $tokens = [
-            // '{ROOT_URL}' => url('/'),
-            '{ROOT_URL}' => base_url(),
-            '{SITE_NAME}' => config('app.name'),
-            '{BRAND_NAME}' => config('app.name'),
+            '{ROOT_URL}' => Settings::get('base_url', config('app.url')),
+            '{SITE_NAME}' => $siteName,
+            '{BRAND_NAME}' => $siteName,
 
-            '{SITE_NAME_LINK}' => '<span class="red"><a href="'.url('/').'">'.config('app.name').'</a></span>',
+            '{SITE_NAME_LINK}' => '<span class="red"><a href="'.url('/').'">'.$siteName.'</a></span>',
 
-            '{CONTACTS_LINK}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], $locale).'</a>',
+            '{CONTACTS_LINK}' => $contactsLink,
 
             '{ETHICAL_CODE_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'ethical-code']).'">'.__('pages.ethical_code', [], $locale).'</a>',
 
             '{TOS_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'terms-of-service']).'">'.__('pages.terms_of_service', [], $locale).'</a>',
 
-            '{PRIVACY_POLICY_ROOT_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">'.__('pages.privacy_policy', [], $locale).'</a>',
+            '{PRIVACY_POLICY_ROOT_LINK}' => $privacyPolicyLink,
 
-            '{PRIVACY_POLICY_LINK}' => '<a href="'.lroute('page.show', ['slug' => 'privacy-policy']).'">'.__('pages.privacy_policy', [], $locale).'</a>',
+            '{PRIVACY_POLICY_LINK}' => $privacyPolicyLink,
 
-            '{PRIVACY_POLICY_URL}' => lroute('page.show', ['slug' => 'privacy-policy']),
+            '{PRIVACY_POLICY_URL}' => $privacyPolicyUrl,
 
-            '{CREATE_PETITION_URL}' => lroute('petition.create'),
-            '{HOW_TO_CREATE_URL}' => lroute('petition.create'),
+            '{CREATE_PETITION_URL}' => $createPetitionUrl,
+            '{HOW_TO_CREATE_URL}' => $createPetitionUrl,
 
             '{RECOVER_URL}' => lroute('password.request'),
             '{DONATIONS_LINK}' => '<a href="'.lroute('donations').'">'.__('pages.donations', [], $locale).'</a>',
             '{HOW_TO_CREATE_LINK}' => '<a href="'.lroute('how-to-write-a-petition').'">'.__('pages.how_to_write_a_petition', [], $locale).'</a>',
 
-            '{FAQ_URL}' => lroute('faqs'),
-            '{CONTACTS_URL}' => lroute('contacts'),
-            '{FAQ_LINK}' => '<a href="'.lroute('faqs').'">'.__('pages.faqs', [], $locale).'</a>',
-            '{CONTACTS_LINK_FULL}' => '<a href="'.lroute('contacts').'">'.__('contacts.title', [], $locale).'</a>',
+            '{FAQ_URL}' => $faqUrl,
+            '{CONTACTS_URL}' => $contactsUrl,
+            '{FAQ_LINK}' => '<a href="'.$faqUrl.'">'.__('pages.faqs', [], $locale).'</a>',
+            '{CONTACTS_LINK_FULL}' => $contactsLink,
         ];
 
         foreach ($tokens as $key => $value) {

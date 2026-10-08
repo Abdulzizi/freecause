@@ -1,10 +1,9 @@
 <?php
 
-use App\Models\Language;
 use App\Models\Permission;
 use App\Models\PetitionTranslation;
 use App\Models\User;
-use App\Support\Settings;
+use App\Support\Locale;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
@@ -12,29 +11,21 @@ use Illuminate\Support\Facades\Route;
 if (! function_exists('active_locales')) {
     function active_locales(): array
     {
-        return cache()->remember(
-            'active_languages',
-            60,
-            fn () => Language::where('is_active', 1)->pluck('code')->toArray()
-        );
+        return Locale::supported();
     }
 }
 
 if (! function_exists('default_locale')) {
     function default_locale(): string
     {
-        return cache()->remember(
-            'default_language',
-            60,
-            fn () => Language::where('is_default', 1)->value('code') ?? 'en'
-        );
+        return Locale::default();
     }
 }
 
 if (! function_exists('is_valid_locale')) {
     function is_valid_locale(string $locale): bool
     {
-        return in_array($locale, active_locales(), true);
+        return in_array($locale, Locale::supported(), true);
     }
 }
 
@@ -117,11 +108,6 @@ if (! function_exists('locale_url')) {
     }
 }
 
-function base_url()
-{
-    return Settings::get('base_url', config('app.url'));
-}
-
 if (! function_exists('canonical_url')) {
     function canonical_url(?string $path = null): string
     {
@@ -155,50 +141,22 @@ function sanitizePetitionHtml(string $html): string
 
     $container = $doc->getElementsByTagName('div')->item(0);
 
-    domSanitizeNode($container, $allowedTags, $doc);
+    if ($container) {
+        // Every permitted tag carries no attributes, and nothing is "killed":
+        // unknown elements are unwrapped and all attributes stripped.
+        sanitizeDomNode($container, array_fill_keys($allowedTags, []), []);
+    }
 
     $out = '';
-    foreach ($container->childNodes as $child) {
-        $out .= $doc->saveHTML($child);
+    if ($container) {
+        foreach ($container->childNodes as $child) {
+            $out .= $doc->saveHTML($child);
+        }
     }
 
     $out = str_ireplace(['<b>', '</b>', '<i>', '</i>'], ['<strong>', '</strong>', '<em>', '</em>'], $out);
 
     return trim($out);
-}
-
-function domSanitizeNode(DOMNode $node, array $allowedTags, DOMDocument $doc): void
-{
-    if (! $node->hasChildNodes()) {
-        return;
-    }
-
-    for ($i = $node->childNodes->length - 1; $i >= 0; $i--) {
-        $child = $node->childNodes->item($i);
-
-        if ($child->nodeType === XML_ELEMENT_NODE) {
-            $tag = strtolower($child->nodeName);
-
-            if ($child->hasAttributes()) {
-                while ($child->attributes->length) {
-                    $child->removeAttributeNode($child->attributes->item(0));
-                }
-            }
-
-            if (! in_array($tag, $allowedTags, true)) {
-                while ($child->firstChild) {
-                    $node->insertBefore($child->firstChild, $child);
-                }
-                $node->removeChild($child);
-
-                continue;
-            }
-
-            domSanitizeNode($child, $allowedTags, $doc);
-        } elseif ($child->nodeType === XML_COMMENT_NODE) {
-            $node->removeChild($child);
-        }
-    }
 }
 if (! function_exists('admin_user')) {
     function admin_user(): ?User
@@ -276,7 +234,7 @@ if (! function_exists('sanitizeAdminHtml')) {
             }
 
             foreach ($nodes as $node) {
-                adminHtmlSanitizeNode($node);
+                sanitizeDomNode($node, adminHtmlAllowedTags(), adminHtmlKilledTags());
             }
 
             $out = '';
@@ -383,12 +341,17 @@ if (! function_exists('adminHtmlSafeUrl')) {
     }
 }
 
-if (! function_exists('adminHtmlSanitizeNode')) {
-    function adminHtmlSanitizeNode(DOMNode $node): void
+if (! function_exists('sanitizeDomNode')) {
+    /**
+     * Recursively sanitize a DOM subtree against an allowlist.
+     *
+     * $allowed maps tag => permitted attributes; elements not listed are
+     * unwrapped (children promoted, tag dropped) while elements in $killed are
+     * removed with their contents. Comments, processing instructions and CDATA
+     * are dropped. href/src are URL-checked and external links get rel=noopener.
+     */
+    function sanitizeDomNode(DOMNode $node, array $allowed, array $killed): void
     {
-        $allowed = adminHtmlAllowedTags();
-        $killed = adminHtmlKilledTags();
-
         foreach (iterator_to_array($node->childNodes) as $child) {
             if ($child->nodeType === XML_ELEMENT_NODE) {
                 $tag = strtolower($child->nodeName);
@@ -399,7 +362,7 @@ if (! function_exists('adminHtmlSanitizeNode')) {
                     continue;
                 }
 
-                adminHtmlSanitizeNode($child);
+                sanitizeDomNode($child, $allowed, $killed);
 
                 if (! array_key_exists($tag, $allowed)) {
                     // Unknown container: drop the tag, keep the text.

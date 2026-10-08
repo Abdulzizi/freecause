@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Language;
+use App\Support\Locale;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -79,12 +79,12 @@ class SetLocale
 
     private static function allowedLocales(): array
     {
-        return cache()->remember('active_languages', 300, fn () => Language::where('is_active', 1)->pluck('code')->toArray());
+        return Locale::supported();
     }
 
     private static function defaultLocale(): string
     {
-        return cache()->remember('default_language', 300, fn () => Language::where('is_default', 1)->value('code') ?? 'en');
+        return Locale::default();
     }
 
     private function mapLegacyLocale(string $locale, array $allowedLocales): ?string

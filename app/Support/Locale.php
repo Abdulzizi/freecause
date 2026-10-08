@@ -51,7 +51,11 @@ class Locale
 
     public static function supported(): array
     {
-        return Language::where('is_active', true)->pluck('code')->toArray();
+        return cache()->remember(
+            'active_languages',
+            300,
+            fn () => Language::where('is_active', true)->pluck('code')->toArray()
+        );
     }
 
     /**
@@ -70,7 +74,11 @@ class Locale
 
     public static function default(): string
     {
-        return Language::where('is_default', true)->value('code') ?? config('locales.default', 'en');
+        return cache()->remember(
+            'default_language',
+            300,
+            fn () => Language::where('is_default', true)->value('code') ?? config('locales.default', 'en')
+        );
     }
 
     public static function trans(string $key, array $params = [], ?string $locale = null): string
