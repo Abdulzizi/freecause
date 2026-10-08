@@ -178,21 +178,16 @@
 
                     {{-- ACTIVE --}}
                     <td>
-                        <div class="inline-flex! flex-col! items-center! gap-[3px]!">
-                            @if (admin_can('petitions', 'edit'))
-                                <button type="button" class="fc-abtn {{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
-                                    data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
-                                    data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
-                                    data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
-                                    {{ $p->is_active ? 'Active' : 'Inactive' }}
-                                </button>
-                            @else
-                                <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
-                            @endif
-                            @if ($p->status === 'draft')
-                                <span class="bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>
-                            @endif
-                        </div>
+                        @if (admin_can('petitions', 'edit'))
+                        <button type="button" class="fc-abtn {{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
+                            data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
+                            data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
+                            data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
+                            {{ $p->is_active ? 'Active' : 'Inactive' }}
+                        </button>
+                        @else
+                            <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
+                        @endif
                     </td>
 
                     {{-- PUBLISHED --}}
@@ -217,7 +212,7 @@
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
-                    <td>{{ $p->title }}</td>
+                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
                     <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];

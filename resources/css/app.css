@@ -803,15 +803,17 @@ nav.navbar {
 .fc-drawer__body {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 12px 64px;
+    padding: 12px;
     -webkit-overflow-scrolling: touch;
 }
 .fc-drawer-savebar {
     position: sticky;
     bottom: 0;
+    margin: 12px -12px -12px;
     background: #fff;
-    padding: 10px 0 2px;
+    padding: 10px 12px;
     border-top: 1px solid #eee;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
 }
 .fc-drawer-backdrop {
     position: fixed;
