@@ -21,6 +21,17 @@ class CacheVersion
         }
     }
 
+    /**
+     * Bump the shared listing groups (home, listings, sitemap) that depend on
+     * petition/category/translation changes.
+     */
+    public static function bumpListings(): void
+    {
+        self::bump('home');
+        self::bump('list');
+        self::bump('sitemap');
+    }
+
     public static function bump(string $group): void
     {
         if ($group === 'list') {

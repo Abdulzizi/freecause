@@ -32,8 +32,6 @@ class PetitionCache
      */
     public static function bump(): void
     {
-        CacheVersion::bump('home');
-        CacheVersion::bump('list');
-        CacheVersion::bump('sitemap');
+        CacheVersion::bumpListings();
     }
 }

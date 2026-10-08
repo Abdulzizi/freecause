@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
+use App\Support\Slug;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +26,7 @@ class AdminCategoriesController extends Controller
         }
 
         try {
-            CacheVersion::bump('home');
-            CacheVersion::bump('list');
-            CacheVersion::bump('sitemap');
+            CacheVersion::bumpListings();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after category save: '.$e->getMessage());
         }
@@ -194,15 +193,14 @@ class AdminCategoriesController extends Controller
                 'sort_order' => 0,
             ]);
 
-            $base = Str::slug($data['name']) ?: 'category';
-            $slug = $base;
-            $i = 1;
-            while (DB::table('category_translations')
-                ->where('locale', $data['locale'])
-                ->where('slug', $slug)
-                ->exists()) {
-                $slug = $base.'-'.$i++;
-            }
+            $slug = Slug::dedupe(
+                $data['name'],
+                fn (string $candidate) => DB::table('category_translations')
+                    ->where('locale', $data['locale'])
+                    ->where('slug', $candidate)
+                    ->exists(),
+                'category'
+            );
 
             DB::table('category_translations')->insert([
                 'category_id' => $categoryId,

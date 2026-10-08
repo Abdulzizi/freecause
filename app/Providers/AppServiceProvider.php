@@ -8,10 +8,7 @@ use App\Models\Language;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
-use App\Observers\CategoryObserver;
-use App\Observers\CategoryTranslationObserver;
-use App\Observers\PetitionObserver;
-use App\Observers\PetitionTranslationObserver;
+use App\Observers\FlushesListingCaches;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -49,10 +46,10 @@ class AppServiceProvider extends ServiceProvider
             return TranslationJoin::apply($this, $config);
         });
 
-        Petition::observe(PetitionObserver::class);
-        Category::observe(CategoryObserver::class);
-        PetitionTranslation::observe(PetitionTranslationObserver::class);
-        CategoryTranslation::observe(CategoryTranslationObserver::class);
+        Petition::observe(FlushesListingCaches::class);
+        Category::observe(FlushesListingCaches::class);
+        PetitionTranslation::observe(FlushesListingCaches::class);
+        CategoryTranslation::observe(FlushesListingCaches::class);
 
         // Rate limiters touch no DB tables — register unconditionally so
         // throttled routes don't 500 when `settings` is missing (e.g. tests).
