@@ -49,7 +49,9 @@ host('rehearsal')
 
 desc('Upload the Vite build produced in CI');
 task('deploy:assets', function () {
-    upload('public/build', '{{release_path}}/public/build');
+    // rsync copies the source dir into the destination as its basename, so
+    // target public/ (exists) to land files at public/build/.
+    upload('public/build', '{{release_path}}/public');
 });
 after('deploy:update_code', 'deploy:assets');
 
