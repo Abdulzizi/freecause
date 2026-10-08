@@ -27,13 +27,11 @@ server prep plus an explicit go.
 Until the environment exists with reviewers, `environment: production` is a
 no-op and a tag still deploys immediately.
 
-## Known constraint: no committed lockfile
+## Lockfile
 
-`package-lock.json` is intentionally not committed, so CI/deploy use
-`npm install` (not `npm ci`) and cannot use the Node cache action. Frontend
-builds are therefore not byte-reproducible. Committing the lockfile would fix
-this; that needs an explicit override of the repo's "never commit
-package-lock.json" rule.
+`package-lock.json` is committed (an explicit override of the repo's historical
+"never commit package-lock.json" rule), so CI and deploy use `npm ci` with the
+setup-node npm cache. Frontend builds are now lockfile-reproducible.
 
 ## Deployer recipe notes
 

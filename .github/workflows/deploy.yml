@@ -41,9 +41,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Npm audit
-        run: npm install --no-audit --no-fund && npm audit --audit-level=high
+        run: npm ci --no-audit --no-fund && npm audit --audit-level=high
 
   deploy:
     needs: [ci]
@@ -57,9 +58,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install JS dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build frontend assets
         run: npm run build
