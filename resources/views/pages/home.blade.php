@@ -48,14 +48,14 @@
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
-                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 2.6 10.6h1.3v10.8h5.3v-5.8h5.6v5.8h5.3V10.6h1.3L12 2.5Z"/></svg>
+                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 2.6 10.6h1.3v10.8h5.3v-5.8h5.6v5.8h5.3V10.6h1.3L12 2.5Z"/></svg>
                                     {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
-                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
+                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
                                     {{ __('home.tab_recent') }}
                                 </button>
                             </li>
