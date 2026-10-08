@@ -15,7 +15,8 @@ class VersionEndpointTest extends TestCase
     {
         parent::setUp();
 
-        $this->path = storage_path('app/version.json');
+        $this->path = storage_path('app/testing-version.json');
+        config(['app.version_file' => $this->path]);
     }
 
     public function test_returns_the_stamped_version(): void

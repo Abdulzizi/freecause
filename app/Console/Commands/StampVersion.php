@@ -20,9 +20,11 @@ class StampVersion extends Command
             'deployed_at' => now()->toIso8601String(),
         ];
 
-        File::ensureDirectoryExists(storage_path('app'));
+        $path = (string) config('app.version_file');
+
+        File::ensureDirectoryExists(dirname($path));
         File::put(
-            storage_path('app/version.json'),
+            $path,
             json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
         );
 

@@ -8,7 +8,7 @@ class VersionController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        $path = storage_path('app/version.json');
+        $path = (string) config('app.version_file');
         $data = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
 
         return response()->json([

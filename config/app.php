@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'version_file' => env('APP_VERSION_FILE', base_path('version.json')),
+
     'canonical_url' => env('CANONICAL_URL', 'https://www.freecause.com'),
 
     /*
