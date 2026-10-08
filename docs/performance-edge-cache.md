@@ -1,47 +1,44 @@
-# Anonymous HTML edge cache: prepared, not activated
+# Anonymous HTML edge cache: not implemented
 
-Both `EDGE_CACHE_ENABLED` and `EDGE_CACHE_PURGE_ENABLED` default to false.
-No Cloudflare rule has been applied. Enabling the first flag alone does not
-make existing pages cacheable: no current renderer sets the required
-`edge_cache_stateless_render` request attribute.
+The origin never made listings cacheable. `EdgeCacheHeaders` unconditionally
+sends `Cache-Control: private, no-store` with `X-FreeCause-Edge-Cache: bypass`
+for the candidate listing routes (`petitions.index`, `petitions.byCategory`).
+The on-request `edge_cache_stateless_render` marker and the `EDGE_CACHE_ENABLED`
+/ `EDGE_CACHE_TTL` origin flags were removed as unreachable scaffolding: no
+renderer ever set the marker, so the eligibility branch could not run.
 
-This is a deliberately narrower preparation scaffold, not completed BETA or
-an achieved anonymous TTFB improvement. Home and petition detail are not
-cacheable and do not have edge purge coverage. Existing application behavior
-still requires the stateless-rendering work below.
+Only `EDGE_CACHE_PURGE_ENABLED` remains. It drives `EdgeCachePurge`, which
+targets canonical, queryless listing and category URLs in active locales.
+List cache-version bumps cover signatures, petition changes and raw-write
+invalidation paths; category translations also bump the list version. Admin page
+writes purge these listings because layout metadata may change. Purges are
+deferred until transaction commit and failures are isolated from user writes.
+The transport is synchronous after commit, bounded to five seconds per batch of
+30 URLs, and disabled by default. Implement queued, coalesced purges before any
+future activation to avoid adding write latency.
 
-EdgeCachePurge targets only canonical, queryless listings and category URLs in
-active locales. List cache-version bumps cover signatures, petition changes
-and existing raw-write invalidation paths; category translations also bump the
-list version. Admin page writes purge these listings because layout metadata
-may change. Purges are deferred until transaction commit; failures are isolated
-from user writes. The current transport is synchronous after commit, with a
-five-second bound per batch of 30 URLs, and is disabled by default. Implement
-queued, coalesced purges before activation to avoid adding write latency.
-
-## Why the current pages bypass
+## Why listings bypass
 
 Laravel's web middleware runs EncryptCookies, AddQueuedCookiesToResponse,
 StartSession, ShareErrorsFromSession, ValidateCsrfToken, then SubstituteBindings.
 SetLocale subsequently stores the locale in that session. The global
 EdgeCacheHeaders middleware evaluates the final response, including cookies,
-without deleting or rewriting those cookies. Only petitions.index and
-petitions.byCategory are future candidates; they currently return private,
-no-store with X-FreeCause-Edge-Cache: bypass.
+without deleting or rewriting them, so it always marks the candidate listing
+routes `private, no-store`.
 
-Home remains excluded because even /{locale} can redirect according to
-Accept-Language, locale_redirected_to, user agent and prefetch headers.
-Petition detail remains excluded because guest sign forms contain session CSRF
+Home is excluded because even `/{locale}` can redirect according to
+Accept-Language, `locale_redirected_to`, user agent and prefetch headers.
+Petition detail is excluded because guest sign forms contain session CSRF
 tokens, errors and old input, and recordView uses session deduplication. Navbar
 authentication, remember-me cookies and toast flash data are also personalized.
-Removing Set-Cookie after rendering would share CSRF tokens and break native
-POST signing. Skipping StartSession would break these consumers. The root,
-auth, OAuth, admin, confirmation, thanks, owner and sitemap routes are excluded.
+Removing Set-Cookie after rendering would share CSRF tokens and break native POST
+signing. Skipping StartSession would break these consumers. The root, auth,
+OAuth, admin, confirmation, thanks, owner and sitemap routes are excluded.
 
-## Prerequisites for activation
+## Prerequisites for a future activation
 
-Implement and separately verify a stateless list/category renderer before setting
-the request marker. It must avoid starting or attaching any session, reading
+Implement and separately verify a stateless list/category renderer before adding
+any cache marker back. It must avoid starting or attaching any session, reading
 authentication or flash data, generating CSRF tokens or queuing cookies. Requests
 with any Cookie or Authorization header must use the normal web stack. Keep
 existing native form POST CSRF validation intact. Supporting detail later needs
@@ -50,14 +47,15 @@ tracking, with explicit review of the behavior change and JavaScript failure
 fallback. Home requires preserving its browser-language redirect behavior before
 any cache lookup can serve HTML.
 
-Origin eligibility additionally requires GET, no query, 200 text/html, no Vary,
-no response cookies and no token markup. TTL is capped at 900 seconds. The
-marker is an internal server attribute, never a client-controlled header.
+A reintroduced origin gate would additionally require GET, no query, 200
+text/html, no Vary, no response cookies and no token markup, with TTL capped at
+900 seconds and the marker kept as an internal server attribute, never a
+client-controlled header.
 
 ## Proposed Cloudflare rule (review before mutation)
 
 Use the existing host and the 14 supported locale paths. Do not enable this
-record until the stateless renderer is deployed and verified:
+record unless a stateless renderer is deployed and verified:
 
 ```json
 {
@@ -100,6 +98,5 @@ feature, category, translation and page edits invalidate affected pages after
 transaction commit; rollback transactions must never send purge requests.
 Failures must not interrupt the user's write. Query variants stay uncached.
 
-Disable the Cloudflare rule and origin feature flag to roll back; purge any
-existing edge copies. No deployment, push, remote mutation or credentials read
-is part of this local preparation.
+Rollback is: disable the Cloudflare rule and purge any existing edge copies. No
+deployment, push, remote mutation or credentials read is part of local work.

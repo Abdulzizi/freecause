@@ -54,15 +54,15 @@ Route::get('/ads.txt', function () {
     return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
 });
 
-$toDefaultLocale = static function (string $segment, ?string $path = null) {
-    $target = '/'.default_locale().'/'.$segment.($path ? '/'.$path : '');
+$toDefaultLocale = static function (string $path) {
+    $target = '/'.default_locale().'/'.ltrim($path, '/');
     $query = request()->getQueryString();
 
     return redirect($target.($query ? '?'.$query : ''), 301);
 };
 
-Route::get('/petitions/{path?}', fn (?string $path = null) => $toDefaultLocale('petitions', $path))->where('path', '.*');
-Route::get('/petition/{path?}', fn (?string $path = null) => $toDefaultLocale('petition', $path))->where('path', '.*');
+Route::get('/petitions/{path?}', fn (?string $path = null) => $toDefaultLocale('petitions'.($path ? '/'.$path : '')))->where('path', '.*');
+Route::get('/petition/{path?}', fn (?string $path = null) => $toDefaultLocale('petition'.($path ? '/'.$path : '')))->where('path', '.*');
 
 // Unprefixed legacy default-locale (en_US) words -> same path under the default locale.
 // Only known legacy first segments are relayed; anything else keeps the existing
@@ -78,12 +78,8 @@ $legacyUnprefixedWords = [
     'ebay', 'zalando', 'amazon', 'expedia', 'booking', 'external',
 ];
 
-Route::get('/{path?}', function (?string $path = null) {
-    $target = '/'.default_locale().'/'.ltrim((string) $path, '/');
-    $query = request()->getQueryString();
-
-    return redirect($target.($query ? '?'.$query : ''), 301);
-})->where('path', '^(?:'.implode('|', array_map('preg_quote', $legacyUnprefixedWords)).')(?:/.*)?$');
+Route::get('/{path?}', fn (?string $path = null) => $toDefaultLocale((string) $path))
+    ->where('path', '^(?:'.implode('|', array_map('preg_quote', $legacyUnprefixedWords)).')(?:/.*)?$');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->whereNumber('page')->name('sitemap.petitions');
@@ -138,7 +134,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
         // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
-        Route::post('/signatures/bulk-delete', [AdminSignaturesController::class, 'bulkDelete'])->middleware('permission:signatures,delete')->name('signatures.bulkDelete');
         Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->name('signatures.bulkAction');
         Route::post('/signatures/{signature}/action', [AdminSignaturesController::class, 'action'])->middleware('permission:signatures,edit')->name('signatures.action');
 

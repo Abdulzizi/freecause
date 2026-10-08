@@ -236,26 +236,6 @@ class AdminSignaturesController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function bulkDelete(Request $request)
-    {
-        $data = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:signatures,id'],
-        ]);
-
-        $petitionIds = DB::table('signatures')->whereIn('id', $data['ids'])->pluck('petition_id')->unique()->all();
-
-        DB::transaction(function () use ($data, $petitionIds) {
-            DB::table('signatures')
-                ->whereIn('id', $data['ids'])
-                ->delete();
-
-            $this->recalculateSignatureCounts($petitionIds);
-        });
-
-        return response()->json(['ok' => true]);
-    }
-
     private function recalculateSignatureCounts(array $petitionIds): void
     {
         foreach ($petitionIds as $pid) {

@@ -6,29 +6,7 @@ import '../css/client-toast.css';
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-    customClass: {
-        popup: 'fc-swal-toast',
-    },
-});
-
-window.toast = {
-    success: (msg) => Toast.fire({ icon: 'success', title: msg }),
-    error: (msg) => Toast.fire({ icon: 'error', title: msg }),
-    warning: (msg) => Toast.fire({ icon: 'warning', title: msg }),
-    info: (msg) => Toast.fire({ icon: 'info', title: msg }),
-};
-
-// Client-facing toasts — smooth, brand-styled, distinct from the admin Toast above.
+// Client-facing toasts — smooth, brand-styled.
 const ClientToast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -61,13 +39,6 @@ window.clientToast = {
 // Public pages enforce a strict CSP (no inline scripts), so DOM behaviours live
 // in the bundle instead of <script> blocks in the views.
 document.addEventListener('DOMContentLoaded', function () {
-    // Server-flashed toasts (session('toast')) delivered via a data-* carrier.
-    const flash = document.getElementById('toast-flash');
-    if (flash && window.clientToast) {
-        const showToast = window.clientToast?.[flash.dataset.type] ?? window.clientToast?.info;
-        showToast?.(flash.dataset.message);
-    }
-
     const liveRegion = (function () {
         let region = document.getElementById('fc-live');
         if (!region) {
@@ -89,6 +60,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 50);
     }
 
+    // Server-flashed toasts delivered via data-* carriers: a single path for the
+    // session('toast') carrier plus session('success') and session('error').
+    const flash = document.getElementById('toast-flash');
+    if (flash && window.clientToast) {
+        const showToast = window.clientToast?.[flash.dataset.type] ?? window.clientToast?.info;
+        showToast?.(flash.dataset.message);
+        announce(flash.dataset.message);
+    }
+
+    const flashSuccess = document.getElementById('flash-success');
+    if (flashSuccess && window.clientToast?.success) {
+        window.clientToast.success(flashSuccess.dataset.message);
+        announce(flashSuccess.dataset.message);
+    }
+
+    const flashError = document.getElementById('flash-error');
+    if (flashError && window.clientToast?.error) {
+        window.clientToast.error(flashError.dataset.message);
+        announce(flashError.dataset.message);
+    }
+
     if (window.clientToast && !window.clientToast.__fcAnnounceWrapped) {
         ['success', 'error', 'warning', 'info'].forEach(function (kind) {
             const original = window.clientToast[kind];
@@ -99,20 +91,6 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         });
         window.clientToast.__fcAnnounceWrapped = true;
-    }
-
-    if (flash && window.clientToast) {
-        announce(flash.dataset.message);
-    }
-
-    const flashSuccess = document.getElementById('flash-success');
-    if (flashSuccess && window.clientToast?.success) {
-        window.clientToast.success(flashSuccess.dataset.message);
-    }
-
-    const flashError = document.getElementById('flash-error');
-    if (flashError && window.clientToast?.error) {
-        window.clientToast.error(flashError.dataset.message);
     }
 
     document.querySelectorAll('ins.adsbygoogle[data-adsense]').forEach(function (slot) {

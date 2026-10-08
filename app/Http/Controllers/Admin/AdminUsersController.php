@@ -288,13 +288,11 @@ class AdminUsersController extends Controller
     public function bulkBan(Request $request)
     {
         $data = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'exists:users,id'],
             'reason' => ['nullable', 'string', 'max:255'],
             'days' => ['nullable', 'integer', 'min:0', 'max:36500'],
         ]);
 
-        $ids = array_map('intval', $data['ids']);
+        $ids = $this->validatedIds($request);
         if (empty($ids)) {
             return response()->json(['ok' => false]);
         }

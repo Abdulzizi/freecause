@@ -17,7 +17,6 @@ class EdgeCacheApplicationTest extends TestCase
     {
         parent::setUp();
         $this->seed([LanguageSeeder::class, UserLevelSeeder::class]);
-        config(['edge-cache.enabled' => true]);
     }
 
     public function test_real_anonymous_listings_bypass_in_every_active_locale(): void
