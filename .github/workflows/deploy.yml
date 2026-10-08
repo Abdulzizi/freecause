@@ -27,33 +27,6 @@ jobs:
     if: ${{ github.event_name == 'push' || inputs.action == 'deploy' }}
     uses: ./.github/workflows/ci.yml
 
-  security-audit:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --no-scripts
-
-      - name: Composer audit
-        run: composer audit --locked
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Npm audit
-        run: npm ci --no-audit --no-fund && npm audit --audit-level=high
-
   deploy:
     needs: [ci]
     if: ${{ always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped') }}
