@@ -27,6 +27,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\VersionController;
 use App\Http\Controllers\WidgetController;
 use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\SetLocale;
@@ -47,6 +48,7 @@ Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(requ
     ->name('root');
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
+Route::get('/version', VersionController::class);
 
 Route::get('/ads.txt', function () {
     $content = Settings::get('ads_txt', '', 'global');
