@@ -30,6 +30,7 @@ add('shared_dirs', [
 ]);
 
 set('writable_dirs', ['bootstrap/cache', 'storage']);
+set('manage_services', true);
 
 host('production')
     ->set('hostname', getenv('DEPLOY_HOST') ?: '37.60.254.112')
@@ -37,6 +38,14 @@ host('production')
     ->set('deploy_path', getenv('DEPLOY_PATH') ?: '/var/www/freecause')
     ->set('identity_file', getenv('DEPLOY_IDENTITY') ?: '~/.ssh/id_deploy')
     ->set('labels', ['stage' => 'production']);
+
+host('rehearsal')
+    ->set('hostname', getenv('DEPLOY_HOST') ?: '37.60.254.112')
+    ->set('remote_user', getenv('DEPLOY_USER') ?: 'root')
+    ->set('deploy_path', getenv('REHEARSAL_PATH') ?: '/var/www/freecause-rehearsal')
+    ->set('identity_file', getenv('DEPLOY_IDENTITY') ?: '~/.ssh/id_deploy')
+    ->set('manage_services', false)
+    ->set('labels', ['stage' => 'rehearsal']);
 
 desc('Upload the Vite build produced in CI');
 task('deploy:assets', function () {
@@ -58,16 +67,31 @@ task('cache:warm', function () {
 
 desc('Restart the queue workers');
 task('queue:restart', function () {
+    if (! get('manage_services')) {
+        writeln('manage_services=false: skipping queue restart');
+
+        return;
+    }
     run('{{bin/php}} {{bin/artisan}} queue:restart');
 });
 
 desc('Restart the supervisor queue group');
 task('supervisor:restart', function () {
+    if (! get('manage_services')) {
+        writeln('manage_services=false: skipping supervisor restart');
+
+        return;
+    }
     run('sudo supervisorctl restart {{supervisor_group}}');
 });
 
 desc('Reload PHP-FPM, resetting opcache');
 task('php-fpm:reload', function () {
+    if (! get('manage_services')) {
+        writeln('manage_services=false: skipping PHP-FPM reload');
+
+        return;
+    }
     run('sudo systemctl reload {{php_fpm_service}}');
 });
 
