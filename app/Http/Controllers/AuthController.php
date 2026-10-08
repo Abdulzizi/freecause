@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeleteAccountRequest;
+use App\Http\Requests\EmailRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
@@ -23,7 +29,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -61,19 +66,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request, string $locale)
+    public function register(RegisterRequest $request, string $locale)
     {
-        $request->merge(['email' => strtolower(trim((string) $request->email))]);
-
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:60'],
-            'surname' => ['required', 'string', 'max:60'],
-            'email' => ['required', 'email', 'max:190', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'max:72'],
-            'nickname' => ['nullable', 'regex:/^[A-Za-z0-9]{3,32}$/', 'unique:users,nickname'],
-            'city' => ['nullable', 'string', 'max:80'],
-            'agree_terms' => ['accepted'],
-        ]);
+        $data = $request->validated();
 
         $fullName = trim($data['name'].' '.$data['surname']);
 
@@ -185,14 +180,9 @@ class AuthController extends Controller
         return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
 
-    public function login(Request $request, string $locale)
+    public function login(LoginRequest $request, string $locale)
     {
-        $request->merge(['email' => strtolower(trim((string) $request->email))]);
-
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
         $remember = $request->boolean('remember');
 
@@ -274,28 +264,11 @@ class AuthController extends Controller
         return redirect()->to(WpSso::logoutUrl("/{$locale}"));
     }
 
-    public function updateProfile(Request $request, string $locale)
+    public function updateProfile(UpdateProfileRequest $request, string $locale)
     {
         $u = Auth::guard('web')->user();
 
-        $data = $request->validate([
-            'first_name' => ['required', 'string', 'max:60'],
-            'last_name' => ['required', 'string', 'max:60'],
-            'nickname' => ['nullable', 'string', 'max:80'],
-            'city' => ['nullable', 'string', 'max:80'],
-            'country' => ['nullable', Rule::in(Countries::codes())],
-            'locale' => [
-                'required',
-                Rule::exists('languages', 'code')->where(fn ($query) => $query->where('is_active', true)),
-            ],
-            'identify_mode' => ['nullable', Rule::in(['full', 'name', 'nick'])],
-
-            'new_email' => ['nullable', 'email', 'max:190'],
-            'new_email_confirmation' => ['nullable', 'same:new_email'],
-
-            'current_password' => [Rule::requiredIf(fn () => filled($request->input('new_password')) && $u->hasLocalPassword())],
-            'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
-        ]);
+        $data = $request->validated();
 
         $first = trim($data['first_name']);
         $last = trim($data['last_name']);
@@ -384,12 +357,8 @@ class AuthController extends Controller
         return redirect()->to("/{$data['locale']}/profile");
     }
 
-    public function delete(Request $request, string $locale)
+    public function delete(DeleteAccountRequest $request, string $locale)
     {
-        $request->validate([
-            'confirm_delete' => ['required', 'in:1'],
-        ]);
-
         $u = Auth::guard('web')->user();
 
         if ($u->isGoogleOnly()) {
@@ -404,10 +373,6 @@ class AuthController extends Controller
                     'google_delete' => __('profile.account_delete_verify_google'),
                 ]);
             }
-        } else {
-            $request->validate([
-                'password' => ['required', 'current_password:web'],
-            ]);
         }
 
         $userId = $u->id;
@@ -542,12 +507,8 @@ class AuthController extends Controller
         return view('auth.forgot-password');
     }
 
-    public function sendResetLink(Request $request, string $locale)
+    public function sendResetLink(EmailRequest $request, string $locale)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -564,14 +525,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function resetPassword(Request $request, string $locale)
+    public function resetPassword(ResetPasswordRequest $request, string $locale)
     {
-        $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-        ]);
-
         try {
             $status = Password::reset(
                 $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -598,12 +553,8 @@ class AuthController extends Controller
         return view('auth.resend-verification', compact('locale'));
     }
 
-    public function resendVerification(Request $request, string $locale)
+    public function resendVerification(EmailRequest $request, string $locale)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
         if (! Settings::get('smtp_enabled', false)) {
             return back()->withErrors([
                 'email' => __('auth.resend_disabled'),
