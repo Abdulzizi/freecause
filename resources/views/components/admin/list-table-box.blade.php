@@ -10,23 +10,23 @@
     $isEmpty = empty($p) ? true : $p->isEmpty();
 @endphp
 
-<div class="fc-box" style="margin-top:10px; padding:10px 10px;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+<div class="fc-box mt-2.5! p-2.5!">
+    <div class="flex! items-center! justify-between! mb-2.5!">
         @if (!empty($p) && $p->hasPages())
             @include('admin.partials.simple-window-pagination', ['p' => $p])
         @endif
     </div>
 
     @if ($isEmpty)
-        <div style="padding:12px 10px; color:#777; font-size:12px;">
+        <div class="px-2.5! py-3! text-[#777]! text-[12px]!">
             {{ $emptyText }}
             @if ($emptyClearRoute)
-                <a href="{{ $emptyClearRoute }}" class="fc-abtn fc-abtn--neutral" style="margin-left:6px;">clear filters</a>
+                <a href="{{ $emptyClearRoute }}" class="fc-abtn fc-abtn--neutral ml-1.5!">clear filters</a>
             @endif
         </div>
     @else
         <div class="fc-table-wrap">
-            <table style="width:100%; border-collapse:collapse;">
+            <table class="w-full! border-collapse!">
                 <thead>
                     {{ $thead }}
                 </thead>
