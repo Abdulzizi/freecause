@@ -13,7 +13,7 @@ A multi-language online petition platform built on Laravel 12. Users create, sig
 | Auth       | Email/password, Google OAuth (Socialite), TOTP 2FA |
 | PDF        | barryvdh/laravel-dompdf                       |
 | Images     | intervention/image-laravel                    |
-| CI/CD      | GitHub Actions (`deploy.yml`, tag-triggered)  |
+| CI/CD      | GitHub Actions: `ci.yml` gate → `deploy.yml` (Deployer 8, tag-triggered) |
 
 ## Project layout
 
@@ -28,12 +28,14 @@ app/
 database/
   migrations/               Schema history
   seeders/                  User levels, languages, page content
+lang/                       PHP translation files (14 locales)
 resources/
-  lang/                     PHP translation files (14 locales)
   views/                    Blade templates (pages/, admin/, petition/)
+  js/, css/                 Vite entry points and styles
 routes/web.php              All routes: public, auth, admin
-.github/workflows/deploy.yml  Tag-triggered deploy pipeline
-freecause-queue.conf        Supervisor worker config
+deploy/                     Deployer recipe, cutover script, supervisor template
+.github/workflows/          ci.yml (gate), deploy.yml (Deployer on tags), i18n.yml
+docs/                       Operational and performance docs
 ```
 
 ## Getting started
@@ -55,11 +57,12 @@ npm install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
-php artisan admin:create     # first admin account
 php artisan storage:link
 npm run build
 php artisan serve
 ```
+
+There is no first-admin command; seed `DemoSeeder` locally for a demo admin, or create/manage admins through the panel and `admin:reset-password`.
 
 Local dev server: `http://localhost:8000`.
 
@@ -70,7 +73,7 @@ Local dev server: `http://localhost:8000`.
 | `composer dev`     | Dev server, queue worker, log tail, Vite in parallel |
 | `composer test`    | Config clear + full test suite                      |
 | `php artisan test --filter=X` | Targeted tests                           |
-| `./vendor/bin/pint`| PSR-12 style fixes (Laravel Pint)                   |
+| `./vendor/bin/pint app database tests routes config` | PSR-12 fixes — always pass explicit paths (a bare run reformats the WordPress tree under `public/magazine/`) |
 | `php artisan cache:warm` | Warm versioned petition/settings cache keys   |
 
 Tests run against sqlite in-memory: `CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=:memory:`.
@@ -121,21 +124,28 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 14 locales: `da de el en es fr it nl pl pt ro ru sv tr`.
 
 - Public routes are locale-prefixed (`/{locale}/petitions`); the root redirects to the browser's locale.
-- Translation files: `resources/lang/{locale}/`.
+- Translation files: `lang/{locale}/`.
 - Translated content (petitions, categories, pages) lives in per-locale DB tables managed through the admin panel.
 - `hreflang` tags (all locales + `x-default`) are rendered on home and petition pages.
 
 ## Production notes
 
-- **Deploys**: push a tag (`v*`) to trigger GitHub Actions; the pipeline checks out the tag on the server, runs migrations, rebuilds caches, restarts the queue, and smoke-tests `/up`. Never edit app code directly on the server.
+- **Deploys**: push a tag (`v*`). `ci.yml` runs the test/lint/build gate, then `deploy.yml` runs **Deployer 8** under the `production` GitHub Environment: it creates a new release under `/var/www/freecause/releases/`, runs migrations, warms caches, restarts queue workers, reloads PHP-FPM, flips the `current` symlink, and smoke-tests `/version`. Never edit app code on the server.
   ```bash
-  git tag v2026.10.03-example
-  git push origin v2026.10.03-example
+  git tag v2026.10.08-example
+  git push origin v2026.10.08-example   # mirror to backup too
   ```
-- **Queue workers**: Supervisor group `freecause-release-queue:*`. After changing mail/DB-driven settings, restart them rather than redeploying.
+- **Rollback**: run the **Deploy** workflow with `action=rollback`, or `dep -f deploy/deploy.php rollback production`. Full runbook in `deploy/README.md`.
+- **Queue workers**: Supervisor group `freecause-release-queue:*`, command pointing at `/var/www/freecause/current`. After changing mail/DB-driven settings, restart them rather than redeploying.
 - **Backups**: daily `backup:run` at 02:00 writes to the S3 `backups` disk with retention cleanup at 02:30. Do not run `backup:clean` manually against that disk.
-- **Health check**: `GET /up` must return 200; the deploy pipeline fails otherwise.
+- **Health/version**: `GET /up` must return 200; `GET /version` reports the deployed commit (`app:stamp-version`). The deploy smoke test compares it to the pushed commit.
 - **Caching**: settings, translations, and petition stats are cached with versioned keys; cache is invalidated on sign writes. An edge CDN may still hold stale files after config changes, so purge by URL when needed.
+
+## Documentation
+
+- `deploy/README.md` — deploy/rollback runbook, Deployer recipe, shared dirs, Environment setup.
+- `docs/performance-edge-cache.md` — edge-cache design and why listings bypass.
+- `docs/performance-qa.md` — manual performance QA checklist.
 
 ## Security
 
