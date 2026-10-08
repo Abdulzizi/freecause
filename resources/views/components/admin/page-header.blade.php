@@ -16,7 +16,7 @@
             {{ $title }}@if ($count !== null) <span>({{ is_numeric($count) ? number_format((float) $count) : $count }})</span>@endif
         </h1>
         @if (filled($context))
-            <p class="m-0! mt-1! text-xs! text-[#777]!">{{ $context }}</p>
+            <p class="m-0! mt-1! text-xs! text-muted!">{{ $context }}</p>
         @endif
     </div>
 

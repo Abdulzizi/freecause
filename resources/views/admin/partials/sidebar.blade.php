@@ -3,8 +3,8 @@
     (.fc-menu rules). Collapse behavior (fc-group/group-title) is unchanged:
     element-level inline styles applied by admin.js, key by group label.
 --}}
-<nav class="fc-menu w-[210px]! bg-[#d7d7d7]! border! border-[#9e9e9e]! rounded! p-1.5! box-border! shrink-0! max-md:fixed! max-md:top-0! max-md:left-0! max-md:bottom-0! max-md:max-w-[85vw]! max-md:rounded-none! max-md:border-r! max-md:border-l-0! max-md:border-t-0! max-md:border-b-0! max-md:overflow-y-auto! max-md:pt-[58px]!" id="fc-menu">
-    <div class="hidden! max-md:block! max-md:p-[10px_8px]! max-md:-m-1.5! max-md:mb-3! max-md:border-b! max-md:border-[#9e9e9e]!">
+<nav class="fc-menu w-[210px]! bg-surface! border! border-border! rounded! p-1.5! box-border! shrink-0! max-md:fixed! max-md:top-0! max-md:left-0! max-md:bottom-0! max-md:max-w-[85vw]! max-md:rounded-none! max-md:border-r! max-md:border-l-0! max-md:border-t-0! max-md:border-b-0! max-md:overflow-y-auto! max-md:pt-[58px]!" id="fc-menu">
+    <div class="hidden! max-md:block! max-md:p-[10px_8px]! max-md:-m-1.5! max-md:mb-3! max-md:border-b! max-md:border-border!">
         <strong>{{ admin_user()?->name ?? 'admin' }}</strong>
         <form method="POST" action="{{ route('admin.logout') }}" class="inline!">
             @csrf

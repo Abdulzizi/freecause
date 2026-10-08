@@ -22,15 +22,15 @@
     @endpush
 
     <div class="text-center! mt-[10px]! mb-[25px]! text-[44px]! font-bold! tracking-[-1px]! max-md:text-[32px]!">
-        <span class="text-[#b30000]!">Online</span><span class="text-[#111]!">Petition</span>
+        <span class="text-brand!">Online</span><span class="text-ink!">Petition</span>
     </div>
 
     @if (session('success'))
-        <div class="w-[320px]! mx-auto! mb-3! border! border-[#b8d7b3]! bg-[#f2fff2]! text-[#1d7a2a]! p-2.5! px-3! rounded-[3px]! text-[13px]!">{{ session('success') }}</div>
+        <div class="w-[320px]! mx-auto! mb-3! border! border-[#b8d7b3]! bg-[#f2fff2]! text-success! p-2.5! px-3! rounded-[3px]! text-[13px]!">{{ session('success') }}</div>
     @endif
 
     @if ($errors->any())
-        <div class="w-[320px]! mx-auto! mb-3! border! border-[#d7b3b3]! bg-[#fff2f2]! text-[#7a1d1d]! p-2.5! px-3! rounded-[3px]! text-[13px]!">
+        <div class="w-[320px]! mx-auto! mb-3! border! border-[#d7b3b3]! bg-[#fff2f2]! text-danger! p-2.5! px-3! rounded-[3px]! text-[13px]!">
             {{ $errors->first() }}
         </div>
     @endif
@@ -42,10 +42,10 @@
             @csrf
 
             <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Email or Username</div>
-            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-white!" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
+            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-surface!" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
 
             <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Password</div>
-            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-white!" type="password" name="password" autocomplete="current-password" required>
+            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-surface!" type="password" name="password" autocomplete="current-password" required>
 
             <div class="flex! items-center! justify-between! gap-2.5! mt-3!">
                 <label class="text-[#e9f0ff]! text-xs! flex! items-center! gap-1.5! select-none!">

@@ -15,10 +15,10 @@
     <div class="min-w-0!">
         {{ $slot }}
         @if (filled($hint))
-            <div class="mt-1! text-[11px]! text-[#777]!">{{ $hint }}</div>
+            <div class="mt-1! text-[11px]! text-muted!">{{ $hint }}</div>
         @endif
         @if (filled($error))
-            <div class="mt-1! text-[11px]! text-[#c00]!" role="alert">{{ $error }}</div>
+            <div class="mt-1! text-[11px]! text-danger!" role="alert">{{ $error }}</div>
         @endif
     </div>
 </div>

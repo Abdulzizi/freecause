@@ -6,15 +6,15 @@
 
     @php
         $icoPublish = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3v12" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round"/>
-        <path d="M7 8l5-5 5 5" stroke="#2f6f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 21h14" stroke="#777" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 3v12" stroke="#198754" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 8l5-5 5 5" stroke="#198754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 21h14" stroke="#5b6470" stroke-width="2" stroke-linecap="round"/>
     </svg>';
 
         $icoUnpublish = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path d="M12 21V9" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
         <path d="M17 16l-5 5-5-5" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 3h14" stroke="#777" stroke-width="2" stroke-linecap="round"/>
+        <path d="M5 3h14" stroke="#5b6470" stroke-width="2" stroke-linecap="round"/>
     </svg>';
 
         $icoFeature = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -23,18 +23,18 @@
     </svg>';
 
         $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="8" stroke="#c00" stroke-width="2"/>
-        <path d="M8 8l8 8" stroke="#c00" stroke-width="2"/>
+        <circle cx="12" cy="12" r="8" stroke="#dc3545" stroke-width="2"/>
+        <path d="M8 8l8 8" stroke="#dc3545" stroke-width="2"/>
     </svg>';
 
         $icoLink = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1" stroke="#444" stroke-width="2"/>
-        <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1" stroke="#444" stroke-width="2"/>
+        <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1" stroke="#212529" stroke-width="2"/>
+        <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1" stroke="#212529" stroke-width="2"/>
     </svg>';
 
         $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
-        <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 6l12 12" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18 6L6 18" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
     </svg>';
     @endphp
 
@@ -146,7 +146,7 @@
     <x-admin.data-table emptyText="no petitions found" :p="$petitions" :emptyClearRoute="route('admin.petitions')" :bulk="[]">
 
         <x-slot:thead>
-            <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
+            <tr class="border-b! border-solid! border-border!" data-admin-row-hover>
                 <th>ID</th>
                 <th width="26"></th>
                 <th width="26">A</th>
@@ -162,7 +162,7 @@
 
         <x-slot:tbody>
             @foreach ($petitions as $p)
-                <tr class="border-b! border-solid! border-[#eee]! {{ ($p->status === 'draft' || ! $p->is_active) ? 'fc-row-muted' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
+                <tr class="border-b! border-solid! border-border! {{ ($p->status === 'draft' || ! $p->is_active) ? 'fc-row-muted' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
 
                     <td>
                         <a href="{{ route('admin.petitions', array_merge(request()->query(), ['select' => $p->id])) }}">
@@ -186,15 +186,15 @@
                             {{ $p->is_active ? 'Active' : 'Inactive' }}
                         </button>
                         @else
-                            <span class="text-xs! {{ $p->is_active ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
+                            <span class="text-xs! {{ $p->is_active ? 'text-success!' : 'text-danger!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
                         @endif
                     </td>
 
                     {{-- PUBLISHED --}}
                     <td>
                         {!! $p->status === 'published'
-                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
+                            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
                     {{-- FEATURED --}}
@@ -207,12 +207,12 @@
                             {{ $p->is_featured ? 'Featured' : 'Feature' }}
                         </button>
                         @else
-                            <span class="text-xs! {{ $p->is_featured ? 'text-[#2f6f2f]!' : 'text-[#900]!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
+                            <span class="text-xs! {{ $p->is_featured ? 'text-success!' : 'text-danger!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
                         @endif
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
-                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
+                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-[#e0e0e0]! text-ink! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
                     <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
@@ -302,7 +302,7 @@
                 $isCreatingTranslation = ! $selectedTranslation;
             @endphp
 
-            <div class="mb-3! border-b! border-[#eee]! pb-2!">
+            <div class="mb-3! border-b! border-border! pb-2!">
                 <form method="get" action="{{ route('admin.petitions') }}"
                     class="flex! items-center! gap-2! flex-wrap! mb-1!">
                     @foreach (request()->except('locale') as $key => $value)
@@ -329,7 +329,7 @@
                 @endif
                 @if ($translationSource?->slug)
                     <a href="{{ route('petition.show', ['locale' => $translationSource->locale, 'slug' => $translationSource->slug, 'id' => $selectedPetition->id]) }}"
-                        target="_blank" rel="noopener" class="text-xs! text-[#1a57c8]!">
+                        target="_blank" rel="noopener" class="text-xs! text-brand!">
                         View petition on site ({{ $localeOptions[$translationSource->locale] ?? $translationSource->locale }})
                     </a>
                 @endif
@@ -381,7 +381,7 @@
                 </x-admin.form-field>
 
                 <div class="grid! grid-cols-[160px_1fr]! gap-3! items-center! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:grid-cols-1! max-md:gap-1.5! max-md:[&_label]:text-xs!">
-                    <label for="petition-featured">featured <span class="text-[#888]!">(this locale)</span></label>
+                    <label for="petition-featured">featured <span class="text-muted!">(this locale)</span></label>
                     <span class="fc-switch">
                         <input id="petition-featured" type="checkbox" name="is_featured" value="1"
                             {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
@@ -391,17 +391,17 @@
 
                 <x-admin.form-field label="owner (user id)">
                     <x-ui.input name="user_id" type="number" :value="$selectedPetition->user_id" class="fc-filter-field" placeholder="user ID" />
-                    @error('user_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+                    @error('user_id') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
                 </x-admin.form-field>
 
                 <x-admin.form-field label="title">
-<x-ui.input name="title" data-slug-source :value="$translationSource->title ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('title') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="title" data-slug-source :value="$translationSource->title ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('title') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="slug">
-<x-ui.input name="slug" data-slug-target :value="$translationSource->slug ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('slug') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="slug" data-slug-target :value="$translationSource->slug ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('slug') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 @if ($selectedPetition)
@@ -425,7 +425,7 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('goal_signatures') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+                        @error('goal_signatures') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="category">
@@ -438,46 +438,46 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('category_id') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+                        @error('category_id') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="tags">
-<x-ui.input name="tags" :value="$selectedPetition->tags ?? ''" placeholder="tag1, tag2" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('tags') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="tags" :value="$selectedPetition->tags ?? ''" placeholder="tag1, tag2" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('tags') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="youtube">
-<x-ui.input name="youtube_url" :value="$selectedPetition->youtube_url ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('youtube_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="youtube_url" :value="$selectedPetition->youtube_url ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('youtube_url') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="target">
-<x-ui.input name="target" :value="$selectedPetition->target ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('target') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="target" :value="$selectedPetition->target ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('target') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="community">
-<x-ui.input name="community" :value="$selectedPetition->community ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('community') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="community" :value="$selectedPetition->community ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('community') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="community url">
-<x-ui.input name="community_url" :value="$selectedPetition->community_url ?? ''" placeholder="https://" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('community_url') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="community_url" :value="$selectedPetition->community_url ?? ''" placeholder="https://" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('community_url') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="location">
-<x-ui.input name="city" :value="$selectedPetition->city ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('city') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="city" :value="$selectedPetition->city ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('city') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="date created">
-<x-ui.input name="created_at" type="datetime-local" :value="$selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                        @error('created_at') <span class="text-[#c00]! text-xs!">{{ $message }}</span> @enderror
+<x-ui.input name="created_at" type="datetime-local" :value="$selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                        @error('created_at') <span class="text-danger! text-xs!">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="text">
-<textarea class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
+<textarea class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white! fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
 </x-admin.form-field>
 
                 {{-- Image management --}}
@@ -507,10 +507,10 @@
                             <input type="checkbox" name="remove_image" value="1"> remove image
                         </label>
                     @else
-                        <span class="text-[#999]! text-[0.85em]!">no image</span>
+                        <span class="text-muted! text-[0.85em]!">no image</span>
                     @endif
-                    <input class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! mt-1!" type="file" name="cover_image" accept="image/*">
-                    <span class="text-[#888]! text-[0.8em]!">upload new image to replace current (max 4 MB)</span>
+                    <input class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white! mt-1!" type="file" name="cover_image" accept="image/*">
+                    <span class="text-muted! text-[0.8em]!">upload new image to replace current (max 4 MB)</span>
                 </div>
 
                 <div class="flex! justify-end! fc-drawer-savebar">
@@ -519,7 +519,7 @@
 
                 </form>
             @else
-                <p class="text-sm! text-[#777]!">View-only access</p>
+                <p class="text-sm! text-muted!">View-only access</p>
                 <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
                     <dt class="font-bold!">Title</dt><dd>{{ $translationSource->title ?? '—' }}</dd>
                     <dt class="font-bold!">Status</dt><dd>{{ $selectedPetition->status }}</dd>
@@ -530,7 +530,7 @@
                 </dl>
             @endif
         @else
-            <x-admin.empty-state message="select a petition to edit" class="text-[#777]!" />
+            <x-admin.empty-state message="select a petition to edit" class="text-muted!" />
         @endif
     </x-admin.detail-panel>
 

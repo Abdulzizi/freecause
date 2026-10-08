@@ -6,7 +6,7 @@
 
     <x-admin.page-header title="spam" />
 
-    <div class="border! border-[#9e9e9e]! rounded! p-[10px]! mb-[15px]!">
+    <div class="border! border-border! rounded! p-[10px]! mb-[15px]!">
         <strong>{{ number_format($bannedCount) }}</strong> IP banned.
     </div>
 
@@ -32,7 +32,7 @@
     <x-admin.data-table empty-text="no blocked activity" :p="$logs" :emptyClearRoute="route('admin.spam')">
 
         <x-slot:thead>
-            <tr data-admin-row-hover class="border-b! border-[#ccc]!">
+            <tr data-admin-row-hover class="border-b! border-border!">
                 <th class="w-[100px]!">type</th>
                 <th class="w-[150px]!">ip</th>
                 <th>payload</th>
@@ -44,7 +44,7 @@
         <x-slot:tbody>
             @forelse($logs as $log)
                 <tr data-admin-row-hover
-                    class="border-b! border-[#eee]! @if (in_array($log->ip, $bannedIps)) bg-[#fff3f3]! @endif">
+                    class="border-b! border-border! @if (in_array($log->ip, $bannedIps)) bg-[#fff3f3]! @endif">
 
                     <td>{{ $log->type }}</td>
 

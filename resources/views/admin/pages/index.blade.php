@@ -56,7 +56,7 @@
     <x-admin.data-table emptyText="no pages found" :p="$pages" :emptyClearRoute="route('admin.pages')">
 
         <x-slot:thead>
-            <tr class="border-b! border-[#ccc]!">
+            <tr class="border-b! border-border!">
                 <th width="70">ID</th>
                 <th width="26"></th>
                 <th width="26">P</th>
@@ -69,7 +69,7 @@
 
         <x-slot:tbody>
             @foreach ($pages as $p)
-                <tr class="border-b! border-[#eee]! {{ $p->published ? '' : 'fc-row-muted' }}" data-admin-row-hover
+                <tr class="border-b! border-border! {{ $p->published ? '' : 'fc-row-muted' }}" data-admin-row-hover
                     data-detail-row data-detail-href="{{ route('admin.pages', array_merge(request()->query(), ['select' => $p->page_id, 'locale' => $p->locale])) }}">
 
                     <td class="text-center!">
@@ -102,7 +102,7 @@
                     <td>
                         {{ $p->title }}
                         @if (! $p->published)
-                            <span class="inline-block! ml-1! bg-[#e0e0e0]! text-[#555]! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">unpublished</span>
+                            <span class="inline-block! ml-1! bg-[#e0e0e0]! text-ink! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">unpublished</span>
                         @endif
                     </td>
                     <td data-hide-mobile class="text-center!">{{ $p->slug }}</td>
@@ -116,7 +116,7 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if (admin_can('pages', 'edit'))
-                    <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-[#eee]! rounded!">
+                    <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-border! rounded!">
                         <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
                             {!! $icoPublish !!}
                             <span class="hidden! md:inline!">Publish</span>
@@ -166,11 +166,11 @@
                 </div>
 
                 <x-admin.form-field label="title">
-                    <x-ui.input name="title" data-slug-source :value="$selectedPage->title" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="title" data-slug-source :value="$selectedPage->title" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="slug" :error="$errors->first('slug')">
-                    <x-ui.input name="slug" data-slug-target :value="$selectedPage->slug" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="slug" data-slug-target :value="$selectedPage->slug" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 @php
@@ -183,7 +183,7 @@
                 <script type="application/json" id="existing-slugs">{!! json_encode($existingSlugs) !!}</script>
 
                 <x-admin.form-field label="content">
-                    <textarea id="content" name="content" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
+                    <textarea id="content" name="content" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! bg-white! min-h-[140px]! resize-y! font-mono! text-[13px]! fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
                 </x-admin.form-field>
 
                 <div class="flex! justify-end! fc-drawer-savebar">
@@ -192,7 +192,7 @@
 
             </form>
             @else
-                <p class="text-sm! text-[#777]!">View-only access</p>
+                <p class="text-sm! text-muted!">View-only access</p>
                 <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
                     <dt class="font-bold!">Title</dt><dd>{{ $selectedPage->title }}</dd>
                     <dt class="font-bold!">Slug</dt><dd>{{ $selectedPage->slug }}</dd>
@@ -205,7 +205,7 @@
                 </div>
             @endif
         @else
-            <x-admin.empty-state message="select a page to edit" class="text-[#777]!" />
+            <x-admin.empty-state message="select a page to edit" class="text-muted!" />
         @endif
 
     </x-admin.detail-panel>

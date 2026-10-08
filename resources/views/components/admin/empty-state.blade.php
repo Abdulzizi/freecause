@@ -8,9 +8,9 @@
     'title' => null,
 ])
 
-<div {{ $attributes->class(['px-3! py-3! text-xs! text-[#777]!']) }}>
+<div {{ $attributes->class(['px-3! py-3! text-xs! text-muted!']) }}>
     @if (filled($title))
-        <div class="mb-1! font-semibold! text-[#555]!">{{ $title }}</div>
+        <div class="mb-1! font-semibold! text-muted!">{{ $title }}</div>
     @endif
     <div>{{ $message }}</div>
     @if (trim((string) $slot) !== '')

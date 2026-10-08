@@ -15,14 +15,14 @@
 @endif
 
 {{-- ── NEW CATEGORY FORM ─────────────────────────────────────────────────── --}}
-<div class="bg-[#f9f9f9]! border! border-[#ddd]! rounded! p-4! mb-[18px]!">
+<div class="bg-[#f9f9f9]! border! border-border! rounded! p-4! mb-[18px]!">
     <div class="font-bold! mb-2.5! text-[13px]! uppercase! tracking-[0.05em]!">
         + new category
     </div>
     <form method="post" action="{{ route('admin.categories.create') }}" class="flex! gap-2.5! items-end! flex-wrap!">
         @csrf
         <div>
-            <label class="block! text-xs! text-[#555]! mb-1!">locale</label>
+            <label class="block! text-xs! text-ink! mb-1!">locale</label>
             <select class="fc-filter-field" name="locale">
                 @foreach ($locales as $k => $label)
                     <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -30,8 +30,8 @@
             </select>
         </div>
         <div class="flex-1! min-w-[180px]!">
-            <label class="block! text-xs! text-[#555]! mb-1!">name *</label>
-            <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
+            <label class="block! text-xs! text-ink! mb-1!">name *</label>
+            <input class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
             <button type="submit" class="fc-abtn fc-abtn--success">create</button>
@@ -72,7 +72,7 @@
     :p="$categories" :emptyClearRoute="route('admin.categories')">
 
     <x-slot:thead>
-        <tr class="border-b! border-[#ccc]!">
+        <tr class="border-b! border-border!">
             <th class="w-[90px]!">ID</th>
             <th class="w-[110px]!">Locale</th>
             <th>Name</th>
@@ -86,7 +86,7 @@
                 $missing = empty($c->name);
             @endphp
 
-            <tr class="border-b! border-[#eee]!" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
+            <tr class="border-b! border-border!" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         {{ $c->id }}
@@ -98,7 +98,7 @@
                 <td>
                     <a href="{{ route('admin.categories', array_merge(request()->query(), ['select' => $c->id])) }}">
                         @if($missing)
-                            <span class="text-[#c00]! font-bold!">MISSING</span>
+                            <span class="text-danger! font-bold!">MISSING</span>
                         @else
                             {{ $c->name }}
                         @endif
@@ -109,7 +109,7 @@
                     @if($c->slug)
                         {{ $c->slug }}
                     @else
-                        <span class="text-[#999]!">none</span>
+                        <span class="text-muted!">none</span>
                     @endif
                 </td>
             </tr>
@@ -133,16 +133,16 @@
 
             <div class="grid! grid-cols-1! gap-1.5! items-start! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                 <label class="font-bold! text-xs! md:text-sm!">locale</label>
-                <div class="py-1.5! text-[#444]!">{{ $locale }}</div>
+                <div class="py-1.5! text-ink!">{{ $locale }}</div>
             </div>
 
             <x-admin.form-field label="name *">
-                <x-ui.input name="name" data-slug-source :value="$selectedTranslation->name ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!"
+                <x-ui.input name="name" data-slug-source :value="$selectedTranslation->name ?? ''" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!"
                        required />
             </x-admin.form-field>
 
             <x-admin.form-field label="slug" :hint="'used in url: /petitions/category-slug-' . $selectedCategory->id">
-                <x-ui.input name="slug" data-slug-target :value="$selectedTranslation->slug ?? ''" class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="slug" data-slug-target :value="$selectedTranslation->slug ?? ''" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
             @php
@@ -176,25 +176,25 @@
         </form>
 
         {{-- Delete category (only when no petitions use it) --}}
-        <div class="mt-[18px]! pt-3.5! border-t! border-[#eee]!">
+        <div class="mt-[18px]! pt-3.5! border-t! border-border!">
             @if ($selectedPetitionCount === 0)
                 <form method="post" action="{{ route('admin.categories.destroy') }}"
                       data-admin-confirm="Delete category #{{ $selectedCategory->id }} and all its translations? This cannot be undone.">
                     @csrf
                     <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
                     <div class="flex! items-center! justify-between!">
-                        <span class="text-xs! text-[#999]!">no petitions use this category</span>
+                        <span class="text-xs! text-muted!">no petitions use this category</span>
                         <button type="submit" class="fc-abtn fc-abtn--danger">delete category</button>
                     </div>
                 </form>
             @else
-                <div class="text-xs! text-[#888]!">
+                <div class="text-xs! text-muted!">
                     ⚠ {{ $selectedPetitionCount }} petition(s) use this category — cannot delete.
                 </div>
             @endif
         </div>
     @else
-        <x-admin.empty-state message="select a category to edit" class="text-[#777]!" />
+        <x-admin.empty-state message="select a category to edit" class="text-muted!" />
     @endif
 
 </x-admin.detail-panel>

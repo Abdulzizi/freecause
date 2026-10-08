@@ -11,16 +11,16 @@
             @csrf
 
             <x-admin.form-field label="code">
-                <x-ui.input name="code" placeholder="e.g. es" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="code" placeholder="e.g. es" required class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
             <x-admin.form-field label="name">
-                <x-ui.input name="name" placeholder="Spanish" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="name" placeholder="Spanish" required class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
             {{-- <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
                 <label class="font-bold! text-sm!">flag filename</label>
-                <input class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" name="flag" placeholder="en_US.png">
+                <input class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" name="flag" placeholder="en_US.png">
             </div> --}}
 
             <div class="text-right! mt-2.5!">
@@ -33,7 +33,7 @@
 
         @forelse($languages as $lang)
             <div
-                class="flex! justify-between! items-start! py-[15px]! border-b! border-[#ddd]!">
+                class="flex! justify-between! items-start! py-[15px]! border-b! border-border!">
 
                 {{-- LEFT INFO --}}
                 <div class="min-w-[200px]!">
@@ -48,7 +48,7 @@
                         @endif
                     </div>
 
-                    <div class="mt-[5px]! text-[13px]! text-[#666]!">
+                    <div class="mt-[5px]! text-[13px]! text-muted!">
                         status: {{ $lang->is_active ? 'active' : 'inactive' }}
                     </div>
                 </div>

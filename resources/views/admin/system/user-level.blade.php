@@ -16,7 +16,7 @@
     <x-admin.data-table emptyText="no user levels found" :p="$levels">
 
         <x-slot:thead>
-            <tr data-admin-row-hover class="border-b! border-[#ccc]! h-11!">
+            <tr data-admin-row-hover class="border-b! border-border! h-11!">
                 <th class="w-[70px]! text-left!">ID</th>
                 <th class="w-10! text-left!"></th>
                 <th class="text-left!">Name (system key)</th>
@@ -28,7 +28,7 @@
 
         <x-slot:tbody>
             @foreach ($levels as $level)
-                <tr class="border-b! border-[#eee]! h-11!" data-admin-row-hover>
+                <tr class="border-b! border-border! h-11!" data-admin-row-hover>
 
                     <td class="text-left! align-middle!">
                         {{ $level->id }}
@@ -88,11 +88,11 @@
             @csrf
 
             <x-admin.form-field label="Name (system key)">
-                <x-ui.input name="name" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="name" required class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
             <x-admin.form-field label="Visible Name">
-                <x-ui.input name="visible_name" required class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                <x-ui.input name="visible_name" required class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
             <div class="flex! justify-end! mt-[15px]!">

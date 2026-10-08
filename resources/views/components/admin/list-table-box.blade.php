@@ -18,7 +18,7 @@
     </div>
 
     @if ($isEmpty)
-        <div class="px-2.5! py-3! text-[#777]! text-[12px]!">
+        <div class="px-2.5! py-3! text-muted! text-[12px]!">
             {{ $emptyText }}
             @if ($emptyClearRoute)
                 <a href="{{ $emptyClearRoute }}" class="fc-abtn fc-abtn--neutral ml-1.5!">clear filters</a>

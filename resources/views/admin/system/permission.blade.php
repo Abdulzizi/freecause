@@ -12,7 +12,7 @@
         </div>
     @endif --}}
 
-    <div class="border! border-[#9e9e9e]! rounded! p-2.5! mb-2.5! p-5! mb-5!">
+    <div class="border! border-border! rounded! p-2.5! mb-2.5! p-5! mb-5!">
 
         <form method="get" action="{{ route('admin.system.permissions') }}"
             class="flex! gap-10! items-end! flex-wrap!">
@@ -64,7 +64,7 @@
 
                 @foreach ($modules[$selectedModule] as $action)
                     <label
-                        class="flex! items-center! gap-2! px-2.5! py-2! border! border-[#e5e5e5]! bg-[#fafafa]! rounded!">
+                        class="flex! items-center! gap-2! px-2.5! py-2! border! border-border! bg-[#fafafa]! rounded!">
 
                         <input type="checkbox" name="actions[]" value="{{ $action }}"
                             {{ in_array($action, $permissions) ? 'checked' : '' }}>

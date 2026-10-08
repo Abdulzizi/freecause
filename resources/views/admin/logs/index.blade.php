@@ -54,7 +54,7 @@
 ]">
 
         <x-slot:thead>
-            <tr data-admin-row-hover class="border-b! border-[#ccc]!">
+            <tr data-admin-row-hover class="border-b! border-border!">
                 <th class="w-[70px]!">ID</th>
                 <th width="26" title="Bulk selection"></th>
                 <th class="w-[80px]!">Level</th>
@@ -65,7 +65,7 @@
 
         <x-slot:tbody>
             @foreach ($logs as $log)
-                <tr data-admin-row-hover class="border-b! border-[#eee]! hover:bg-[#f7f7f7]!">
+                <tr data-admin-row-hover class="border-b! border-border! hover:bg-[#f7f7f7]!">
 
                     <td>
                         <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline! text-black!">
@@ -79,11 +79,11 @@
 
                     <td class="text-left!">
                         @if($log->level === 'error')
-                            <span class="font-bold! text-[#b00020]!">ERROR</span>
+                            <span class="font-bold! text-danger!">ERROR</span>
                         @elseif($log->level === 'warning')
                             <span class="font-bold! text-[#c67c00]!">WARNING</span>
                         @else
-                            <span class="font-bold! text-[#2f6f2f]!">INFO</span>
+                            <span class="font-bold! text-success!">INFO</span>
                         @endif
                     </td>
 
@@ -126,7 +126,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="content">
-                    <textarea class="w-full! box-border! border! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white! min-h-[140px]! resize-y! font-[Consolas,_Courier_New,_monospace]! text-[13px]!" readonly>
+                    <textarea class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white! min-h-[140px]! resize-y! font-[Consolas,_Courier_New,_monospace]! text-[13px]!" readonly>
                         {{ $selected->content }}
                     </textarea>
                 </x-admin.form-field>

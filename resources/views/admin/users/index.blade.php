@@ -5,20 +5,20 @@
 @section('content')
     @php
         $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
-            <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 6l12 12" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
+            <path d="M18 6L6 18" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
         </svg>';
 
         $icoUnban = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="8" stroke="#5c8f3a" stroke-width="2"/>
-            <path d="M8 12h8" stroke="#5c8f3a" stroke-width="2"/>
+            <circle cx="12" cy="12" r="8" stroke="#198754" stroke-width="2"/>
+            <path d="M8 12h8" stroke="#198754" stroke-width="2"/>
         </svg>';
 
         $icoDelete = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M5 7h14" stroke="#d23b2a" stroke-width="2"/>
-            <path d="M9 7V5h6v2" stroke="#d23b2a" stroke-width="2"/>
-            <path d="M9 10v6M15 10v6" stroke="#d23b2a" stroke-width="2"/>
-            <path d="M6 7l1 12h10l1-12" stroke="#d23b2a" stroke-width="2"/>
+            <path d="M5 7h14" stroke="#dc3545" stroke-width="2"/>
+            <path d="M9 7V5h6v2" stroke="#dc3545" stroke-width="2"/>
+            <path d="M9 10v6M15 10v6" stroke="#dc3545" stroke-width="2"/>
+            <path d="M6 7l1 12h10l1-12" stroke="#dc3545" stroke-width="2"/>
         </svg>';
     @endphp
 
@@ -76,7 +76,7 @@
         'banWithDetails'  => true,
     ] : null">
         <x-slot:thead>
-            <tr class="border-b! border-solid! border-[#ccc]!" data-admin-row-hover>
+            <tr class="border-b! border-solid! border-border!" data-admin-row-hover>
                 <th class="text-left! w-[90px]!">id</th>
                 <th width="26"></th>
                 <th class="w-[26px]! text-left!" data-hide-mobile>v</th>
@@ -94,7 +94,7 @@
                 @php
                     $isBanned = $u->level?->name === 'banned';
                 @endphp
-                <tr class="border-b! border-solid! border-[#eee]! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-[#900]!' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
+                <tr class="border-b! border-solid! border-border! {{ $isBanned ? 'bg-[#fff3f3]! [&_td]:text-danger!' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
                             class="no-underline! text-black!">
@@ -113,15 +113,15 @@
 
                     <td data-hide-mobile class="text-left!">
                         @if ($u->verified ?? 0)
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5c8f3a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                         @endif
                     </td>
 
                     <td>
                         <a href="mailto:{{ $u->email }}"
-                            style="{{ $isBanned ? 'color:#c00; font-weight:bold;' : '' }}">
+                            style="{{ $isBanned ? 'color:#dc3545; font-weight:bold;' : '' }}">
                             {{ $u->email }}
                         </a>
                     </td>
@@ -141,7 +141,7 @@
                         @endif
 
                         @if ($isBanned)
-                            <span class="ml-1.5!  px-1.5! py-0.5! bg-[#c00]! text-white! rounded-[2px]!"
+                            <span class="ml-1.5!  px-1.5! py-0.5! bg-danger! text-white! rounded-[2px]!"
                             title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
                                 BANNED
                             </span>
@@ -207,12 +207,12 @@
                     @else
                         <button type="button" data-user-single-action="ban"
                             data-url="{{ route('admin.users.ban', ['user' => $selectedUser->id]) }}"
-                            class="border! border-[#b42318]! bg-white! text-[#b42318]! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
+                            class="border! border-danger! bg-white! text-danger! px-2.5! py-1! rounded! text-xs! cursor-pointer!">
                             Ban user
                         </button>
                     @endif
                 @else
-                    <span class="text-[#777]!">System accounts and your own account cannot be banned here.</span>
+                    <span class="text-muted!">System accounts and your own account cannot be banned here.</span>
                 @endif
             </div>
             @endif
@@ -224,11 +224,11 @@
 
             <x-admin.section-panel title="Access Data">
                 <x-admin.form-field label="username">
-                    <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="password" :error="$errors->first('password')">
-                    <x-ui.input name="password" type="password" value="" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="password" type="password" value="" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="level">
@@ -251,19 +251,19 @@
             <x-admin.section-panel title="other">
 
                 <x-admin.form-field label="first name">
-                    <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="last name">
-                    <x-ui.input name="last_name" :value="$selectedUser->last_name ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="last_name" :value="$selectedUser->last_name ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="nickname">
-                    <x-ui.input name="nickname" :value="$selectedUser->nickname ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="nickname" :value="$selectedUser->nickname ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="location">
-                    <x-ui.input name="city" :value="$selectedUser->city ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="city" :value="$selectedUser->city ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="identify as">
@@ -283,7 +283,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="email">
-                    <x-ui.input name="email" data-live-validate :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-[#bdbdbd]! rounded! px-2! py-1.5! text-sm! bg-white!" />
+                    <x-ui.input name="email" data-live-validate :value="$selectedUser->email ?? ''" class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="locale">
@@ -305,7 +305,7 @@
             </div>
         </form>
         @elseif ($selectedUser)
-            <p class="text-sm! text-[#777]!">View-only access</p>
+            <p class="text-sm! text-muted!">View-only access</p>
             <dl class="grid! grid-cols-[120px_1fr]! gap-2! text-sm! max-md:grid-cols-[90px_1fr]!">
                 <dt class="font-bold!">Email</dt><dd>{{ $selectedUser->email }}</dd>
                 <dt class="font-bold!">Username</dt><dd>{{ $selectedUser->username ?? $selectedUser->name }}</dd>

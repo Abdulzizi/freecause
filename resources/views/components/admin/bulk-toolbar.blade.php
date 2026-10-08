@@ -23,17 +23,17 @@
 
 <div class="flex! items-center! gap-2.5! flex-wrap! max-md:gap-1.5!">
     <div class="flex! items-center! gap-1!">
-        <a href="#" data-bulk="all" title="Select all" aria-label="Select all" class="inline-flex! items-center! gap-1! no-underline! text-[#555]! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
+        <a href="#" data-bulk="all" title="Select all" aria-label="Select all" class="inline-flex! items-center! gap-1! no-underline! text-muted! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
             <span class="inline-block! w-3.5! text-center! text-xs!"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
             <span class="max-md:hidden!">All</span>
         </a>
 
-        <a href="#" data-bulk="none" title="Deselect all" aria-label="Deselect all" class="inline-flex! items-center! gap-1! no-underline! text-[#555]! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
+        <a href="#" data-bulk="none" title="Deselect all" aria-label="Deselect all" class="inline-flex! items-center! gap-1! no-underline! text-muted! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
             <span class="inline-block! w-3.5! text-center! text-xs!"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18"></rect></svg></span>
             <span class="max-md:hidden!">None</span>
         </a>
 
-        <a href="#" data-bulk="invert" title="Invert selection" aria-label="Invert selection" class="inline-flex! items-center! gap-1! no-underline! text-[#555]! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
+        <a href="#" data-bulk="invert" title="Invert selection" aria-label="Invert selection" class="inline-flex! items-center! gap-1! no-underline! text-muted! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#f0f0f0]!">
             <span class="inline-block! w-3.5! text-center! text-xs!"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 21"></path><path d="M3 3L21 21"></path></svg></span>
             <span class="max-md:hidden!">Invert</span>
         </a>
@@ -44,13 +44,13 @@
     {{ $slot }}
 
     @if ($banRoute)
-        <div class="flex! items-center! gap-1! ml-1! pl-2.5! border-l! border-[#ddd]!">
+        <div class="flex! items-center! gap-1! ml-1! pl-2.5! border-l! border-border!">
             <a href="#" data-bulk="ban"
                data-confirm="{{ $banConfirm }}"
                data-ban-details="{{ $banWithDetails ? '1' : '0' }}"
                title="{{ $banLabel }}"
                aria-label="{{ $banLabel }}"
-               class="inline-flex! items-center! gap-1! no-underline! text-[#900]! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#fff0f0]!">
+               class="inline-flex! items-center! gap-1! no-underline! text-danger! p-[3px_6px]! rounded-[3px]! transition-colors! hover:bg-[#fff0f0]!">
                 <span class="inline-block! w-3.5! text-center! text-xs!"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></span>
                 <span class="max-md:hidden!">{{ $banLabel }}</span>
             </a>
