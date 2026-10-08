@@ -1,0 +1,9 @@
+# Reference only. Diff against the live vhost before editing; keep the existing
+# redirects, headers, PHP-FPM socket and WordPress magazine handling intact.
+#
+# The only required change for the Deployer layout is the document root:
+#
+#   root /var/www/freecause/current/public;   # was .../<old-release-dir>/public
+#
+# Everything else in the current `sites-enabled/freecause-com` vhost stays as is.
+# After editing: back up the vhost, `nginx -t`, then `systemctl reload nginx`.

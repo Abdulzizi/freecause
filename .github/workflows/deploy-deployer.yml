@@ -1,0 +1,91 @@
+name: Deploy (Deployer)
+
+# Phase 1 path. Manual only until the cutover is complete and the in-place job
+# in deploy.yml is retired. Needs the `production` environment reviewer.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Tag or branch to deploy'
+        required: true
+        default: 'main'
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Install Deployer
+        run: |
+          curl -fsSL -o deployer.phar https://deployer.org/deployer.phar
+          chmod +x deployer.phar
+          sudo mv deployer.phar /usr/local/bin/dep
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf 'Host *\n  StrictHostKeyChecking accept-new\n  IdentityFile ~/.ssh/id_deploy\n' > ~/.ssh/config
+
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/var/www/freecause' }}
+        run: dep -f deploy/deploy.php deploy production --no-interaction
+
+      - name: Smoke test
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          expected="${EXPECTED_COMMIT:0:7}"
+          for i in 1 2 3 4 5 6; do
+            body=$(curl -fsS --max-time 15 https://www.freecause.com/version || true)
+            commit=$(printf '%s' "$body" | sed -n 's/.*"commit":"\([^"]*\)".*/\1/p')
+            if [ "$commit" = "$expected" ]; then
+              echo "version OK ($commit)"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "version check failed (expected $expected, got '${commit:-none}')"
+          exit 1
+
+      - name: Roll back on failure
+        if: failure()
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/var/www/freecause' }}
+        run: dep -f deploy/deploy.php rollback production --no-interaction || true

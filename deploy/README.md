@@ -79,18 +79,29 @@ phase should either treat the WP tree as a separate deploy or share it.
 
 ## Cutover (Phase 1, needs approval)
 
-1. Provision the Deployer layout at `deploy_path` (`releases/`, `shared/`,
-   `current`). New path, not the existing release dir.
-2. Seed `shared/` (see above) from the live install.
-3. Repoint nginx `root` to `{deploy_path}/current/public`; back up the vhost,
-   `nginx -t`, reload.
-4. Install `deploy/supervisor/freecause-release-queue.conf` on the server and
-   `supervisorctl reread && update`.
-5. Rehearse end-to-end on a throwaway host or a copied DB before the real flip.
-6. Run `dep deploy` from the runner; verify `/version` shows the new commit and
-   `/up` is 200.
+Artifacts: `deploy/cutover.sh` (dry-run by default), `deploy/nginx/current-public-root.snippet`,
+`.github/workflows/deploy-deployer.yml` (manual dispatch only).
+
+1. `deploy_path` defaults to `/var/www/freecause` (new layout). Confirm it.
+2. Seed `shared/` from the live install:
+   `APP_ROOT=/var/www/freecause OLD_ROOT=/var/www/freecause-release-v2026.09.19 bash deploy/cutover.sh`
+   (dry-run), review, then add `--apply`. The old install is copied, not moved,
+   so it stays serviceable for rollback.
+3. Repoint nginx `root` to `$APP_ROOT/current/public` (see the snippet); back up
+   the vhost, `nginx -t`, reload.
+4. Install `deploy/supervisor/freecause-release-queue.conf`; `supervisorctl
+   reread && update`. Stop the old release's workers so only one set runs.
+5. Rehearsal options (pick one):
+   - Temporary second vhost + second `deploy_path` on the same box, then discard.
+   - Direct cutover inside the maintenance window, with rollback = repoint nginx
+     back to the old root.
+6. Run the **Deploy (Deployer)** workflow (`ref` = tag/branch). It deploys, checks
+   `/version` equals the pushed commit, and auto-rolls-back on failure.
+7. Once green, retire the in-place `deploy` job in `deploy.yml` so there is a
+   single CD path.
 
 ## Rollback
 
-- Deployer: `dep rollback` (re-points `current` to the previous release).
-- `deploy.yml` failure hook: re-run with `ref` set to the previous tag.
+- Deployer: `dep -f deploy/deploy.php rollback production`.
+- `deploy-deployer.yml` runs rollback automatically on smoke failure.
+- Worst case before cutover is verified: repoint nginx to the old root.
