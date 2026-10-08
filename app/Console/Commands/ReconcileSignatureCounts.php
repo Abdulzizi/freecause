@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\CacheVersion;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -53,6 +54,8 @@ class ReconcileSignatureCounts extends Command
                 ->where('id', $row->id)
                 ->update(['signature_count' => $row->actual]);
         }
+
+        CacheVersion::bumpListings();
 
         $this->info('Fixed '.count($mismatches).' petition signature counts.');
 

@@ -15,10 +15,10 @@ use App\Rules\MinCharacters;
 use App\Rules\MinWords;
 use App\Rules\SafeExternalImageUrl;
 use App\Rules\TagList;
+use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\ImageVariants;
-use App\Support\PetitionCache;
 use App\Support\Settings;
 use App\Support\Slug;
 use App\Support\Spam;
@@ -547,8 +547,7 @@ class PetitionController extends Controller
                 );
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
-                    DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                    PetitionCache::touch($petition);
+                    PetitionStats::increment($petition->id);
                 }
 
                 AppLog::info(
@@ -690,8 +689,7 @@ class PetitionController extends Controller
                         'locale' => $locale,
                     ]);
 
-                    DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                    PetitionCache::touch($petition);
+                    PetitionStats::increment($petition->id);
                 }
 
                 toast('Petition created successfully.', 'success');
@@ -742,8 +740,7 @@ class PetitionController extends Controller
                 }
 
                 if ($sig->wasRecentlyCreated) {
-                    DB::table('petitions')->where('id', $petition->id)->increment('signature_count');
-                    PetitionCache::touch($petition);
+                    PetitionStats::increment($petition->id);
                 }
 
                 session()->forget("sign.{$petition->id}");

@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\Language;
-use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\PetitionStats;
 use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\Countries;
 use App\Support\Locale;
-use App\Support\PetitionCache;
 use App\Support\Settings;
 use App\Support\Spam;
 use App\Support\WpSso;
@@ -500,13 +499,11 @@ class AuthController extends Controller
                 ->where('confirmed', false)
                 ->update(['confirmed' => true, 'updated_at' => now()]);
 
+            $increments = [];
             foreach ($pending as $row) {
-                DB::table('petitions')->where('id', $row->petition_id)->increment('signature_count', $row->total);
-
-                if ($petition = Petition::find($row->petition_id)) {
-                    PetitionCache::touch($petition);
-                }
+                $increments[(int) $row->petition_id] = (int) $row->total;
             }
+            PetitionStats::incrementMany($increments);
         });
 
         // * AUTO LOGIN AFTER VERIFY

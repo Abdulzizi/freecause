@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Language;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Services\PetitionStats;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
@@ -353,13 +354,7 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            if ($petition = Petition::find($data['id'])) {
-                PetitionCache::touch($petition);
-            }
-
-            CacheVersion::bump('home');
-            CacheVersion::bump('list');
-            CacheVersion::bump('sitemap');
+            PetitionCache::bump();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition save: '.$e->getMessage());
         }
@@ -431,9 +426,7 @@ class AdminPetitionsController extends Controller
         });
 
         try {
-            if ($petition = Petition::find($petitionId)) {
-                PetitionCache::touch($petition);
-            }
+            PetitionCache::bump();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition create: '.$e->getMessage());
         }
@@ -495,11 +488,7 @@ class AdminPetitionsController extends Controller
         });
 
         try {
-            if ($petition = Petition::find($id)) {
-                PetitionCache::touch($petition);
-            }
-
-            CacheVersion::bump('list'); // also purges the edge listing cache
+            PetitionCache::bump();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after translate-missing: '.$e->getMessage());
         }
@@ -594,18 +583,7 @@ class AdminPetitionsController extends Controller
         ]);
         $id = (int) $data['id'];
 
-        $actualCount = DB::table('signatures')
-            ->where('petition_id', $id)
-            ->where('confirmed', 1) // canonical count = confirmed signatures only
-            ->count();
-
-        $updated = DB::table('petitions')
-            ->where('id', $id)
-            ->update(['signature_count' => $actualCount]);
-
-        if ($petition = Petition::find($id)) {
-            PetitionCache::touch($petition);
-        }
+        $actualCount = PetitionStats::recalculate($id);
 
         Log::info("Signature count reconciled for petition {$id}: {$actualCount}");
 
@@ -639,9 +617,9 @@ class AdminPetitionsController extends Controller
             ]);
         }
 
-        // Counts are derived from confirmed signatures; invalidate shared
-        // listing caches once instead of dispatching one purge per petition.
-        PetitionCache::bump();
+        // Counts are derived from confirmed signatures; invalidate the listing
+        // caches once instead of dispatching one purge per petition.
+        CacheVersion::bumpListings();
 
         Log::info("All signature counts reconciled: {$total} petitions");
 

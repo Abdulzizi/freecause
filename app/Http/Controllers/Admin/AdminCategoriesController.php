@@ -26,7 +26,7 @@ class AdminCategoriesController extends Controller
         }
 
         try {
-            CacheVersion::bumpListings();
+            CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after category save: '.$e->getMessage());
         }

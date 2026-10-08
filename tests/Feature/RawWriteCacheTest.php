@@ -51,14 +51,14 @@ class RawWriteCacheTest extends TestCase
         ];
     }
 
-    private function assertVersionsBumped(array $before): void
+    private function assertListingsBumpedNotSitemap(array $before): void
     {
         $this->assertNotSame($before['home'], CacheVersion::get('home'));
         $this->assertNotSame($before['list'], CacheVersion::get('list'));
-        $this->assertNotSame($before['sitemap'], CacheVersion::get('sitemap'));
+        $this->assertSame($before['sitemap'], CacheVersion::get('sitemap'));
     }
 
-    public function test_guest_sign_bumps_home_list_and_sitemap_versions(): void
+    public function test_guest_sign_bumps_listing_versions_but_not_sitemap(): void
     {
         $petition = $this->publishedPetition('raw-sign-petition');
 
@@ -73,10 +73,10 @@ class RawWriteCacheTest extends TestCase
             'agree3' => '1',
         ])->assertRedirect();
 
-        $this->assertVersionsBumped($before);
+        $this->assertListingsBumpedNotSitemap($before);
     }
 
-    public function test_reconcile_bumps_home_list_and_sitemap_versions(): void
+    public function test_reconcile_bumps_listing_versions_but_not_sitemap(): void
     {
         $petition = Petition::factory()->create(['signature_count' => 999]);
 
@@ -92,6 +92,6 @@ class RawWriteCacheTest extends TestCase
             ->assertOk()
             ->assertJson(['ok' => true]);
 
-        $this->assertVersionsBumped($before);
+        $this->assertListingsBumpedNotSitemap($before);
     }
 }

@@ -8,11 +8,11 @@ class FlushesListingCaches
 {
     public function saved($model): void
     {
-        CacheVersion::bumpListings();
+        CacheVersion::bumpAll();
     }
 
     public function deleted($model): void
     {
-        CacheVersion::bumpListings();
+        CacheVersion::bumpAll();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Services\PetitionStats;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -191,7 +192,7 @@ class AdminSignaturesController extends Controller
                 'delete' => DB::table('signatures')->whereIn('id', $ids)->delete(),
             };
 
-            $this->recalculateSignatureCounts($petitionIds);
+            PetitionStats::recalculateMany($petitionIds);
         });
 
         return response()->json(['ok' => true]);
@@ -216,7 +217,7 @@ class AdminSignaturesController extends Controller
             }
 
             DB::table('signatures')->where('id', $signature)->update(['confirmed' => $targetConfirmed]);
-            $this->recalculateSignatureCounts([(int) $row->petition_id]);
+            PetitionStats::recalculateMany([(int) $row->petition_id]);
 
             return ['status' => 'updated'];
         });
@@ -234,17 +235,5 @@ class AdminSignaturesController extends Controller
         }
 
         return response()->json(['ok' => true]);
-    }
-
-    private function recalculateSignatureCounts(array $petitionIds): void
-    {
-        foreach ($petitionIds as $pid) {
-            $count = DB::table('signatures')
-                ->where('petition_id', $pid)
-                ->where('confirmed', 1)
-                ->count();
-
-            DB::table('petitions')->where('id', $pid)->update(['signature_count' => $count]);
-        }
     }
 }
