@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminUserLevelDeleteRequest;
+use App\Http\Requests\Admin\AdminUserLevelStoreRequest;
 use App\Models\Permission;
 use App\Models\UserLevel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class AdminUserLevelsController extends Controller
 {
@@ -33,14 +33,9 @@ class AdminUserLevelsController extends Controller
         return view('admin.system.user-level', compact('levels'));
     }
 
-    public function store(Request $request)
+    public function store(AdminUserLevelStoreRequest $request)
     {
-        $request->merge(['name' => strtolower(trim((string) $request->input('name')))]);
-
-        $data = $request->validate([
-            'name' => ['required', 'alpha_dash', 'max:50', 'unique:user_levels,name', Rule::notIn(['admin', 'superadmin', 'system', 'root'])],
-            'visible_name' => ['required', 'string', 'max:100'],
-        ]);
+        $data = $request->validated();
 
         UserLevel::create([
             'name' => $data['name'],
@@ -53,12 +48,9 @@ class AdminUserLevelsController extends Controller
         return back()->with('success', 'Level created successfully.');
     }
 
-    public function delete(Request $request)
+    public function delete(AdminUserLevelDeleteRequest $request)
     {
-        $ids = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:user_levels,id'],
-        ])['ids'];
+        $ids = $request->validated()['ids'];
         $ids = array_values(array_unique(array_map('intval', $ids)));
 
         $ownLevelId = admin_user()?->level_id;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\LanguageOptionsUpdateRequest;
 use App\Models\Language;
 use App\Models\PageContent;
 use App\Services\PageContentService;
@@ -99,17 +100,8 @@ class LanguageOptionsController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(LanguageOptionsUpdateRequest $request)
     {
-        $locales = $this->getLocales();
-
-        $request->validate([
-            'locale' => ['required', 'in:'.implode(',', array_keys($locales))],
-            'meta_description' => ['nullable', 'string', 'max:500'],
-            'meta_keywords' => ['nullable', 'string', 'max:500'],
-            'exclude_most_read' => ['nullable', 'regex:/^\s*\d+(\s*,\s*\d+)*\s*$/'],
-        ]);
-
         $locale = $request->input('locale');
 
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;

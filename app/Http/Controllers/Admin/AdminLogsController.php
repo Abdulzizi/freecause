@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminLogBulkRequest;
 use App\Models\Log;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
@@ -142,24 +143,18 @@ class AdminLogsController extends Controller
         );
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkDelete(AdminLogBulkRequest $request)
     {
-        $ids = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
-        ])['ids'];
+        $ids = $request->validated()['ids'];
 
         $deleted = Log::whereIn('id', $ids)->delete();
 
         return response()->json(['ok' => true, 'deleted' => $deleted, 'restorable' => 1]);
     }
 
-    public function restore(Request $request)
+    public function restore(AdminLogBulkRequest $request)
     {
-        $ids = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
-        ])['ids'];
+        $ids = $request->validated()['ids'];
 
         $restored = Log::onlyTrashed()->whereIn('id', $ids)->restore();
 

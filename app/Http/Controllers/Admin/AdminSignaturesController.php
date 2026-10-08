@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminSignatureActionRequest;
+use App\Http\Requests\Admin\AdminSignatureBulkRequest;
 use App\Models\Language;
 use App\Services\PetitionStats;
 use App\Support\ApproxRows;
@@ -168,13 +170,9 @@ class AdminSignaturesController extends Controller
         ));
     }
 
-    public function bulkAction(Request $request)
+    public function bulkAction(AdminSignatureBulkRequest $request)
     {
-        $data = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:signatures,id'],
-            'action' => ['required', 'string', 'in:approve,reject,delete'],
-        ]);
+        $data = $request->validated();
 
         $ids = $data['ids'];
 
@@ -198,11 +196,9 @@ class AdminSignaturesController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function action(Request $request, int $signature)
+    public function action(AdminSignatureActionRequest $request, int $signature)
     {
-        $data = $request->validate([
-            'action' => ['required', 'string', 'in:approve,reject'],
-        ]);
+        $data = $request->validated();
 
         $targetConfirmed = $data['action'] === 'approve' ? 1 : 0;
         $result = DB::transaction(function () use ($signature, $targetConfirmed) {

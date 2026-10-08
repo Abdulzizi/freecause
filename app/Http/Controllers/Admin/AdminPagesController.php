@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminPageBulkRequest;
+use App\Http\Requests\Admin\AdminPageSaveRequest;
 use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Support\EdgeCachePurge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class AdminPagesController extends Controller
 {
@@ -78,29 +78,14 @@ class AdminPagesController extends Controller
         ));
     }
 
-    public function save(Request $request)
+    public function save(AdminPageSaveRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'page_id' => ['nullable', 'integer', 'exists:pages,id'],
-            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'title' => ['required', 'string', 'max:190'],
-            'slug' => ['nullable', 'string', 'max:190'],
-            'content' => ['nullable', 'string'],
-        ]);
+        $data = $request->validated();
 
         $redirectParams = array_filter([
             'locale' => $request->input('locale'),
             'select' => $request->input('page_id'),
         ], fn ($value) => $value !== null && $value !== '');
-
-        if ($validator->fails()) {
-            return redirect()
-                ->route('admin.pages', $redirectParams)
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $data = $validator->validated();
 
         $published = $request->has('published');
         $slug = $data['slug'] ? Str::slug($data['slug']) : Str::slug($data['title']);
@@ -158,13 +143,9 @@ class AdminPagesController extends Controller
             ->with('view_url', $viewUrl);
     }
 
-    public function bulkAction(Request $request)
+    public function bulkAction(AdminPageBulkRequest $request)
     {
-        $data = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer'],
-            'action' => ['required', 'string', 'in:publish,unpublish,delete'],
-        ]);
+        $data = $request->validated();
         $ids = $data['ids'];
         $action = $data['action'];
 

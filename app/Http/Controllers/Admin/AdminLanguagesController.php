@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminLanguageStoreRequest;
+use App\Http\Requests\Admin\AdminLanguageUpdateRequest;
 use App\Models\Language;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -19,14 +20,8 @@ class AdminLanguagesController extends Controller
         return view('admin.languages.index', compact('languages'));
     }
 
-    public function store(Request $request)
+    public function store(AdminLanguageStoreRequest $request)
     {
-        $request->validate([
-            'code' => ['required', 'string', 'regex:/^[a-z]{2,8}$/', 'unique:languages,code'],
-            'name' => ['required', 'max:255'],
-            // 'flag' => ['nullable', 'max:100'],
-        ]);
-
         $code = strtolower($request->code);
 
         if (! is_dir(base_path('lang/'.$code))) {
@@ -48,11 +43,9 @@ class AdminLanguagesController extends Controller
         return back()->with('success', 'language created');
     }
 
-    public function update(Request $request, Language $language)
+    public function update(AdminLanguageUpdateRequest $request, Language $language)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         if ($language->is_default && ! $request->has('is_active')) {
             return back()->with('error', 'cannot deactivate default language');

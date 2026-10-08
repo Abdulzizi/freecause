@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClaimAccountRequest;
 use App\Http\Requests\PetitionRequest;
 use App\Mail\VerifyAccountMail;
 use App\Models\Category;
@@ -831,11 +832,9 @@ class PetitionController extends Controller
         ));
     }
 
-    public function claimAccount(Request $request, string $locale, string $slug, int $id)
+    public function claimAccount(ClaimAccountRequest $request, string $locale, string $slug, int $id)
     {
-        $request->validate([
-            'password' => ['required', 'string', 'min:8', 'max:72'],
-        ]);
+        $data = $request->validated();
 
         $claim = $request->session()->get('sign_claim');
         abort_unless($claim, 404);
@@ -851,7 +850,7 @@ class PetitionController extends Controller
             ]);
         }
 
-        $user->forceFill(['password' => Hash::make($request->password)])->save();
+        $user->forceFill(['password' => Hash::make($data['password'])])->save();
         $request->session()->forget('sign_claim');
 
         toast('Your password has been set. You can now log in.', 'success');

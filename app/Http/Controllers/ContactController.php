@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ContactRequest;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
-    public function send(Request $request)
+    public function send(ContactRequest $request)
     {
         if (! Settings::get('email_contact_enabled', true, 'global')) {
             abort(404);
         }
 
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'email' => ['required', 'email', 'max:190'],
-            'text' => ['required', 'string', 'max:5000'],
-        ]);
+        $data = $request->validated();
 
         $adminEmail = Settings::get('email_to_staff', '', 'global') ?: config('mail.from.address');
         $subject = Settings::get('email_contact_subject', '', 'global') ?: null;

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminPetitionBulkRequest;
 use App\Http\Requests\Admin\AdminPetitionCreateRequest;
+use App\Http\Requests\Admin\AdminPetitionReconcileRequest;
 use App\Http\Requests\Admin\AdminPetitionSaveRequest;
+use App\Http\Requests\Admin\AdminPetitionTranslateRequest;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Petition;
@@ -20,7 +23,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
@@ -410,12 +412,9 @@ class AdminPetitionsController extends Controller
             ->with('success', 'petition #'.$petitionId.' created');
     }
 
-    public function translateMissing(Request $request)
+    public function translateMissing(AdminPetitionTranslateRequest $request)
     {
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:petitions,id'],
-            'locale' => ['nullable', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-        ]);
+        $data = $request->validated();
 
         $id = (int) $data['id'];
         $sourceLocale = $data['locale'] ?? default_locale();
@@ -470,16 +469,9 @@ class AdminPetitionsController extends Controller
         return response()->json(['ok' => true, 'created' => $created, 'missing' => 0]);
     }
 
-    public function bulkAction(Request $request)
+    public function bulkAction(AdminPetitionBulkRequest $request)
     {
-        $locale = $request->input('locale', 'en');
-
-        $data = $request->validate([
-            'action' => ['required', 'string', 'in:publish,unpublish,activate,deactivate,feature,unfeature,ban'],
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'distinct', 'exists:petitions,id'],
-            'reason' => ['nullable', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         $ids = $data['ids'];
 
@@ -550,11 +542,9 @@ class AdminPetitionsController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function reconcile(Request $request)
+    public function reconcile(AdminPetitionReconcileRequest $request)
     {
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:petitions,id'],
-        ]);
+        $data = $request->validated();
         $id = (int) $data['id'];
 
         $actualCount = PetitionStats::recalculate($id);

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminUserBanRequest;
+use App\Http\Requests\Admin\AdminUserBulkRequest;
 use App\Http\Requests\Admin\AdminUserSaveRequest;
 use App\Models\Language;
 use App\Models\User;
@@ -268,12 +270,9 @@ class AdminUsersController extends Controller
             ->with('success', 'saved');
     }
 
-    public function bulkBan(Request $request)
+    public function bulkBan(AdminUserBanRequest $request)
     {
-        $data = $request->validate([
-            'reason' => ['nullable', 'string', 'max:255'],
-            'days' => ['nullable', 'integer', 'min:0', 'max:36500'],
-        ]);
+        $data = $request->validated();
 
         $ids = $this->validatedIds($request);
         if (empty($ids)) {
@@ -432,27 +431,20 @@ class AdminUsersController extends Controller
         return array_map('intval', $validator->validated()['ids']);
     }
 
-    public function bulkAction(Request $request)
+    public function bulkAction(AdminUserBulkRequest $request)
     {
-        $data = $request->validate([
-            'action' => ['required', 'string', 'in:ban,unban,delete'],
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:users,id'],
-        ]);
+        $data = $request->validated();
 
         return match ($data['action']) {
-            'ban' => $this->bulkBan($request),
+            'ban' => $this->bulkBan(app(AdminUserBanRequest::class)),
             'unban' => $this->bulkUnban($request),
             'delete' => $this->bulkDelete($request),
         };
     }
 
-    public function ban(Request $request, User $user)
+    public function ban(AdminUserBanRequest $request, User $user)
     {
-        $data = $request->validate([
-            'reason' => ['nullable', 'string', 'max:255'],
-            'days' => ['nullable', 'integer', 'min:0', 'max:36500'],
-        ]);
+        $data = $request->validated();
 
         if ($this->isProtectedUser($user)) {
             return response()->json(['ok' => false, 'error' => 'You cannot ban yourself or a system-level user.'], 403);

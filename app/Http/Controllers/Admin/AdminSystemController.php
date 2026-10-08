@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminSystemUserInfoRequest;
 use App\Support\AppLog;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class AdminSystemController extends Controller
 {
@@ -18,26 +17,11 @@ class AdminSystemController extends Controller
         return view('admin.system.user-info', compact('admin'));
     }
 
-    public function updateUserInfo(Request $request)
+    public function updateUserInfo(AdminSystemUserInfoRequest $request)
     {
         $admin = admin_user();
 
-        $data = $request->validate([
-            'email' => ['required', 'email', 'max:190'],
-
-            'current_password' => [
-                Rule::requiredIf($request->filled('new_password')),
-                'nullable',
-                'string',
-            ],
-
-            'new_password' => [
-                'nullable',
-                'confirmed',
-                'min:8',
-                'max:72',
-            ],
-        ]);
+        $data = $request->validated();
 
         if (! empty($data['new_password'])) {
             if (! Hash::check($data['current_password'], $admin->password)) {

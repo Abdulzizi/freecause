@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminCategoryCreateRequest;
+use App\Http\Requests\Admin\AdminCategoryDeleteRequest;
 use App\Http\Requests\Admin\AdminCategorySaveRequest;
 use App\Models\Language;
 use App\Support\ApproxRows;
@@ -13,7 +15,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class AdminCategoriesController extends Controller
 {
@@ -174,12 +175,9 @@ class AdminCategoriesController extends Controller
             ->with('success', 'saved');
     }
 
-    public function createCategory(Request $request)
+    public function createCategory(AdminCategoryCreateRequest $request)
     {
-        $data = $request->validate([
-            'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
-            'name' => ['required', 'string', 'max:150'],
-        ]);
+        $data = $request->validated();
 
         $categoryId = DB::transaction(function () use ($data) {
             $categoryId = DB::table('categories')->insertGetId([
@@ -213,11 +211,9 @@ class AdminCategoriesController extends Controller
             ->with('success', 'Category created.');
     }
 
-    public function destroy(Request $request)
+    public function destroy(AdminCategoryDeleteRequest $request)
     {
-        $data = $request->validate([
-            'id' => ['required', 'integer', 'exists:categories,id'],
-        ]);
+        $data = $request->validated();
 
         $id = (int) $data['id'];
 

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin\System;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PermissionStoreRequest;
 use App\Models\Permission;
 use App\Models\UserLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class PermissionController extends Controller
 {
@@ -44,23 +44,13 @@ class PermissionController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(PermissionStoreRequest $request)
     {
-        $modules = Permission::matrix();
+        $data = $request->validated();
 
-        $validated = $request->validate([
-            'module' => ['required', 'string', Rule::in(array_keys($modules))],
-            'level_id' => ['required', 'integer', 'exists:user_levels,id'],
-            'actions' => ['array'],
-        ]);
-
-        $module = $validated['module'];
-        $levelId = (int) $validated['level_id'];
-        $allowedActions = $modules[$module];
-
-        $request->validate([
-            'actions.*' => [Rule::in($allowedActions)],
-        ]);
+        $module = $data['module'];
+        $levelId = (int) $data['level_id'];
+        $allowedActions = Permission::matrix()[$module];
 
         $level = UserLevel::findOrFail($levelId);
 
@@ -68,7 +58,7 @@ class PermissionController extends Controller
             return back()->withErrors(['level_id' => 'System level permissions cannot be changed.']);
         }
 
-        $actions = array_values(array_intersect($request->input('actions', []), $allowedActions));
+        $actions = array_values(array_intersect($data['actions'] ?? [], $allowedActions));
 
         if ($module === 'system'
             && ! in_array('manage', $actions, true)
