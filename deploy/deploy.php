@@ -5,7 +5,7 @@ namespace Deployer;
 require 'recipe/laravel.php';
 
 set('application', 'freecause');
-set('repository', 'https://github.com/Abdulzizi/frecause.git');
+set('repository', 'https://github.com/Abdulzizi/freecause.git');
 set('keep_releases', 5);
 set('ssh_multiplexing', true);
 set('git_tty', false);
@@ -55,7 +55,7 @@ after('deploy:update_code', 'deploy:assets');
 
 desc('Record the deployed version for /version');
 task('deploy:version', function () {
-    $commit = run('cd {{release_path}} && git rev-parse --short HEAD');
+    $commit = run('cd {{deploy_path}}/.dep/repo && git rev-parse --short HEAD');
     run('{{bin/php}} {{bin/artisan}} app:stamp-version "{{target}}" --commit="'.$commit.'"');
 });
 after('deploy:vendors', 'deploy:version');
@@ -95,7 +95,8 @@ task('php-fpm:reload', function () {
     run('sudo systemctl reload {{php_fpm_service}}');
 });
 
-before('deploy:migrate', 'artisan:down');
+before('artisan:migrate', 'artisan:down');
+after('deploy:vendors', 'artisan:migrate');
 after('deploy:success', 'artisan:up');
 after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');

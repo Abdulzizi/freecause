@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Deployer
         run: |
-          curl -fsSL -o deployer.phar https://deployer.org/deployer.phar
+          curl -fsSL -o deployer.phar https://github.com/deployphp/deployer/releases/download/v8.0.5/deployer.phar
           chmod +x deployer.phar
           sudo mv deployer.phar /usr/local/bin/dep
 

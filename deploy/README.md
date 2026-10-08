@@ -77,6 +77,17 @@ On cutover, seed `shared/` from the current install before the first deploy
 carries its own copy. `keep_releases = 5` therefore costs roughly 2 GB. A later
 phase should either treat the WP tree as a separate deploy or share it.
 
+## Rehearsal result
+
+Rehearsed end-to-end on the prod box against a throwaway layout
+(`/var/www/freecause-rehearsal`, scratch DB `freecause_rehearsal`, port-8443
+vhost). Result: clone → composer → migrate → cache warm → symlink all green,
+`/up` healthy, `/version` reported the pushed commit, `dep rollback` flipped
+`current` back and the site stayed up, live site untouched throughout. Two
+fixes came out of it: the Deployer phar must be 8.x (the `deployer.org` URL
+serves 6.x), and `deploy:version` reads the commit from `{{deploy_path}}/.dep/repo`
+(Deployer 8 releases are not git repos).
+
 ## Cutover (Phase 1, needs approval)
 
 Artifacts: `deploy/cutover.sh` (dry-run by default), `deploy/nginx/current-public-root.snippet`,
