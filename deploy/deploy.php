@@ -12,7 +12,6 @@ set('git_tty', false);
 
 set('bin/php', 'php8.3');
 set('php_fpm_service', 'php8.3-fpm');
-set('supervisor_group', 'freecause-release-queue:*');
 
 set('shared_files', ['.env']);
 set('shared_dirs', ['storage']);
@@ -77,16 +76,6 @@ task('queue:restart', function () {
     run('{{bin/php}} {{bin/artisan}} queue:restart');
 });
 
-desc('Restart the supervisor queue group');
-task('supervisor:restart', function () {
-    if (! get('manage_services')) {
-        writeln('manage_services=false: skipping supervisor restart');
-
-        return;
-    }
-    run('sudo supervisorctl restart {{supervisor_group}}');
-});
-
 desc('Reload PHP-FPM, resetting opcache');
 task('php-fpm:reload', function () {
     if (! get('manage_services')) {
@@ -102,8 +91,7 @@ after('deploy:vendors', 'artisan:migrate');
 after('deploy:success', 'artisan:up');
 after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');
-after('queue:restart', 'supervisor:restart');
 after('deploy:symlink', 'php-fpm:reload');
 
-after('deploy:failed', 'deploy:unlock');
 after('deploy:failed', 'artisan:up');
+after('deploy:failed', 'deploy:unlock');

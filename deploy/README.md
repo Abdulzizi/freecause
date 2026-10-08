@@ -14,7 +14,7 @@ Production runs on the **Deployer 8** layout at `/var/www/freecause`
   dispatch) it runs CI → Deployer deploy → `/version` smoke → auto-rollback on
   failure. Bound to the `production` GitHub Environment.
 - `deploy/deploy.php` — Deployer recipe (release dirs, shared dirs, migrate,
-  cache warm, queue + supervisor + PHP-FPM reload).
+  cache warm, queue restart, PHP-FPM reload).
 - `deploy/supervisor/freecause-release-queue.conf` — supervisor program template.
 - `deploy/cutover.sh` — seeds `shared/` from an in-place install (dry-run by
   default; `--apply` to execute).
@@ -44,8 +44,11 @@ Without reviewers, `environment: production` is a no-op.
   as its basename, so targeting `public/build` nested it as `public/build/build`).
 - `deploy:version` reads the commit from `{{deploy_path}}/.dep/repo` (Deployer 8
   releases are not git repos) and stamps `storage/app/version.json` for `/version`.
-- Maintenance mode wraps migrations, then `cache:warm`, `queue:restart`,
-  supervisor restart, and a graceful PHP-FPM reload.
+- Maintenance mode wraps migrations and lifts on success. On failure, `artisan:up`
+  runs before `deploy:unlock` so the site never stays in maintenance. After the
+  symlink flip: `cache:warm`, `queue:restart`, and a graceful PHP-FPM reload.
+  Worker recycling uses Laravel's `queue:restart` (supervisor `autorestart`
+  brings the workers back) — no blocking `supervisorctl restart` in the deploy.
 
 ### Shared dirs (from the repo's `.gitignore`)
 
