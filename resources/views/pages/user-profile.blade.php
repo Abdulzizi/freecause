@@ -13,33 +13,33 @@
                 </h1>
                 <div class="text-sm!">
                     <a class="text-brand!" href="/{{ app()->getLocale() }}">{{ __('userprofile.home') }}</a>
-                    <span class="text-[#6c757d]!"> / </span>
-                    <span class="text-[#6c757d]! break-words!">{{ $user->display_name }}</span>
+                    <span class="text-muted!"> / </span>
+                    <span class="text-muted! break-words!">{{ $user->display_name }}</span>
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-lg! p-4! border! border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-lg! p-4! border! border-border!">
 
-                <div class="relative! capitalize! text-[1.3rem]! md:text-[1.5rem]! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0! font-bold! break-words!">{{ $user->display_name }}</div>
+                <div class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]! font-bold! break-words!">{{ $user->display_name }}</div>
 
                 <div class="flex! flex-wrap! -mx-3!">
 
                     <div class="w-full! md:w-1/3! shrink-0! grow-0! px-3!">
                         <table class="w-full! text-sm! border-collapse!">
-                            <tr class="border-b! border-[#eee]!">
-                                <td class="py-2.5! text-[#555]!">{{ __('userprofile.registration_date') }}</td>
+                            <tr class="border-b! border-border!">
+                                <td class="py-2.5! text-muted!">{{ __('userprofile.registration_date') }}</td>
                                 <td class="py-2.5! text-right! font-medium!">
                                     {{ optional($user->created_at)->format('n/j/y H:i') }}
                                 </td>
                             </tr>
-                            <tr class="border-b! border-[#eee]!">
-                                <td class="py-2.5! text-[#555]!">{{ __('userprofile.petitions') }}</td>
+                            <tr class="border-b! border-border!">
+                                <td class="py-2.5! text-muted!">{{ __('userprofile.petitions') }}</td>
                                 <td class="py-2.5! text-right! font-medium!">
                                     {{ $petitionCount }}
                                 </td>
                             </tr>
                             <tr>
-                                <td class="py-2.5! text-[#555]!">{{ __('userprofile.signatures') }}</td>
+                                <td class="py-2.5! text-muted!">{{ __('userprofile.signatures') }}</td>
                                 <td class="py-2.5! text-right! font-medium!">
                                     {{ $signatureCount }}
                                 </td>
@@ -61,7 +61,7 @@
                                     </a>
                                 </div>
                             @empty
-                                <div class="text-[13px]! text-[#999]!">{{ __('userprofile.no_petitions') }}</div>
+                                <div class="text-[13px]! text-muted!">{{ __('userprofile.no_petitions') }}</div>
                             @endforelse
                         </div>
 
@@ -77,7 +77,7 @@
                                     </a>
                                 </div>
                             @empty
-                                <div class="text-[13px]! text-[#999]!">{{ __('userprofile.no_signatures') }}</div>
+                                <div class="text-[13px]! text-muted!">{{ __('userprofile.no_signatures') }}</div>
                             @endforelse
                         </div>
 

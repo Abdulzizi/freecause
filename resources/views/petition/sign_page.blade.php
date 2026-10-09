@@ -17,7 +17,7 @@
 @section('content')
     <section class="py-14! md:py-24!">
         <x-ui.container>
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-12! text-center! border! border-[#eee]! max-w-[900px]! mx-auto!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-12! text-center! border! border-border! max-w-[900px]! mx-auto!">
 
                 <h1 class="mb-6! text-[1.3rem]! md:text-[28px]! font-medium! break-words! [overflow-wrap:anywhere]!">
                     {{ $h2Line1 }}<br>
@@ -43,7 +43,7 @@
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', '1') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
-                    <button class="inline-flex! items-center! justify-center! gap-2! bg-[#cc1f1f]! text-white! border! border-[#cc1f1f]! rounded-[0.625rem]! px-5! py-3! text-[22px]! font-semibold! no-underline! hover:bg-[#b31b1b]! max-md:w-full! max-md:text-[18px]! max-md:px-4! max-md:py-2.5!" type="submit">
+                    <button class="inline-flex! items-center! justify-center! gap-2! bg-brand! text-white! border! border-brand! rounded-[0.625rem]! px-5! py-3! text-[22px]! font-semibold! no-underline! hover:bg-[#b31b1b]! max-md:w-full! max-md:text-[18px]! max-md:px-4! max-md:py-2.5!" type="submit">
                         {{ $btnText }} <span>»</span>
                     </button>
                 </form>

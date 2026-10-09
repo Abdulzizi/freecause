@@ -33,14 +33,14 @@
 @section('content')
     <section class="py-14! md:py-24!">
         <x-ui.container>
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]! max-w-[820px]! mx-auto!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border! max-w-[820px]! mx-auto!">
 
                 <h1 class="mb-4! text-2xl! md:text-[28px]!">
                     {{ $h1Text }}
                 </h1>
 
                 <div class="mb-4!">
-                    <a class="text-[#cc1f1f]!" href="{{ $petitionUrl }}">
+                    <a class="text-brand!" href="{{ $petitionUrl }}">
                         {{ $petitionTitle }}
                     </a>
                 </div>
@@ -59,19 +59,19 @@
                                 <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
                                     @csrf
                                     <div class="mb-4!">
-                                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-[#212529]! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
+                                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <x-ui.button type="submit" variant="danger">{{ __('sign.claim_btn') }}</x-ui.button>
                                 </form>
-                                <p class="mt-4! mb-0! text-[#6c757d]! text-[13px]!">
+                                <p class="mt-4! mb-0! text-muted! text-[13px]!">
                                     {{ __('sign.claim_verify_note') }}
                                 </p>
                             </div>
                         @else
-                            <p class="mb-0! text-[#6c757d]! text-sm!">
+                            <p class="mb-0! text-muted! text-sm!">
                                 {{ __('sign.claim_existing') }}
                             </p>
                         @endif
@@ -91,13 +91,13 @@
                         @endphp
 
                         <div class="mb-2.5!">
-                            <a class="block! px-3.5! py-2.5! border! border-[#f0caca]! rounded-md! bg-[#fff6f6]! text-[#cc1f1f]! no-underline! transition! duration-150! hover:bg-[#cc1f1f]! hover:text-white! hover:border-[#cc1f1f]!"
+                            <a class="block! px-3.5! py-2.5! border! border-[#f0caca]! rounded-md! bg-[#fff6f6]! text-brand! no-underline! transition! duration-150! hover:bg-brand! hover:text-white! hover:border-brand!"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty
-                        <div class="text-[#6c757d]! text-sm!">
+                        <div class="text-muted! text-sm!">
                             {{ $suggestionsEmpty }}
                         </div>
                     @endforelse

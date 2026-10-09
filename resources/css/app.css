@@ -664,6 +664,23 @@ nav.navbar {
     }
 }
 
+.fcui-section-title {
+    position: relative;
+    padding-bottom: 0.625rem;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+}
+
+.fcui-section-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, #000000 30%, var(--color-brand) 30%);
+}
+
 @keyframes fcui-skeleton-shimmer {
     0% {
         background-position: 200% 0;

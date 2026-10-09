@@ -94,14 +94,14 @@
 
                                 <div class="text-center! mt-4!">
                                     <a href="{{ lroute('password.request') }}" class="text-brand!">{{ __('auth.forgot_password') }}</a>
-                                    <span class="text-[#6c757d]! px-2!">|</span>
+                                    <span class="text-muted! px-2!">|</span>
                                     <a href="{{ lroute('verification.resend.form') }}" class="text-brand!">
                                         {{ __('auth.resend_verification') }}
                                     </a>
                                 </div>
 
                                 <div class="text-center! mt-4!">
-                                    <span class="text-[#6c757d]!">{{ __('auth.not_member') }}</span>
+                                    <span class="text-muted!">{{ __('auth.not_member') }}</span>
                                     <a href="{{ lroute('register') }}" class="text-brand!">{{ __('auth.sign_up_now') }}</a>
                                 </div>
                             </form>

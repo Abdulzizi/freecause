@@ -23,12 +23,12 @@
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('list.search_placeholder') }}"
                                aria-label="{{ __('list.search') }}"
-                               class="block! w-full! px-2! py-1! text-[.875rem]! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25!">
+                               class="block! w-full! px-2! py-1! text-[.875rem]! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand-light! focus:outline-none! focus:ring-4! focus:ring-brand/25!">
                         <button type="submit" class="inline-flex! items-center! justify-center! px-2! py-1! bg-brand! text-white! border! border-brand! rounded-md! cursor-pointer! hover:bg-[#b31b1b]!" aria-label="{{ __('list.search') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         </button>
                         @if(request('q'))
-                            <a href="{{ request()->url() }}" class="inline-flex! items-center! justify-center! px-2! py-1! text-[#6c757d]! bg-white! border! border-[#6c757d]! rounded-md! no-underline! hover:bg-[#6c757d]! hover:text-white!"
+                            <a href="{{ request()->url() }}" class="inline-flex! items-center! justify-center! px-2! py-1! text-muted! bg-white! border! border-muted! rounded-md! no-underline! hover:bg-muted! hover:text-white!"
                                aria-label="{{ __('list.clear') }}" title="{{ __('list.clear') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </a>
@@ -36,7 +36,7 @@
                     </form>
                 </div>
 
-                <div class="h-0.5! bg-[#e9ecef]! relative! mb-[22px]!">
+                <div class="h-0.5! bg-border! relative! mb-[22px]!">
                     <div
                         class="h-0.5! w-full! bg-[linear-gradient(to_right,#000,#f00)]! absolute! left-0! top-0!">
                     </div>
@@ -44,15 +44,15 @@
 
                 @if (! $search && isset($sort))
                     <div class="flex! items-center! flex-wrap! gap-2! mb-4!">
-                        <span class="text-[13px]! text-[#6c757d]! me-1!">{{ __('list.sort_by') }}:</span>
+                        <span class="text-[13px]! text-muted! me-1!">{{ __('list.sort_by') }}:</span>
                         @php
                             $sortBase = request()->except(['sort', 'page']);
                         @endphp
                         <a href="{{ request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'newest'])) }}"
-                           class="inline-flex! items-center! px-3! py-1! rounded-full! text-[13px]! no-underline! border! transition-colors! duration-150! {{ $sort === 'newest' ? 'bg-brand! text-white! border-brand!' : 'bg-white! text-brand! border-[#e9ecef]! hover:border-brand!' }}"
+                           class="inline-flex! items-center! px-3! py-1! rounded-full! text-[13px]! no-underline! border! transition-colors! duration-150! {{ $sort === 'newest' ? 'bg-brand! text-white! border-brand!' : 'bg-white! text-brand! border-border! hover:border-brand!' }}"
                            @if ($sort === 'newest') aria-current="true" @endif>{{ __('list.sort_newest') }}</a>
                         <a href="{{ request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'signed'])) }}"
-                           class="inline-flex! items-center! px-3! py-1! rounded-full! text-[13px]! no-underline! border! transition-colors! duration-150! {{ $sort === 'signed' ? 'bg-brand! text-white! border-brand!' : 'bg-white! text-brand! border-[#e9ecef]! hover:border-brand!' }}"
+                           class="inline-flex! items-center! px-3! py-1! rounded-full! text-[13px]! no-underline! border! transition-colors! duration-150! {{ $sort === 'signed' ? 'bg-brand! text-white! border-brand!' : 'bg-white! text-brand! border-border! hover:border-brand!' }}"
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
                     </div>
                 @endif
@@ -62,9 +62,9 @@
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" data-prefetch class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-[#e9ecef]! rounded-md! text-brand! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-brand! hover:text-white! hover:border-brand! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
+                        ]) }}" data-prefetch class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-border! rounded-md! text-brand! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-brand! hover:text-white! hover:border-brand! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
                             <span class="break-words! min-w-0!">{{ $petition->tr_title }}</span>
-                            <span class="text-[#6c757d]! ms-4! text-nowrap! text-[13px]!">
+                            <span class="text-muted! ms-4! text-nowrap! text-[13px]!">
                                 <span data-abbr data-abbr-value="{{ (int) ($petition->signature_count ?? 0) }}">{{ number_format($petition->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                             </span>
                         </a>
@@ -81,7 +81,7 @@
                                 <circle cx="80" cy="82" r="16" fill="#cc1f1f"></circle>
                                 <path d="M74 82h12M80 76v12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"></path>
                             </svg>
-                            <p class="text-[#6c757d]! mb-4!">{{ __('list.none') }}</p>
+                            <p class="text-muted! mb-4!">{{ __('list.none') }}</p>
                             <a href="{{ lroute('petition.create') }}" class="inline-flex! items-center! justify-center! px-4! py-2! bg-brand! text-white! border! border-brand! rounded-md! no-underline! hover:bg-[#b31b1b]! hover:no-underline!">
                                 {{ __('home.btn_create_petition') }}
                             </a>

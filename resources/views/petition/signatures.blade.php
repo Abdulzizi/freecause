@@ -14,7 +14,7 @@
     <section class="py-14! md:py-24!">
         <x-ui.container>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-border!">
                 <div class="flex! flex-wrap! items-center! -mx-3!">
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
@@ -42,20 +42,20 @@
 
                     <div class="w-full! md:w-1/2! shrink-0! sm:w-2/3! px-3!">
                         <h1 class="mb-2! text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
-                            <a href="{{ $petitionUrl }}" data-prefetch class="text-[#212529]! no-underline!">
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-ink! no-underline!">
                                 {{ $petitionTitle }}
                             </a>
                         </h1>
 
-                        <p class="text-[#6c757d]! mb-4! text-sm! leading-[1.6]!">
+                        <p class="text-muted! mb-4! text-sm! leading-[1.6]!">
                             {{ $shortDesc }}
-                            <a href="{{ $petitionUrl }}" data-prefetch class="text-[#cc1f1f]! ms-1!">{{ __('sig.continue') }}</a>
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-brand! ms-1!">{{ __('sig.continue') }}</a>
                         </p>
 
                         <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
                             <div class="h-1.5! bg-[#2ca02c]!" style="width: {{ $pct }}%;"></div>
                         </div>
-                        <div class="flex! justify-between! text-[13px]! text-[#666]!">
+                        <div class="flex! justify-between! text-[13px]! text-muted!">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
@@ -70,11 +70,11 @@
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border!">
 
                 <div class="font-bold! text-base! mb-4!">
                     {{ __('sig.all_signatures') }}
-                    <span class="text-[#6c757d]! font-normal! text-sm!">
+                    <span class="text-muted! font-normal! text-sm!">
                         ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
@@ -87,23 +87,23 @@
 
                 @forelse($signatures as $sig)
                     <div class="flex! items-start! gap-4! py-4! {{ !$loop->last ? 'border-b!' : '' }}">
-                        <div class="shrink-0! text-[#6c757d]! text-[13px]! min-w-[32px]! pt-0.5!">
+                        <div class="shrink-0! text-muted! text-[13px]! min-w-[32px]! pt-0.5!">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
                         <div class="grow!">
                             <div class="flex! items-center! gap-2! flex-wrap!">
                                 <strong class="text-[15px]!">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
-                                    <span class="text-[#6c757d]! text-[13px]!">
+                                    <span class="text-muted! text-[13px]!">
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
-                                <span class="text-[#6c757d]! ms-auto! text-xs!">
+                                <span class="text-muted! ms-auto! text-xs!">
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>
                             @if (!empty($sig->text) && $sig->text !== __('sig.default_comment'))
-                                <p class="mb-0! mt-1! text-[#6c757d]! text-sm!">
+                                <p class="mb-0! mt-1! text-muted! text-sm!">
                                     "{{ $sig->text }}"
                                 </p>
                             @endif
@@ -119,7 +119,7 @@
                             <line x1="44" y1="64" x2="64" y2="64" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
                             <path d="M70 72l5 5 11-11" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
                         </svg>
-                        <p class="text-[#6c757d]! text-sm! mb-0!">{{ __('sig.no_signatures') }}</p>
+                        <p class="text-muted! text-sm! mb-0!">{{ __('sig.no_signatures') }}</p>
                     </div>
                 @endforelse
 

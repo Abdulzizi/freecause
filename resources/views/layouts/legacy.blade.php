@@ -90,7 +90,7 @@
         $announcementText   = \App\Support\Settings::get('announcement_text', '', 'global');
     @endphp
     @if ($announcementActive && $announcementText)
-        <div style="background:#c00;color:#fff;text-align:center;padding:8px 16px;font-size:0.95em;font-weight:600;">
+        <div class="bg-brand! text-white! text-center! px-4! py-2! text-[0.95em]! font-semibold!">
             {!! e($announcementText) !!}
         </div>
     @endif

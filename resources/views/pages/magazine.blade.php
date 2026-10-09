@@ -32,7 +32,7 @@
                     </x-ui.alert>
                     <div class="text-center! py-6!">
                         <h2 class="mb-4! font-semibold!">{{ __('nav.magazine_coming_soon') }}</h2>
-                        <p class="text-[#6c757d]! text-base!">
+                        <p class="text-muted! text-base!">
                             {{ __('nav.magazine_body') }}
                         </p>
                         <x-ui.button :href="lroute('home')" variant="danger" class="mt-3">{{ __('nav.magazine_back_home') }}</x-ui.button>

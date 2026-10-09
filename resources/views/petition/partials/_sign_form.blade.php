@@ -58,11 +58,11 @@
                 <div class="w-full! mb-[14px]!">
                     @if ($useLabels)
                         <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
                             value="{{ old('comment', $defaultComment) }}" required>
                     @else
                         <label for="sign_comment_auth_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                     <span data-error-for="comment" hidden class="text-[13px]! text-brand! mt-1! block!"></span>
@@ -158,10 +158,10 @@
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
                     <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
-                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
                 @else
                     <label for="sign_name_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblName }}</label>
-                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
                         placeholder="{{ $phName }}" required>
                 @endif
                 <span data-error-for="name" hidden class="text-[13px]! text-brand! mt-1! block!"></span>
@@ -170,10 +170,10 @@
             <div class="{{ $col }} mb-[14px]!">
                 @if ($useLabels)
                     <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
-                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}" required aria-required="true">
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}" required aria-required="true">
                 @else
                     <label for="sign_email_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblEmail }}</label>
-                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}"
+                    <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}"
                         placeholder="{{ $phEmail }}" required aria-required="true">
                 @endif
                 <span data-error-for="email" hidden class="text-[13px]! text-brand! mt-1! block!"></span>
@@ -189,11 +189,11 @@
                 <div class="w-full! mb-[14px]!">
                     @if ($useLabels)
                         <label class="block! mb-2! text-[12px]! mb-[4px]! text-[#444]!" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
                             value="{{ old('comment', $defaultComment) }}" required>
                     @else
                         <label for="sign_comment_guest_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-[#999]!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
+                        <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! h-[32px]! px-[10px]! py-[6px]! text-[13px]! rounded-[6px]! placeholder:italic! placeholder:text-muted!" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
                             value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
                     @endif
                     <span data-error-for="comment" hidden class="text-[13px]! text-brand! mt-1! block!"></span>

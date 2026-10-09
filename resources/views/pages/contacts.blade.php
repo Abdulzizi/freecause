@@ -35,7 +35,7 @@
                     <div class="fcui-card relative! flex! flex-col! min-w-0! w-full! max-w-[720px]! mx-auto!">
                         <div class="grow! shrink! basis-auto! p-6!">
 
-                            <h2 class="relative! capitalize! text-[18px]! pb-[10px]! mb-[20px]! font-semibold! after:absolute! after:content-['']! after:h-[1px]! after:w-full! after:left-0! after:bottom-0! after:bg-gradient-to-r! after:from-black! after:from-30%! after:to-[#ce2020]!">{{ __('contacts.title') }}</h2>
+                            <h2 class="fcui-section-title capitalize! text-[18px]!">{{ __('contacts.title') }}</h2>
 
                             <div class="mb-6!">
                                 {!! __('contacts.intro') !!}

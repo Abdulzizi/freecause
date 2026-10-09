@@ -15,12 +15,12 @@
                 <h1 class="mb-2! text-2xl! font-semibold!">{{ __('errors.404_title') }}</h1>
                 <div class="text-sm!">
                     <a class="text-brand!" href="{{ url('/'.app()->getLocale()) }}">{{ __('errors.home') }}</a>
-                    <span class="text-[#6c757d]!"> / </span>
-                    <span class="text-[#6c757d]!">404</span>
+                    <span class="text-muted!"> / </span>
+                    <span class="text-muted!">404</span>
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-[#eee]!">
+            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border!">
                 <div class="flex! justify-center! mb-6!">
                     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none" aria-hidden="true">
                         <ellipse cx="100" cy="132" rx="70" ry="8" fill="#f6d4d4"></ellipse>
@@ -35,15 +35,15 @@
                         <path d="M116 48l10 10M126 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
                     </svg>
                 </div>
-                <div class="mb-2! relative! capitalize! text-[1.3rem]! md:text-[1.5rem]! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:bg-[linear-gradient(to_right,#000_30%,#ce2020_30%)]! after:w-full! after:left-0! after:bottom-0!">404</div>
+                <div class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">404</div>
 
-                <p class="text-[15px]! text-[#555]! mb-1.5!">
+                <p class="text-[15px]! text-muted! mb-1.5!">
                     {{ __('errors.404_lead') }}
                 </p>
-                <p class="text-[15px]! text-[#555]! mb-5!">
+                <p class="text-[15px]! text-muted! mb-5!">
                     {{ __('errors.404_hint') }}
                 </p>
-                <p class="text-sm! text-[#555]! mb-5!">
+                <p class="text-sm! text-muted! mb-5!">
                     {{ __('errors.404_suggestions') }}
                 </p>
 
@@ -64,7 +64,7 @@
                                             ]) }}">
                                             {{ $p->title }}
                                         </a>
-                                        <div class="text-xs! text-[#999]! mt-1!">
+                                        <div class="text-xs! text-muted! mt-1!">
                                             {{ number_format($p->signature_count) }} {{ __('errors.signatures') }}
                                         </div>
                                     </div>

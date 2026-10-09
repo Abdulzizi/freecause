@@ -13,7 +13,7 @@
 </div>
 
 <div class="flex! items-center! gap-4! my-4!">
-    <div style="height:1px;background:#ddd;flex:1;"></div>
+    <div style="height:1px;background:var(--color-border);flex:1;"></div>
     <div class="font-semibold!" style="background:#fff;padding:0 10px;border-radius:999px;">{{ __('auth.or') }}</div>
-    <div style="height:1px;background:#ddd;flex:1;"></div>
+    <div style="height:1px;background:var(--color-border);flex:1;"></div>
 </div>

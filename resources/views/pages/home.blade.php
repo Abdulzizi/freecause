@@ -72,7 +72,7 @@
                                             <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none! transition! duration-150! hover:shadow-lg!">
                                                 <div class="grow! shrink! basis-auto! p-5! max-sm:p-4!">
 
-                                                    <span class="bg-[#ffefef]! text-danger! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
+                                                    <span class="bg-brand/5! text-danger! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
@@ -108,7 +108,7 @@
 
                                                             @else
                                                                 <h3>{{ __('home.featured_none_title') }}</h3>
-                                                                <p class="text-[#6c757d]!">
+                                                                <p class="text-muted!">
                                                                     {{ __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
@@ -128,7 +128,7 @@
                                                                     role="progressbar" aria-valuenow="{{ (int) $progress }}"
                                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
-                                                            <div class="flex! justify-between! text-[#6c757d]!">
+                                                            <div class="flex! justify-between! text-muted!">
                                                                 <span><span data-countup data-countup-to="{{ (int) $signatures }}">{{ number_format($signatures) }}</span> {{ __('home.signatures_label') }}</span>
                                                                 <span>{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
                                                             </div>
@@ -201,7 +201,7 @@
                                                     @empty
 
                                                         <li class="group">
-                                                            <div class="text-[#6c757d]! p-2!">
+                                                            <div class="text-muted! p-2!">
                                                                 {{ __('home.recent_empty') }}
                                                                 &mdash;
                                                                 <a href="{{ lroute('petitions.index') }}" class="text-brand! group-hover:text-white!">
@@ -233,7 +233,7 @@
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
                     <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
+                        <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
                             {{ __('home.what_title') }}
                         </h2>
 
@@ -245,7 +245,7 @@
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3!">
                     <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
 
-                        <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">
+                        <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
                             {{ __('home.create_box_title') }}
                         </h2>
 
@@ -262,7 +262,7 @@
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! mb-6!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
-                    <h2 class="capitalize! text-[1.3rem]! md:text-[1.5rem]! relative! pb-2.5! mb-5! font-semibold! after:absolute! after:content-['']! after:h-px! after:w-full! after:left-0! after:bottom-0! after:bg-[linear-gradient(to_right,#000000_30%,#ce2020_30%)]!">{{ __('home.categories_title') }}</h2>
+                    <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
@@ -285,7 +285,7 @@
         <x-ui.container>
             <div class="text-center! mb-6!">
                 <h2 class="mb-2!">{{ __('home.blog_title') }}</h2>
-                <p class="text-[#6c757d]!">{{ __('home.blog_subtitle') }}
+                <p class="text-muted!">{{ __('home.blog_subtitle') }}
                 </p>
             </div>
 

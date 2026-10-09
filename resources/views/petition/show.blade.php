@@ -89,7 +89,7 @@
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border!">
                 <div data-confetti-on-load data-confetti-threshold="{{ in_array(true, [$pct>=100, $pct>=75, $pct>=50, $pct>=25], true) ? 1 : 0 }}" hidden></div>
                 @if ($pct >= 80 && $pct < 100 && !$hasSigned)
-                    <div class="flex! items-center! gap-2! bg-[#fff5f5]! border! border-brand! text-brand! rounded-[.5rem]! px-4! py-3! mb-4! text-[14px]! font-semibold!" role="status">
+                    <div class="flex! items-center! gap-2! bg-brand/5! border! border-brand! text-brand! rounded-[.5rem]! px-4! py-3! mb-4! text-[14px]! font-semibold!" role="status">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
                             <path d="M12 9v4"></path>
                             <path d="M12 17h.01"></path>
@@ -119,7 +119,7 @@
                         </span>
                     @endif
                     @if ($petition->is_featured)
-                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-[#fff5f5]! text-brand! border! border-[#f3c6c6]! px-2.5! py-[3px]! text-[12px]! font-semibold!">
+                        <span class="inline-flex! items-center! gap-1! rounded-full! bg-brand/5! text-brand! border! border-brand/20! px-2.5! py-[3px]! text-[12px]! font-semibold!">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0!">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
@@ -127,7 +127,7 @@
                         </span>
                     @endif
                     @if ($petition->category?->name)
-                        <span class="inline-flex! items-center! rounded-full! bg-[#f1f1f1]! text-[#555]! border! border-[#e0e0e0]! px-2.5! py-[3px]! text-[12px]! font-medium!">
+                        <span class="inline-flex! items-center! rounded-full! bg-[#f1f1f1]! text-muted! border! border-border! px-2.5! py-[3px]! text-[12px]! font-medium!">
                             {{ $petition->category->name }}
                         </span>
                     @endif
@@ -135,7 +135,7 @@
 
                 {{-- Share buttons --}}
                 <div class="flex! flex-wrap! items-center! gap-2! mb-4!">
-                    <span class="text-[13px]! font-semibold! text-[#555]!">{{ __('show.share') }}:</span>
+                    <span class="text-[13px]! font-semibold! text-muted!">{{ __('show.share') }}:</span>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex! items-center! gap-[5px]! rounded! px-3! py-[5px]! text-[13px]! font-medium! no-underline! border-0! cursor-pointer! transition-opacity! duration-150! hover:opacity-85! hover:no-underline! bg-[#1877f2]! text-white!"
                        aria-label="Share on Facebook">
@@ -182,7 +182,7 @@
                         </a>
 
                         <div class="mt-4!">
-                            <div class="text-base! leading-[1.75]! text-[#222]! [&_p]:mb-3! [&_p]:text-sm! [&_p]:leading-[1.75]! [&_ul]:my-2.5! [&_ul]:mt-0! [&_ul]:mb-3.5! [&_ul]:list-disc! [&_ul]:pl-[22px]! [&_ol]:my-2.5! [&_ol]:mt-0! [&_ol]:mb-3.5! [&_ol]:list-decimal! [&_ol]:pl-[22px]! [&_li]:mb-1.5! [&_li]:text-sm! [&_li]:leading-[1.75]! [&_li>ul]:mt-2! [&_li>ol]:mt-2! [&_h3]:mt-4! [&_h3]:text-base! [&_h3]:font-bold! [&_h4]:mt-3.5! [&_h4]:text-[15px]! [&_h4]:font-bold!">
+                            <div class="text-base! leading-[1.75]! text-ink! [&_p]:mb-3! [&_p]:text-sm! [&_p]:leading-[1.75]! [&_ul]:my-2.5! [&_ul]:mt-0! [&_ul]:mb-3.5! [&_ul]:list-disc! [&_ul]:pl-[22px]! [&_ol]:my-2.5! [&_ol]:mt-0! [&_ol]:mb-3.5! [&_ol]:list-decimal! [&_ol]:pl-[22px]! [&_li]:mb-1.5! [&_li]:text-sm! [&_li]:leading-[1.75]! [&_li>ul]:mt-2! [&_li>ol]:mt-2! [&_h3]:mt-4! [&_h3]:text-base! [&_h3]:font-bold! [&_h4]:mt-3.5! [&_h4]:text-[15px]! [&_h4]:font-bold!">
                                 {!! $tr->description !!}
                             </div>
                         </div>
@@ -235,17 +235,17 @@
                                                 @else
                                                     <strong class="text-[15px]!">{{ $comment->name ?? __('sig.anonymous') }}</strong>
                                                 @endif
-                                                <span class="text-[#6c757d]! ms-auto! text-xs!">
+                                                <span class="text-muted! ms-auto! text-xs!">
                                                     {{ optional($comment->created_at)->format('j F Y') }}
                                                 </span>
                                             </div>
-                                            <p class="mb-0! mt-1! text-[#6c757d]! text-sm!">
+                                            <p class="mb-0! mt-1! text-muted! text-sm!">
                                                 "{{ $comment->text }}"
                                             </p>
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-[#6c757d]! text-sm!">{{ __('sig.no_comments') }}</div>
+                                    <div class="text-muted! text-sm!">{{ __('sig.no_comments') }}</div>
                                 @endforelse
 
                                 @if ($shoutbox->hasPages())
@@ -295,7 +295,7 @@
                             <div class="flex! justify-between! mt-2! text-sm!">
                                 <div><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
                                 @php $goalLabelPrefix = trim(str_replace(number_format($goalTotal), '', $goalLabelText)); @endphp
-                                <div class="text-[#6c757d]!">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
+                                <div class="text-muted!">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
                             </div>
 
                             @if (($recentSignatureCount ?? 0) > 0)
@@ -325,12 +325,12 @@
                                             <strong>{{ $goalCurrent - $i }}.</strong>
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
                                                 class="text-brand!">{{ $sig->name ?? __('sig.anonymous') }}</a>
-                                            <span class="text-[#6c757d]!">|</span>
+                                            <span class="text-muted!">|</span>
                                             <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="flex! flex-col! items-center! justify-center! text-center! py-6! text-[#6c757d]!">
+                                    <div class="flex! flex-col! items-center! justify-center! text-center! py-6! text-muted!">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mb-2! opacity-70!">
                                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="9" cy="7" r="4"></circle>
@@ -359,7 +359,7 @@
                                             {{ $petition->user->name }}
                                         </a>
                                     @else
-                                        <span class="text-[#6c757d]!">Unknown</span>
+                                        <span class="text-muted!">Unknown</span>
                                     @endif
                                 </div>
 
@@ -389,7 +389,7 @@
                                         @endif
                                     @endforeach
                                 @else
-                                    <span class="text-[#6c757d]!">{{ $tagsEmpty }}</span>
+                                    <span class="text-muted!">{{ $tagsEmpty }}</span>
                                 @endif
                             </div>
                         </div>
@@ -400,17 +400,17 @@
 
                             <div class="mt-4! text-[13px]!">
                                 <div class="mb-2!"><strong>{{ $embedDirect }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value="{{ $directLink }}" readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! mb-4!" value="{{ $directLink }}" readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedHtml }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!"
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! mb-4!"
                                     value='<a href="{{ $directLink }}">{{ $petitionTitle }}</a>' readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedForumNoTitle }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" value='[URL="{{ $directLink }}"][/URL]' readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! mb-4!" value='[URL="{{ $directLink }}"][/URL]' readonly>
 
                                 <div class="mb-2!"><strong>{{ $embedForumWithTitle }}</strong></div>
-                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25!" value='[URL]{{ $directLink }}[/URL]' readonly>
+                                <input class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25!" value='[URL]{{ $directLink }}[/URL]' readonly>
                             </div>
                         </div>
 
@@ -433,7 +433,7 @@
                                             $widgetCode = '<script src="'.url("/widgets/pbadge/{$petition->id}/{$widgetType}").'"></script>';
                                         @endphp
                                         <div class="mb-2!"><strong>{{ str_replace('x', '×', $widgetType) }}</strong></div>
-                                        <textarea class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-[#86b7fe]! focus:outline-none! focus:ring-4! focus:ring-[#0d6efd]/25! mb-4!" rows="3" readonly>{{ $widgetCode }}</textarea>
+                                        <textarea class="block! w-full! px-3! py-1.5! text-base! leading-normal! text-ink! bg-white! border! border-[#ced4da]! rounded-md! appearance-none! focus:border-brand! focus:outline-none! focus:ring-4! focus:ring-brand/25! mb-4!" rows="3" readonly>{{ $widgetCode }}</textarea>
                                         <div class="mb-6! overflow-auto">
                                             <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
                                                 alt="{{ $widgetType }} petition widget preview" loading="lazy" decoding="async">
@@ -459,7 +459,7 @@
                                             {{ __('show.download_signatures') }} :
                                             <a class="text-brand!"
                                                 href="{{ lroute('petition.download.txt', ['slug' => $tr->slug, 'id' => $petition->id]) }}">TXT</a>
-                                            <span class="text-[#6c757d]!"> </span>
+                                            <span class="text-muted!"> </span>
                                             <a class="text-brand!"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
@@ -483,8 +483,8 @@
                                 <a href="{{ lroute('petition.show', ['slug' => $rel->tr_slug, 'id' => $rel->id]) }}"
                                    class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-border! shadow-sm! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
                                     <div class="p-4!">
-                                        <div class="text-[#222]! font-semibold! text-sm! leading-snug! break-words! [overflow-wrap:anywhere]!">{{ $rel->tr_title }}</div>
-                                        <div class="mt-2! text-[13px]! text-[#6c757d]!">
+                                        <div class="text-ink! font-semibold! text-sm! leading-snug! break-words! [overflow-wrap:anywhere]!">{{ $rel->tr_title }}</div>
+                                        <div class="mt-2! text-[13px]! text-muted!">
                                             <span data-countup data-countup-to="{{ (int) ($rel->signature_count ?? 0) }}">{{ number_format($rel->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                                         </div>
                                     </div>

@@ -22,9 +22,9 @@
                             </div>
 
                             <div class="flex! items-center! gap-4! mb-6!">
-                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
+                                <div class="h-px! bg-border! flex-1!"></div>
                                 <div class="font-semibold!">{{ __('auth.or') }}</div>
-                                <div class="h-px! bg-[#ddd]! flex-1!"></div>
+                                <div class="h-px! bg-border! flex-1!"></div>
                             </div>
 
                             <div class="mb-4!">
@@ -137,7 +137,7 @@
                                 </div>
 
                                 <div class="text-center! mt-4!">
-                                    <span class="text-[#6c757d]!">{{ __('auth.already_member') }}</span>
+                                    <span class="text-muted!">{{ __('auth.already_member') }}</span>
                                     <a href="{{ lroute('login') }}" class="text-brand!">{{ __('auth.sign_in_now') }}</a>
                                 </div>
                             </form>

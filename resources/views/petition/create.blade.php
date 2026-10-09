@@ -66,11 +66,11 @@
                 </div>
 
                 @guest
-                    <div class="mb-4! max-w-[720px]! mx-auto! [&_.nav-link]:w-full! [&_.nav-link]:text-[#333]! [&_.nav-link]:font-semibold! max-md:[&_.nav-link]:py-[0.65rem]! max-md:[&_.nav-link]:px-2! max-md:[&_.tab-pane>div]:p-4! max-md:[&_.tab-pane>div]:border-t-0! max-md:[&_.tab-pane>div]:rounded-t-none! max-md:[&_.tab-pane>div]:rounded-b-lg! max-md:[&_.tab-pane>div]:shadow-none! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full! max-md:[&_.btn]:w-full!">
+                    <div class="mb-4! max-w-[720px]! mx-auto! [&_.nav-link]:w-full! [&_.nav-link]:text-ink! [&_.nav-link]:font-semibold! max-md:[&_.nav-link]:py-[0.65rem]! max-md:[&_.nav-link]:px-2! max-md:[&_.tab-pane>div]:p-4! max-md:[&_.tab-pane>div]:border-t-0! max-md:[&_.tab-pane>div]:rounded-t-none! max-md:[&_.tab-pane>div]:rounded-b-lg! max-md:[&_.tab-pane>div]:shadow-none! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full! max-md:[&_.btn]:w-full!">
                         <ul class="nav nav-tabs nav-fill" role="tablist" aria-label="Authentication options">
                             <li class="nav-item" role="presentation">
                                 <button
-                                    class="nav-link @if($activeAuthTab === 'login') active text-[#d61f26]! @endif"
+                                    class="nav-link @if($activeAuthTab === 'login') active text-brand! @endif"
                                     id="create-login-tab"
                                     data-bs-toggle="tab"
                                     data-bs-target="#create-login-pane"
@@ -84,7 +84,7 @@
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button
-                                    class="nav-link @if($activeAuthTab === 'register') active text-[#d61f26]! @endif"
+                                    class="nav-link @if($activeAuthTab === 'register') active text-brand! @endif"
                                     id="create-register-tab"
                                     data-bs-toggle="tab"
                                     data-bs-target="#create-register-pane"
@@ -130,7 +130,7 @@
 
                         <div class="mb-4!">
                             <div class="font-semibold!">{{ __('create.petition_data') }}</div>
-                            <div class="h-0.5! bg-[#d61f26]! w-full! mt-1.5!"></div>
+                            <div class="h-0.5! bg-brand! w-full! mt-1.5!"></div>
                         </div>
 
                         <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem]! max-md:[&_.mb-3]:mb-[0.85rem]! max-md:[&_.form-control]:w-full! max-md:[&_.form-select]:w-full!" method="POST" action="{{ $isEdit
@@ -165,7 +165,7 @@
                                         required>{!! $oldDesc !!}</textarea>
                                 </div>
 
-                                <div class="block! pt-2! px-0.5! text-[13px]! text-[#555]!">{{ __('create.markup_hint') }}</div>
+                                <div class="block! pt-2! px-0.5! text-[13px]! text-muted!">{{ __('create.markup_hint') }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
@@ -210,7 +210,7 @@
                             <div class="mb-3" data-image-field>
                                 <label class="block! mb-2!">{{ __('form.image') }}</label>
 
-                                <p class="text-[#6c757d]! text-[.875em]! mb-2!" data-image-instructions>
+                                <p class="text-muted! text-[.875em]! mb-2!" data-image-instructions>
                                     {{ __('create.image_instructions') }}
                                 </p>
 
@@ -220,7 +220,7 @@
                                     name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                     data-image-input data-max-size="4194304">
 
-                                <small class="text-[#6c757d]! block! mt-1!" data-image-formats>
+                                <small class="text-muted! block! mt-1!" data-image-formats>
                                     {{ __('create.image_formats') }}
                                 </small>
 
@@ -231,7 +231,7 @@
                                 <div class="mt-4! hidden!" data-image-preview>
                                     <img src="" alt="{{ __('create.image_preview_alt') }}" class="img-thumbnail max-h-[220px]! w-auto! h-auto! object-contain!" data-image-preview-img>
                                     <div class="flex! items-center! justify-between! mt-2!">
-                                        <small class="text-[#6c757d]!">
+                                        <small class="text-muted!">
                                             <span data-image-name></span>
                                             <span class="ms-1!" data-image-size></span>
                                         </small>
@@ -251,7 +251,7 @@
                                     </div>
                                 @endif
 
-                                <div class="flex! items-center! text-center! gap-3! my-4! text-[#888]! font-semibold! text-sm! uppercase! tracking-[0.05em]! before:flex-1! before:h-px! before:bg-[#e0e0e0]! after:flex-1! after:h-px! after:bg-[#e0e0e0]! before:content-['']! after:content-['']!" role="separator" aria-label="or">
+                                <div class="flex! items-center! text-center! gap-3! my-4! text-muted! font-semibold! text-sm! uppercase! tracking-[0.05em]! before:flex-1! before:h-px! before:bg-border! after:flex-1! after:h-px! after:bg-border! before:content-['']! after:content-['']!" role="separator" aria-label="or">
                                     <span>{{ __('create.or') }}</span>
                                 </div>
 
@@ -286,7 +286,7 @@
                             </div>
 
                             <div class="text-center! max-md:[&_.fcui-btn]:w-full!">
-                                <span data-autosave-status class="text-[13px]! text-[#6c757d]! me-3!"></span>
+                                <span data-autosave-status class="text-[13px]! text-muted! me-3!"></span>
                                 <x-ui.button type="submit" variant="danger" class="px-12!"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
