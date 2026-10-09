@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClaimAccountRequest;
 use App\Http\Requests\PetitionRequest;
-use App\Mail\VerifyAccountMail;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\PageContent;
@@ -12,23 +11,19 @@ use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
-use App\Models\UserLevel;
+use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\ImageVariants;
-use App\Support\Settings;
 use App\Support\Slug;
-use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -388,132 +383,10 @@ class PetitionController extends Controller
                 return back()->withInput();
             }
 
-            return $this->signAsAuthed($request, $locale, $petition);
+            return PetitionSigning::signAsAuthed($request, $locale, $petition);
         }
 
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:60'],
-            'email' => ['required', 'email', 'max:190'],
-            'comment' => ['nullable', 'string', 'max:500'],
-
-            'agree1' => ['required', 'in:on,1'],
-            'agree2' => ['required', 'in:on,1'],
-            'agree3' => ['required', 'in:on,1'],
-        ]);
-
-        $spamText = implode(' ', [
-            $data['name'] ?? '',
-            $data['comment'] ?? '',
-        ]);
-
-        if (Spam::isSpam($spamText)) {
-            Spam::log('signature', json_encode($data));
-
-            toast('Suspicious activity detected.', 'error');
-
-            return back()->withInput();
-        }
-
-        if (Spam::rateLimit('petition')) {
-            Spam::log('petition', 'Rate limit exceeded');
-            Spam::banCurrentIp('Too many petition attempts');
-
-            toast('Too many petition attempts.', 'error');
-
-            return back()->withInput();
-        }
-
-        $email = strtolower(trim($data['email']));
-
-        $existingUser = User::where('email', $email)->first();
-
-        $alreadySigned = Signature::where('petition_id', $petition->id)
-            ->where(function ($q) use ($email, $existingUser) {
-                $q->where('email', $email);
-
-                if ($existingUser) {
-                    $q->orWhere('user_id', $existingUser->id);
-                }
-            })
-            ->exists();
-
-        if ($alreadySigned) {
-            return back()
-                ->withErrors(['email' => 'You already signed this petition.'])
-                ->withInput($request->except('password'));
-        }
-
-        try {
-            return DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser) {
-                $userLevel = UserLevel::where('name', 'user')->first();
-                $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
-
-                $user = $existingUser ?? User::create([
-                    'name' => $data['name'],
-                    'first_name' => $data['name'],
-                    'last_name' => null,
-                    'email' => $email,
-                    'locale' => $locale,
-                    'ip' => request()->ip(),
-                    'level_id' => $userLevel?->id,
-                    'verified' => ! $needsVerification,
-                    'verification_token' => $needsVerification ? Str::random(64) : null,
-                    'verification_token_sent_at' => $needsVerification ? now() : null,
-                ]);
-
-                if (! $existingUser && $needsVerification && Settings::get('smtp_enabled', false)) {
-                    try {
-                        Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
-                    } catch (\Throwable $e) {
-                        AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
-                    }
-                }
-
-                $sig = Signature::firstOrCreate(
-                    ['petition_id' => $petition->id, 'email' => $email],
-                    [
-                        'user_id' => $user->id,
-                        'name' => $data['name'],
-                        'locale' => $locale,
-                        'text' => $data['comment'] ?? 'I support this petition',
-                        'confirmed' => $user->verified,
-                        'ip_address' => request()->ip(),
-                    ]
-                );
-
-                if ($sig->wasRecentlyCreated && $sig->confirmed) {
-                    PetitionStats::increment($petition->id);
-                }
-
-                AppLog::info(
-                    'Petition signed',
-                    'Petition ID: '.$petition->id.' | User: '.$email.' | IP: '.request()->ip(),
-                    'petition.sign'
-                );
-
-                session()->forget("sign.{$petition->id}");
-                session()->flash('sign_claim', [
-                    'email' => $email,
-                    'is_new' => ! $existingUser,
-                    'name' => $data['name'],
-                ]);
-
-                return redirect()->route('petition.thanks', [
-                    'locale' => $tr->locale,
-                    'slug' => $tr->slug,
-                    'id' => $petition->id,
-                    'status' => $user->verified ? 1 : 0,
-                ]);
-            });
-        } catch (QueryException $e) {
-            if (($e->errorInfo[0] ?? null) === '23000') {
-                return back()
-                    ->withErrors(['email' => 'You already signed this petition.'])
-                    ->withInput($request->except('password'));
-            }
-
-            throw $e;
-        }
+        return PetitionSigning::signAsGuest($request, $petition, $locale);
     }
 
     public function create(string $locale)
@@ -631,97 +504,6 @@ class PetitionController extends Controller
             }
 
             throw $e;
-        }
-    }
-
-    private function signAsAuthed(Request $request, string $locale, Petition $petition)
-    {
-        $data = $request->validate([
-            'comment' => ['nullable', 'string', 'max:500'],
-            'agree1' => ['required', 'in:agree'],
-            'agree2' => ['required', 'in:agree'],
-            'agree3' => ['required', 'in:agree'],
-        ]);
-
-        $u = auth()->user();
-
-        try {
-            return DB::transaction(function () use ($data, $locale, $petition, $u) {
-                $sig = Signature::firstOrCreate(
-                    ['petition_id' => $petition->id, 'email' => $u->email],
-                    [
-                        'user_id' => $u->id,
-                        'name' => $u->name,
-                        'locale' => $locale,
-                        'text' => $data['comment'] ?? 'I support this petition',
-                        'ip_address' => request()->ip(),
-                    ]
-                );
-
-                if (! $sig->wasRecentlyCreated) {
-                    toast('You already signed this petition.', 'info');
-                }
-
-                if ($sig->wasRecentlyCreated) {
-                    PetitionStats::increment($petition->id);
-                }
-
-                session()->forget("sign.{$petition->id}");
-
-                $tr = $petition->translationOrFallback($locale);
-
-                abort_if(! $tr, 404);
-
-                AppLog::info(
-                    'Petition signed',
-                    'Petition ID: '.$petition->id.' | User: '.$u->email.' | IP: '.request()->ip(),
-                    'petition.sign'
-                );
-
-                if ($sig->wasRecentlyCreated) {
-                    toast('Thank you for signing!', 'success');
-                }
-
-                return redirect()->route('petition.thanks', [
-                    'locale' => $tr->locale,
-                    'slug' => $tr->slug,
-                    'id' => $petition->id,
-                    'status' => 1,
-                ]);
-            });
-        } catch (QueryException $e) {
-            // Concurrent duplicate sign (unique key race): treat as
-            // already signed instead of an uncaught 500.
-            if (($e->errorInfo[0] ?? null) !== '23000' && ! str_contains($e->getMessage(), 'UNIQUE')) {
-                throw $e;
-            }
-
-            $sig = Signature::where('petition_id', $petition->id)
-                ->where(function ($q) use ($u) {
-                    $q->where('email', $u->email)->orWhere('user_id', $u->id);
-                })
-                ->first();
-
-            if ($sig) {
-                toast('You already signed this petition.', 'info');
-            } else {
-                throw $e;
-            }
-
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->where('locale', $locale)
-                ->first()
-                ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
-
-            abort_if(! $tr, 404);
-
-            return redirect()->route('petition.thanks', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-                'status' => 1,
-            ]);
         }
     }
 
