@@ -63,7 +63,7 @@
 
     .fc-box .bulk-action:hover,
     .fc-box a[title]:hover {
-        background: #f5f5f5 !important;
+        background: var(--color-surface-muted) !important;
     }
 
     .fc-box .bulk-action,

@@ -39,7 +39,7 @@
         </a>
     </div>
 
-    <span class="fc-bulk-count items-center! py-0.5! px-2! bg-[#e8f0fe]! text-[#1a5fb4]! rounded-[10px]! text-[11px]! font-semibold! whitespace-nowrap! leading-[1.6]! ml-2!" id="fc-bulk-count" aria-live="polite"></span>
+    <span class="fc-bulk-count items-center! py-0.5! px-2! bg-info/10! text-info! rounded-[10px]! text-[11px]! font-semibold! whitespace-nowrap! leading-[1.6]! ml-2!" id="fc-bulk-count" aria-live="polite"></span>
 
     {{ $slot }}
 

@@ -95,8 +95,6 @@ function setLoading(button, loading) {
         button.disabled = true;
         button.style.cursor = 'wait';
         button.style.opacity = '.7';
-        const label = button.querySelector('.fc-btn-label');
-        if (label) label.textContent = '...';
         return;
     }
     if (button.dataset.adminLoadingHtml) button.innerHTML = button.dataset.adminLoadingHtml;

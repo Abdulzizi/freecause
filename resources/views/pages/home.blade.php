@@ -124,7 +124,7 @@
                                                     @if ($featuredPetition)
                                                         <div class="mb-4!">
                                                             <div class="progress mb-2!">
-                                                                <div class="progress-bar" style="width: {{ $progress }}%;"
+                                                                <div class="progress-bar fcui-progress-fill" style="--pct: {{ $progress }}%"
                                                                     role="progressbar" aria-valuenow="{{ (int) $progress }}"
                                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
