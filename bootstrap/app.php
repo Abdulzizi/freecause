@@ -20,6 +20,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->registered(function (Application $app) {
@@ -58,6 +59,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(EdgeCacheHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        Integration::handles($exceptions);
 
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson()) {
