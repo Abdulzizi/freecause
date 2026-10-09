@@ -7,6 +7,14 @@ Supervisor group `freecause-release-queue:*` (2 workers, `www-data`). Daily
 
 Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
 
+## Monitoring
+
+Sentry error tracking (`sentry/sentry-laravel`, wired in `bootstrap/app.php`
+via `Integration::handles`). DSN lives in the server's shared `.env` as
+`SENTRY_LARAVEL_DSN`; `SENTRY_TRACES_SAMPLE_RATE` is optional (0.1 in prod).
+Verify with `php artisan sentry:test`. Committed: package, config, bootstrap
+wiring — the DSN itself never lands in git.
+
 ## Operational traps
 
 - **Pint**: always pass explicit paths (`app database tests routes config`); a
@@ -20,6 +28,23 @@ Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
   window and prefer online DDL for new indexes.
 - **Cloudflare** can serve stale files at the edge; purge by URL after
   robots/config changes whose freshness matters.
+
+## Edge (Cloudflare)
+
+Zone `freecause.com` is on the Cloudflare **Free** plan. Custom WAF rules are
+capped at **5** — repurpose a rule rather than expecting a 6th. Inventory and
+bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
+
+- Free-plan custom-rule expressions reject `matches` and `starts_with`
+  (Business/Advanced): use `eq`, `contains`, `and`, `not`, `lower()`.
+- The MCP/API token can **list + delete** custom rules but **create** fails with
+  `405 Method not allowed for this authentication scheme` — add/edit rules in the
+  Cloudflare dashboard.
+- `robots.txt` blocks Applebot (`46db1e79`, 2026-10-07); it had crawled ~1.26M
+  requests/week beforehand (verified-crawler skip on profile paths) — expect a
+  multi-day decline.
+- 503 spikes track deploy maintenance windows + crawler retries (Oct 8: 6.2K);
+  deploy fix `c02a8117` lifts maintenance earlier.
 
 ## Parked backlog
 
