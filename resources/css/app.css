@@ -1142,18 +1142,24 @@ select.fc-filter-field {
 }
 .fc-abtn--danger {
     color: var(--color-danger);
-    border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-surface));
+    border-color: var(--color-danger);
     min-width: 6rem;
 }
 .fc-abtn--danger:hover {
-    background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface));
+    background: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
+}
+.fc-abtn--danger:active {
+    background: color-mix(in srgb, var(--color-danger) 16%, var(--color-surface));
 }
 .fc-abtn--success {
     color: var(--color-success);
-    border-color: color-mix(in srgb, var(--color-success) 40%, var(--color-surface));
+    border-color: var(--color-success);
 }
 .fc-abtn--success:hover {
-    background: color-mix(in srgb, var(--color-success) 6%, var(--color-surface));
+    background: color-mix(in srgb, var(--color-success) 8%, var(--color-surface));
+}
+.fc-abtn--success:active {
+    background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
 }
 .fc-abtn--neutral {
     color: var(--color-muted);
