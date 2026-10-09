@@ -53,7 +53,7 @@
                         </p>
 
                         <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
-                            <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $pct }}%"></div>
+                            <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                         </div>
                         <div class="flex! justify-between! text-[13px]! text-muted!">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>

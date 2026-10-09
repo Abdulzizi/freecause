@@ -289,7 +289,7 @@
                             @include('partials.gradient-divider')
 
                             <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-4!">
-                                <div class="h-1.5! bg-[#2ca02c]!" data-progress-bar data-progress-pct="{{ $pct }}" style="width: {{ $pct }}%;"></div>
+                                <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                             </div>
 
                             <div class="flex! justify-between! mt-2! text-sm!">

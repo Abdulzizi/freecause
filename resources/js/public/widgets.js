@@ -64,30 +64,6 @@ export function init(ctx) {
         window.requestAnimationFrame(step);
     });
 
-    document.querySelectorAll('[data-progress-bar]').forEach(function (el) {
-        const pct = Number(el.dataset.progressPct);
-        if (!Number.isFinite(pct)) return;
-        const clamped = Math.max(0, Math.min(100, pct));
-        if (prefersReducedMotion) {
-            el.style.width = clamped + '%';
-            return;
-        }
-        const duration = 900;
-        let startTime = null;
-        el.style.width = '0%';
-        const step = function (now) {
-            if (startTime === null) startTime = now;
-            const progress = Math.min((now - startTime) / duration, 1);
-            el.style.width = (clamped * easeOut(progress)) + '%';
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                el.style.width = clamped + '%';
-            }
-        };
-        window.requestAnimationFrame(step);
-    });
-
     document.querySelectorAll('img[data-blurup]').forEach(function (img) {
         const markLoaded = function () {
             img.classList.add('is-loaded');

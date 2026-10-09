@@ -1189,6 +1189,21 @@ select.fc-filter-field {
 }
 .fcui-progress-fill {
     width: var(--pct, 0%);
+    transform-origin: left center;
+    animation: fcui-progress-grow 0.9s ease-out both;
+}
+@keyframes fcui-progress-grow {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .fcui-progress-fill {
+        animation: none;
+    }
 }
 
 .fc-switch {
