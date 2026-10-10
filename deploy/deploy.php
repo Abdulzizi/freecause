@@ -88,7 +88,7 @@ task('php-fpm:reload', function () {
 
 before('artisan:migrate', 'artisan:down');
 after('deploy:vendors', 'artisan:migrate');
-after('deploy:success', 'artisan:up');
+after('deploy:symlink', 'artisan:up');
 after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');
 after('deploy:symlink', 'php-fpm:reload');

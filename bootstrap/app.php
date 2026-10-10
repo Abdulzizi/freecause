@@ -49,6 +49,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'optional.session' => OptionalSession::class,
         ]);
 
+        $middleware->preventRequestsDuringMaintenance([
+            'sitemap.xml',
+            'sitemap-*.xml',
+            'robots.txt',
+        ]);
+
         $middleware->prepend(ConditionalLogging::class);
 
         $middleware->append(DebugForIp::class);

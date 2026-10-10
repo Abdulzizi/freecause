@@ -44,11 +44,11 @@ Without reviewers, `environment: production` is a no-op.
   as its basename, so targeting `public/build` nested it as `public/build/build`).
 - `deploy:version` reads the commit from `{{deploy_path}}/.dep/repo` (Deployer 8
   releases are not git repos) and stamps `storage/app/version.json` for `/version`.
-- Maintenance mode wraps migrations and lifts on success. On failure, `artisan:up`
-  runs before `deploy:unlock` so the site never stays in maintenance. After the
-  symlink flip: `cache:warm`, `queue:restart`, and a graceful PHP-FPM reload.
-  Worker recycling uses Laravel's `queue:restart` (supervisor `autorestart`
-  brings the workers back) — no blocking `supervisorctl restart` in the deploy.
+- Maintenance mode wraps migrations only; it lifts immediately after the symlink
+  flip (`after('deploy:symlink', 'artisan:up')`) so `cache:warm` (minutes) runs
+  live. `sitemap*.xml` and `robots.txt` are excluded from maintenance via
+  `preventRequestsDuringMaintenance()` in `bootstrap/app.php`, so crawlers never
+  see a 503. On failure, `artisan:up` runs before `deploy:unlock`.
 
 ### Shared dirs (from the repo's `.gitignore`)
 

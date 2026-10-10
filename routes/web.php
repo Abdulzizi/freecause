@@ -88,11 +88,21 @@ $legacyUnprefixedWords = [
 Route::get('/{path?}', fn (?string $path = null) => $toDefaultLocale((string) $path))
     ->where('path', '^(?:'.implode('|', array_map('preg_quote', $legacyUnprefixedWords)).')(?:/.*)?$');
 
-Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
-Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->whereNumber('page')->name('sitemap.petitions');
-Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
-Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
-Route::get('/sitemap-magazine.xml', [SitemapController::class, 'magazine'])->name('sitemap.magazine');
+$withoutSession = [
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    ValidateCsrfToken::class,
+];
+
+Route::withoutMiddleware($withoutSession)->group(function () {
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+    Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->whereNumber('page')->name('sitemap.petitions');
+    Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
+    Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
+    Route::get('/sitemap-magazine.xml', [SitemapController::class, 'magazine'])->name('sitemap.magazine');
+});
 
 Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'show'])->name('login');
@@ -186,15 +196,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 
 Route::prefix('{locale}')
     ->middleware(['optional.session', 'setLocale', 'block.banned.ip', 'block.banned.user'])
-    ->group(function () {
-        $withoutSession = [
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            ValidateCsrfToken::class,
-        ];
-
+    ->group(function () use ($withoutSession) {
         Route::get('/petitions', [PetitionController::class, 'index'])
             ->withoutMiddleware($withoutSession)
             ->name('petitions.index');
