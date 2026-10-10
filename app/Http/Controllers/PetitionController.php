@@ -333,25 +333,23 @@ class PetitionController extends Controller
             return;
         }
 
-        DB::transaction(function () use ($petition) {
-            $today = now()->toDateString();
-            $now = now();
+        $today = now()->toDateString();
+        $now = now();
 
-            DB::table('petition_views')->insertOrIgnore([
-                'petition_id' => $petition->id,
-                'viewed_on' => $today,
-                'views' => 0,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
+        DB::table('petition_views')->insertOrIgnore([
+            'petition_id' => $petition->id,
+            'viewed_on' => $today,
+            'views' => 0,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
 
-            DB::table('petition_views')
-                ->where('petition_id', $petition->id)
-                ->where('viewed_on', $today)
-                ->increment('views', 1, ['updated_at' => $now]);
+        DB::table('petition_views')
+            ->where('petition_id', $petition->id)
+            ->where('viewed_on', $today)
+            ->increment('views', 1, ['updated_at' => $now]);
 
-            DB::table('petitions')->where('id', $petition->id)->increment('views');
-        });
+        DB::table('petitions')->where('id', $petition->id)->increment('views');
 
         $request->session()->put($sessionKey, true);
     }
