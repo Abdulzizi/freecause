@@ -283,5 +283,5 @@ Route::prefix('{locale}')
             ->where('status', '([0-9]+|created)?')
             ->name('petition.thanks');
 
-        Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');
+        Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[^{}/]+')->name('page.show');
     });

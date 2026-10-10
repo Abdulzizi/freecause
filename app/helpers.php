@@ -70,6 +70,13 @@ if (! function_exists('locale_url')) {
         }
 
         $params = $route->parameters();
+
+        foreach ($params as $param) {
+            if (is_string($param) && strpbrk($param, '{}') !== false) {
+                return url("/{$newLocale}");
+            }
+        }
+
         $params['locale'] = $newLocale;
 
         if (isset($params['id']) && (isset($params['slug']) || str_contains($routeName, 'petition.'))) {

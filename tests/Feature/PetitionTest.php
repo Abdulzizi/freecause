@@ -278,6 +278,11 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('petition_views', ['petition_id' => $petition->id, 'views' => 1]);
     }
 
+    public function test_token_shaped_petition_slug_returns_404(): void
+    {
+        $this->get('/en/petition/'.rawurlencode('{CONTACTS_URL}').'/1')->assertNotFound();
+    }
+
     public function test_inactive_published_petition_shows_offline_page(): void
     {
         $petition = Petition::factory()->create(['status' => 'published', 'is_active' => false]);

@@ -60,6 +60,11 @@ class ContentPagesTest extends TestCase
             ->assertDontSee(__('pages.lang_fallback_notice'));
     }
 
+    public function test_token_shaped_page_slug_returns_404(): void
+    {
+        $this->get('/en/'.rawurlencode('{ETHICAL_CODE_LINK}'))->assertNotFound();
+    }
+
     public function test_unknown_slug_returns_404(): void
     {
         $this->get('/en/this-slug-does-not-exist')->assertNotFound();
