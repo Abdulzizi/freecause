@@ -13,6 +13,7 @@ use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -281,6 +282,29 @@ class PetitionTest extends TestCase
     public function test_token_shaped_petition_slug_returns_404(): void
     {
         $this->get('/en/petition/'.rawurlencode('{CONTACTS_URL}').'/1')->assertNotFound();
+    }
+
+    public function test_petition_page_looks_up_translations_at_most_once(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Lookup Once',
+            'slug' => 'lookup-once',
+            'description' => 'Description',
+        ]);
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get("/en/petition/lookup-once/{$petition->id}")->assertOk();
+
+        $lookups = collect(DB::getQueryLog())
+            ->filter(fn (array $q) => preg_match('/select .?locale.?, .?slug.? from .petition_translations/i', $q['query']))
+            ->count();
+
+        $this->assertSame(1, $lookups);
     }
 
     public function test_inactive_published_petition_shows_offline_page(): void

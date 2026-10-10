@@ -10,6 +10,7 @@ use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
@@ -95,5 +96,21 @@ class UserProfileTest extends TestCase
 
         $this->assertSame(1, Cache::get($cacheKey)['signatureCount']);
         $this->assertSame(1, Cache::get($cacheKey)['petitionCount']);
+    }
+
+    public function test_profile_page_does_not_lookup_petition_translations(): void
+    {
+        $this->addPublishedPetition($this->profileUser);
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $this->get('/en/user/scraper-target/'.$this->profileUser->id)->assertStatus(200);
+
+        $lookups = collect(DB::getQueryLog())
+            ->filter(fn (array $q) => preg_match('/select .?locale.?, .?slug.? from .petition_translations/i', $q['query']))
+            ->count();
+
+        $this->assertSame(0, $lookups);
     }
 }
