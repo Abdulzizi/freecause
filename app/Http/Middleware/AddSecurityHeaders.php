@@ -29,11 +29,12 @@ class AddSecurityHeaders
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
 
         // Admin routes get a permissive CSP (inline scripts/styles needed for the panel).
+        // 'unsafe-eval' is required by Alpine/BlatUI and accepted: admin-only, staff-authenticated surface.
         // Public routes get a strict CSP — no unsafe-inline on scripts.
         if ($request->is('admin') || $request->is('admin/*')) {
             $csp =
                 "default-src 'self'; ".
-                "script-src 'self' 'unsafe-inline' ".
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
                     'https://ajax.googleapis.com https://accounts.google.com '.
                     'https://cdn.ckeditor.com; '.

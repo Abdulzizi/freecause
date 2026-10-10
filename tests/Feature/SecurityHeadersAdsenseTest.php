@@ -45,12 +45,18 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString("base-uri 'self'", $csp);
     }
 
-    public function test_admin_csp_disallows_unsafe_eval(): void
+    public function test_admin_csp_allows_unsafe_eval_for_alpine(): void
     {
         $csp = $this->cspFor('/admin/login');
 
-        $this->assertStringContainsString("script-src 'self' 'unsafe-inline' ", $csp);
-        $this->assertStringNotContainsString('unsafe-eval', $csp);
+        $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval' ", $csp);
         $this->assertStringContainsString('cdn.ckeditor.com', $csp);
+    }
+
+    public function test_public_csp_disallows_unsafe_eval(): void
+    {
+        $csp = $this->cspFor('/en');
+
+        $this->assertStringNotContainsString('unsafe-eval', $csp);
     }
 }

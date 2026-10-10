@@ -1,0 +1,30 @@
+@import "./blatui.css";
+
+:root {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --primary: #cc1f1f;
+    --primary-foreground: #ffffff;
+    --secondary: #f9fafb;
+    --secondary-foreground: #212529;
+    --muted: #f9fafb;
+    --muted-foreground: #5b6470;
+    --accent: #f9fafb;
+    --accent-foreground: #212529;
+    --destructive: #dc3545;
+    --success: #198754;
+    --info: #1a5fb4;
+    --foreground: #212529;
+    --border: #dee2e6;
+    --input: #dee2e6;
+    --ring: #cc1f1f;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #212529;
+    --sidebar-primary: #cc1f1f;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f9fafb;
+    --sidebar-accent-foreground: #212529;
+    --sidebar-border: #dee2e6;
+    --sidebar-ring: #cc1f1f;
+}

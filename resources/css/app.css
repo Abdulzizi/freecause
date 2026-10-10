@@ -13,6 +13,9 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source not '../views/components/blatui';
+@source not '../js/blatui.js';
+@source not '../js/blatui-core.js';
 
 :root {
     --fc-shadow-sm: 0 1px 2px rgba(48, 42, 34, 0.04), 0 8px 24px rgba(48, 42, 34, 0.06);
