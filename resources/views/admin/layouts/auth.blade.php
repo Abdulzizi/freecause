@@ -7,7 +7,7 @@
     <title>@yield('title', 'Admin Login')</title>
     <link rel="icon" type="image/png" href="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
 
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/admin.js'])
 
     @stack('head')
 </head>

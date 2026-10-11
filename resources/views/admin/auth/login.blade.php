@@ -3,79 +3,64 @@
 @section('title', 'Admin Login')
 
 @section('content')
-    @push('head')
-        <style>
-            .btn-login[disabled] { opacity: .6; cursor: wait; }
-            .btn-login .spinner {
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                border: 2px solid #a7b6da;
-                border-top-color: transparent;
-                border-radius: 50%;
-                animation: fcspin .7s linear infinite;
-                margin-right: 6px;
-                vertical-align: -1px;
-            }
-            @keyframes fcspin { to { transform: rotate(360deg); } }
-        </style>
-    @endpush
-
     <div class="text-center! mt-[10px]! mb-[25px]! text-[44px]! font-bold! tracking-[-1px]! max-md:text-[32px]!">
         <span class="text-brand!">Online</span><span class="text-ink!">Petition</span>
     </div>
 
     @if (session('success'))
-        <div class="w-[320px]! mx-auto! mb-3! border! border-[#b8d7b3]! bg-[#f2fff2]! text-success! p-2.5! px-3! rounded-[3px]! text-[13px]!">{{ session('success') }}</div>
+        <x-blatui.alert tone="success" class="mb-4!">{{ session('success') }}</x-blatui.alert>
     @endif
 
     @if ($errors->any())
-        <div class="w-[320px]! mx-auto! mb-3! border! border-[#d7b3b3]! bg-[#fff2f2]! text-danger! p-2.5! px-3! rounded-[3px]! text-[13px]!">
-            {{ $errors->first() }}
-        </div>
+        <x-blatui.alert variant="destructive" class="mb-4!">{{ $errors->first() }}</x-blatui.alert>
     @endif
 
-    <div class="w-[320px]! mx-auto! rounded! border! border-[#3f66c7]! bg-gradient-to-b! from-[#86a9ff]! to-[#1f3f96]! shadow-[0_4px_12px_rgba(0,0,0,0.15)]! p-4!">
-        <div class="text-center! text-[#e9f0ff]! text-[34px]! font-extrabold! tracking-[6px]! [text-shadow:0_1px_0_rgba(0,0,0,0.25)]! my-1! mb-3!">LOGIN</div>
+    <x-blatui.card variant="sectioned" class="max-w-[400px]! mx-auto!">
+        <x-blatui.card-header>
+            <x-blatui.card-title>Login</x-blatui.card-title>
+        </x-blatui.card-header>
 
-        <form method="POST" action="{{ route('admin.login.post') }}">
-            @csrf
+        <x-blatui.card-content>
+            <form method="POST" action="{{ route('admin.login.post') }}" class="flex! flex-col! gap-5!">
+                @csrf
 
-            <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Email or Username</div>
-            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-surface!" type="text" name="login" value="{{ old('login') }}" autocomplete="username" required>
+                <x-blatui.field data-invalid="{{ $errors->has('login') ? 'true' : 'false' }}">
+                    <x-blatui.field-label for="login">Email or Username</x-blatui.field-label>
+                    <x-blatui.input id="login" name="login" :value="old('login')" autocomplete="username" autofocus required />
+                    @error('login')
+                        <x-blatui.field-error>{{ $message }}</x-blatui.field-error>
+                    @enderror
+                </x-blatui.field>
 
-            <div class="text-[#e9f0ff]! text-xs! mt-2.5! mb-1!">Password</div>
-            <input class="w-full! box-border! py-2! px-2.5! rounded-sm! border! border-[#9bb2e8]! outline-none! bg-surface!" type="password" name="password" autocomplete="current-password" required>
+                <x-blatui.field data-invalid="{{ $errors->has('password') ? 'true' : 'false' }}">
+                    <x-blatui.field-label for="password">Password</x-blatui.field-label>
+                    <x-blatui.input id="password" type="password" name="password" autocomplete="current-password" required />
+                    @error('password')
+                        <x-blatui.field-error>{{ $message }}</x-blatui.field-error>
+                    @enderror
+                </x-blatui.field>
 
-            <div class="flex! items-center! justify-between! gap-2.5! mt-3!">
-                <label class="text-[#e9f0ff]! text-xs! flex! items-center! gap-1.5! select-none!">
-                    <input type="checkbox" name="remember" value="1">
-                    stay logged in
-                </label>
+                <div class="flex! items-center! justify-between! gap-3!">
+                    <label class="flex! items-center! gap-1.5! text-sm! select-none!">
+                        <input type="checkbox" name="remember" value="1">
+                        stay logged in
+                    </label>
 
-                <x-ui.button variant="secondary" size="sm" class="btn-login border! border-[#a7b6da]! bg-[#f2f2f2]! px-2.5! py-1.5! rounded-sm! cursor-pointer! text-xs! font-bold!" type="submit" id="btn-login-submit">
-                    sign in »
-                </x-ui.button>
-            </div>
-        </form>
-    </div>
+                    <x-blatui.button type="submit" id="btn-login-submit">sign in »</x-blatui.button>
+                </div>
+            </form>
+        </x-blatui.card-content>
+    </x-blatui.card>
 
     @push('scripts')
         <script>
             (function () {
-                const form = document.querySelector('form[method="POST"]');
+                const form = document.querySelector('form[action="{{ route('admin.login.post') }}"]');
                 const btn = document.getElementById('btn-login-submit');
-                if (!form || !btn) {
-                    return;
-                }
-                let submitting = false;
+                if (!form || !btn) return;
                 form.addEventListener('submit', function () {
-                    if (submitting) {
-                        return;
-                    }
-                    submitting = true;
                     btn.disabled = true;
-                    btn.innerHTML = '<span class="spinner"></span>signing in...';
+                    btn.textContent = 'signing in...';
                 });
             })();
         </script>
