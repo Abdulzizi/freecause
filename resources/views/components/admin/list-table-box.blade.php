@@ -57,8 +57,42 @@
 <style>
     .fc-box table th,
     .fc-box table td {
-        padding: 6px 8px;
+        padding: 8px 10px;
         vertical-align: middle;
+        text-align: left;
+    }
+
+    .fc-box table thead th {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        background: var(--color-surface-muted);
+        border-bottom: 1px solid var(--color-border);
+        white-space: nowrap;
+    }
+
+    .fc-box table tbody td {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .fc-box table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .fc-box table tbody tr:hover {
+        background: var(--color-surface-muted);
+    }
+
+    .fc-box .fc-row-actions-cell {
+        width: 1%;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    .fc-box .fc-table-wrap {
+        overflow-x: auto;
     }
 
     .fc-box .bulk-action:hover,

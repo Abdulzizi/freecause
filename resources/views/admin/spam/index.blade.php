@@ -37,7 +37,7 @@
                 <th class="w-[150px]!">ip</th>
                 <th>payload</th>
                 <th class="w-[160px]!">date</th>
-                <th class="w-[160px]!">action</th>
+                <th class="fc-row-actions-cell">actions</th>
             </tr>
         </x-slot:thead>
 
@@ -59,25 +59,27 @@
 
                     <td>{{ $log->created_at }}</td>
 
-                    <td class="flex! gap-1.5! flex-wrap!">
+                    <td class="fc-row-actions-cell">
 
-                        <button type="button" data-payload-toggle="{{ $log->id }}" class="fc-abtn">view</button>
+                        <x-admin.row-actions>
+                            <x-blatui.dropdown-menu-item type="button" data-payload-toggle="{{ $log->id }}">View payload</x-blatui.dropdown-menu-item>
 
-                        @if (in_array($log->ip, $bannedIps))
-                            <form method="post" action="{{ route('admin.spam.unban') }}"
-                                data-admin-confirm="Unban this IP? {{ $log->ip }}">
-                                @csrf
-                                <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="fc-abtn fc-abtn--danger">unban</button>
-                            </form>
-                        @else
-                            <form method="post" action="{{ route('admin.spam.ban') }}"
-                                data-admin-confirm="Are you sure you want to ban this IP? {{ $log->ip }} This will block access immediately.">
-                                @csrf
-                                <input type="hidden" name="ip" value="{{ $log->ip }}">
-                                <button class="fc-abtn fc-abtn--danger">ban</button>
-                            </form>
-                        @endif
+                            @if (in_array($log->ip, $bannedIps))
+                                <form method="post" action="{{ route('admin.spam.unban') }}"
+                                    data-admin-confirm="Unban this IP? {{ $log->ip }}">
+                                    @csrf
+                                    <input type="hidden" name="ip" value="{{ $log->ip }}">
+                                    <x-blatui.dropdown-menu-item type="submit" variant="destructive">Unban IP</x-blatui.dropdown-menu-item>
+                                </form>
+                            @else
+                                <form method="post" action="{{ route('admin.spam.ban') }}"
+                                    data-admin-confirm="Are you sure you want to ban this IP? {{ $log->ip }} This will block access immediately.">
+                                    @csrf
+                                    <input type="hidden" name="ip" value="{{ $log->ip }}">
+                                    <x-blatui.dropdown-menu-item type="submit" variant="destructive">Ban IP</x-blatui.dropdown-menu-item>
+                                </form>
+                            @endif
+                        </x-admin.row-actions>
 
                     </td>
                 </tr>

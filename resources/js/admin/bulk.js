@@ -226,6 +226,7 @@ async function handleSignature(button) {
         group.querySelectorAll('[data-signature-action]').forEach((control) => {
             const isCurrent = (control.dataset.signatureAction === 'approve') === confirmed;
             control.disabled = isCurrent;
+            control.toggleAttribute('data-disabled', isCurrent);
             control.title = isCurrent ? (confirmed ? 'Already confirmed' : 'Already rejected') : (confirmed ? 'Reject signature' : 'Approve signature');
         });
         const status = group.closest('tr')?.querySelector('[data-signature-status]');

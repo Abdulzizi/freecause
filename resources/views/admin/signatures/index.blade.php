@@ -174,20 +174,22 @@
                     <td>{{ $s->created_at }}</td>
 
                     @if ($hasConfirmed && admin_can('signatures', 'edit'))
-                        <td data-hide-mobile>
-                            <div class="flex! items-center! gap-1!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
-                                <button type="button" data-signature-action="approve"
-                                    data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    @disabled($s->confirmed)
-                                    title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}" class="fc-abtn">
-                                    Approve
-                                </button>
-                                <button type="button" data-signature-action="reject"
-                                    data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                    @disabled(! $s->confirmed)
-                                    title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}" class="fc-abtn">
-                                    Reject
-                                </button>
+                        <td data-hide-mobile class="fc-row-actions-cell">
+                            <div class="inline-flex!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
+                                <x-admin.row-actions>
+                                    <x-blatui.dropdown-menu-item type="button" data-signature-action="approve"
+                                        data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
+                                        :disabled="$s->confirmed"
+                                        title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}">
+                                        Approve
+                                    </x-blatui.dropdown-menu-item>
+                                    <x-blatui.dropdown-menu-item type="button" data-signature-action="reject"
+                                        data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
+                                        :disabled="! $s->confirmed"
+                                        title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}">
+                                        Reject
+                                    </x-blatui.dropdown-menu-item>
+                                </x-admin.row-actions>
                             </div>
                         </td>
                     @endif

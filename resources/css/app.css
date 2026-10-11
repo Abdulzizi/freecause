@@ -1124,6 +1124,7 @@ select.fc-filter-field {
    Horizontal icon+label, one height for every toolbar. */
 .fc-abtn {
     display: inline-flex;
+    flex: none;
     align-items: center;
     gap: 5px;
     height: 32px;
