@@ -1,21 +1,6 @@
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-});
-
-window.toast = {
-    success: (message) => Toast.fire({ icon: 'success', title: message }),
-    error: (message) => Toast.fire({ icon: 'error', title: message }),
-    warning: (message) => Toast.fire({ icon: 'warning', title: message }),
-    info: (message) => Toast.fire({ icon: 'info', title: message }),
-};
-
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content || '';
 const notify = (kind, message) => window.toast?.[kind]?.(message);
 

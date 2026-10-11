@@ -106,12 +106,12 @@
         @if ($hasOptions)
             <x-blatui.select-trigger :class="'w-full'.($multiple ? ' data-[size=default]:h-auto min-h-9 py-1' : '')" :ariaLabel="$placeholder !== '' ? $placeholder : __('Select option')">
                 <x-blatui.select-value :placeholder="$placeholder" />
-            </x-ui.select-trigger>
+            </x-blatui.select-trigger>
             <x-blatui.select-content :indicator="$indicator">
                 @foreach ($normalized as $val => $lab)
-                    <x-blatui.select-item :value="$val">{{ $lab }}</x-ui.select-item>
+                    <x-blatui.select-item :value="$val">{{ $lab }}</x-blatui.select-item>
                 @endforeach
-            </x-ui.select-content>
+            </x-blatui.select-content>
         @else
             {{ $slot }}
         @endif

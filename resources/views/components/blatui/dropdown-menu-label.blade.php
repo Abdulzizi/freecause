@@ -4,4 +4,4 @@
     :data-slot="'dropdown-menu-label'"
     :inset="$inset"
     {{ $attributes }}
->{{ $slot }}</x-ui.menu-label>
+>{{ $slot }}</x-blatui.menu-label>

@@ -15,5 +15,5 @@ case "$cmd" in
     *) echo "usage: scripts/blatui.sh add|update [components...]" >&2; exit 1 ;;
 esac
 
-sed -i '' 's/<x-ui\./<x-blatui./g' resources/views/components/blatui/*.blade.php
+sed -i '' 's|</x-ui\.|</x-blatui.|g; s|<x-ui\.|<x-blatui.|g' resources/views/components/blatui/*.blade.php
 "$PHP" artisan blatui:doctor || true

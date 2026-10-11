@@ -80,6 +80,6 @@
 @endif
 
 @if ($tooltip)
-        <x-blatui.tooltip-content side="right" :state="$tipState" :arrow="false">{{ $tooltip }}</x-ui.tooltip-content>
+        <x-blatui.tooltip-content side="right" :state="$tipState" :arrow="false">{{ $tooltip }}</x-blatui.tooltip-content>
     </div>
 @endif

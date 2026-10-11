@@ -8,4 +8,4 @@
     :value="$value"
     :close-on-select="$closeOnSelect"
     {{ $attributes }}
->{{ $slot }}</x-ui.menu-radio-item>
+>{{ $slot }}</x-blatui.menu-radio-item>
