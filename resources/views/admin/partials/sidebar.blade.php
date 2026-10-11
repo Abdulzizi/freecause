@@ -43,33 +43,57 @@
     <x-blatui.sidebar-content>
         @foreach ($groups as $group)
             <x-blatui.sidebar-group>
-                <x-blatui.sidebar-group-label>{{ $group['label'] }}</x-blatui.sidebar-group-label>
-                <x-blatui.sidebar-menu>
-                    @foreach ($group['links'] as $link)
-                        @if ($link['module'] === null || admin_can($link['module'], 'view'))
-                            <x-blatui.sidebar-menu-item>
-                                <x-blatui.sidebar-menu-button :href="route($link['route'])" :is-active="request()->routeIs($link['is'])">
-                                    <span>{{ $link['label'] }}</span>
-                                </x-blatui.sidebar-menu-button>
-                            </x-blatui.sidebar-menu-item>
-                        @endif
-                    @endforeach
-                </x-blatui.sidebar-menu>
+                <x-blatui.collapsible
+                    :open="true"
+                    x-init="try { if (localStorage.getItem('fc-group-{{ $group['label'] }}') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-{{ $group['label'] }}', v ? '0' : '1') } catch (e) {} })"
+                >
+                    <x-blatui.collapsible-trigger class="group/trigger w-full!">
+                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between!">
+                            <span>{{ $group['label'] }}</span>
+                            <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
+                        </x-blatui.sidebar-group-label>
+                    </x-blatui.collapsible-trigger>
+                    <x-blatui.collapsible-content>
+                        <x-blatui.sidebar-menu>
+                            @foreach ($group['links'] as $link)
+                                @if ($link['module'] === null || admin_can($link['module'], 'view'))
+                                    <x-blatui.sidebar-menu-item>
+                                        <x-blatui.sidebar-menu-button :href="route($link['route'])" :is-active="request()->routeIs($link['is'])">
+                                            <span>{{ $link['label'] }}</span>
+                                        </x-blatui.sidebar-menu-button>
+                                    </x-blatui.sidebar-menu-item>
+                                @endif
+                            @endforeach
+                        </x-blatui.sidebar-menu>
+                    </x-blatui.collapsible-content>
+                </x-blatui.collapsible>
             </x-blatui.sidebar-group>
         @endforeach
 
         @if (admin_can('system', 'manage'))
             <x-blatui.sidebar-group>
-                <x-blatui.sidebar-group-label>system</x-blatui.sidebar-group-label>
-                <x-blatui.sidebar-menu>
-                    @foreach ($systemLinks as $link)
-                        <x-blatui.sidebar-menu-item>
-                            <x-blatui.sidebar-menu-button :href="route($link['route'])" :is-active="request()->routeIs($link['is'])">
-                                <span>{{ $link['label'] }}</span>
-                            </x-blatui.sidebar-menu-button>
-                        </x-blatui.sidebar-menu-item>
-                    @endforeach
-                </x-blatui.sidebar-menu>
+                <x-blatui.collapsible
+                    :open="true"
+                    x-init="try { if (localStorage.getItem('fc-group-system') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-system', v ? '0' : '1') } catch (e) {} })"
+                >
+                    <x-blatui.collapsible-trigger class="group/trigger w-full!">
+                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between!">
+                            <span>system</span>
+                            <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
+                        </x-blatui.sidebar-group-label>
+                    </x-blatui.collapsible-trigger>
+                    <x-blatui.collapsible-content>
+                        <x-blatui.sidebar-menu>
+                            @foreach ($systemLinks as $link)
+                                <x-blatui.sidebar-menu-item>
+                                    <x-blatui.sidebar-menu-button :href="route($link['route'])" :is-active="request()->routeIs($link['is'])">
+                                        <span>{{ $link['label'] }}</span>
+                                    </x-blatui.sidebar-menu-button>
+                                </x-blatui.sidebar-menu-item>
+                            @endforeach
+                        </x-blatui.sidebar-menu>
+                    </x-blatui.collapsible-content>
+                </x-blatui.collapsible>
             </x-blatui.sidebar-group>
         @endif
     </x-blatui.sidebar-content>
