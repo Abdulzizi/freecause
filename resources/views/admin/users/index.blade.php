@@ -141,7 +141,7 @@
                         @endif
 
                         @if ($isBanned)
-                            <span class="ml-1.5!  px-1.5! py-0.5! bg-danger! text-white! rounded-[2px]!"
+                            <span class="ml-1.5! px-1.5! py-0.5! text-[11px]! bg-danger! text-white! rounded-[2px]!"
                             title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
                                 BANNED
                             </span>

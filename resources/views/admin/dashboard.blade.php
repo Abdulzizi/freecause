@@ -91,12 +91,12 @@
 <div class="grid! grid-cols-2! gap-5! mb-5! max-sm:grid-cols-1! max-sm:gap-4!">
     <x-blatui.card class="p-5! mb-5!">
         <h2 class="m-0! mb-4! text-lg! text-ink! border-b! border-border! pb-2.5!">Top Petitions</h2>
-        <table class="w-full! border-collapse! overflow-x-auto! block!">
+        <table class="w-full! border-collapse! overflow-x-auto! block! text-[13px]!">
             <thead>
                 <tr>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">ID</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Signatures</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Goal</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">ID</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Signatures</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Goal</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,7 +115,7 @@
 
     <x-blatui.card class="p-5! mb-5!">
         <h2 class="m-0! mb-4! text-lg! text-ink! border-b! border-border! pb-2.5!">System Health</h2>
-        <div class="grid! grid-cols-[repeat(auto-fit,minmax(200px,1fr))]! gap-3!">
+        <div class="grid! grid-cols-[repeat(auto-fit,minmax(200px,1fr))]! gap-3! text-[13px]!">
             <div class="flex! justify-between! p-2! px-3! bg-[#f9f9f9]! rounded!">
                 <span class="text-muted!">PHP Version</span>
                 <span class="font-semibold! text-ink!">{{ $systemHealth['php_version'] }}</span>
@@ -151,12 +151,12 @@
 <div class="grid! grid-cols-2! gap-5! mb-5! max-sm:grid-cols-1! max-sm:gap-4!">
     <x-blatui.card class="p-5! mb-5!">
         <h2 class="m-0! mb-4! text-lg! text-ink! border-b! border-border! pb-2.5!">Recent Users</h2>
-        <table class="w-full! border-collapse! overflow-x-auto! block!">
+        <table class="w-full! border-collapse! overflow-x-auto! block! text-[13px]!">
             <thead>
                 <tr>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Email</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Status</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Joined</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Email</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Status</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Joined</th>
                 </tr>
             </thead>
             <tbody>
@@ -181,12 +181,12 @@
 
     <x-blatui.card class="p-5! mb-5!">
         <h2 class="m-0! mb-4! text-lg! text-ink! border-b! border-border! pb-2.5!">Recent Petitions</h2>
-        <table class="w-full! border-collapse! overflow-x-auto! block!">
+        <table class="w-full! border-collapse! overflow-x-auto! block! text-[13px]!">
             <thead>
                 <tr>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">ID</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Status</th>
-                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-xs! uppercase! text-muted!">Created</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">ID</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Status</th>
+                    <th class="p-2.5! px-3! text-left! border-b! border-border! whitespace-nowrap! bg-[#f9f9f9]! font-semibold! text-[11px]! uppercase! text-muted!">Created</th>
                 </tr>
             </thead>
             <tbody>

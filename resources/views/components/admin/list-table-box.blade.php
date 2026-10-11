@@ -55,6 +55,11 @@
 </div>
 
 <style>
+    .fc-box table {
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
     .fc-box table th,
     .fc-box table td {
         padding: 8px 10px;

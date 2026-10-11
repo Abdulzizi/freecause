@@ -186,7 +186,7 @@
                             {{ $p->is_active ? 'Active' : 'Inactive' }}
                         </button>
                         @else
-                            <span class="text-xs! {{ $p->is_active ? 'text-success!' : 'text-danger!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
+                            <span class="{{ $p->is_active ? 'text-success!' : 'text-danger!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
                         @endif
                     </td>
 
@@ -207,12 +207,12 @@
                             {{ $p->is_featured ? 'Featured' : 'Feature' }}
                         </button>
                         @else
-                            <span class="text-xs! {{ $p->is_featured ? 'text-success!' : 'text-danger!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
+                            <span class="{{ $p->is_featured ? 'text-success!' : 'text-danger!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
                         @endif
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
-                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-border! text-ink! text-[10px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
+                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-border! text-ink! text-[11px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
                     <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
