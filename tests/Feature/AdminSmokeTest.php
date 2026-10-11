@@ -219,6 +219,16 @@ class AdminSmokeTest extends TestCase
             ->assertOk();
     }
 
+    public function test_admin_dashboard_uses_blatui_markup(): void
+    {
+        $this->actingAs($this->admin, 'admin')
+            ->get('/admin/dashboard')
+            ->assertOk()
+            ->assertSee('data-slot="page-header"', false)
+            ->assertSee('data-slot="card"', false)
+            ->assertSee('data-slot="badge"', false);
+    }
+
     // ── Bulk action / reconcile counts ──────────────────────────────────
 
     public function test_reconcile_endpoint_fixes_drifted_signature_count(): void
