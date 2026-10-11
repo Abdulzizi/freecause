@@ -48,7 +48,7 @@
                     x-init="try { if (localStorage.getItem('fc-group-{{ $group['label'] }}') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-{{ $group['label'] }}', v ? '0' : '1') } catch (e) {} })"
                 >
                     <x-blatui.collapsible-trigger class="group/trigger w-full!">
-                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between!">
+                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between! text-ink! font-semibold!">
                             <span>{{ $group['label'] }}</span>
                             <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
                         </x-blatui.sidebar-group-label>
@@ -77,7 +77,7 @@
                     x-init="try { if (localStorage.getItem('fc-group-system') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-system', v ? '0' : '1') } catch (e) {} })"
                 >
                     <x-blatui.collapsible-trigger class="group/trigger w-full!">
-                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between!">
+                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between! text-ink! font-semibold!">
                             <span>system</span>
                             <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
                         </x-blatui.sidebar-group-label>
