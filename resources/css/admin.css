@@ -34,3 +34,25 @@
     --sidebar-border: #dee2e6;
     --sidebar-ring: #cc1f1f;
 }
+
+/* Sidebar colors: legacy-compat declares unlayered `a { color: … }` rules that beat
+   Tailwind utilities, so link colors are re-asserted here with higher specificity. */
+[data-sidebar='menu-button'] {
+    color: var(--sidebar-foreground, #212529);
+}
+
+[data-sidebar='menu-button']:hover,
+[data-sidebar='menu-button']:focus {
+    color: var(--sidebar-foreground, #212529);
+}
+
+[data-sidebar='menu-button'][data-active='true'],
+[data-sidebar='menu-button'][data-active='true']:hover,
+[data-sidebar='menu-button'][data-active='true']:focus {
+    color: var(--color-brand, #cc1f1f);
+}
+
+[data-slot='sidebar-group-label'] {
+    color: var(--color-ink, #212529);
+    font-weight: 600;
+}
