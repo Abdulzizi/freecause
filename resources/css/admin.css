@@ -54,5 +54,11 @@
 
 [data-slot='sidebar-group-label'] {
     color: var(--color-ink, #212529);
+    background: #e9ecef;
+    border-radius: 4px;
     font-weight: 600;
+}
+
+[data-slot='sidebar-group-label']:hover {
+    background: #e0e4e8;
 }
