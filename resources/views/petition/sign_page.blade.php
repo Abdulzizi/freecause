@@ -27,7 +27,7 @@
                     {{ $h2Line2 }}
                 </h1>
 
-                @auth
+                @if (auth()->check() || ! empty($signData))
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block">
                     @csrf
                     <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
@@ -42,9 +42,9 @@
                         </x-ui.alert>
                     @endif
 
-                    <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', '1') }}">
-                    <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', '1') }}">
-                    <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', '1') }}">
+                    <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', 'agree') }}">
+                    <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', 'agree') }}">
+                    <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', 'agree') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
                     <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-lg px-5 py-3 text-xl font-semibold no-underline hover:bg-brand-hover max-md:w-full max-md:text-lg max-md:px-4 max-md:py-2.5" type="submit">
@@ -61,7 +61,7 @@
                         'hasSigned' => false,
                     ])
                 </div>
-                @endauth
+                @endif
             </div>
         </x-ui.section>
 @endsection

@@ -706,6 +706,82 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
     }
 
+    public function test_authenticated_confirm_page_signs_with_its_rendered_values(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Confirm Authed',
+            'slug' => 'confirm-authed',
+            'description' => 'Description',
+        ]);
+
+        $page = $this->actingAs($this->user)
+            ->get("/en/petition/confirm-authed/{$petition->id}/sign/confirm")
+            ->assertOk();
+
+        preg_match_all('/name="(agree[123])" value="([^"]+)"/', $page->getContent(), $matches);
+        $agreements = array_combine($matches[1], $matches[2]);
+
+        $this->assertCount(3, $agreements);
+
+        $response = $this->post("/en/petition/confirm-authed/{$petition->id}/sign", $agreements);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect("/en/petition/confirm-authed/{$petition->id}/thanksforsigning/1");
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+        ]);
+    }
+
+    public function test_guest_signing_accepts_the_consent_value_the_form_submits(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Consent Value',
+            'slug' => 'consent-value',
+            'description' => 'Description',
+        ]);
+
+        $form = $this->get("/en/petition/consent-value/{$petition->id}/sign/confirm")->assertOk();
+
+        preg_match_all('/name="(agree[123])" value="([^"]+)"/', $form->getContent(), $matches);
+        $agreements = array_combine($matches[1], $matches[2]);
+
+        $this->assertCount(3, $agreements);
+
+        $confirmation = $this->post("/en/petition/consent-value/{$petition->id}/sign/confirm", array_merge($agreements, [
+            'name' => 'Consent Guest',
+            'email' => 'consent-guest@example.com',
+            'comment' => 'I support this petition',
+        ]));
+
+        $confirmation->assertSessionHasNoErrors();
+        $confirmation->assertOk();
+        $confirmation->assertSee("/en/petition/consent-value/{$petition->id}/sign\"", false);
+
+        $response = $this->post("/en/petition/consent-value/{$petition->id}/sign", $agreements);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect("/en/petition/consent-value/{$petition->id}/thanksforsigning/1");
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'email' => 'consent-guest@example.com',
+        ]);
+    }
+
     public function test_cannot_sign_same_petition_twice(): void
     {
         $petition = Petition::factory()->create([

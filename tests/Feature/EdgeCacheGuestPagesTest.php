@@ -99,7 +99,8 @@ class EdgeCacheGuestPagesTest extends TestCase
         $this->assertNotSame(419, $confirm->getStatusCode());
         $this->assertNotSame(405, $confirm->getStatusCode());
         $confirm->assertOk();
-        $this->assertStringContainsString($signUrl, $confirm->getContent());
+        $confirm->assertSessionHasNoErrors();
+        $this->assertStringContainsString($signUrl.'"', $confirm->getContent());
 
         $final = $this->post($signUrl, [
             '_token' => $this->csrfToken($confirm->getContent()),
@@ -110,7 +111,12 @@ class EdgeCacheGuestPagesTest extends TestCase
         ]);
 
         $this->assertNotSame(419, $final->getStatusCode());
+        $final->assertSessionHasNoErrors();
         $final->assertRedirect();
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'email' => 'no-js@example.com',
+        ]);
     }
 
     private function csrfToken(string $html): string
