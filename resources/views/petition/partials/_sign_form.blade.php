@@ -133,7 +133,7 @@
     @endif
 @else
     @if ($stateless)
-        <x-ui.button variant="danger" :href="$signPageUrl" class="w-full!">{{ $tBtnSign }}</x-ui.button>
+        <x-ui.button variant="danger" :href="$signPageUrl" class="w-full!" data-sign-cta data-cached="1">{{ $tBtnSign }}</x-ui.button>
     @else
     <form action="{{ $signPageUrl }}" method="POST" data-sign-busy data-validate data-msg-required="{{ __('common.required') }}" data-msg-email="{{ __('sign.email_warning') }}" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf

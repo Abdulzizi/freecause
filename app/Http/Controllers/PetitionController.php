@@ -645,15 +645,11 @@ class PetitionController extends Controller
         }
 
         if ($request->isMethod('get')) {
-            if (auth()->check()) {
-                $content = PageContent::where('page', 'petition_sign')
-                    ->where('locale', $locale)
-                    ->pluck('value', 'key');
+            $content = PageContent::where('page', 'petition_sign')
+                ->where('locale', $locale)
+                ->pluck('value', 'key');
 
-                return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
-            }
-
-            return redirect()->route('petition.show', compact('locale', 'slug', 'id'));
+            return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
         }
 
         $rules = auth()->check()

@@ -1,4 +1,12 @@
 export function init() {
+    document.querySelectorAll('[data-sign-cta]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'sign_cta_click', { variant: el.dataset.cached === '1' ? 'stateless' : 'session' });
+            }
+        });
+    });
+
     document.querySelectorAll('form').forEach(function (form) {
         if (form.dataset.fcLoadingBound === '1') return;
         if (!form.querySelector('[data-loading]')) return;

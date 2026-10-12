@@ -54,10 +54,12 @@ class SignPageOauthReturnTest extends TestCase
             ->assertSee('Test Petition');
     }
 
-    public function test_guest_get_redirects_to_petition(): void
+    public function test_guest_get_renders_the_sign_form(): void
     {
         $this->get('/en/petition/test-petition/'.$this->petition->id.'/sign/confirm')
-            ->assertRedirect('/en/petition/test-petition/'.$this->petition->id);
+            ->assertOk()
+            ->assertSee('fc-sign-form', false)
+            ->assertSee('name="_token"', false);
     }
 
     public function test_post_without_agreements_still_validates(): void

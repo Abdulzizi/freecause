@@ -28,6 +28,7 @@
                     {{ $h2Line2 }}
                 </h1>
 
+                @auth
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block!">
                     @csrf
                     <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
@@ -51,6 +52,17 @@
                         {{ $btnText }} <span>»</span>
                     </button>
                 </form>
+                @else
+                <div class="text-start!">
+                    @include('petition.partials._sign_form', [
+                        'variant' => 'stack',
+                        'petition' => $petition,
+                        'tr' => $tr,
+                        'locale' => $locale,
+                        'hasSigned' => false,
+                    ])
+                </div>
+                @endauth
             </div>
         </x-ui.container>
     </section>
