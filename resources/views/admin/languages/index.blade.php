@@ -50,7 +50,7 @@
                 </div>
 
                 {{-- VIEW MODE --}}
-                <div x-show="!editing" class="ms-auto! flex! items-center! gap-2!">
+                <div x-show="!editing" class="ms-auto! flex items-center! gap-2!">
                     <x-blatui.button variant="outline" size="sm" type="button" @click="editing = true">edit</x-blatui.button>
 
                     @if (!$lang->is_default)
@@ -63,7 +63,7 @@
 
                 {{-- EDIT MODE --}}
                 <form x-show="editing" x-cloak method="post" action="{{ route('admin.languages.update', $lang) }}"
-                    class="ms-auto! flex! flex-wrap! items-center! gap-2!">
+                    class="ms-auto! flex flex-wrap! items-center! gap-2!">
                     @csrf
                     @method('PUT')
 

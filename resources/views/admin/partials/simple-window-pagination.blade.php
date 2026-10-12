@@ -9,10 +9,6 @@
     $window   = 5;
     $start    = max(1, $current - $window);
     $end      = $lastPage ? min($lastPage, $current + $window) : $current;
-    $perPage  = method_exists($p, 'perPage') ? $p->perPage() : 25;
-    $total    = method_exists($p, 'total') ? $p->total() : null;
-    $from     = $total ? (($current - 1) * $perPage) + 1 : null;
-    $to       = $total ? min($from + $perPage - 1, $total) : null;
 @endphp
 
 <div class="flex! items-center! justify-between! flex-wrap! gap-2!">
@@ -61,8 +57,4 @@
             @endif
         </x-blatui.pagination-content>
     </x-blatui.pagination>
-
-    @if ($total !== null)
-        <span class="text-[12px]! text-muted! whitespace-nowrap!">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
-    @endif
 </div>
