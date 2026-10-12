@@ -276,7 +276,7 @@
             </x-admin.section-panel>
 
             <div class="flex! justify-end! mt-1.5! fc-drawer-savebar">
-                <button type="submit" class="fc-abtn">save</button>
+                <x-blatui.button type="submit">save</x-blatui.button>
             </div>
         </form>
         @elseif ($selectedUser)

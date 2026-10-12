@@ -158,12 +158,12 @@
                     {{-- ACTIVE --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <button type="button" class="fc-abtn {{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
+                        <x-blatui.button variant="outline" size="sm" type="button" class="{{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_active ? 'deactivate' : 'activate' }}"
                             data-kind="active" aria-pressed="{{ $p->is_active ? 'true' : 'false' }}">
                             {{ $p->is_active ? 'Active' : 'Inactive' }}
-                        </button>
+                        </x-blatui.button>
                         @else
                             <span class="{{ $p->is_active ? 'text-success!' : 'text-danger!' }}">{{ $p->is_active ? 'Active' : 'Inactive' }}</span>
                         @endif
@@ -179,12 +179,12 @@
                     {{-- FEATURED --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
-                        <button type="button" class="fc-abtn {{ $p->is_featured ? 'fc-abtn--success' : '' }}"
+                        <x-blatui.button variant="outline" size="sm" type="button" class="{{ $p->is_featured ? 'fc-abtn--success' : '' }}"
                             data-petition-toggle data-url="{{ route('admin.petitions.bulkAction') }}"
                             data-id="{{ $p->id }}" data-action="{{ $p->is_featured ? 'unfeature' : 'feature' }}"
                             data-kind="featured" aria-pressed="{{ $p->is_featured ? 'true' : 'false' }}">
                             {{ $p->is_featured ? 'Featured' : 'Feature' }}
-                        </button>
+                        </x-blatui.button>
                         @else
                             <span class="{{ $p->is_featured ? 'text-success!' : 'text-danger!' }}">{{ $p->is_featured ? 'Featured' : 'Not featured' }}</span>
                         @endif
@@ -295,9 +295,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="fc-abtn">
+                    <x-blatui.button type="submit" size="sm">
                         Open locale
-                    </button>
+                    </x-blatui.button>
                 </form>
                 @if ($isCreatingTranslation)
                     <div class="text-xs! text-[#8a6d1e]!">
@@ -313,22 +313,22 @@
             </div>
 
             @if (admin_can('petitions', 'edit'))
-                <button type="button"
+                <x-blatui.button variant="outline" type="button"
                     data-reconcile-one
                     data-url="{{ route('admin.petitions.reconcile') }}"
-                    data-id="{{ $selectedPetition->id }}" class="fc-abtn">
+                    data-id="{{ $selectedPetition->id }}">
                     Reconcile signature count for this petition
-                </button>
+                </x-blatui.button>
 
                 @if ($missingTranslationCount > 0)
-                    <button type="button"
+                    <x-blatui.button variant="outline" type="button"
                         data-translate-missing
                         data-url="{{ route('admin.petitions.translateMissing') }}"
                         data-id="{{ $selectedPetition->id }}"
                         data-source="{{ $translationSource?->locale ?? $locale }}"
-                        data-count="{{ $missingTranslationCount }}" class="fc-abtn">
+                        data-count="{{ $missingTranslationCount }}">
                         translate to missing locales ({{ $missingTranslationCount }})
-                    </button>
+                    </x-blatui.button>
                 @endif
             @endif
 
@@ -491,7 +491,7 @@
                 </div>
 
                 <div class="flex! justify-end! fc-drawer-savebar">
-                    <button type="submit" class="fc-abtn">save</button>
+                    <x-blatui.button type="submit">save</x-blatui.button>
                 </div>
 
                 </form>

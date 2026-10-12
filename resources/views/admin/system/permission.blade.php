@@ -79,7 +79,7 @@
             </div>
 
             <div class="flex! justify-end! mt-[25px]!">
-                <button type="submit" class="fc-abtn">save</button>
+                <x-blatui.button type="submit">save</x-blatui.button>
             </div>
 
         </form>

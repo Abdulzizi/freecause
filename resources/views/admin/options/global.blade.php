@@ -221,7 +221,7 @@
         </x-admin.section-panel>
 
         <div class="mt-1.5! text-end!">
-            <button type="submit" class="fc-abtn">save</button>
+            <x-blatui.button type="submit">save</x-blatui.button>
         </div>
     </form>
 @endsection

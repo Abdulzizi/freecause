@@ -169,7 +169,7 @@
                 </x-admin.form-field>
 
                 <div class="flex! justify-end! fc-drawer-savebar">
-                    <button class="fc-abtn">save</button>
+                    <x-blatui.button type="submit">save</x-blatui.button>
                 </div>
 
             </form>

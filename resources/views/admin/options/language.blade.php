@@ -94,7 +94,7 @@
             @endif
 
             <div class="text-right! mt-2.5!">
-                <button type="submit" class="fc-abtn">save</button>
+                <x-blatui.button type="submit">save</x-blatui.button>
             </div>
 
         </form>

@@ -34,7 +34,7 @@
             <input class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
-            <button type="submit" class="fc-abtn fc-abtn--success">create</button>
+            <x-blatui.button type="submit">create</x-blatui.button>
         </div>
     </form>
 </x-blatui.card>
@@ -171,7 +171,7 @@
             </div>
 
             <div class="flex! justify-end! mt-1.5! fc-drawer-savebar">
-                <button type="submit" class="fc-abtn">save</button>
+                <x-blatui.button type="submit">save</x-blatui.button>
             </div>
         </form>
 
@@ -184,7 +184,7 @@
                     <input type="hidden" name="id" value="{{ $selectedCategory->id }}">
                     <div class="flex! items-center! justify-between!">
                         <span class="text-xs! text-muted!">no petitions use this category</span>
-                        <button type="submit" class="fc-abtn fc-abtn--danger">delete category</button>
+                        <x-blatui.button variant="destructive" type="submit">delete category</x-blatui.button>
                     </div>
                 </form>
             @else

@@ -65,17 +65,12 @@
         <x-slot:footer>
             <div class="flex! gap-3! items-center!">
 
-                <button type="button" class="fc-abtn bulk-action" data-action="delete">
-
-                    <svg class="max-md:w-4! max-md:h-4!" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 6l12 12" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
-                        <path d="M18 6L6 18" stroke="#d23b2a" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-
+                <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete">
+                    <x-lucide-x aria-hidden="true" />
                     <div class="max-md:hidden!">
                         delete
                     </div>
-                </button>
+                </x-blatui.button>
 
             </div>
         </x-slot:footer>
@@ -96,7 +91,7 @@
             </x-admin.form-field>
 
             <div class="flex! justify-end! mt-[15px]!">
-                <button class="fc-abtn">add</button>
+                <x-blatui.button type="submit">add</x-blatui.button>
             </div>
         </form>
 

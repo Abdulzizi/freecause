@@ -17,7 +17,7 @@
         </div>
 
         <div class="flex! justify-end! mt-1.5!">
-            <button type="submit" title="save" class="fc-abtn">save</button>
+            <x-blatui.button type="submit" title="save">save</x-blatui.button>
         </div>
     </form>
 @endsection

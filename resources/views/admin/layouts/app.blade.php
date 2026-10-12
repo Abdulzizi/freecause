@@ -27,10 +27,10 @@
                     <span class="max-md:hidden!">support</span>
                     <x-blatui.dropdown-menu>
                         <x-blatui.dropdown-menu-trigger>
-                            <button type="button" class="fc-abtn ms-1">
+                            <x-blatui.button variant="outline" size="sm" type="button" class="ms-1!">
                                 {{ admin_user()?->name ?? 'admin' }}
                                 <x-lucide-chevron-down class="size-3.5" aria-hidden="true" />
-                            </button>
+                            </x-blatui.button>
                         </x-blatui.dropdown-menu-trigger>
                         <x-blatui.dropdown-menu-content align="end" class="w-44!">
                             <x-blatui.dropdown-menu-label class="text-muted!">{{ admin_user()?->name ?? 'admin' }}</x-blatui.dropdown-menu-label>

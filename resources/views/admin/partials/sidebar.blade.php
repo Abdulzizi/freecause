@@ -103,7 +103,7 @@
             <strong class="text-sm">{{ admin_user()?->name ?? 'admin' }}</strong>
             <form method="POST" action="{{ route('admin.logout') }}">
                 @csrf
-                <button type="submit" class="fc-abtn">exit</button>
+                <x-blatui.button variant="outline" size="sm" type="submit">exit</x-blatui.button>
             </form>
         </div>
     </x-blatui.sidebar-footer>

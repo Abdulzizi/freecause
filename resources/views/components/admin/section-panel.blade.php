@@ -1,7 +1,7 @@
 {{--
-    Existing admin tab + boxed-content pattern.
+    Admin section: a small uppercase heading above a card.
     Props: title (required string), tabClass/boxClass (optional class strings).
-    The default slot is rendered inside the box. Additional attributes are applied to the tab.
+    The default slot is rendered inside the card.
 --}}
 @props([
     'title',
@@ -9,9 +9,10 @@
     'boxClass' => '',
 ])
 
-<div {{ $attributes->class(['fc-tab', 'flex! items-center! gap-2!', $tabClass]) }}>
+<div {{ $attributes->class(['flex! items-center! gap-2! mb-2! font-semibold! text-[13px]! uppercase! tracking-[0.05em]! text-ink!', $tabClass]) }}>
     {{ $title }}
 </div>
-<div @class(['fc-box', $boxClass])>
+
+<x-blatui.card class="p-4! mb-5! {{ $boxClass }}">
     {{ $slot }}
-</div>
+</x-blatui.card>

@@ -24,7 +24,7 @@
             </div> --}}
 
             <div class="text-right! mt-2.5!">
-                <button class="fc-abtn">create language</button>
+                <x-blatui.button type="submit">create language</x-blatui.button>
             </div>
         </form>
     </x-admin.section-panel>
@@ -41,10 +41,7 @@
                         {{ strtoupper($lang->code) }}: {{ $lang->name }}
 
                         @if ($lang->is_default)
-                            <span
-                                class="bg-success! text-white! px-1.5! py-0.5! rounded! text-xs! ml-1.5!">
-                                default
-                            </span>
+                            <x-blatui.badge tone="success" class="ml-1.5!">default</x-blatui.badge>
                         @endif
                     </div>
 
@@ -74,7 +71,7 @@
                             active
                         </label>
 
-                        <button class="fc-abtn">save</button>
+                        <x-blatui.button type="submit">save</x-blatui.button>
                     </form>
 
                     @if (!$lang->is_default)
@@ -82,7 +79,7 @@
 
                             <form method="post" action="{{ route('admin.languages.default', $lang) }}">
                                 @csrf
-                                <button type="submit" class="fc-abtn">set default</button>
+                                <x-blatui.button variant="outline" size="sm" type="submit">set default</x-blatui.button>
                             </form>
 
                         </div>

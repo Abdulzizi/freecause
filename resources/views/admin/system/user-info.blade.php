@@ -45,7 +45,7 @@
         </x-admin.section-panel>
 
         <div class="mt-5!">
-            <button class="fc-abtn">save</button>
+            <x-blatui.button type="submit">save</x-blatui.button>
         </div>
 
     </form>
