@@ -10,23 +10,23 @@
     $isEmpty = empty($p) ? true : $p->isEmpty();
 @endphp
 
-<div class="fc-box mt-2.5! p-2.5!">
-    <div class="flex! items-center! justify-between! mb-2.5!">
+<div class="fc-box mt-2.5 p-2.5">
+    <div class="flex items-center justify-between mb-2.5">
         @if (!empty($p) && $p->hasPages())
             @include('admin.partials.simple-window-pagination', ['p' => $p])
         @endif
     </div>
 
     @if ($isEmpty)
-        <div class="px-2.5! py-3! text-muted! text-[12px]!">
+        <div class="px-2.5 py-3 text-muted text-[12px]">
             {{ $emptyText }}
             @if ($emptyClearRoute)
-                <x-blatui.button variant="outline" size="sm" :href="$emptyClearRoute" class="ml-1.5!">clear filters</x-blatui.button>
+                <x-blatui.button variant="outline" size="sm" :href="$emptyClearRoute" class="ml-1.5">clear filters</x-blatui.button>
             @endif
         </div>
     @else
         <div class="fc-table-wrap">
-            <table class="w-full! border-collapse!">
+            <table class="w-full border-collapse">
                 <thead>
                     {{ $thead }}
                 </thead>

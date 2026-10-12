@@ -14,20 +14,20 @@
 
 @section('content')
 
-    <section id="welcomes" class="bg-[var(--fc-band)]! fc-section fc-hero">
+    <section id="welcomes" class="bg-[var(--fc-band)] fc-section fc-hero">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3! items-center! justify-center!">
-                <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3! text-center!">
+            <div class="flex flex-wrap -mx-3 items-center justify-center">
+                <div class="w-full md:w-2/3 shrink-0 grow-0 px-3 text-center">
 
-                    <h1 class="fc-hero-item text-black! font-semibold! text-2xl! md:text-5xl! mb-6! max-sm:mb-4!">
+                    <h1 class="fc-hero-item text-black font-semibold text-2xl md:text-5xl mb-6 max-sm:mb-4">
                         {{ $content['h1'] ?? __('home.h1') }}
                     </h1>
 
-                    <h2 class="fc-hero-item text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.45]!">
+                    <h2 class="fc-hero-item text-[#4b5563] text-base leading-[1.5] md:text-xl md:leading-[1.45]">
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
-                    <div class="fc-hero-item mt-7! mb-4!">
+                    <div class="fc-hero-item mt-7 mb-4">
                         <x-ui.button :href="lroute('petition.create')" variant="primary" size="lg">
                             {{ __('home.btn_create_petition') }}
                         </x-ui.button>
@@ -40,22 +40,22 @@
 
     <section class="fc-section">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3!">
-                <div class="w-full! shrink-0! grow-0! px-3!">
+            <div class="flex flex-wrap -mx-3">
+                <div class="w-full shrink-0 grow-0 px-3">
                     <div class="fcui-card">
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
                                 <button class="nav-link active" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
-                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 2.6 10.6h1.3v10.8h5.3v-5.8h5.6v5.8h5.3V10.6h1.3L12 2.5Z"/></svg>
+                                    <svg class="inline-block mr-1.5" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 2.6 10.6h1.3v10.8h5.3v-5.8h5.6v5.8h5.3V10.6h1.3L12 2.5Z"/></svg>
                                     {{ __('home.tab_featured') }}
                                 </button>
                             </li>
 
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
-                                    <svg class="inline-block! mr-1.5!" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
+                                    <svg class="inline-block mr-1.5" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
                                     {{ __('home.tab_recent') }}
                                 </button>
                             </li>
@@ -65,35 +65,35 @@
 
                             <div class="tab-pane fade show active" id="featured-petition-tab-pane">
 
-                                <div class="p-4! md:p-[25px]! max-sm:p-3!">
-                                    <div class="flex! flex-wrap! -mx-3!">
-                                        <div class="w-full! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
+                                <div class="p-4 md:p-[25px] max-sm:p-3">
+                                    <div class="flex flex-wrap -mx-3">
+                                        <div class="w-full shrink-0 grow-0 px-3 mb-[25px] max-md:mb-[30px]">
 
-                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! fc-lift">
-                                                <div class="grow! shrink! basis-auto! p-5! max-sm:p-4!">
+                                            <div class="featured-box relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md fc-lift">
+                                                <div class="grow shrink basis-auto p-5 max-sm:p-4">
 
-                                                    <span class="bg-brand/5! text-danger! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
+                                                    <span class="bg-brand/5 text-danger px-5 py-[3px] rounded-[5px] text-sm mb-5 inline-block">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
-                                                    <div class="flex! flex-wrap! -mx-3! relative!">
+                                                    <div class="flex flex-wrap -mx-3 relative">
 
                                                         @if ($featuredPetition)
-                                                        <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-6! max-sm:mb-4!">
+                                                        <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-sm:mb-4">
                                                             @php $wv = \App\Support\ImageVariants::urls($featuredPetition->cover_image); @endphp
                                                             @if ($wv)
                                                             <picture>
                                                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full! aspect-[16/9]! object-cover!" data-blurup
+                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full aspect-[16/9] object-cover" data-blurup
                                                                     loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             </picture>
                                                             @else
-                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full! aspect-[16/9]! object-cover!" data-blurup
+                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full aspect-[16/9] object-cover" data-blurup
                                                                 loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
                                                             @endif
                                                         </div>
 
-                                                        <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-6! max-sm:mb-4!">
+                                                        <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-sm:mb-4">
                                                                 <h3>{{ $featuredPetition->tr_title }}</h3>
                                                                 <p>
                                                                     <strong>
@@ -102,33 +102,33 @@
                                                                     {{ $featuredPetition->target ?? '-' }}
                                                                 </p>
 
-                                                                <p class="line-clamp-7!">
+                                                                <p class="line-clamp-7">
                                                                     {{ \Illuminate\Support\Str::limit(strip_tags($featuredPetition->tr_description ?? ''), 600) }}
                                                                 </p>
 
                                                             @else
                                                                 <h3>{{ __('home.featured_none_title') }}</h3>
-                                                                <p class="text-muted!">
+                                                                <p class="text-muted">
                                                                     {{ __('home.featured_none_sub') }}
                                                                 </p>
                                                             @endif
                                                         </div>
 
                                                         @if ($featuredPetition)
-                                                            <a href="{{ $featuredUrl }}" data-prefetch class="absolute! inset-0! z-[2]! text-[0px]! bg-transparent!">
+                                                            <a href="{{ $featuredUrl }}" data-prefetch class="absolute inset-0 z-[2] text-[0px] bg-transparent">
                                                                 {{ __('home.featured_read_more') }}
                                                             </a>
                                                         @endif
                                                     </div>
 
                                                     @if ($featuredPetition)
-                                                        <div class="mb-4!">
-                                                            <div class="progress mb-2!">
+                                                        <div class="mb-4">
+                                                            <div class="progress mb-2">
                                                                 <div class="progress-bar fcui-progress-fill" style="--pct: {{ $progress > 0 ? max($progress, 1.5) : 0 }}%"
                                                                     role="progressbar" aria-valuenow="{{ (int) $progress }}"
                                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
-                                                            <div class="flex! justify-between! text-muted!">
+                                                            <div class="flex justify-between text-muted">
                                                                 <span class="fc-tabular"><span data-countup data-countup-to="{{ (int) $signatures }}">{{ number_format($signatures) }}</span> {{ __('home.signatures_label') }}</span>
                                                                 <span class="fc-tabular">{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
                                                             </div>
@@ -150,10 +150,10 @@
 
                             <div class="tab-pane fade" id="recent-activities-tab-pane" role="tabpanel">
 
-                                <div class="p-4! md:p-[25px]! max-sm:p-3!">
-                                    <div class="flex! flex-wrap! -mx-3!">
-                                        <div class="w-full! shrink-0! grow-0! px-3!">
-                                            <div class="mb-[50px]!">
+                                <div class="p-4 md:p-[25px] max-sm:p-3">
+                                    <div class="flex flex-wrap -mx-3">
+                                        <div class="w-full shrink-0 grow-0 px-3">
+                                            <div class="mb-[50px]">
 
                                                 <ul class="most-listing">
 
@@ -175,8 +175,8 @@
                                                             <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif>
 
                                                                 <div
-                                                                    class="flex! justify-between! mb-1!">
-                                                                    <p class="text-sm!">
+                                                                    class="flex justify-between mb-1">
+                                                                    <p class="text-sm">
                                                                         <span>
                                                                             {{ $sig->name }}
                                                                         </span>
@@ -186,12 +186,12 @@
                                                                         </strong>
                                                                     </p>
 
-                                                                    <span class="text-brand! text-sm! group-hover:text-white!">
+                                                                    <span class="text-brand text-sm group-hover:text-white">
                                                                         {{ $sig->created_at ? \Carbon\Carbon::parse($sig->created_at)->diffForHumans() : '' }}
                                                                     </span>
                                                                 </div>
 
-                                                                <p class="text-sm!">
+                                                                <p class="text-sm">
                                                                     {{ $sig->petition_title }}
                                                                 </p>
 
@@ -201,10 +201,10 @@
                                                     @empty
 
                                                         <li class="group">
-                                                            <div class="text-muted! p-2!">
+                                                            <div class="text-muted p-2">
                                                                 {{ __('home.recent_empty') }}
                                                                 &mdash;
-                                                                <a href="{{ lroute('petitions.index') }}" class="text-brand! group-hover:text-white!">
+                                                                <a href="{{ lroute('petitions.index') }}" class="text-brand group-hover:text-white">
                                                                     {{ __('home.btn_browse_petitions') }}
                                                                 </a>
                                                             </div>
@@ -226,14 +226,14 @@
         </x-ui.container>
     </section>
 
-    <section class="fc-section bg-[var(--fc-band)]!">
+    <section class="fc-section bg-[var(--fc-band)]">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3!">
+            <div class="flex flex-wrap -mx-3">
 
-                <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
-                    <div class="gray-box bg-white! border! border-[#ede9e3]! p-[15px]! rounded-[12px]! shadow-[var(--fc-shadow-sm)]!">
+                <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-[25px] max-md:mb-[30px]">
+                    <div class="gray-box bg-white border border-[#ede9e3] p-[15px] rounded-[12px] shadow-[var(--fc-shadow-sm)]">
 
-                        <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
+                        <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">
                             {{ __('home.what_title') }}
                         </h2>
 
@@ -242,10 +242,10 @@
                     </div>
                 </div>
 
-                <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3!">
-                    <div class="gray-box bg-white! border! border-[#ede9e3]! p-[15px]! rounded-[12px]! shadow-[var(--fc-shadow-sm)]!">
+                <div class="w-full md:w-1/2 shrink-0 grow-0 px-3">
+                    <div class="gray-box bg-white border border-[#ede9e3] p-[15px] rounded-[12px] shadow-[var(--fc-shadow-sm)]">
 
-                        <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
+                        <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">
                             {{ __('home.create_box_title') }}
                         </h2>
 
@@ -260,19 +260,19 @@
 
     <section class="fc-section">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3! mb-6!">
-                <div class="w-full! shrink-0! grow-0! px-3!">
-                    <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">{{ __('home.categories_title') }}</h2>
+            <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="w-full shrink-0 grow-0 px-3">
+                    <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
-            <div class="flex! flex-wrap! -mx-3! fc-reveal fc-stagger">
+            <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                 @foreach ($categories as $cat)
-                    <div class="w-full! lg:w-1/4! sm:w-1/2! shrink-0! grow-0! px-3! mb-4!">
+                    <div class="w-full lg:w-1/4 sm:w-1/2 shrink-0 grow-0 px-3 mb-4">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                            class="bg-white! border! border-border! rounded-lg! p-6! text-center! no-underline! text-black! fc-lift block!">
-                            <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
-                            <h3 class="text-base! md:text-base!">{{ $cat->tr_name }}</h3>
+                            class="bg-white border border-border rounded-lg p-6 text-center no-underline text-black fc-lift block">
+                            <span class="text-[25px] mb-2 hidden"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
+                            <h3 class="text-base md:text-base">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
                 @endforeach
@@ -281,31 +281,31 @@
     </section>
 
     @if (count($magazinePosts) > 0)
-    <section class="bg-[var(--fc-band)]! fc-section">
+    <section class="bg-[var(--fc-band)] fc-section">
         <x-ui.container>
-            <div class="text-center! mb-6!">
-                <h2 class="mb-2!">{{ __('home.blog_title') }}</h2>
-                <p class="text-muted!">{{ __('home.blog_subtitle') }}
+            <div class="text-center mb-6">
+                <h2 class="mb-2">{{ __('home.blog_title') }}</h2>
+                <p class="text-muted">{{ __('home.blog_subtitle') }}
                 </p>
             </div>
 
-            <div class="flex! flex-wrap! -mx-3! fc-reveal fc-stagger">
+            <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                 @foreach ($magazinePosts as $post)
-                    <div class="w-full! md:w-1/3! shrink-0! grow-0! px-3! mb-6!">
-                        <a class="block! h-full! no-underline!" href="/magazine/{{ $post->post_name }}">
-                            <div class="shadow-[var(--fc-shadow-sm)]! rounded-[15px]! overflow-hidden! fc-lift">
+                    <div class="w-full md:w-1/3 shrink-0 grow-0 px-3 mb-6">
+                        <a class="block h-full no-underline" href="/magazine/{{ $post->post_name }}">
+                            <div class="shadow-[var(--fc-shadow-sm)] rounded-[15px] overflow-hidden fc-lift">
                                 <div>
                                     @if ($post->thumbnail_path)
-                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup w-full! aspect-[16/9]! object-cover!">
+                                        <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup w-full aspect-[16/9] object-cover">
                                     @else
-                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="fcui-blurup w-full! aspect-[16/9]! object-cover!">
+                                        <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="fcui-blurup w-full aspect-[16/9] object-cover">
                                     @endif
                                 </div>
-                                <div class="p-5! bg-white! min-h-[146px]!">
-                                    <h3 class="text-base! md:text-base! mb-2.5! text-black!">{{ $post->post_title }}</h3>
-                                    <span class="text-brand!">
+                                <div class="p-5 bg-white min-h-[146px]">
+                                    <h3 class="text-base md:text-base mb-2.5 text-black">{{ $post->post_title }}</h3>
+                                    <span class="text-brand">
                                     {{ __('home.blog_read_more') }}
-                                    <span class="ml-1.5!">›</span>
+                                    <span class="ml-1.5">›</span>
                                     </span>
                                 </div>
                             </div>
@@ -314,7 +314,7 @@
                 @endforeach
             </div>
 
-            <div class="text-center! mt-6!">
+            <div class="text-center mt-6">
                 <x-ui.button variant="ghost" href="/magazine">
                     {{ __('home.blog_view_all') }}
                 </x-ui.button>

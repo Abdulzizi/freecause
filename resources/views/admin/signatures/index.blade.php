@@ -70,7 +70,7 @@
     <x-admin.data-table emptyText="no signatures found" :p="$signatures" :emptyClearRoute="route('admin.signatures')" :bulk="[]">
 
         <x-slot:thead>
-            <tr class="border-b! border-border!">
+            <tr class="border-b border-border">
                 <th width="70">ID</th>
                 <th width="26" title="Bulk selection" aria-label="Bulk selection"></th>
                 <th width="26" data-hide-mobile title="User email verified" aria-label="User email verified">
@@ -98,7 +98,7 @@
 
         <x-slot:tbody>
             @foreach ($signatures as $s)
-                <tr class="border-b! border-border!">
+                <tr class="border-b border-border">
 
                     <td>{{ $s->id }}</td>
 
@@ -108,7 +108,7 @@
                         @endif
                     </td>
 
-                    <td data-hide-mobile class="text-center!">
+                    <td data-hide-mobile class="text-center">
                         @if ($s->user_verified)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
@@ -117,7 +117,7 @@
                     </td>
 
                     @if ($hasConfirmed)
-                        <td data-hide-mobile class="text-center!" data-signature-status>
+                        <td data-hide-mobile class="text-center" data-signature-status>
                             @if ($s->confirmed)
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             @else
@@ -140,7 +140,7 @@
                         @endif
                     </td>
 
-                    <td data-hide-mobile class="text-center!">
+                    <td data-hide-mobile class="text-center">
                         @if ($s->petition_slug)
                             <a
                                 href="{{ route('petition.show', [
@@ -160,7 +160,7 @@
                     </td>
 
                     @if ($hasText)
-                        <td data-hide-mobile class="max-w-[300px]! overflow-hidden! text-ellipsis! whitespace-nowrap!">
+                        <td data-hide-mobile class="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {{ $s->text }}
                         </td>
                     @endif
@@ -169,7 +169,7 @@
 
                     @if ($hasConfirmed && admin_can('signatures', 'edit'))
                         <td data-hide-mobile class="fc-row-actions-cell">
-                            <div class="inline-flex!" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
+                            <div class="inline-flex" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
                                 <x-admin.row-actions>
                                     <x-blatui.dropdown-menu-item type="button" data-signature-action="approve"
                                         data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
@@ -193,16 +193,16 @@
         </x-slot:tbody>
 
         <x-slot:footer>
-            <div class="flex! gap-2! items-center! flex-wrap!">
+            <div class="flex gap-2 items-center flex-wrap">
                 @if ($hasConfirmed && admin_can('signatures', 'edit'))
                     <x-blatui.button-group>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="approve" title="Approve">
                             <x-lucide-check aria-hidden="true" />
-                            <span class="max-md:hidden!">Approve</span>
+                            <span class="max-md:hidden">Approve</span>
                         </x-blatui.button>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="reject" title="Reject">
                             <x-lucide-x aria-hidden="true" />
-                            <span class="max-md:hidden!">Reject</span>
+                            <span class="max-md:hidden">Reject</span>
                         </x-blatui.button>
                     </x-blatui.button-group>
                 @endif
@@ -210,13 +210,13 @@
                 @if (admin_can('signatures', 'delete'))
                     <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete" title="Delete">
                         <x-lucide-trash-2 aria-hidden="true" />
-                        <span class="max-md:hidden!">Delete</span>
+                        <span class="max-md:hidden">Delete</span>
                     </x-blatui.button>
                 @endif
 
                 <x-blatui.button variant="outline" size="sm" :href="route('admin.signatures', request()->except('select'))" title="Clear selection">
                     <x-lucide-x aria-hidden="true" />
-                    <span class="max-md:hidden!">Clear</span>
+                    <span class="max-md:hidden">Clear</span>
                 </x-blatui.button>
             </div>
         </x-slot:footer>

@@ -34,9 +34,9 @@
 
     </x-admin.filter-box>
 
-    <div class="border! border-border! rounded! p-2.5! mb-5!">
+    <div class="border border-border rounded p-2.5 mb-5">
 
-        <div class="flex! flex-wrap! gap-[30px]!">
+        <div class="flex flex-wrap gap-[30px]">
 
             <div>
                 <h2>{{ number_format($summary['users_total']) }}</h2>
@@ -73,16 +73,16 @@
         <x-admin.data-table :p="$results">
 
             <x-slot:thead>
-                <tr data-admin-row-hover class="border-b! border-border!">
+                <tr data-admin-row-hover class="border-b border-border">
                     @foreach ($columns as $c)
-                        <th class="text-left!">{{ $c }}</th>
+                        <th class="text-left">{{ $c }}</th>
                     @endforeach
                 </tr>
             </x-slot:thead>
 
             <x-slot:tbody>
                 @foreach ($results as $row)
-                    <tr data-admin-row-hover class="border-b! border-border!">
+                    <tr data-admin-row-hover class="border-b border-border">
                         @foreach ((array) $row as $cell)
                             <td>{{ $cell }}</td>
                         @endforeach

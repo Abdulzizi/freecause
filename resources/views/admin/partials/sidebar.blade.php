@@ -35,8 +35,8 @@
 <x-blatui.sidebar variant="inset">
     <x-blatui.sidebar-header>
         <a href="{{ route('admin.dashboard') }}" class="flex items-baseline gap-1.5 rounded-md px-2 py-1 no-underline">
-            <span class="text-sm font-semibold text-ink!">FreeCause</span>
-            <span class="text-xs text-muted!">admin</span>
+            <span class="text-sm font-semibold text-ink">FreeCause</span>
+            <span class="text-xs text-muted">admin</span>
         </a>
     </x-blatui.sidebar-header>
 
@@ -47,8 +47,8 @@
                     :open="true"
                     x-init="try { if (localStorage.getItem('fc-group-{{ $group['label'] }}') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-{{ $group['label'] }}', v ? '0' : '1') } catch (e) {} })"
                 >
-                    <x-blatui.collapsible-trigger class="group/trigger w-full!">
-                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between! text-ink! font-semibold!">
+                    <x-blatui.collapsible-trigger class="group/trigger w-full">
+                        <x-blatui.sidebar-group-label class="w-full cursor-pointer justify-between text-ink font-semibold">
                             <span>{{ $group['label'] }}</span>
                             <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
                         </x-blatui.sidebar-group-label>
@@ -76,8 +76,8 @@
                     :open="true"
                     x-init="try { if (localStorage.getItem('fc-group-system') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-system', v ? '0' : '1') } catch (e) {} })"
                 >
-                    <x-blatui.collapsible-trigger class="group/trigger w-full!">
-                        <x-blatui.sidebar-group-label class="w-full! cursor-pointer! justify-between! text-ink! font-semibold!">
+                    <x-blatui.collapsible-trigger class="group/trigger w-full">
+                        <x-blatui.sidebar-group-label class="w-full cursor-pointer justify-between text-ink font-semibold">
                             <span>system</span>
                             <x-lucide-chevron-down class="size-3.5 transition-transform group-data-[state=closed]/trigger:-rotate-90" />
                         </x-blatui.sidebar-group-label>
@@ -98,7 +98,7 @@
         @endif
     </x-blatui.sidebar-content>
 
-    <x-blatui.sidebar-footer class="md:hidden!">
+    <x-blatui.sidebar-footer class="md:hidden">
         <div class="flex items-center justify-between gap-2 px-1">
             <strong class="text-sm">{{ admin_user()?->name ?? 'admin' }}</strong>
             <form method="POST" action="{{ route('admin.logout') }}">

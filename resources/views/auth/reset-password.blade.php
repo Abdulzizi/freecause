@@ -5,17 +5,17 @@
 @section('content')
     <section class="fc-section">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3! justify-center!">
-                <div class="w-full! shrink-0! grow-0! px-3! md:w-[41.666667%]!">
-                    <div class="bg-white! shadow-sm! rounded-[1rem]! p-6! md:p-8! border! border-border!">
-                        <h1 class="mb-6! text-center! text-2xl!">{{ __('auth.reset_title') }}</h1>
+            <div class="flex flex-wrap -mx-3 justify-center">
+                <div class="w-full shrink-0 grow-0 px-3 md:w-[41.666667%]">
+                    <div class="bg-white shadow-sm rounded-[1rem] p-6 md:p-8 border border-border">
+                        <h1 class="mb-6 text-center text-2xl">{{ __('auth.reset_title') }}</h1>
 
                         <form method="POST" action="{{ lroute('password.update') }}">
                             @csrf
 
                             <input type="hidden" name="token" value="{{ $token }}">
 
-                            <div class="mb-4!">
+                            <div class="mb-4">
                                 <x-ui.input
                                     type="email"
                                     id="reset_email"
@@ -27,7 +27,7 @@
                                 />
                             </div>
 
-                            <div class="mb-4!">
+                            <div class="mb-4">
                                 <x-ui.input
                                     type="password"
                                     id="reset_password"
@@ -40,7 +40,7 @@
                                 />
                             </div>
 
-                            <div class="mb-4!">
+                            <div class="mb-4">
                                 <x-ui.input
                                     type="password"
                                     id="reset_password_confirmation"
@@ -50,7 +50,7 @@
                                 />
                             </div>
 
-                            <x-ui.button type="submit" variant="danger" class="w-full!">{{ __('auth.reset_submit') }}</x-ui.button>
+                            <x-ui.button type="submit" variant="danger" class="w-full">{{ __('auth.reset_submit') }}</x-ui.button>
                         </form>
                     </div>
                 </div>

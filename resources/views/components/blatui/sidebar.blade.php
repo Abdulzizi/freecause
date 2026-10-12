@@ -26,7 +26,7 @@
 <div
     {{ $rootAttributes->twMerge('text-sidebar-foreground group peer hidden md:block', $userClass) }}
 
-    :class="{ 'md:hidden!': isMobile }"
+    :class="{ 'md:hidden': isMobile }"
     :data-state="open ? 'expanded' : 'collapsed'"
     :data-collapsible="open ? '' : @js($collapsible)"
     data-variant="{{ $variant }}"

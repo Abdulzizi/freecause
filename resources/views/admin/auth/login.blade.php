@@ -3,25 +3,25 @@
 @section('title', 'Admin Login')
 
 @section('content')
-    <div class="text-center! mt-[10px]! mb-[25px]! text-[44px]! font-bold! tracking-[-1px]! max-md:text-[32px]!">
-        <span class="text-brand!">Online</span><span class="text-ink!">Petition</span>
+    <div class="text-center mt-[10px] mb-[25px] text-[44px] font-bold tracking-[-1px] max-md:text-[32px]">
+        <span class="text-brand">Online</span><span class="text-ink">Petition</span>
     </div>
 
     @if (session('success'))
-        <x-blatui.alert tone="success" class="mb-4!">{{ session('success') }}</x-blatui.alert>
+        <x-blatui.alert tone="success" class="mb-4">{{ session('success') }}</x-blatui.alert>
     @endif
 
     @if ($errors->any())
-        <x-blatui.alert variant="destructive" class="mb-4!">{{ $errors->first() }}</x-blatui.alert>
+        <x-blatui.alert variant="destructive" class="mb-4">{{ $errors->first() }}</x-blatui.alert>
     @endif
 
-    <x-blatui.card variant="sectioned" class="max-w-[400px]! mx-auto!">
+    <x-blatui.card variant="sectioned" class="max-w-[400px] mx-auto">
         <x-blatui.card-header>
             <x-blatui.card-title>Login</x-blatui.card-title>
         </x-blatui.card-header>
 
         <x-blatui.card-content>
-            <form method="POST" action="{{ route('admin.login.post') }}" class="flex! flex-col! gap-5!">
+            <form method="POST" action="{{ route('admin.login.post') }}" class="flex flex-col gap-5">
                 @csrf
 
                 <x-blatui.field data-invalid="{{ $errors->has('login') ? 'true' : 'false' }}">
@@ -40,8 +40,8 @@
                     @enderror
                 </x-blatui.field>
 
-                <div class="flex! items-center! justify-between! gap-3!">
-                    <label class="flex! items-center! gap-1.5! text-sm! select-none!">
+                <div class="flex items-center justify-between gap-3">
+                    <label class="flex items-center gap-1.5 text-sm select-none">
                         <input type="checkbox" name="remember" value="1">
                         stay logged in
                     </label>

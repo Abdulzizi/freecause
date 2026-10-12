@@ -1,5 +1,5 @@
 @if ($errors->any())
-    <x-ui.alert variant="error" class="mb-4!">
+    <x-ui.alert variant="error" class="mb-4">
         {{ $errors->first() }}
     </x-ui.alert>
 @endif
@@ -14,7 +14,7 @@
     <fieldset>
         <input type="hidden" name="__contacts" value="1" />
 
-        <div class="mb-4!">
+        <div class="mb-4">
             <x-ui.input
                 type="text"
                 id="contact_name"
@@ -28,7 +28,7 @@
             />
         </div>
 
-        <div class="mb-4!">
+        <div class="mb-4">
             <x-ui.input
                 type="email"
                 id="contact_email"
@@ -42,7 +42,7 @@
             />
         </div>
 
-        <div class="fcui-field mb-4!">
+        <div class="fcui-field mb-4">
             <label for="contact_text" class="fcui-field__label">
                 {{ __('contacts.text_label') }}
                 <span class="fcui-field__required" aria-hidden="true">*</span>
@@ -61,7 +61,7 @@
         </div>
 
         <div>
-            <x-ui.button type="submit" variant="danger" class="w-full! py-2! rounded-lg!">
+            <x-ui.button type="submit" variant="danger" class="w-full py-2 rounded-lg">
                 {{ __('contacts.submit') }}
             </x-ui.button>
         </div>

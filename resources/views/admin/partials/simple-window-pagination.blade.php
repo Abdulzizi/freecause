@@ -11,8 +11,8 @@
     $end      = $lastPage ? min($lastPage, $current + $window) : $current;
 @endphp
 
-<div class="flex! items-center! justify-between! flex-wrap! gap-2!">
-    <x-blatui.pagination class="mx-0! w-auto! justify-start!">
+<div class="flex items-center justify-between flex-wrap gap-2">
+    <x-blatui.pagination class="mx-0 w-auto justify-start">
         <x-blatui.pagination-content>
             @if ($current > 1)
                 <x-blatui.pagination-item>

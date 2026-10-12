@@ -85,10 +85,10 @@ class ContentRenderer
         $index = 0;
 
         foreach ($sections as $section) {
-            $output .= '<h2 class="mb-4! text-xl! font-bold!">'.e($section['title']).'</h2>';
+            $output .= '<h2 class="mb-4 text-xl font-bold">'.e($section['title']).'</h2>';
             $accordionId = 'faqAcc-'.Str::slug($section['title'] ?: 'faq');
 
-            $output .= '<div class="accordion mb-6!" id="'.$accordionId.'">';
+            $output .= '<div class="accordion mb-6" id="'.$accordionId.'">';
 
             foreach ($section['items'] as $item) {
                 $index++;
@@ -98,7 +98,7 @@ class ContentRenderer
                 $answer = trim(implode('', $item['answer']));
                 $body = $answer !== '' && trim(strip_tags($answer)) !== ''
                     ? $answer
-                    : '<p class="mb-0! text-gray-500!">...</p>';
+                    : '<p class="mb-0 text-gray-500">...</p>';
 
                 $output .= '<div class="accordion-item border border-gray-200">'
                     .'<h2 class="accordion-header" id="'.$headingId.'">'

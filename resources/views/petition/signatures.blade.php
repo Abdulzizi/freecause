@@ -14,54 +14,54 @@
     <section class="fc-section">
         <x-ui.container>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-border!">
-                <div class="flex! flex-wrap! items-center! -mx-3!">
+            <div class="bg-white shadow-sm rounded-[.5rem] p-6 mb-6 border border-border">
+                <div class="flex flex-wrap items-center -mx-3">
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
-                    <div class="w-full! md:w-1/4! shrink-0! sm:w-1/3! px-3!">
-                        <a href="{{ $petitionUrl }}" data-prefetch class="rounded-lg! overflow-hidden! block! h-40! bg-[#1a1a1a]! relative!">
+                    <div class="w-full md:w-1/4 shrink-0 sm:w-1/3 px-3">
+                        <a href="{{ $petitionUrl }}" data-prefetch class="rounded-lg overflow-hidden block h-40 bg-[#1a1a1a] relative">
                             @if ($wv)
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="100vw">
                                 <img src="{{ $coverImg }}" alt="" aria-hidden="true"
-                                    class="absolute! -inset-2.5! w-[calc(100%+20px)]! h-[calc(100%+20px)]! object-cover! blur-[14px]! opacity-[0.55]!" loading="lazy" decoding="async">
+                                    class="absolute -inset-2.5 w-[calc(100%+20px)] h-[calc(100%+20px)] object-cover blur-[14px] opacity-[0.55]" loading="lazy" decoding="async">
                             </picture>
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 400px, 100vw">
                                 <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}" data-blurup
-                                    class="fcui-blurup relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
+                                    class="fcui-blurup relative z-[1] w-full h-40 object-contain" loading="eager" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $coverImg }}" alt="" aria-hidden="true"
-                                class="absolute! -inset-2.5! w-[calc(100%+20px)]! h-[calc(100%+20px)]! object-cover! blur-[14px]! opacity-[0.55]!" loading="lazy" decoding="async">
+                                class="absolute -inset-2.5 w-[calc(100%+20px)] h-[calc(100%+20px)] object-cover blur-[14px] opacity-[0.55]" loading="lazy" decoding="async">
                             <img src="{{ $coverImg }}" alt="{{ $petitionTitle }}" data-blurup
-                                class="fcui-blurup relative! z-[1]! w-full! h-40! object-contain!" loading="eager" decoding="async">
+                                class="fcui-blurup relative z-[1] w-full h-40 object-contain" loading="eager" decoding="async">
                             @endif
                         </a>
                     </div>
 
-                    <div class="w-full! md:w-1/2! shrink-0! sm:w-2/3! px-3!">
-                        <h1 class="mb-2! text-2xl! md:text-[19px]! font-bold! leading-[1.35]!">
-                            <a href="{{ $petitionUrl }}" data-prefetch class="text-ink! no-underline!">
+                    <div class="w-full md:w-1/2 shrink-0 sm:w-2/3 px-3">
+                        <h1 class="mb-2 text-2xl md:text-[19px] font-bold leading-[1.35]">
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-ink no-underline">
                                 {{ $petitionTitle }}
                             </a>
                         </h1>
 
-                        <p class="text-muted! mb-4! text-sm! leading-[1.6]!">
+                        <p class="text-muted mb-4 text-sm leading-[1.6]">
                             {{ $shortDesc }}
-                            <a href="{{ $petitionUrl }}" data-prefetch class="text-brand! ms-1!">{{ __('sig.continue') }}</a>
+                            <a href="{{ $petitionUrl }}" data-prefetch class="text-brand ms-1">{{ __('sig.continue') }}</a>
                         </p>
 
-                        <div class="fc-progress-reveal h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
-                            <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
+                        <div class="fc-progress-reveal h-1.5 bg-[#e9ecef] rounded-full overflow-hidden mb-2">
+                            <div class="h-1.5 bg-[#2ca02c] fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                         </div>
-                        <div class="flex! justify-between! text-[13px]! text-muted! fc-tabular">
+                        <div class="flex justify-between text-[13px] text-muted fc-tabular">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
                     </div>
 
-                    <div class="w-full! md:w-1/4! shrink-0! md:text-right! px-3!">
+                    <div class="w-full md:w-1/4 shrink-0 md:text-right px-3">
                         <x-ui.button variant="danger" :href="$signUrl">
                             {{ __('sig.sign_link') }}
                         </x-ui.button>
@@ -70,48 +70,48 @@
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border! fc-reveal">
+            <div class="bg-white shadow-sm rounded-[.5rem] p-6 border border-border fc-reveal">
 
-                <div class="font-bold! text-base! mb-4!">
+                <div class="font-bold text-base mb-4">
                     {{ __('sig.all_signatures') }}
-                    <span class="text-muted! font-normal! text-sm!">
+                    <span class="text-muted font-normal text-sm">
                         ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
 
-                <div class="h-0.5! bg-[#e9ecef]! relative! mb-[22px]!">
+                <div class="h-0.5 bg-[#e9ecef] relative mb-[22px]">
                     <div
-                        class="h-0.5! w-full! bg-[linear-gradient(to_right,#000,#f00)]! absolute! left-0! top-0!">
+                        class="h-0.5 w-full bg-[linear-gradient(to_right,#000,#f00)] absolute left-0 top-0">
                     </div>
                 </div>
 
                 @forelse($signatures as $sig)
-                    <div class="flex! items-start! gap-4! py-4! {{ !$loop->last ? 'border-b!' : '' }}">
-                        <div class="shrink-0! text-muted! text-[13px]! min-w-[32px]! pt-0.5!">
+                    <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
+                        <div class="shrink-0 text-muted text-[13px] min-w-[32px] pt-0.5">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
-                        <div class="grow!">
-                            <div class="flex! items-center! gap-2! flex-wrap!">
-                                <strong class="text-[15px]!">{{ $sig->name ?? __('sig.anonymous') }}</strong>
+                        <div class="grow">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <strong class="text-[15px]">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
-                                    <span class="text-muted! text-[13px]!">
+                                    <span class="text-muted text-[13px]">
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
-                                <span class="text-muted! ms-auto! text-xs!">
+                                <span class="text-muted ms-auto text-xs">
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>
                             @if (!empty($sig->text) && $sig->text !== __('sig.default_comment'))
-                                <p class="mb-0! mt-1! text-muted! text-sm!">
+                                <p class="mb-0 mt-1 text-muted text-sm">
                                     "{{ $sig->text }}"
                                 </p>
                             @endif
                         </div>
                     </div>
                 @empty
-                    <div class="flex! flex-col! items-center! justify-center! text-center! py-10! px-4!">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4!">
+                    <div class="flex flex-col items-center justify-center text-center py-10 px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4">
                             <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
                             <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
                             <rect x="34" y="40" width="52" height="40" rx="6" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
@@ -119,7 +119,7 @@
                             <line x1="44" y1="64" x2="64" y2="64" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
                             <path d="M70 72l5 5 11-11" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
                         </svg>
-                        <p class="text-muted! text-sm! mb-0!">{{ __('sig.no_signatures') }}</p>
+                        <p class="text-muted text-sm mb-0">{{ __('sig.no_signatures') }}</p>
                     </div>
                 @endforelse
 

@@ -13,8 +13,8 @@
 </head>
 
 <body>
-    <div class="flex! items-start! justify-center! min-h-screen! bg-[#f9fafb]! py-10! px-[15px]!">
-        <div class="w-full! max-w-[1050px]! px-5! pt-10! pb-[60px]! max-md:px-3! max-md:py-6! max-md:pb-10!">
+    <div class="flex items-start justify-center min-h-screen bg-[#f9fafb] py-10 px-[15px]">
+        <div class="w-full max-w-[1050px] px-5 pt-10 pb-[60px] max-md:px-3 max-md:py-6 max-md:pb-10">
             @yield('content')
         </div>
     </div>

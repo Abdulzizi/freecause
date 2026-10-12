@@ -13,8 +13,8 @@
 @endphp
 
 @if ($adsenseEnabled && $client && $resolvedSlot)
-    <div {{ $attributes->merge(['class' => 'fcui-ad w-full! overflow-hidden! text-center!']) }} aria-hidden="true">
-        <ins class="adsbygoogle block!"
+    <div {{ $attributes->merge(['class' => 'fcui-ad w-full overflow-hidden text-center']) }} aria-hidden="true">
+        <ins class="adsbygoogle block"
             style="display:block;min-height:{{ $minHeight }}"
             data-adsense="1"
             data-ad-client="{{ $client }}"

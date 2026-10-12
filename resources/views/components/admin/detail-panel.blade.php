@@ -33,7 +33,7 @@
         x-effect="if (!open) close()"
         class="contents"
     >
-        <x-blatui.sheet-content :showClose="false" class="fc-drawer gap-0! p-0!" id="{{ $drawerId }}" data-open="1">
+        <x-blatui.sheet-content :showClose="false" class="fc-drawer gap-0 p-0" id="{{ $drawerId }}" data-open="1">
             <div class="fc-drawer__head">
                 <span>{{ $title }}</span>
                 @if ($closeRoute)

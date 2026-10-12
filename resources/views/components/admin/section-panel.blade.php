@@ -5,10 +5,10 @@
     'boxClass' => '',
 ])
 
-<div {{ $attributes->class(['flex! items-center! gap-2! mb-2! font-semibold! text-[13px]! uppercase! tracking-[0.05em]! text-ink!', $tabClass]) }}>
+<div {{ $attributes->class(['flex items-center gap-2 mb-2 font-semibold text-[13px] uppercase tracking-[0.05em] text-ink', $tabClass]) }}>
     {{ $title }}
 </div>
 
-<x-blatui.card class="p-4! mb-5! {{ $boxClass }}">
+<x-blatui.card class="p-4 mb-5 {{ $boxClass }}">
     {{ $slot }}
 </x-blatui.card>

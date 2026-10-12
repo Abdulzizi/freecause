@@ -1,12 +1,12 @@
 
 
-    <section class="py-14! md:py-24!">
+    <section class="py-14 md:py-24">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3!">
-                <div class="w-full! shrink-0! grow-0! px-3!">
-                    <div class="fcui-card relative! flex! flex-col! min-w-0!">
-                        <div class="fcui-prose grow! shrink! basis-auto! p-6!">
-                            <div class="mb-6!">
+            <div class="flex flex-wrap -mx-3">
+                <div class="w-full shrink-0 grow-0 px-3">
+                    <div class="fcui-card relative flex flex-col min-w-0">
+                        <div class="fcui-prose grow shrink basis-auto p-6">
+                            <div class="mb-6">
 
                                     <p><strong>Privacy Statement</strong></p>
 

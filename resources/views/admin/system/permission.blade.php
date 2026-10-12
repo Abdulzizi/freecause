@@ -6,13 +6,13 @@
 
     <x-admin.page-header title="permissions" />
 
-    <div class="border! border-border! rounded! p-2.5! mb-2.5! p-5! mb-5!">
+    <div class="border border-border rounded p-2.5 mb-2.5 p-5 mb-5">
 
         <form method="get" action="{{ route('admin.system.permissions') }}"
-            class="flex! gap-10! items-end! flex-wrap!">
+            class="flex gap-10 items-end flex-wrap">
 
             <div>
-                <label class="block! mb-1.5!">
+                <label class="block mb-1.5">
                     Module
                 </label>
 
@@ -28,7 +28,7 @@
             </div>
 
             <div>
-                <label class="block! mb-1.5!">
+                <label class="block mb-1.5">
                     Level
                 </label>
 
@@ -54,16 +54,16 @@
             <input type="hidden" name="module" value="{{ $selectedModule }}">
             <input type="hidden" name="level_id" value="{{ $selectedLevel }}">
 
-            <div class="grid! gap-3! grid-cols-[repeat(auto-fill,minmax(200px,1fr))]!">
+            <div class="grid gap-3 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
 
                 @foreach ($modules[$selectedModule] as $action)
                     <label
-                        class="flex! items-center! gap-2! px-2.5! py-2! border! border-border! bg-[#fafafa]! rounded!">
+                        class="flex items-center gap-2 px-2.5 py-2 border border-border bg-[#fafafa] rounded">
 
                         <input type="checkbox" name="actions[]" value="{{ $action }}"
                             {{ in_array($action, $permissions) ? 'checked' : '' }}>
 
-                        <span class="capitalize!">
+                        <span class="capitalize">
                             {{ $action }}
                         </span>
 
@@ -72,7 +72,7 @@
 
             </div>
 
-            <div class="flex! justify-end! mt-[25px]!">
+            <div class="flex justify-end mt-[25px]">
                 <x-blatui.button type="submit">save</x-blatui.button>
             </div>
 

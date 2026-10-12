@@ -1,14 +1,14 @@
 
 
-    <section class="py-14! md:py-24!">
+    <section class="py-14 md:py-24">
         <x-ui.container>
-            <div class="flex! flex-wrap! -mx-3!">
-                <div class="w-full! shrink-0! grow-0! px-3!">
+            <div class="flex flex-wrap -mx-3">
+                <div class="w-full shrink-0 grow-0 px-3">
 
-                    <div class="fcui-card relative! flex! flex-col! min-w-0!">
-                        <div class="fcui-prose grow! shrink! basis-auto! p-6!">
+                    <div class="fcui-card relative flex flex-col min-w-0">
+                        <div class="fcui-prose grow shrink basis-auto p-6">
 
-                            <div class="mb-6!">
+                            <div class="mb-6">
 
                                     <h3>FreeCause User Agreement</h3>
 
@@ -183,7 +183,7 @@
                                         forward a closed petition to another petition site either by way of URL forwarding
                                         or by notation (text direction).</p>
 
-                                    <div class="pl-[50px]!">
+                                    <div class="pl-[50px]">
                                         <p>(b) Members acknowledge that the signature list URL can be made available by
                                             them and sent (emailed) to the petition target for viewing of the signature
                                             list at any time and on completition of the petition. Members acknowledge

@@ -11,29 +11,29 @@
     @stack('head')
 </head>
 
-<body class="bg-[#f9fafb]!">
-    <x-blatui.sidebar-provider class="bg-[#f9fafb]!">
+<body class="bg-[#f9fafb]">
+    <x-blatui.sidebar-provider class="bg-[#f9fafb]">
         @include('admin.partials.sidebar')
 
-        <x-blatui.sidebar-inset class="min-h-[calc(100vh-70px)]!">
-            <header class="flex flex-wrap items-center justify-between gap-2 border-b! border-border! bg-surface! px-3.5! py-2.5! text-sm! box-border! max-md:px-2.5! max-md:py-1.5! max-md:text-[13px]!">
+        <x-blatui.sidebar-inset class="min-h-[calc(100vh-70px)]">
+            <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface px-3.5 py-2.5 text-sm box-border max-md:px-2.5 max-md:py-1.5 max-md:text-[13px]">
                 <div class="flex items-center gap-2">
                     <x-blatui.sidebar-trigger />
-                    <a class="text-ink! no-underline! whitespace-nowrap! hover:underline!" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                    <a class="text-ink no-underline whitespace-nowrap hover:underline" href="{{ route('admin.dashboard') }}">Dashboard</a>
                 </div>
-                <div class="flex items-center gap-2 text-muted! max-md:gap-1">
-                    <span class="whitespace-nowrap!">v 1.2.1</span>
-                    <span class="max-md:hidden!">|</span>
-                    <span class="max-md:hidden!">support</span>
+                <div class="flex items-center gap-2 text-muted max-md:gap-1">
+                    <span class="whitespace-nowrap">v 1.2.1</span>
+                    <span class="max-md:hidden">|</span>
+                    <span class="max-md:hidden">support</span>
                     <x-blatui.dropdown-menu>
                         <x-blatui.dropdown-menu-trigger>
-                            <x-blatui.button variant="outline" size="sm" type="button" class="ms-1!">
+                            <x-blatui.button variant="outline" size="sm" type="button" class="ms-1">
                                 {{ admin_user()?->name ?? 'admin' }}
                                 <x-lucide-chevron-down class="size-3.5" aria-hidden="true" />
                             </x-blatui.button>
                         </x-blatui.dropdown-menu-trigger>
-                        <x-blatui.dropdown-menu-content align="end" class="w-44!">
-                            <x-blatui.dropdown-menu-label class="text-muted!">{{ admin_user()?->name ?? 'admin' }}</x-blatui.dropdown-menu-label>
+                        <x-blatui.dropdown-menu-content align="end" class="w-44">
+                            <x-blatui.dropdown-menu-label class="text-muted">{{ admin_user()?->name ?? 'admin' }}</x-blatui.dropdown-menu-label>
                             <x-blatui.dropdown-menu-separator />
                             <form method="POST" action="{{ route('admin.logout') }}">
                                 @csrf
@@ -44,7 +44,7 @@
                 </div>
             </header>
 
-            <div class="min-w-0! flex-1! box-border! p-2.5! px-3! max-md:p-3!">
+            <div class="min-w-0 flex-1 box-border p-2.5 px-3 max-md:p-3">
                 @yield('content')
             </div>
         </x-blatui.sidebar-inset>

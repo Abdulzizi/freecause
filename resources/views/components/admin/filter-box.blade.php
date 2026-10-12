@@ -5,14 +5,14 @@
     'activeCount' => 0,
 ])
 
-<div class="flex! items-center! gap-2! mb-2!">
-    <span class="font-semibold! text-[13px]! uppercase! tracking-[0.05em]! text-ink!">{{ $title }}</span>
+<div class="flex items-center gap-2 mb-2">
+    <span class="font-semibold text-[13px] uppercase tracking-[0.05em] text-ink">{{ $title }}</span>
     @if ($activeCount > 0)
         <x-blatui.badge tone="info">{{ $activeCount }} active</x-blatui.badge>
     @endif
 </div>
 
-<x-blatui.card class="p-3! mb-3!">
+<x-blatui.card class="p-3 mb-3">
     <form method="get" action="{{ $action }}" class="fc-filter-form" data-live-search>
         {{ $slot }}
 
