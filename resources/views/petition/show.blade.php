@@ -27,6 +27,9 @@
 
     $loginUrl = lroute('login');
 
+    $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
+    $signTarget = request()->attributes->get('stateless_render') === true ? $signPageUrl : '#signFormTop';
+
     $authHintSplit = __('show.auth_hint_split', ['login_url' => $loginUrl]);
     $authHintStack = __('show.auth_hint_stack', ['login_url' => $loginUrl]);
 
@@ -104,7 +107,7 @@
                     </h1>
 
                     @if (!$hasSigned)
-                        <x-ui.button variant="danger" href="#signFormTop">{{ $btnSignNow }}</x-ui.button>
+                        <x-ui.button variant="danger" href="{{ $signTarget }}">{{ $btnSignNow }}</x-ui.button>
                     @endif
                 </div>
 
@@ -505,7 +508,7 @@
 
     @if (!$hasSigned)
         <div class="fcui-sticky-signbar">
-            <a href="#signFormTop" class="fcui-btn fcui-btn--md fcui-btn--danger block! text-center! w-full!">{{ $btnSignNow }}</a>
+            <a href="{{ $signTarget }}" class="fcui-btn fcui-btn--md fcui-btn--danger block! text-center! w-full!">{{ $btnSignNow }}</a>
         </div>
     @endif
 

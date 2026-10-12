@@ -28,6 +28,7 @@
     $agreeNo = __('sign.agree_no');
 
     $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
+    $stateless = request()->attributes->get('stateless_render') === true;
 @endphp
 
 @if ($isAuthed)
@@ -131,6 +132,9 @@
 
     @endif
 @else
+    @if ($stateless)
+        <x-ui.button variant="danger" :href="$signPageUrl" class="w-full!">{{ $tBtnSign }}</x-ui.button>
+    @else
     <form action="{{ $signPageUrl }}" method="POST" data-sign-busy data-validate data-msg-required="{{ __('common.required') }}" data-msg-email="{{ __('sign.email_warning') }}" class="fc-sign-form fc-sign-form--{{ $variant }}">
         @csrf
         <x-ui.alert variant="error" class="mt-2!" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
@@ -224,4 +228,5 @@
             </div>
         </div>
     </form>
+    @endif
 @endif

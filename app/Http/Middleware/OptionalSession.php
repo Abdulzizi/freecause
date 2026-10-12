@@ -16,7 +16,8 @@ class OptionalSession
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->cookies->count() === 0
+        if ($request->isMethod('GET')
+            && $request->cookies->count() === 0
             && ! $request->headers->has('Authorization')
             && auth()->guest()) {
             $request->attributes->set('stateless_render', true);

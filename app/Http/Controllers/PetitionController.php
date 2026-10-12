@@ -330,7 +330,7 @@ class PetitionController extends Controller
 
         $sessionKey = "petition_viewed.{$petition->id}";
 
-        if ($request->session()->has($sessionKey)) {
+        if ($request->hasSession() && $request->session()->has($sessionKey)) {
             return;
         }
 
@@ -352,7 +352,9 @@ class PetitionController extends Controller
 
         DB::table('petitions')->where('id', $petition->id)->increment('views');
 
-        $request->session()->put($sessionKey, true);
+        if ($request->hasSession()) {
+            $request->session()->put($sessionKey, true);
+        }
     }
 
     public function sign(Request $request, string $locale, string $slug, int $id)

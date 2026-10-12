@@ -14,22 +14,18 @@ untouched (no inline script).
 
 ## Ruleset
 
-Two lists, both `"relative_to": "document"`, both `eagerness: conservative`:
+Two lists, both `"relative_to": "document"`:
 
 - `prefetch` — every same-origin link except `/admin/*`, `/api/*`, `/*logout*`,
   `*/download/*`, `/widgets/*`, `/widget-render/*`, `[target=_blank]`,
-  `[rel~=nofollow]` and `[data-no-prerender]`.
-- `prerender` — the same set plus `*/petition/*`, `*/create-petition*` and
-  `*/sign*` exclusions.
+  `[rel~=nofollow]` and `[data-no-prerender]`. `eagerness: conservative`.
+- `prerender` — the same set plus `*/create-petition*` and `*/sign*`
+  exclusions. `eagerness: moderate` (hover ~200ms, Chrome pools two).
 
-The prerender exclusions exist because those pages are not edge-cached yet and
-are the most expensive renders; a hover-triggered preload would cost a full PHP
-render. Once `docs/performance-edge-cache.md` covers detail and the form pages,
-the plan is:
-
-1. drop the three path exclusions from the prerender list,
-2. raise `eagerness` to `moderate` (hover ~200ms, Chrome pools two),
-3. re-check origin load and `Sec-Purpose` traffic.
+Petition detail is prerenderable again because it is edge-cached for guests
+(see `docs/performance-edge-cache.md`) — a hover-triggered preload is now cheap
+and correctly bypasses counting for bare prefetches. `create-petition` and the
+sign pages stay excluded: they are sessionful by design.
 
 To opt a link out later, add `data-no-prerender` to the anchor.
 

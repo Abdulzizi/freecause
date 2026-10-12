@@ -9,6 +9,7 @@ return [
     'routes' => [
         'petitions.index',
         'petitions.byCategory',
+        'petition.show',
         'page.show',
         'faqs',
         'how-to-write-a-petition',

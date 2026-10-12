@@ -40,11 +40,15 @@ class SpeculationRulesTest extends TestCase
         $matchAll = ['href_matches' => '/*', 'relative_to' => 'document'];
         $petitionExclusion = ['not' => ['href_matches' => '*/petition/*']];
         $adminExclusion = ['not' => ['href_matches' => '/admin/*']];
+        $createExclusion = ['not' => ['href_matches' => '*/create-petition*']];
+        $signExclusion = ['not' => ['href_matches' => '*/sign*']];
 
         $this->assertContains($matchAll, $rules['prerender'][0]['where']['and']);
         $this->assertContains($adminExclusion, $rules['prerender'][0]['where']['and']);
-        $this->assertContains($petitionExclusion, $rules['prerender'][0]['where']['and']);
-        $this->assertSame('conservative', $rules['prerender'][0]['eagerness']);
+        $this->assertNotContains($petitionExclusion, $rules['prerender'][0]['where']['and']);
+        $this->assertContains($createExclusion, $rules['prerender'][0]['where']['and']);
+        $this->assertContains($signExclusion, $rules['prerender'][0]['where']['and']);
+        $this->assertSame('moderate', $rules['prerender'][0]['eagerness']);
 
         $this->assertContains($matchAll, $rules['prefetch'][0]['where']['and']);
         $this->assertContains($adminExclusion, $rules['prefetch'][0]['where']['and']);

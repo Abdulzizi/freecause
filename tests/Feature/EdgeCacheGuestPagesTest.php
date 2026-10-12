@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Petition;
+use App\Models\PetitionTranslation;
+use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,5 +45,50 @@ class EdgeCacheGuestPagesTest extends TestCase
             ->get('/en/donations')
             ->assertOk()
             ->assertHeader('X-FreeCause-Edge-Cache', 'bypass');
+    }
+
+    public function test_guest_petition_detail_is_edge_eligible_without_a_form_token(): void
+    {
+        [$petition, $slug] = $this->publishedPetition();
+
+        $response = $this->get("/en/petition/{$slug}/{$petition->id}");
+
+        $response->assertOk()
+            ->assertHeader('X-FreeCause-Edge-Cache', 'eligible')
+            ->assertHeaderMissing('Set-Cookie');
+
+        $this->assertStringNotContainsString('name="_token"', $response->getContent());
+        $this->assertStringContainsString('/sign/confirm', $response->getContent());
+    }
+
+    public function test_authenticated_petition_detail_bypasses(): void
+    {
+        [$petition, $slug] = $this->publishedPetition();
+
+        $this->actingAs($this->user())
+            ->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->assertHeader('X-FreeCause-Edge-Cache', 'bypass');
+    }
+
+    private function user()
+    {
+        return User::factory()->create(['verified' => true]);
+    }
+
+    private function publishedPetition(): array
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        $slug = 'edge-cache-detail-'.$petition->id;
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Edge Cache Detail',
+            'slug' => $slug,
+            'description' => 'Description',
+        ]);
+
+        return [$petition, $slug];
     }
 }

@@ -274,11 +274,30 @@ class PetitionTest extends TestCase
             'description' => 'Description',
         ]);
 
-        $this->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
-        $this->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
+        $withSession = fn () => $this->withUnencryptedCookie(config('session.cookie'), 'viewer-session');
+
+        $withSession()->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
+        $withSession()->get("/en/petition/viewed-petition/{$petition->id}")->assertOk();
 
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'views' => 1]);
         $this->assertDatabaseHas('petition_views', ['petition_id' => $petition->id, 'views' => 1]);
+    }
+
+    public function test_stateless_petition_render_counts_a_view_each_time(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Stateless Petition',
+            'slug' => 'stateless-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/stateless-petition/{$petition->id}")->assertOk();
+        $this->get("/en/petition/stateless-petition/{$petition->id}")->assertOk();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'views' => 2]);
     }
 
     public function test_token_shaped_petition_slug_returns_404(): void

@@ -66,7 +66,6 @@ Route::get('/speculationrules.json', function () {
     $prerenderExclusions = [
         ['not' => ['href_matches' => '*/create-petition*']],
         ['not' => ['href_matches' => '*/sign*']],
-        ['not' => ['href_matches' => '*/petition/*']],
     ];
 
     $selectorExclusions = [
@@ -86,7 +85,7 @@ Route::get('/speculationrules.json', function () {
                         $selectorExclusions
                     ),
                 ],
-                'eagerness' => 'conservative',
+                'eagerness' => 'moderate',
             ],
         ],
         'prefetch' => [
@@ -312,7 +311,10 @@ Route::prefix('{locale}')
 
         Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
 
-        Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->name('petition.show');
+        Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->name('petition.show');
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware('throttle:10,1');

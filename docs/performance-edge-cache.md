@@ -1,9 +1,9 @@
 # Anonymous HTML edge cache
 
 The origin renders an allowlist of public GET routes (`petitions.index`,
-`petitions.byCategory`, `page.show`, `faqs`, `how-to-write-a-petition`,
-`donations`, `personal-data-processing`) through a stateless path when the
-request allows it.
+`petitions.byCategory`, `petition.show`, `page.show`, `faqs`,
+`how-to-write-a-petition`, `donations`, `personal-data-processing`) through a
+stateless path when the request allows it.
 
 ## Origin behaviour
 
@@ -37,12 +37,24 @@ served to visitors who should have been redirected. `faqs`,
 `how-to-write-a-petition`, `donations`, `personal-data-processing` and the
 `page.show` slugs are safe because the locale in the path is explicit and the
 auto-redirect only matches `root`/`home`.
-Petition detail is excluded because guest sign forms contain session CSRF
-tokens, errors and old input, and recordView uses session deduplication. Navbar
-authentication, remember-me cookies and toast flash data are also personalized.
-Removing Set-Cookie after rendering would share CSRF tokens and break native POST
-signing. The root, auth, OAuth, admin, confirmation, thanks, owner and sitemap
-routes are excluded.
+
+Petition detail is cacheable for cookie-less guests. Two adaptations make that
+safe and JS-free:
+
+- The guest sign forms are replaced by a single "sign now" button that links to
+  the sessionful confirm page, so the cached HTML contains no CSRF token at all
+  and no-JS visitors still reach a working form.
+- `recordView` guards its session calls with `hasSession()`; stateless renders
+  count one view per origin render with no per-session dedupe. Combined with
+  edge caching, `petitions.views` therefore approximates origin renders rather
+  than user views (it is a vanity metric; `signature_count` is unaffected).
+
+`create-petition` and the sign flows stay sessionful: their forms are the page,
+and serving them without a token would break submission for visitors without
+JS. Navbar authentication, remember-me cookies and toast flash data are likewise
+personalized. Removing Set-Cookie after rendering would share CSRF tokens and
+break native POST signing. The root, auth, OAuth, admin, confirmation, thanks,
+owner and sitemap routes are excluded.
 
 ## Purge
 
@@ -63,7 +75,7 @@ for the 14 supported locale paths, on listings plus the static content slugs:
 ```json
 {
   "description": "FreeCause verified stateless pages only",
-  "expression": "(http.host eq \"www.freecause.com\" and http.request.uri.query eq \"\" and http.cookie eq \"\" and not any(http.request.headers[\"authorization\"][*] ne \"\") and http.request.uri.path matches r\"^/(da|de|el|en|es|fr|it|nl|pl|pt|ro|ru|sv|tr)/(petitions(/category-[^/]+-[0-9]+)?|faqs|how-to-write-a-petition|donations|personal-data-processing|terms-of-service|privacy-policy|ethical-code)$\")",
+  "expression": "(http.host eq \"www.freecause.com\" and http.request.uri.query eq \"\" and http.cookie eq \"\" and not any(http.request.headers[\"authorization\"][*] ne \"\") and http.request.uri.path matches r\"^/(da|de|el|en|es|fr|it|nl|pl|pt|ro|ru|sv|tr)/(petitions(/category-[^/]+-[0-9]+)?|petition/[^/]+/[0-9]+|faqs|how-to-write-a-petition|donations|personal-data-processing|terms-of-service|privacy-policy|ethical-code)$\")",
   "action": "set_cache_settings",
   "action_parameters": {
     "cache": true,
@@ -101,8 +113,8 @@ Confirm all active locales, invalid locales and legacy redirects; first browser
 language visits must retain existing redirects. Confirm guest, session,
 remember-me, admin, OAuth, query, failed and non-HTML responses bypass. Confirm
 new stateless pages have no token, flash, account data or Set-Cookie. Verify
-MISS followed by HIT for anonymous listings and static pages, and bypass for
-personalized requests. Check sign, publish, feature, category, translation and page edits
+MISS followed by HIT for anonymous listings, static pages and petition detail,
+and bypass for personalized requests. Check sign, publish, feature, category, translation and page edits
 invalidate affected pages after transaction commit; rollback transactions must
 never send purge requests. Failures must not interrupt the user's write. Query
 variants stay uncached.
