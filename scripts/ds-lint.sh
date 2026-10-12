@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # ds-lint — design-system guard for the public + admin Blade/CSS surface.
+# Skips vendor trees (components/blatui is CLI-generated, emails need inline styles).
 # Fails on: important-utility bangs, arbitrary type/spacing, disallowed radius,
 # disallowed elevation, raw hex colours outside the allowlist.
 #
@@ -25,7 +26,8 @@ scan() {
     local label="$1" pattern="$2"
     shift 2
     local hits total
-    hits=$(grep -rnE "$pattern" "$@" --include='*.blade.php' --include='*.js' --include='*.php' 2>/dev/null || true)
+    hits=$(grep -rnE "$pattern" "$@" --include='*.blade.php' --include='*.js' --include='*.php' \
+        --exclude-dir=blatui --exclude-dir=emails 2>/dev/null || true)
     if [ -n "$hits" ]; then
         total=$(printf '%s\n' "$hits" | wc -l | tr -d ' ')
         report "$label" "$hits" "$total"
@@ -39,7 +41,7 @@ scan "disallowed radius" 'rounded-(xs|xl|2xl|3xl|4xl)([^a-z-]|$)|rounded-\[|roun
 scan "disallowed elevation" 'shadow-(2xs|xs|sm|md|lg|xl|2xl)([^a-z-]|$)|shadow-\[' "${VIEWS[@]}"
 scan "arbitrary colour utility" '(bg|text|border|ring|outline|fill|stroke|from|via|to|decoration|placeholder|caret|accent|divide)-\[#' "${VIEWS[@]}"
 
-hex_hits=$(grep -rnE 'style="[^"]*#[0-9a-fA-F]{3,8}' "${VIEWS[@]}" --include='*.blade.php' 2>/dev/null || true)
+hex_hits=$(grep -rnE 'style="[^"]*#[0-9a-fA-F]{3,8}' "${VIEWS[@]}" --include='*.blade.php' --exclude-dir=blatui --exclude-dir=emails 2>/dev/null || true)
 if [ -n "$hex_hits" ] && [ -f "$ALLOW_FILE" ]; then
     hex_hits=$(printf '%s\n' "$hex_hits" | grep -vEf <(grep -vE '^[[:space:]]*(#|$)' "$ALLOW_FILE") || true)
 fi

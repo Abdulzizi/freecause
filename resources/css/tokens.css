@@ -3,6 +3,10 @@
     --color-surface: var(--fc-surface);
     --color-surface-2: var(--fc-surface-2);
     --color-surface-muted: var(--fc-surface-2);
+    --color-band: var(--fc-band);
+    --color-dark: var(--fc-dark);
+    --color-on-dark: var(--fc-on-dark);
+    --color-on-dark-muted: var(--fc-on-dark-muted);
     --color-border: var(--fc-border);
     --color-border-strong: var(--fc-border-strong);
     --color-ink: var(--fc-text);
@@ -87,6 +91,9 @@
 
     --fc-hairline: rgba(31, 30, 28, 0.08);
     --fc-band: var(--fc-surface-2);
+    --fc-dark: #1f2024;
+    --fc-on-dark: #f4f2ef;
+    --fc-on-dark-muted: #b9b4ac;
 
     --fc-r-sm: 6px;
     --fc-r-md: 8px;
