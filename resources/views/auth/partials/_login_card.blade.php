@@ -1,9 +1,9 @@
-<div class="bg-white rounded-[.5rem] shadow-sm p-4">
+<div class="bg-surface rounded-md shadow-elev-1 p-4">
     @include('auth.partials._social_box', ['redirect' => $redirect, 'flow' => 'login'])
 
     <div class="mb-4">
         <div class="font-semibold">{{ __('auth.login') }}</div>
-        <div class="h-[2px] bg-[#d61f26] w-full mt-[6px]"></div>
+        <div class="h-0.5 bg-brand w-full mt-1.5"></div>
     </div>
 
     @if (old('auth_form') === 'login' && $errors->any())
@@ -36,7 +36,7 @@
             />
         </div>
 
-        <x-ui.button type="submit" variant="danger" class="px-6 rounded-[6px]">
+        <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm">
             {{ __('auth.login') }}
         </x-ui.button>
 

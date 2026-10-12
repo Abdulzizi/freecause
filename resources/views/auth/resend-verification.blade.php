@@ -7,9 +7,9 @@
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 justify-center">
                 <div class="w-full shrink-0 grow-0 px-3 md:w-2/3 lg:w-1/2">
-                    <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-[1rem] border border-border shadow-[var(--fc-elev-1)]">
+                    <div class="relative flex flex-col min-w-0 bg-surface bg-clip-border rounded-lg shadow-elev-1">
                         <div class="grow shrink basis-auto p-6 md:p-12">
-                            <h1 class="text-center mb-6 text-[28px] font-medium">{{ __('auth.resend_verification_heading') }}</h1>
+                            <h1 class="text-center mb-6 text-2xl font-medium">{{ __('auth.resend_verification_heading') }}</h1>
 
                             @if (session('success'))
                                 <x-ui.alert variant="success" class="mb-4">{{ session('success') }}</x-ui.alert>
@@ -38,7 +38,7 @@
                                 <x-ui.button type="submit" variant="danger" class="w-full">{{ __('auth.resend_email_btn') }}</x-ui.button>
 
                                 <div class="text-center mt-4">
-                                    <a href="{{ lroute('login') }}" class="text-[#6c757d]">{{ __('auth.back_login') }}</a>
+                                    <a href="{{ lroute('login') }}" class="text-muted">{{ __('auth.back_login') }}</a>
                                 </div>
                             </form>
                         </div>

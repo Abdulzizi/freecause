@@ -1,10 +1,10 @@
 
 @php($isRegisterSubmit = old('auth_form') === 'register')
-<div class="bg-white rounded-[.5rem] shadow-sm p-4">
+<div class="bg-surface rounded-md shadow-elev-1 p-4">
     @include('auth.partials._social_box', ['redirect' => $redirect])
 
     <div class="mb-4">
-        <div class="font-semibold text-[22px]">{{ __('auth.register') }}</div>
+        <div class="font-semibold text-xl">{{ __('auth.register') }}</div>
     </div>
 
     @if (old('auth_form') === 'register' && $errors->any())
@@ -68,7 +68,7 @@
             />
         </div>
 
-        <div class="mb-4 text-[14px]">
+        <div class="mb-4 text-sm">
             {{ __('auth.nickname_hint') }}
         </div>
 
@@ -99,6 +99,6 @@
             </label>
         </div>
 
-        <x-ui.button type="submit" variant="danger" class="px-6 rounded-[6px]">{{ __('auth.submit') }}</x-ui.button>
+        <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm">{{ __('auth.submit') }}</x-ui.button>
     </form>
 </div>

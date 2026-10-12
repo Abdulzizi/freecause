@@ -8,15 +8,15 @@
             <div class="flex flex-wrap -mx-3 justify-center">
                 <div class="w-full shrink-0 grow-0 px-3 md:w-2/3 lg:w-1/2">
 
-                    <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-[1rem] border border-border shadow-[var(--fc-elev-1)]">
+                    <div class="relative flex flex-col min-w-0 bg-surface bg-clip-border rounded-lg shadow-elev-1">
                         <div class="grow shrink basis-auto p-6 md:p-12">
 
-                            <h1 class="text-center mb-6 text-[28px] font-medium">{{ __('auth.google_heading') }}</h1>
+                            <h1 class="text-center mb-6 text-2xl font-medium">{{ __('auth.google_heading') }}</h1>
 
                             <div class="text-center mb-6">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}"
                                     class="btn fc-google-btn fc-oauth-btn">
-                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-[18px] h-[18px] block shrink-0" aria-hidden="true">
+                                    <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-4.5 h-4.5 block shrink-0" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
                             </div>
@@ -29,7 +29,7 @@
 
                             <div class="mb-4">
                                 <div class="font-semibold">{{ __('auth.login') }}</div>
-                                <div class="h-0.5 bg-[#d61f26] w-full mt-1.5"></div>
+                                <div class="h-0.5 bg-brand w-full mt-1.5"></div>
                             </div>
 
                             @if ($errors->any())
