@@ -47,7 +47,7 @@
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
                             <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
-                            <button type="submit" class="nav-link btn btn-link p-0">
+                            <button type="submit" class="nav-link">
                                 {{ $c['nav_logout'] ?? __('nav.logout') }}
                             </button>
                         </form>

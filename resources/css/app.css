@@ -385,11 +385,11 @@ body.fc-public .navbar {
     box-shadow: none;
 }
 
-body.fc-public .navbar .nav-link {
+body.fc-public .navbar a.nav-link {
     position: relative;
 }
 
-body.fc-public .navbar .nav-link::after {
+body.fc-public .navbar a.nav-link::after {
     content: "";
     position: absolute;
     inset-inline: 0.5rem;
@@ -402,10 +402,29 @@ body.fc-public .navbar .nav-link::after {
     transition: transform var(--fc-dur-fast) var(--fc-ease-standard);
 }
 
-body.fc-public .navbar .nav-link:hover::after,
-body.fc-public .navbar .nav-link:focus-visible::after,
-body.fc-public .navbar .nav-link.active::after {
+body.fc-public .navbar a.nav-link:hover::after,
+body.fc-public .navbar a.nav-link:focus-visible::after,
+body.fc-public .navbar a.nav-link.active::after {
     transform: scaleX(1);
+}
+
+body.fc-public .navbar button.nav-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    color: var(--color-ink);
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+}
+
+body.fc-public .navbar button.nav-link:hover {
+    color: var(--color-brand);
+}
+
+body.fc-public .navbar button.nav-link:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
 }
 
 @view-transition {
@@ -438,7 +457,7 @@ body.fc-public .navbar .nav-link.active::after {
         animation: none;
     }
 
-    body.fc-public .navbar .nav-link::after {
+    body.fc-public .navbar a.nav-link::after {
         transition: none;
     }
 
