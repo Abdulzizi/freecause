@@ -59,6 +59,8 @@
     @endforeach
 
     <x-blatui.back-to-top />
+
+    <div id="fc-nav-progress" class="fc-nav-progress" hidden></div>
 </body>
 
 </html>

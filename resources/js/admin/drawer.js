@@ -153,7 +153,7 @@ function handleDrawerInput(event) {
         if (filterForm.dataset.fcLastSearch === value) return;
         filterForm.dataset.fcLastSearch = value;
         filterForm.requestSubmit();
-    }, 450);
+    }, 300);
     liveSearchTimers.set(filterForm, timer);
 }
 
@@ -202,6 +202,16 @@ export function init() {
         const form = dirtyForm(event.target);
         if (form) clearDrawerDirty(form);
     }, true);
+    document.addEventListener('submit', (event) => {
+        if (!(event.target instanceof Element) || !event.target.closest('form.fc-filter-form')) return;
+        const active = document.activeElement;
+        try {
+            sessionStorage.setItem('fc:filterRestore', JSON.stringify({
+                name: (active && active.name) || '',
+                scroll: window.scrollY,
+            }));
+        } catch (_) { /* storage unavailable */ }
+    }, true);
     document.addEventListener('reset', (event) => {
         const form = dirtyForm(event.target);
         if (form) clearDrawerDirty(form);
@@ -230,4 +240,40 @@ export function init() {
     };
 
     markRowOpenFromUrl();
+    restoreFilterState();
+}
+
+function restoreFilterState() {
+    let raw = null;
+    try {
+        raw = sessionStorage.getItem('fc:filterRestore');
+        if (raw) sessionStorage.removeItem('fc:filterRestore');
+    } catch (_) {
+        return;
+    }
+    if (!raw) return;
+    let saved;
+    try {
+        saved = JSON.parse(raw);
+    } catch (_) {
+        return;
+    }
+    if (saved && saved.name) {
+        let field = null;
+        try {
+            field = document.querySelector(`.fc-filter-form [name="${CSS.escape(saved.name)}"]`);
+        } catch (_) {
+            field = null;
+        }
+        if (field && typeof field.focus === 'function') {
+            field.focus({ preventScroll: true });
+            const type = (field.getAttribute('type') || 'text').toLowerCase();
+            if (field instanceof HTMLInputElement && ['text', 'search', 'tel', 'url', 'password'].includes(type)) {
+                try {
+                    field.setSelectionRange(field.value.length, field.value.length);
+                } catch (_) { /* unsupported input type */ }
+            }
+        }
+    }
+    if (saved && typeof saved.scroll === 'number') window.scrollTo({ top: saved.scroll });
 }

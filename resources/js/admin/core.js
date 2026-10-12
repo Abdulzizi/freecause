@@ -139,6 +139,17 @@ export function init() {
         }
     });
 
+    document.addEventListener('submit', (event) => {
+        if (event.defaultPrevented) return;
+        const form = event.target.closest('form');
+        if (!form || form.hasAttribute('data-no-pending')) return;
+        form.setAttribute('aria-busy', 'true');
+        form.querySelectorAll('button[type=submit], input[type=submit]').forEach((control) => {
+            control.disabled = true;
+            control.setAttribute('aria-busy', 'true');
+        });
+    });
+
     document.addEventListener('click', async (event) => {
         const payloadToggle = event.target.closest('[data-payload-toggle]');
         if (payloadToggle) {
