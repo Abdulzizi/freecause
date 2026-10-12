@@ -199,25 +199,25 @@
                     <x-blatui.button-group>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="approve" title="Approve">
                             <x-lucide-check aria-hidden="true" />
-                            <span class="hidden! md:inline!">Approve</span>
+                            <span class="max-md:hidden!">Approve</span>
                         </x-blatui.button>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="reject" title="Reject">
                             <x-lucide-x aria-hidden="true" />
-                            <span class="hidden! md:inline!">Reject</span>
+                            <span class="max-md:hidden!">Reject</span>
                         </x-blatui.button>
                     </x-blatui.button-group>
                 @endif
 
                 @if (admin_can('signatures', 'delete'))
-                    <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action text-danger! border-danger! hover:bg-destructive/10!" data-action="delete" title="Delete">
+                    <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete" title="Delete">
                         <x-lucide-trash-2 aria-hidden="true" />
-                        <span class="hidden! md:inline!">Delete</span>
+                        <span class="max-md:hidden!">Delete</span>
                     </x-blatui.button>
                 @endif
 
                 <x-blatui.button variant="outline" size="sm" :href="route('admin.signatures', request()->except('select'))" title="Clear selection">
                     <x-lucide-x aria-hidden="true" />
-                    <span class="hidden! md:inline!">Clear</span>
+                    <span class="max-md:hidden!">Clear</span>
                 </x-blatui.button>
             </div>
         </x-slot:footer>

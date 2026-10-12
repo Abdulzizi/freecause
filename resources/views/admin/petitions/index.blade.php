@@ -5,36 +5,9 @@
 @section('content')
 
     @php
-        $icoPublish = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3v12" stroke="#198754" stroke-width="2" stroke-linecap="round"/>
-        <path d="M7 8l5-5 5 5" stroke="#198754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 21h14" stroke="#5b6470" stroke-width="2" stroke-linecap="round"/>
-    </svg>';
-
-        $icoUnpublish = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M12 21V9" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
-        <path d="M17 16l-5 5-5-5" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 3h14" stroke="#5b6470" stroke-width="2" stroke-linecap="round"/>
-    </svg>';
-
-        $icoFeature = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3l3 6 6 .5-4.5 4 1.5 6L12 17l-6 2.5 1.5-6L3 9.5 9 9l3-6z"
-        stroke="#c69200" stroke-width="2" fill="none"/>
-    </svg>';
-
-        $icoBan = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="8" stroke="#dc3545" stroke-width="2"/>
-        <path d="M8 8l8 8" stroke="#dc3545" stroke-width="2"/>
-    </svg>';
-
         $icoLink = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1" stroke="#212529" stroke-width="2"/>
         <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1" stroke="#212529" stroke-width="2"/>
-    </svg>';
-
-        $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M6 6l12 12" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
-        <path d="M18 6L6 18" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
     </svg>';
     @endphp
 
@@ -250,47 +223,47 @@
                 @if (admin_can('petitions', 'edit'))
                     <x-blatui.button variant="destructive" size="sm" type="button" data-petition-bulk-ban
                         data-url="{{ route('admin.petitions.bulkAction') }}">
-                        {!! $icoBan !!}
+                        <x-lucide-ban aria-hidden="true" />
                         <span class="max-md:hidden!">Ban</span>
                     </x-blatui.button>
                 @endif
                 @if (admin_can('petitions', 'edit'))
-                    <div class="flex! gap-1! items-center!">
+                    <div class="flex! gap-2! items-center!">
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="publish" title="Publish">
-                            {!! $icoPublish !!}
+                            <x-lucide-circle-check aria-hidden="true" />
                             <span class="max-md:hidden!">Publish</span>
                         </x-blatui.button>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="unpublish" title="Unpublish">
-                            {!! $icoUnpublish !!}
+                            <x-lucide-circle-x aria-hidden="true" />
                             <span class="max-md:hidden!">Unpublish</span>
                         </x-blatui.button>
                     </div>
 
-                    <div class="flex! gap-1! items-center!">
+                    <div class="flex! gap-2! items-center!">
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="activate" title="Activate">
-                            {!! $icoPublish !!}
+                            <x-lucide-circle-check aria-hidden="true" />
                             <span class="max-md:hidden!">Activate</span>
                         </x-blatui.button>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="deactivate" title="Deactivate">
-                            {!! $icoUnpublish !!}
+                            <x-lucide-circle-x aria-hidden="true" />
                             <span class="max-md:hidden!">Deactivate</span>
                         </x-blatui.button>
                     </div>
 
-                    <div class="flex! gap-1! items-center!">
+                    <div class="flex! gap-2! items-center!">
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="feature" title="Feature">
-                            {!! $icoFeature !!}
+                            <x-lucide-star aria-hidden="true" />
                             <span class="max-md:hidden!">Feature</span>
                         </x-blatui.button>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="unfeature" title="Unfeature">
-                            {!! $icoFeature !!}
+                            <x-lucide-star-off aria-hidden="true" />
                             <span class="max-md:hidden!">Unfeature</span>
                         </x-blatui.button>
                     </div>
                 @endif
 
                 <x-blatui.button variant="outline" size="sm" :href="route('admin.petitions', request()->except('select'))" title="Clear selection">
-                    {!! $icoX !!}
+                    <x-lucide-x aria-hidden="true" />
                     <span class="max-md:hidden!">Clear</span>
                 </x-blatui.button>
             </div>

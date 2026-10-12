@@ -103,7 +103,7 @@
         <x-slot:footer>
             @if (admin_can('logs', 'delete'))
                 <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Delete selected logs">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a11" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    <x-lucide-trash-2 aria-hidden="true" />
                     <span class="max-md:hidden!">delete selected</span>
                 </x-blatui.button>
             @endif

@@ -3,25 +3,6 @@
 @section('title', 'Users')
 
 @section('content')
-    @php
-        $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
-            <path d="M18 6L6 18" stroke="#dc3545" stroke-width="2" stroke-linecap="round"/>
-        </svg>';
-
-        $icoUnban = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="8" stroke="#198754" stroke-width="2"/>
-            <path d="M8 12h8" stroke="#198754" stroke-width="2"/>
-        </svg>';
-
-        $icoDelete = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M5 7h14" stroke="#dc3545" stroke-width="2"/>
-            <path d="M9 7V5h6v2" stroke="#dc3545" stroke-width="2"/>
-            <path d="M9 10v6M15 10v6" stroke="#dc3545" stroke-width="2"/>
-            <path d="M6 7l1 12h10l1-12" stroke="#dc3545" stroke-width="2"/>
-        </svg>';
-    @endphp
-
     <x-admin.page-header title="users" :count="$approxTotal" />
 
     @php
@@ -160,24 +141,22 @@
 
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
-                <div class="flex! gap-1! items-center!">
-                    @if (admin_can('users', 'edit'))
-                        <x-blatui.button variant="outline" size="sm" type="button" id="bulk-unban" title="Unban">
-                            {!! $icoUnban !!}
-                            <span class="max-md:hidden!">Unban</span>
-                        </x-blatui.button>
-                    @endif
+                @if (admin_can('users', 'edit'))
+                    <x-blatui.button variant="outline" size="sm" type="button" id="bulk-unban" title="Unban">
+                        <x-lucide-undo-2 aria-hidden="true" />
+                        <span class="max-md:hidden!">Unban</span>
+                    </x-blatui.button>
+                @endif
 
-                    @if (admin_can('users', 'delete'))
-                        <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Delete">
-                            {!! $icoDelete !!}
-                            <span class="max-md:hidden!">Delete</span>
-                        </x-blatui.button>
-                    @endif
-                </div>
+                @if (admin_can('users', 'delete'))
+                    <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Delete">
+                        <x-lucide-trash-2 aria-hidden="true" />
+                        <span class="max-md:hidden!">Delete</span>
+                    </x-blatui.button>
+                @endif
 
                 <x-blatui.button variant="outline" size="sm" :href="route('admin.users', request()->except('select'))" title="Clear selection">
-                    {!! $icoX !!}
+                    <x-lucide-x aria-hidden="true" />
                     <span class="max-md:hidden!">Clear</span>
                 </x-blatui.button>
             </div>
