@@ -51,9 +51,15 @@ CSP stays strict — never add eval there.
 
 ## Styling rules
 
-- Do **not** use `flex!` / `block!` (important display) on elements toggled by Alpine
-  `x-show`: `!important` beats Alpine's inline `display:none`. Use the plain utility.
-- Admin links default to ink; the public link color is scoped out with
-  `a:not([data-slot])`. Brand-colored links must opt in with `text-brand!`.
-- Keep table body text on the shared 13px scale; headers are 11px uppercase muted.
+- Never use `!` important suffixes (`flex!`, `block!`, `text-brand!`). `legacy-compat.css`
+  now sits below `components`/`utilities` in the cascade, so plain utilities win; the
+  admin sheet maps BlatUI variables onto the shared tokens (see `docs/design-system.md`).
+- Alpine `x-show` toggles keep working because nothing is important: never reintroduce
+  `!important` on a display utility.
+- Admin links default to ink through a `@layer base` rule (`a:not([data-slot])`); brand
+  links opt in with `text-brand`.
+- Type comes from the shared scale: `text-sm` for tables and dense UI, `text-xs` for
+  uppercase/meta, `text-lg`/`text-2xl` for page headings. No arbitrary `text-[…]`.
+- Surfaces use `bg-surface`/`bg-surface-2` with `border-border` or `shadow-elev-1`, radius
+  `rounded-sm|md|lg|full` only, elevation `shadow-elev-1|2|3` only.
 - Turbo page swaps fade the main inset in with a 140ms `fc-page-enter` animation (skipped on first load and under `prefers-reduced-motion`); `scrollbar-gutter: stable` prevents width shifts when scrollbars appear.
