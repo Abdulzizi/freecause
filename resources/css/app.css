@@ -212,7 +212,7 @@ body.fc-public .fc-lift {
 
 body.fc-public .fc-lift:hover {
     transform: translateY(var(--fc-hover-lift));
-    box-shadow: var(--fc-elev-2);
+    box-shadow: var(--fc-elev-2) !important;
 }
 
 /* Scroll reveals + stagger — progressive enhancement (P2) */
@@ -229,7 +229,7 @@ body.fc-public .fc-lift:hover {
 
 @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-        body.fc-public .fc-reveal,
+        body.fc-public .fc-reveal:not(.fc-stagger),
         body.fc-public .fc-stagger > * {
             animation: fc-reveal-in var(--fc-dur-slow) var(--fc-ease-decel) both;
             animation-timeline: view();
@@ -245,6 +245,43 @@ body.fc-public .fc-lift:hover {
         body.fc-public .fc-stagger > :nth-child(6) { --fc-i: 5; }
         body.fc-public .fc-stagger > :nth-child(7) { --fc-i: 6; }
         body.fc-public .fc-stagger > :nth-child(8) { --fc-i: 7; }
+    }
+}
+
+/* Press feedback for action buttons (P3) */
+body.fc-public .fcui-btn:not(:disabled):not([aria-busy='true']):active {
+    transform: scale(var(--fc-press-scale));
+}
+
+/* Copy-link success micro-feedback (class added by legacy/petition-show.js) (P3) */
+body.fc-public .fc-share-copy--copied {
+    color: #1e7a34;
+    animation: fc-copied-pop var(--fc-dur-fast) var(--fc-ease-decel);
+}
+
+@keyframes fc-copied-pop {
+    from {
+        transform: scale(0.94);
+    }
+    to {
+        transform: none;
+    }
+}
+
+/* Goal progress fills when it scrolls into view (P3) */
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        body.fc-public .fc-progress-reveal .fcui-progress-fill {
+            animation-timeline: view();
+            animation-range: entry 25% cover 50%;
+        }
+    }
+}
+
+/* Floating scroll-top clears the mobile sticky sign bar (P3) */
+@media (max-width: 767.98px) {
+    body.fc-public:has(.fcui-sticky-signbar) .fcui-scrolltop {
+        bottom: calc(4.5rem + env(safe-area-inset-bottom));
     }
 }
 
@@ -323,6 +360,16 @@ body.fc-public .navbar .nav-link.active::after {
     body.fc-public .fc-lift:hover {
         transform: none;
     }
+
+    body.fc-public .fc-share-copy--copied {
+        animation: none;
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none;
+    }
 }
 
 h1,
@@ -396,7 +443,7 @@ nav.navbar {
         text-decoration: none !important;
         cursor: pointer;
         user-select: none;
-        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
     }
 
     .fcui-btn:focus-visible {
@@ -798,7 +845,7 @@ nav.navbar {
         align-items: center;
         gap: 0.75rem;
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
         background-color: #ffffff !important;
         box-shadow: 0 -4px 16px rgba(48, 42, 34, 0.14);
     }

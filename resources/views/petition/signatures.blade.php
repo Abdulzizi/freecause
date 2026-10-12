@@ -11,7 +11,7 @@
 @section('title', 'Signatures: ' . $petitionTitle)
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
 
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! mb-6! border! border-border!">
@@ -52,10 +52,10 @@
                             <a href="{{ $petitionUrl }}" data-prefetch class="text-brand! ms-1!">{{ __('sig.continue') }}</a>
                         </p>
 
-                        <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
+                        <div class="fc-progress-reveal h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mb-2!">
                             <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                         </div>
-                        <div class="flex! justify-between! text-[13px]! text-muted!">
+                        <div class="flex! justify-between! text-[13px]! text-muted! fc-tabular">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border!">
+            <div class="bg-white! shadow-sm! rounded-[.5rem]! p-6! border! border-border! fc-reveal">
 
                 <div class="font-bold! text-base! mb-4!">
                     {{ __('sig.all_signatures') }}

@@ -3,7 +3,7 @@
 @section('title', ($pageTitle ?? __('list.petitions')) . ' - FreeCause')
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
 
             <nav aria-label="breadcrumb" class="mb-4!">
@@ -57,14 +57,14 @@
                     </div>
                 @endif
 
-                <div class="flex! flex-col! gap-2!">
+                <div class="flex! flex-col! gap-2! fc-reveal fc-stagger">
                     @forelse($petitions as $petition)
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" data-prefetch class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-border! rounded-md! text-brand! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-brand! hover:text-white! hover:border-brand! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:no-underline!">
+                        ]) }}" data-prefetch style="view-transition-name: petition-{{ $petition->id }}" class="flex! justify-between! items-center! px-3.5! py-2.5! border! border-border! rounded-md! text-brand! text-sm! bg-white! transition-all! duration-[0.18s]! ease-[ease]! hover:bg-brand! hover:text-white! hover:border-brand! hover:shadow-[0_2px_6px_rgba(204,31,31,0.25)]! hover:-translate-y-px! hover:no-underline!">
                             <span class="break-words! min-w-0!">{{ $petition->tr_title }}</span>
-                            <span class="text-muted! ms-4! text-nowrap! text-[13px]!">
+                            <span class="fc-tabular text-muted! ms-4! text-nowrap! text-[13px]!">
                                 <span data-abbr data-abbr-value="{{ (int) ($petition->signature_count ?? 0) }}">{{ number_format($petition->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                             </span>
                         </a>

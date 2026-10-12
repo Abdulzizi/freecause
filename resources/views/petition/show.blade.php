@@ -68,7 +68,7 @@
 @endpush
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
 
             {{-- Breadcrumb --}}
@@ -99,7 +99,7 @@
                     </div>
                 @endif
 
-                <div class="flex! items-center! justify-between! flex-wrap! gap-2! mb-2!">
+                <div class="flex! items-center! justify-between! flex-wrap! gap-2! mb-2!" style="view-transition-name: petition-{{ $petition->id }}">
                     <h1 class="mb-0! text-[22px]! font-bold! leading-[1.3]! break-words! [overflow-wrap:anywhere]!">
                         {{ $petitionTitle }}
                     </h1>
@@ -222,7 +222,7 @@
                             <h2 class="text-lg! font-semibold!">{{ $boxShoutbox }}</h2>
                             @include('partials.gradient-divider')
 
-                            <div>
+                            <div class="fc-reveal fc-stagger">
                                 @forelse ($shoutbox as $comment)
                                     <div class="flex! items-start! gap-4! py-4! {{ !$loop->last ? 'border-b!' : '' }}">
                                         <div class="grow!">
@@ -288,14 +288,14 @@
                             <h2 class="text-lg! font-semibold!">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
-                            <div class="h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-4!">
+                            <div class="fc-progress-reveal h-1.5! bg-[#e9ecef]! rounded-full! overflow-hidden! mt-4!">
                                 <div class="h-1.5! bg-[#2ca02c]! fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                             </div>
 
                             <div class="flex! justify-between! mt-2! text-sm!">
-                                <div><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
+                                <div class="fc-tabular"><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
                                 @php $goalLabelPrefix = trim(str_replace(number_format($goalTotal), '', $goalLabelText)); @endphp
-                                <div class="text-muted!">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
+                                <div class="fc-tabular text-muted!">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
                             </div>
 
                             @if (($recentSignatureCount ?? 0) > 0)
@@ -315,7 +315,7 @@
                             </div>
                             @include('partials.gradient-divider')
 
-                            <div class="text-[13px]! mt-4!">
+                            <div class="text-[13px]! mt-4! fc-reveal fc-stagger">
                                 @forelse($latest as $i => $sig)
                                     <div class="py-[6px]! border-b! border-[#f1f1f1]! last:border-b-0!">
                                         <div class="font-bold! mb-0.5!">
@@ -477,14 +477,14 @@
             @if (($related ?? collect())->isNotEmpty())
                 <div class="mt-10!">
                     <h2 class="text-[18px]! font-bold! mb-4!">{{ __('show.related') }}</h2>
-                    <div class="flex! flex-wrap! -mx-3!">
+                    <div class="flex! flex-wrap! -mx-3! fc-reveal fc-stagger">
                         @foreach ($related as $rel)
                             <div class="w-full! md:w-1/3! shrink-0! px-3! mb-6!">
                                 <a href="{{ lroute('petition.show', ['slug' => $rel->tr_slug, 'id' => $rel->id]) }}"
-                                   class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-border! shadow-sm! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-lg!">
+                                   class="block! h-full! no-underline! bg-white! rounded-[.5rem]! border! border-border! shadow-sm! overflow-hidden! fc-lift">
                                     <div class="p-4!">
                                         <div class="text-ink! font-semibold! text-sm! leading-snug! break-words! [overflow-wrap:anywhere]!">{{ $rel->tr_title }}</div>
-                                        <div class="mt-2! text-[13px]! text-muted!">
+                                        <div class="mt-2! text-[13px]! text-muted! fc-tabular">
                                             <span data-countup data-countup-to="{{ (int) ($rel->signature_count ?? 0) }}">{{ number_format($rel->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                                         </div>
                                     </div>
