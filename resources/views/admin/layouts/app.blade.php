@@ -52,6 +52,7 @@
 
     <x-blatui.sonner />
     <x-blatui.sonner-flash />
+    <x-admin.confirm-dialog />
 
     @foreach ($errors->all() as $err)
         <div hidden data-admin-flash="error" data-message="{{ $err }}"></div>

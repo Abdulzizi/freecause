@@ -65,11 +65,6 @@ export function init() {
             const modal = document.querySelector('.fc-modal[data-open="1"]');
             if (modal) {
                 closeAdminModal(modal);
-                return;
-            }
-            const drawer = document.querySelector('.fc-drawer[data-open="1"]');
-            if (drawer) {
-                drawer.querySelector('.fc-drawer__close')?.click();
             }
             return;
         }

@@ -5,6 +5,10 @@ const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ||
 const notify = (kind, message) => window.toast?.[kind]?.(message);
 
 async function confirmAction(message, title = 'Please confirm') {
+    if (window.fcConfirm) {
+        return window.fcConfirm(message, title);
+    }
+
     const result = await Swal.fire({
         icon: 'warning',
         title,

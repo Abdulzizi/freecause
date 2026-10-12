@@ -224,5 +224,10 @@ export function init() {
         event.returnValue = '';
     });
 
+    window.fcDrawer = {
+        hasDirty: hasDirtyDrawerForm,
+        clearDirty: clearDirtyDrawerForms,
+    };
+
     markRowOpenFromUrl();
 }
