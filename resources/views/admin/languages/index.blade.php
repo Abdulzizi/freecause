@@ -32,12 +32,11 @@
     <x-admin.section-panel title="existing languages">
 
         @forelse($languages as $lang)
-            <div
-                class="flex! justify-between! items-start! py-[15px]! border-b! border-border!">
+            <div x-data="{ editing: false }" class="flex! flex-wrap! items-center! gap-3! py-4! border-b! border-border! last:border-b-0!">
 
                 {{-- LEFT INFO --}}
-                <div class="min-w-[200px]!">
-                    <div class="text-base! font-bold!">
+                <div class="w-full! shrink-0! md:w-[190px]!">
+                    <div class="text-[14px]! font-semibold! text-ink!">
                         {{ strtoupper($lang->code) }}: {{ $lang->name }}
 
                         @if ($lang->is_default)
@@ -45,44 +44,42 @@
                         @endif
                     </div>
 
-                    <div class="mt-[5px]! text-[13px]! text-muted!">
+                    <div class="mt-0.5! text-[12px]! text-muted!">
                         status: {{ $lang->is_active ? 'active' : 'inactive' }}
                     </div>
                 </div>
 
-                <div class="flex-1! max-w-[500px]!">
-
-                    <form method="post" action="{{ route('admin.languages.update', $lang) }}"
-                        class="flex! gap-3! items-center! mb-1.5!">
-                        @csrf
-                        @method('PUT')
-
-                        <label for="lang-name-{{ $lang->id }}" class="text-[13px]! text-muted!">name</label>
-                        <x-ui.input id="lang-name-{{ $lang->id }}" name="name" :value="$lang->name" class="fc-filter-field w-[220px]! max-w-full!" />
-
-                        <label class="flex! items-center! gap-[5px]! text-[13px]!">
-                            <span class="fc-switch">
-                                <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
-                                <span class="fc-switch__track" aria-hidden="true"></span>
-                            </span>
-                            active
-                        </label>
-
-                        <x-blatui.button type="submit" size="sm">save</x-blatui.button>
-                    </form>
+                {{-- VIEW MODE --}}
+                <div x-show="!editing" class="ms-auto! flex! items-center! gap-2!">
+                    <x-blatui.button variant="outline" size="sm" type="button" @click="editing = true">edit</x-blatui.button>
 
                     @if (!$lang->is_default)
-                        <div class="flex! gap-2!">
-
-                            <form method="post" action="{{ route('admin.languages.default', $lang) }}">
-                                @csrf
-                                <x-blatui.button variant="outline" size="sm" type="submit">set default</x-blatui.button>
-                            </form>
-
-                        </div>
+                        <form method="post" action="{{ route('admin.languages.default', $lang) }}">
+                            @csrf
+                            <x-blatui.button variant="ghost" size="sm" type="submit">set default</x-blatui.button>
+                        </form>
                     @endif
-
                 </div>
+
+                {{-- EDIT MODE --}}
+                <form x-show="editing" x-cloak method="post" action="{{ route('admin.languages.update', $lang) }}"
+                    class="ms-auto! flex! flex-wrap! items-center! gap-2!">
+                    @csrf
+                    @method('PUT')
+
+                    <x-ui.input name="name" :value="$lang->name" aria-label="Language name" class="fc-filter-field w-[200px]! max-w-full!" />
+
+                    <label class="flex! items-center! gap-1.5! text-[13px]! whitespace-nowrap!">
+                        <span class="fc-switch">
+                            <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
+                            <span class="fc-switch__track" aria-hidden="true"></span>
+                        </span>
+                        active
+                    </label>
+
+                    <x-blatui.button size="sm" type="submit">save</x-blatui.button>
+                    <x-blatui.button variant="ghost" size="sm" type="button" @click="editing = false">cancel</x-blatui.button>
+                </form>
 
             </div>
 
