@@ -7,7 +7,7 @@
 <x-admin.page-header title="categories" :count="$approxTotal" />
 
 @if (session('success'))
-    <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-2! py-1.5! rounded! mt-1.5! mb-2.5!">{{ session('success') }}</div>
+    <x-blatui.alert tone="success" class="mt-1.5! mb-2.5!">{{ session('success') }}</x-blatui.alert>
 @endif
 
 @if ($errors->any())
@@ -15,7 +15,7 @@
 @endif
 
 {{-- ── NEW CATEGORY FORM ─────────────────────────────────────────────────── --}}
-<div class="bg-[#f9f9f9]! border! border-border! rounded! p-4! mb-[18px]!">
+<x-blatui.card class="p-4! mb-[18px]!">
     <div class="font-bold! mb-2.5! text-[13px]! uppercase! tracking-[0.05em]!">
         + new category
     </div>
@@ -37,7 +37,7 @@
             <button type="submit" class="fc-abtn fc-abtn--success">create</button>
         </div>
     </form>
-</div>
+</x-blatui.card>
 
 {{-- ── FILTER ────────────────────────────────────────────────────────────── --}}
 @php

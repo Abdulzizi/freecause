@@ -212,16 +212,16 @@
                     </td>
 
                     <td data-hide-mobile>{{ $p->signature_count }} / {{ $p->goal_signatures }}</td>
-                    <td>{{ $p->title }}@if ($p->status === 'draft') <span class="ml-1! inline-block! bg-border! text-ink! text-[11px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">draft</span>@endif</td>
+                    <td>{{ $p->title }}@if ($p->status === 'draft') <x-blatui.badge tone="warning" class="ml-1! align-middle!">draft</x-blatui.badge>@endif</td>
                     <td data-hide-mobile>
                         @php
                             $petitionLocales = $p->translation_locales ? explode(',', $p->translation_locales) : [];
                         @endphp
                         @foreach ($activeLanguages as $lang)
                             @if (in_array($lang, $petitionLocales))
-                                <span class="inline-block! bg-[#d4edda]! text-[#155724]! rounded-[3px]! px-[5px]! py-px!  m-px!">{{ $lang }}</span>
+                                <x-blatui.badge tone="success" class="m-px!">{{ $lang }}</x-blatui.badge>
                             @else
-                                <span class="inline-block! bg-[#f8d7da]! text-[#721c24]! rounded-[3px]! px-[5px]! py-px!  m-px!">{{ $lang }}</span>
+                                <x-blatui.badge tone="danger" class="m-px!">{{ $lang }}</x-blatui.badge>
                             @endif
                         @endforeach
                     </td>

@@ -66,7 +66,7 @@ class AdminPanelRevampB2Test extends TestCase
             @$document->loadHTML($response->getContent());
             $xpath = new \DOMXPath($document);
             $componentHeaders = $xpath->query(
-                '//h1[contains(@class, "m-0!") and contains(@class, "text-lg!")] | //*[@data-slot="page-header"]//h1'
+                '//h1[contains(@class, "m-0!") and (contains(@class, "text-lg!") or contains(@class, "text-2xl!"))] | //*[@data-slot="page-header"]//h1'
             );
 
             $this->assertGreaterThan(

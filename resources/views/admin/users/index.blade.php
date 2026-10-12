@@ -66,7 +66,7 @@
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
-        <a href="{{ route('admin.users.export', request()->query()) }}" class="fc-abtn" :href="route('admin.users.export', request()->query())">export CSV</a>
+        <x-blatui.button variant="outline" size="sm" :href="route('admin.users.export', request()->query())">export CSV</x-blatui.button>
     </div>
 
     <x-admin.data-table empty-text="no users found, try clearing filters" :p="$users" :emptyClearRoute="route('admin.users')" :bulk="admin_can('users', 'edit') ? [
@@ -141,10 +141,7 @@
                         @endif
 
                         @if ($isBanned)
-                            <span class="ml-1.5! px-1.5! py-0.5! text-[11px]! bg-danger! text-white! rounded-[2px]!"
-                            title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">
-                                BANNED
-                            </span>
+                            <x-blatui.badge tone="danger" variant="solid" class="ml-1.5! align-middle!" title="{{ $u->banned_reason ? 'Reason: ' . $u->banned_reason : 'No reason given' }}{{ $u->banned_until ? ' · Until: ' . $u->banned_until : ' · Permanent' }}">BANNED</x-blatui.badge>
                         @endif
                     </td>
                     <td data-hide-mobile>{{ $u->first_name }}</td>

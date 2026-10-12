@@ -5,20 +5,20 @@
     'activeCount' => 0,
 ])
 
-<div class="fc-tab" style="display:flex; align-items:center; gap:8px;">
-    {{ $title }}
+<div class="flex! items-center! gap-2! mb-2!">
+    <span class="font-semibold! text-[13px]! uppercase! tracking-[0.05em]! text-ink!">{{ $title }}</span>
     @if ($activeCount > 0)
-        <span class="fc-filter-count show">{{ $activeCount }} active</span>
+        <x-blatui.badge variant="secondary">{{ $activeCount }} active</x-blatui.badge>
     @endif
 </div>
-<div class="fc-box">
-    <form method="get" action="{{ $action }}" class="fc-filter-form" data-live-search style="margin:0;">
 
+<x-blatui.card class="p-3! mb-3!">
+    <form method="get" action="{{ $action }}" class="fc-filter-form" data-live-search>
         {{ $slot }}
 
         <div class="fc-filter-actions">
-            <button class="fc-abtn" type="submit">apply</button>
-            <a class="fc-abtn fc-abtn--neutral" href="{{ $reset }}" style="text-decoration:none;">reset</a>
+            <x-blatui.button type="submit" size="sm">apply</x-blatui.button>
+            <x-blatui.button variant="outline" size="sm" :href="$reset">reset</x-blatui.button>
         </div>
     </form>
-</div>
+</x-blatui.card>

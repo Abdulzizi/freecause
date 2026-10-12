@@ -102,7 +102,7 @@
                     <td>
                         {{ $p->title }}
                         @if (! $p->published)
-                            <span class="inline-block! ml-1! bg-border! text-ink! text-[11px]! uppercase! tracking-wide! rounded-[3px]! px-[4px]! py-px!">unpublished</span>
+                            <x-blatui.badge tone="warning" class="ml-1! align-middle!">unpublished</x-blatui.badge>
                         @endif
                     </td>
                     <td data-hide-mobile class="text-center!">{{ $p->slug }}</td>

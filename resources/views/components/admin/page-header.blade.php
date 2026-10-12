@@ -2,7 +2,6 @@
     Admin page heading with an optional count, context line, and right-aligned actions.
     Props: title (required string), count (optional scalar), context (optional string).
     The default slot is reserved for page actions.
-    Keep the legacy heading spacing and the admin `!` utility convention when adopting.
 --}}
 @props([
     'title',
@@ -10,13 +9,16 @@
     'context' => null,
 ])
 
-<div {{ $attributes->class(['flex! items-start! justify-between! gap-3! flex-wrap! mb-2!']) }}>
+<div {{ $attributes->class(['flex! items-start! justify-between! gap-3! flex-wrap! mb-5!']) }}>
     <div class="min-w-0!">
-        <h1 class="m-0! text-lg! max-md:text-base!">
-            {{ $title }}@if ($count !== null) <span>({{ is_numeric($count) ? number_format((float) $count) : $count }})</span>@endif
+        <h1 class="m-0! flex! items-center! gap-2! text-2xl! font-bold! tracking-tight! text-foreground! max-md:text-xl!">
+            <span class="truncate!">{{ $title }}</span>
+            @if ($count !== null)
+                <x-blatui.badge variant="secondary">{{ is_numeric($count) ? number_format((float) $count) : $count }}</x-blatui.badge>
+            @endif
         </h1>
         @if (filled($context))
-            <p class="m-0! mt-1! text-xs! text-muted!">{{ $context }}</p>
+            <p class="m-0! mt-1! text-[13px]! text-muted!">{{ $context }}</p>
         @endif
     </div>
 
