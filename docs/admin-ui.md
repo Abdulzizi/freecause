@@ -56,3 +56,4 @@ CSP stays strict — never add eval there.
 - Admin links default to ink; the public link color is scoped out with
   `a:not([data-slot])`. Brand-colored links must opt in with `text-brand!`.
 - Keep table body text on the shared 13px scale; headers are 11px uppercase muted.
+- Turbo page swaps fade the main inset in with a 140ms `fc-page-enter` animation (skipped on first load and under `prefers-reduced-motion`); `scrollbar-gutter: stable` prevents width shifts when scrollbars appear.

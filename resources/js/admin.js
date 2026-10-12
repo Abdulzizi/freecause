@@ -47,6 +47,13 @@ document.addEventListener('turbo:load', () => {
     if (bootedBody === document.body) return;
     if (window.Alpine) window.Alpine.initTree(document.body);
     bootPage();
+
+    const inset = document.querySelector('[data-slot="sidebar-inset"]');
+    if (inset) {
+        inset.classList.remove('fc-page-enter');
+        void inset.offsetWidth;
+        inset.classList.add('fc-page-enter');
+    }
 });
 
 document.addEventListener('turbo:before-render', () => {
