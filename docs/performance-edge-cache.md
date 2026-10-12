@@ -69,39 +69,75 @@ disabled by default.
 
 ## Cloudflare rule (review before mutation)
 
-Cache only queryless, cookie-less, Authorization-less GETs on the existing host,
-for the 14 supported locale paths, on listings plus the static content slugs:
+The rule lives in `deploy/cloudflare/cache-rules.json` (shipped `enabled: false`,
+covered by `tests/Feature/CloudflareCacheRuleTest.php`). It is deliberately
+written for the Free plan and locale-agnostic:
 
-```json
-{
-  "description": "FreeCause verified stateless pages only",
-  "expression": "(http.host eq \"www.freecause.com\" and http.request.uri.query eq \"\" and http.cookie eq \"\" and not any(http.request.headers[\"authorization\"][*] ne \"\") and http.request.uri.path matches r\"^/(da|de|el|en|es|fr|it|nl|pl|pt|ro|ru|sv|tr)/(petitions(/category-[^/]+-[0-9]+)?|petition/[^/]+/[0-9]+|faqs|how-to-write-a-petition|donations|personal-data-processing|terms-of-service|privacy-policy|ethical-code)$\")",
-  "action": "set_cache_settings",
-  "action_parameters": {
-    "cache": true,
-    "edge_ttl": { "mode": "bypass_by_default" },
-    "browser_ttl": { "mode": "respect_origin" }
-  },
-  "enabled": false
-}
-```
+- Only `eq`, `contains`, `not`, `and`, `or`, `any` — the Free plan rejects
+  `matches`, `starts_with`, `ends_with` and `wildcard`, so a regex expression
+  would fail to save and the whole edge benefit would never land.
+- No locale list to maintain: the path shapes (`/petitions`, `/petition/`,
+  `/faqs`, …) are matched without the locale prefix, and the route slugs are the
+  same in every locale, so adding a locale cannot silently drop a page from the
+  cache.
+- Positive guards for personalized or form paths: `/user/`, `/admin`, `/sign`,
+  `/create-petition`, `/download`, `/widget`.
+- Origin stays authoritative: `edge_ttl.mode = bypass_by_default` means
+  Cloudflare only caches responses that carry the origin's
+  `Cache-Control: public, s-maxage=…`; everything else (including all
+  session-bearing pages) keeps its `no-store` and is bypassed.
 
-The rule stays a per-path allowlist: `page.show` accepts any slug, so the rule
-must enumerate the published static slugs rather than `/{locale}/*`. It cannot be
-created or edited by the MCP/API token (405 for this authentication scheme), so
-apply it in the Cloudflare dashboard; the origin's `X-FreeCause-Edge-Cache:
-eligible` gate stays authoritative either way.
+The MCP/API token cannot create or edit Cache Rules (405 for this
+authentication scheme), so this must be applied in the Cloudflare dashboard:
+paste the expression, let the dashboard validate it, and only then enable the
+rule. If it rejects anything, nothing is applied — the origin is unaffected.
 
-Cloudflare regex availability depends on the zone plan; if unavailable, generate
-explicit exact listing paths and category prefixes for each active locale and
-keep origin route-name checks as the final gate. Verify expression syntax with
-Cloudflare validation before applying. Do not override origin TTL or strip
-Set-Cookie. Do not use a blanket cache-everything rule. Keep the default cache
-key and query behavior. A final bypass rule for the same candidate paths should
-match any cookie, Authorization, query, or method outside GET/HEAD, with action
-set_cache_settings and cache:false. Rules combine in order; later conflicting
-settings win. GET-only eligibility expressions can interfere with URL purges,
-so leave method gating to the origin and explicit unsafe-method bypass.
+## Deploy order (one-way safe)
+
+1. Deploy the origin changes first and verify on a real guest request that a
+   cacheable page contains **zero** `name="_token"` and no `Set-Cookie`
+   (`curl -s -D - -o body.html <url> | grep -iE 'x-freecause|set-cookie'` plus
+   `grep -c 'name="_token"' body.html`).
+2. Confirm the CTA target (`/petition/{slug}/{id}/sign/confirm`) is sessionful
+   and not edge-eligible, and walk the no-JS flow end to end (detail → form →
+   confirm → sign) — covered by
+   `EdgeCacheGuestPagesTest::test_no_js_guest_can_complete_the_sign_flow`.
+3. Only then enable the Cloudflare rule. Enabling it first would cache
+   token-bearing HTML and produce 419s.
+
+## Sign funnel hypothesis (measure, do not assume)
+
+Replacing the guest inline form with a "sign now" button costs one navigation
+for the highest-intent action, so the trade-off is a hypothesis:
+
+- `data-sign-cta` carries `data-cached=1|0`; the public bundle sends a GA4
+  `sign_cta_click` event with `variant: stateless|session`.
+- Compare before/after in GA4: detail pageviews → `/sign/confirm` pageviews →
+  `sign_cta_click` → thanks pageviews, and signatures ÷ detail views over the
+  same windows.
+- If conversion drops, the two one-click alternatives that keep the page
+  cacheable are (a) a small uncached endpoint that hands the cached form its
+  token, or (b) rendering the form as an uncached fragment. Both were evaluated
+  and deferred in favour of the no-JS-safe button.
+
+## Deprecated metric
+
+`petitions.views` / `petition_views` are write-only in production code (no
+Blade, admin, export, sitemap or API reads them — audited). After edge caching
+they mean "origin renders", not user views, and stateless renders have no
+per-session dedupe. Treat them as deprecated: do not surface them as "views" in
+any UI, and add a client beacon before they are used as a product metric.
+
+## Rule hygiene
+
+Do not override the origin TTL or strip Set-Cookie, do not use a blanket
+cache-everything rule, and keep the default cache key and query behaviour. A
+final bypass rule for the same candidate paths should match any cookie,
+Authorization or query, with action set_cache_settings and cache:false; rules
+combine in order and later conflicting settings win. GET-only eligibility
+expressions can interfere with URL purges, so leave method gating to the origin
+and to that explicit unsafe-method bypass. Verify expression syntax with the
+dashboard validation before applying.
 
 Cloudflare references: [Cache Rules settings](https://developers.cloudflare.com/cache/how-to/cache-rules/settings/),
 [rule order](https://developers.cloudflare.com/cache/how-to/cache-rules/order/),
@@ -121,3 +157,15 @@ variants stay uncached.
 
 Rollback is: disable the Cloudflare rule and purge any existing edge copies. No
 deployment, push, remote mutation or credentials read is part of local work.
+
+## Watch for one day after enabling the rule
+
+1. **419 / CSRF errors** (Sentry `Page Expired`, or a spike in 419 responses) —
+   means token-bearing HTML got cached, or a cached page's form was submitted
+   without a session. Turn the rule off, purge, re-check step 1 of the deploy
+   order.
+2. **Origin 5xx** (Sentry) — especially around petition detail, from the
+   `hasSession()` guards in `recordView`.
+3. **`cf-cache-status` ratio** on the new paths: a low HIT ratio on paths that
+   should be cached means the expression is not matching what you think it is
+   (check `http.cookie eq ""` first — any stray cookie defeats it).

@@ -1,0 +1,11 @@
+{
+  "description": "FreeCause verified stateless pages only",
+  "expression": "(http.host eq \"www.freecause.com\" and http.request.uri.query eq \"\" and http.cookie eq \"\" and not any(http.request.headers[\"authorization\"][*] ne \"\") and (http.request.uri.path contains \"/petitions\" or http.request.uri.path contains \"/petition/\" or http.request.uri.path contains \"/faqs\" or http.request.uri.path contains \"/how-to-write-a-petition\" or http.request.uri.path contains \"/donations\" or http.request.uri.path contains \"/personal-data-processing\" or http.request.uri.path contains \"/terms-of-service\" or http.request.uri.path contains \"/privacy-policy\" or http.request.uri.path contains \"/ethical-code\") and not (http.request.uri.path contains \"/user/\") and not (http.request.uri.path contains \"/admin\") and not (http.request.uri.path contains \"/sign\") and not (http.request.uri.path contains \"/create-petition\") and not (http.request.uri.path contains \"/download\") and not (http.request.uri.path contains \"/widget\"))",
+  "action": "set_cache_settings",
+  "action_parameters": {
+    "cache": true,
+    "edge_ttl": { "mode": "bypass_by_default" },
+    "browser_ttl": { "mode": "respect_origin" }
+  },
+  "enabled": false
+}

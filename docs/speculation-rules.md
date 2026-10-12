@@ -25,7 +25,8 @@ Two lists, both `"relative_to": "document"`:
 Petition detail is prerenderable again because it is edge-cached for guests
 (see `docs/performance-edge-cache.md`) — a hover-triggered preload is now cheap
 and correctly bypasses counting for bare prefetches. `create-petition` and the
-sign pages stay excluded: they are sessionful by design.
+sign pages stay excluded: they are sessionful by design (the sign page renders
+the guest form with a real CSRF token on a fresh GET).
 
 To opt a link out later, add `data-no-prerender` to the anchor.
 
