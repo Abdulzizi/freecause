@@ -4,7 +4,7 @@
 @section('body_class', 'contacts')
 
 @section('content')
-    <section class="bg-[var(--fc-band)]! fc-section">
+    <section class="bg-[var(--fc-band)]! fc-head-band">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
@@ -27,7 +27,7 @@
         </x-ui.container>
     </section>
 
-    <section class="petitions-list py-14! md:py-24!">
+    <section class="petitions-list pt-8! pb-14! md:pt-10! md:pb-24!">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">

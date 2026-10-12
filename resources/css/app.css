@@ -133,6 +133,10 @@ body.fc-public main a[href] {
     padding-block: clamp(3.5rem, 8vw, 6rem);
 }
 
+.fc-head-band {
+    padding-block: clamp(2.25rem, 5vw, 3.25rem) clamp(1.5rem, 3vw, 2.25rem);
+}
+
 @keyframes fc-hero-in {
     from {
         opacity: 0;
