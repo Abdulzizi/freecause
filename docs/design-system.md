@@ -102,8 +102,7 @@ Scope excludes `resources/views/components/blatui` (CLI-generated) and
 `resources/views/emails` (needs inline styles). Exceptions can be registered in
 `scripts/ds-lint-allow.txt` (one regex per line, `#` comments).
 
-CI: advisory step in `.github/workflows/ci.yml` until the sweep is complete,
-then blocking (phase P9).
+CI: blocking step in `.github/workflows/ci.yml` (`Design system lint`).
 
 ## Deliberate exceptions
 
@@ -111,19 +110,33 @@ then blocking (phase P9).
   SweetAlert2's own stylesheet, which is injected outside the layer order.
 - `[data-hide-mobile] { display: none !important }` must beat table-cell
   utilities on mobile.
+- Raw hex is allowed for inline **SVG artwork** (`fill=`/`stroke=`/`stop-color=`
+  attributes) and inside standalone documents that never load the token sheet:
+  `petition/widget.blade.php` (embedded iframe page, inline `<style>` only) and
+  `petition/pdf.blade.php` (rendered by dompdf, which does not resolve CSS
+  variables reliably). Both already use the token palette values.
 - `legacy-compat.css` retains Bootstrap *behaviour* (collapse, dropdown, tabs,
   modal) and its base element styling, now safely under the utilities layer.
   Dead visual rules inside it are removed incrementally.
+- Off-grid default steps (`p-5`, `py-1.5`, `p-2.5`, …) and dimension brackets
+  (`max-w-[720px]`, `grid-cols-[160px_1fr]`, `min-h-[140px]`, aspect ratios)
+  remain where no token exists; the lint only enforces the type/spacing/radius/
+  elevation/colour rules above.
 
 ## Migration metrics
 
 | Metric | Before | After |
 |---|---|---|
-| `!` important overrides (views) | 4,570 | 0 |
+| `!` important overrides in views | 4,570 | 0 |
 | Arbitrary font sizes | 228 | 0 |
 | Arbitrary spacing values | 71 | 0 |
-| Raw hex in views | 220 | 0 |
-| Raw hex in `app.css` | 81 | 0 |
-| Distinct radius values | 12 | 3 + pill |
-| Distinct shadow levels | 8+ | 3 + none |
-| Built public CSS | 192.8 kB | see `npm run build` output |
+| Disallowed radius values | 148 | 0 |
+| Disallowed elevation values | 71 | 0 |
+| Arbitrary colour utilities | 101 | 0 |
+| Inline-style hex | 23 | 0 |
+| Raw hex in `app.css` | 81 | 0 (all in `tokens.css`) |
+| Raw hex in views (styling) | 220 | 7 (standalone widget/pdf `<style>`) |
+| `border` tokens in views | 951 | 703 (−26%) |
+| Built public CSS | 192.8 kB / 1,035 `!important` | 185.1 kB / 179 `!important` |
+| `x-ui.*` component usages | 141 | 254 |
+
