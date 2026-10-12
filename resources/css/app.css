@@ -448,6 +448,10 @@ body.fc-public .navbar .nav-link.active::after {
         transform: none;
     }
 
+    body.fc-public .fcui-btn:not(:disabled):not([aria-busy='true']):active {
+        transform: none;
+    }
+
     body.fc-public .fc-share-copy--copied {
         animation: none;
     }
