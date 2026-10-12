@@ -53,6 +53,8 @@ readable with no hidden content.
 | `.swal2-show` / `.swal2-hide` | 250ms dialog scale + fade | account confirm dialogs | instant dialog |
 | Bootstrap `.collapsing` | retimed to 250ms standard easing | FAQ accordion | Bootstrap default |
 | `@view-transition` | cross-document 200ms fade + shared element `view-transition-name: petition-{id}` | list → detail card/header morph | instant navigation |
+| `view-transition-name: site-header` / `site-notice` / `site-footer` | persistent chrome stays put during page transitions (`animation: none` on the groups) | navbar, maintenance notice, footer | chrome fades with the page |
+| `#fcui-topbar` | load progress bar, shown only when navigation is still pending after 300ms | internal link clicks | no bar on instant navigations |
 | `.fcui-sticky-signbar` | fixed mobile sign CTA (no layout shift) | petition detail | inline sign buttons |
 | `.fcui-input` / `.fcui-field-*` | inputs, labels, hints, error rings | all public forms | native controls |
 
