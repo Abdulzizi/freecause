@@ -20,6 +20,45 @@
 :root {
     --fc-shadow-sm: 0 1px 2px rgba(48, 42, 34, 0.04), 0 8px 24px rgba(48, 42, 34, 0.06);
     --fc-shadow-md: 0 4px 12px rgba(48, 42, 34, 0.08), 0 16px 40px rgba(48, 42, 34, 0.1);
+
+    /* Motion + visual refresh tokens (motion-visual-refresh-spec P0) */
+    --fc-bg: #faf9f7;
+    --fc-surface: #ffffff;
+    --fc-surface-2: #f9fafb;
+    --fc-border: #dee2e6;
+    --fc-border-strong: #c9cdd2;
+    --fc-text: #212529;
+    --fc-text-muted: #5b6470;
+    --fc-accent: #cc1f1f;
+    --fc-success: #198754;
+    --fc-warning: #c67c00;
+    --fc-danger: #dc3545;
+    --fc-info: #1a5fb4;
+    --fc-hairline: rgba(33, 37, 41, 0.08);
+
+    --fc-r-sm: 6px;
+    --fc-r-md: 8px;
+    --fc-r-lg: 12px;
+    --fc-r-pill: 999px;
+    --fc-elev-1: var(--fc-shadow-sm);
+    --fc-elev-2: var(--fc-shadow-md);
+    --fc-elev-3: 0 12px 32px rgba(48, 42, 34, 0.12);
+
+    --fc-link-underline-offset: 3px;
+
+    --fc-dur-instant: 100ms;
+    --fc-dur-fast: 150ms;
+    --fc-dur-base: 250ms;
+    --fc-dur-slow: 400ms;
+    --fc-dur-hero: 800ms;
+    --fc-ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
+    --fc-ease-decel: cubic-bezier(0.16, 1, 0.3, 1);
+    --fc-ease-accel: cubic-bezier(0.4, 0, 1, 1);
+    --fc-rise-sm: 8px;
+    --fc-rise-md: 16px;
+    --fc-stagger: 40ms;
+    --fc-press-scale: 0.98;
+    --fc-hover-lift: -3px;
 }
 
 @theme {
@@ -60,6 +99,110 @@ ol:not([class]) {
 
 ::selection {
     background: rgba(204, 31, 31, 0.16);
+}
+
+/* ===== Public primitives (motion-visual-refresh-spec P0/P1) ===== */
+body.fc-public {
+    background: var(--fc-bg);
+}
+
+body.fc-public main :where(a[href], button, summary, [tabindex='0']):not([class*='fcui-']):not(.btn):not([data-bs-toggle]):focus-visible {
+    outline: 2px solid var(--fc-accent);
+    outline-offset: 2px;
+}
+
+body.fc-public main a[href] {
+    text-underline-offset: var(--fc-link-underline-offset);
+}
+
+.fc-tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+.fc-skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 120;
+}
+
+.fc-skip-link:focus {
+    left: 10px;
+    top: 10px;
+    padding: 10px 16px;
+    background: var(--fc-surface);
+    color: var(--fc-text);
+    border: 1px solid var(--fc-border);
+    border-radius: var(--fc-r-md);
+    box-shadow: var(--fc-elev-2);
+    text-decoration: none;
+}
+
+/* Header chrome: hairline edge + link underline slide (P1) */
+body.fc-public .navbar {
+    border-bottom: 1px solid var(--fc-hairline);
+    box-shadow: none;
+}
+
+body.fc-public .navbar .nav-link {
+    position: relative;
+}
+
+body.fc-public .navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.5rem;
+    bottom: 0.3rem;
+    height: 2px;
+    background: var(--fc-accent);
+    border-radius: var(--fc-r-pill);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--fc-dur-fast) var(--fc-ease-standard);
+}
+
+body.fc-public .navbar .nav-link:hover::after,
+body.fc-public .navbar .nav-link:focus-visible::after,
+body.fc-public .navbar .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+/* Page transitions (cross-document; progressive enhancement) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: fc-vt-leave var(--fc-dur-base) var(--fc-ease-accel) both;
+}
+
+::view-transition-new(root) {
+    animation: fc-vt-enter var(--fc-dur-base) var(--fc-ease-decel) both;
+}
+
+@keyframes fc-vt-leave {
+    to {
+        opacity: 0;
+        transform: translateY(calc(var(--fc-rise-sm) * -1));
+    }
+}
+
+@keyframes fc-vt-enter {
+    from {
+        opacity: 0;
+        transform: translateY(var(--fc-rise-sm));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+
+    body.fc-public .navbar .nav-link::after {
+        transition: none;
+    }
 }
 
 h1,
@@ -127,7 +270,7 @@ nav.navbar {
         justify-content: center;
         gap: 0.5rem;
         border: 1px solid transparent;
-        border-radius: 0.625rem;
+        border-radius: var(--fc-r-md);
         font-weight: 600;
         line-height: 1.2;
         text-decoration: none !important;
@@ -288,8 +431,8 @@ nav.navbar {
     .fcui-card {
         background-color: #ffffff !important;
         border: 1px solid #ede9e3;
-        border-radius: 0.875rem;
-        box-shadow: var(--fc-shadow-sm);
+        border-radius: var(--fc-r-lg);
+        box-shadow: var(--fc-elev-1);
         overflow: hidden;
     }
 
@@ -311,7 +454,7 @@ nav.navbar {
         padding: 0.875rem 1rem;
         border: 1px solid transparent;
         border-inline-start-width: 4px;
-        border-radius: 0.625rem;
+        border-radius: var(--fc-r-md);
         font-size: 0.9375rem;
         line-height: 1.45;
     }

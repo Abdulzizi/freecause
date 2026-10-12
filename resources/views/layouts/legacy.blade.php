@@ -82,7 +82,8 @@
     @include('partials.analytics')
 </head>
 
-<body class="@yield('body_class', '')">
+<body class="fc-public @yield('body_class', '')">
+    <a href="#fc-main" class="fc-skip-link">{{ __('Skip to content') }}</a>
     @include('partials.navbar')
 
     @php
@@ -95,7 +96,7 @@
         </div>
     @endif
 
-    <main>
+    <main id="fc-main">
         @yield('content')
     </main>
 
