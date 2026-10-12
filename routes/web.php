@@ -246,7 +246,7 @@ Route::prefix('{locale}')
 
 Route::prefix('{locale}')
     ->middleware(['setLocale', 'block.banned.ip', 'block.banned.user'])
-    ->group(function () {
+    ->group(function () use ($withoutSession) {
         Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
         Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 
@@ -288,10 +288,22 @@ Route::prefix('{locale}')
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
         });
 
-        Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))->name('faqs');
-        Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))->name('how-to-write-a-petition');
-        Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))->name('donations');
-        Route::get('/personal-data-processing', fn (string $locale) => app(PageController::class)->showFixed($locale, 'personal-data-processing'))->name('personal-data-processing');
+        Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->name('faqs');
+        Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->name('how-to-write-a-petition');
+        Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->name('donations');
+        Route::get('/personal-data-processing', fn (string $locale) => app(PageController::class)->showFixed($locale, 'personal-data-processing'))
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->name('personal-data-processing');
 
         Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
         Route::post('/contacts', [ContactController::class, 'send'])->name('contacts.submit')->middleware('throttle:6,1');
@@ -309,5 +321,9 @@ Route::prefix('{locale}')
             ->where('status', '([0-9]+|created)?')
             ->name('petition.thanks');
 
-        Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[^{}/]+')->name('page.show');
+        Route::get('/{slug}', [PageController::class, 'show'])
+            ->withoutMiddleware($withoutSession)
+            ->middleware('optional.session')
+            ->where('slug', '[^{}/]+')
+            ->name('page.show');
     });

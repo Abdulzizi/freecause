@@ -25,11 +25,12 @@ class EdgeCacheHeaders
             && $response->getStatusCode() === 200
             && str_starts_with(strtolower($response->headers->get('Content-Type', '')), 'text/html')
             && count($response->headers->getCookies()) === 0
-            && ! $response->headers->has('Vary');
+            && ! $response->headers->has('Vary')
+            && ! $this->containsCsrfForm($response);
 
         if ($cacheable) {
             $ttl = max(1, min(900, (int) config('edge-cache.ttl', 600)));
-            $response->headers->set('Cache-Control', "public, max-age=0, s-maxage={$ttl}");
+            $response->headers->set('Cache-Control', "public, max-age=0, s-maxage={$ttl}, stale-while-revalidate=60");
             $response->headers->set('X-FreeCause-Edge-Cache', 'eligible');
         } else {
             $response->headers->set('Cache-Control', 'private, no-store');
@@ -37,5 +38,14 @@ class EdgeCacheHeaders
         }
 
         return $response;
+    }
+
+    private function containsCsrfForm(Response $response): bool
+    {
+        try {
+            return str_contains((string) $response->getContent(), 'name="_token"');
+        } catch (\Throwable) {
+            return true;
+        }
     }
 }

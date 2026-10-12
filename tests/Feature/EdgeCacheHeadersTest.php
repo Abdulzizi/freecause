@@ -13,9 +13,14 @@ class EdgeCacheHeadersTest extends TestCase
 {
     private function listingRequest(string $uri = '/en/petitions'): Request
     {
+        return $this->edgeRequest($uri, 'petitions.index');
+    }
+
+    private function edgeRequest(string $uri, string $routeName): Request
+    {
         $request = Request::create($uri);
         $route = new Route('GET', ltrim((string) parse_url($uri, PHP_URL_PATH), '/'), fn () => null);
-        $route->name('petitions.index');
+        $route->name($routeName);
         $request->setRouteResolver(fn () => $route);
 
         return $request;
@@ -85,5 +90,36 @@ class EdgeCacheHeadersTest extends TestCase
             $response = (new EdgeCacheHeaders)->handle($request, fn () => response($content, 200, ['Content-Type' => 'text/html']));
             $this->assertSame('bypass', $response->headers->get('X-FreeCause-Edge-Cache'), $case);
         }
+    }
+
+    public function test_stateless_static_pages_are_eligible(): void
+    {
+        foreach ([['page.show', '/en/terms-of-service'], ['faqs', '/en/faqs'], ['donations', '/en/donations']] as [$routeName, $uri]) {
+            $request = $this->edgeRequest($uri, $routeName);
+            $request->attributes->set('stateless_render', true);
+            $response = (new EdgeCacheHeaders)->handle($request, fn () => response('<html>Static page</html>', 200, ['Content-Type' => 'text/html']));
+
+            $this->assertSame('eligible', $response->headers->get('X-FreeCause-Edge-Cache'), $routeName);
+            $this->assertStringContainsString('stale-while-revalidate=60', (string) $response->headers->get('Cache-Control'), $routeName);
+        }
+    }
+
+    public function test_home_route_is_left_untouched(): void
+    {
+        $request = $this->edgeRequest('/en', 'home');
+        $request->attributes->set('stateless_render', true);
+        $response = (new EdgeCacheHeaders)->handle($request, fn () => response('<html>Home</html>', 200, ['Content-Type' => 'text/html']));
+
+        $this->assertNull($response->headers->get('X-FreeCause-Edge-Cache'));
+    }
+
+    public function test_csrf_form_markup_bypasses_even_when_stateless(): void
+    {
+        $request = $this->listingRequest();
+        $request->attributes->set('stateless_render', true);
+        $response = (new EdgeCacheHeaders)->handle($request, fn () => response('<html><form method="post"><input type="hidden" name="_token" value="placeholder"></form></html>', 200, ['Content-Type' => 'text/html']));
+
+        $this->assertSame('bypass', $response->headers->get('X-FreeCause-Edge-Cache'));
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
     }
 }

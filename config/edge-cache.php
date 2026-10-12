@@ -6,5 +6,13 @@ return [
     'api_token' => env('CLOUDFLARE_API_TOKEN', ''),
     'base_url' => env('EDGE_CACHE_BASE_URL', 'https://www.freecause.com'),
     'ttl' => (int) env('EDGE_CACHE_TTL', 600),
-    'routes' => ['petitions.index', 'petitions.byCategory'],
+    'routes' => [
+        'petitions.index',
+        'petitions.byCategory',
+        'page.show',
+        'faqs',
+        'how-to-write-a-petition',
+        'donations',
+        'personal-data-processing',
+    ],
 ];
