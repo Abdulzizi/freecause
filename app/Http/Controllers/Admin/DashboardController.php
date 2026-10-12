@@ -48,10 +48,11 @@ class DashboardController extends Controller
             $weekAgo = now()->subWeek();
 
             $newUsers = User::query()
+                ->where('created_at', '>=', $weekAgo)
                 ->selectRaw(
                     'SUM(CASE WHEN created_at BETWEEN ? AND ? THEN 1 ELSE 0 END) as today, '.
-                    'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as week',
-                    [$todayStart, $todayEnd, $weekAgo]
+                    'COUNT(*) as week',
+                    [$todayStart, $todayEnd]
                 )
                 ->first();
 
@@ -66,10 +67,11 @@ class DashboardController extends Controller
                 ->first());
 
             $newSignatures = Signature::query()
+                ->where('created_at', '>=', $weekAgo)
                 ->selectRaw(
                     'SUM(CASE WHEN created_at BETWEEN ? AND ? THEN 1 ELSE 0 END) as today, '.
-                    'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as week',
-                    [$todayStart, $todayEnd, $weekAgo]
+                    'COUNT(*) as week',
+                    [$todayStart, $todayEnd]
                 )
                 ->first();
 

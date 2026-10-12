@@ -78,6 +78,11 @@ those are cached `information_schema` lookups (1h TTL), while the sqlite probe f
 to per-table `COUNT()`. With the 5-minute warm schedule, production visitors normally pay
 only the shared layout queries.
 
+Note: the batched aggregates are bounded with `WHERE created_at >= (week ago)` so they
+reuse the `created_at` index range — an unbounded `SUM(CASE …)` variant caused a
+full-table scan that exceeded the 300s `cache:warm` deploy timeout (deploy auto-rolled
+back; fixed with the range-bounded form, same numbers).
+
 ## Full-navigation flows (code inspection)
 
 Admin interactions are mostly full-page navigations; each is a fresh render +
