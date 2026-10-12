@@ -16,63 +16,57 @@
 @endphp
 
 <div class="flex! items-center! justify-between! flex-wrap! gap-2!">
-<div class="flex! gap-1! items-center! text-xs! max-md:gap-1.5!">
-    @if($current > 1)
-        <a href="{{ $p->url($current - 1) }}"
-            class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
-            «
-        </a>
-    @endif
-
-    @if($lastPage)
-        @if($start > 1)
-            <a href="{{ $p->url(1) }}"
-                class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
-                1
-            </a>
-            @if($start > 2)
-                <span class="px-1!">…</span>
+    <x-blatui.pagination class="mx-0! w-auto! justify-start!">
+        <x-blatui.pagination-content>
+            @if ($current > 1)
+                <x-blatui.pagination-item>
+                    <x-blatui.pagination-link :href="$p->url($current - 1)" size="icon" aria-label="Previous page">
+                        <x-lucide-chevron-left class="size-4" aria-hidden="true" />
+                    </x-blatui.pagination-link>
+                </x-blatui.pagination-item>
             @endif
-        @endif
 
-        @for($i = $start; $i <= $end; $i++)
-            @if($i === $current)
-                <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-border! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
-                    {{ $i }}
-                </span>
+            @if ($lastPage)
+                @if ($start > 1)
+                    <x-blatui.pagination-item>
+                        <x-blatui.pagination-link :href="$p->url(1)" size="icon" aria-label="Page 1">1</x-blatui.pagination-link>
+                    </x-blatui.pagination-item>
+                    @if ($start > 2)
+                        <x-blatui.pagination-item><x-blatui.pagination-ellipsis /></x-blatui.pagination-item>
+                    @endif
+                @endif
+
+                @for ($i = $start; $i <= $end; $i++)
+                    <x-blatui.pagination-item>
+                        <x-blatui.pagination-link :href="$p->url($i)" size="icon" :is-active="$i === $current" :aria-label="'Page '.$i">{{ $i }}</x-blatui.pagination-link>
+                    </x-blatui.pagination-item>
+                @endfor
+
+                @if ($end < $lastPage)
+                    @if ($end < $lastPage - 1)
+                        <x-blatui.pagination-item><x-blatui.pagination-ellipsis /></x-blatui.pagination-item>
+                    @endif
+                    <x-blatui.pagination-item>
+                        <x-blatui.pagination-link :href="$p->url($lastPage)" size="icon" :aria-label="'Page '.$lastPage">{{ $lastPage }}</x-blatui.pagination-link>
+                    </x-blatui.pagination-item>
+                @endif
             @else
-                <a href="{{ $p->url($i) }}"
-                    class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
-                    {{ $i }}
-                </a>
+                <x-blatui.pagination-item>
+                    <x-blatui.pagination-link :href="$p->url($current)" size="icon" :is-active="true" :aria-label="'Page '.$current">{{ $current }}</x-blatui.pagination-link>
+                </x-blatui.pagination-item>
             @endif
-        @endfor
 
-        @if($end < $lastPage)
-            @if($end < $lastPage - 1)
-                <span class="px-1!">…</span>
+            @if ($hasMore)
+                <x-blatui.pagination-item>
+                    <x-blatui.pagination-link :href="$p->url($current + 1)" size="icon" aria-label="Next page">
+                        <x-lucide-chevron-right class="size-4" aria-hidden="true" />
+                    </x-blatui.pagination-link>
+                </x-blatui.pagination-item>
             @endif
-            <a href="{{ $p->url($lastPage) }}"
-                class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
-                {{ $lastPage }}
-            </a>
-        @endif
-    @else
-        {{-- simplePaginate: just show current page number --}}
-        <span class="min-w-[22px]! text-center! py-0.5! px-1.5! border! border-border! bg-border! max-md:min-w-[36px]! max-md:p-2! max-md:px-2.5! max-md:text-center! max-md:text-[13px]!">
-            {{ $current }}
-        </span>
-    @endif
+        </x-blatui.pagination-content>
+    </x-blatui.pagination>
 
-    @if($hasMore)
-        <a href="{{ $p->url($current + 1) }}"
-            class="py-0.5! px-1.5! border! border-border! bg-surface-muted! no-underline! text-ink! max-md:p-2! max-md:px-2.5! max-md:min-w-[36px]! max-md:text-center! max-md:text-[13px]!">
-            »
-        </a>
+    @if ($total !== null)
+        <span class="text-[11px]! text-muted! whitespace-nowrap!">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
     @endif
-</div>
-
-@if($total !== null)
-    <span class="text-[11px]! text-muted! whitespace-nowrap!">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
-@endif
 </div>
