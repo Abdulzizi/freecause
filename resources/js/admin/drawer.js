@@ -175,7 +175,12 @@ function handleFieldBlur(event) {
     setFieldError(field, 'Enter a valid email address.');
 }
 
-export function init() {
+let bound = false;
+
+function bindListeners() {
+    if (bound) return;
+    bound = true;
+
     /* Any click on a list row opens that row's detail drawer, the standard
        ?select= navigation. Interactive elements inside the row keep their own
        behavior (checkboxes, buttons, links, selects, labels). */
@@ -192,7 +197,8 @@ export function init() {
         }
         clearDirtyDrawerForms();
         markRowOpen(row);
-        window.location.href = row.dataset.detailHref;
+        if (window.fcVisit) window.fcVisit(row.dataset.detailHref);
+        else window.location.href = row.dataset.detailHref;
     });
 
     document.addEventListener('input', handleDrawerInput, true);
@@ -217,16 +223,14 @@ export function init() {
         if (form) clearDrawerDirty(form);
     }, true);
 
-    document.addEventListener('click', async (event) => {
-        if (!(event.target instanceof Element)) return;
-        const closeLink = event.target.closest('a.fc-drawer__close');
-        if (!closeLink || !hasDirtyDrawerForm()) return;
+    document.addEventListener('turbo:before-visit', async (event) => {
+        if (!hasDirtyDrawerForm()) return;
         event.preventDefault();
-        event.stopPropagation();
         if (!(await confirmAction('Discard unsaved changes?', 'Unsaved changes'))) return;
         clearDirtyDrawerForms();
-        window.location.href = closeLink.href;
-    }, true);
+        if (window.fcVisit) window.fcVisit(event.detail.url);
+        else window.location.href = event.detail.url;
+    });
 
     window.addEventListener('beforeunload', (event) => {
         if (!hasDirtyDrawerForm()) return;
@@ -238,7 +242,10 @@ export function init() {
         hasDirty: hasDirtyDrawerForm,
         clearDirty: clearDirtyDrawerForms,
     };
+}
 
+export function init() {
+    bindListeners();
     markRowOpenFromUrl();
     restoreFilterState();
 }

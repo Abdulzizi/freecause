@@ -91,9 +91,10 @@ export function init() {
     if (bound) return;
     bound = true;
 
-    window.fcProgress = { start, done };
+    window.fcProgress = { start, done, reset };
 
     window.addEventListener('pageshow', reset);
+    document.addEventListener('turbo:load', reset);
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('submit', onDocumentSubmit);
 

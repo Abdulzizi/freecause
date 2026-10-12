@@ -333,7 +333,7 @@
             @endif
 
             @if (admin_can('petitions', 'edit'))
-                <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('admin.petitions.save') }}" enctype="multipart/form-data" data-turbo="false">
                 @csrf
 
                 <input type="hidden" name="id" value="{{ $selectedPetition->id }}">

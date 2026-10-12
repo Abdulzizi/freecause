@@ -40,6 +40,15 @@ own CSS/JS bundle, separate from the public site.
 Admin `script-src` allows `'unsafe-inline' 'unsafe-eval'` (Alpine needs eval). The public
 CSP stays strict — never add eval there.
 
+## Navigation (Turbo Drive)
+
+- The admin bundle boots Hotwire Turbo Drive (`@hotwired/turbo`) — admin only, the public site is untouched. Internal links, GET filter forms and standard POST forms swap the body without full reloads; scroll is preserved.
+- Re-init contract for `resources/js/admin/*` modules: bind document listeners **once** (module-level `bound` guard) and expose DOM work through `init()`, which `admin.js` re-runs per page. On `turbo:load` of a replaced body it also calls `Alpine.initTree(document.body)`; `turbo:before-render` destroys the old tree.
+- Navigate programmatically with `window.fcVisit(url)` (falls back to `location.href` without Turbo).
+- Forms containing CKEditor or file uploads keep `data-turbo="false"` (editor sync + multipart safety).
+- Turbo's own progress bar is hidden (`turbo-progress-bar` CSS); the custom `fc-nav-progress` bar is the single indicator.
+- The dirty-drawer guard also runs on `turbo:before-visit`; `turbo:before-cache` resets progress and strips teleported overlays before the snapshot.
+
 ## Styling rules
 
 - Do **not** use `flex!` / `block!` (important display) on elements toggled by Alpine

@@ -264,15 +264,21 @@ async function handleUserAction(button) {
     }
 }
 
+let bound = false;
+
 export function init() {
-    const config = bulkConfigs();
-    updateBulkState(config);
+    updateBulkState(bulkConfigs());
+
+    if (bound) return;
+    bound = true;
 
     document.addEventListener('change', (event) => {
+        const config = bulkConfigs();
         if (event.target.matches(config.checkboxSelector || '.bulk-checkbox')) updateBulkState(config);
     });
 
     document.addEventListener('click', async (event) => {
+        const config = bulkConfigs();
         const petitionToggle = event.target.closest('[data-petition-toggle]');
         if (petitionToggle) return handlePetitionToggle(petitionToggle);
         const petitionBan = event.target.closest('[data-petition-bulk-ban]');

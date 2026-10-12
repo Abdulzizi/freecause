@@ -24,7 +24,8 @@
                 const proceed = (ok) => {
                     if (!ok) { this.closing = false; this.open = true; return; }
                     window.fcDrawer?.clearDirty?.();
-                    window.location.href = @js($closeRoute);
+                    if (window.fcVisit) window.fcVisit(@js($closeRoute));
+                    else window.location.href = @js($closeRoute);
                 };
                 if (window.fcDrawer?.hasDirty?.() && window.fcConfirm) {
                     window.fcConfirm('Discard unsaved changes?', 'Unsaved changes').then(proceed);

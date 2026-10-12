@@ -21,7 +21,7 @@
 
     @if($showForm)
 
-        <form method="post" action="{{ route('admin.options.language.update') }}">
+        <form method="post" action="{{ route('admin.options.language.update') }}" data-turbo="false">
             @csrf
             <input type="hidden" name="locale" value="{{ $locale }}">
 

@@ -111,10 +111,11 @@ async function copyText(value) {
 
 export { csrf, notify, confirmAction, jsonPost, banDetails, setLoading };
 
-export function init() {
-    document.querySelectorAll('[data-admin-flash]').forEach((node) => {
-        notify(node.dataset.adminFlash || 'info', node.dataset.message || '');
-    });
+let bound = false;
+
+function bindListeners() {
+    if (bound) return;
+    bound = true;
 
     document.addEventListener('change', (event) => {
         if (event.target.matches('[data-admin-autosubmit]')) event.target.form?.requestSubmit();
@@ -171,6 +172,13 @@ export function init() {
         }
     });
 
+}
+
+function runDomTasks() {
+    document.querySelectorAll('[data-admin-flash]').forEach((node) => {
+        notify(node.dataset.adminFlash || 'info', node.dataset.message || '');
+    });
+
     document.querySelectorAll('form').forEach((form) => {
         const controls = form.querySelectorAll('[data-loading]');
         if (!controls.length || form.dataset.adminLoadingBound === '1') return;
@@ -189,4 +197,9 @@ export function init() {
             }, 0);
         });
     });
+}
+
+export function init() {
+    bindListeners();
+    runDomTasks();
 }

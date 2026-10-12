@@ -41,8 +41,11 @@ function handleSmtpToggle() {
         : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>';
 }
 
-export function init() {
-    loadRichEditors();
+let bound = false;
+
+function bindListeners() {
+    if (bound) return;
+    bound = true;
 
     document.addEventListener('keydown', function (event) {
         if ((event.key === 's' || event.key === 'S') && !event.ctrlKey && !event.metaKey && !event.altKey && !isEditableTarget(event.target)) {
@@ -61,4 +64,18 @@ export function init() {
             handleSmtpToggle();
         }
     });
+
+    document.addEventListener('turbo:before-cache', () => {
+        if (!window.CKEDITOR || !window.CKEDITOR.instances) return;
+        Object.keys(window.CKEDITOR.instances).forEach((name) => {
+            try {
+                window.CKEDITOR.instances[name].destroy(true);
+            } catch (_) { /* editor already torn down */ }
+        });
+    });
+}
+
+export function init() {
+    bindListeners();
+    loadRichEditors();
 }

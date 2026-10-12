@@ -133,7 +133,7 @@
 
         @if ($selectedPage)
             @if (admin_can('pages', 'edit'))
-            <form method="POST" action="{{ route('admin.pages.save') }}">
+            <form method="POST" action="{{ route('admin.pages.save') }}" data-turbo="false">
                 @csrf
 
                 <input type="hidden" name="page_id" value="{{ $selectedPage->page_id }}">

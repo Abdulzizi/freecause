@@ -11,6 +11,7 @@
         "@alpinejs/collapse": "^3.17.4",
         "@alpinejs/focus": "^3.17.4",
         "@floating-ui/dom": "^1.8.0",
+        "@hotwired/turbo": "^8.0.23",
         "@tailwindcss/vite": "^4.0.0",
         "alpinejs": "^3.17.4",
         "axios": "^1.11.0",
