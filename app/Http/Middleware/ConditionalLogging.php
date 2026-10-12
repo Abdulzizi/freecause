@@ -11,6 +11,10 @@ class ConditionalLogging
 {
     public function handle(Request $request, Closure $next)
     {
+        if (self::isSpeculative($request)) {
+            return $next($request);
+        }
+
         try {
             $enabled = (bool) Settings::get('logging_enabled', false, 'global');
             $cookieName = Settings::get('logging_cookie_name', '', 'global');
@@ -37,5 +41,19 @@ class ConditionalLogging
         }
 
         return $next($request);
+    }
+
+    public static function isSpeculative(Request $request): bool
+    {
+        $purpose = strtolower((string) $request->header('Sec-Purpose'));
+
+        return str_contains($purpose, 'prefetch') || str_contains($purpose, 'prerender');
+    }
+
+    public static function isPrefetchOnly(Request $request): bool
+    {
+        $purpose = strtolower((string) $request->header('Sec-Purpose'));
+
+        return str_contains($purpose, 'prefetch') && ! str_contains($purpose, 'prerender');
     }
 }

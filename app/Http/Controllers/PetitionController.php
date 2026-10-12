@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\ConditionalLogging;
 use App\Http\Requests\ClaimAccountRequest;
 use App\Http\Requests\PetitionRequest;
 use App\Models\Category;
@@ -323,6 +324,10 @@ class PetitionController extends Controller
 
     private function recordView(Request $request, Petition $petition): void
     {
+        if (ConditionalLogging::isPrefetchOnly($request)) {
+            return;
+        }
+
         $sessionKey = "petition_viewed.{$petition->id}";
 
         if ($request->session()->has($sessionKey)) {
