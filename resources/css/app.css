@@ -142,6 +142,112 @@ body.fc-public main a[href] {
     text-decoration: none;
 }
 
+/* Section rhythm (P2) */
+.fc-section {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+}
+
+/* Hero choreography — once, on load (P2) */
+@keyframes fc-hero-in {
+    from {
+        opacity: 0;
+        transform: translateY(var(--fc-rise-md));
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+body.fc-public .fc-hero .fc-hero-item {
+    animation: fc-hero-in var(--fc-dur-hero) var(--fc-ease-decel) both;
+}
+
+body.fc-public .fc-hero .fc-hero-item:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+body.fc-public .fc-hero .fc-hero-item:nth-child(2) {
+    animation-delay: 80ms;
+}
+
+body.fc-public .fc-hero .fc-hero-item:nth-child(3) {
+    animation-delay: 160ms;
+}
+
+/* Tab panes (P2) */
+@keyframes fc-pane-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+body.fc-public .tab-content > .tab-pane.active {
+    animation: fc-pane-in var(--fc-dur-base) var(--fc-ease-standard) both;
+}
+
+/* Recent-activity rows stagger when their tab is activated (display toggle restarts it). */
+body.fc-public .tab-pane.active .most-listing li {
+    animation: fc-reveal-in var(--fc-dur-slow) var(--fc-ease-decel) both;
+}
+
+body.fc-public .tab-pane.active .most-listing li:nth-child(1) { animation-delay: 0ms; }
+body.fc-public .tab-pane.active .most-listing li:nth-child(2) { animation-delay: calc(var(--fc-stagger) * 1); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(3) { animation-delay: calc(var(--fc-stagger) * 2); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(4) { animation-delay: calc(var(--fc-stagger) * 3); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(5) { animation-delay: calc(var(--fc-stagger) * 4); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(6) { animation-delay: calc(var(--fc-stagger) * 5); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(7) { animation-delay: calc(var(--fc-stagger) * 6); }
+body.fc-public .tab-pane.active .most-listing li:nth-child(8) { animation-delay: calc(var(--fc-stagger) * 7); }
+
+/* Hover lift (P2) */
+body.fc-public .fc-lift {
+    transition: transform var(--fc-dur-fast) var(--fc-ease-standard), box-shadow var(--fc-dur-fast) var(--fc-ease-standard);
+}
+
+body.fc-public .fc-lift:hover {
+    transform: translateY(var(--fc-hover-lift));
+    box-shadow: var(--fc-elev-2);
+}
+
+/* Scroll reveals + stagger — progressive enhancement (P2) */
+@keyframes fc-reveal-in {
+    from {
+        opacity: 0;
+        transform: translateY(var(--fc-rise-md));
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        body.fc-public .fc-reveal,
+        body.fc-public .fc-stagger > * {
+            animation: fc-reveal-in var(--fc-dur-slow) var(--fc-ease-decel) both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 30%;
+            animation-delay: calc(var(--fc-i, 0) * var(--fc-stagger));
+        }
+
+        body.fc-public .fc-stagger > :nth-child(1) { --fc-i: 0; }
+        body.fc-public .fc-stagger > :nth-child(2) { --fc-i: 1; }
+        body.fc-public .fc-stagger > :nth-child(3) { --fc-i: 2; }
+        body.fc-public .fc-stagger > :nth-child(4) { --fc-i: 3; }
+        body.fc-public .fc-stagger > :nth-child(5) { --fc-i: 4; }
+        body.fc-public .fc-stagger > :nth-child(6) { --fc-i: 5; }
+        body.fc-public .fc-stagger > :nth-child(7) { --fc-i: 6; }
+        body.fc-public .fc-stagger > :nth-child(8) { --fc-i: 7; }
+    }
+}
+
 /* Header chrome: hairline edge + link underline slide (P1) */
 body.fc-public .navbar {
     border-bottom: 1px solid var(--fc-hairline);
@@ -206,6 +312,16 @@ body.fc-public .navbar .nav-link.active::after {
 
     body.fc-public .navbar .nav-link::after {
         transition: none;
+    }
+
+    body.fc-public .fc-hero .fc-hero-item,
+    body.fc-public .tab-content > .tab-pane.active,
+    body.fc-public .tab-pane.active .most-listing li {
+        animation: none;
+    }
+
+    body.fc-public .fc-lift:hover {
+        transform: none;
     }
 }
 

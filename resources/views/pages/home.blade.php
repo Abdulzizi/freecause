@@ -14,20 +14,20 @@
 
 @section('content')
 
-    <section id="welcomes" class="bg-[#f8f9fa]! pt-14! pb-16! md:pt-24! md:pb-20!">
+    <section id="welcomes" class="bg-[var(--fc-band)]! fc-section fc-hero">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! items-center! justify-center!">
                 <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3! text-center!">
 
-                    <h1 class="text-black! font-semibold! text-2xl! md:text-5xl! mb-6! max-sm:mb-4!">
+                    <h1 class="fc-hero-item text-black! font-semibold! text-2xl! md:text-5xl! mb-6! max-sm:mb-4!">
                         {{ $content['h1'] ?? __('home.h1') }}
                     </h1>
 
-                    <h2 class="text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.45]!">
+                    <h2 class="fc-hero-item text-[#4b5563]! text-base! leading-[1.5]! md:text-xl! md:leading-[1.45]!">
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
-                    <div class="mt-7! mb-4!">
+                    <div class="fc-hero-item mt-7! mb-4!">
                         <x-ui.button :href="lroute('petition.create')" variant="primary" size="lg">
                             {{ __('home.btn_create_petition') }}
                         </x-ui.button>
@@ -38,7 +38,7 @@
         </x-ui.container>
     </section>
 
-    <section class="bg-[#f9fafb]! py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
@@ -69,7 +69,7 @@
                                     <div class="flex! flex-wrap! -mx-3!">
                                         <div class="w-full! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
 
-                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! shadow-none! transition! duration-150! hover:shadow-lg!">
+                                            <div class="featured-box relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-md! fc-lift">
                                                 <div class="grow! shrink! basis-auto! p-5! max-sm:p-4!">
 
                                                     <span class="bg-brand/5! text-danger! px-5! py-[3px]! rounded-[5px]! text-sm! mb-5! inline-block!">
@@ -129,8 +129,8 @@
                                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
                                                             <div class="flex! justify-between! text-muted!">
-                                                                <span><span data-countup data-countup-to="{{ (int) $signatures }}">{{ number_format($signatures) }}</span> {{ __('home.signatures_label') }}</span>
-                                                                <span>{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
+                                                                <span class="fc-tabular"><span data-countup data-countup-to="{{ (int) $signatures }}">{{ number_format($signatures) }}</span> {{ __('home.signatures_label') }}</span>
+                                                                <span class="fc-tabular">{{ __('home.goal_label') }} {{ number_format($goal) }}</span>
                                                             </div>
                                                         </div>
 
@@ -226,7 +226,7 @@
         </x-ui.container>
     </section>
 
-    <section class="py-14! md:py-24!">
+    <section class="fc-section bg-[var(--fc-band)]!">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3!">
 
@@ -258,7 +258,7 @@
         </x-ui.container>
     </section>
 
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! mb-6!">
                 <div class="w-full! shrink-0! grow-0! px-3!">
@@ -266,11 +266,11 @@
                 </div>
             </div>
 
-            <div class="flex! flex-wrap! -mx-3!">
+            <div class="flex! flex-wrap! -mx-3! fc-reveal fc-stagger">
                 @foreach ($categories as $cat)
                     <div class="w-full! lg:w-1/4! sm:w-1/2! shrink-0! grow-0! px-3! mb-4!">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                            class="bg-white! border! border-border! rounded-lg! p-6! text-center! no-underline! text-black! transition-all! duration-200! hover:shadow-[0_2px_8px_rgba(0,0,0,0.1)]! block!">
+                            class="bg-white! border! border-border! rounded-lg! p-6! text-center! no-underline! text-black! fc-lift block!">
                             <span class="text-[25px]! mb-2! hidden!"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
                             <h3 class="text-base! md:text-base!">{{ $cat->tr_name }}</h3>
                         </a>
@@ -281,7 +281,7 @@
     </section>
 
     @if (count($magazinePosts) > 0)
-    <section class="bg-[#f9fafb]! py-14! md:py-24!">
+    <section class="bg-[var(--fc-band)]! fc-section">
         <x-ui.container>
             <div class="text-center! mb-6!">
                 <h2 class="mb-2!">{{ __('home.blog_title') }}</h2>
@@ -289,11 +289,11 @@
                 </p>
             </div>
 
-            <div class="flex! flex-wrap! -mx-3!">
+            <div class="flex! flex-wrap! -mx-3! fc-reveal fc-stagger">
                 @foreach ($magazinePosts as $post)
                     <div class="w-full! md:w-1/3! shrink-0! grow-0! px-3! mb-6!">
                         <a class="block! h-full! no-underline!" href="/magazine/{{ $post->post_name }}">
-                            <div class="shadow-[var(--fc-shadow-sm)]! rounded-[15px]! overflow-hidden! transition! duration-150! hover:-translate-y-0.5! hover:shadow-[var(--fc-shadow-md)]!">
+                            <div class="shadow-[var(--fc-shadow-sm)]! rounded-[15px]! overflow-hidden! fc-lift">
                                 <div>
                                     @if ($post->thumbnail_path)
                                         <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup w-full! aspect-[16/9]! object-cover!">

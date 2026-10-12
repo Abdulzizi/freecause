@@ -1,4 +1,4 @@
-<section class="bg-[#fbfbfb]! py-10! md:py-16!">
+<section class="bg-[var(--fc-band)]! fc-section">
     <x-ui.container>
         <div class="flex! flex-wrap! -mx-3!">
             <div class="w-full! shrink-0! grow-0! px-3!">
