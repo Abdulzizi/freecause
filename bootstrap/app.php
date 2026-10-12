@@ -3,6 +3,7 @@
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\AdminAuditLog;
 use App\Http\Middleware\AdminAuth;
+use App\Http\Middleware\AppendSpeculationRulesHeader;
 use App\Http\Middleware\BlockBannedIp;
 use App\Http\Middleware\BlockBannedUser;
 use App\Http\Middleware\CanonicalHost;
@@ -63,6 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(CanonicalHost::class);
         $middleware->append(LegacyWordRedirect::class);
         $middleware->append(EdgeCacheHeaders::class);
+        $middleware->append(AppendSpeculationRulesHeader::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);

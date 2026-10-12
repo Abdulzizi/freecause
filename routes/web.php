@@ -53,6 +53,57 @@ Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(requ
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 Route::get('/version', VersionController::class);
 
+Route::get('/speculationrules.json', function () {
+    $urlExclusions = [
+        ['not' => ['href_matches' => '/admin/*']],
+        ['not' => ['href_matches' => '/api/*']],
+        ['not' => ['href_matches' => '/*logout*']],
+        ['not' => ['href_matches' => '*/download/*']],
+        ['not' => ['href_matches' => '/widgets/*']],
+        ['not' => ['href_matches' => '/widget-render/*']],
+    ];
+
+    $prerenderExclusions = [
+        ['not' => ['href_matches' => '*/create-petition*']],
+        ['not' => ['href_matches' => '*/sign*']],
+        ['not' => ['href_matches' => '*/petition/*']],
+    ];
+
+    $selectorExclusions = [
+        ['not' => ['selector_matches' => '[target=_blank]']],
+        ['not' => ['selector_matches' => '[rel~=nofollow]']],
+        ['not' => ['selector_matches' => '[data-no-prerender]']],
+    ];
+
+    return response()->json([
+        'prerender' => [
+            [
+                'where' => [
+                    'and' => array_merge(
+                        [['href_matches' => '/*', 'relative_to' => 'document']],
+                        $urlExclusions,
+                        $prerenderExclusions,
+                        $selectorExclusions
+                    ),
+                ],
+                'eagerness' => 'conservative',
+            ],
+        ],
+        'prefetch' => [
+            [
+                'where' => [
+                    'and' => array_merge(
+                        [['href_matches' => '/*', 'relative_to' => 'document']],
+                        $urlExclusions,
+                        $selectorExclusions
+                    ),
+                ],
+                'eagerness' => 'conservative',
+            ],
+        ],
+    ])->header('Content-Type', 'application/speculationrules+json');
+})->name('speculation.rules');
+
 Route::get('/ads.txt', function () {
     $content = Settings::get('ads_txt', '', 'global');
 
