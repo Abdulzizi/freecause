@@ -135,7 +135,11 @@ body.fc-public main a[href] {
 }
 
 .fc-head-band {
-    padding-block: clamp(2.25rem, 5vw, 3.25rem) clamp(1.5rem, 3vw, 2.25rem);
+    padding-block: clamp(1.25rem, 3vw, 2rem) clamp(0.875rem, 2vw, 1.25rem);
+}
+
+body.fc-public #fc-main > section:first-child:not(.fc-hero) {
+    padding-block-start: clamp(1.25rem, 3vw, 2rem);
 }
 
 @keyframes fc-hero-in {

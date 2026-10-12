@@ -38,7 +38,8 @@ readable with no hidden content.
 | Primitive | Effect | Applied on | Fallback |
 | --- | --- | --- | --- |
 | `.fc-section` | section rhythm `padding-block: clamp(3.5rem, 8vw, 6rem)` | page sections | normal padding |
-| `.fc-head-band` | compact page-head padding (2.25–3.25rem top, 1.5–2.25rem bottom) | static/contacts/magazine heads | normal padding |
+| `.fc-head-band` | compact page-head padding (20–32px top, 14–20px bottom) | static/contacts/magazine heads | normal padding |
+| `#fc-main > section:first-child` | compact 20–32px top padding on every public page (home hero excluded) | all public pages | normal padding |
 | `.fc-prose` | 78ch measure, paragraph/list/blockquote rhythm, hairline `hr`, `scroll-margin-top` on headings | static/legal content | plain content |
 | `.fc-hero` + `.fc-hero-item` | one-shot stagger: headline → sub → CTA (0/80/160ms) | home hero only | visible immediately |
 | `.fc-reveal` | scroll-driven fade + rise (`animation-timeline: view()`) | blocks below the fold | visible immediately |
