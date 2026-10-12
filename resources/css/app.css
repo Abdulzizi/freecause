@@ -1450,3 +1450,223 @@ select.fc-filter-field {
         opacity: 0;
     }
 }
+
+@layer components {
+    .fcui-section {
+        padding-block: clamp(2.5rem, 5vw, 4rem);
+    }
+
+    .fcui-section--band {
+        background: var(--fc-surface-2);
+    }
+
+    .fcui-section--tight {
+        padding-block: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .fcui-page-head {
+        padding-block: clamp(1.25rem, 3vw, 2rem) clamp(0.875rem, 2vw, 1.25rem);
+    }
+
+    .fcui-page-head__title {
+        font-size: var(--text-2xl);
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+        font-weight: 600;
+        text-wrap: balance;
+    }
+
+    .fcui-page-head__lead {
+        margin-top: 0.5rem;
+        max-width: 68ch;
+        color: var(--fc-text-muted);
+        font-size: var(--text-base);
+    }
+
+    .fcui-page-head__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .fcui-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.125rem 0.5rem;
+        border: 1px solid var(--fc-border);
+        border-radius: var(--fc-r-pill);
+        background: var(--fc-surface);
+        color: var(--fc-text-muted);
+        font-size: var(--text-xs);
+        font-weight: 500;
+        line-height: 1.4;
+        white-space: nowrap;
+    }
+
+    .fcui-badge--brand {
+        border-color: var(--fc-brand-border);
+        background: var(--fc-brand-soft);
+        color: var(--fc-brand);
+    }
+
+    .fcui-badge--success {
+        border-color: color-mix(in srgb, var(--fc-success) 28%, transparent);
+        background: var(--fc-success-soft);
+        color: var(--fc-success);
+    }
+
+    .fcui-badge--warning {
+        border-color: color-mix(in srgb, var(--fc-warning) 28%, transparent);
+        background: var(--fc-warning-soft);
+        color: var(--fc-warning);
+    }
+
+    .fcui-badge--danger {
+        border-color: color-mix(in srgb, var(--fc-danger) 28%, transparent);
+        background: var(--fc-danger-soft);
+        color: var(--fc-danger);
+    }
+
+    .fcui-badge--info {
+        border-color: color-mix(in srgb, var(--fc-info) 28%, transparent);
+        background: color-mix(in srgb, var(--fc-info) 8%, transparent);
+        color: var(--fc-info);
+    }
+
+    .fcui-breadcrumb {
+        font-size: var(--text-sm);
+        color: var(--fc-text-muted);
+    }
+
+    .fcui-breadcrumb ol {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.375rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .fcui-breadcrumb a {
+        color: var(--fc-text-muted);
+        text-decoration: none;
+    }
+
+    .fcui-breadcrumb a:hover {
+        color: var(--fc-brand);
+        text-decoration: underline;
+    }
+
+    .fcui-breadcrumb [aria-current='page'] {
+        color: var(--fc-text);
+    }
+
+    .fcui-breadcrumb__sep {
+        color: var(--fc-text-subtle);
+    }
+
+    .fcui-empty {
+        padding: clamp(2rem, 5vw, 3rem) 1rem;
+        border: 1px dashed var(--fc-border-strong);
+        border-radius: var(--fc-r-lg);
+        background: var(--fc-surface);
+        text-align: center;
+    }
+
+    .fcui-empty__icon {
+        margin-inline: auto;
+        color: var(--fc-text-subtle);
+    }
+
+    .fcui-empty__title {
+        margin-top: 0.75rem;
+        font-size: var(--text-lg);
+        font-weight: 600;
+    }
+
+    .fcui-empty__text {
+        margin-top: 0.25rem;
+        color: var(--fc-text-muted);
+    }
+
+    .fcui-empty__action {
+        margin-top: 1.25rem;
+    }
+
+    .fcui-pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .fcui-pagination__item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        height: 2rem;
+        padding-inline: 0.5rem;
+        border: 1px solid var(--fc-border);
+        border-radius: var(--fc-r-sm);
+        background: var(--fc-surface);
+        color: var(--fc-text-muted);
+        font-size: var(--text-sm);
+        text-decoration: none;
+        transition: background-color var(--fc-dur-fast) var(--fc-ease-standard), color var(--fc-dur-fast) var(--fc-ease-standard), border-color var(--fc-dur-fast) var(--fc-ease-standard);
+    }
+
+    .fcui-pagination__item:hover {
+        border-color: var(--fc-border-strong);
+        background: var(--fc-surface-2);
+        color: var(--fc-text);
+    }
+
+    .fcui-pagination__item--current {
+        border-color: var(--fc-brand);
+        background: var(--fc-brand);
+        color: var(--fc-surface);
+        font-weight: 600;
+    }
+
+    .fcui-pagination__item--disabled {
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    .fcui-divider {
+        border: 0;
+        border-top: 1px solid var(--fc-hairline);
+    }
+
+    .fcui-skeleton {
+        display: block;
+        border-radius: var(--fc-r-sm);
+        background: linear-gradient(90deg, var(--fc-surface-2) 25%, var(--fc-border) 37%, var(--fc-surface-2) 63%);
+        background-size: 400% 100%;
+        animation: fcui-skeleton-shimmer 1.4s ease infinite;
+    }
+
+    .fcui-skeleton--text {
+        height: 1em;
+    }
+
+    .fcui-skeleton--title {
+        height: 1.75rem;
+        max-width: 22rem;
+    }
+
+    body.fc-public :where(input, select, textarea):focus-visible {
+        outline: 2px solid var(--fc-focus);
+        outline-offset: 2px;
+    }
+
+    body.fc-public :where(.fcui-btn, .fcui-pagination__item, .fcui-badge)[href]:focus-visible,
+    body.fc-public :where(.fcui-btn, button.fcui-btn):focus-visible {
+        outline: 2px solid var(--fc-focus);
+        outline-offset: 2px;
+    }
+}
