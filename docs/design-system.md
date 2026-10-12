@@ -147,6 +147,6 @@ CI: blocking step in `.github/workflows/ci.yml` (`Design system lint`).
 | Raw hex in `app.css` | 81 | 0 (all in `tokens.css`) |
 | Raw hex in views (styling) | 220 | 7 (standalone widget/pdf `<style>`) |
 | `border` tokens in views | 951 | 703 (−26%) |
-| Built public CSS | 192.8 kB / 1,035 `!important` | 185.1 kB / 179 `!important` |
+| Built public CSS | 192.8 kB / 1,035 `!important` | 181.5 kB / 168 `!important` (prod build) |
 | New `x-ui` component call sites | 0 | 35 (`section` 20, `badge` 6, `page-head` 3, `empty` 3, `breadcrumb` 2, `pagination` 1) |
 
