@@ -25,7 +25,7 @@
     @section('title', '403 - Forbidden')
 
     @section('content')
-        <section class="py-12!">
+        <section class="fc-section">
             <x-ui.container>
 
                 <div class="mb-6!">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border!">
+                <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border! fc-enter">
                     <div class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">403</div>
                     <p class="text-[15px]! text-muted! mb-1.5!">
                         {{ __('errors.403_lead') }}

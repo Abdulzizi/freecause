@@ -14,8 +14,12 @@
 
 @section('title', $pageTitle)
 
+@push('head')
+    <style>@view-transition { navigation: none; }</style>
+@endpush
+
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
             <div class="bg-white! shadow-sm! rounded-[.5rem]! p-12! text-center! border! border-border! max-w-[900px]! mx-auto!">
 

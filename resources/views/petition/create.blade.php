@@ -24,10 +24,11 @@
 
 @push('head')
     <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" integrity="sha384-cPa8kzsYWhqpAfWOLWYIw3V0BhPi/m3lrd8tBTPxr2NrYCHRVZ7xy1cEoRGOM/03" crossorigin="anonymous">
+    <style>@view-transition { navigation: none; }</style>
 @endpush
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container class="max-md:px-3!">
 
             @auth
@@ -46,17 +47,17 @@
                 <h1 class="text-center! mb-6! max-md:text-[1.45rem]! max-md:mb-4!">{{ __('create.heading_create') }}</h1>
 
                 <div class="flex! flex-wrap! items-center! justify-center! gap-[60px]! mb-10! max-md:hidden!" aria-label="Petition creation progress">
-                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!" aria-current="step">
                         <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:100%_0%]!"></span>
-                        <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_create') }}</div>
+                        <div class="text-xl! font-semibold! text-brand! whitespace-nowrap!">{{ __('petition.step_create') }}</div>
                     </div>
 
-                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]! opacity-60!">
                         <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:0%_50%]!"></span>
                         <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_share') }}</div>
                     </div>
 
-                    <div class="flex! items-center! gap-[18px]! min-w-[240px]!">
+                    <div class="flex! items-center! gap-[18px]! min-w-[240px]! opacity-60!">
                         <span class="inline-block! w-16! h-16! bg-[url('/legacy/images/startpetition-icons.png')]! bg-no-repeat! bg-[length:200%_300%]! bg-[position:0%_100%]!"></span>
                         <div class="text-xl! font-medium! text-[#111]! whitespace-nowrap!">{{ __('petition.step_change') }}</div>
                     </div>

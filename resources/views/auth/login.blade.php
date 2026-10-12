@@ -3,12 +3,12 @@
 @section('title', __('auth.title_login'))
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! justify-center!">
                 <div class="w-full! shrink-0! grow-0! px-3! md:w-2/3! lg:w-1/2!">
 
-                    <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-[1rem]! shadow-[0_1rem_3rem_rgba(0,0,0,0.175)]!">
+                    <div class="relative! flex! flex-col! min-w-0! bg-white! bg-clip-border! rounded-[1rem]! border! border-border! shadow-[var(--fc-elev-1)]!">
                         <div class="grow! shrink! basis-auto! p-6! md:p-12!">
 
                             <h1 class="text-center! mb-6! text-[28px]! font-medium!">{{ __('auth.google_heading') }}</h1>

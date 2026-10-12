@@ -3,7 +3,7 @@
 @section('title', '404 - Page not found')
 
 @section('content')
-    <section class="py-12!">
+    <section class="fc-section">
         <x-ui.container>
 
             @php
@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border!">
+            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border! fc-enter">
                 <div class="flex! justify-center! mb-6!">
                     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none" aria-hidden="true">
                         <ellipse cx="100" cy="132" rx="70" ry="8" fill="#f6d4d4"></ellipse>

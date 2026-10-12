@@ -73,7 +73,8 @@ class PetitionTest extends TestCase
 
         $this->get('/en/petitions?q=Forest')
             ->assertOk()
-            ->assertSee('Protect Local Forests')
+            ->assertSee('Protect Local')
+            ->assertSee('<mark>Forest</mark>', false)
             ->assertDontSee('Improve Public Transit');
     }
 
@@ -143,7 +144,8 @@ class PetitionTest extends TestCase
 
         $this->get("/en/petitions/category-test-category-{$this->category->id}?q=Animals")
             ->assertOk()
-            ->assertSee('Protect Test Animals')
+            ->assertSee('Protect Test')
+            ->assertSee('<mark>Animals</mark>', false)
             ->assertDontSee('Build Safer Roads');
 
         $this->get("/en/petitions/category-test-category-{$this->category->id}?q=Missing")

@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
 
             <div class="mb-6!">
@@ -25,7 +25,7 @@
                 <div class="flex! flex-wrap! -mx-3!">
 
                     <div class="w-full! md:w-1/3! shrink-0! grow-0! px-3!">
-                        <table class="w-full! text-sm! border-collapse!">
+                        <table class="w-full! text-sm! border-collapse! fc-tabular">
                             <tr class="border-b! border-border!">
                                 <td class="py-2.5! text-muted!">{{ __('userprofile.registration_date') }}</td>
                                 <td class="py-2.5! text-right! font-medium!">
@@ -49,7 +49,7 @@
 
                     <div class="w-full! md:w-2/3! shrink-0! grow-0! px-3!">
 
-                        <div class="mb-6!">
+                        <div class="mb-6! fc-reveal fc-stagger">
                             <h2 class="text-base! font-bold! mb-4! break-words!">
                                 {{ __('userprofile.recent_petitions', ['name' => $user->display_name]) }}
                             </h2>
@@ -65,7 +65,7 @@
                             @endforelse
                         </div>
 
-                        <div>
+                        <div class="fc-reveal fc-stagger">
                             <h2 class="text-base! font-bold! mb-4! break-words!">
                                 {{ __('userprofile.recent_signatures', ['name' => $user->display_name]) }}
                             </h2>

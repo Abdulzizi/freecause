@@ -3,11 +3,11 @@
 @section('title', __('auth.reset_title'))
 
 @section('content')
-    <section class="py-14! md:py-24!">
+    <section class="fc-section">
         <x-ui.container>
             <div class="flex! flex-wrap! -mx-3! justify-center!">
                 <div class="w-full! shrink-0! grow-0! px-3! md:w-[41.666667%]!">
-                    <div class="shadow-sm">
+                    <div class="bg-white! shadow-sm! rounded-[1rem]! p-6! md:p-8! border! border-border!">
                         <h1 class="mb-6! text-center! text-2xl!">{{ __('auth.reset_title') }}</h1>
 
                         <form method="POST" action="{{ lroute('password.update') }}">

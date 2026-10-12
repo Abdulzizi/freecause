@@ -7,14 +7,14 @@
 @section('title', 'Maintenance - FreeCause')
 
 @section('content')
-    <section class="py-12!">
+    <section class="fc-section">
         <x-ui.container>
 
             <div class="mb-6!">
                 <h1 class="mb-2! text-2xl! font-semibold!">{{ __('errors.503_title') }}</h1>
             </div>
 
-            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border!">
+            <div class="bg-white! shadow-sm! rounded-lg! p-6! mb-12! border! border-border! fc-enter">
                 <div class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">503</div>
                 <p class="text-[15px]! text-muted! mb-1.5!">
                     {{ __('errors.503_lead') }}

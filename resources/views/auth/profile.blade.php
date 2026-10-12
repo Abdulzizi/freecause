@@ -12,14 +12,14 @@
             && (int) ($googleDeleteProof['user_id'] ?? 0) === (int) $u->id
             && (int) ($googleDeleteProof['verified_at'] ?? 0) >= now()->subMinutes(5)->timestamp;
 
-        $card = 'rounded-xl! border! border-gray-200! bg-white! p-6! shadow-sm!';
+        $card = 'rounded-xl! border! border-border! bg-white! p-6! shadow-[var(--fc-elev-1)]!';
         $input = 'block! w-full! rounded-md! border! border-gray-300! bg-white! px-3! py-2! text-[14px]! leading-normal! text-gray-900! transition! focus:border-brand! focus:ring-2! focus:ring-brand/25! focus:outline-none!';
         $label = 'text-[13px]! font-medium! text-gray-700!';
-        $btnBrand = 'inline-flex! items-center! justify-center! gap-2! rounded-md! bg-brand! px-5! py-2.5! text-[14px]! font-semibold! text-white! no-underline! transition! hover:bg-brand-light! focus:outline-none! disabled:cursor-not-allowed! disabled:opacity-50!';
-        $btnOutline = 'inline-flex! items-center! justify-center! gap-2! rounded-md! border! border-gray-300! bg-white! px-4! py-2! text-[13px]! font-medium! text-gray-700! no-underline! transition! hover:bg-gray-50! focus:outline-none! disabled:cursor-not-allowed! disabled:opacity-60!';
+        $btnBrand = 'fcui-btn fcui-btn--danger fcui-btn--md';
+        $btnOutline = 'fcui-btn fcui-btn--secondary fcui-btn--md';
     @endphp
 
-    <section class="py-14! md:py-24! bg-[#f7f7f8]!">
+    <section class="fc-section bg-[var(--fc-band)]!">
         <div class="mx-auto! max-w-5xl! px-4!">
             <div class="grid! grid-cols-1! items-start! gap-6! lg:grid-cols-12!">
 
@@ -105,7 +105,7 @@
                                 </button>
 
                                 <noscript>
-                                    <button type="submit" class="{{ $btnBrand }} mt-3!">
+                                    <button type="submit" class="{{ $btnBrand }} mt-3!" data-loading data-loading-text="{{ __('ui.saving') }}">
                                         {{ __('profile.google_disconnect') }}
                                     </button>
                                 </noscript>
