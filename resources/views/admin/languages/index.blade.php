@@ -53,17 +53,14 @@
                 <div class="flex-1! max-w-[500px]!">
 
                     <form method="post" action="{{ route('admin.languages.update', $lang) }}"
-                        class="flex! gap-2.5! items-center! mb-1.5!">
+                        class="flex! gap-3! items-center! mb-1.5!">
                         @csrf
                         @method('PUT')
 
-                        <x-admin.form-field label="name" class="min-w-0! flex-1!">
-                            <x-ui.input name="name" :value="$lang->name" class="fc-filter-field" />
-                        </x-admin.form-field>
+                        <label for="lang-name-{{ $lang->id }}" class="text-[13px]! text-muted!">name</label>
+                        <x-ui.input id="lang-name-{{ $lang->id }}" name="name" :value="$lang->name" class="fc-filter-field w-[220px]! max-w-full!" />
 
-                        {{-- <input class="fc-filter-field" name="flag" value="{{ $lang->flag }}"> --}}
-
-                        <label class="flex! items-center! gap-[5px]!">
+                        <label class="flex! items-center! gap-[5px]! text-[13px]!">
                             <span class="fc-switch">
                                 <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
                                 <span class="fc-switch__track" aria-hidden="true"></span>
@@ -71,7 +68,7 @@
                             active
                         </label>
 
-                        <x-blatui.button type="submit">save</x-blatui.button>
+                        <x-blatui.button type="submit" size="sm">save</x-blatui.button>
                     </form>
 
                     @if (!$lang->is_default)

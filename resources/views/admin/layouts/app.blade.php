@@ -19,7 +19,7 @@
             <header class="flex flex-wrap items-center justify-between gap-2 border-b! border-border! bg-surface! px-3.5! py-2.5! text-sm! box-border! max-md:px-2.5! max-md:py-1.5! max-md:text-[13px]!">
                 <div class="flex items-center gap-2">
                     <x-blatui.sidebar-trigger />
-                    <a class="text-brand! no-underline! whitespace-nowrap! hover:underline!" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                    <a class="text-ink! no-underline! whitespace-nowrap! hover:underline!" href="{{ route('admin.dashboard') }}">Dashboard</a>
                 </div>
                 <div class="flex items-center gap-2 text-muted! max-md:gap-1">
                     <span class="whitespace-nowrap!">v 1.2.1</span>

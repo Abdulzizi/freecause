@@ -46,12 +46,6 @@
     color: var(--sidebar-foreground, #212529);
 }
 
-[data-sidebar='menu-button'][data-active='true'],
-[data-sidebar='menu-button'][data-active='true']:hover,
-[data-sidebar='menu-button'][data-active='true']:focus {
-    color: var(--color-brand, #cc1f1f);
-}
-
 [data-slot='sidebar-group-label'] {
     color: var(--color-ink, #212529);
     background: #e9ecef;
