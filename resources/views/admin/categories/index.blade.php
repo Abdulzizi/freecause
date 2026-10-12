@@ -11,7 +11,7 @@
 @endif
 
 @if ($errors->any())
-    <div class="fc-error mb-3!">{{ $errors->first() }}</div>
+    <x-blatui.alert variant="destructive" class="mb-3!">{{ $errors->first() }}</x-blatui.alert>
 @endif
 
 {{-- ── NEW CATEGORY FORM ─────────────────────────────────────────────────── --}}

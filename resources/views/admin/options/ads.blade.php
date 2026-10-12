@@ -5,10 +5,6 @@
 @section('content')
     <x-admin.page-header title="ads.txt" />
 
-    {{-- @if(session('success'))
-        <div class="fc-success">{{ session('success') }}</div>
-    @endif --}}
-
     <form method="post" action="{{ route('admin.ads.update') }}">
         @csrf
 

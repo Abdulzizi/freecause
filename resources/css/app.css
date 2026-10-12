@@ -750,13 +750,6 @@ nav.navbar {
 
     .fc-drawer,
     .fc-drawer[data-open="1"] .fc-drawer__body > :first-child,
-    .fc-drawer-backdrop,
-    .fc-modal,
-    .fc-modal__panel,
-    .fc-menu a.fc-side-link,
-    .fc-menu .group-title,
-    .fc-menu .group-title:after,
-    .fc-abtn,
     .fc-filter-field,
     .fc-bulk-count,
     .fc-bulk-count--pop,
@@ -764,7 +757,6 @@ nav.navbar {
     .fc-switch,
     .fc-switch__track,
     .fc-switch__track::after,
-    .fc-drawer__body .fc-tab,
     .swal2-toast,
     .swal2-toast.swal2-hide,
     tr[data-detail-row] {
@@ -773,11 +765,7 @@ nav.navbar {
     }
 }
 
-.fc-group.collapsed > a {
-    display: none !important;
-}
-
-/* ===== Admin slide-over detail drawer + modal ===== */
+/* ===== Admin slide-over detail drawer ===== */
 /* Right-side editing drawer — replaces the inline panel under the table. */
 .fc-drawer {
     position: fixed;
@@ -838,19 +826,6 @@ nav.navbar {
     border-top: 1px solid var(--color-border);
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
 }
-.fc-drawer-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 94;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-out;
-}
-.fc-drawer-backdrop[data-open="1"] {
-    opacity: 1;
-    pointer-events: auto;
-}
 @keyframes fc-drawer-slide-up {
     from {
         opacity: 0;
@@ -866,65 +841,11 @@ nav.navbar {
         width: 100vw;
     }
 }
-/* Centered confirmation-style modal (create petition etc.). */
-.fc-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 110;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-.fc-modal[data-open="1"] {
-    display: flex;
-}
-.fc-modal__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-}
-.fc-modal__panel {
-    position: relative;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    width: 100%;
-    max-width: 560px;
-    max-height: 85vh;
-    overflow-y: auto;
-}
-.fc-modal__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-surface-muted);
-    font-weight: 700;
-    font-size: 13px;
-}
-.fc-modal__body {
-    padding: 12px;
-}
-
 /* Small screens: hide the flagged secondary columns entirely so tables
    stay width-limited instead of h-scrolling. */
 @media (max-width: 768px) {
     [data-hide-mobile] {
         display: none !important;
-    }
-}
-
-/* Small screens: hide the flagged secondary columns entirely so tables
-   stay width-limited instead of h-scrolling. */
-@media (max-width: 768px) {
-    [data-hide-mobile] {
-        display: none !important;
-    }
-    .fc-modal {
-        padding: 8px;
     }
     .fc-drawer__body {
         padding: 10px;
@@ -932,118 +853,15 @@ nav.navbar {
     .fc-drawer-savebar {
         padding: 8px 0 4px;
     }
-    .fc-abtn {
-        padding: 0 9px;
-        font-size: 12px;
-    }
-}
-
-/* ===== Admin sidebar ===== */
-/* Normalized rhythm: consistent paddings, group gaps, hover + active states.
-   The markup has no per-link utilities; spacing lives here. */
-.fc-menu .fc-side-group {
-    margin-bottom: 10px;
-}
-.fc-menu .fc-side-group:last-child {
-    margin-bottom: 4px;
-}
-.fc-menu .group-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 9px;
-    margin: 2px 0 6px;
-    background: var(--color-border);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    cursor: pointer;
-    user-select: none;
-}
-.fc-menu .group-title:after {
-    content: "";
-    border-top: 5px solid var(--color-muted);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    width: 0;
-    height: 0;
-    transform: translateY(1px);
-    transition: transform 0.15s ease;
-}
-.fc-menu .fc-group.collapsed .group-title:after {
-    transform: translateY(1px) rotate(-90deg);
-}
-.fc-menu a.fc-side-link {
-    display: block;
-    padding: 7px 10px;
-    margin: 2px 0;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    font-size: 13px;
-    line-height: 1.35;
-    color: var(--color-ink);
-    text-decoration: none;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-.fc-menu a.fc-side-link:hover {
-    background: var(--color-border);
-    border-color: var(--color-border);
-}
-.fc-menu a.fc-side-link:active {
-    transform: scale(0.98);
-}
-.fc-menu a.fc-side-link.active {
-    background: rgba(204, 31, 31, 0.07);
-    border-color: var(--color-border);
-    color: var(--color-brand);
-    font-weight: 600;
-}
-.fc-menu a.fc-side-link:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand-light);
 }
 
 .fc-box {
     border-color: var(--color-border);
 }
-.fc-tab {
-    background: var(--color-surface-muted);
-    border-color: var(--color-border);
-    color: var(--color-ink);
-}
-.fc-menu-toggle {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-    color: var(--color-ink);
-}
-@media (max-width: 768px) {
-    .fc-menu a.fc-side-link {
-        padding: 9px 12px;
-        font-size: 13px;
-    }
-}
 
 /* normalized detail-panel (drawer) inner rhythm */
 .fc-drawer__body .fc-box {
     margin-bottom: 12px;
-}
-.fc-drawer__body .fc-tab {
-    margin-top: 12px;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-.fc-drawer__body .fc-tab:first-child {
-    margin-top: 0;
-}
-.fc-drawer__body .fc-tab:active {
-    transform: scale(0.98);
-}
-.fc-drawer__body .fc-tab:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand-light);
 }
 
 /* list rows that open the detail drawer */
@@ -1123,46 +941,6 @@ select.fc-filter-field {
 }
 /* Compact toolbar action button (bulk bars, clear-selection, single actions).
    Horizontal icon+label, one height for every toolbar. */
-.fc-abtn {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    gap: 5px;
-    height: 32px;
-    padding: 0 11px;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    background: var(--color-surface);
-    color: var(--color-muted);
-    font-size: 12.5px;
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-.fc-abtn:hover {
-    background: var(--color-surface-muted);
-}
-.fc-abtn:active {
-    background: var(--color-border);
-    transform: scale(0.98);
-}
-.fc-abtn:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand-light);
-}
-.fc-abtn[disabled],
-.fc-abtn.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-}
-.fc-abtn svg {
-    width: 14px;
-    height: 14px;
-    flex: none;
-}
 .fc-abtn--danger {
     color: var(--color-danger);
     border-color: var(--color-danger);
@@ -1184,11 +962,7 @@ select.fc-filter-field {
 .fc-abtn--success:active {
     background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
 }
-.fc-abtn--neutral {
-    color: var(--color-muted);
-}
-.fc-bulk-count,
-.fc-filter-count {
+.fc-bulk-count {
     background: color-mix(in srgb, var(--color-info) 10%, var(--color-surface));
     color: var(--color-info);
 }

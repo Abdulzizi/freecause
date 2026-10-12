@@ -16,16 +16,10 @@
 
             <x-admin.form-field label="current password">
                 <x-ui.input name="current_password" type="password" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                {{-- @error('current_password')
-                    <div class="fc-error">{{ $message }}</div>
-                @enderror --}}
             </x-admin.form-field>
 
             <x-admin.form-field label="new password">
                 <x-ui.input name="new_password" type="password" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                {{-- @error('new_password')
-                    <div class="fc-error">{{ $message }}</div>
-                @enderror --}}
             </x-admin.form-field>
 
             <x-admin.form-field label="repeat new password">
@@ -38,9 +32,6 @@
 
             <x-admin.form-field label="email">
                 <x-ui.input name="email" type="email" data-live-validate :value="old('email', $admin->email)" class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
-                {{-- @error('email')
-                    <div class="fc-error">{{ $message }}</div>
-                @enderror --}}
             </x-admin.form-field>
         </x-admin.section-panel>
 

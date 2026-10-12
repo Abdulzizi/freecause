@@ -83,7 +83,6 @@ class AdminPanelRevampB0Test extends TestCase
             <x-admin.bulk-toolbar>
                 <button type="button">Archive selected</button>
             </x-admin.bulk-toolbar>
-            <x-admin.pagination :p="$empty" />
             <x-admin.data-table :p="$filled">
                 <x-slot:thead><tr><th>Petition</th></tr></x-slot:thead>
                 <x-slot:tbody><tr><td>Example row</td></tr></x-slot:tbody>

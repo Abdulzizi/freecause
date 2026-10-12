@@ -8,6 +8,7 @@
 | [`i18n-crowdin.md`](i18n-crowdin.md) | Crowdin / i18n integration runbook |
 | [`performance-edge-cache.md`](performance-edge-cache.md) | Anonymous edge-cache design; why listings bypass |
 | [`edge-waf-bots.md`](edge-waf-bots.md) | Cloudflare WAF rules, Free-plan limits, bot/crawler traffic findings |
+| [`admin-ui.md`](admin-ui.md) | Admin panel: BlatUI bundles/components, JS hooks, CSP, styling rules |
 | [`performance-qa.md`](performance-qa.md) | Manual performance QA checklist |
 
 Operational docs that are intentionally local-only (never committed, per
