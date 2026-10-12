@@ -671,14 +671,6 @@
         box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.15);
     }
 
-    .fcui-input--error {
-        border-color: var(--fc-brand);
-    }
-
-    .fcui-input--error:focus {
-        box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.2);
-    }
-
     .fcui-field__hint {
         font-size: var(--text-sm);
         color: var(--fc-text-muted);
@@ -917,11 +909,6 @@
         opacity: 1;
     }
 
-    .fcui-field-invalid {
-        border-color: var(--fc-brand);
-        box-shadow: 0 0 0 3px rgba(204, 31, 31, 0.18);
-    }
-
     .fcui-sticky-signbar {
         position: fixed;
         bottom: 0;
@@ -957,10 +944,6 @@
     .fcui-pwwrap {
         position: relative;
         display: block;
-    }
-
-    .fcui-pwwrap > input {
-        padding-inline-end: 2.75rem;
     }
 
     .fcui-pwtoggle {
@@ -1690,5 +1673,25 @@ select.fc-filter-field {
 @layer overrides {
     .collapse {
         visibility: visible;
+    }
+}
+
+@layer overrides {
+    .fcui-input--error,
+    .fcui-field-invalid {
+        border-color: var(--fc-brand);
+    }
+
+    .fcui-input--error:focus,
+    .fcui-field-invalid:focus {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--fc-brand) 20%, transparent);
+    }
+
+    .fcui-field-invalid {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--fc-brand) 18%, transparent);
+    }
+
+    .fcui-pwwrap > input {
+        padding-inline-end: 2.75rem;
     }
 }
