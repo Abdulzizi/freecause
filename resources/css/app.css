@@ -1,4 +1,4 @@
-@layer theme, base, legacy, components, utilities;
+@layer theme, base, legacy, components, utilities, overrides;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
@@ -15,10 +15,6 @@
 @source not '../js/blatui-core.js';
 
 @layer components {
-    .collapse {
-        visibility: visible;
-    }
-
     img {
         display: inline;
     }
@@ -1688,5 +1684,11 @@ select.fc-filter-field {
     body.fc-public :where(.fcui-btn, button.fcui-btn):focus-visible {
         outline: 2px solid var(--fc-focus);
         outline-offset: 2px;
+    }
+}
+
+@layer overrides {
+    .collapse {
+        visibility: visible;
     }
 }

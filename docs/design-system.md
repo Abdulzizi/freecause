@@ -106,6 +106,12 @@ CI: blocking step in `.github/workflows/ci.yml` (`Design system lint`).
 
 ## Deliberate exceptions
 
+- `@layer overrides` exists for exactly one legacy/Tailwind class-name collision:
+  Bootstrap's `.collapse` hook (which must stay `visibility: visible`) also
+  matches Tailwind's `collapse` utility (`visibility: collapse`). The override
+  layer sits after `utilities` so the Bootstrap behaviour wins without an
+  `!important`. Add further entries there only for the same class-name-collision
+  reason.
 - `resources/css/client-toast.css` keeps `!important` where it must beat
   SweetAlert2's own stylesheet, which is injected outside the layer order.
 - `[data-hide-mobile] { display: none !important }` must beat table-cell
