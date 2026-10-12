@@ -1,0 +1,143 @@
+@theme {
+    --color-canvas: var(--fc-bg);
+    --color-surface: var(--fc-surface);
+    --color-surface-2: var(--fc-surface-2);
+    --color-surface-muted: var(--fc-surface-2);
+    --color-border: var(--fc-border);
+    --color-border-strong: var(--fc-border-strong);
+    --color-ink: var(--fc-text);
+    --color-muted: var(--fc-text-muted);
+    --color-subtle: var(--fc-text-subtle);
+    --color-brand: var(--fc-brand);
+    --color-brand-hover: var(--fc-brand-hover);
+    --color-brand-active: var(--fc-brand-active);
+    --color-brand-soft: var(--fc-brand-soft);
+    --color-brand-border: var(--fc-brand-border);
+    --color-brand-light: #ff4b4b;
+    --color-success: var(--fc-success);
+    --color-success-soft: var(--fc-success-soft);
+    --color-warning: var(--fc-warning);
+    --color-warning-soft: var(--fc-warning-soft);
+    --color-danger: var(--fc-danger);
+    --color-danger-soft: var(--fc-danger-soft);
+    --color-info: var(--fc-info);
+    --color-focus: var(--fc-focus);
+    --color-whatsapp: var(--fc-social-whatsapp);
+    --color-facebook: var(--fc-social-facebook);
+
+    --text-xs: 12px;
+    --text-xs--line-height: 1.4;
+    --text-sm: 14px;
+    --text-sm--line-height: 1.45;
+    --text-base: 16px;
+    --text-base--line-height: 1.6;
+    --text-lg: 18px;
+    --text-lg--line-height: 1.5;
+    --text-xl: 22px;
+    --text-xl--line-height: 1.35;
+    --text-xl--letter-spacing: -0.01em;
+    --text-2xl: 28px;
+    --text-2xl--line-height: 1.25;
+    --text-2xl--letter-spacing: -0.015em;
+    --text-3xl: 36px;
+    --text-3xl--line-height: 1.15;
+    --text-3xl--letter-spacing: -0.02em;
+    --text-4xl: clamp(44px, 6vw, 56px);
+    --text-4xl--line-height: 1.05;
+    --text-4xl--letter-spacing: -0.02em;
+
+    --radius-sm: var(--fc-r-sm);
+    --radius-md: var(--fc-r-md);
+    --radius-lg: var(--fc-r-lg);
+    --radius-pill: var(--fc-r-pill);
+
+    --shadow-elev-1: var(--fc-elev-1);
+    --shadow-elev-2: var(--fc-elev-2);
+    --shadow-elev-3: var(--fc-elev-3);
+
+    --ease-standard: var(--fc-ease-standard);
+    --ease-decel: var(--fc-ease-decel);
+    --ease-accel: var(--fc-ease-accel);
+}
+
+:root {
+    --fc-bg: #faf9f7;
+    --fc-surface: #ffffff;
+    --fc-surface-2: #f4f2ef;
+    --fc-border: #e6e3dd;
+    --fc-border-strong: #d6d1c8;
+    --fc-text: #1f1e1c;
+    --fc-text-muted: #6b655d;
+    --fc-text-subtle: #938d84;
+    --fc-brand: #cc1f1f;
+    --fc-brand-hover: #b31b1b;
+    --fc-brand-active: #a00117;
+    --fc-brand-soft: #fdf3f2;
+    --fc-brand-border: #f1cfcc;
+    --fc-success: #1e7a34;
+    --fc-success-soft: #e9f6ec;
+    --fc-warning: #b7791f;
+    --fc-warning-soft: #fdf6e7;
+    --fc-danger: #d92d20;
+    --fc-danger-soft: #fef3f2;
+    --fc-info: #1a5fb4;
+    --fc-focus: #cc1f1f;
+    --fc-social-whatsapp: #25d366;
+    --fc-social-facebook: #1877f2;
+
+    --fc-hairline: rgba(31, 30, 28, 0.08);
+    --fc-band: var(--fc-surface-2);
+
+    --fc-r-sm: 6px;
+    --fc-r-md: 8px;
+    --fc-r-lg: 12px;
+    --fc-r-pill: 9999px;
+
+    --fc-elev-1: 0 1px 2px rgba(31, 30, 28, 0.05), 0 1px 1px rgba(31, 30, 28, 0.04);
+    --fc-elev-2: 0 4px 12px rgba(31, 30, 28, 0.08);
+    --fc-elev-3: 0 12px 32px rgba(31, 30, 28, 0.12);
+    --fc-shadow-sm: var(--fc-elev-1);
+    --fc-shadow-md: var(--fc-elev-2);
+
+    --fc-z-sticky: 1020;
+    --fc-z-header: 1030;
+    --fc-z-overlay: 1040;
+    --fc-z-modal: 1050;
+    --fc-z-toast: 1060;
+    --fc-z-topbar: 1070;
+
+    --fc-dur-instant: 100ms;
+    --fc-dur-fast: 150ms;
+    --fc-dur-base: 200ms;
+    --fc-dur-slow: 300ms;
+    --fc-dur-hero: 500ms;
+    --fc-ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
+    --fc-ease-decel: cubic-bezier(0.16, 1, 0.3, 1);
+    --fc-ease-accel: cubic-bezier(0.4, 0, 1, 1);
+
+    --fc-rise-sm: 8px;
+    --fc-rise-md: 16px;
+    --fc-stagger: 40ms;
+    --fc-press-scale: 0.98;
+    --fc-hover-lift: -3px;
+    --fc-link-underline-offset: 3px;
+}
+
+@utility z-sticky {
+    z-index: var(--fc-z-sticky);
+}
+@utility z-header {
+    z-index: var(--fc-z-header);
+}
+@utility z-overlay {
+    z-index: var(--fc-z-overlay);
+}
+@utility z-modal {
+    z-index: var(--fc-z-modal);
+}
+@utility z-toast {
+    z-index: var(--fc-z-toast);
+}
+@utility z-topbar {
+    z-index: var(--fc-z-topbar);
+}

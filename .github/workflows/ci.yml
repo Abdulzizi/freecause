@@ -37,6 +37,10 @@ jobs:
       - name: Check code style
         run: ./vendor/bin/pint --test app database tests routes config
 
+      - name: Design system lint (advisory)
+        run: bash scripts/ds-lint.sh
+        continue-on-error: true
+
   assets:
     runs-on: ubuntu-latest
     steps:
