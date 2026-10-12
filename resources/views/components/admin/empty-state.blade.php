@@ -9,7 +9,7 @@
     @if (filled($title))
         <div class="font-semibold text-sm text-ink">{{ $title }}</div>
     @endif
-    <div class="text-[13px] text-muted">{{ $message }}</div>
+    <div class="text-sm text-muted">{{ $message }}</div>
     @if (trim((string) $slot) !== '')
         <div class="mt-2">{{ $slot }}</div>
     @endif

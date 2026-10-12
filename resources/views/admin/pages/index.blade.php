@@ -143,11 +143,11 @@
                 </div>
 
                 <x-admin.form-field label="title">
-                    <x-ui.input name="title" data-slug-source :value="$selectedPage->title" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="title" data-slug-source :value="$selectedPage->title" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="slug" :error="$errors->first('slug')">
-                    <x-ui.input name="slug" data-slug-target :value="$selectedPage->slug" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="slug" data-slug-target :value="$selectedPage->slug" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 @php
@@ -160,7 +160,7 @@
                 <script type="application/json" id="existing-slugs">{!! json_encode($existingSlugs) !!}</script>
 
                 <x-admin.form-field label="content">
-                    <textarea id="content" name="content" class="w-full box-border border border-border rounded px-2 py-1.5 bg-white min-h-[140px] resize-y font-mono text-[13px] fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
+                    <textarea id="content" name="content" class="w-full box-border border border-border rounded-sm px-2 py-1.5 bg-white min-h-[140px] resize-y font-mono text-sm fc-editor" data-ckeditor="rich" rows="12">{{ $selectedPage->content }}</textarea>
                 </x-admin.form-field>
 
                 <div class="flex justify-end fc-drawer-savebar">

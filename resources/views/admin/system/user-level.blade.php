@@ -7,7 +7,7 @@
     <x-admin.page-header title="user levels" :count="$levels->total()" />
 
     @if (session('success'))
-        <div class="border border-[#77c777] bg-[#e9ffe9] text-[#135f13] px-1.5 py-1 rounded my-1.5 mb-[15px]">
+        <div class="border border-success bg-success-soft text-success px-1.5 py-1 rounded-sm my-1.5 mb-4">
             {{ session('success') }}
         </div>
     @endif
@@ -82,14 +82,14 @@
             @csrf
 
             <x-admin.form-field label="Name (system key)">
-                <x-ui.input name="name" required class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="name" required class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             <x-admin.form-field label="Visible Name">
-                <x-ui.input name="visible_name" required class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="visible_name" required class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
-            <div class="flex justify-end mt-[15px]">
+            <div class="flex justify-end mt-4">
                 <x-blatui.button type="submit">add</x-blatui.button>
             </div>
         </form>

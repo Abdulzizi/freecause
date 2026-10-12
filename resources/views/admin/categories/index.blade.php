@@ -14,8 +14,8 @@
     <x-blatui.alert variant="destructive" class="mb-3">{{ $errors->first() }}</x-blatui.alert>
 @endif
 
-<x-blatui.card class="p-4 mb-[18px]">
-    <div class="font-bold mb-2.5 text-[13px] uppercase tracking-[0.05em]">
+<x-blatui.card class="p-4 mb-4">
+    <div class="font-bold mb-2.5 text-sm uppercase tracking-wider">
         + new category
     </div>
     <form method="post" action="{{ route('admin.categories.create') }}" class="flex gap-2.5 items-end flex-wrap">
@@ -30,7 +30,7 @@
         </div>
         <div class="flex-1 min-w-[180px]">
             <label class="block text-xs text-ink mb-1">name *</label>
-            <input class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" type="text" name="name" placeholder="Category name" required>
+            <input class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" type="text" name="name" placeholder="Category name" required>
         </div>
         <div>
             <x-blatui.button type="submit">create</x-blatui.button>
@@ -133,12 +133,12 @@
             </div>
 
             <x-admin.form-field label="name *">
-                <x-ui.input name="name" data-slug-source :value="$selectedTranslation->name ?? ''" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white"
+                <x-ui.input name="name" data-slug-source :value="$selectedTranslation->name ?? ''" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white"
                        required />
             </x-admin.form-field>
 
             <x-admin.form-field label="slug" :hint="'used in url: /petitions/category-slug-' . $selectedCategory->id">
-                <x-ui.input name="slug" data-slug-target :value="$selectedTranslation->slug ?? ''" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="slug" data-slug-target :value="$selectedTranslation->slug ?? ''" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             @php
@@ -171,7 +171,7 @@
             </div>
         </form>
 
-        <div class="mt-[18px] pt-3.5 border-t border-border">
+        <div class="mt-4 pt-3.5 border-t border-border">
             @if ($selectedPetitionCount === 0)
                 <form method="post" action="{{ route('admin.categories.destroy') }}"
                       data-admin-confirm="Delete category #{{ $selectedCategory->id }} and all its translations? This cannot be undone.">

@@ -6,7 +6,7 @@
 
     <x-admin.page-header title="spam" />
 
-    <div class="border border-border rounded p-[10px] mb-[15px]">
+    <div class="border border-border rounded-sm p-2 mb-4">
         <strong>{{ number_format($bannedCount) }}</strong> IP banned.
     </div>
 
@@ -24,7 +24,7 @@
         <input class="fc-filter-field" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
-    <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-[15px]">
+    <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-4">
         @csrf
         <x-blatui.button variant="destructive" type="submit">clear spam logs</x-blatui.button>
     </form>
@@ -84,8 +84,8 @@
                     </td>
                 </tr>
 
-                <tr id="payload-{{ $log->id }}" style="display:none;" class="bg-[#f8f9fa]">
-                    <td colspan="5" class="p-[15px]">
+                <tr id="payload-{{ $log->id }}" style="display:none;" class="bg-surface-2">
+                    <td colspan="5" class="p-4">
 
                         <strong>full payload:</strong>
 
@@ -101,11 +101,11 @@
                         @endphp
 
                         <div
-                            class="bg-[#1e1e1e] rounded-md border border-[#333] mt-2.5 relative">
+                            class="bg-surface-2 rounded-md border border-border mt-2.5 relative">
                             <x-blatui.button variant="outline" size="sm" type="button" class="absolute top-2 right-2" data-payload-copy="{{ $log->id }}">copy</x-blatui.button>
 
                             <pre id="payload-content-{{ $log->id }}"
-                                class="m-0 p-[18px] text-[#d4d4d4] text-[13px] leading-[1.5] whitespace-pre-wrap break-words overflow-auto max-h-[400px]">{{ $payloadFormatted }}</pre>
+                                class="m-0 p-4 text-muted text-sm leading-normal whitespace-pre-wrap break-words overflow-auto max-h-[400px]">{{ $payloadFormatted }}</pre>
                         </div>
 
                     </td>

@@ -14,7 +14,7 @@
             @endif
         </h1>
         @if (filled($context))
-            <p class="m-0 mt-1 text-[13px] text-muted">{{ $context }}</p>
+            <p class="m-0 mt-1 text-sm text-muted">{{ $context }}</p>
         @endif
     </div>
 

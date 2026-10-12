@@ -11,11 +11,11 @@
             @csrf
 
             <x-admin.form-field label="code">
-                <x-ui.input name="code" placeholder="e.g. es" required class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="code" placeholder="e.g. es" required class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             <x-admin.form-field label="name">
-                <x-ui.input name="name" placeholder="Spanish" required class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="name" placeholder="Spanish" required class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             <div class="text-right mt-2.5">
@@ -30,7 +30,7 @@
             <div x-data="{ editing: false }" class="flex flex-wrap items-center gap-3 py-4 border-b border-border last:border-b-0">
 
                 <div class="w-full shrink-0 md:w-[190px]">
-                    <div class="text-[14px] font-semibold text-ink">
+                    <div class="text-sm font-semibold text-ink">
                         {{ strtoupper($lang->code) }}: {{ $lang->name }}
 
                         @if ($lang->is_default)
@@ -38,7 +38,7 @@
                         @endif
                     </div>
 
-                    <div class="mt-0.5 text-[12px] text-muted">
+                    <div class="mt-0.5 text-xs text-muted">
                         status: {{ $lang->is_active ? 'active' : 'inactive' }}
                     </div>
                 </div>
@@ -61,7 +61,7 @@
 
                     <x-ui.input name="name" :value="$lang->name" aria-label="Language name" class="fc-filter-field w-[200px] max-w-full" />
 
-                    <label class="flex items-center gap-1.5 text-[13px] whitespace-nowrap">
+                    <label class="flex items-center gap-1.5 text-sm whitespace-nowrap">
                         <span class="fc-switch">
                             <input type="checkbox" name="is_active" {{ $lang->is_active ? 'checked' : '' }}>
                             <span class="fc-switch__track" aria-hidden="true"></span>

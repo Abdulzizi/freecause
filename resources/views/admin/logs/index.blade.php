@@ -68,7 +68,7 @@
                 <tr data-admin-row-hover class="border-b border-border hover:bg-surface-muted">
 
                     <td>
-                        <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline text-black">
+                        <a href="{{ route('admin.logs', array_merge(request()->query(), ['select' => $log->id])) }}" class="no-underline text-ink">
                             {{ $log->id }}
                         </a>
                     </td>
@@ -81,7 +81,7 @@
                         @if($log->level === 'error')
                             <span class="font-bold text-danger">ERROR</span>
                         @elseif($log->level === 'warning')
-                            <span class="font-bold text-[#c67c00]">WARNING</span>
+                            <span class="font-bold text-warning">WARNING</span>
                         @else
                             <span class="font-bold text-success">INFO</span>
                         @endif
@@ -126,7 +126,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="content">
-                    <textarea class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white min-h-[140px] resize-y font-[Consolas,_Courier_New,_monospace] text-[13px]" readonly>
+                    <textarea class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white min-h-[140px] resize-y font-mono" readonly>
                         {{ $selected->content }}
                     </textarea>
                 </x-admin.form-field>

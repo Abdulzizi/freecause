@@ -29,7 +29,7 @@
         </x-blatui.button>
     </x-blatui.button-group>
 
-    <span class="fc-bulk-count items-center py-0.5 px-2 rounded-[10px] text-[11px] font-semibold whitespace-nowrap leading-[1.6] ml-2" id="fc-bulk-count" aria-live="polite"></span>
+    <span class="fc-bulk-count items-center py-0.5 px-2 rounded-lg text-xs font-semibold whitespace-nowrap leading-relaxed ml-2" id="fc-bulk-count" aria-live="polite"></span>
 
     {{ $slot }}
 

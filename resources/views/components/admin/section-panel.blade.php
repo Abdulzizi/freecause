@@ -5,7 +5,7 @@
     'boxClass' => '',
 ])
 
-<div {{ $attributes->class(['flex items-center gap-2 mb-2 font-semibold text-[13px] uppercase tracking-[0.05em] text-ink', $tabClass]) }}>
+<div {{ $attributes->class(['flex items-center gap-2 mb-2 font-semibold text-sm uppercase tracking-wider text-ink', $tabClass]) }}>
     {{ $title }}
 </div>
 

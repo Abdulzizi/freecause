@@ -11,12 +11,12 @@
     @stack('head')
 </head>
 
-<body class="bg-[#f9fafb]">
-    <x-blatui.sidebar-provider class="bg-[#f9fafb]">
+<body class="bg-canvas">
+    <x-blatui.sidebar-provider class="bg-canvas">
         @include('admin.partials.sidebar')
 
         <x-blatui.sidebar-inset class="min-h-[calc(100vh-70px)]">
-            <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface px-3.5 py-2.5 text-sm box-border max-md:px-2.5 max-md:py-1.5 max-md:text-[13px]">
+            <header class="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface px-3.5 py-2.5 text-sm box-border max-md:px-2.5 max-md:py-1.5">
                 <div class="flex items-center gap-2">
                     <x-blatui.sidebar-trigger />
                     <a class="text-ink no-underline whitespace-nowrap hover:underline" href="{{ route('admin.dashboard') }}">Dashboard</a>

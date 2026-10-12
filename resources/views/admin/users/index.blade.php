@@ -78,7 +78,7 @@
                 <tr class="border-b border-solid border-border {{ $isBanned ? 'bg-danger/5 [&_td]:text-danger' : '' }}" data-admin-row-hover data-detail-row data-detail-href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}">
                     <td>
                         <a href="{{ route('admin.users', array_merge(request()->query(), ['select' => $u->id])) }}"
-                            class="no-underline text-black">
+                            class="no-underline text-ink">
                             {{ $u->id }}
                         </a>
                     </td>
@@ -102,7 +102,7 @@
 
                     <td>
                         <a href="mailto:{{ $u->email }}"
-                            style="{{ $isBanned ? 'color:#dc3545; font-weight:bold;' : '' }}">
+                            style="{{ $isBanned ? 'color:var(--fc-danger); font-weight:bold;' : '' }}">
                             {{ $u->email }}
                         </a>
                     </td>
@@ -114,7 +114,7 @@
 
                         @if (!$isAdmin)
                             <a target="_blank" rel="noopener" href="{{ route('user.profile', ['locale' => app()->getLocale(), 'slug' => $u->username ?? \Str::slug($u->name), 'id' => $u->id]) }}"
-                                class="text-black">
+                                class="text-ink">
                                 {{ $u->name }}
                             </a>
                         @else
@@ -176,13 +176,13 @@
                     @if ($selectedUserIsBanned)
                         <button type="button" data-user-single-action="unban"
                             data-url="{{ route('admin.users.unban', ['user' => $selectedUser->id]) }}"
-                            class="border border-[#6b8e23] bg-white px-2.5 py-1 rounded text-xs cursor-pointer">
+                            class="border border-success bg-white px-2.5 py-1 rounded-sm text-xs cursor-pointer">
                             Unban user
                         </button>
                     @else
                         <button type="button" data-user-single-action="ban"
                             data-url="{{ route('admin.users.ban', ['user' => $selectedUser->id]) }}"
-                            class="border border-danger bg-white text-danger px-2.5 py-1 rounded text-xs cursor-pointer">
+                            class="border border-danger bg-white text-danger px-2.5 py-1 rounded-sm text-xs cursor-pointer">
                             Ban user
                         </button>
                     @endif
@@ -199,11 +199,11 @@
 
             <x-admin.section-panel title="Access Data">
                 <x-admin.form-field label="username">
-                    <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="username" :value="$selectedUser->username ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="password" :error="$errors->first('password')">
-                    <x-ui.input name="password" type="password" value="" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="password" type="password" value="" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="level">
@@ -226,19 +226,19 @@
             <x-admin.section-panel title="other">
 
                 <x-admin.form-field label="first name">
-                    <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="first_name" :value="$selectedUser->first_name ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="last name">
-                    <x-ui.input name="last_name" :value="$selectedUser->last_name ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="last_name" :value="$selectedUser->last_name ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="nickname">
-                    <x-ui.input name="nickname" :value="$selectedUser->nickname ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="nickname" :value="$selectedUser->nickname ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="location">
-                    <x-ui.input name="city" :value="$selectedUser->city ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="city" :value="$selectedUser->city ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="identify as">
@@ -258,7 +258,7 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="email">
-                    <x-ui.input name="email" data-live-validate :value="$selectedUser->email ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+                    <x-ui.input name="email" data-live-validate :value="$selectedUser->email ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                 </x-admin.form-field>
 
                 <x-admin.form-field label="locale">

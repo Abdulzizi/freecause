@@ -34,9 +34,9 @@
 
     </x-admin.filter-box>
 
-    <div class="border border-border rounded p-2.5 mb-5">
+    <div class="border border-border rounded-sm p-2.5 mb-5">
 
-        <div class="flex flex-wrap gap-[30px]">
+        <div class="flex flex-wrap gap-8">
 
             <div>
                 <h2>{{ number_format($summary['users_total']) }}</h2>

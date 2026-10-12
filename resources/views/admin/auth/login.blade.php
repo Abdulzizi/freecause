@@ -3,7 +3,7 @@
 @section('title', 'Admin Login')
 
 @section('content')
-    <div class="text-center mt-[10px] mb-[25px] text-[44px] font-bold tracking-[-1px] max-md:text-[32px]">
+    <div class="text-center mt-2 mb-6 text-4xl font-bold tracking-tight max-md:text-3xl">
         <span class="text-brand">Online</span><span class="text-ink">Petition</span>
     </div>
 

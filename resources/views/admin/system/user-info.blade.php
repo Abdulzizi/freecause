@@ -15,22 +15,22 @@
             </x-admin.form-field>
 
             <x-admin.form-field label="current password">
-                <x-ui.input name="current_password" type="password" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="current_password" type="password" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             <x-admin.form-field label="new password">
-                <x-ui.input name="new_password" type="password" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="new_password" type="password" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
 
             <x-admin.form-field label="repeat new password">
-                <x-ui.input name="new_password_confirmation" type="password" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="new_password_confirmation" type="password" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
         </x-admin.section-panel>
 
         <x-admin.section-panel title="misc">
 
             <x-admin.form-field label="email">
-                <x-ui.input name="email" type="email" data-live-validate :value="old('email', $admin->email)" class="w-full box-border border border-border rounded px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="email" type="email" data-live-validate :value="old('email', $admin->email)" class="w-full box-border border border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
         </x-admin.section-panel>
 

@@ -294,7 +294,7 @@
                     </x-blatui.button>
                 </form>
                 @if ($isCreatingTranslation)
-                    <div class="text-xs text-[#8a6d1e]">
+                    <div class="text-xs text-warning">
                         Create translation{{ $selectedDefaultTranslation ? ' from ' . ($localeOptions[$selectedDefaultTranslation->locale] ?? $selectedDefaultTranslation->locale) : '' }}.
                     </div>
                 @endif
@@ -366,12 +366,12 @@
                 </x-admin.form-field>
 
                 <x-admin.form-field label="title">
-<x-ui.input name="title" data-slug-source :value="$translationSource->title ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="title" data-slug-source :value="$translationSource->title ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('title') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="slug">
-<x-ui.input name="slug" data-slug-target :value="$translationSource->slug ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="slug" data-slug-target :value="$translationSource->slug ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('slug') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
@@ -413,42 +413,42 @@
 </x-admin.form-field>
 
                 <x-admin.form-field label="tags">
-<x-ui.input name="tags" :value="$selectedPetition->tags ?? ''" placeholder="tag1, tag2" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="tags" :value="$selectedPetition->tags ?? ''" placeholder="tag1, tag2" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('tags') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="youtube">
-<x-ui.input name="youtube_url" :value="$selectedPetition->youtube_url ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="youtube_url" :value="$selectedPetition->youtube_url ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('youtube_url') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="target">
-<x-ui.input name="target" :value="$selectedPetition->target ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="target" :value="$selectedPetition->target ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('target') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="community">
-<x-ui.input name="community" :value="$selectedPetition->community ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="community" :value="$selectedPetition->community ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('community') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="community url">
-<x-ui.input name="community_url" :value="$selectedPetition->community_url ?? ''" placeholder="https://" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="community_url" :value="$selectedPetition->community_url ?? ''" placeholder="https://" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('community_url') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="location">
-<x-ui.input name="city" :value="$selectedPetition->city ?? ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="city" :value="$selectedPetition->city ?? ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('city') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="date created">
-<x-ui.input name="created_at" type="datetime-local" :value="$selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : ''" class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white" />
+<x-ui.input name="created_at" type="datetime-local" :value="$selectedPetition->created_at ? \Illuminate\Support\Str::of($selectedPetition->created_at)->replace(' ', 'T')->limit(16, '') : ''" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
                         @error('created_at') <span class="text-danger text-xs">{{ $message }}</span> @enderror
 </x-admin.form-field>
 
                 <x-admin.form-field label="text">
-<textarea class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
+<textarea class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
 </x-admin.form-field>
 
                 <div class="flex flex-col items-start gap-1.5 py-1.5 [&_label]:font-bold [&_label]:text-sm max-md:[&_label]:text-xs">
@@ -468,19 +468,19 @@
                         @if ($wv)
                         <picture>
                             <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="240px">
-                            <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px] max-h-[120px] rounded object-cover" loading="lazy" decoding="async">
+                            <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px] max-h-[120px] rounded-sm object-cover" loading="lazy" decoding="async">
                         </picture>
                         @else
-                        <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px] max-h-[120px] rounded object-cover" loading="lazy" decoding="async">
+                        <img src="{{ $imgSrc }}" alt="{{ $selectedTranslation->title ?? 'Cover image' }}" class="max-w-[220px] max-h-[120px] rounded-sm object-cover" loading="lazy" decoding="async">
                         @endif
-                        <label class="text-[0.85em]">
+                        <label class="text-sm">
                             <input type="checkbox" name="remove_image" value="1"> remove image
                         </label>
                     @else
-                        <span class="text-muted text-[0.85em]">no image</span>
+                        <span class="text-muted text-sm">no image</span>
                     @endif
-                    <input class="w-full box-border border border-solid border-border rounded px-2 py-1.5 text-sm bg-white mt-1" type="file" name="cover_image" accept="image/*">
-                    <span class="text-muted text-[0.8em]">upload new image to replace current (max 4 MB)</span>
+                    <input class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white mt-1" type="file" name="cover_image" accept="image/*">
+                    <span class="text-muted text-xs">upload new image to replace current (max 4 MB)</span>
                 </div>
 
                 <div class="flex justify-end fc-drawer-savebar">

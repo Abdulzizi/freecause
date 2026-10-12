@@ -18,7 +18,7 @@
     </div>
 
     @if ($isEmpty)
-        <div class="px-2.5 py-3 text-muted text-[12px]">
+        <div class="px-2.5 py-3 text-muted text-xs">
             {{ $emptyText }}
             @if ($emptyClearRoute)
                 <x-blatui.button variant="outline" size="sm" :href="$emptyClearRoute" class="ml-1.5">clear filters</x-blatui.button>
