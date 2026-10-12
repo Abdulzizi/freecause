@@ -8,12 +8,6 @@ use App\Models\Language;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Legacy localized-word redirects (LEGACY_URL_MAPPING.md §4/§5/§6/§7).
- *
- * Covers one exact-URL example per handled shape, the intentional 404s and
- * the pass-through of current canonical English routes.
- */
 class LegacyRedirectTest extends TestCase
 {
     use RefreshDatabase;
@@ -39,7 +33,6 @@ class LegacyRedirectTest extends TestCase
 
     public function test_localized_list_word_with_legacy_category_id_redirects_to_canonical_category(): void
     {
-        // legacy it_ range: legacy id 79 -> old_id 13 -> new category id 13
         for ($i = 0; $i < 13; $i++) {
             Category::create(['is_active' => 1, 'sort_order' => $i + 1]);
         }

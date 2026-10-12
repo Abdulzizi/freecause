@@ -1,4 +1,4 @@
-{{-- Legacy include adapter; existing view callers keep their current configuration keys. --}}
+
 @include('admin.partials.bulk-module', ['bulkConfig' => [
     'actionRoute' => $actionRoute ?? null,
     'banRoute' => $banRoute ?? null,

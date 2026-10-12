@@ -1,17 +1,4 @@
-{{--
-    Select root.
-      native  false (default) -> the BlatUI JS listbox (rich, custom options).
-              true            -> a bare, BlatUI-styled native <select> for no-JS form
-                                 layers (submits without JS, name-bound). Put <option>s in
-                                 the slot and mark the selected one with `selected`.
-      size    sm | default | lg  (native only; height)
-      multiple false (default) -> single pick. true -> pick many; selected render as
-              removable chips in the trigger and the list stays open. Submits as `name[]`.
-      options [value => label] shorthand — auto-composes trigger/content/items (or <option>s
-              when native). Omit it to use the compositional API via the slot.
-      placeholder  trigger text when nothing is selected (pass a translated string; '' by default
-                   so no English ever leaks).
---}}
+
 @props([
     'name' => null,
     'value' => '',
@@ -21,12 +8,11 @@
     'options' => null,
     'placeholder' => '',
     'color' => null,
-    'indicator' => 'check',   // check | checkbox | radio — how a selected option is marked (custom listbox only)
+    'indicator' => 'check',
 ])
 
 @php
     $hasOptions = is_array($options) && count($options) > 0;
-    // Normalise to [value => label]: associative keys are values; a plain list uses value === label.
     $normalized = [];
     if ($hasOptions) {
         foreach ($options as $k => $v) {
@@ -38,20 +24,15 @@
         }
     }
 
-    // Multiple seeds an array of values; single keeps the scalar string.
     $selectedValues = collect(is_array($value) ? $value : (($value === '' || $value === null) ? [] : [$value]))
         ->map(fn ($v) => (string) $v)->values();
     $initialValue = $multiple ? $selectedValues : (string) $value;
 
-    // `color` brands the trigger's focus ring locally (overrides the ring/primary tokens).
     $colorStyle = $color ? "--ring: {$color}; --primary: {$color}; --primary-foreground: #ffffff;" : '';
     $userStyle = (string) $attributes->get('style', '');
     $style = trim($colorStyle.($colorStyle && $userStyle ? ' ' : '').$userStyle);
     $attributes = $attributes->except('style');
 
-    // Livewire bridge — the native <select> binds wire:model directly; the custom listbox
-    // binds its Alpine value through $blatModel instead (blatui-core.js), with the property path
-    // travelling as a data attribute so a morph can re-point it. No-op without Livewire.
     $wireModel = \Illuminate\View\ComponentAttributeBag::hasMacro('wire') ? $attributes->wire('model') : null;
     $hasWire = $wireModel && is_string($wireModel->value()) && $wireModel->value() !== '';
     if (! $native && $hasWire) {

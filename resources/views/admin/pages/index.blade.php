@@ -11,9 +11,7 @@
 </svg>';
     @endphp
 
-
     <x-admin.page-header title="pages" :count="$approxTotal" />
-
 
     @php
         $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
@@ -34,7 +32,6 @@
         </select>
 
     </x-admin.filter-box>
-
 
     <x-admin.data-table emptyText="no pages found" :p="$pages" :emptyClearRoute="route('admin.pages')">
 
@@ -95,7 +92,6 @@
             @endforeach
         </x-slot:tbody>
 
-
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if (admin_can('pages', 'edit'))
@@ -127,7 +123,6 @@
         </x-slot:footer>
 
     </x-admin.data-table>
-
 
     <x-admin.detail-panel title="page" :closeRoute="route('admin.pages', request()->except('select'))">
 
@@ -191,7 +186,6 @@
         @endif
 
     </x-admin.detail-panel>
-
 
     @include('admin.partials.bulk-js', [
         'actionRoute' => route('admin.pages.bulkAction'),

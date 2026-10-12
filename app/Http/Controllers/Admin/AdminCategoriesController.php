@@ -38,8 +38,6 @@ class AdminCategoriesController extends Controller
     {
         $locale = $request->query('locale', default_locale());
 
-        // Guard the locale before it reaches the query: a non-string or unknown
-        // code is bounced back to the default so no unvalidated value is used.
         if (! is_string($locale) || ! is_valid_locale($locale)) {
             return redirect()->route('admin.categories', array_merge(
                 $request->except('locale'),
@@ -52,7 +50,6 @@ class AdminCategoriesController extends Controller
             'name' => trim((string) $request->query('name', '')),
         ];
 
-        // Pre-fetch petition counts per category (single query, avoids N+1)
         $petitionCounts = DB::table('petitions')
             ->whereNotNull('category_id')
             ->select('category_id', DB::raw('COUNT(*) as petition_count'))
@@ -85,7 +82,6 @@ class AdminCategoriesController extends Controller
         $categories = $q->paginate(50)->withQueryString();
         $approxTotal = $this->approxTableRows('categories');
 
-        // Attach petition counts to paginated collection
         $categories->getCollection()->transform(function ($cat) use ($petitionCounts) {
             $cat->petition_count = $petitionCounts[$cat->id] ?? 0;
 

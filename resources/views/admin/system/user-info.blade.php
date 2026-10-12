@@ -27,7 +27,6 @@
             </x-admin.form-field>
         </x-admin.section-panel>
 
-
         <x-admin.section-panel title="misc">
 
             <x-admin.form-field label="email">

@@ -13,9 +13,6 @@ class SettingsTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Must match Settings::CACHE_KEY (private constant).
-     */
     private const CACHE_KEY = 'settings:all';
 
     protected function setUp(): void
@@ -106,10 +103,8 @@ class SettingsTest extends TestCase
 
     public function test_get_leaves_plain_and_json_strings_untouched(): void
     {
-        // Plain non-JSON string is returned verbatim.
         Setting::create(['group' => 'global', 'key' => 'plain', 'value' => 'hello', 'type' => 'string']);
 
-        // A JSON-encoded string is returned raw (byte-compatible with the legacy get()).
         Setting::create(['group' => 'global', 'key' => 'quoted', 'value' => '"hello"', 'type' => 'string']);
 
         $this->assertSame('hello', Settings::get('plain'));
@@ -121,7 +116,6 @@ class SettingsTest extends TestCase
         Settings::set('greeting', 'hi');
         $this->assertSame('hi', Settings::get('greeting'));
 
-        // Mutate the DB behind the cached snapshot: reads stay stale.
         Setting::where('key', 'greeting')->update(['value' => 'bye']);
         $this->assertSame('hi', Settings::get('greeting'));
 

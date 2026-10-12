@@ -1,6 +1,5 @@
 import Swal from 'sweetalert2';
 
-// Client-facing toasts — smooth, brand-styled.
 const ClientToast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -54,8 +53,6 @@ export function init(ctx) {
 
     ctx.announce = announce;
 
-    // Server-flashed toasts delivered via data-* carriers: a single path for the
-    // session('toast') carrier plus session('success') and session('error').
     const flash = document.getElementById('toast-flash');
     if (flash && window.clientToast) {
         const showToast = window.clientToast?.[flash.dataset.type] ?? window.clientToast?.info;

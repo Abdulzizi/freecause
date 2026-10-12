@@ -33,7 +33,6 @@ class AdminLanguagesController extends Controller
         Language::create([
             'code' => $code,
             'name' => $request->name,
-            // 'flag' => $request->flag ?? null,
             'is_active' => true,
             'is_default' => false,
         ]);

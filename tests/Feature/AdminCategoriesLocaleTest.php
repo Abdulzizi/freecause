@@ -11,14 +11,6 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Regression coverage for the admin categories locale parameter.
- *
- * The index used to interpolate the raw `?locale=` query value into a
- * DB::raw() select term, which was a SQL injection sink and also blew up on
- * non-string input. These tests pin the guard (invalid/malformed locales are
- * redirected, never passed through) and the validated happy path.
- */
 class AdminCategoriesLocaleTest extends TestCase
 {
     use RefreshDatabase;

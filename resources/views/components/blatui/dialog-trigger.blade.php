@@ -1,6 +1,4 @@
-{{-- for: when set, opens a dispatchable dialog defined elsewhere (decoupled from this
-     trigger's scope) via $dispatch('open-dialog-{for}'). Otherwise opens the dialog in
-     the same x-data scope (default Radix-style behavior). --}}
+
 @props(['for' => null])
 
 <span

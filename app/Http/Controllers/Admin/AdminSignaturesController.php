@@ -32,9 +32,6 @@ class AdminSignaturesController extends Controller
             'date_to' => trim((string) $request->query('date_to', '')),
         ];
 
-        // $hasText = Schema::hasColumn('signatures', 'text');
-        // $hasConfirmed = Schema::hasColumn('signatures', 'confirmed');
-
         $hasText = cache()->remember(
             'schema:signatures:has_text',
             3600,

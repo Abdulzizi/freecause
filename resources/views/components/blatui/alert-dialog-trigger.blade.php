@@ -1,7 +1,4 @@
-{{-- for: when set, opens a dispatchable alert-dialog defined elsewhere via
-     $dispatch('open-alert-dialog-{for}'). Pass row context in the event detail:
-     x-on:click="$dispatch('open-alert-dialog-{for}', { id: row.id })". Otherwise opens
-     the alert-dialog in the same scope. --}}
+
 @props(['for' => null])
 
 <span

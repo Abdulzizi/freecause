@@ -71,7 +71,6 @@
     <section class="fc-section">
         <x-ui.container>
 
-            {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="mb-4!">
                 <ol class="breadcrumb text-[13px]! mb-0!">
                     <li class="breadcrumb-item">
@@ -133,7 +132,6 @@
                     @endif
                 </div>
 
-                {{-- Share buttons --}}
                 <div class="flex! flex-wrap! items-center! gap-2! mb-4!">
                     <span class="text-[13px]! font-semibold! text-muted!">{{ __('show.share') }}:</span>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"

@@ -15,7 +15,6 @@
             <td align="center" style="padding:40px 16px 48px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
 
-                    {{-- Brand header --}}
                     <tr>
                         <td align="center" style="padding:0 0 30px;">
                             <a href="{{ url('/') }}" target="_blank" style="text-decoration:none;">
@@ -24,7 +23,6 @@
                         </td>
                     </tr>
 
-                    {{-- Card --}}
                     <tr>
                         <td style="background:#ffffff;border:1px solid #E8E6E1;border-radius:12px;padding:44px 46px 40px;">
 
@@ -77,7 +75,6 @@
                         </td>
                     </tr>
 
-                    {{-- Footer --}}
                     <tr>
                         <td align="center" style="padding:28px 8px 0;">
                             <p style="margin:0 0 6px;font-family:Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#B6AFA5;">

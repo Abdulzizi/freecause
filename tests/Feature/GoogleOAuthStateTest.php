@@ -30,7 +30,6 @@ class GoogleOAuthStateTest extends TestCase
 
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
 
-        // Exercise the real Google provider while preventing all network calls.
         $this->googleResponses = new MockHandler;
         $handler = HandlerStack::create($this->googleResponses);
         $handler->push(Middleware::history($this->googleRequests));
@@ -270,8 +269,7 @@ class GoogleOAuthStateTest extends TestCase
 
     private function googleCallback(array $query): TestResponse
     {
-        // HTTP requests resolve a fresh provider in production. Forgetting the
-        // test application's cached driver also prevents cached-user bypasses.
+
         Socialite::forgetDrivers();
 
         return $this->get('/en/oauth/google/callback?'.http_build_query($query));

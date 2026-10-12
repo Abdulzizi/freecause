@@ -1,9 +1,4 @@
-{{--
-    Admin bulk-selection toolbar (BlatUI buttons). Keeps the fc-bulk-* / data-bulk JS hooks.
-    Props: actionRoute, banRoute, deleteRoute, unbanRoute, restoreRoute, noun, banLabel,
-    banConfirm, banWithDetails, emptyMsg, checkboxSelector. The default slot may contain
-    custom action controls such as existing .bulk-action buttons.
---}}
+
 @props([
     'actionRoute' => null,
     'banRoute' => null,

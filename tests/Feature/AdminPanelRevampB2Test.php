@@ -32,7 +32,6 @@ class AdminPanelRevampB2Test extends TestCase
         $this->actingAs($admin, 'admin');
     }
 
-    /** @return array<string, string> */
     private function adminViews(): array
     {
         return [

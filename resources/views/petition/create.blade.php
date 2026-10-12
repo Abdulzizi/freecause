@@ -1,9 +1,6 @@
 @php
-    $mode = $mode ?? 'create'; // create|edit
+    $mode = $mode ?? 'create';
     $isEdit = $mode === 'edit';
-
-    // when editing, controller should pass: $petition, $tr, $locale, $categories
-    // when creating, controller should pass: $categories, $locale (and no $petition/$tr)
 
     $oldTitle = old('title', $tr->title ?? '');
     $oldDesc = old('description', $tr->description ?? '');

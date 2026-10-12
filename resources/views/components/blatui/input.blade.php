@@ -11,17 +11,13 @@
 
     $classes = $base.' '.($sizes[$size] ?? $sizes['default']);
 
-    // A password field opts into a show/hide eye toggle by default. Pass :toggle="false" to opt out.
     $isPassword = $type === 'password' && $toggle !== false;
-    // Optional leading (prefix) / trailing (suffix) adornments — pass an icon via the named slots.
     $hasLeading = isset($leading) && $leading->isNotEmpty();
     $hasTrailing = isset($trailing) && $trailing->isNotEmpty();
     $wrap = $isPassword || $hasLeading || $hasTrailing;
 
-    // Pad the field so text never sits under an adornment (logical props → RTL-safe).
     $pad = ($hasLeading ? ' ps-9' : '').(($isPassword || $hasTrailing) ? ' pe-10' : '');
 
-    // `color` brands the focus ring + selection locally (overrides the ring/primary tokens).
     $colorStyle = $color ? "--ring: {$color}; --primary: {$color}; --primary-foreground: #ffffff;" : '';
     $userStyle = (string) $attributes->get('style', '');
     $fieldStyle = trim($colorStyle.($colorStyle && $userStyle ? ' ' : '').$userStyle);
@@ -29,8 +25,7 @@
 @endphp
 
 @if ($wrap)
-    {{-- Layout/width classes go on the wrapper so adornments anchor to the field's edges;
-         behavioral attributes (name, id, placeholder, wire:model, required…) stay on the <input>. --}}
+
     <div
         data-slot="input-wrapper"
         @if ($isPassword) x-data="{ show: false }" @endif
@@ -64,12 +59,12 @@
                 x-bind:aria-pressed="show"
                 class="text-muted-foreground hover:text-foreground focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex items-center rounded-md px-3 outline-none transition-colors focus-visible:ring-[3px]"
             >
-                {{-- eye (password hidden) --}}
+
                 <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
                     <circle cx="12" cy="12" r="3" />
                 </svg>
-                {{-- eye-off (password visible) --}}
+
                 <svg x-show="show" style="display: none;" xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
                     <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />

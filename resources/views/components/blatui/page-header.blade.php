@@ -1,13 +1,11 @@
 @props([
-    'title' => null,         // page title; may also be supplied via the `title` slot
-    'description' => null,    // supporting copy; may also be supplied via the `description` slot
-    'separator' => false,     // when true, draws a bottom border under the header
-    'as' => 'h1',             // heading level for the title (h1..h6)
+    'title' => null,
+    'description' => null,
+    'separator' => false,
+    'as' => 'h1',
 ])
 
 @php
-    // Title comes from the `title` prop or the default slot; description from the
-    // `description` prop or the `description` named slot.
     $hasTitle = filled(trim((string) $title)) || filled(trim((string) $slot));
     $hasDescription = filled(trim((string) $description));
 @endphp

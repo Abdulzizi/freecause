@@ -16,8 +16,6 @@ class WordPressUserDeletionService
             throw new RuntimeException('WordPress bootstrap was not found.');
         }
 
-        // WordPress and Laravel both define the global __() helper, so WP
-        // must be bootstrapped in a separate process.
         $script = <<<'PHP'
 require $argv[1];
 require_once ABSPATH.'wp-admin/includes/user.php';

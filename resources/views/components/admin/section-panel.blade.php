@@ -1,8 +1,4 @@
-{{--
-    Admin section: a small uppercase heading above a card.
-    Props: title (required string), tabClass/boxClass (optional class strings).
-    The default slot is rendered inside the card.
---}}
+
 @props([
     'title',
     'tabClass' => '',

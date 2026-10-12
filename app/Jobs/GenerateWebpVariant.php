@@ -22,7 +22,6 @@ class GenerateWebpVariant implements ShouldQueue
         try {
             ImageVariants::ensure(Storage::disk('public')->path($this->relativePath));
         } catch (\Throwable $e) {
-            // ensure() never throws; guard path() resolution anyway.
         }
     }
 }

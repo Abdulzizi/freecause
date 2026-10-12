@@ -2,13 +2,6 @@
 
 namespace App\Support;
 
-/**
- * Single source of truth for the versioned cache keys shared between the
- * read sites (controllers) and the cache:warm command.
- *
- * Each builder embeds the current CacheVersion value so that a version bump
- * naturally invalidates the entry without an explicit forget.
- */
 class CacheKeys
 {
     public static function homeCategories(string $locale): string

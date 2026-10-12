@@ -121,7 +121,6 @@
         @endif
     </x-admin.filter-box>
 
-
     <x-admin.data-table emptyText="no petitions found" :p="$petitions" :emptyClearRoute="route('admin.petitions')" :bulk="[]">
 
         <x-slot:thead>
@@ -155,7 +154,6 @@
                         @endif
                     </td>
 
-                    {{-- ACTIVE --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
                         <x-blatui.button variant="outline" size="sm" type="button" class="{{ $p->is_active ? 'fc-abtn--success' : 'fc-abtn--danger' }}"
@@ -169,14 +167,12 @@
                         @endif
                     </td>
 
-                    {{-- PUBLISHED --}}
                     <td>
                         {!! $p->status === 'published'
                             ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
                             : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' !!}
                     </td>
 
-                    {{-- FEATURED --}}
                     <td>
                         @if (admin_can('petitions', 'edit'))
                         <x-blatui.button variant="outline" size="sm" type="button" class="{{ $p->is_featured ? 'fc-abtn--success' : '' }}"
@@ -216,7 +212,6 @@
                 </tr>
             @endforeach
         </x-slot:tbody>
-
 
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
@@ -270,7 +265,6 @@
         </x-slot:footer>
 
     </x-admin.data-table>
-
 
     <x-admin.detail-panel title="petition" :closeRoute="route('admin.petitions', request()->except('select'))">
         @if ($selectedPetition)
@@ -457,7 +451,6 @@
 <textarea class="w-full! box-border! border! border-solid! border-border! rounded! px-2! py-1.5! text-sm! bg-white! fc-editor" data-ckeditor="rich" name="text" rows="8">{{ $translationSource->description ?? '' }}</textarea>
 </x-admin.form-field>
 
-                {{-- Image management --}}
                 <div class="flex! flex-col! items-start! gap-1.5! py-1.5! [&_label]:font-bold! [&_label]:text-sm! max-md:[&_label]:text-xs!">
                     <label>cover image</label>
                     @php
@@ -512,7 +505,6 @@
     </x-admin.detail-panel>
 
 @endsection
-
 
 @include('admin.partials.bulk-js', [
     'actionRoute' => route('admin.petitions.bulkAction'),

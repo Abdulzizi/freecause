@@ -12,9 +12,6 @@ export function init(ctx) {
         }
     });
 
-    // Petition sharing: use the device share sheet when available. The link's
-    // mailto href remains a no-JavaScript fallback and never exposes contacts
-    // to FreeCause.
     document.querySelectorAll('[data-share-petition]').forEach(function (shareLink) {
         shareLink.addEventListener('click', async function (event) {
             if (typeof navigator.share !== 'function') {

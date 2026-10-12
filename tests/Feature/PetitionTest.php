@@ -1151,10 +1151,8 @@ class PetitionTest extends TestCase
         $this->assertNotNull($user->password);
         $this->assertTrue(Hash::check('secret123', $user->password));
 
-        // claim session is consumed on success, so a repeat attempt 404s instead of re-validating
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])->assertStatus(404);
 
-        // exactly one new user from signing (the petition owner user already existed)
         $this->assertSame($usersBeforeSign + 1, User::count());
         $this->assertSame(1, User::where('email', $email)->count());
     }

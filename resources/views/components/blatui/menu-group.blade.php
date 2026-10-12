@@ -1,9 +1,6 @@
 @props([
     'dataSlot' => 'menu-group',
-    // selector pointing at the family's own *-label slot for aria-labelledby wiring
     'labelSlot' => 'menu-label',
-    // dropdown renders a single-line div (data-slot first); context/menubar render a
-    // multi-line div (role first). compact=true reproduces the dropdown layout exactly.
     'compact' => false,
 ])
 

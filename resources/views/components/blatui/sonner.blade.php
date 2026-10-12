@@ -1,11 +1,4 @@
-{{--
-    Sonner toaster. Listens for window 'toast' events (use window.toast(...) — see blatui-core.js).
-      position  top/bottom + left/center/right (default bottom-right)
-      expand    keep toasts always expanded as a list. Default false → collapsed stack that
-                fans out on hover/focus (Sonner-style).
-    A11y: region labelled "Notifications"; each toast is a status/alert with aria-live; the stack
-          expands on focus-within so keyboard users can reach every toast's close button.
---}}
+
 @props([
     'position' => 'bottom-right',
     'expand' => false,
@@ -37,8 +30,6 @@
         gap: 14,
         disabled: false,
         init() {
-            // The toaster is a singleton — if one is already mounted on the page, this extra
-            // instance stays inert (prevents duplicate toasts when x-ui.sonner appears twice).
             if (window.__blatToasterActive) { this.disabled = true; return; }
             window.__blatToasterActive = true;
         },

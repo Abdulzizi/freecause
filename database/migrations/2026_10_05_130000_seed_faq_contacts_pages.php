@@ -9,12 +9,6 @@ return new class extends Migration
 {
     private const LOCALE = 'en';
 
-    /**
-     * Q&A content mirrored 1:1 from the former resources/views/pages/faq.blade.php.
-     * Content is pure token markup: all {…} placeholders are expanded at render
-     * time by app/Services/ContentRenderer.php (locale-aware URLs, so no route
-     * or database resolution happens while the migration runs).
-     */
     private function faq(): array
     {
         return [
@@ -153,13 +147,6 @@ return new class extends Migration
         ];
     }
 
-    /**
-     * Content mirrored from the former resources/views/pages/contacts.blade.php.
-     * The contact form itself cannot live in sanitized page content
-     * (sanitizeAdminHtml strips form/input elements), so the seeded page keeps
-     * the informational card and points at the contact channels; the POST
-     * /contacts endpoint remains in place.
-     */
     private function contacts(): string
     {
         return <<<'HTML'
@@ -182,8 +169,6 @@ HTML;
                     continue;
                 }
 
-                // Trusted legacy markup coming from the blade itself; the whole
-                // payload is sanitized via sanitizeAdminHtml() before storage.
                 $html .= '<p>'.$item['a'].'</p>';
             }
         }

@@ -12,7 +12,6 @@ class BlockBannedUser
         if (auth()->check() && auth()->user()->hasLevel('banned')) {
             $user = auth()->user();
 
-            // If ban has a fixed expiry and it has passed, auto-unban
             if ($user->banned_until !== null && now()->gt($user->banned_until)) {
                 $userLevel = UserLevel::where('name', 'user')->value('id');
                 $user->update([

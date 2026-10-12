@@ -77,8 +77,7 @@ class DashboardController extends Controller
 
             return [
                 'users_total' => $this->approxTableRows('users'),
-                // Exact verified COUNT() scans ~15M index entries on prod;
-                // cache it for an hour instead of the block TTL.
+
                 'users_verified' => Cache::remember('admin:users:verified_count', 3600, fn () => User::where('verified', 1)->count()),
                 'users_new_today' => (int) $newUsers->today,
                 'users_new_week' => (int) $newUsers->week,

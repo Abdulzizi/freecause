@@ -1,4 +1,4 @@
-/* Client-facing toasts (public site) — smooth, brand-styled, distinct from admin */
+
 .fc-client-toast {
     --fc-success: #16a34a;
     --fc-error: #cc1f1f;
@@ -25,7 +25,6 @@
     margin-right: 12px;
 }
 
-/* Status colours — success is green, error stays brand red */
 .fc-client-toast .swal2-icon.swal2-success {
     border-color: var(--fc-success);
     color: var(--fc-success);
@@ -59,10 +58,6 @@
     color: var(--fc-info);
 }
 
-/* Responsive: small screens — let the toast breathe and keep text compact */
-/* SweetAlert2 injects its base CSS as a <style> at runtime (after this file),
-   so `!important` here is what keeps the responsive width from being
-   overridden by the injected copy of `width: 360px`. */
 @media (max-width: 575.98px) {
     body.swal2-toast-shown .swal2-container {
         width: 100% !important;
@@ -94,7 +89,6 @@
     }
 }
 
-/* Progress bar — tinted by the toast's status */
 .fc-client-toast-progress {
     height: 3px !important;
     border-radius: 3px;

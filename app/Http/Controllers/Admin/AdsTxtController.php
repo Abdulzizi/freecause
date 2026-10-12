@@ -17,12 +17,7 @@ class AdsTxtController extends Controller
 
     public function update(Request $request)
     {
-        // Settings::set(
-        //     'ads_txt',
-        //     $request->input('ads_txt', ''),
-        //     'text',
-        //     'global'
-        // );
+
         Settings::set('ads_txt', $request->input('ads_txt', ''), 'global');
 
         return back()->with('success', 'saved');

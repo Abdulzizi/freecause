@@ -64,7 +64,6 @@ class CacheInvalidationTest extends TestCase
 
     public function test_petition_translation_save_bumps_home_and_list(): void
     {
-        // create the parent petition first so its own bump does not mask the translation bump
         $petition = Petition::factory()->create();
 
         $homeBefore = CacheVersion::get('home');
@@ -78,7 +77,6 @@ class CacheInvalidationTest extends TestCase
 
     public function test_category_translation_save_bumps_home_and_sitemap(): void
     {
-        // create the parent category first so its own bump does not mask the translation bump
         $category = Category::factory()->create();
 
         $homeBefore = CacheVersion::get('home');
@@ -135,7 +133,6 @@ class CacheInvalidationTest extends TestCase
             ->assertOk()
             ->assertSee('Original Homepage Petition Title');
 
-        // title lives on the translation, so renaming it must invalidate the homepage cache
         $translation->update(['title' => 'Renamed Homepage Petition Title']);
 
         $this->get('/en')

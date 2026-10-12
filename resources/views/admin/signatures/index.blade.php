@@ -31,7 +31,6 @@
             <input class="fc-filter-field" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
         @endif
 
-        {{-- BUG 3 FIX: locale options now come from $locales passed by controller --}}
         <select data-admin-autosubmit class="fc-filter-field" name="locale">
             @foreach ($locales as $k => $label)
                 <option value="{{ $k }}" {{ ($filters['locale'] ?? '') == $k ? 'selected' : '' }}>

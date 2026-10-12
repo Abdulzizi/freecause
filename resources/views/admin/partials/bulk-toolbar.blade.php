@@ -1,4 +1,4 @@
-{{-- Legacy include adapter; existing list-table-box callers keep their current API. --}}
+
 <x-admin.bulk-toolbar
     :ban-route="$banRoute ?? null"
     :ban-label="$banLabel ?? 'Ban'"

@@ -1,26 +1,4 @@
-{{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Privacy Policy - FreeCause - Online Petition') --}}
-{{-- @section('body_class', 'privacy-policy') --}}
-
-{{-- @section('content') --}}
-    {{-- <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2>Privacy Policy</h2>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ lroute('home') }}">Home</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">Privacy Policy</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section> --}}
 
     <section class="py-14! md:py-24!">
         <x-ui.container>
@@ -29,9 +7,7 @@
                     <div class="fcui-card relative! flex! flex-col! min-w-0!">
                         <div class="fcui-prose grow! shrink! basis-auto! p-6!">
                             <div class="mb-6!">
-                                {{-- <h4>Privacy Policy</h4>
 
-                                <div> --}}
                                     <p><strong>Privacy Statement</strong></p>
 
                                     <p>
@@ -265,7 +241,7 @@
                                         at
                                         <a href="{{ lroute('contacts') }}">Contacts</a>.
                                     </p>
-                                {{-- </div> --}}
+
                             </div>
                         </div>
                     </div>
@@ -273,4 +249,4 @@
             </div>
         </x-ui.container>
     </section>
-{{-- @endsection --}}
+

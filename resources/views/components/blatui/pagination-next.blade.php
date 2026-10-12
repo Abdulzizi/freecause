@@ -1,11 +1,10 @@
 @props([
     'href' => '#',
-    'label' => null,        // visible text; defaults via __() below (no hardcoded English)
-    'ariaLabel' => null,    // accessible name; defaults via __() below
+    'label' => null,
+    'ariaLabel' => null,
 ])
 
 @php
-    // i18n-safe defaults: these are translation keys, localise them in your lang files.
     $label ??= __('Next');
     $ariaLabel ??= __('Go to next page');
 @endphp

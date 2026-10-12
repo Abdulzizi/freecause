@@ -18,12 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
-/**
- * Regression coverage for the confirmed admin-panel defects: user-level
- * privilege escalation, reconcile signature counts, pages bulk delete,
- * signatures bulk delete permission, featured-flag divergence, homepage
- * key sanitization and the log export cap.
- */
 class AdminBackendFixesTest extends TestCase
 {
     use RefreshDatabase;
@@ -58,8 +52,6 @@ class AdminBackendFixesTest extends TestCase
 
         return User::factory()->create(['level_id' => $level->id, 'verified' => true]);
     }
-
-    // ── 1a. Users: level changes restricted to system admins ────────────
 
     public function test_non_system_admin_cannot_change_user_level(): void
     {
@@ -309,8 +301,6 @@ class AdminBackendFixesTest extends TestCase
         $this->assertSame(UserLevel::where('name', 'user')->value('id'), $target->fresh()->level_id);
     }
 
-    // ── 2. Reconcile counts confirmed signatures only ───────────────────
-
     public function test_reconcile_counts_only_confirmed_signatures(): void
     {
         $petition = Petition::factory()->create(['signature_count' => 999]);
@@ -327,8 +317,6 @@ class AdminBackendFixesTest extends TestCase
 
         $this->assertSame(1, (int) $petition->fresh()->signature_count);
     }
-
-    // ── 3. Pages bulk delete removes parent rows (cascade) ──────────────
 
     public function test_pages_bulk_delete_removes_pages_and_all_translations(): void
     {
@@ -401,8 +389,6 @@ class AdminBackendFixesTest extends TestCase
         $this->assertDatabaseMissing('pages', ['id' => $page->id]);
     }
 
-    // ── 4. Signatures bulk-action delete requires delete permission ─────
-
     public function test_signatures_bulk_action_delete_requires_delete_permission(): void
     {
         $editor = $this->editorAdmin('signatures');
@@ -417,14 +403,12 @@ class AdminBackendFixesTest extends TestCase
 
         $this->assertDatabaseHas('signatures', ['id' => $signatureId]);
 
-        // approve stays editable under signatures:edit
         $this->actingAs($editor, 'admin')
             ->postJson('/admin/signatures/bulk-action', ['action' => 'approve', 'ids' => [$signatureId]])
             ->assertOk();
 
         $this->assertSame(1, (int) DB::table('signatures')->where('id', $signatureId)->value('confirmed'));
 
-        // system admin may delete
         $this->actingAs($this->systemAdmin(), 'admin')
             ->postJson('/admin/signatures/bulk-action', ['action' => 'delete', 'ids' => [$signatureId]])
             ->assertOk();
@@ -449,8 +433,6 @@ class AdminBackendFixesTest extends TestCase
 
         $this->assertDatabaseMissing('signatures', ['id' => $signatureId]);
     }
-
-    // ── 5. Featured flags stay in sync on save ──────────────────────────
 
     public function test_unfeaturing_petition_clears_all_translation_flags(): void
     {
@@ -493,8 +475,6 @@ class AdminBackendFixesTest extends TestCase
         $this->assertSame(1, DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'en')->value('is_featured'));
     }
 
-    // ── 6. Homepage keys are sanitized like layout keys ─────────────────
-
     public function test_language_options_sanitize_homepage_keys(): void
     {
         $this->actingAs($this->systemAdmin(), 'admin')
@@ -507,8 +487,6 @@ class AdminBackendFixesTest extends TestCase
 
         $this->assertSame('<strong>Title</strong>', $value);
     }
-
-    // ── 7. Log export respects the 10k cap ──────────────────────────────
 
     public function test_log_export_streams_all_logs_within_cap(): void
     {

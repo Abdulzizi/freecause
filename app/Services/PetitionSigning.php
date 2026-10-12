@@ -205,8 +205,7 @@ class PetitionSigning
                 ]);
             });
         } catch (QueryException $e) {
-            // Concurrent duplicate sign (unique key race): treat as
-            // already signed instead of an uncaught 500.
+
             if (($e->errorInfo[0] ?? null) !== '23000' && ! str_contains($e->getMessage(), 'UNIQUE')) {
                 throw $e;
             }

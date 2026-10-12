@@ -1,7 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-// Maps old prefix → pics folder name on the server
 $prefixToFolder = [
     'ws_' => 'en_US',
     'uk_' => 'en_GB',
@@ -38,7 +37,6 @@ $prefixToFolder = [
     'dk_' => 'da_DK',
 ];
 
-// Load new DB config from .env
 $envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
@@ -75,9 +73,7 @@ $updated = 0;
 $skipped = 0;
 
 while ($row = $result->fetch_assoc()) {
-    // Skip external URLs — they were never local files and would produce
-    // corrupt paths like "es_AR/http://...". run fix_corrupt_image_urls.php
-    // to clean up any that were stored in a previous run.
+
     if (str_starts_with($row['pic'], 'http://') || str_starts_with($row['pic'], 'https://')) {
         $skipped++;
 

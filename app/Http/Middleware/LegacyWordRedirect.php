@@ -8,28 +8,8 @@ use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-/**
- * Legacy URL word compatibility layer.
- *
- * Global middleware (runs before the router, so it also covers deep paths that
- * match no {locale} group route). Only acts when the first path segment is a
- * short new-app locale or a legacy full locale literal. Translates legacy route
- * words into the canonical English word paths of the new app, resolves legacy
- * category ids (id -> new id is `(id - 1) % 22 + 1`, the legacy per-prefix id
- * ranges tile 1..726 contiguously in old_id order) and issues permanent 301
- * redirects while preserving query strings.
- */
 class LegacyWordRedirect
 {
-    /**
-     * Legacy words per route family. `canonical` entries are words that also
-     * exist as new-app route words (matched for every locale when no locale
-     * specific word matches) and generally pass through untouched unless their
-     * tail needs rewriting. Families intentionally absent here (`feed`,
-     * `signatures`, `referers`, `invite-friends`, `tag`, `pic`,
-     * `download-signatures`) fall through to the router's 404 — deliberate
-     * per LEGACY_URL_MAPPING.md §5/§6/§7.
-     */
     private const WORDS = [
         'list' => [
             'canonical' => ['petitions'],
@@ -83,8 +63,7 @@ class LegacyWordRedirect
             'tr' => ['ara'],
         ],
         'faq' => [
-            // NOTE: no `canonical` — `/xx/faqs` is already the real route word and
-            // must pass through instead of looping.
+
             'en' => ['faq'],
             'da' => ['faq'],
             'de' => ['haufig-gestellte-fragen'],
@@ -120,12 +99,10 @@ class LegacyWordRedirect
         'recover' => ['en' => ['recover-password']],
     ];
 
-    /** Legacy category words, used only to recognise category tail segments. */
     private const CATEGORY = [
         'category', 'categoria', 'categorie', 'kategori', 'kategorie', 'kategoriler', 'kategoria',
     ];
 
-    /** Legacy page words, used only to recognise `page-N` tail segments. */
     private const PAGE = [
         'page', 'pagina', 'side', 'seite', 'strona', 'sida', 'sayfa',
     ];
@@ -139,14 +116,11 @@ class LegacyWordRedirect
         $segments = array_values(array_filter(explode('/', $request->path()), static fn ($s) => $s !== ''));
         $first = $segments[0] ?? null;
         if ($first === null) {
-            return $next($request); // root `/`
+            return $next($request);
         }
 
         $allowedLocales = cache()->remember('active_languages', 300, fn () => Language::where('is_active', 1)->pluck('code')->toArray());
 
-        // Full legacy locale literal (it_IT, pt-PT, ...) -> short locale. Global,
-        // so deep legacy URLs whose remaining segments match no group route still
-        // get the same canonical hop SetLocale performs for matched routes.
         $short = SetLocale::legacyLocaleMap()[strtolower(str_replace('-', '_', $first))] ?? null;
         if ($short !== null && in_array($short, $allowedLocales, true)) {
             $rest = implode('/', array_slice($segments, 1));
@@ -155,15 +129,15 @@ class LegacyWordRedirect
         }
 
         if (! in_array($first, $allowedLocales, true)) {
-            return $next($request); // unknown first segment: existing behaviour wins
+            return $next($request);
         }
 
         $locale = $first;
-        array_shift($segments); // drop the locale segment itself
+        array_shift($segments);
 
         $first = $segments[0] ?? null;
         if ($first === null) {
-            return $next($request); // `/{locale}` alone is the home route
+            return $next($request);
         }
 
         $tail = array_slice($segments, 1);
@@ -182,8 +156,7 @@ class LegacyWordRedirect
             'blog' => $this->redirectWithQuery($request, '/magazine/'),
             'topics', 'results' => $this->redirectWithQuery($request, "/$locale/petitions"),
             'recover' => $this->redirectWithQuery($request, "/$locale/forgot-password"),
-            // `/download-signatures/{id}` needs an id→slug resolution the plain
-            // redirect table can't provide: deferred, stays 404 (see report).
+
             'download' => abort(404),
             default => abort(404),
         };
@@ -215,9 +188,7 @@ class LegacyWordRedirect
         $category = $catWord !== null ? $this->parseCategory($categorySegment) : null;
 
         if ($category !== null) {
-            // Canonical word form with the canonical category word is handled by
-            // CategoryPetitionController (it canonicalises legacy ids in DB terms);
-            // only rewrite when the legacy page segment needs translating.
+
             if ($canonical && $catWord === 'category') {
                 if ($page === null) {
                     return $next($request);
@@ -238,7 +209,6 @@ class LegacyWordRedirect
         }
 
         if ($categorySegment !== null && preg_match('/^user(-\d+)?$/', $categorySegment)) {
-            // legacy author-filtered list has no equivalent: point at the plain list
             return $this->redirectWithQuery($request, "/$locale/petitions");
         }
 
@@ -253,9 +223,6 @@ class LegacyWordRedirect
     {
         $page = $this->popPage($tail);
 
-        // Legacy hashed petition URLs: /{locale}/petition/{slug}/{id}/{hex}.
-        // The trailing hex token is not a real route segment, so strip it with a
-        // permanent redirect to the canonical petition URL.
         if ($page === null && count($tail) === 3 && ctype_digit($tail[1]) && preg_match('/^[0-9a-f]{16,}$/i', $tail[2])) {
             return $this->redirectWithQuery($request, "/$locale/petition/{$tail[0]}/{$tail[1]}");
         }
@@ -293,9 +260,6 @@ class LegacyWordRedirect
         return $this->redirectWithQuery($request, "/$locale/petitions", $page, ['q' => $query]);
     }
 
-    /**
-     * Remove and return a trailing `{pageWord}-N` segment, if present.
-     */
     private function popPage(array &$tail): ?int
     {
         $last = $tail[count($tail) - 1] ?? null;

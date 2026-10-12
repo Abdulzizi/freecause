@@ -108,7 +108,6 @@
                                 class="m-0! p-[18px]! text-[#d4d4d4]! text-[13px]! leading-[1.5]! whitespace-pre-wrap! break-words! overflow-auto! max-h-[400px]!">{{ $payloadFormatted }}</pre>
                         </div>
 
-
                     </td>
                 </tr>
 
@@ -122,6 +121,5 @@
         </x-slot:tbody>
 
     </x-admin.data-table>
-
 
 @endsection

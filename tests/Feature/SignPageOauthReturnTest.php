@@ -48,7 +48,6 @@ class SignPageOauthReturnTest extends TestCase
     {
         $user = User::factory()->create(['verified' => true]);
 
-        // OAuth petition flow returns here with GET after login.
         $this->actingAs($user)
             ->get('/en/petition/test-petition/'.$this->petition->id.'/sign/confirm?oauth_logged_in=1')
             ->assertOk()

@@ -12,11 +12,6 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Regression: approving/rejecting/deleting signatures changed
- * petitions.signature_count with raw writes and no cache invalidation, so
- * listings kept stale counts.
- */
 class AdminSignatureCacheTest extends TestCase
 {
     use RefreshDatabase;

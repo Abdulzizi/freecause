@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use App\Support\Settings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,12 +18,6 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
 
     public $locale;
 
-    /**
-     * Accept primitives instead of the User model so the job does not crash
-     * if the user is deleted before the queue worker processes it.
-     *
-     * @param  User|object  $user
-     */
     public function __construct($user, string $locale)
     {
         $this->firstName = $user->first_name ?? '';

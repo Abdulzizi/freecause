@@ -302,7 +302,6 @@ export function init() {
         input.addEventListener('input', hide);
     });
 
-    // Contact form: submit over AJAX so the sender gets immediate feedback.
     const contactForm = document.getElementById('contactForm');
     if (!contactForm || !window.clientToast) return;
 

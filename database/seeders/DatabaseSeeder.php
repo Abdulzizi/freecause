@@ -9,9 +9,6 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call(PageContentSeeder::class);
@@ -21,6 +18,5 @@ class DatabaseSeeder extends Seeder
         $this->call(StaticPageSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(PermissionSeeder::class);
-        // $this->call(DemoSeeder::class);
     }
 }

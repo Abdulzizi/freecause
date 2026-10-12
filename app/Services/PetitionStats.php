@@ -6,14 +6,6 @@ use App\Support\CacheVersion;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-/**
- * The single write path for petition signature counts.
- *
- * Every raw write to petitions.signature_count goes through here so the listing
- * caches are always invalidated and the per-petition signature cache forgotten.
- * Count changes affect listings (cards show counts) but not the sitemap, so only
- * the listing groups are bumped.
- */
 class PetitionStats
 {
     public static function increment(int $petitionId, int $by = 1): void
@@ -21,7 +13,6 @@ class PetitionStats
         self::incrementMany([$petitionId => $by]);
     }
 
-    /** @param array<int, int> $byPetitionId petition id => amount */
     public static function incrementMany(array $byPetitionId): void
     {
         $touched = [];
@@ -41,7 +32,6 @@ class PetitionStats
         self::invalidate($touched);
     }
 
-    /** Recompute the canonical count (confirmed signatures) for one petition. */
     public static function recalculate(int $petitionId): int
     {
         $count = DB::table('signatures')
@@ -56,7 +46,6 @@ class PetitionStats
         return $count;
     }
 
-    /** @param array<int, int|string> $petitionIds */
     public static function recalculateMany(array $petitionIds): void
     {
         $touched = [];
@@ -78,7 +67,6 @@ class PetitionStats
         self::invalidate($touched);
     }
 
-    /** @param array<int, int> $petitionIds */
     private static function invalidate(array $petitionIds): void
     {
         if ($petitionIds === []) {

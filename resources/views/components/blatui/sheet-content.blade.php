@@ -1,8 +1,4 @@
-{{--
-    closeOnOverlay  clicking the backdrop closes the sheet. Set false for a "static
-                    backdrop" — a form a stray click shouldn't discard. Escape and the
-                    close button are unaffected.
---}}
+
 @props([
     'side' => 'right',
     'showClose' => true,

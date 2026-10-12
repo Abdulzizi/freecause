@@ -18,11 +18,6 @@
                 <x-ui.input name="name" placeholder="Spanish" required class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" />
             </x-admin.form-field>
 
-            {{-- <div class="grid! grid-cols-1! gap-1.5! py-1.5! md:grid-cols-[160px_1fr]! md:gap-3! md:items-center!">
-                <label class="font-bold! text-sm!">flag filename</label>
-                <input class="w-full! box-border! border! border-border! rounded! px-2! py-1.5! text-sm! bg-white!" name="flag" placeholder="en_US.png">
-            </div> --}}
-
             <div class="text-right! mt-2.5!">
                 <x-blatui.button type="submit">create language</x-blatui.button>
             </div>
@@ -34,7 +29,6 @@
         @forelse($languages as $lang)
             <div x-data="{ editing: false }" class="flex! flex-wrap! items-center! gap-3! py-4! border-b! border-border! last:border-b-0!">
 
-                {{-- LEFT INFO --}}
                 <div class="w-full! shrink-0! md:w-[190px]!">
                     <div class="text-[14px]! font-semibold! text-ink!">
                         {{ strtoupper($lang->code) }}: {{ $lang->name }}
@@ -49,7 +43,6 @@
                     </div>
                 </div>
 
-                {{-- VIEW MODE --}}
                 <div x-show="!editing" class="ms-auto! flex items-center! gap-2!">
                     <x-blatui.button variant="outline" size="sm" type="button" @click="editing = true">edit</x-blatui.button>
 
@@ -61,7 +54,6 @@
                     @endif
                 </div>
 
-                {{-- EDIT MODE --}}
                 <form x-show="editing" x-cloak method="post" action="{{ route('admin.languages.update', $lang) }}"
                     class="ms-auto! flex flex-wrap! items-center! gap-2!">
                     @csrf

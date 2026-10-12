@@ -80,7 +80,6 @@ class HomeController extends Controller
             ", $tr['bindings']);
         });
 
-        // phpredis can deserialize DB::select() stdClass results as arrays — normalise back to objects
         $recentActivities = array_map(fn ($r) => is_array($r) ? (object) $r : $r, (array) $recentActivities);
 
         $maxFeatured = (int) Settings::get('max_featured_petitions_per_country', 5, 'global');
@@ -104,8 +103,6 @@ class HomeController extends Controller
                 ->toArray();
         });
 
-        // If this locale has no specifically-featured petitions, fall back to default locale's pool
-        // so non-English home pages still show a featured petition until admins configure per-locale.
         $usingFallbackPool = false;
         if (empty($pool) && $locale !== $defaultLocale) {
             $usingFallbackPool = true;
@@ -163,7 +160,6 @@ class HomeController extends Controller
             }
         });
 
-        // phpredis can deserialize DB::select() stdClass results as arrays — normalise back to objects
         $magazinePosts = array_map(fn ($r) => is_array($r) ? (object) $r : $r, (array) $magazinePosts);
 
         return view('pages.home', compact(

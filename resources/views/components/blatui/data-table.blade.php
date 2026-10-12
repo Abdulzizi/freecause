@@ -1,24 +1,15 @@
 @props([
-    'columns' => [],      // [['key'=>'name','label'=>'Name','sortable'=>true,'class'=>''], ...]
-    'rows' => [],         // [['name'=>'…','email'=>'…'], ...]
+    'columns' => [],
+    'rows' => [],
     'searchable' => true,
-    'searchKey' => null,  // column key to search; defaults to all column keys
+    'searchKey' => null,
     'searchPlaceholder' => null,
     'selectable' => true,
     'pageSize' => 5,
-    'rowKey' => 'id',     // row-data key used for stable :keys and passed to the actions slot (item.r[rowKey])
-    'actionsLabel' => null,        // header label for the row-actions column (kept sr-only)
-    'stickyActions' => false,      // freeze the actions column to the right edge on horizontal scroll
+    'rowKey' => 'id',
+    'actionsLabel' => null,
+    'stickyActions' => false,
 ])
-
-{{--
-    Row actions: pass an `actions` slot. It renders inside the Alpine x-for, so the current row is
-    available as `item.r` (the row data) and `item.i` (its index). Wire it to Livewire with $wire:
-
-        <x-slot:actions>
-            <x-blatui.button size="sm" variant="ghost" x-on:click="$wire.edit(item.r.{{ rowKey }})">Edit</x-blatui.button>
-        </x-slot:actions>
---}}
 
 @php
     $searchPlaceholder ??= __('Search...');

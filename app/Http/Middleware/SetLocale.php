@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\URL;
 
 class SetLocale
 {
-    /** Set once a first-time visitor has been auto-redirected to their browser language. */
     private const REDIRECT_COOKIE = 'locale_redirected_to';
 
     public function handle(Request $request, Closure $next)
@@ -44,16 +43,6 @@ class SetLocale
         return $next($request);
     }
 
-    /**
-     * Legacy parity (gtranslate on the old site): a first-time visitor landing on
-     * the site root is sent to the language their browser asks for, unless that
-     * language is the default one. The root-only scope means an explicit
-     * /{locale}/... link is never hijacked, and the cookie keeps it to one
-     * redirect for 30 days instead of fighting the visitor on every page.
-     *
-     * Public so the unprefixed root route resolves the language in one hop rather
-     * than bouncing / -> /{default} -> /{browser}.
-     */
     public function autoRedirectToBrowserLocale(Request $request, ?string $currentLocale = null): ?RedirectResponse
     {
         if (! $request->isMethod('GET')
@@ -94,10 +83,6 @@ class SetLocale
         return $short !== null && in_array($short, $allowedLocales, true) ? $short : null;
     }
 
-    /**
-     * Full legacy locale literals (it_IT, en_US, pt-BR, ...) mapped to the
-     * short new-app locale they convert to.
-     */
     public static function legacyLocaleMap(): array
     {
         $legacyMap = [];

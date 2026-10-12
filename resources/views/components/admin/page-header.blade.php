@@ -1,8 +1,4 @@
-{{--
-    Admin page heading with an optional count, context line, and right-aligned actions.
-    Props: title (required string), count (optional scalar), context (optional string).
-    The default slot is reserved for page actions.
---}}
+
 @props([
     'title',
     'count' => null,

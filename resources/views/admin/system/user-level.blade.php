@@ -12,7 +12,6 @@
         </div>
     @endif
 
-
     <x-admin.data-table emptyText="no user levels found" :p="$levels">
 
         <x-slot:thead>
@@ -98,7 +97,6 @@
     </x-admin.section-panel>
 
 @endsection
-
 
 @include('admin.partials.bulk-js', [
     'actionRoute' => route('admin.system.user_levels.delete'),

@@ -1,8 +1,4 @@
-{{--
-    Compact empty-state message for admin panels and tables.
-    Props: message (required string), title (optional string).
-    The default slot is an optional action area.
---}}
+
 @props([
     'message',
     'title' => null,

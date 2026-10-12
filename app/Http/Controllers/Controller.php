@@ -4,10 +4,6 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
-    /**
-     * Sanitize a relative redirect destination. Accepts only same-site
-     * paths (no scheme-relative `//`, no backslashes, no control chars).
-     */
     public static function sanitizeRedirectPath(?string $dest, string $fallback): string
     {
         if ($dest !== null && $dest !== ''

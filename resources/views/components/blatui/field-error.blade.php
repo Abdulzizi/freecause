@@ -3,9 +3,6 @@
 ])
 
 @php
-    // Mirrors shadcn's <FieldError errors={[...]} />: accepts slot content, a single
-    // string, or an array of messages / { message } objects. One message renders as
-    // text; several render as a bulleted list. Nothing renders when there's no content.
     $items = collect(is_array($messages) ? $messages : ($messages !== null && $messages !== '' ? [$messages] : []))
         ->map(fn ($m) => is_array($m) ? ($m['message'] ?? null) : $m)
         ->filter(fn ($m) => filled($m))

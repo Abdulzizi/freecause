@@ -25,7 +25,6 @@
             @csrf
             <input type="hidden" name="locale" value="{{ $locale }}">
 
-            {{-- head --}}
             <x-admin.section-panel :title="html_entity_decode('&lt;head&gt;')">
 
                 <x-admin.form-field label="meta keywords">

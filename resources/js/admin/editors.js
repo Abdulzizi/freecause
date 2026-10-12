@@ -21,7 +21,7 @@ function loadRichEditors() {
                 ],
                 height: 350,
             });
-        } catch (_) { /* Leave the textarea usable if CKEditor cannot initialize. */ }
+        } catch (_) { }
     });
     if (window.CKEDITOR) return activate();
     const script = document.createElement('script');
@@ -70,7 +70,7 @@ function bindListeners() {
         Object.keys(window.CKEDITOR.instances).forEach((name) => {
             try {
                 window.CKEDITOR.instances[name].destroy(true);
-            } catch (_) { /* editor already torn down */ }
+            } catch (_) { }
         });
     });
 }

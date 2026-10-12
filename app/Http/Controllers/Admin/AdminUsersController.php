@@ -71,8 +71,6 @@ class AdminUsersController extends Controller
     {
         $filters = $this->filters($request);
 
-        // Collect the bounded id set first: a limit() on the streamed query is
-        // overridden by chunk(), which would paginate past the 10k cap.
         $ids = $this->filteredQuery(User::query(), $filters)
             ->orderByDesc('id')
             ->limit(10000)
@@ -86,8 +84,7 @@ class AdminUsersController extends Controller
                 ->whereIn('id', $ids)
                 ->orderByDesc('id')
                 ->chunk(500, function ($rows) use ($handle) {
-                    // One query per chunk batch instead of lazy-loading each
-                    // row's level (N+1).
+
                     $levelNames = UserLevel::whereIn('id', $rows->pluck('level_id')->filter()->unique()->all())
                         ->pluck('name', 'id');
 
@@ -107,9 +104,6 @@ class AdminUsersController extends Controller
         }, 'users-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
     }
 
-    /**
-     * Normalise the request's filter query string into a single array.
-     */
     private function filters(Request $request): array
     {
         return [
@@ -128,10 +122,6 @@ class AdminUsersController extends Controller
         ];
     }
 
-    /**
-     * Apply the user-list filters to a query. Shared by index() and export()
-     * so the exported CSV always matches the on-screen listing.
-     */
     private function filteredQuery(Builder $q, array $filters): Builder
     {
         if ($filters['id'] !== '') {
@@ -212,9 +202,6 @@ class AdminUsersController extends Controller
             return back()->withErrors(['level' => 'You cannot change your own role.'])->withInput();
         }
 
-        // Privilege-escalation guard: only system-level admins may change a
-        // user's level, and never for someone who already holds a system level
-        // (that includes other admins; the self case is excluded above).
         $levelChangesRequested = $request->filled('level') && $data['level'] !== ($user->level->name ?? null);
 
         if ($levelChangesRequested) {
@@ -310,9 +297,6 @@ class AdminUsersController extends Controller
 
         $skipped = count($ids) - $banned;
 
-        // The banned set may contain admin/system/own accounts which are
-        // always protected; reporting success with zero changes explains
-        // "why is the user still here" instead of a silent no-op.
         if ($banned === 0) {
             return response()->json([
                 'ok' => false,

@@ -13,7 +13,6 @@ class UserProfileController extends Controller
         $locale = app()->getLocale();
         $defaultLocale = default_locale();
 
-        // Data is stable; cache 2 min so scraper floods hit Redis instead of MySQL.
         $data = cache()->remember("user:profile:data:{$id}:{$locale}", now()->addSeconds(120), function () use ($id, $locale, $defaultLocale) {
             $user = User::findOrFail($id);
 

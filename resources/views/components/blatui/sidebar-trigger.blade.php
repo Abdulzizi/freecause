@@ -1,9 +1,8 @@
 @props([
-    'label' => null,        // accessible name; defaults via __() below (no hardcoded English)
+    'label' => null,
 ])
 
 @php
-    // i18n-safe default: this is a translation key, localise it in your lang files.
     $label ??= __('Toggle Sidebar');
 @endphp
 

@@ -36,7 +36,6 @@ class GlobalOptionsController extends Controller
         'announcement_active' => false,
         'announcement_text' => '',
 
-        // Email Templates
         'email_verify_subject' => '',
         'email_verify_greeting' => '',
         'email_verify_button_text' => '',
@@ -153,25 +152,20 @@ class GlobalOptionsController extends Controller
 
     public function clearCache(Request $request)
     {
-        // System-only: without the gate any admin could trigger this.
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
         if (! $isSystemAdmin) {
             abort(403);
         }
 
         try {
-            // Targeted forgets only: a Cache::flush() on the shared Redis
-            // store wiped public-site caches and re-triggered the cold
-            // dashboard 524 incident for the whole site at once.
+
             $flatKeys = [
-                // settings snapshot + locale helpers
                 'settings:all',
                 'default_language',
                 'languages:codes',
                 'active_languages',
                 'active_languages_full',
 
-                // dashboard + stats aggregates
                 'admin:dashboard:stats:v2',
                 'admin:dashboard:quick',
                 'admin:dashboard:recent',
@@ -182,9 +176,6 @@ class GlobalOptionsController extends Controller
                 'admin:petitions:status_counts',
                 'level:user_counts',
 
-                // stat type pages (top signers/petitioners etc.) carry
-                // type:locale:range:page keys — they expire in 600s on their
-                // own; enumerating every combination here is not worth it.
             ];
 
             foreach ($flatKeys as $key) {
@@ -195,12 +186,10 @@ class GlobalOptionsController extends Controller
                 Cache::forget("approx_rows:{$table}");
             }
 
-            // Cache-version integers: forget, they re-seed to 1 on next use.
             foreach (['home', 'list', 'sitemap'] as $group) {
                 Cache::forget("ver:{$group}");
             }
 
-            // Per-level permission lookups (short TTL, bounded matrix).
             $modules = Permission::matrix();
             foreach (UserLevel::pluck('id') as $levelId) {
                 foreach ($modules as $module => $actions) {
@@ -210,7 +199,6 @@ class GlobalOptionsController extends Controller
                 }
             }
 
-            // Per-locale category lists.
             foreach (Language::where('is_active', true)->pluck('code') as $loc) {
                 Cache::forget("categories:list:{$loc}");
             }

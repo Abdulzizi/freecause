@@ -76,10 +76,6 @@ class PetitionController extends Controller
         return $normalized ?: null;
     }
 
-    /**
-     * Store and downscale an uploaded cover image, returning its public-disk
-     * path. Throws a validation error when the file cannot be processed.
-     */
     private function storeCoverImage(UploadedFile $file): string
     {
         $path = $file->store('petitions', 'public');
@@ -525,9 +521,6 @@ class PetitionController extends Controller
             ]);
         }
 
-        // The petition translation is authoritative for this page. This is
-        // especially important when an old or shared URL uses a locale for
-        // which the petition has no translation.
         $locale = $tr->locale;
         App::setLocale($locale);
         URL::defaults(['locale' => $locale]);
@@ -546,8 +539,7 @@ class PetitionController extends Controller
                 $join->on('pt_locale.petition_id', '=', 'petitions.id')
                     ->where('pt_locale.locale', '=', $locale);
             })
-            // Keep every recommendation in the language of the petition that
-            // was signed instead of falling back to a different translation.
+
             ->whereNotNull('pt_locale.title')
             ->where('petitions.status', 'published')
             ->where('petitions.is_active', 1)
@@ -645,10 +637,6 @@ class PetitionController extends Controller
             ]);
         }
 
-        // GET renders the confirm form for already-authenticated users (the
-        // OAuth petition flow returns here after auth); validation and the
-        // session snapshot only apply to the actual POST. signAsAuthed()
-        // re-validates the agreed flags on the sign POST itself.
         if ($request->isMethod('get')) {
             if (auth()->check()) {
                 $content = PageContent::where('page', 'petition_sign')

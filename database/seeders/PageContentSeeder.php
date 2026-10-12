@@ -10,14 +10,12 @@ class PageContentSeeder extends Seeder
     public function run(): void
     {
         $rows = [
-            // GLOBAL
             ['page' => 'global', 'locale' => 'en', 'key' => 'meta_title_suffix', 'value' => ' - FreeCause'],
             ['page' => 'global', 'locale' => 'en', 'key' => 'meta_description', 'value' => 'FreeCause - Online Petition Platform'],
             ['page' => 'global', 'locale' => 'en', 'key' => 'meta_keywords', 'value' => 'petitions, activism, freecause'],
             ['page' => 'global', 'locale' => 'en', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'global', 'locale' => 'en', 'key' => 'footer_additional_html', 'value' => ''],
 
-            // ENGLISH
             ['page' => 'home', 'locale' => 'en', 'key' => 'h1', 'value' => 'Change the world!'],
             ['page' => 'home', 'locale' => 'en', 'key' => 'h2', 'value' => 'Welcome to FreeCause - Online Petition, the ultimate spot to kick off your online petition—let’s make some waves!'],
             [
@@ -37,7 +35,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'en', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'en', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // FRENCH
             ['page' => 'home', 'locale' => 'fr', 'key' => 'h1', 'value' => 'Changeons le monde'],
             ['page' => 'home', 'locale' => 'fr', 'key' => 'h2', 'value' => 'Bienvenue sur <span class="red">FreeCause</span>, la plateforme de pétitions en ligne.'],
             [
@@ -57,7 +54,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'fr', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'fr', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // ITALIAN
             ['page' => 'home', 'locale' => 'it', 'key' => 'h1', 'value' => 'Cambiamo il mondo'],
             ['page' => 'home', 'locale' => 'it', 'key' => 'h2', 'value' => 'Benvenuto su <span class="red">FreeCause</span>, la piattaforma di petizioni online.'],
             [
@@ -77,7 +73,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'it', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'it', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // GERMAN
             ['page' => 'home', 'locale' => 'de', 'key' => 'h1', 'value' => 'Verändere die Welt'],
             ['page' => 'home', 'locale' => 'de', 'key' => 'h2', 'value' => 'Willkommen bei <span class="red">FreeCause</span>, der Plattform für Online-Petitionen.'],
             ['page' => 'home', 'locale' => 'de', 'key' => 'text_index_left', 'value' => '<p>Eine Online-Petition ermöglicht es jedem, digitale Unterschriften für eine gute Sache zu sammeln und echten Wandel zu bewirken.</p><ul><li>Sofort Tausende von Unterstützern erreichen</li><li>Verifizierte Unterschriften an Entscheidungsträger übergeben</li><li>Fortschritt in Echtzeit verfolgen</li><li>Kostenlos erstellen, unterzeichnen und teilen</li></ul><p>Neu bei Online-Petitionen? Lies unsere <a href="{FAQ_URL}">FAQ</a> oder <a href="{CONTACTS_URL}">kontaktiere uns</a> — wir helfen dir gerne weiter.</p>'],
@@ -87,7 +82,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'de', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'de', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // SPANISH
             ['page' => 'home', 'locale' => 'es', 'key' => 'h1', 'value' => 'Cambia el Mundo'],
             ['page' => 'home', 'locale' => 'es', 'key' => 'h2', 'value' => 'Bienvenido a <span class="red">FreeCause</span>, la plataforma de peticiones en línea.'],
             ['page' => 'home', 'locale' => 'es', 'key' => 'text_index_left', 'value' => '<p>Una petición en línea te permite recopilar firmas digitales para apoyar una causa y lograr un cambio real.</p><ul><li>Llega a miles de personas de forma instantánea</li><li>Presenta firmas verificadas a los responsables</li><li>Sigue tu progreso en tiempo real</li><li>Gratis para crear, firmar y compartir</li></ul><p>¿Primera vez con peticiones? Lee nuestras <a href="{FAQ_URL}">preguntas frecuentes</a> o <a href="{CONTACTS_URL}">contáctanos</a> y te ayudamos a empezar.</p>'],
@@ -97,7 +91,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'es', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'es', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // PORTUGUESE
             ['page' => 'home', 'locale' => 'pt', 'key' => 'h1', 'value' => 'Mude o Mundo'],
             ['page' => 'home', 'locale' => 'pt', 'key' => 'h2', 'value' => 'Bem-vindo ao <span class="red">FreeCause</span>, a plataforma de petições online.'],
             ['page' => 'home', 'locale' => 'pt', 'key' => 'text_index_left', 'value' => '<p>Uma petição online permite que qualquer pessoa colete assinaturas digitais para apoiar uma causa e promover mudanças reais.</p><ul><li>Alcance milhares de apoiadores instantaneamente</li><li>Apresente assinaturas verificadas aos responsáveis</li><li>Acompanhe seu progresso em tempo real</li><li>Grátis para criar, assinar e compartilhar</li></ul><p>Nunca criou uma petição? Leia nossas <a href="{FAQ_URL}">perguntas frequentes</a> ou <a href="{CONTACTS_URL}">fale conosco</a> — estamos aqui para ajudar.</p>'],
@@ -107,7 +100,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'pt', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'pt', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // DUTCH
             ['page' => 'home', 'locale' => 'nl', 'key' => 'h1', 'value' => 'Verander de Wereld'],
             ['page' => 'home', 'locale' => 'nl', 'key' => 'h2', 'value' => 'Welkom bij <span class="red">FreeCause</span>, het platform voor online petities.'],
             ['page' => 'home', 'locale' => 'nl', 'key' => 'text_index_left', 'value' => '<p>Een online petitie stelt iedereen in staat digitale handtekeningen te verzamelen voor een goed doel en echte verandering te bewerkstelligen.</p><ul><li>Bereik direct duizenden supporters</li><li>Presenteer geverifieerde handtekeningen aan beslissers</li><li>Volg je voortgang in realtime</li><li>Gratis aanmaken, ondertekenen en delen</li></ul><p>Nieuw met petities? Lees onze <a href="{FAQ_URL}">FAQ</a> om te begrijpen hoe het werkt, of <a href="{CONTACTS_URL}">neem contact op</a> voor hulp.</p>'],
@@ -117,7 +109,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'nl', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'nl', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // POLISH
             ['page' => 'home', 'locale' => 'pl', 'key' => 'h1', 'value' => 'Zmień Świat'],
             ['page' => 'home', 'locale' => 'pl', 'key' => 'h2', 'value' => 'Witamy w <span class="red">FreeCause</span>, platformie petycji online.'],
             ['page' => 'home', 'locale' => 'pl', 'key' => 'text_index_left', 'value' => '<p>Petycja online umożliwia każdemu zbieranie cyfrowych podpisów w celu wsparcia sprawy i wprowadzenia realnych zmian.</p><ul><li>Dotrzyj do tysięcy zwolenników natychmiast</li><li>Przekaż zweryfikowane podpisy decydentom</li><li>Śledź postępy w czasie rzeczywistym</li><li>Bezpłatne tworzenie, podpisywanie i udostępnianie</li></ul><p>Pierwszy raz z petycją? Sprawdź nasze <a href="{FAQ_URL}">FAQ</a> albo <a href="{CONTACTS_URL}">skontaktuj się z nami</a> — chętnie pomożemy.</p>'],
@@ -127,7 +118,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'pl', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'pl', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // ROMANIAN
             ['page' => 'home', 'locale' => 'ro', 'key' => 'h1', 'value' => 'Schimbă Lumea'],
             ['page' => 'home', 'locale' => 'ro', 'key' => 'h2', 'value' => 'Bine ai venit la <span class="red">FreeCause</span>, platforma de petiții online.'],
             ['page' => 'home', 'locale' => 'ro', 'key' => 'text_index_left', 'value' => '<p>O petiție online permite oricui să colecteze semnături digitale pentru a susține o cauză și a genera schimbări reale.</p><ul><li>Atinge mii de susținători instantaneu</li><li>Prezintă semnături verificate factorilor de decizie</li><li>Urmărește progresul în timp real</li><li>Gratuit pentru a crea, semna și distribui</li></ul><p>Prima dată cu o petiție? Citește <a href="{FAQ_URL}">întrebările frecvente</a> sau <a href="{CONTACTS_URL}">contactează-ne</a> — suntem aici să te ajutăm.</p>'],
@@ -137,7 +127,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'ro', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'ro', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // RUSSIAN
             ['page' => 'home', 'locale' => 'ru', 'key' => 'h1', 'value' => 'Измени Мир'],
             ['page' => 'home', 'locale' => 'ru', 'key' => 'h2', 'value' => 'Добро пожаловать на <span class="red">FreeCause</span> — платформу онлайн-петиций.'],
             ['page' => 'home', 'locale' => 'ru', 'key' => 'text_index_left', 'value' => '<p>Онлайн-петиция позволяет каждому собирать цифровые подписи в поддержку своей инициативы и добиваться реальных изменений.</p><ul><li>Мгновенно достучаться до тысяч сторонников</li><li>Представить проверенные подписи лицам, принимающим решения</li><li>Отслеживать прогресс в режиме реального времени</li><li>Бесплатно создавать, подписывать и делиться</li></ul><p>Впервые на платформе? Ознакомьтесь с нашим <a href="{FAQ_URL}">разделом FAQ</a> или <a href="{CONTACTS_URL}">свяжитесь с нами</a> — мы поможем разобраться.</p>'],
@@ -147,7 +136,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'ru', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'ru', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // DANISH
             ['page' => 'home', 'locale' => 'da', 'key' => 'h1', 'value' => 'Forandre Verden'],
             ['page' => 'home', 'locale' => 'da', 'key' => 'h2', 'value' => 'Velkommen til <span class="red">FreeCause</span>, platformen for online underskriftindsamlinger.'],
             ['page' => 'home', 'locale' => 'da', 'key' => 'text_index_left', 'value' => '<p>En online underskriftindsamling giver alle mulighed for at samle digitale underskrifter til støtte for en sag og skabe reel forandring.</p><ul><li>Nå tusindvis af støtter øjeblikkeligt</li><li>Præsenter verificerede underskrifter til beslutningstagere</li><li>Følg din fremgang i realtid</li><li>Gratis at oprette, underskrive og dele</li></ul><p>Ny til underskriftindsamlinger? Læs vores <a href="{FAQ_URL}">FAQ</a> for at forstå, hvordan det virker, eller <a href="{CONTACTS_URL}">kontakt os</a> for hjælp.</p>'],
@@ -157,7 +145,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'da', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'da', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // SWEDISH
             ['page' => 'home', 'locale' => 'sv', 'key' => 'h1', 'value' => 'Förändra Världen'],
             ['page' => 'home', 'locale' => 'sv', 'key' => 'h2', 'value' => 'Välkommen till <span class="red">FreeCause</span>, plattformen för namninsamlingar online.'],
             ['page' => 'home', 'locale' => 'sv', 'key' => 'text_index_left', 'value' => '<p>En namninsamling online låter vem som helst samla digitala underskrifter för att stödja en sak och driva fram verklig förändring.</p><ul><li>Nå tusentals supportrar omedelbart</li><li>Presentera verifierade underskrifter för beslutsfattare</li><li>Följ din framgång i realtid</li><li>Gratis att skapa, signera och dela</li></ul><p>Ny på namninsamlingar? Läs vår <a href="{FAQ_URL}">FAQ</a> för att förstå hur det fungerar, eller <a href="{CONTACTS_URL}">kontakta oss</a> för hjälp.</p>'],
@@ -167,7 +154,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'sv', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'sv', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // TURKISH
             ['page' => 'home', 'locale' => 'tr', 'key' => 'h1', 'value' => 'Dünyayı Değiştir'],
             ['page' => 'home', 'locale' => 'tr', 'key' => 'h2', 'value' => '<span class="red">FreeCause</span>\'a hoş geldiniz, çevrimiçi dilekçe platformu.'],
             ['page' => 'home', 'locale' => 'tr', 'key' => 'text_index_left', 'value' => '<p>Çevrimiçi bir dilekçe, herkese dijital imza toplayarak bir davayı destekleme ve gerçek değişim yaratma imkânı sunar.</p><ul><li>Anında binlerce destekçiye ulaşın</li><li>Doğrulanmış imzaları karar vericilere sunun</li><li>İlerlemenizi gerçek zamanlı takip edin</li><li>Oluşturmak, imzalamak ve paylaşmak ücretsiz</li></ul><p>Dilekçeler konusunda yeni misiniz? <a href="{FAQ_URL}">SSS sayfamıza</a> bakın ya da <a href="{CONTACTS_URL}">bize ulaşın</a> — yardımcı olmaktan memnuniyet duyarız.</p>'],
@@ -177,7 +163,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'tr', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'tr', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // GREEK
             ['page' => 'home', 'locale' => 'el', 'key' => 'h1', 'value' => 'Άλλαξε τον Κόσμο'],
             ['page' => 'home', 'locale' => 'el', 'key' => 'h2', 'value' => 'Καλώς ήρθατε στο <span class="red">FreeCause</span>, την πλατφόρμα διαδικτυακών αναφορών.'],
             ['page' => 'home', 'locale' => 'el', 'key' => 'text_index_left', 'value' => '<p>Μια διαδικτυακή αναφορά επιτρέπει σε οποιονδήποτε να συλλέγει ψηφιακές υπογραφές για να υποστηρίξει μια υπόθεση και να επιφέρει πραγματική αλλαγή.</p><ul><li>Φτάστε άμεσα σε χιλιάδες υποστηρικτές</li><li>Παρουσιάστε επαληθευμένες υπογραφές σε υπεύθυνους λήψης αποφάσεων</li><li>Παρακολουθήστε την πρόοδό σας σε πραγματικό χρόνο</li><li>Δωρεάν δημιουργία, υπογραφή και κοινοποίηση</li></ul><p>Νέος στις αναφορές; Διαβάστε τις <a href="{FAQ_URL}">Συχνές Ερωτήσεις</a> μας ή <a href="{CONTACTS_URL}">επικοινωνήστε μαζί μας</a> — είμαστε εδώ για να βοηθήσουμε.</p>'],
@@ -187,19 +172,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'home', 'locale' => 'el', 'key' => 'head_additional_html', 'value' => ''],
             ['page' => 'home', 'locale' => 'el', 'key' => 'exclude_most_read', 'value' => ''],
 
-            // BUTTONS / TABS
-
-            // FEATURED BOX
-
-            // RECENT ACTIVITY
-
-            // ONLINE PETITION SECTION
-
-            // CREATE PETITION BOX
-
-            // CATEGORIES + BLOG
-
-            // NAVBAR
             ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_explore',  'value' => 'Explore petitions'],
             ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_magazine', 'value' => 'Magazine'],
             ['page' => 'navbar', 'locale' => 'en', 'key' => 'nav_help',     'value' => 'Help'],
@@ -221,7 +193,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_logout',   'value' => 'Esci'],
             ['page' => 'navbar', 'locale' => 'it', 'key' => 'nav_startfree', 'value' => 'Inizia gratis'],
 
-            // PETITION SIGN PAGE
             ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'title',    'value' => 'Sign - :title'],
             ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'h2_line1', 'value' => 'Support and share your cause.'],
             ['page' => 'petition_sign', 'locale' => 'en', 'key' => 'h2_line2', 'value' => 'Please click "like" button and sign the petition'],
@@ -237,7 +208,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'h2_line2', 'value' => 'Clicca sul pulsante "Mi piace" e firma la petizione'],
             ['page' => 'petition_sign', 'locale' => 'it', 'key' => 'btn_sign', 'value' => 'Firma'],
 
-            // PETITION THANKS PAGE
             ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'title_created',      'value' => 'Thanks! - FreeCause'],
             ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'title_signed',       'value' => 'Thank you for having signed - FreeCause'],
             ['page' => 'petition_thanks', 'locale' => 'en', 'key' => 'h1_created',         'value' => 'Thanks!'],
@@ -268,7 +238,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'suggestions_empty',   'value' => 'Nessun suggerimento al momento.'],
             ['page' => 'petition_thanks', 'locale' => 'it', 'key' => 'invite_btn',          'value' => 'Invita amici dalla tua rubrica »'],
 
-            // PETITION SHOW PAGE
             ['page' => 'petition_show', 'locale' => 'en', 'key' => 'title', 'value' => ':title - FreeCause'],
             ['page' => 'petition_show', 'locale' => 'en', 'key' => 'btn_sign_now', 'value' => 'Sign Now'],
 
@@ -304,7 +273,6 @@ class PageContentSeeder extends Seeder
 
             ['page' => 'petition_show', 'locale' => 'en', 'key' => 'box_widgets', 'value' => 'Widgets'],
 
-            // FR
             ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'title', 'value' => ':title - FreeCause'],
             ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'btn_sign_now', 'value' => 'Signer'],
 
@@ -340,7 +308,6 @@ class PageContentSeeder extends Seeder
 
             ['page' => 'petition_show', 'locale' => 'fr', 'key' => 'box_widgets', 'value' => 'Widgets'],
 
-            // IT
             ['page' => 'petition_show', 'locale' => 'it', 'key' => 'title', 'value' => ':title - FreeCause'],
             ['page' => 'petition_show', 'locale' => 'it', 'key' => 'btn_sign_now', 'value' => 'Firma ora'],
 
@@ -376,7 +343,6 @@ class PageContentSeeder extends Seeder
 
             ['page' => 'petition_show', 'locale' => 'it', 'key' => 'box_widgets', 'value' => 'Widget'],
 
-            // PETITION SIGN FORM PARTIAL
             ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'signed_already', 'value' => 'You signed this petition.'],
             ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'signed_hint', 'value' => 'Support and share your cause. Please click "like" button and sign the petition'],
             ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'btn_sign', 'value' => 'Sign'],
@@ -408,7 +374,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree_yes', 'value' => 'I agree'],
             ['page' => 'petition_sign_form', 'locale' => 'en', 'key' => 'agree_no', 'value' => 'I do not agree'],
 
-            // FR
             ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'signed_already', 'value' => 'Vous avez signé cette pétition.'],
             ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'signed_hint', 'value' => 'Soutenez et partagez votre cause. Cliquez sur "J’aime" et signez la pétition.'],
             ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'btn_sign', 'value' => 'Signer'],
@@ -440,7 +405,6 @@ class PageContentSeeder extends Seeder
             ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree_yes', 'value' => 'J’accepte'],
             ['page' => 'petition_sign_form', 'locale' => 'fr', 'key' => 'agree_no', 'value' => 'Je n’accepte pas'],
 
-            // IT
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'signed_already', 'value' => 'Hai firmato questa petizione.'],
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'signed_hint', 'value' => 'Sostieni e condividi la tua causa. Clicca su "Mi piace" e firma la petizione.'],
             ['page' => 'petition_sign_form', 'locale' => 'it', 'key' => 'btn_sign', 'value' => 'Firma'],

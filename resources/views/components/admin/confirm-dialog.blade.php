@@ -1,7 +1,4 @@
-{{--
-    Shared confirm dialog (BlatUI alert-dialog) driven by window.fcConfirm(message, title).
-    Mounted once in the admin layout; resolves a promise with the user's choice.
---}}
+
 <div
     x-data="{ message: '', title: 'Please confirm', resolver: null }"
     x-init="window.__fcConfirmReady = true"

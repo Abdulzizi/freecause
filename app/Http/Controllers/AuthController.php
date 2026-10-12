@@ -114,7 +114,6 @@ class AuthController extends Controller
                 'last_name' => $data['surname'],
                 'email' => strtolower(trim($data['email'])),
                 'password' => Hash::make($data['password']),
-                // Marks that a real (form-based) password exists at first set.
                 'password_changed_at' => now(),
                 'locale' => $locale,
                 'ip' => $request->ip(),
@@ -207,7 +206,6 @@ class AuthController extends Controller
 
         $legacyHash = $user && filled($user->password) && str_contains($user->password, ':');
 
-        // Try standard bcrypt login first.
         try {
             $loggedIn = ! $legacyHash
                 && Auth::guard('web')->attempt($credentials, $remember);
@@ -215,11 +213,9 @@ class AuthController extends Controller
             $loggedIn = false;
         }
 
-        // Fallback: legacy md5(md5(password).salt):salt hash for migrated old users
         if (! $loggedIn && $legacyHash) {
             [$hash, $salt] = explode(':', $user->password, 2);
             if (md5(md5($credentials['password']).$salt) === $hash) {
-                // Rehash to bcrypt and save
                 $user->password = Hash::make($credentials['password']);
                 $user->password_changed_at = now();
                 $user->save();
@@ -298,9 +294,7 @@ class AuthController extends Controller
             }
 
             if (! Settings::get('smtp_enabled', false)) {
-                // Without an active mail system we cannot verify the new
-                // address, which would allow taking over a Google account
-                // claiming that email. Reject the change instead.
+
                 return back()
                     ->withInput()
                     ->withErrors(['new_email' => __('profile.email_needs_mail_system')]);
@@ -438,9 +432,7 @@ class AuthController extends Controller
         }
 
         DB::transaction(function () use ($user) {
-            // Lock the row and atomically gate on `verified` so concurrent
-            // double-clicks verify exactly once and claim pending signatures
-            // exactly once.
+
             $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
 
             if (! $locked) {
@@ -470,10 +462,6 @@ class AuthController extends Controller
             }
             PetitionStats::incrementMany($increments);
         });
-
-        // * AUTO LOGIN AFTER VERIFY
-        // Auth::login($user);
-        // request()->session()->regenerate();
 
         return redirect()->to("/{$locale}")->with('success', __('auth.verify_success'));
     }
@@ -532,7 +520,6 @@ class AuthController extends Controller
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user, $password) {
                     $user->password = Hash::make($password);
-                    // A set password implies password_changed_at is set (never NULL).
                     $user->password_changed_at = now();
                     $user->save();
 

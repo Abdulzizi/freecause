@@ -9,10 +9,6 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Coverage for the admin user CSV export: streamed download, matching
- * columns, filter parity with the on-screen listing and bounded output.
- */
 class AdminUsersExportTest extends TestCase
 {
     use RefreshDatabase;
@@ -77,8 +73,6 @@ class AdminUsersExportTest extends TestCase
             ->assertOk()
             ->streamedContent();
 
-        // Mirrors the log-export cap test: each user is written exactly once
-        // (the id set is collected once, then streamed).
         foreach ($users as $user) {
             $this->assertSame(1, substr_count($content, $user->email));
         }

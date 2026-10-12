@@ -16,15 +16,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-/**
- * Tier-1 admin performance fixes:
- *  - /admin/stats: totals + type aggregates are cached, page renders work
- *  - /admin/system/user-levels: member counts come from one cached GROUP BY
- *  - /admin/logs: no full COUNT(*) per view, prefix-only title search
- *  - "clear cache": targeted key forgets, system-admin gated, no Cache::flush()
- *  - /admin/petitions: two-stage page query, title search via fulltext scope
- *  - edge purge: Cloudflare calls happen through the queued job, not the request
- */
 class AdminPerformanceFixesTest extends TestCase
 {
     use RefreshDatabase;
@@ -78,7 +69,6 @@ class AdminPerformanceFixesTest extends TestCase
         $cached = Cache::get('admin:stats:totals');
         $this->assertSame('3', (string) $cached->petitions_total);
 
-        // Second render must not change the cached aggregate object.
         $snapshot = Cache::get('admin:stats:totals');
         $this->actingAs($viewer, 'admin')->get(route('admin.stats', ['type' => 'top_petitioners']));
         $this->assertSame(spl_object_hash($snapshot), spl_object_hash(Cache::get('admin:stats:totals')));
@@ -112,7 +102,6 @@ class AdminPerformanceFixesTest extends TestCase
         $res = $this->actingAs($viewer, 'admin')->get(route('admin.logs', ['q' => 'prefixmatch']));
         $res->assertOk();
         $res->assertSee('prefixmatch-title');
-        // mid-string hits in other rows must not surface with prefix search
         $res->assertDontSee('other');
 
         $res2 = $this->actingAs($viewer, 'admin')->get(route('admin.logs', ['context' => 'system.users']));
@@ -174,7 +163,6 @@ class AdminPerformanceFixesTest extends TestCase
 
         $missing = $this->actingAs($viewer, 'admin')->get(route('admin.petitions', ['missing_locale' => 'de']));
         $missing->assertOk();
-        // both petitions lack a German translation
         $missing->assertSee('Save the whales specifically');
         $missing->assertSee('Completely other topic');
 
@@ -197,8 +185,6 @@ class AdminPerformanceFixesTest extends TestCase
             'title' => 'Queue purge wiring', 'slug' => 'queue-purge-wiring', 'description' => 'd',
         ]);
 
-        // Sync driver executes the job inline; this verifies the job→purge
-        // wiring (prod redis driver runs the same job on the workers).
         dispatch(new PurgeEdgeListings);
 
         Http::assertSent(function ($request) {

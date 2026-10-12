@@ -181,9 +181,6 @@ function bindListeners() {
     if (bound) return;
     bound = true;
 
-    /* Any click on a list row opens that row's detail drawer, the standard
-       ?select= navigation. Interactive elements inside the row keep their own
-       behavior (checkboxes, buttons, links, selects, labels). */
     document.addEventListener('click', async function (event) {
         if (event.defaultPrevented || event.button !== 0) return;
         if (event.target.closest('a, button, input, select, textarea, label')) return;
@@ -216,7 +213,7 @@ function bindListeners() {
                 name: (active && active.name) || '',
                 scroll: window.scrollY,
             }));
-        } catch (_) { /* storage unavailable */ }
+        } catch (_) { }
     }, true);
     document.addEventListener('reset', (event) => {
         const form = dirtyForm(event.target);
@@ -278,7 +275,7 @@ function restoreFilterState() {
             if (field instanceof HTMLInputElement && ['text', 'search', 'tel', 'url', 'password'].includes(type)) {
                 try {
                     field.setSelectionRange(field.value.length, field.value.length);
-                } catch (_) { /* unsupported input type */ }
+                } catch (_) { }
             }
         }
     }

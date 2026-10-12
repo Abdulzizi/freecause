@@ -1,5 +1,5 @@
 @php
-    $variant = $variant ?? 'stack'; // stack | split
+    $variant = $variant ?? 'stack';
     $col = $variant === 'split' ? 'w-full! md:w-1/2! shrink-0! px-1!' : 'w-full! px-1!';
     $useLabels = $variant === 'split';
     $isAuthed = auth()->check();
@@ -67,8 +67,6 @@
                     @endif
                     <span data-error-for="comment" hidden class="text-[13px]! text-brand! mt-1! block!"></span>
                 </div>
-
-                {{-- @include('petition.partials._agreements') --}}
 
                 <div class="mb-[14px]!">
                     <div class="font-bold!">
@@ -207,7 +205,6 @@
                     </p>
                 @endif
 
-                {{-- agreements --}}
                 <div class="p-4! rounded-[.25rem]! bg-[#f8f9fa]! border! border-border! mb-[14px]!">
                     <div class="flex! items-start! gap-2! mb-2!">
                         <input class="form-check-input shrink-0! float-none! ml-0! mt-0.5!" type="checkbox" id="agree1_{{ $variant }}" name="agree1" value="1" {{ old('agree1') ? 'checked' : '' }}>

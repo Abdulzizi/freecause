@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 trait InteractsWithAdminLists
 {
-    /** @return list<int> */
     protected function adminBulkIds(Request $request, string $table): array
     {
         $validator = validator(

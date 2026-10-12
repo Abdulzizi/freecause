@@ -1,9 +1,4 @@
-{{--
-    Thin wrapper over x-admin.list-table-box; preserves its table, toolbar, footer, and pagination markup.
-    Props: p (optional paginator), bulk (optional bulk toolbar config), emptyText (optional message).
-    Blade normalizes both empty-text and emptyText call-site spellings to emptyText.
-    Named slots: thead, tbody, footer.
---}}
+
 @props([
     'p' => null,
     'bulk' => null,

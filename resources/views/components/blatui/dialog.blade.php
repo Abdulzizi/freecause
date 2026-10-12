@@ -1,11 +1,4 @@
-{{--
-    Dialog root. Holds the open state.
-      open  initial open state
-      id    optional — enables "dispatchable" mode: the dialog also opens/closes from
-            anywhere via $dispatch('open-dialog-{id}') / $dispatch('close-dialog-{id}').
-            Lets a trigger inside a @foreach/partial drive a single shared modal defined
-            elsewhere (use <x-blatui.dialog-trigger for="{id}"> or dispatch the event yourself).
---}}
+
 @props(['open' => false, 'id' => null])
 
 <div

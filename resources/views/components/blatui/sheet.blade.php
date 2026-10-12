@@ -1,10 +1,4 @@
-{{--
-    Sheet root. Holds the open state.
-      open  initial open state
-      id    optional — enables "dispatchable" mode: the sheet also opens/closes from
-            anywhere via $dispatch('open-sheet-{id}') / $dispatch('close-sheet-{id}').
-            Use <x-blatui.sheet-trigger for="{id}"> from inside a @foreach/partial.
---}}
+
 @props(['open' => false, 'id' => null])
 
 <div

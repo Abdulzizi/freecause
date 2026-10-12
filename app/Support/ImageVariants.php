@@ -7,15 +7,8 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class ImageVariants
 {
-    /** Variant widths keyed by the suffix label appended to the basename. */
     private const VARIANTS = ['w800' => 800, 'w400' => 400];
 
-    /**
-     * URLs for srcset if both WebP variants exist on disk, else null.
-     *
-     * @param  string|null  $relativePath  DB value, e.g. "petitions/abc.jpg" (no "storage/" prefix, no leading slash).
-     * @return array<string, string>|null ['800' => url, '400' => url]
-     */
     public static function urls(?string $relativePath): ?array
     {
         if ($relativePath === null || $relativePath === '') {
@@ -44,13 +37,6 @@ class ImageVariants
         ];
     }
 
-    /**
-     * Create missing WebP variants next to the original file.
-     *
-     * Idempotent: existing variant files are never rewritten. Never throws.
-     *
-     * @return array<string, string>|null ['w800' => abs path, 'w400' => abs path]
-     */
     public static function ensure(string $absPath): ?array
     {
         try {
@@ -92,9 +78,6 @@ class ImageVariants
         }
     }
 
-    /**
-     * Delete both WebP variants for the given relative path (best-effort, never throws).
-     */
     public static function purge(?string $relativePath): void
     {
         if ($relativePath === null || $relativePath === '') {
@@ -110,13 +93,9 @@ class ImageVariants
                 Storage::disk('public')->delete($variant);
             }
         } catch (\Throwable $e) {
-            // best-effort: deletion failures must not propagate
         }
     }
 
-    /**
-     * Basename without its extension; extensionless names are returned whole.
-     */
     private static function stem(string $path): string
     {
         $base = basename($path);
@@ -130,9 +109,6 @@ class ImageVariants
         return str_ends_with($stem, '_800w') || str_ends_with($stem, '_400w');
     }
 
-    /**
-     * @return array<string, string>
-     */
     private static function absoluteVariantPaths(string $absPath): array
     {
         $dir = dirname($absPath);
@@ -144,9 +120,6 @@ class ImageVariants
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     private static function relativeVariantPaths(string $relativePath): array
     {
         $relativePath = ltrim($relativePath, '/');

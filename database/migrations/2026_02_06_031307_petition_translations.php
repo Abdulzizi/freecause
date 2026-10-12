@@ -6,17 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('petition_translations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('petition_id')->constrained()->cascadeOnDelete();
-            $table->string('locale', 5); // en/fr/it
+            $table->string('locale', 5);
             $table->string('title', 190);
-            $table->string('slug', 220); // per-locale slug
+            $table->string('slug', 220);
             $table->longText('description');
             $table->timestamps();
 
@@ -27,9 +24,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('petition_translations');

@@ -6,10 +6,6 @@
 
 @php
     $placement = $side.($align === 'center' ? '' : '-'.$align);
-    // Anchor to the inner sidebar menu-action button when present (it is absolutely
-    // positioned at the item's top-right), otherwise to the trigger element itself.
-    // The trigger span is display:contents (no box), so anchor to its real inner
-    // element: the sidebar menu-action button when present, else the first child.
     $anchorRef = '($refs.trigger?.querySelector(\'[data-slot=sidebar-menu-action]\') || $refs.trigger?.firstElementChild || $refs.trigger)';
     $anchorAttr = 'x-blat-anchor.'.$placement.'.offset.'.$sideOffset.'="'.$anchorRef.'"';
 @endphp

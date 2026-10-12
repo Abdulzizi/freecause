@@ -9,9 +9,6 @@
 ])
 
 @php
-    // Livewire bridge — a native checkbox binds wire:model on the real <input>; the custom (Alpine)
-    // one binds its `checked` state through $blatModel instead (see blatui-core.js), with the
-    // property path travelling as a data attribute so a morph can re-point it. No-op without Livewire.
     $wireModel = \Illuminate\View\ComponentAttributeBag::hasMacro('wire') ? $attributes->wire('model') : null;
     $hasWire = $wireModel && is_string($wireModel->value()) && $wireModel->value() !== '';
     if (! $native && $hasWire) {
@@ -23,9 +20,7 @@
 @endphp
 
 @if ($native)
-    {{-- Real native checkbox for no-JS / native-submit form layers. Styled via the
-         .blat-checkbox foundations utility (accent-color). `indeterminate` needs JS and is
-         not supported here — use the default (Alpine) checkbox if you need it. --}}
+
     <input
         type="checkbox"
         @if ($id) id="{{ $id }}" @endif
@@ -53,8 +48,7 @@
             <x-lucide-minus class="size-3.5" x-show="indeterminate" aria-hidden="true" />
             <x-lucide-check class="size-3.5" x-show="!indeterminate" aria-hidden="true" />
         </span>
-        {{-- Hidden (non-interactive) input carries the value for form submission; type=hidden
-             is valid inside a button and avoids a nested interactive control. --}}
+
         @if ($name)
             <input type="hidden" :name="checked && !indeterminate ? @js($name) : null" value="{{ $value }}">
         @endif

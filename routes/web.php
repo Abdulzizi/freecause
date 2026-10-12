@@ -47,8 +47,6 @@ Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'scrip
 Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
     ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
-// Unprefixed root: send first-time visitors straight to their browser language
-// (one hop) instead of bouncing / -> /{default} -> /{browser} via SetLocale.
 Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(request()) ?? redirect('/'.default_locale()))
     ->name('root');
 
@@ -71,9 +69,6 @@ $toDefaultLocale = static function (string $path) {
 Route::get('/petitions/{path?}', fn (?string $path = null) => $toDefaultLocale('petitions'.($path ? '/'.$path : '')))->where('path', '.*');
 Route::get('/petition/{path?}', fn (?string $path = null) => $toDefaultLocale('petition'.($path ? '/'.$path : '')))->where('path', '.*');
 
-// Unprefixed legacy default-locale (en_US) words -> same path under the default locale.
-// Only known legacy first segments are relayed; anything else keeps the existing
-// SetLocale browser-detect behaviour. Word translation happens in LegacyWordRedirect.
 $legacyUnprefixedWords = [
     'search', 'faq', 'faqs', 'news', 'topics', 'results', 'recover-password',
     'signatures', 'referers', 'download-signatures', 'invite-friends', 'tag', 'pic', 'feed',
@@ -111,10 +106,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
     Route::middleware(['admin.auth', 'admin.audit'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-        // * DASHBOARD
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // * OPTIONS
         Route::get('/options/global', [GlobalOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.global');
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.global.update');
         Route::post('/options/clear-cache', [GlobalOptionsController::class, 'clearCache'])->middleware('permission:options,edit')->name('options.clearCache');
@@ -123,7 +116,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::get('/ads', [AdsTxtController::class, 'edit'])->middleware('permission:options,view')->name('ads');
         Route::post('/ads', [AdsTxtController::class, 'update'])->middleware('permission:options,edit')->name('ads.update');
 
-        // * USERS
         Route::get('/users', [AdminUsersController::class, 'index'])->middleware('permission:users,view')->name('users');
         Route::get('/users/export', [AdminUsersController::class, 'export'])->middleware('permission:users,view')->name('users.export');
         Route::post('/users/save', [AdminUsersController::class, 'save'])->middleware('permission:users,edit')->name('users.save');
@@ -134,7 +126,6 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/users/{user}/unban', [AdminUsersController::class, 'unban'])->middleware('permission:users,edit')->name('users.unban');
         Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->middleware('permission:users,delete')->name('users.bulkDelete');
 
-        // * PETITIONS
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
         Route::post('/petitions/create', [AdminPetitionsController::class, 'create'])->middleware('permission:petitions,edit')->name('petitions.create');
@@ -143,32 +134,26 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/petitions/reconcile', [AdminPetitionsController::class, 'reconcile'])->middleware('permission:petitions,edit')->name('petitions.reconcile');
         Route::post('/petitions/reconcile-all', [AdminPetitionsController::class, 'reconcileAll'])->middleware('permission:petitions,edit')->name('petitions.reconcileAll');
 
-        // * CATEGORIES
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->middleware('permission:categories,view')->name('categories');
         Route::post('/categories/save', [AdminCategoriesController::class, 'save'])->middleware('permission:categories,edit')->name('categories.save');
         Route::post('/categories/create', [AdminCategoriesController::class, 'createCategory'])->middleware('permission:categories,edit')->name('categories.create');
         Route::post('/categories/delete', [AdminCategoriesController::class, 'destroy'])->middleware('permission:categories,delete')->name('categories.destroy');
 
-        // * SIGNATURES
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
         Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->name('signatures.bulkAction');
         Route::post('/signatures/{signature}/action', [AdminSignaturesController::class, 'action'])->middleware('permission:signatures,edit')->name('signatures.action');
 
-        // * PAGES
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
         Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
 
-        // * SPAM
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
         Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');
         Route::post('/spam/unban', [AdminSpamController::class, 'unban'])->middleware('permission:spam,edit')->name('spam.unban');
         Route::post('/spam/clear', [AdminSpamController::class, 'clear'])->middleware('permission:spam,delete')->name('spam.clear');
 
-        // * STATS
         Route::get('/stats', [AdminStatsController::class, 'index'])->middleware('permission:stats,view')->name('stats');
 
-        // * LOGS
         Route::get('/logs', [AdminLogsController::class, 'index'])->middleware('permission:logs,view')->name('logs');
         Route::get('/logs/export', [AdminLogsController::class, 'export'])->middleware('permission:logs,view')->name('logs.export');
         Route::post('/logs/prune', [AdminLogsController::class, 'prune'])->middleware('permission:logs,delete')->name('logs.prune');
@@ -176,14 +161,12 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/logs/restore', [AdminLogsController::class, 'restore'])->middleware('permission:logs,delete')->name('logs.restore');
         Route::post('/logs/restore-all', [AdminLogsController::class, 'restoreAll'])->middleware('permission:logs,delete')->name('logs.restoreAll');
 
-        // * LANGUAGES
         Route::get('/languages', [AdminLanguagesController::class, 'index'])->middleware('permission:languages,view')->name('languages.index');
         Route::post('/languages', [AdminLanguagesController::class, 'store'])->middleware('permission:languages,edit')->name('languages.store');
         Route::put('/languages/{language}', [AdminLanguagesController::class, 'update'])->middleware('permission:languages,edit')->name('languages.update');
         Route::post('/languages/{language}/default', [AdminLanguagesController::class, 'setDefault'])->middleware('permission:languages,edit')->name('languages.default');
         Route::delete('/languages/{language}', [AdminLanguagesController::class, 'destroy'])->middleware('permission:languages,delete')->name('languages.destroy');
 
-        // * SYSTEM
         Route::get('/system/user-info', [AdminSystemController::class, 'userInfo'])->middleware('permission:system,manage')->name('system.user_info');
         Route::post('/system/user-info', [AdminSystemController::class, 'updateUserInfo'])->middleware('permission:system,manage')->name('system.user_info.update');
         Route::get('/system/user-levels', [AdminUserLevelsController::class, 'index'])->middleware('permission:system,manage')->name('system.user_levels');
@@ -213,7 +196,6 @@ Route::prefix('{locale}')
 Route::prefix('{locale}')
     ->middleware(['setLocale', 'block.banned.ip', 'block.banned.user'])
     ->group(function () {
-        // auth + oauth
         Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
         Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
 
@@ -249,16 +231,12 @@ Route::prefix('{locale}')
 
             Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware('throttle:5,1');
 
-            // petition owner operations
             Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->name('petition.edit');
             Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update');
             Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])->name('petition.download.txt');
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
         });
 
-        // static pages — FAQ renders from page_translations like the other
-        // editorial pages (admin/pages editable, no code deploy needed);
-        // contacts is a fully static Blade + translations template.
         Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))->name('faqs');
         Route::get('/how-to-write-a-petition', fn (string $locale) => app(PageController::class)->showFixed($locale, 'how-to-write-a-petition'))->name('how-to-write-a-petition');
         Route::get('/donations', fn (string $locale) => app(PageController::class)->showFixed($locale, 'donations'))->name('donations');
@@ -267,13 +245,10 @@ Route::prefix('{locale}')
         Route::get('/contacts', fn () => view('pages.contacts'))->name('contacts');
         Route::post('/contacts', [ContactController::class, 'send'])->name('contacts.submit')->middleware('throttle:6,1');
 
-        // home + petitions
         Route::get('/', [HomeController::class, 'index'])->name('home');
 
-        // petition creation
         Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
 
-        // petition actions (show / sign / thanks)
         Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])->name('petition.show');
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');

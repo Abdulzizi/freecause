@@ -14,15 +14,8 @@ class UserLevelSeeder extends Seeder
         UserLevel::truncate();
         Schema::enableForeignKeyConstraints();
 
-        // is_system = trusted admin level that bypasses permission checks
-        // (canAccessAdmin()/CheckPermission). ONLY `admin` may be system-level;
-        // `user`/`banned` must NOT grant admin access.
         UserLevel::insert([
-            // [
-            //     'name' => 'superadmin',
-            //     'visible_name' => 'Superadmin',
-            //     'is_system' => true,
-            // ],
+
             [
                 'name' => 'admin',
                 'visible_name' => 'Admin',

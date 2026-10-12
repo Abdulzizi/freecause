@@ -17,20 +17,14 @@ class AddSecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        // Prevent clickjacking
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
-        // Prevent MIME sniffing
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Restrict browser features
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
 
-        // Admin routes get a permissive CSP (inline scripts/styles needed for the panel).
-        // 'unsafe-eval' is required by Alpine/BlatUI and accepted: admin-only, staff-authenticated surface.
-        // Public routes get a strict CSP — no unsafe-inline on scripts.
         if ($request->is('admin') || $request->is('admin/*')) {
             $csp =
                 "default-src 'self'; ".

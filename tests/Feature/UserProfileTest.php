@@ -79,7 +79,6 @@ class UserProfileTest extends TestCase
         $this->assertSame(0, Cache::get($cacheKey)['signatureCount']);
         $this->assertSame(1, Cache::get($cacheKey)['petitionCount']);
 
-        // A new signature in the DB must NOT appear while the cache is warm.
         Signature::factory()->create([
             'petition_id' => $petition->id,
             'user_id' => $this->profileUser->id,
@@ -89,7 +88,6 @@ class UserProfileTest extends TestCase
 
         $this->assertSame(0, Cache::get($cacheKey)['signatureCount']);
 
-        // Once the key is dropped, the next request regenerates with fresh data.
         Cache::forget($cacheKey);
 
         $this->get('/en/user/scraper-target/'.$this->profileUser->id)->assertStatus(200);

@@ -56,10 +56,6 @@ class AdminPetitionsController extends Controller
             ? 'GROUP_CONCAT(locale ORDER BY locale SEPARATOR ",")'
             : 'GROUP_CONCAT(locale, ",")';
 
-        // Stage 1: id-only page query. The old whole-table GROUP_CONCAT
-        // derived join materialized ~2x table every render; filters that need
-        // translations run as EXISTS subqueries over the unique
-        // (petition_id, locale) index instead.
         $idQuery = DB::table('petitions')->select('petitions.id');
 
         if ($filters['id'] !== '') {
@@ -67,8 +63,7 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['title'] !== '') {
-            // Leading-wildcard LIKE cannot use the fulltext index; scope the
-            // search to the locales the editor is working with.
+
             $searchTerm = $filters['title'];
             $searchLocales = array_values(array_unique([$locale, $defaultLocale]));
             $idQuery->whereIn('petitions.id', function ($sub) use ($searchTerm, $searchLocales, $isMysql) {
@@ -116,8 +111,6 @@ class AdminPetitionsController extends Controller
 
         $idPage = $idQuery->orderByDesc('petitions.id')->simplePaginate(25)->withQueryString();
 
-        // Stage 2: hydrate the 25 page rows (titles, slugs, locale chips)
-        // with narrow whereIn queries — never the whole table.
         $pageIds = collect($idPage->items())->pluck('id')->all();
 
         if ($pageIds !== []) {
@@ -291,10 +284,6 @@ class AdminPetitionsController extends Controller
                 $petitionUpdate['image_url'] = null;
             }
 
-            // Featured flags: global petitions.is_featured is the single source
-            // of truth for the admin list. Mirror it onto the edited locale's
-            // translation, and when un-featuring clear is_featured in ALL
-            // translations of the petition so admin and public stay in sync.
             $isFeatured = $request->boolean('is_featured');
 
             DB::transaction(function () use ($data, $petitionUpdate, $isFeatured) {
@@ -366,7 +355,6 @@ class AdminPetitionsController extends Controller
 
         $locale = $data['locale'];
 
-        // Slugs are unique per (locale, slug) — dedupe against that scope.
         $slug = Slug::dedupe(
             $data['title'],
             fn (string $candidate) => DB::table('petition_translations')
@@ -382,7 +370,7 @@ class AdminPetitionsController extends Controller
             $id = DB::table('petitions')->insertGetId([
                 'user_id' => admin_user()->id,
                 'goal_signatures' => $data['goal_signatures'] ?? 1000,
-                'status' => 'draft', // petitions always start unpublished
+                'status' => 'draft',
                 'category_id' => $data['category_id'] ?? null,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -442,8 +430,6 @@ class AdminPetitionsController extends Controller
             return response()->json(['ok' => true, 'created' => 0, 'missing' => 0]);
         }
 
-        // slug is unique per (locale, slug), so the source slug can be
-        // reused verbatim for every new locale.
         $created = DB::transaction(function () use ($source, $targets, $id) {
             foreach ($targets as $code) {
                 PetitionTranslation::updateOrCreate(
@@ -452,7 +438,7 @@ class AdminPetitionsController extends Controller
                         'title' => $source->title,
                         'slug' => $source->slug,
                         'description' => $source->description,
-                        'is_featured' => false, // drafts seed the copy, publishing stays manual
+                        'is_featured' => false,
                     ]
                 );
             }
@@ -507,7 +493,6 @@ class AdminPetitionsController extends Controller
 
             case 'feature':
                 DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
-                // Only feature in the default locale — per-locale featuring is set individually in the edit panel
                 $defaultLocale = Language::where('is_default', true)->value('code') ?? 'en';
                 DB::table('petition_translations')
                     ->whereIn('petition_id', $ids)
@@ -517,7 +502,6 @@ class AdminPetitionsController extends Controller
 
             case 'unfeature':
                 DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 0]);
-                // Remove from ALL locales — un-featuring is global
                 DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
@@ -581,8 +565,6 @@ class AdminPetitionsController extends Controller
             ]);
         }
 
-        // Counts are derived from confirmed signatures; invalidate the listing
-        // caches once instead of dispatching one purge per petition.
         CacheVersion::bumpListings();
 
         Log::info("All signature counts reconciled: {$total} petitions");

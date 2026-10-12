@@ -14,7 +14,6 @@
     <x-blatui.alert variant="destructive" class="mb-3!">{{ $errors->first() }}</x-blatui.alert>
 @endif
 
-{{-- ── NEW CATEGORY FORM ─────────────────────────────────────────────────── --}}
 <x-blatui.card class="p-4! mb-[18px]!">
     <div class="font-bold! mb-2.5! text-[13px]! uppercase! tracking-[0.05em]!">
         + new category
@@ -39,7 +38,6 @@
     </form>
 </x-blatui.card>
 
-{{-- ── FILTER ────────────────────────────────────────────────────────────── --}}
 @php
     $activeFilterCount = collect($filters)->filter(fn($v) => $v !== '' && $v !== null)->count();
 @endphp
@@ -67,7 +65,6 @@
 
 </x-admin.filter-box>
 
-{{-- ── LIST ──────────────────────────────────────────────────────────────── --}}
 <x-admin.data-table empty-text="no categories found, try clearing filters"
     :p="$categories" :emptyClearRoute="route('admin.categories')">
 
@@ -118,11 +115,10 @@
 
 </x-admin.data-table>
 
-{{-- ── DETAIL / EDIT PANEL ───────────────────────────────────────────────── --}}
 <x-admin.detail-panel title="category" :closeRoute="route('admin.categories', request()->except('select'))">
 
     @if ($selectedCategory)
-        {{-- Edit translation --}}
+
         <form method="post"
               action="{{ route('admin.categories.save') }}"
               class="m-0!">
@@ -175,7 +171,6 @@
             </div>
         </form>
 
-        {{-- Delete category (only when no petitions use it) --}}
         <div class="mt-[18px]! pt-3.5! border-t! border-border!">
             @if ($selectedPetitionCount === 0)
                 <form method="post" action="{{ route('admin.categories.destroy') }}"

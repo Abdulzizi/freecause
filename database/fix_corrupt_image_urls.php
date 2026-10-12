@@ -1,29 +1,11 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * FreeCause — Fix Corrupt image_url Entries
- *
- * The old `pic` column sometimes stored external HTTP URLs rather than local
- * filenames. update_image_urls.php blindly prefixed these with the locale
- * folder, producing invalid paths like `es_AR/http://profile.ak.fbcdn.net/...`.
- *
- * This script finds all such entries and sets image_url = NULL so that
- * Petition::coverUrl() falls back to the placeholder image instead of
- * trying to resolve a dead external URL as a local file path.
- *
- * Usage:
- *   php database/fix_corrupt_image_urls.php
- *   php database/fix_corrupt_image_urls.php --dry-run
- *
- * Run from the Laravel project root.
- */
 $dryRun = in_array('--dry-run', $argv ?? []);
 if ($dryRun) {
     echo "[DRY RUN] No changes will be made.\n\n";
 }
 
-// Load .env
 $envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
@@ -47,8 +29,6 @@ if ($db->connect_error) {
 }
 $db->set_charset('utf8mb4');
 
-// Find all image_url values where the part after "locale/" is an external URL.
-// Pattern: anything that contains "/http://" or "/https://"
 $result = $db->query("
     SELECT id, image_url
     FROM petitions
@@ -82,7 +62,6 @@ echo '  '.str_repeat('-', 18)."\n";
 printf("  %-10s %6d\n\n", 'TOTAL', $total);
 
 if (! $dryRun) {
-    // Batch update in chunks to avoid giant IN() queries
     $chunks = array_chunk($ids, 500);
     $fixed = 0;
     foreach ($chunks as $chunk) {

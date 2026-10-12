@@ -15,9 +15,6 @@ class AdminAuth
             return redirect()->route('admin.login');
         }
 
-        // A stale admin-guard session must not survive a level change that
-        // revokes admin access (e.g. accounts seeded while the user level
-        // carried is_system). Re-check on every request.
         if (! admin_user()?->canAccessAdmin()) {
             Auth::guard('admin')->logout();
             $request->session()->invalidate();

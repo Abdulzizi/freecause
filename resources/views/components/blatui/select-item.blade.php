@@ -3,7 +3,7 @@
 @props([
     'value' => '',
     'disabled' => false,
-    'indicator' => 'check',   // check | checkbox | radio — usually set once on the select or select-content wrapper
+    'indicator' => 'check',
 ])
 
 @php

@@ -1,26 +1,4 @@
-{{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Ethical code - FreeCause - Online Petition') --}}
-{{-- @section('body_class', 'ethical-code') --}}
-
-{{-- @section('content') --}}
-    {{-- <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2>Ethical code</h2>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ lroute('home') }}">Home</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">Ethical code</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section> --}}
 
     <section class="py-14! md:py-24!">
         <x-ui.container>
@@ -29,9 +7,6 @@
                     <div class="fcui-card relative! flex! flex-col! min-w-0!">
                         <div class="fcui-prose grow! shrink! basis-auto! p-6!">
                             <div class="mb-6!">
-                                {{-- <h4>Ethical code</h4>
-
-                                <div> --}}
 
                                     <h2>Our code of ethics</h2>
 
@@ -208,7 +183,6 @@
                                         our employees and fostering a safe work environment.
                                     </p>
 
-                                {{-- </div><!-- / --> --}}
                             </div>
                         </div>
                     </div>
@@ -216,4 +190,4 @@
             </div>
         </x-ui.container>
     </section>
-{{-- @endsection --}}
+

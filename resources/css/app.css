@@ -2,11 +2,7 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
-/* Extracted subset of the retired legacy stylesheets (bootstrap + style.css + admin.css):
-   only the rules still referenced by markup that keeps those class names (grid, forms,
-   buttons, behavioral collapse/dropdown states, JS state hooks). Order matters: this is
-   unlayered, so it beats Tailwind layers the way the old unlinked stylesheets did, while
-   `!`-marked utilities still win over it (layered !important beats unlayered !important). */
+
 @import './legacy-compat.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -21,7 +17,6 @@
     --fc-shadow-sm: 0 1px 2px rgba(48, 42, 34, 0.04), 0 8px 24px rgba(48, 42, 34, 0.06);
     --fc-shadow-md: 0 4px 12px rgba(48, 42, 34, 0.08), 0 16px 40px rgba(48, 42, 34, 0.1);
 
-    /* Motion + visual refresh tokens (motion-visual-refresh-spec P0) */
     --fc-bg: #faf9f7;
     --fc-surface: #ffffff;
     --fc-surface-2: #f9fafb;
@@ -76,17 +71,10 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Tailwind ships a `.collapse { visibility: collapse }` utility (for tables). It hijacks
-   Bootstrap's `.collapse` contract (navbar collapse + accordions): those hide via
-   `display`, and visibility:collapse renders them permanently invisible. This unlayered
-   rule beats the layered utility; the compat layer keeps owning display. */
 .collapse {
     visibility: visible;
 }
 
-/* Preflight deltas vs the retired baseline (browser default img display, preflight list
-   resets): keep the pre-preflight rendering for bare elements; `!`-marked utilities and
-   classed lists still override normally. */
 img {
     display: inline;
 }
@@ -101,7 +89,6 @@ ol:not([class]) {
     background: rgba(204, 31, 31, 0.16);
 }
 
-/* ===== Public primitives (motion-visual-refresh-spec P0/P1) ===== */
 body.fc-public {
     background: var(--fc-bg);
 }
@@ -142,12 +129,10 @@ body.fc-public main a[href] {
     text-decoration: none;
 }
 
-/* Section rhythm (P2) */
 .fc-section {
     padding-block: clamp(3.5rem, 8vw, 6rem);
 }
 
-/* Hero choreography — once, on load (P2) */
 @keyframes fc-hero-in {
     from {
         opacity: 0;
@@ -175,7 +160,6 @@ body.fc-public .fc-hero .fc-hero-item:nth-child(3) {
     animation-delay: 160ms;
 }
 
-/* Tab panes (P2) */
 @keyframes fc-pane-in {
     from {
         opacity: 0;
@@ -191,7 +175,6 @@ body.fc-public .tab-content > .tab-pane.active {
     animation: fc-pane-in var(--fc-dur-base) var(--fc-ease-standard) both;
 }
 
-/* Recent-activity rows stagger when their tab is activated (display toggle restarts it). */
 body.fc-public .tab-pane.active .most-listing li {
     animation: fc-reveal-in var(--fc-dur-slow) var(--fc-ease-decel) both;
 }
@@ -205,7 +188,6 @@ body.fc-public .tab-pane.active .most-listing li:nth-child(6) { animation-delay:
 body.fc-public .tab-pane.active .most-listing li:nth-child(7) { animation-delay: calc(var(--fc-stagger) * 6); }
 body.fc-public .tab-pane.active .most-listing li:nth-child(8) { animation-delay: calc(var(--fc-stagger) * 7); }
 
-/* Hover lift (P2) */
 body.fc-public .fc-lift {
     transition: transform var(--fc-dur-fast) var(--fc-ease-standard), box-shadow var(--fc-dur-fast) var(--fc-ease-standard);
 }
@@ -215,7 +197,6 @@ body.fc-public .fc-lift:hover {
     box-shadow: var(--fc-elev-2) !important;
 }
 
-/* Scroll reveals + stagger — progressive enhancement (P2) */
 @keyframes fc-reveal-in {
     from {
         opacity: 0;
@@ -248,12 +229,10 @@ body.fc-public .fc-lift:hover {
     }
 }
 
-/* Press feedback for action buttons (P3) */
 body.fc-public .fcui-btn:not(:disabled):not([aria-busy='true']):active {
     transform: scale(var(--fc-press-scale));
 }
 
-/* Copy-link success micro-feedback (class added by legacy/petition-show.js) (P3) */
 body.fc-public .fc-share-copy--copied {
     color: #1e7a34;
     animation: fc-copied-pop var(--fc-dur-fast) var(--fc-ease-decel);
@@ -268,7 +247,6 @@ body.fc-public .fc-share-copy--copied {
     }
 }
 
-/* Goal progress fills when it scrolls into view (P3) */
 @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
         body.fc-public .fc-progress-reveal .fcui-progress-fill {
@@ -278,14 +256,12 @@ body.fc-public .fc-share-copy--copied {
     }
 }
 
-/* Floating scroll-top clears the mobile sticky sign bar (P3) */
 @media (max-width: 767.98px) {
     body.fc-public:has(.fcui-sticky-signbar) .fcui-scrolltop {
         bottom: calc(4.5rem + env(safe-area-inset-bottom));
     }
 }
 
-/* Header chrome: hairline edge + link underline slide (P1) */
 body.fc-public .navbar {
     border-bottom: 1px solid var(--fc-hairline);
     box-shadow: none;
@@ -314,9 +290,6 @@ body.fc-public .navbar .nav-link.active::after {
     transform: scaleX(1);
 }
 
-/* Page transitions (cross-document; progressive enhancement).
-   Opacity-only on purpose: translating the whole root exposes snapshot edges
-   and reads as the page "moving" — a plain cross-fade is smoother. */
 @view-transition {
     navigation: auto;
 }
@@ -405,7 +378,6 @@ nav.navbar {
     }
 }
 
-/* Native sign-form progress indicator; the legacy subset omits spinner styles. */
 .fc-sign-spinner {
     display: inline-block;
     width: 1em;
@@ -1074,8 +1046,6 @@ nav.navbar {
     }
 }
 
-/* ===== Admin slide-over detail drawer ===== */
-/* Right-side editing drawer — replaces the inline panel under the table. */
 .fc-drawer {
     position: fixed;
     top: 0;
@@ -1132,8 +1102,7 @@ nav.navbar {
         width: 100vw;
     }
 }
-/* Small screens: hide the flagged secondary columns entirely so tables
-   stay width-limited instead of h-scrolling. */
+
 @media (max-width: 768px) {
     [data-hide-mobile] {
         display: none !important;
@@ -1150,12 +1119,10 @@ nav.navbar {
     border-color: var(--color-border);
 }
 
-/* normalized detail-panel (drawer) inner rhythm */
 .fc-drawer__body .fc-box {
     margin-bottom: 12px;
 }
 
-/* list rows that open the detail drawer */
 tr[data-detail-row] {
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
@@ -1167,7 +1134,7 @@ tr.fc-row-open {
 tr.fc-row-muted td {
     opacity: 0.75;
 }
-/* ID cells render consistently black, no bootstrap link color */
+
 tr[data-detail-row] td:first-child a {
     color: var(--color-ink);
     text-decoration: none;
@@ -1189,9 +1156,6 @@ tr[data-detail-row] td a[href*="select="] {
     box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
 }
 
-/* ===== Admin filter bar + bulk toolbar controls ===== */
-/* Uniform field control for admin filter bars. Width comes from the
-   .fc-filter-form grid — no per-input max-width utilities. */
 .fc-filter-field {
     width: 100%;
     box-sizing: border-box;
@@ -1215,7 +1179,7 @@ select.fc-filter-field {
     background: var(--color-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
     padding-right: 30px;
 }
-/* Filter form grid: equal flexible cells, no ragged wraps. */
+
 .fc-filter-form {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1230,8 +1194,7 @@ select.fc-filter-field {
     gap: 6px;
     justify-content: flex-end;
 }
-/* Compact toolbar action button (bulk bars, clear-selection, single actions).
-   Horizontal icon+label, one height for every toolbar. */
+
 .fc-abtn--danger {
     color: var(--color-danger);
     border-color: var(--color-danger);

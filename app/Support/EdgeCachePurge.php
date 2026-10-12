@@ -10,20 +10,15 @@ use Illuminate\Support\Facades\Log;
 
 class EdgeCachePurge
 {
-    /** Only canonical, query-free listing URLs are future cache candidates. */
     public static function listings(): void
     {
         if (! config('edge-cache.purge_enabled')) {
             return;
         }
 
-        // URL building + Cloudflare round-trips run on the queue workers so
-        // admin save requests never wait on them. afterCommit semantics are
-        // preserved by the job itself; the sync test driver executes inline.
         dispatch(new PurgeEdgeListings);
     }
 
-    /** Builds the full listing URL set for all active locales. */
     public static function listingUrls(): array
     {
         $base = rtrim((string) config('edge-cache.base_url'), '/');
@@ -39,7 +34,6 @@ class EdgeCachePurge
         return $urls;
     }
 
-    /** Job entry point: build listing URLs and purge them. */
     public static function dispatchListingPurge(): void
     {
         try {
@@ -70,7 +64,6 @@ class EdgeCachePurge
                     Log::warning('Edge cache purge failed; cached pages expire at the configured TTL.');
                 }
             } catch (\Throwable) {
-                // Do not expose request headers, credentials or remote response bodies.
                 Log::warning('Edge cache purge unavailable; cached pages expire at the configured TTL.');
             }
         }

@@ -1,19 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * FreeCause — Petition Image Verification
- *
- * Reports how many petitions have their image file present vs missing,
- * broken down by locale folder.
- *
- * Usage:
- *   php database/verify_petition_images.php
- *
- * Run from the Laravel project root.
- */
-
-// Load .env
 $envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {

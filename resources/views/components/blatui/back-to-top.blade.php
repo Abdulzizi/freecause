@@ -1,7 +1,7 @@
 @props([
-    'threshold' => 300,   // px scrolled before the button appears
-    'variant' => 'primary', // 'primary' (filled) | 'subtle' (card + border)
-    'demo' => false,      // docs-only: always visible & in-flow (preview frame doesn't scroll the window)
+    'threshold' => 300,
+    'variant' => 'primary',
+    'demo' => false,
 ])
 
 @php
@@ -11,14 +11,9 @@
     ];
     $variantClasses = $variants[$variant] ?? $variants['primary'];
 
-    // In docs (`demo`), pin it static & in-flow so it renders inside the non-scrolling preview frame.
-    // In real use it floats fixed at the bottom-end corner (end-* is RTL-safe).
     $position = $demo ? 'static' : 'fixed bottom-6 end-6 z-40';
 @endphp
 
-{{-- A floating "scroll to top" button. It listens to the window scroll position and
-     reveals itself once the user has scrolled past `threshold` px, then smoothly
-     scrolls back to the top on click (instantly under prefers-reduced-motion). --}}
 <button
     data-slot="back-to-top"
     type="button"

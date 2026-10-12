@@ -6,12 +6,6 @@
 
     <x-admin.page-header title="permissions" />
 
-    {{-- @if (session('success'))
-        <div class="border! border-[#77c777]! bg-[#e9ffe9]! text-[#135f13]! px-1.5! py-1! rounded! my-1.5! mb-2.5!">
-            {{ session('success') }}
-        </div>
-    @endif --}}
-
     <div class="border! border-border! rounded! p-2.5! mb-2.5! p-5! mb-5!">
 
         <form method="get" action="{{ route('admin.system.permissions') }}"

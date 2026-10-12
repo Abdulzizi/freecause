@@ -86,8 +86,6 @@ class GoogleAuthController extends Controller
             ]);
         }
 
-        // Socialite must generate both the outgoing state and its session value.
-        // Overriding the URL parameter makes its callback validation fail.
         return Socialite::driver('google')->redirect();
     }
 
@@ -227,14 +225,7 @@ class GoogleAuthController extends Controller
         $newUser = false;
 
         if ($user && empty($user->google_id)) {
-            // Re-link is only safe for a genuinely passwordless account.
-            // Require BOTH signals: no stored password hash AND no
-            // password_changed_at stamp. Checking password_changed_at alone is
-            // not enough — legacy-migrated accounts can carry a real (legacy)
-            // password hash while password_changed_at is still NULL because it
-            // is only stamped on the first new-site login/password set. Those
-            // accounts must log in first, not be silently claimable by whoever
-            // controls the matching Google email.
+
             $hasNoRealPassword = is_null($user->password_changed_at)
                 && blank($user->password);
 
@@ -244,7 +235,6 @@ class GoogleAuthController extends Controller
                     'User ID: '.$user->id.' | Email: '.$email,
                     'auth.google'
                 );
-                // fall through — google_id will be set below
             } else {
                 AppLog::warning(
                     'Google OAuth email conflict — existing account not linked',
@@ -314,7 +304,6 @@ class GoogleAuthController extends Controller
                 'slug' => $ctx['slug'],
                 'id' => $ctx['petition_id'],
             ]);
-            // route() returns absolute URL; extract path for the SSO redirect
             $dest = parse_url($dest, PHP_URL_PATH).'?'.http_build_query(['oauth_logged_in' => 1]);
 
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));

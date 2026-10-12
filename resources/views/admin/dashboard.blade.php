@@ -2,7 +2,6 @@
 
 @section('title', 'Dashboard')
 
-
 @section('content')
 <x-blatui.page-header title="Dashboard" class="mb-6!" />
 

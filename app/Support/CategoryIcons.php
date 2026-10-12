@@ -4,7 +4,6 @@ namespace App\Support;
 
 class CategoryIcons
 {
-    /** @var array<int, string> */
     protected static array $map = [
         1 => 'bi-hearts',
         2 => 'bi-briefcase',
@@ -28,9 +27,6 @@ class CategoryIcons
         return self::$map[$categoryId] ?? $default;
     }
 
-    /**
-     * @return array<int, string>
-     */
     public static function all(): array
     {
         return self::$map;

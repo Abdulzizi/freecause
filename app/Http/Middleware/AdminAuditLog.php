@@ -12,7 +12,6 @@ class AdminAuditLog
     {
         $response = $next($request);
 
-        // Log all state-changing admin requests
         if (! in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
             return $response;
         }
@@ -26,7 +25,6 @@ class AdminAuditLog
             $method = $request->method();
 
             $input = $this->redactSensitiveInput($request->all());
-            // Truncate large inputs to keep logs manageable
             array_walk($input, function (&$v) {
                 if (is_string($v) && mb_strlen($v) > 300) {
                     $v = mb_substr($v, 0, 300).'…';
@@ -41,7 +39,6 @@ class AdminAuditLog
                 'admin.audit'
             );
         } catch (\Throwable) {
-            // Never let audit logging break the response
         }
 
         return $response;

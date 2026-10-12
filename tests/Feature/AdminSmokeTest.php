@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-/**
- * First-pass smoke coverage for the admin panel: login flow, one authenticated
- * GET per admin index page, and the reconcile/bulk-count endpoints.
- * Cache invalidation is covered by CacheInvalidationTest — do not duplicate it.
- */
 class AdminSmokeTest extends TestCase
 {
     use RefreshDatabase;
@@ -31,10 +26,6 @@ class AdminSmokeTest extends TestCase
 
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
 
-        // AppServiceProvider::boot() bails out early while the settings table is
-        // still missing (RefreshDatabase migrates after boot), so bootRateLimiting()
-        // never runs in tests. Mirror the production admin-login limiter here so the
-        // throttle:admin-login middleware on POST /admin/login can resolve it.
         RateLimiter::for('admin-login', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         $this->admin = User::factory()->create([
@@ -42,8 +33,6 @@ class AdminSmokeTest extends TestCase
             'verified' => true,
         ]);
     }
-
-    // ── Admin login flow ────────────────────────────────────────────────
 
     public function test_admin_login_page_renders(): void
     {
@@ -77,7 +66,6 @@ class AdminSmokeTest extends TestCase
 
     public function test_admin_login_regenerates_session_id_and_csrf_token(): void
     {
-        // §2.2: successful login must regenerate the session ID and rotate the CSRF token
         $this->withSession([]);
 
         $oldId = session()->getId();
@@ -117,13 +105,6 @@ class AdminSmokeTest extends TestCase
         $this->assertGuest('admin');
     }
 
-    // ── Non-admin levels must not gain admin access ────────────────────
-    //
-    // Regression guard for the user-level access hole: is_system is the
-    // trusted-admin bypass in canAccessAdmin()/CheckPermission, so only the
-    // seeded `admin` level may carry it — `user`/`banned` must be denied.
-
-    /** @return array<string, array{string}> */
     public static function nonAdminLevels(): array
     {
         return [
@@ -165,8 +146,6 @@ class AdminSmokeTest extends TestCase
             'verified' => true,
         ]);
 
-        // Even with a live admin-guard session (e.g. seeded before the fix),
-        // a non-system level must be refused, not shown the panel.
         $this->actingAs($member, 'admin')
             ->get('/admin/dashboard')
             ->assertForbidden();
@@ -186,8 +165,6 @@ class AdminSmokeTest extends TestCase
 
         $this->assertGuest('admin');
     }
-
-    // ── One authenticated GET per admin index page ──────────────────────
 
     public static function adminIndexPages(): array
     {
@@ -228,8 +205,6 @@ class AdminSmokeTest extends TestCase
             ->assertSee('data-slot="card"', false)
             ->assertSee('data-slot="badge"', false);
     }
-
-    // ── Bulk action / reconcile counts ──────────────────────────────────
 
     public function test_reconcile_endpoint_fixes_drifted_signature_count(): void
     {

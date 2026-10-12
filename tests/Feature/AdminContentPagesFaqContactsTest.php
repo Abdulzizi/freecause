@@ -10,10 +10,6 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * The former faq/contacts blades now render from page_translations via
- * PageController::showFixed, like the other editorial pages.
- */
 class AdminContentPagesFaqContactsTest extends TestCase
 {
     use RefreshDatabase;

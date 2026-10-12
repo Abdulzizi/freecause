@@ -1,25 +1,4 @@
-{{-- @extends('layouts.legacy') --}}
 
-{{-- @section('title', 'Terms of Service - FreeCause - Online Petition') --}}
-
-{{-- @section('content') --}}
-    {{-- <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2>Terms of Service</h2>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ lroute('home') }}">Home</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">Terms of Service</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section> --}}
 
     <section class="py-14! md:py-24!">
         <x-ui.container>
@@ -30,9 +9,7 @@
                         <div class="fcui-prose grow! shrink! basis-auto! p-6!">
 
                             <div class="mb-6!">
-                                {{-- <h4>Terms of Service</h4>
 
-                                <div> --}}
                                     <h3>FreeCause User Agreement</h3>
 
                                     <p>"User" refers to any individual who loads any material to or from the
@@ -340,7 +317,6 @@
                                         for the betterment of our members' interests.
                                     </p>
 
-                                {{-- </div> --}}
                             </div>
 
                         </div>
@@ -350,4 +326,4 @@
             </div>
         </x-ui.container>
     </section>
-{{-- @endsection --}}
+

@@ -11,7 +11,6 @@
         'destructive' => 'text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive',
     ];
 
-    // Semantic status tones — soft tinted callouts. Literal strings for the scanner.
     $tones = [
         'success' => 'border-success/20 bg-success/10 text-success [&>svg]:text-success *:data-[slot=alert-description]:text-success',
         'warning' => 'border-warning/20 bg-warning/10 text-warning [&>svg]:text-warning *:data-[slot=alert-description]:text-warning',

@@ -1,15 +1,4 @@
-{{--
-    fullscreen      render the dialog edge-to-edge (inset-0) instead of a centered box —
-                    useful for mobile-style takeovers, editors, media viewers.
-    position        where the box sits: center (default) | top | bottom | left | right |
-                    top-left | top-right | bottom-left | bottom-right.
-    closeOnOverlay  clicking the backdrop closes the dialog. Set false for a "static
-                    backdrop" — a long form or a multi-step flow a stray click shouldn't
-                    discard. Escape and the close button are unaffected: never make a
-                    dialog impossible to leave from the keyboard. Forcing a decision
-                    rather than protecting one? Reach for the alert-dialog component —
-                    role="alertdialog", non-dismissible by design.
---}}
+
 @props(['showClose' => true, 'fullscreen' => false, 'position' => 'center', 'closeOnOverlay' => true])
 
 @php

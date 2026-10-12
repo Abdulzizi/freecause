@@ -60,8 +60,7 @@ class AdminStatsController extends Controller
 
     private function summaryStats($locale, $from)
     {
-        // The exact totals cost full index scans on prod-scale tables
-        // (18.45M users / 18.65M signatures); run them at most every 15 min.
+
         $totals = Cache::remember('admin:stats:totals', 900, function () {
             return DB::table('users')
                 ->selectRaw('
@@ -74,7 +73,6 @@ class AdminStatsController extends Controller
                 ->first();
         });
 
-        // Recent counts: cache 5 min keyed by range + locale
         $rangeKey = $from->toDateString().':'.($locale ?: 'all');
         $recent = Cache::remember("admin:stats:recent:{$rangeKey}", 300, function () use ($from, $locale) {
             return [
@@ -106,10 +104,6 @@ class AdminStatsController extends Controller
         ];
     }
 
-    /**
-     * Heavy grouped aggregates (top signers scans millions of signature rows)
-     * are cached per type/locale/range/page so paging stays cheap.
-     */
     private function cachedStat(string $type, string $locale, string $range, int $page): array
     {
         $key = 'admin:stat:type:'.$type.':'.($locale ?: 'all').':'.$range.':page:'.$page;
@@ -118,7 +112,6 @@ class AdminStatsController extends Controller
             $from = $this->resolveRange($range);
             [$columns, $query] = $this->resolveStat($type, $locale, $from);
 
-            // Fetch one page plus one row to detect a next page cheaply.
             $items = (clone $query)->forPage($page, 25)->limit(26)->get();
 
             return [

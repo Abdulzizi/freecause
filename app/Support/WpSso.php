@@ -6,10 +6,6 @@ use Illuminate\Support\Facades\Log;
 
 class WpSso
 {
-    /**
-     * Build a signed SSO login URL that passes through sso.php to set
-     * the WordPress auth cookie before redirecting to $redirect.
-     */
     public static function loginUrl(string $email, string $displayName, string $redirect): string
     {
         $secret = config('app.sso_secret');
@@ -24,7 +20,7 @@ class WpSso
             $payload = base64_encode(json_encode([
                 'e' => $email,
                 'n' => $displayName,
-                'x' => time() + 120, // 2-minute TTL
+                'x' => time() + 120,
             ]));
 
             $sig = hash_hmac('sha256', $payload, $secret);
@@ -41,9 +37,6 @@ class WpSso
         }
     }
 
-    /**
-     * Build a URL that clears the WordPress session before redirecting to $redirect.
-     */
     public static function logoutUrl(string $redirect): string
     {
         if (! config('app.sso_secret')) {

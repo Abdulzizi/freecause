@@ -29,15 +29,11 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
     public function boot(): void
     {
-        // Eloquent builders return the Eloquent builder (so ->paginate() etc.
-        // hydrate models); base query builders (DB::table(...)) keep working too.
+
         EloquentBuilder::macro('withTranslation', function (array $config) {
             return TranslationJoin::apply($this, $config);
         });
@@ -51,8 +47,6 @@ class AppServiceProvider extends ServiceProvider
         PetitionTranslation::observe(FlushesListingCaches::class);
         CategoryTranslation::observe(FlushesListingCaches::class);
 
-        // Rate limiters touch no DB tables — register unconditionally so
-        // throttled routes don't 500 when `settings` is missing (e.g. tests).
         $this->bootRateLimiting();
 
         try {

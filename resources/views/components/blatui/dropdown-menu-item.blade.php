@@ -4,7 +4,7 @@
     'inset' => false,
     'disabled' => false,
     'closeOnSelect' => true,
-    'type' => 'button',   // set type="submit" to submit the surrounding <form> (default button = no submit)
+    'type' => 'button',
 ])
 
 <x-blatui.menu-item

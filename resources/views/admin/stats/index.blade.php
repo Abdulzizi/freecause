@@ -68,7 +68,6 @@
 
     </div>
 
-
     @if ($results)
 
         <x-admin.data-table :p="$results">

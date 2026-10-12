@@ -1,8 +1,4 @@
-{{--
-    Right-side editing sheet for admin detail panels.
-    Opens from the ?select= param and closes by navigating to closeRoute (dropping ?select=).
-    Dirty forms are guarded through the shared BlatUI confirm dialog.
---}}
+
 @props([
     'title' => 'detail',
     'closeRoute' => null,

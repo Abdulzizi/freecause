@@ -88,7 +88,7 @@
                     </td>
 
                     <td>
-                        {{-- {{ Str::limit($log->title, 80) }} --}}
+
                         {{ Str::limit($log->title . ' - ' . $log->content, 80) }}
                     </td>
 

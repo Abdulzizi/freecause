@@ -33,11 +33,8 @@ class PetitionFactory extends Factory
             'goal_signatures' => $this->faker->randomElement($allowedGoals),
             'signature_count' => 0,
 
-            // 85% published, 15% draft
             'status' => $isPublished ? 'published' : 'draft',
-            // 95% active
             'is_active' => $this->faker->boolean(95),
-            // only published petitions can be featured
             'is_featured' => $isPublished && $this->faker->boolean(10),
 
             'target' => $this->faker->optional(0.6)->name(),

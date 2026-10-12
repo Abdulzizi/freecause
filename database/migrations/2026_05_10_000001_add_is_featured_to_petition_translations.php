@@ -14,8 +14,6 @@ return new class extends Migration
             $table->index(['locale', 'is_featured'], 'pt_locale_featured_idx');
         });
 
-        // Seed: any petition currently marked is_featured globally → mark all its
-        // existing translations as featured too (preserves existing admin intent).
         DB::table('petition_translations')
             ->whereIn('petition_id', DB::table('petitions')->where('is_featured', 1)->select('id'))
             ->update(['is_featured' => 1]);

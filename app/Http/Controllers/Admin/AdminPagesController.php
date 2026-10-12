@@ -58,7 +58,6 @@ class AdminPagesController extends Controller
                 ->first();
         }
 
-        // BUG 3 FIX: dynamic locales from languages table instead of hardcoded
         $languages = Language::where('is_active', true)
             ->orderByDesc('is_default')
             ->orderBy('name')
@@ -159,7 +158,6 @@ class AdminPagesController extends Controller
         $affected = match ($action) {
             'publish' => $q->update(['published' => 1]),
             'unpublish' => $q->update(['published' => 0]),
-            // Checkboxes submit page_id; the FK cascade removes every translation.
             'delete' => Page::whereIn('id', $ids)->delete(),
         };
 

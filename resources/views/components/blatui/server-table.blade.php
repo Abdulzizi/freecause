@@ -1,56 +1,43 @@
 @props([
-    'columns' => [],        // [['key'=>'name','label'=>'Name','sortable'=>true,'align'=>'left','class'=>'','width'=>null], ...]
-    'rows' => [],           // array | Collection | LengthAwarePaginator — rendered server-side (a real Blade loop)
-    'rowKey' => 'id',       // primary-key path read from each row (data_get: works with arrays and Eloquent models)
+    'columns' => [],
+    'rows' => [],
+    'rowKey' => 'id',
 
-    // Sorting — driven by the host (Livewire). The header buttons call wire:click="{sortMethod}('key')".
-    'sort' => null,         // current sort key (for aria-sort + active header state)
-    'direction' => 'asc',   // 'asc' | 'desc'
+    'sort' => null,
+    'direction' => 'asc',
     'sortMethod' => 'sortBy',
 
-    // Row actions — declarative. Each action renders a button per row with a native wire:click
-    // carrying the real primary key, e.g. wire:click="edit(5)". See the shape in docs-api/server-table.php.
     'actions' => [],
-    'actionsView' => null,  // escape hatch: a Blade view included per row with $row in scope (fully custom markup)
+    'actionsView' => null,
     'actionsLabel' => null,
-    'actionsMode' => 'inline', // 'inline' (buttons) | 'dropdown' (overflow menu)
-    'stickyActions' => false,  // freeze the actions column to the right edge during horizontal scroll
+    'actionsMode' => 'inline',
+    'stickyActions' => false,
 
-    // Custom cell rendering: map of column key => Blade view, included with $value and $row in scope.
     'cellViews' => [],
 
-    // Selection — checkboxes bound to a Livewire array property via wire:model.
     'selectable' => false,
     'selectModel' => 'selected',
 
-    // Search — an input above the table bound to a Livewire property.
     'searchable' => false,
     'searchModel' => 'search',
     'searchPlaceholder' => null,
 
-    // Page size — a select in the toolbar bound to a Livewire property. Reset the paginator in
-    // the host when it changes (updatedPerPage() => $this->resetPage()), or page 5 of 10-per-page
-    // can land you past the end of the same result set at 50.
     'perPageModel' => 'perPage',
-    'perPageOptions' => [],     // e.g. [10, 25, 50] or [10 => '10 per page', ...]. Empty = no select.
+    'perPageOptions' => [],
     'perPageLabel' => null,
 
-    // Column visibility — a dropdown of checkboxes in the toolbar. Server-side, like everything
-    // else here: hidden columns are not rendered at all, so their cells are never built and never
-    // cross the wire. Same shape as sort/direction/sortMethod — the host owns the state and the
-    // component reports the toggle back to it.
     'toggleableColumns' => false,
-    'visibleColumns' => null,   // array of visible column keys; null = every column is visible
+    'visibleColumns' => null,
     'toggleColumnMethod' => 'toggleColumn',
     'columnsLabel' => null,
 
-    'caption' => null,          // accessible table caption
-    'captionVisible' => false,  // show the caption above the table (default: sr-only)
+    'caption' => null,
+    'captionVisible' => false,
     'emptyText' => null,
     'emptyIcon' => 'search-x',
-    'responsive' => 'scroll',   // 'scroll' (horizontal scroll) | 'stack' (cards on mobile, table from md:)
-    'variant' => 'default',     // 'default' | 'card'
-    'paginate' => true,         // when rows is a paginator, render its links below the table
+    'responsive' => 'scroll',
+    'variant' => 'default',
+    'paginate' => true,
 ])
 
 @php
@@ -72,9 +59,6 @@
         'hideable' => $c['hideable'] ?? true,
     ])->values();
 
-    // null means "not being controlled", which is not the same as "none visible" — an empty array
-    // is a legitimate state the host can arrive at by unchecking everything, and it has to survive
-    // a round trip rather than snapping back to all-visible.
     $cols = $visibleColumns === null
         ? $allCols
         : $allCols->filter(fn ($c) => ! $c['hideable'] || in_array($c['key'], $visibleColumns, true))->values();
@@ -91,8 +75,6 @@
         default => 'text-start',
     };
 
-    // Build the wire:click argument list for an action on a given row. Numeric keys stay bare
-    // (edit(5)); strings/uuids are quoted (edit('9f3…')). `params` overrides the default [rowKey].
     $actionArgs = function (array $action, $row) use ($rowKey) {
         $params = $action['params'] ?? [data_get($row, $rowKey)];
 
@@ -104,7 +86,6 @@
         })->implode(', ');
     };
 
-    // Resolve an action href — a plain string ({id} is substituted) or a closure fn ($row) => url.
     $actionHref = function (array $action, $row) use ($rowKey) {
         $h = $action['href'] ?? null;
         if ($h instanceof \Closure) return $h($row);
@@ -115,9 +96,6 @@
 
     $stack = $responsive === 'stack';
 
-    // A card wrapper AROUND rows that are themselves cards below md is a card in a card: two
-    // borders, two radii, two surfaces. In stack mode the row is the card, so the wrapper stands
-    // down until the real table appears at md.
     $wrapperClass = match ($variant) {
         'card' => $stack
             ? 'max-md:border-0 max-md:bg-transparent max-md:shadow-none md:bg-card md:rounded-lg md:border md:shadow-xs'
@@ -153,17 +131,12 @@
                 />
             @endif
 
-            {{-- Whatever the host needs that no prop will ever cover: a status filter, a date
-                 range, a bulk-action button. Sits after the search box and before the built-ins,
-                 and is the reason per-page/columns are conveniences rather than the only way in. --}}
             {{ $toolbar ?? '' }}
 
             @if (! empty($perPageOptions) || $toggleableColumns)
                 <div class="ms-auto flex items-center gap-2">
                     @if (! empty($perPageOptions))
                         @php
-                            // [10, 25, 50] and [10 => '10 per page'] both work: a list gets its
-                            // labels from its values, a map keeps the ones it was given.
                             $perPage = collect($perPageOptions)->mapWithKeys(fn ($label, $key) => is_int($key) && ! is_array($label)
                                 ? [(string) $label => (string) $label]
                                 : [(string) $key => (string) $label])->all();
@@ -190,9 +163,7 @@
                                 @foreach ($allCols as $col)
                                     @continue (! $col['hideable'])
                                     @php $isVisible = $visibleColumns === null || in_array($col['key'], $visibleColumns, true); @endphp
-                                    {{-- The check mark is Alpine state seeded once from the server. Livewire's
-                                         morph would leave that state behind on a node it decides to keep, so the
-                                         key carries the value and the item is replaced when it changes. --}}
+
                                     <x-blatui.dropdown-menu-checkbox-item
                                         wire:key="col-{{ $col['key'] }}-{{ $isVisible ? 1 : 0 }}"
                                         :checked="$isVisible"
@@ -259,8 +230,6 @@
                 </tr>
             </thead>
 
-            {{-- Dropping the last row's border is a real-table nicety; below md every row is a
-                 separate card and the last one needs its border like the others. --}}
             <tbody data-slot="table-body" class="{{ $stack ? 'max-md:block md:[&_tr:last-child]:border-0' : '[&_tr:last-child]:border-0' }}">
                 @forelse ($items as $row)
                     <tr wire:key="row-{{ data_get($row, $rowKey) }}"

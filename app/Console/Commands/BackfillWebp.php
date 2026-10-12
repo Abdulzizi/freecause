@@ -125,9 +125,6 @@ class BackfillWebp extends Command
         return 0;
     }
 
-    /**
-     * @return array<int, string>|null Relative paths, or null when no base dir exists.
-     */
     private function collectFiles($disk): ?array
     {
         $found = false;
@@ -172,9 +169,6 @@ class BackfillWebp extends Command
         return $disk->exists($dir.$stem.'_800w.webp') && $disk->exists($dir.$stem.'_400w.webp');
     }
 
-    /**
-     * @param  array<int, string>  $rels
-     */
     private function dispatchChunk(array $rels): int
     {
         foreach ($rels as $rel) {

@@ -1,32 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * FreeCause — Old DB → New DB Migration Script
- *
- * BEFORE RUNNING:
- *   1. Open SSH tunnel in a separate terminal and leave it running:
- *      ssh -L 3307:localhost:3306 azizi@138.197.120.103
- *
- *   2. Reset your local DB first:
- *      php artisan migrate:fresh --seed
- *
- *   3. Then run this script:
- *      php database/migrate_old_data.php
- *
- * Order: user_levels → users → categories → petitions → petition_translations → signatures
- */
-
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
-
-// OLD DB — accessed via SSH tunnel on port 3307
 define('OLD_HOST', '127.0.0.1');
 define('OLD_PORT', 3306);
 define('OLD_USER', 'freecause');
 define('OLD_PASS', 'secret');
 define('OLD_DB', 'freecause_old');
 
-// New DB — auto-read from your Laravel .env
 $envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
@@ -46,8 +26,6 @@ define('NEW_DB', $env['DB_DATABASE'] ?? 'freecause');
 
 define('BATCH_SIZE', 1000);
 
-// ─── CONNECT ─────────────────────────────────────────────────────────────────
-
 echo 'Connecting to OLD DB (via SSH tunnel on port '.OLD_PORT.")...\n";
 $old = new mysqli(OLD_HOST, OLD_USER, OLD_PASS, OLD_DB, OLD_PORT);
 if ($old->connect_error) {
@@ -64,12 +42,10 @@ if ($new->connect_error) {
 $new->set_charset('utf8mb4');
 echo "NEW DB connected.\n\n";
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-
 function prefix_to_locale(string $prefix): string
 {
     $map = [
-        'ws_' => 'en',  // world site (main English)
+        'ws_' => 'en',
         'uk_' => 'en',
         'ca_' => 'en',
         'au_' => 'en',
@@ -141,8 +117,6 @@ function batch_insert($new, string $table, array $rows, array $columns): void
     }
 }
 
-// ─── STEP 1: USER LEVELS ─────────────────────────────────────────────────────
-
 echo "=== STEP 1: User Levels ===\n";
 
 $result = $old->query('SELECT id, name FROM user_levels');
@@ -156,8 +130,6 @@ batch_insert($new, 'user_levels', $rows, ['id', 'name', 'created_at', 'updated_a
 $new->query('SET FOREIGN_KEY_CHECKS=1');
 echo '  Inserted '.count($rows)." user levels.\n\n";
 
-// ─── STEP 2: USERS ───────────────────────────────────────────────────────────
-
 echo "=== STEP 2: Users ===\n";
 
 $lastUserId = (int) $new->query('SELECT COALESCE(MAX(id), 0) as m FROM users')->fetch_assoc()['m'];
@@ -166,7 +138,6 @@ echo "  Resuming from user id > {$lastUserId}. Remaining: {$total}\n";
 
 $migrated = 0;
 
-// Build google_id / facebook_id lookup from users_socials
 echo "  Loading social logins...\n";
 $socials = [];
 $sr = $old->query('SELECT user_id, oauth_provider, oauth_uid FROM users_socials');
@@ -207,7 +178,7 @@ while (true) {
             esc($new, $firstName).','.
             esc($new, $lastName).','.
             esc($new, $row['email']).','.
-            esc($new, $row['password']).','.  // SHA1 — legacy login handles it
+            esc($new, $row['password']).','.
             esc($new, $locale).','.
             (int) $row['level_id'].','.
             $verified.','.
@@ -233,23 +204,17 @@ while (true) {
 
 echo "\n  Done.\n\n";
 
-// ─── STEP 3: CATEGORIES ──────────────────────────────────────────────────────
-
 echo "=== STEP 3: Categories ===\n";
 echo "  NOTE: New DB uses 15 fixed categories with translations.\n";
 echo '  Old DB has '.$old->query('SELECT COUNT(*) as c FROM petition_categories')->fetch_assoc()['c']." categories.\n";
 echo "  Building old_id → new_id map from petition_categorymeta...\n";
 
-// The new categories are already seeded (15 fixed ones).
-// We need to map old category_ids to new ones by matching names.
-// Get old category names in English
 $oldCats = [];
 $cr = $old->query('SELECT pc.id, pc.name, pc.prefix FROM petition_categories pc');
 while ($c = $cr->fetch_assoc()) {
     $oldCats[$c['id']] = ['name' => $c['name'], 'prefix' => $c['prefix']];
 }
 
-// Get new categories with English translation
 $newCats = [];
 $nr = $new->query("
     SELECT c.id, ct.name
@@ -261,18 +226,14 @@ while ($c = $nr->fetch_assoc()) {
     $newCats[strtolower($c['name'])] = $c['id'];
 }
 
-// Build mapping: old_category_id → new_category_id
-// For unmapped ones, default to first category (id=1)
 $categoryMap = [];
 foreach ($oldCats as $oldId => $cat) {
     $name = strtolower($cat['name']);
-    // Try exact match first
     if (isset($newCats[$name])) {
         $categoryMap[$oldId] = $newCats[$name];
 
         continue;
     }
-    // Try partial match
     $matched = false;
     foreach ($newCats as $newName => $newId) {
         if (str_contains($name, $newName) || str_contains($newName, $name)) {
@@ -282,16 +243,13 @@ foreach ($oldCats as $oldId => $cat) {
         }
     }
     if (! $matched) {
-        $categoryMap[$oldId] = 1; // fallback to first category
+        $categoryMap[$oldId] = 1;
     }
 }
 
-// Save map to a file for review
 file_put_contents('/tmp/category_map.json', json_encode($categoryMap, JSON_PRETTY_PRINT));
 echo "  Category map saved to /tmp/category_map.json — review before continuing.\n";
 echo '  Mapped '.count($categoryMap)." old categories to new ones.\n\n";
-
-// ─── STEP 4: PETITIONS ───────────────────────────────────────────────────────
 
 echo "=== STEP 4: Petitions ===\n";
 
@@ -340,7 +298,7 @@ while (true) {
             esc($new, $row['yt']).','.
             esc($new, $row['pic']).','.
             (int) $newCatId.','.
-            '0,'. // signature_count — will update after signatures migrate
+            '0,'.
             esc($new, $createdAt).','.
             esc($new, $createdAt).
         ')';
@@ -359,8 +317,6 @@ while (true) {
 }
 
 echo "\n  Done.\n\n";
-
-// ─── STEP 5: PETITION TRANSLATIONS ───────────────────────────────────────────
 
 echo "=== STEP 5: Petition Translations ===\n";
 echo "  (Each old petition row = one translation row, locale from prefix)\n";
@@ -413,8 +369,6 @@ while (true) {
 
 echo "\n  Done.\n\n";
 
-// ─── STEP 6: SIGNATURES ──────────────────────────────────────────────────────
-
 echo "=== STEP 6: Signatures ===\n";
 
 $lastSigId = (int) $new->query('SELECT COALESCE(MAX(id), 0) as m FROM signatures')->fetch_assoc()['m'];
@@ -457,7 +411,7 @@ while (true) {
             esc($new, $row['text'] ?? '').','.
             $confirmed.','.
             esc($new, $row['ip']).','.
-            '0,'. // is_spam
+            '0,'.
             esc($new, $createdAt).','.
             esc($new, $createdAt).
         ')';
@@ -476,8 +430,6 @@ while (true) {
 
 echo "\n  Done.\n\n";
 
-// ─── STEP 7: UPDATE SIGNATURE COUNTS ─────────────────────────────────────────
-
 echo "=== STEP 7: Updating signature counts on petitions ===\n";
 
 $new->query('
@@ -490,8 +442,6 @@ $new->query('
 
 echo "  Done.\n\n";
 
-// ─── STEP 8: BANNED IPs ───────────────────────────────────────────────────────
-
 echo "=== STEP 8: Banned IPs ===\n";
 
 $result = $old->query('SELECT ip FROM _banned_ips');
@@ -502,8 +452,6 @@ while ($row = $result->fetch_assoc()) {
 
 batch_insert($new, 'banned_ips', $rows, ['ip', 'created_at', 'updated_at']);
 echo '  Inserted '.count($rows)." banned IPs.\n\n";
-
-// ─── DONE ─────────────────────────────────────────────────────────────────────
 
 $old->close();
 $new->close();

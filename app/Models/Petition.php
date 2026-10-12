@@ -78,7 +78,7 @@ class Petition extends Model
             }
         }
 
-        $n = ($this->id ? ($this->id % 7) : 0) + 1; // 1..7
+        $n = ($this->id ? ($this->id % 7) : 0) + 1;
         $legacyPath = public_path("legacy/images/pic{$n}.jpg");
 
         if (file_exists($legacyPath)) {

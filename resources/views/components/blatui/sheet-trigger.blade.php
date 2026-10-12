@@ -1,5 +1,4 @@
-{{-- for: when set, opens a dispatchable sheet defined elsewhere via
-     $dispatch('open-sheet-{for}'). Otherwise opens the sheet in the same scope. --}}
+
 @props(['for' => null])
 
 <span

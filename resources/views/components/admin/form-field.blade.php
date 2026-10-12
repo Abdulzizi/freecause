@@ -1,8 +1,4 @@
-{{--
-    Responsive admin label/control row.
-    Props: label (required string or viewable), for (optional control id), hint/error (optional text).
-    The default slot must contain the form control; callers retain control of its name, value, and validation.
---}}
+
 @props([
     'label',
     'for' => null,

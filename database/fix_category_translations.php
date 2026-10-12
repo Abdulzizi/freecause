@@ -1,12 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * Import missing category translations from old DB into new DB.
- * Uses one representative prefix per locale to get translated category names.
- */
-
-// Position within prefix block → new category ID (same as fix_categories.php)
 $positionToNewId = [
     1 => 6,  2 => 1,  3 => 2,  4 => 4,  5 => 9,
     6 => 8,  7 => 4,  8 => 14, 9 => 4,  10 => 4,
@@ -15,7 +9,6 @@ $positionToNewId = [
     21 => 4,  22 => 8,
 ];
 
-// One representative prefix per missing locale
 $localePrefix = [
     'pl' => 'pl_',
     'pt' => 'pt_',
@@ -37,7 +30,6 @@ function slugify(string $text): string
     return trim($text, '-') ?: 'category';
 }
 
-// Load .env
 $envFile = __DIR__.'/../.env';
 $env = [];
 foreach (file($envFile) as $line) {
@@ -92,7 +84,6 @@ foreach ($localePrefix as $locale => $prefix) {
             continue;
         }
 
-        // Skip if translation already exists
         $check = $new->query("SELECT id FROM category_translations WHERE category_id={$newCatId} AND locale='{$locale}' LIMIT 1");
         if ($check->num_rows > 0) {
             continue;

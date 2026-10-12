@@ -27,8 +27,7 @@ class AdminLogsController extends Controller
         $q = Log::query()->orderByDesc('id');
 
         if ($filters['q']) {
-            // Prefix match on the title (and log text starts-with) only: a
-            // leading-wildcard LIKE over longText/long tables is a full scan.
+
             $like = str_replace(['%', '_'], ['\%', '\_'], $filters['q']).'%';
             $q->where('title', 'like', $like);
         }
@@ -53,9 +52,6 @@ class AdminLogsController extends Controller
             $q->whereDate('created_at', '<=', $filters['date_to']);
         }
 
-        // simplePaginate: a full paginate() COUNT(*) over an unbounded logs
-        // table ran on every view. The header count comes from the approx
-        // table-rows estimate instead.
         $logs = $q->withTrashed()->orderByDesc('id')->simplePaginate(25)->withQueryString();
         $logTotal = $this->approxTableRows('logs');
 
@@ -96,8 +92,6 @@ class AdminLogsController extends Controller
             $q->where('context', $filters['context']);
         }
 
-        // Collect the bounded id set first: a limit() on the streamed query is
-        // overridden by chunk(), which would paginate past the 10k cap.
         $ids = $q->pluck('id')->all();
 
         return response()->streamDownload(function () use ($ids) {

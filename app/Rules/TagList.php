@@ -4,7 +4,6 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Collection;
 
 class TagList implements ValidationRule
 {
@@ -15,7 +14,6 @@ class TagList implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        /** @var Collection<int, string> $tags */
         $tags = collect(explode(',', (string) $value))
             ->map(fn ($tag) => trim($tag))
             ->filter()

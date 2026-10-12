@@ -15,10 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
-/**
- * Regression coverage for the petitions admin panel: create from panel,
- * translate-missing one-click seeding, and the save() cache-touch path.
- */
 class AdminPetitionPanelTest extends TestCase
 {
     use RefreshDatabase;
@@ -83,7 +79,6 @@ class AdminPetitionPanelTest extends TestCase
         $this->assertSame('Test Petition', $translation->title);
         $this->assertSame('test-petition', $translation->slug);
 
-        // Title collision: slug must be deduped, not rejected.
         $this->actingAs($admin, 'admin')
             ->post('/admin/petitions/create', ['title' => 'Test Petition', 'locale' => 'en'])
             ->assertRedirect();
@@ -100,7 +95,6 @@ class AdminPetitionPanelTest extends TestCase
 
         $petitionId = $this->createPetitionViaDb('Source Petition', 'en', 'source-petition');
 
-        // 14 seeded languages minus the existing en translation
         $expectedLanguages = DB::table('languages')->where('is_active', 1)->count() - 1;
 
         $this->actingAs($admin, 'admin')
@@ -113,7 +107,6 @@ class AdminPetitionPanelTest extends TestCase
         $this->assertTrue($rows->every(fn ($row) => $row->slug === 'source-petition'));
         $this->assertTrue($rows->contains(fn ($row) => $row->locale === 'fr' && $row->title === 'Source Petition'));
 
-        // Idempotent: second call creates nothing.
         $this->actingAs($admin, 'admin')
             ->postJson('/admin/petitions/translate-missing', ['id' => $petitionId])
             ->assertOk()

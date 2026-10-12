@@ -12,8 +12,6 @@ import * as account from './public/account.js';
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// Public pages enforce a strict CSP (no inline scripts), so DOM behaviours live
-// in the bundle instead of <script> blocks in the views.
 document.addEventListener('DOMContentLoaded', function () {
     const ctx = {
         prefersReducedMotion: window.matchMedia

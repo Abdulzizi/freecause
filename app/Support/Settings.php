@@ -9,9 +9,6 @@ class Settings
 {
     private const CACHE_KEY = 'settings:all';
 
-    /**
-     * @return array<string, array<string, string|null>> group => key => raw value
-     */
     private static function all(): array
     {
         try {
@@ -63,9 +60,6 @@ class Settings
         self::forget();
     }
 
-    /**
-     * Invalidate the whole settings snapshot so the next read rebuilds it from the DB.
-     */
     public static function forget(): void
     {
         Cache::forget(self::CACHE_KEY);

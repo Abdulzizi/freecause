@@ -47,10 +47,7 @@ return new class extends Migration
             });
     }
 
-    public function down(): void
-    {
-        // Redacted credentials cannot be recovered.
-    }
+    public function down(): void {}
 
     private function redact(array $input): array
     {

@@ -71,7 +71,6 @@ class ImageVariantsTest extends TestCase
     {
         Storage::fake('public');
 
-        // A filename whose stem already ends in "_800w" must never be converted.
         $stemmed = $this->fixtureJpeg('petitions/fixture_800w.jpg', 800, 600);
 
         $this->assertNull(ImageVariants::ensure($stemmed));
@@ -124,7 +123,6 @@ class ImageVariantsTest extends TestCase
         Storage::disk('public')->assertMissing('petitions/fixture_800w.webp');
         Storage::disk('public')->assertMissing('petitions/fixture_400w.webp');
 
-        // No-op when variants are absent (must not throw).
         ImageVariants::purge('petitions/fixture.jpg');
         ImageVariants::purge(null);
         ImageVariants::purge('https://images.example.com/petitions/abc.jpg');

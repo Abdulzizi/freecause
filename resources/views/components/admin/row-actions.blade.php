@@ -1,8 +1,4 @@
-{{--
-    Row actions menu for admin list tables.
-    Renders an icon trigger + dropdown; put x-blatui.dropdown-menu-item items in the slot
-    (links, plain buttons, or `type="submit"` items inside a form for POST actions).
---}}
+
 @props(['align' => 'end'])
 
 <x-blatui.dropdown-menu {{ $attributes }}>

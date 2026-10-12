@@ -4,9 +4,6 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    /* Coexistence with legacy admin markup (remove at M6):
-       BlatUI's --muted is a surface; app.css uses the same name as the dark muted-text color.
-       0.5rem keeps the BlatUI radius scale on the Tailwind defaults legacy markup expects. */
     --muted: #5b6470;
     --color-muted: #5b6470;
     --radius: 0.5rem;
@@ -35,14 +32,10 @@
     --sidebar-ring: #cc1f1f;
 }
 
-/* Legacy link colors are a public-site brand cue; admin links stay neutral unless a
-   component or an important utility says otherwise. */
 a:not([data-slot]) {
     color: var(--color-ink, #212529);
 }
 
-/* Sidebar colors: legacy-compat declares unlayered `a { color: … }` rules that beat
-   Tailwind utilities, so link colors are re-asserted here with higher specificity. */
 [data-sidebar='menu-button'] {
     color: var(--sidebar-foreground, #212529);
 }
@@ -74,5 +67,4 @@ html{scrollbar-gutter:stable}
 .fc-page-enter{animation:fc-page-enter 140ms ease-out}
 @media (prefers-reduced-motion: reduce){.fc-page-enter{animation:none}}
 
-/* Public-only page transitions; the admin uses Turbo swaps instead. */
 @view-transition{navigation:none}

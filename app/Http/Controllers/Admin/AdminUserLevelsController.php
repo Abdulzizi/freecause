@@ -16,8 +16,6 @@ class AdminUserLevelsController extends Controller
     {
         $levels = UserLevel::orderBy('id')->paginate(20);
 
-        // A correlated withCount() scans the 18M-row users table once per
-        // level on every render; one grouped pass cached for an hour instead.
         $counts = Cache::remember('level:user_counts', 3600, function () {
             return DB::table('users')
                 ->selectRaw('level_id, COUNT(*) as n')

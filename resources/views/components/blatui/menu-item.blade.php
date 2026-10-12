@@ -6,22 +6,12 @@
     'inset' => false,
     'disabled' => false,
     'closeOnSelect' => true,
-    'type' => 'button',   // set type="submit" to submit the surrounding <form> (default button = no submit)
-    // mergeClick=true: strip any caller @click/x-on:click and merge it with the
-    //   close-on-select expression (dropdown / context behaviour). mergeClick=false:
-    //   always emit @click="closeMenu()" and leave the caller's @click on the bag (menubar).
+    'type' => 'button',
     'mergeClick' => true,
-    // clickConditional=true omits the click handler when the expression is empty
-    //   (dropdown can opt out of close-on-select). clickConditional=false always emits
-    //   a bare click line (context / menubar, which always close on select).
-    //   Controls byte-for-byte whitespace layout of the click attribute.
     'clickConditional' => true,
 ])
 
 @php
-    // Merge any caller-provided @click with the close-on-select behaviour so the
-    // two don't collide into duplicate attributes (the browser would keep only one).
-    // closeMenu() (not a bare `open = false`) so keyboard focus returns to the trigger.
     if ($mergeClick) {
         $userClick = $attributes->get('@click') ?? $attributes->get('x-on:click');
         $attributes = $attributes->except(['@click', 'x-on:click']);
