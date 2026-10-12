@@ -231,7 +231,7 @@
             <div class="flex! flex-wrap! -mx-3!">
 
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3! mb-[25px]! max-md:mb-[30px]!">
-                    <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
+                    <div class="gray-box bg-white! border! border-[#ede9e3]! p-[15px]! rounded-[12px]! shadow-[var(--fc-shadow-sm)]!">
 
                         <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
                             {{ __('home.what_title') }}
@@ -243,7 +243,7 @@
                 </div>
 
                 <div class="w-full! md:w-1/2! shrink-0! grow-0! px-3!">
-                    <div class="gray-box bg-[#f9fafb]! p-[15px]! rounded-[10px]!">
+                    <div class="gray-box bg-white! border! border-[#ede9e3]! p-[15px]! rounded-[12px]! shadow-[var(--fc-shadow-sm)]!">
 
                         <h2 class="fcui-section-title capitalize! text-[1.3rem]! md:text-[1.5rem]!">
                             {{ __('home.create_box_title') }}

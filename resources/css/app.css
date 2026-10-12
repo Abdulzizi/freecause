@@ -106,6 +106,10 @@ body.fc-public {
     background: var(--fc-bg);
 }
 
+html:has(body.fc-public) {
+    background: var(--fc-bg);
+}
+
 body.fc-public main :where(a[href], button, summary, [tabindex='0']):not([class*='fcui-']):not(.btn):not([data-bs-toggle]):focus-visible {
     outline: 2px solid var(--fc-accent);
     outline-offset: 2px;
@@ -167,30 +171,30 @@ body.fc-public .navbar .nav-link.active::after {
     transform: scaleX(1);
 }
 
-/* Page transitions (cross-document; progressive enhancement) */
+/* Page transitions (cross-document; progressive enhancement).
+   Opacity-only on purpose: translating the whole root exposes snapshot edges
+   and reads as the page "moving" — a plain cross-fade is smoother. */
 @view-transition {
     navigation: auto;
 }
 
 ::view-transition-old(root) {
-    animation: fc-vt-leave var(--fc-dur-base) var(--fc-ease-accel) both;
+    animation: fc-vt-fade-out 200ms var(--fc-ease-standard) both;
 }
 
 ::view-transition-new(root) {
-    animation: fc-vt-enter var(--fc-dur-base) var(--fc-ease-decel) both;
+    animation: fc-vt-fade-in 200ms var(--fc-ease-standard) both;
 }
 
-@keyframes fc-vt-leave {
+@keyframes fc-vt-fade-out {
     to {
         opacity: 0;
-        transform: translateY(calc(var(--fc-rise-sm) * -1));
     }
 }
 
-@keyframes fc-vt-enter {
+@keyframes fc-vt-fade-in {
     from {
         opacity: 0;
-        transform: translateY(var(--fc-rise-sm));
     }
 }
 
