@@ -8,7 +8,7 @@
 <div class="flex! items-center! gap-2! mb-2!">
     <span class="font-semibold! text-[13px]! uppercase! tracking-[0.05em]! text-ink!">{{ $title }}</span>
     @if ($activeCount > 0)
-        <x-blatui.badge variant="secondary">{{ $activeCount }} active</x-blatui.badge>
+        <x-blatui.badge tone="info">{{ $activeCount }} active</x-blatui.badge>
     @endif
 </div>
 

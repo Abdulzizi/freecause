@@ -785,6 +785,7 @@ nav.navbar {
     right: 0;
     bottom: 0;
     width: min(900px, 96vw);
+    max-width: 96vw;
     background: var(--color-surface);
     z-index: 95;
     box-shadow: -2px 0 14px rgba(0, 0, 0, 0.18);

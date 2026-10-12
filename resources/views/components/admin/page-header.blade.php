@@ -14,7 +14,7 @@
         <h1 class="m-0! flex! items-center! gap-2! text-2xl! font-bold! tracking-tight! text-foreground! max-md:text-xl!">
             <span class="truncate!">{{ $title }}</span>
             @if ($count !== null)
-                <x-blatui.badge variant="secondary">{{ is_numeric($count) ? number_format((float) $count) : $count }}</x-blatui.badge>
+                <x-blatui.badge variant="outline" class="text-muted! border-border!">{{ is_numeric($count) ? number_format((float) $count) : $count }}</x-blatui.badge>
             @endif
         </h1>
         @if (filled($context))
