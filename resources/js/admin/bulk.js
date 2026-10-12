@@ -72,7 +72,7 @@ async function runBulkAction(button, config) {
     setLoading(button, true);
     try {
         await jsonPost(config.actionRoute, { action, ids });
-        window.location.reload();
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message);
         setLoading(button, false);
@@ -101,7 +101,7 @@ async function runBulkNamedAction(button, config, action) {
         } else {
             notify('success', result.msg || (action === 'delete' ? 'Deleted.' : 'Unbanned.'));
         }
-        window.location.reload();
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message);
         setLoading(button, false);
@@ -124,7 +124,7 @@ async function runBulkBan(button, config, url = config.banRoute) {
     setLoading(button, true);
     try {
         await jsonPost(url, { action: 'ban', ids, ...details });
-        window.location.reload();
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message);
         setLoading(button, false);
@@ -164,7 +164,7 @@ async function handlePetitionBan(button, config) {
     try {
         await jsonPost(button.dataset.url, { action: 'ban', ids });
         notify('success', 'Selected petitions were unpublished and deactivated.');
-        window.setTimeout(() => window.location.reload(), 700);
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message || 'Could not ban selected petitions.');
         setLoading(button, false);
@@ -194,7 +194,7 @@ async function handleTranslateMissing(button) {
             locale: button.dataset.source || undefined,
         });
         notify('success', `Created ${result.created} draft translation(s).`);
-        window.setTimeout(() => window.location.reload(), 700);
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message || 'Could not create missing translations.');
         button.disabled = false;
@@ -217,7 +217,7 @@ async function handleSignature(button) {
         if (response.status === 409) {
             notify('warning', result.msg || (action === 'approve' ? 'Already confirmed.' : 'Already rejected.'));
             button.disabled = false;
-            window.setTimeout(() => window.location.reload(), 700);
+            window.setTimeout(() => window.fcRefresh(), 700);
             return;
         }
         if (!response.ok || !result.ok) throw new Error(result.error || 'Could not update signature.');
@@ -257,7 +257,7 @@ async function handleUserAction(button) {
     try {
         await jsonPost(button.dataset.url, payload);
         notify('success', action === 'ban' ? 'User banned.' : 'User unbanned.');
-        window.setTimeout(() => window.location.reload(), 700);
+        window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message || 'Could not update user status.');
         button.disabled = false;

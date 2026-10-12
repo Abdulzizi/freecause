@@ -27,6 +27,20 @@ window.fcVisit = (url, options = {}) => {
     window.location.href = url;
 };
 
+window.fcRefresh = () => {
+    const scrollY = window.scrollY;
+    if (!window.Turbo) {
+        window.location.reload();
+        return;
+    }
+    const restore = () => {
+        window.scrollTo(0, scrollY);
+        document.removeEventListener('turbo:load', restore);
+    };
+    document.addEventListener('turbo:load', restore);
+    window.Turbo.visit(window.location.href, { action: 'replace' });
+};
+
 document.addEventListener('DOMContentLoaded', bootPage);
 
 document.addEventListener('turbo:load', () => {
