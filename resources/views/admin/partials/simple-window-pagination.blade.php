@@ -20,9 +20,7 @@
         <x-blatui.pagination-content>
             @if ($current > 1)
                 <x-blatui.pagination-item>
-                    <x-blatui.pagination-link :href="$p->url($current - 1)" size="icon" aria-label="Previous page">
-                        <x-lucide-chevron-left class="size-4" aria-hidden="true" />
-                    </x-blatui.pagination-link>
+                    <x-blatui.pagination-previous :href="$p->url($current - 1)" />
                 </x-blatui.pagination-item>
             @endif
 
@@ -58,15 +56,13 @@
 
             @if ($hasMore)
                 <x-blatui.pagination-item>
-                    <x-blatui.pagination-link :href="$p->url($current + 1)" size="icon" aria-label="Next page">
-                        <x-lucide-chevron-right class="size-4" aria-hidden="true" />
-                    </x-blatui.pagination-link>
+                    <x-blatui.pagination-next :href="$p->url($current + 1)" />
                 </x-blatui.pagination-item>
             @endif
         </x-blatui.pagination-content>
     </x-blatui.pagination>
 
     @if ($total !== null)
-        <span class="text-[11px]! text-muted! whitespace-nowrap!">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
+        <span class="text-[12px]! text-muted! whitespace-nowrap!">Showing {{ number_format($from) }}–{{ number_format($to) }} of {{ number_format($total) }}</span>
     @endif
 </div>
