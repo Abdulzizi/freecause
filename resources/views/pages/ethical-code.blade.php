@@ -1,7 +1,6 @@
 
 
-    <section class="py-14 md:py-24">
-        <x-ui.container>
+    <x-ui.section>
             <div class="flex flex-wrap -mx-3">
                 <div class="w-full shrink-0 grow-0 px-3">
                     <div class="fcui-card relative flex flex-col min-w-0">
@@ -188,6 +187,5 @@
                     </div>
                 </div>
             </div>
-        </x-ui.container>
-    </section>
+    </x-ui.section>
 

@@ -4,27 +4,13 @@
 @section('body_class', 'magazine')
 
 @section('content')
-    <section class="bg-[var(--fc-band)] fc-head-band">
-        <x-ui.container>
-            <div class="flex flex-wrap -mx-3">
-                <div class="w-full shrink-0 grow-0 px-3">
-                    <h1 class="text-xl mb-[5px]">{{ __('nav.magazine') }}</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0 p-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ lroute('home') }}">{{ __('nav.home') }}</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('nav.magazine_breadcrumb') }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </x-ui.container>
-    </section>
+    <x-ui.page-head :band="true" :title="__('nav.magazine')" :breadcrumb="[
+        ['label' => __('nav.home'), 'url' => lroute('home')],
+        ['label' => __('nav.magazine_breadcrumb')],
+    ]" />
 
-    <section class="pt-8 pb-14 md:pt-10 md:pb-24">
-        <x-ui.container>
-            <div class="flex flex-wrap -mx-3 justify-center">
+    <x-ui.section>
+        <div class="flex flex-wrap -mx-3 justify-center">
                 <div class="w-full md:w-2/3 shrink-0 grow-0 px-3 py-4">
                     <x-ui.alert variant="warning" class="mb-4">
                         <strong>{{ __('nav.magazine_notice_title') }}</strong>
@@ -39,6 +25,5 @@
                     </div>
                 </div>
             </div>
-        </x-ui.container>
-    </section>
+    </x-ui.section>
 @endsection

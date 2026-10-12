@@ -14,16 +14,16 @@
 
 @section('content')
 
-    <section id="welcomes" class="bg-[var(--fc-band)] fc-section fc-hero">
+    <section id="welcomes" class="bg-band fc-section fc-hero">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 items-center justify-center">
                 <div class="w-full md:w-2/3 shrink-0 grow-0 px-3 text-center">
 
-                    <h1 class="fc-hero-item text-black font-semibold text-2xl md:text-5xl mb-6 max-sm:mb-4">
+                    <h1 class="fc-hero-item text-ink font-semibold text-2xl md:text-5xl mb-6 max-sm:mb-4">
                         {{ $content['h1'] ?? __('home.h1') }}
                     </h1>
 
-                    <h2 class="fc-hero-item text-[#4b5563] text-base leading-[1.5] md:text-xl md:leading-[1.45]">
+                    <h2 class="fc-hero-item text-muted text-base leading-normal md:text-xl">
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
@@ -65,14 +65,14 @@
 
                             <div class="tab-pane fade show active" id="featured-petition-tab-pane">
 
-                                <div class="p-4 md:p-[25px] max-sm:p-3">
+                                <div class="p-4 md:p-6 max-sm:p-3">
                                     <div class="flex flex-wrap -mx-3">
-                                        <div class="w-full shrink-0 grow-0 px-3 mb-[25px] max-md:mb-[30px]">
+                                        <div class="w-full shrink-0 grow-0 px-3 mb-6 max-md:mb-8">
 
                                             <div class="featured-box relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md fc-lift">
                                                 <div class="grow shrink basis-auto p-5 max-sm:p-4">
 
-                                                    <span class="bg-brand/5 text-danger px-5 py-[3px] rounded-[5px] text-sm mb-5 inline-block">
+                                                    <span class="bg-brand/5 text-danger px-5 py-1 rounded-sm text-sm mb-5 inline-block">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
@@ -115,7 +115,7 @@
                                                         </div>
 
                                                         @if ($featuredPetition)
-                                                            <a href="{{ $featuredUrl }}" data-prefetch class="absolute inset-0 z-[2] text-[0px] bg-transparent">
+                                                            <a href="{{ $featuredUrl }}" data-prefetch class="absolute inset-0 z-10 text-transparent bg-transparent">
                                                                 {{ __('home.featured_read_more') }}
                                                             </a>
                                                         @endif
@@ -150,10 +150,10 @@
 
                             <div class="tab-pane fade" id="recent-activities-tab-pane" role="tabpanel">
 
-                                <div class="p-4 md:p-[25px] max-sm:p-3">
+                                <div class="p-4 md:p-6 max-sm:p-3">
                                     <div class="flex flex-wrap -mx-3">
                                         <div class="w-full shrink-0 grow-0 px-3">
-                                            <div class="mb-[50px]">
+                                            <div class="mb-12">
 
                                                 <ul class="most-listing">
 
@@ -226,14 +226,14 @@
         </x-ui.container>
     </section>
 
-    <section class="fc-section bg-[var(--fc-band)]">
+    <section class="fc-section bg-band">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3">
 
-                <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-[25px] max-md:mb-[30px]">
-                    <div class="gray-box bg-white border border-[#ede9e3] p-[15px] rounded-[12px] shadow-[var(--fc-shadow-sm)]">
+                <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-md:mb-8">
+                    <div class="gray-box bg-white p-4 rounded-lg shadow-elev-1">
 
-                        <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">
+                        <h2 class="fcui-section-title capitalize text-xl md:text-2xl">
                             {{ __('home.what_title') }}
                         </h2>
 
@@ -243,9 +243,9 @@
                 </div>
 
                 <div class="w-full md:w-1/2 shrink-0 grow-0 px-3">
-                    <div class="gray-box bg-white border border-[#ede9e3] p-[15px] rounded-[12px] shadow-[var(--fc-shadow-sm)]">
+                    <div class="gray-box bg-white p-4 rounded-lg shadow-elev-1">
 
-                        <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">
+                        <h2 class="fcui-section-title capitalize text-xl md:text-2xl">
                             {{ __('home.create_box_title') }}
                         </h2>
 
@@ -262,7 +262,7 @@
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full shrink-0 grow-0 px-3">
-                    <h2 class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">{{ __('home.categories_title') }}</h2>
+                    <h2 class="fcui-section-title capitalize text-xl md:text-2xl">{{ __('home.categories_title') }}</h2>
                 </div>
             </div>
 
@@ -270,8 +270,8 @@
                 @foreach ($categories as $cat)
                     <div class="w-full lg:w-1/4 sm:w-1/2 shrink-0 grow-0 px-3 mb-4">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                            class="bg-white border border-border rounded-lg p-6 text-center no-underline text-black fc-lift block">
-                            <span class="text-[25px] mb-2 hidden"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
+                            class="bg-white border border-border rounded-lg p-6 text-center no-underline text-ink fc-lift block">
+                            <span class="text-2xl mb-2 hidden"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
                             <h3 class="text-base md:text-base">{{ $cat->tr_name }}</h3>
                         </a>
                     </div>
@@ -281,7 +281,7 @@
     </section>
 
     @if (count($magazinePosts) > 0)
-    <section class="bg-[var(--fc-band)] fc-section">
+    <section class="bg-band fc-section">
         <x-ui.container>
             <div class="text-center mb-6">
                 <h2 class="mb-2">{{ __('home.blog_title') }}</h2>
@@ -293,7 +293,7 @@
                 @foreach ($magazinePosts as $post)
                     <div class="w-full md:w-1/3 shrink-0 grow-0 px-3 mb-6">
                         <a class="block h-full no-underline" href="/magazine/{{ $post->post_name }}">
-                            <div class="shadow-[var(--fc-shadow-sm)] rounded-[15px] overflow-hidden fc-lift">
+                            <div class="shadow-elev-1 rounded-lg overflow-hidden fc-lift">
                                 <div>
                                     @if ($post->thumbnail_path)
                                         <img src="/magazine/wp-content/uploads/{{ $post->thumbnail_path }}" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup class="fcui-blurup w-full aspect-[16/9] object-cover">
@@ -301,8 +301,8 @@
                                         <img src="/magazine/wp-content/themes/freecause/assets/images/default-post.jpg" alt="{{ $post->post_title }}" loading="lazy" decoding="async" data-blurup onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext fill=%22%236c757d%22 font-family=%22sans-serif%22 font-size=%2218%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E'" class="fcui-blurup w-full aspect-[16/9] object-cover">
                                     @endif
                                 </div>
-                                <div class="p-5 bg-white min-h-[146px]">
-                                    <h3 class="text-base md:text-base mb-2.5 text-black">{{ $post->post_title }}</h3>
+                                <div class="p-5 bg-white min-h-36">
+                                    <h3 class="text-base md:text-base mb-2.5 text-ink">{{ $post->post_title }}</h3>
                                     <span class="text-brand">
                                     {{ __('home.blog_read_more') }}
                                     <span class="ml-1.5">›</span>

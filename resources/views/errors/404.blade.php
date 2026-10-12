@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-lg p-6 mb-12 border border-border fc-enter">
+            <div class="bg-white shadow-elev-1 rounded-lg p-6 mb-12 fc-enter">
                 <div class="flex justify-center mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none" aria-hidden="true">
                         <ellipse cx="100" cy="132" rx="70" ry="8" fill="#f6d4d4"></ellipse>
@@ -35,12 +35,12 @@
                         <path d="M116 48l10 10M126 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
                     </svg>
                 </div>
-                <div class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">404</div>
+                <div class="fcui-section-title capitalize text-xl md:text-2xl">404</div>
 
-                <p class="text-[15px] text-muted mb-1.5">
+                <p class="text-sm text-muted mb-1.5">
                     {{ __('errors.404_lead') }}
                 </p>
-                <p class="text-[15px] text-muted mb-5">
+                <p class="text-sm text-muted mb-5">
                     {{ __('errors.404_hint') }}
                 </p>
                 <p class="text-sm text-muted mb-5">
@@ -55,7 +55,7 @@
                         <div class="flex flex-wrap -mt-4 -mx-2">
                             @foreach ($mostRead as $p)
                                 <div class="shrink-0 grow-0 mt-4 px-2 w-full md:w-1/2">
-                                    <div class="p-2.5 border border-[#f0f0f0] rounded-md">
+                                    <div class="p-2.5 border border-border rounded-md">
                                         <a class="text-brand text-sm font-medium no-underline" data-prefetch
                                             href="{{ route('petition.show', [
                                                 'locale' => $locale,

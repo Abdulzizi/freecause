@@ -9,8 +9,8 @@
     @section('title', 'Forbidden')
 
     @section('content')
-        <div class="fc-box p-10 text-center max-w-[600px] my-[60px] mx-auto">
-            <h1 class="text-[28px] mb-4">403 - {{ __('errors.403_admin_title') }}</h1>
+        <div class="fc-box p-10 text-center max-w-xl my-16 mx-auto">
+            <h1 class="text-2xl mb-4">403 - {{ __('errors.403_admin_title') }}</h1>
             <p class="mb-5 text-muted">
                 {{ __('errors.403_admin_lead') }}
             </p>
@@ -37,12 +37,12 @@
                     </div>
                 </div>
 
-                <div class="bg-white shadow-sm rounded-lg p-6 mb-12 border border-border fc-enter">
-                    <div class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">403</div>
-                    <p class="text-[15px] text-muted mb-1.5">
+                <div class="bg-white shadow-elev-1 rounded-lg p-6 mb-12 fc-enter">
+                    <div class="fcui-section-title capitalize text-xl md:text-2xl">403</div>
+                    <p class="text-sm text-muted mb-1.5">
                         {{ __('errors.403_lead') }}
                     </p>
-                    <p class="text-[15px] text-muted mb-5">
+                    <p class="text-sm text-muted mb-5">
                         {{ __('errors.403_hint') }}
                     </p>
                     <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.back_home') }}</x-ui.button>

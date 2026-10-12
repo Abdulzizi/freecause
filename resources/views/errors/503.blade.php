@@ -14,12 +14,12 @@
                 <h1 class="mb-2 text-2xl font-semibold">{{ __('errors.503_title') }}</h1>
             </div>
 
-            <div class="bg-white shadow-sm rounded-lg p-6 mb-12 border border-border fc-enter">
-                <div class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem]">503</div>
-                <p class="text-[15px] text-muted mb-1.5">
+            <div class="bg-white shadow-elev-1 rounded-lg p-6 mb-12 fc-enter">
+                <div class="fcui-section-title capitalize text-xl md:text-2xl">503</div>
+                <p class="text-sm text-muted mb-1.5">
                     {{ __('errors.503_lead') }}
                 </p>
-                <p class="text-[15px] text-muted mb-5">
+                <p class="text-sm text-muted mb-5">
                     {{ __('errors.503_hint') }}
                 </p>
                 <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.503_btn') }}</x-ui.button>

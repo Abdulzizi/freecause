@@ -18,9 +18,9 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-lg p-4 border border-border">
+            <div class="bg-white shadow-elev-1 rounded-lg p-4">
 
-                <div class="fcui-section-title capitalize text-[1.3rem] md:text-[1.5rem] font-bold break-words">{{ $user->display_name }}</div>
+                <div class="fcui-section-title capitalize text-xl md:text-2xl font-bold break-words">{{ $user->display_name }}</div>
 
                 <div class="flex flex-wrap -mx-3">
 
@@ -55,13 +55,13 @@
                             </h2>
 
                             @forelse ($recentPetitions as $p)
-                                <div class="py-1.5 border-b border-[#f2f2f2] text-sm">
+                                <div class="py-1.5 border-b border-border text-sm">
                                     <a class="text-brand break-words" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
                                         {{ $p->title }}
                                     </a>
                                 </div>
                             @empty
-                                <div class="text-[13px] text-muted">{{ __('userprofile.no_petitions') }}</div>
+                                <div class="text-sm text-muted">{{ __('userprofile.no_petitions') }}</div>
                             @endforelse
                         </div>
 
@@ -71,13 +71,13 @@
                             </h2>
 
                             @forelse ($recentSignatures as $s)
-                                <div class="py-1.5 border-b border-[#f2f2f2] text-sm">
+                                <div class="py-1.5 border-b border-border text-sm">
                                     <a class="text-brand break-words" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
                                         {{ $s->title }}
                                     </a>
                                 </div>
                             @empty
-                                <div class="text-[13px] text-muted">{{ __('userprofile.no_signatures') }}</div>
+                                <div class="text-sm text-muted">{{ __('userprofile.no_signatures') }}</div>
                             @endforelse
                         </div>
 

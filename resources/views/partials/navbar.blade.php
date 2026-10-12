@@ -2,7 +2,7 @@
     $isAuthed = auth()->check();
     $c = $navbarContent ?? [];
 @endphp
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+<nav class="navbar navbar-expand-lg bg-white shadow-elev-1">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="FreeCause">
