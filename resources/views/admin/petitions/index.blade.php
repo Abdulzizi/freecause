@@ -40,54 +40,60 @@
 
     <x-admin.page-header title="petitions" :count="$approxTotal">
         @if (admin_can('petitions', 'edit'))
-            <button type="button" class="fc-abtn" data-petition-create-toggle aria-haspopup="dialog">
-                new petition
-            </button>
+            <x-blatui.dialog-trigger for="petition-create">
+                <x-blatui.button type="button">new petition</x-blatui.button>
+            </x-blatui.dialog-trigger>
         @endif
     </x-admin.page-header>
 
     @if (admin_can('petitions', 'edit'))
-        <x-admin.modal id="petition-create-modal" title="create petition">
-            <form data-petition-create-form method="post" action="{{ route('admin.petitions.create') }}" style="display: none;">
-                @csrf
+        <x-blatui.dialog id="petition-create">
+            <x-blatui.dialog-content>
+                <x-blatui.dialog-header>
+                    <x-blatui.dialog-title>create petition</x-blatui.dialog-title>
+                </x-blatui.dialog-header>
 
-                <x-admin.form-field label="title">
-                    <input name="title" required maxlength="255" class="fc-filter-field" placeholder="petition title">
-                </x-admin.form-field>
+                <form method="post" action="{{ route('admin.petitions.create') }}">
+                    @csrf
 
-                <x-admin.form-field label="locale">
-                    <select name="locale" class="fc-filter-field">
-                        @foreach ($localeOptions as $code => $label)
-                            <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </x-admin.form-field>
+                    <x-admin.form-field label="title">
+                        <input name="title" required maxlength="255" class="fc-filter-field" placeholder="petition title">
+                    </x-admin.form-field>
 
-                <x-admin.form-field label="category">
-                    <select name="category_id" class="fc-filter-field">
-                        <option value="">—</option>
-                        @foreach ($categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name ?? ('#'.$cat->id) }}</option>
-                        @endforeach
-                    </select>
-                </x-admin.form-field>
+                    <x-admin.form-field label="locale">
+                        <select name="locale" class="fc-filter-field">
+                            @foreach ($localeOptions as $code => $label)
+                                <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </x-admin.form-field>
 
-                <x-admin.form-field label="goal">
-                    <select name="goal_signatures" class="fc-filter-field">
-                        @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
-                            <option value="{{ $goalOption }}" {{ $goalOption === 1000 ? 'selected' : '' }}>
-                                {{ number_format($goalOption) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </x-admin.form-field>
+                    <x-admin.form-field label="category">
+                        <select name="category_id" class="fc-filter-field">
+                            <option value="">—</option>
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name ?? ('#'.$cat->id) }}</option>
+                            @endforeach
+                        </select>
+                    </x-admin.form-field>
 
-                <div class="fc-filter-actions">
-                    <button type="submit" class="fc-abtn">create</button>
-                    <button type="button" class="fc-abtn fc-abtn--neutral" data-admin-modal-close>cancel</button>
-                </div>
-            </form>
-        </x-admin.modal>
+                    <x-admin.form-field label="goal">
+                        <select name="goal_signatures" class="fc-filter-field">
+                            @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
+                                <option value="{{ $goalOption }}" {{ $goalOption === 1000 ? 'selected' : '' }}>
+                                    {{ number_format($goalOption) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </x-admin.form-field>
+
+                    <x-blatui.dialog-footer>
+                        <x-blatui.button variant="outline" type="button" @click="open = false">cancel</x-blatui.button>
+                        <x-blatui.button type="submit">create</x-blatui.button>
+                    </x-blatui.dialog-footer>
+                </form>
+            </x-blatui.dialog-content>
+        </x-blatui.dialog>
     @endif
 
     @php

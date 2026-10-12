@@ -3,22 +3,6 @@ function isEditableTarget(node) {
     return !!node.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]');
 }
 
-function openAdminModal(id) {
-    const modal = document.getElementById(id);
-    if (!modal) return;
-    modal.dataset.open = '1';
-    modal.setAttribute('aria-hidden', 'false');
-    const form = modal.querySelector('form');
-    if (form) form.style.display = '';
-    modal.querySelector('input:not([type="hidden"]), select, textarea')?.focus();
-}
-
-function closeAdminModal(modal) {
-    if (!modal) return;
-    modal.dataset.open = '0';
-    modal.setAttribute('aria-hidden', 'true');
-}
-
 function loadRichEditors() {
     const areas = document.querySelectorAll('textarea.fc-editor[data-ckeditor="rich"]');
     if (!areas.length) return;
@@ -61,13 +45,6 @@ export function init() {
     loadRichEditors();
 
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            const modal = document.querySelector('.fc-modal[data-open="1"]');
-            if (modal) {
-                closeAdminModal(modal);
-            }
-            return;
-        }
         if ((event.key === 's' || event.key === 'S') && !event.ctrlKey && !event.metaKey && !event.altKey && !isEditableTarget(event.target)) {
             const drawer = document.querySelector('.fc-drawer[data-open="1"]');
             if (!drawer) return;
@@ -79,21 +56,9 @@ export function init() {
         }
     });
 
-    document.addEventListener('click', async (event) => {
+    document.addEventListener('click', (event) => {
         if (event.target.closest('#toggle_smtp_pass')) {
             handleSmtpToggle();
-            return;
-        }
-        const createToggle = event.target.closest('[data-petition-create-toggle]');
-        if (createToggle) {
-            event.preventDefault();
-            return openAdminModal('petition-create-modal');
-        }
-        const modalClose = event.target.closest('[data-admin-modal-close]');
-        if (modalClose) {
-            event.preventDefault();
-            const modal = modalClose.closest('.fc-modal');
-            if (modal) closeAdminModal(modal);
         }
     });
 }
