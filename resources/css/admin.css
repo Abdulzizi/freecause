@@ -35,6 +35,12 @@
     --sidebar-ring: #cc1f1f;
 }
 
+/* Legacy link colors are a public-site brand cue; admin links stay neutral unless a
+   component or an important utility says otherwise. */
+a:not([data-slot]) {
+    color: var(--color-ink, #212529);
+}
+
 /* Sidebar colors: legacy-compat declares unlayered `a { color: … }` rules that beat
    Tailwind utilities, so link colors are re-asserted here with higher specificity. */
 [data-sidebar='menu-button'] {
