@@ -44,27 +44,27 @@
             @endauth
 
             @if(!$isEdit)
-                <h1 class="text-center mb-6 max-md:text-[1.45rem] max-md:mb-4">{{ __('create.heading_create') }}</h1>
+                <h1 class="text-center mb-6 max-md:text-xl max-md:mb-4">{{ __('create.heading_create') }}</h1>
 
-                <div class="flex flex-wrap items-center justify-center gap-[60px] mb-10 max-md:hidden" aria-label="Petition creation progress">
-                    <div class="flex items-center gap-[18px] min-w-[240px]" aria-current="step">
+                <div class="flex flex-wrap items-center justify-center gap-16 mb-10 max-md:hidden" aria-label="Petition creation progress">
+                    <div class="flex items-center gap-4 min-w-[240px]" aria-current="step">
                         <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:100%_0%]"></span>
                         <div class="text-xl font-semibold text-brand whitespace-nowrap">{{ __('petition.step_create') }}</div>
                     </div>
 
-                    <div class="flex items-center gap-[18px] min-w-[240px] opacity-60">
+                    <div class="flex items-center gap-4 min-w-[240px] opacity-60">
                         <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_50%]"></span>
-                        <div class="text-xl font-medium text-[#111] whitespace-nowrap">{{ __('petition.step_share') }}</div>
+                        <div class="text-xl font-medium text-ink whitespace-nowrap">{{ __('petition.step_share') }}</div>
                     </div>
 
-                    <div class="flex items-center gap-[18px] min-w-[240px] opacity-60">
+                    <div class="flex items-center gap-4 min-w-[240px] opacity-60">
                         <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_100%]"></span>
-                        <div class="text-xl font-medium text-[#111] whitespace-nowrap">{{ __('petition.step_change') }}</div>
+                        <div class="text-xl font-medium text-ink whitespace-nowrap">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
 
                 @guest
-                    <div class="mb-4 max-w-[720px] mx-auto [&_.nav-link]:w-full [&_.nav-link]:text-ink [&_.nav-link]:font-semibold max-md:[&_.nav-link]:py-[0.65rem] max-md:[&_.nav-link]:px-2 max-md:[&_.tab-pane>div]:p-4 max-md:[&_.tab-pane>div]:border-t-0 max-md:[&_.tab-pane>div]:rounded-t-none max-md:[&_.tab-pane>div]:rounded-b-lg max-md:[&_.tab-pane>div]:shadow-none max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full max-md:[&_.btn]:w-full">
+                    <div class="mb-4 max-w-[720px] mx-auto [&_.nav-link]:w-full [&_.nav-link]:text-ink [&_.nav-link]:font-semibold max-md:[&_.nav-link]:py-2 max-md:[&_.nav-link]:px-2 max-md:[&_.tab-pane>div]:p-4 max-md:[&_.tab-pane>div]:border-t-0 max-md:[&_.tab-pane>div]:rounded-t-none max-md:[&_.tab-pane>div]:rounded-b-lg max-md:[&_.tab-pane>div]:shadow-none max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full max-md:[&_.btn]:w-full">
                         <ul class="nav nav-tabs nav-fill" role="tablist" aria-label="Authentication options">
                             <li class="nav-item" role="presentation">
                                 <button
@@ -119,11 +119,11 @@
                     </div>
                 @endguest
             @else
-                <h1 class="text-center mb-6 max-md:text-[1.45rem] max-md:mb-4">{{ __('create.heading_edit') }}</h1>
+                <h1 class="text-center mb-6 max-md:text-xl max-md:mb-4">{{ __('create.heading_edit') }}</h1>
             @endif
 
             @auth
-                <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md border-0 shadow-sm">
+                <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md border-0 shadow-elev-1">
                     <div class="grow shrink basis-auto p-6 max-md:p-4">
 
                         <div class="mb-4">
@@ -131,7 +131,7 @@
                             <div class="h-0.5 bg-brand w-full mt-1.5"></div>
                         </div>
 
-                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-[0.85rem] max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
+                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
                             ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
@@ -143,13 +143,13 @@
                             <div class="mb-3">
                                 <label class="block mb-2">{{ __('form.description') }}</label>
 
-                                <div class="border border-[#d9d9d9] rounded overflow-hidden">
-                                    <div id="fc-quill-toolbar" class="flex items-center gap-1.5 p-1.5 bg-[#f3f3f3] border-b border-[#d9d9d9]">
+                                <div class="border border-border rounded-sm overflow-hidden">
+                                    <div id="fc-quill-toolbar" class="flex items-center gap-1.5 p-1.5 bg-surface-2 border-b border-border">
                                         <button class="ql-bold" type="button" title="Bold (Ctrl+B)"></button>
                                         <button class="ql-italic" type="button" title="Italic (Ctrl+I)"></button>
                                         <button class="ql-underline" type="button" title="Underline (Ctrl+U)"></button>
 
-                                        <span class="w-px h-5 bg-[#cfcfcf] mx-1.5"></span>
+                                        <span class="w-px h-5 bg-border-strong mx-1.5"></span>
 
                                         <button class="ql-list" value="bullet" type="button" title="Bullet list"></button>
                                         <button class="ql-list" value="ordered" type="button" title="Numbered list"></button>
@@ -163,7 +163,7 @@
                                         required>{!! $oldDesc !!}</textarea>
                                 </div>
 
-                                <div class="block pt-2 px-0.5 text-[13px] text-muted">{{ __('create.markup_hint') }}</div>
+                                <div class="block pt-2 px-0.5 text-sm text-muted">{{ __('create.markup_hint') }}</div>
                             </div>
 
                             <div class="row g-3 mb-3">
@@ -208,7 +208,7 @@
                             <div class="mb-3" data-image-field>
                                 <label class="block mb-2">{{ __('form.image') }}</label>
 
-                                <p class="text-muted text-[.875em] mb-2" data-image-instructions>
+                                <p class="text-muted text-sm mb-2" data-image-instructions>
                                     {{ __('create.image_instructions') }}
                                 </p>
 
@@ -284,7 +284,7 @@
                             </div>
 
                             <div class="text-center max-md:[&_.fcui-btn]:w-full">
-                                <span data-autosave-status class="text-[13px] text-muted me-3"></span>
+                                <span data-autosave-status class="text-sm text-muted me-3"></span>
                                 <x-ui.button type="submit" variant="danger" class="px-12"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}

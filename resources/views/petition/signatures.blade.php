@@ -11,15 +11,14 @@
 @section('title', 'Signatures: ' . $petitionTitle)
 
 @section('content')
-    <section class="fc-section">
-        <x-ui.container>
+    <x-ui.section>
 
-            <div class="bg-white shadow-sm rounded-[.5rem] p-6 mb-6 border border-border">
+            <div class="bg-white shadow-elev-1 rounded-md p-6 mb-6">
                 <div class="flex flex-wrap items-center -mx-3">
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
                     <div class="w-full md:w-1/4 shrink-0 sm:w-1/3 px-3">
-                        <a href="{{ $petitionUrl }}" data-prefetch class="rounded-lg overflow-hidden block h-40 bg-[#1a1a1a] relative">
+                        <a href="{{ $petitionUrl }}" data-prefetch class="rounded-lg overflow-hidden block h-40 bg-dark relative">
                             @if ($wv)
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="100vw">
@@ -41,7 +40,7 @@
                     </div>
 
                     <div class="w-full md:w-1/2 shrink-0 sm:w-2/3 px-3">
-                        <h1 class="mb-2 text-2xl md:text-[19px] font-bold leading-[1.35]">
+                        <h1 class="mb-2 text-2xl md:text-lg font-bold leading-[1.35]">
                             <a href="{{ $petitionUrl }}" data-prefetch class="text-ink no-underline">
                                 {{ $petitionTitle }}
                             </a>
@@ -52,10 +51,10 @@
                             <a href="{{ $petitionUrl }}" data-prefetch class="text-brand ms-1">{{ __('sig.continue') }}</a>
                         </p>
 
-                        <div class="fc-progress-reveal h-1.5 bg-[#e9ecef] rounded-full overflow-hidden mb-2">
-                            <div class="h-1.5 bg-[#2ca02c] fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
+                        <div class="fc-progress-reveal h-1.5 bg-surface-2 rounded-full overflow-hidden mb-2">
+                            <div class="h-1.5 bg-success fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
                         </div>
-                        <div class="flex justify-between text-[13px] text-muted fc-tabular">
+                        <div class="flex justify-between text-sm text-muted fc-tabular">
                             <span><strong>{{ number_format($goalCurrent) }}</strong> {{ __('sig.signatures') }}</span>
                             <span>{{ __('sig.goal') }} {{ number_format($goalTotal) }}</span>
                         </div>
@@ -70,7 +69,7 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm rounded-[.5rem] p-6 border border-border fc-reveal">
+            <div class="bg-white shadow-elev-1 rounded-md p-6 fc-reveal">
 
                 <div class="font-bold text-base mb-4">
                     {{ __('sig.all_signatures') }}
@@ -79,22 +78,22 @@
                     </span>
                 </div>
 
-                <div class="h-0.5 bg-[#e9ecef] relative mb-[22px]">
+                <div class="h-0.5 bg-surface-2 relative mb-6">
                     <div
-                        class="h-0.5 w-full bg-[linear-gradient(to_right,#000,#f00)] absolute left-0 top-0">
+                        class="h-0.5 w-full bg-gradient-to-r from-dark to-brand absolute left-0 top-0">
                     </div>
                 </div>
 
                 @forelse($signatures as $sig)
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
-                        <div class="shrink-0 text-muted text-[13px] min-w-[32px] pt-0.5">
+                        <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
                         <div class="grow">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <strong class="text-[15px]">{{ $sig->name ?? __('sig.anonymous') }}</strong>
+                                <strong class="text-sm">{{ $sig->name ?? __('sig.anonymous') }}</strong>
                                 @if ($sig->user?->city)
-                                    <span class="text-muted text-[13px]">
+                                    <span class="text-muted text-sm">
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
@@ -127,8 +126,7 @@
 
             </div>
 
-        </x-ui.container>
-    </section>
+        </x-ui.section>
 
     <button type="button" class="fcui-scrolltop" data-scroll-top aria-label="Back to top">↑</button>
 @endsection

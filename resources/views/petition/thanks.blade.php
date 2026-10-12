@@ -33,9 +33,9 @@
 @section('content')
     <section class="py-14 md:py-24">
         <x-ui.container>
-            <div class="bg-white shadow-sm rounded-[.5rem] p-6 border border-border max-w-[820px] mx-auto">
+            <div class="bg-white shadow-elev-1 rounded-md p-6 max-w-[820px] mx-auto">
 
-                <h1 class="mb-4 text-2xl md:text-[28px]">
+                <h1 class="mb-4 text-2xl">
                     {{ $h1Text }}
                 </h1>
 
@@ -46,7 +46,7 @@
                 </div>
 
                 @if ($isCreated || $requiresVerification)
-                    <p class="mb-6 text-[15px]">
+                    <p class="mb-6 text-sm">
                         {{ $pText }}
                     </p>
                 @endif
@@ -54,19 +54,19 @@
                 @if (!empty($claim))
                     <div class="mt-6">
                         @if ($canClaim)
-                            <div class="p-4 rounded-[.25rem] border bg-[#f8f9fa]">
-                                <h2 class="mb-4 text-[1.1rem] md:text-lg">{{ __('sign.claim_title') }}</h2>
+                            <div class="p-4 rounded-sm border bg-surface-2">
+                                <h2 class="mb-4 text-lg">{{ __('sign.claim_title') }}</h2>
                                 <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
                                     @csrf
                                     <div class="mb-4">
-                                        <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-[#ced4da] rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
+                                        <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <x-ui.button type="submit" variant="danger">{{ __('sign.claim_btn') }}</x-ui.button>
                                 </form>
-                                <p class="mt-4 mb-0 text-muted text-[13px]">
+                                <p class="mt-4 mb-0 text-muted text-sm">
                                     {{ __('sign.claim_verify_note') }}
                                 </p>
                             </div>
@@ -78,7 +78,7 @@
                     </div>
                 @endif
 
-                <h2 class="mt-10 mb-4 text-[1.3rem] md:text-[22px]">
+                <h2 class="mt-10 mb-4 text-xl">
                     {{ $suggestionsTitle }}
                 </h2>
 
@@ -91,7 +91,7 @@
                         @endphp
 
                         <div class="mb-2.5">
-                            <a class="block px-3.5 py-2.5 border border-[#f0caca] rounded-md bg-[#fff6f6] text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
+                            <a class="block px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
                             </a>

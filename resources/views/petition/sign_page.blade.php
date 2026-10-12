@@ -19,11 +19,10 @@
 @endpush
 
 @section('content')
-    <section class="fc-section">
-        <x-ui.container>
-            <div class="bg-white shadow-sm rounded-[.5rem] p-12 text-center border border-border max-w-[900px] mx-auto">
+    <x-ui.section>
+            <div class="bg-white shadow-elev-1 rounded-md p-12 text-center max-w-[900px] mx-auto">
 
-                <h1 class="mb-6 text-[1.3rem] md:text-[28px] font-medium break-words [overflow-wrap:anywhere]">
+                <h1 class="mb-6 text-xl md:text-2xl font-medium break-words [overflow-wrap:anywhere]">
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
                 </h1>
@@ -48,7 +47,7 @@
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', '1') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
-                    <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-[0.625rem] px-5 py-3 text-[22px] font-semibold no-underline hover:bg-[#b31b1b] max-md:w-full max-md:text-[18px] max-md:px-4 max-md:py-2.5" type="submit">
+                    <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-lg px-5 py-3 text-xl font-semibold no-underline hover:bg-brand-hover max-md:w-full max-md:text-lg max-md:px-4 max-md:py-2.5" type="submit">
                         {{ $btnText }} <span>»</span>
                     </button>
                 </form>
@@ -64,6 +63,5 @@
                 </div>
                 @endauth
             </div>
-        </x-ui.container>
-    </section>
+        </x-ui.section>
 @endsection

@@ -22,7 +22,7 @@
         }
 
         .muted {
-            color: #777;
+            color: #6b655d;
             font-size: 11px;
         }
 
