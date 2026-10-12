@@ -49,6 +49,35 @@ Temporary feature test (`TempAdminPerfProbeTest`, deleted after the run):
 Outlier: **dashboard at 22 queries** — first target for query reduction
 (inspect dashboard controller aggregates / repeated Settings lookups).
 
+## Phase 4 — backend diet (implemented)
+
+Cold-path changes in `DashboardController`:
+
+- users new today/week: 2 queries → 1 conditional aggregate.
+- signatures today/week: 2 queries → 1 conditional aggregate.
+- petition status counts + new-today: 3 queries → 1 (`admin:petitions:status_counts:v2`).
+- TTLs raised: recent 120→300s; quick/health 300→900s (stats stays 900s, verified count 1h).
+- `routes/console.php`: `DashboardController::warm()` now runs **every 5 minutes**, so admin
+  visitors practically always hit warm dashboard caches (the hourly `cache:warm` still
+  covers the public/home caches).
+- Indexes: no additions needed — `signatures(created_at)`, `users(created_at, verified)`,
+  `petitions(status, created_at)` and `logs(level, created_at)` already exist (verified
+  against migrations).
+
+Re-measured cold probe (same methodology as Phase 0):
+
+| Page | Queries before | Queries after |
+|---|---:|---:|
+| /admin/dashboard | 22 | 19 |
+| /admin/users | 5 | 5 |
+| /admin/petitions | 4 | 4 |
+| /admin/logs | 2 | 2 |
+
+The remaining cold-dashboard queries are mostly `approxTableRows()` calls: on production
+those are cached `information_schema` lookups (1h TTL), while the sqlite probe falls back
+to per-table `COUNT()`. With the 5-minute warm schedule, production visitors normally pay
+only the shared layout queries.
+
 ## Full-navigation flows (code inspection)
 
 Admin interactions are mostly full-page navigations; each is a fresh render +

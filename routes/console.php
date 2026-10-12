@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Log;
 use App\Support\AppLog;
 use App\Support\Settings;
@@ -16,6 +17,8 @@ Schedule::command('signatures:reconcile')->dailyAt('03:00');
 Schedule::command('backup:run')->dailyAt('02:00');
 Schedule::command('backup:clean')->dailyAt('02:30');
 Schedule::command('cache:warm')->hourly();
+
+Schedule::call(fn () => app(DashboardController::class)->warm())->everyFiveMinutes();
 Schedule::command('queue:monitor', [
     '--alert-email' => Settings::get('email_to_staff', '') ?: config('mail.from.address'),
 ])->everyFiveMinutes();
