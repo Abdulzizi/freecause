@@ -109,17 +109,18 @@
                         </div>
                     </div>
                 @empty
-                    <div class="flex flex-col items-center justify-center text-center py-10 px-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4">
-                            <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
-                            <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
-                            <rect x="34" y="40" width="52" height="40" rx="6" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
-                            <line x1="44" y1="54" x2="76" y2="54" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
-                            <line x1="44" y1="64" x2="64" y2="64" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
-                            <path d="M70 72l5 5 11-11" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                        </svg>
-                        <p class="text-muted text-sm mb-0">{{ __('sig.no_signatures') }}</p>
-                    </div>
+                    <x-ui.empty :text="__('sig.no_signatures')">
+                        <x-slot:icon>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4">
+                                <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
+                                <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
+                                <rect x="34" y="40" width="52" height="40" rx="6" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
+                                <line x1="44" y1="54" x2="76" y2="54" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                <line x1="44" y1="64" x2="64" y2="64" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                <path d="M70 72l5 5 11-11" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                            </svg>
+                        </x-slot:icon>
+                    </x-ui.empty>
                 @endforelse
 
                 @include('partials.pagination', ['paginator' => $signatures])

@@ -61,7 +61,7 @@
                                     </a>
                                 </div>
                             @empty
-                                <div class="text-sm text-muted">{{ __('userprofile.no_petitions') }}</div>
+                                <x-ui.empty :text="__('userprofile.no_petitions')" class="px-4 py-6" />
                             @endforelse
                         </div>
 
