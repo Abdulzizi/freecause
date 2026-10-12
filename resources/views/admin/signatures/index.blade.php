@@ -5,11 +5,6 @@
 @section('content')
 
     @php
-        $icoX = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M6 6l12 12" stroke="#dc3545" stroke-width="2"/>
-                    <path d="M18 6L6 18" stroke="#dc3545" stroke-width="2"/>
-                </svg>';
-
         $icoLink = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1" stroke="#212529" stroke-width="2"/>
                         <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1" stroke="#212529" stroke-width="2"/>
@@ -201,36 +196,29 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if ($hasConfirmed && admin_can('signatures', 'edit'))
-                    <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-border! rounded!">
-                        <button type="button" class="fc-abtn bulk-action" data-action="approve" title="Approve">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M5 13l4 4L19 7" stroke="#198754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                    <x-blatui.button-group>
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="approve" title="Approve">
+                            <x-lucide-check aria-hidden="true" />
                             <span class="hidden! md:inline!">Approve</span>
-                        </button>
-
-                        <button type="button" class="fc-abtn bulk-action" data-action="reject" title="Reject">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 6l12 12" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M18 6L6 18" stroke="#8a6d1e" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+                        </x-blatui.button>
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="reject" title="Reject">
+                            <x-lucide-x aria-hidden="true" />
                             <span class="hidden! md:inline!">Reject</span>
-                        </button>
-                    </div>
+                        </x-blatui.button>
+                    </x-blatui.button-group>
                 @endif
 
                 @if (admin_can('signatures', 'delete'))
-                    <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
-                        {!! $icoX !!}
+                    <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action text-danger! border-danger! hover:bg-destructive/10!" data-action="delete" title="Delete">
+                        <x-lucide-trash-2 aria-hidden="true" />
                         <span class="hidden! md:inline!">Delete</span>
-                    </button>
+                    </x-blatui.button>
                 @endif
 
-                <a href="{{ route('admin.signatures', request()->except('select')) }}"
-                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
-                    {!! $icoX !!}
+                <x-blatui.button variant="outline" size="sm" :href="route('admin.signatures', request()->except('select'))" title="Clear selection">
+                    <x-lucide-x aria-hidden="true" />
                     <span class="hidden! md:inline!">Clear</span>
-                </a>
+                </x-blatui.button>
             </div>
         </x-slot:footer>
 

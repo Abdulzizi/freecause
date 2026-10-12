@@ -96,6 +96,11 @@
         text-align: right;
     }
 
+    .fc-box [aria-disabled='true'] {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
     .fc-box .fc-table-wrap {
         overflow-x: auto;
     }

@@ -162,25 +162,24 @@
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 <div class="flex! gap-1! items-center!">
                     @if (admin_can('users', 'edit'))
-                        <button type="button" id="bulk-unban" class="fc-abtn" title="Unban">
+                        <x-blatui.button variant="outline" size="sm" type="button" id="bulk-unban" title="Unban">
                             {!! $icoUnban !!}
                             <span class="max-md:hidden!">Unban</span>
-                        </button>
+                        </x-blatui.button>
                     @endif
 
                     @if (admin_can('users', 'delete'))
-                        <button type="button" id="bulk-delete" class="fc-abtn" title="Delete">
+                        <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Delete">
                             {!! $icoDelete !!}
                             <span class="max-md:hidden!">Delete</span>
-                        </button>
+                        </x-blatui.button>
                     @endif
                 </div>
 
-                <a href="{{ route('admin.users', request()->except('select')) }}"
-                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
+                <x-blatui.button variant="outline" size="sm" :href="route('admin.users', request()->except('select'))" title="Clear selection">
                     {!! $icoX !!}
                     <span class="max-md:hidden!">Clear</span>
-                </a>
+                </x-blatui.button>
             </div>
         </x-slot:footer>
 

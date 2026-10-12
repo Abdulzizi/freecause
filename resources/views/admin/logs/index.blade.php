@@ -32,7 +32,7 @@
     </x-admin.filter-box>
 
     <div class="flex! gap-2! mb-3! items-center! flex-wrap!">
-        <a href="{{ route('admin.logs.export', request()->query()) }}" class="fc-abtn">export CSV</a>
+        <x-blatui.button variant="outline" size="sm" :href="route('admin.logs.export', request()->query())">export CSV</x-blatui.button>
 
         <form method="post" action="{{ route('admin.logs.prune') }}" class="flex! gap-1.5! items-center!" data-admin-confirm="Delete all logs older than the selected number of days?">
             @csrf
@@ -42,7 +42,7 @@
                 <option value="90" selected>90 days</option>
                 <option value="180">180 days</option>
             </select>
-            <button type="submit" class="fc-abtn fc-abtn--danger">prune old logs</button>
+            <x-blatui.button variant="destructive" type="submit">prune old logs</x-blatui.button>
         </form>
     </div>
 
@@ -102,17 +102,17 @@
 
         <x-slot:footer>
             @if (admin_can('logs', 'delete'))
-                <button type="button" id="bulk-delete" class="fc-abtn fc-abtn--danger" title="Delete selected logs">
+                <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Delete selected logs">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a11" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                     <span class="max-md:hidden!">delete selected</span>
-                </button>
+                </x-blatui.button>
             @endif
             @if (admin_can('logs', 'delete'))
                 <form method="post" action="{{ route('admin.logs.restoreAll') }}" data-admin-confirm="Restore log entries deleted in the last five minutes?">
                     @csrf
-                    <button type="submit" class="fc-abtn fc-abtn--neutral" title="Restore soft-deleted entries (5-minute window)">
+                    <x-blatui.button variant="outline" size="sm" type="submit" title="Restore soft-deleted entries (5-minute window)">
                         <span class="max-md:hidden!">undo last delete</span>
-                    </button>
+                    </x-blatui.button>
                 </form>
             @endif
         </x-slot:footer>

@@ -26,7 +26,7 @@
 
     <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-[15px]!">
         @csrf
-        <button class="fc-abtn fc-abtn--danger">clear spam logs</button>
+        <x-blatui.button variant="destructive" type="submit">clear spam logs</x-blatui.button>
     </form>
 
     <x-admin.data-table empty-text="no blocked activity" :p="$logs" :emptyClearRoute="route('admin.spam')">
@@ -102,7 +102,7 @@
 
                         <div
                             class="bg-[#1e1e1e]! rounded-md! border! border-[#333]! mt-2.5! relative!">
-                            <button type="button" data-payload-copy="{{ $log->id }}" class="fc-abtn absolute! top-2! right-2!">copy</button>
+                            <x-blatui.button variant="outline" size="sm" type="button" class="absolute! top-2! right-2!" data-payload-copy="{{ $log->id }}">copy</x-blatui.button>
 
                             <pre id="payload-content-{{ $log->id }}"
                                 class="m-0! p-[18px]! text-[#d4d4d4]! text-[13px]! leading-[1.5]! whitespace-pre-wrap! break-words! overflow-auto! max-h-[400px]!">{{ $payloadFormatted }}</pre>

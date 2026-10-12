@@ -117,30 +117,29 @@
             <div class="flex! gap-2! items-center! flex-wrap!">
                 @if (admin_can('pages', 'edit'))
                     <div class="flex! gap-0.5! p-0.5! bg-[#f8f8f8]! border! border-border! rounded!">
-                        <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="publish" title="Publish">
                             {!! $icoPublish !!}
                             <span class="hidden! md:inline!">Publish</span>
-                        </button>
+                        </x-blatui.button>
 
-                        <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="unpublish" title="Unpublish">
                             {!! $icoUnpublish !!}
                             <span class="hidden! md:inline!">Unpublish</span>
-                        </button>
+                        </x-blatui.button>
                     </div>
                 @endif
 
                 @if (admin_can('pages', 'delete'))
-                    <button type="button" class="fc-abtn bulk-action" data-action="delete" title="Delete">
+                    <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete" title="Delete">
                         {!! $icoX !!}
                         <span class="hidden! md:inline!">Delete</span>
-                    </button>
+                    </x-blatui.button>
                 @endif
 
-                <a href="{{ route('admin.pages', request()->except('select')) }}"
-                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
+                <x-blatui.button variant="outline" size="sm" :href="route('admin.pages', request()->except('select'))" title="Clear selection">
                     {!! $icoX !!}
                     <span class="hidden! md:inline!">Clear</span>
-                </a>
+                </x-blatui.button>
             </div>
         </x-slot:footer>
 

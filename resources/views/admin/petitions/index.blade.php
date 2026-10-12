@@ -248,53 +248,51 @@
         <x-slot:footer>
             <div class="flex! gap-2! items-center! flex-wrap! max-md:gap-1.5! max-md:w-full! max-md:justify-end!">
                 @if (admin_can('petitions', 'edit'))
-                    <button type="button" data-petition-bulk-ban
-                        data-url="{{ route('admin.petitions.bulkAction') }}"
-                        class="fc-abtn fc-abtn--danger">
+                    <x-blatui.button variant="destructive" size="sm" type="button" data-petition-bulk-ban
+                        data-url="{{ route('admin.petitions.bulkAction') }}">
                         {!! $icoBan !!}
                         <span class="max-md:hidden!">Ban</span>
-                    </button>
+                    </x-blatui.button>
                 @endif
                 @if (admin_can('petitions', 'edit'))
                     <div class="flex! gap-1! items-center!">
-                        <button type="button" class="fc-abtn bulk-action" data-action="publish" title="Publish">
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="publish" title="Publish">
                             {!! $icoPublish !!}
                             <span class="max-md:hidden!">Publish</span>
-                        </button>
-                        <button type="button" class="fc-abtn bulk-action" data-action="unpublish" title="Unpublish">
+                        </x-blatui.button>
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="unpublish" title="Unpublish">
                             {!! $icoUnpublish !!}
                             <span class="max-md:hidden!">Unpublish</span>
-                        </button>
+                        </x-blatui.button>
                     </div>
 
                     <div class="flex! gap-1! items-center!">
-                        <button type="button" class="fc-abtn bulk-action" data-action="activate" title="Activate">
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="activate" title="Activate">
                             {!! $icoPublish !!}
                             <span class="max-md:hidden!">Activate</span>
-                        </button>
-                        <button type="button" class="fc-abtn bulk-action" data-action="deactivate" title="Deactivate">
+                        </x-blatui.button>
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="deactivate" title="Deactivate">
                             {!! $icoUnpublish !!}
                             <span class="max-md:hidden!">Deactivate</span>
-                        </button>
+                        </x-blatui.button>
                     </div>
 
                     <div class="flex! gap-1! items-center!">
-                        <button type="button" class="fc-abtn bulk-action" data-action="feature" title="Feature">
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="feature" title="Feature">
                             {!! $icoFeature !!}
                             <span class="max-md:hidden!">Feature</span>
-                        </button>
-                        <button type="button" class="fc-abtn bulk-action" data-action="unfeature" title="Unfeature">
+                        </x-blatui.button>
+                        <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="unfeature" title="Unfeature">
                             {!! $icoFeature !!}
                             <span class="max-md:hidden!">Unfeature</span>
-                        </button>
+                        </x-blatui.button>
                     </div>
                 @endif
 
-                <a href="{{ route('admin.petitions', request()->except('select')) }}"
-                    title="Clear selection" class="fc-abtn fc-abtn--neutral">
+                <x-blatui.button variant="outline" size="sm" :href="route('admin.petitions', request()->except('select'))" title="Clear selection">
                     {!! $icoX !!}
                     <span class="max-md:hidden!">Clear</span>
-                </a>
+                </x-blatui.button>
             </div>
         </x-slot:footer>
 
