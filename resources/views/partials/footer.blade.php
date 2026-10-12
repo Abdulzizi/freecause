@@ -11,7 +11,7 @@
     $bottom = $layoutContent['footer_bottom'] ?? '';
 @endphp
 
-<section class="bg-[#1f2024]! text-white! font-[Arial,sans-serif]!">
+<section class="site-footer bg-[#1f2024]! text-white! font-[Arial,sans-serif]!">
     <div class="mx-auto! w-full! px-3! max-w-[1300px]!">
         <div class="flex! flex-wrap! -mx-3!">
             <div class="w-full! shrink-0! grow-0! px-3!">

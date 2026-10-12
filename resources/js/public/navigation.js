@@ -64,7 +64,9 @@ export function init(ctx) {
         bar.className = 'fcui-topbar';
         document.body.appendChild(bar);
 
+        const startDelay = 300;
         let active = false;
+        let startTimer = null;
         let settleTimer = null;
 
         const start = function () {
@@ -87,6 +89,19 @@ export function init(ctx) {
             });
         };
 
+        const queue = function () {
+            if (active || startTimer !== null) return;
+            startTimer = window.setTimeout(function () {
+                startTimer = null;
+                start();
+            }, startDelay);
+        };
+
+        const cancel = function () {
+            window.clearTimeout(startTimer);
+            startTimer = null;
+        };
+
         const done = function () {
             if (!active) return;
             active = false;
@@ -99,6 +114,19 @@ export function init(ctx) {
                     bar.style.transition = '';
                 });
             }, prefersReducedMotion ? 0 : 220);
+        };
+
+        const reset = function () {
+            cancel();
+            window.clearTimeout(settleTimer);
+            if (!active) return;
+            active = false;
+            bar.classList.remove('is-active');
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+            window.requestAnimationFrame(function () {
+                bar.style.transition = '';
+            });
         };
 
         document.addEventListener('click', function (event) {
@@ -116,14 +144,19 @@ export function init(ctx) {
             }
             if (url.origin !== window.location.origin) return;
             if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
-            start();
+            queue();
         });
 
         document.addEventListener('submit', function () {
             start();
         });
 
-        window.addEventListener('pagehide', done);
+        window.addEventListener('pagehide', function () {
+            cancel();
+            done();
+        });
+
+        window.addEventListener('pageshow', reset);
     })();
 
     document.addEventListener('click', function (event) {

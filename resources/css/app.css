@@ -427,6 +427,24 @@ body.fc-public .navbar button.nav-link:focus-visible {
     outline-offset: 2px;
 }
 
+body.fc-public .navbar {
+    view-transition-name: site-header;
+}
+
+body.fc-public .site-notice {
+    view-transition-name: site-notice;
+}
+
+body.fc-public .site-footer {
+    view-transition-name: site-footer;
+}
+
+::view-transition-group(site-header),
+::view-transition-group(site-notice),
+::view-transition-group(site-footer) {
+    animation: none;
+}
+
 @view-transition {
     navigation: auto;
 }
