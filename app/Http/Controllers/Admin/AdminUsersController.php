@@ -7,16 +7,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserBanRequest;
 use App\Http\Requests\Admin\AdminUserBulkRequest;
 use App\Http\Requests\Admin\AdminUserSaveRequest;
+use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Support\AppLog;
 use App\Support\ApproxRows;
 use App\Support\Locale;
+use App\Support\Settings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminUsersController extends Controller
@@ -220,8 +225,12 @@ class AdminUsersController extends Controller
             return back()->withErrors(['verified' => 'You cannot deactivate your own account.'])->withInput();
         }
 
+        $wasVerified = (bool) $user->verified;
+        $nowVerified = $request->boolean('verified');
+        $needsReverification = $wasVerified && ! $nowVerified;
+
         try {
-            DB::transaction(function () use ($request, $data, $user, $levelChangesRequested) {
+            DB::transaction(function () use ($request, $data, $user, $levelChangesRequested, $needsReverification) {
                 if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
@@ -244,10 +253,26 @@ class AdminUsersController extends Controller
                 $user->locale = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
                 $user->verified = $request->boolean('verified');
 
+                if ($needsReverification) {
+                    $user->verification_token = Str::random(64);
+                    $user->verification_token_sent_at = now();
+                } elseif ($user->verified) {
+                    $user->verification_token = null;
+                    $user->verification_token_sent_at = null;
+                }
+
                 $user->save();
             });
         } catch (\Throwable $e) {
             return back()->withInput()->withErrors(['id' => 'Could not save user.']);
+        }
+
+        if ($needsReverification && Settings::get('smtp_enabled', false)) {
+            try {
+                Mail::to($user->email)->queue(new VerifyAccountMail($user, $user->locale ?: default_locale()));
+            } catch (\Throwable $e) {
+                AppLog::error('Re-verification email failed', 'User ID: '.$user->id.' | '.$e->getMessage(), 'admin.users');
+            }
         }
 
         if ($user->wasChanged('level_id')) {

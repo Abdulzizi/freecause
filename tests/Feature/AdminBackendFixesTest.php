@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Mail\VerifyAccountMail;
 use App\Models\Log;
 use App\Models\Page;
 use App\Models\Permission;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
@@ -81,6 +84,49 @@ class AdminBackendFixesTest extends TestCase
             ->assertSessionHasErrors('level');
 
         $this->assertSame(UserLevel::where('name', 'admin')->value('id'), $otherAdmin->fresh()->level_id);
+    }
+
+    public function test_unverifying_a_user_rotates_the_token_and_queues_a_new_link(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create(['verified' => true, 'verification_token' => null]);
+
+        Mail::fake();
+        Settings::set('smtp_enabled', true, 'global');
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/admin/users?select='.$target->id);
+
+        $target->refresh();
+
+        $this->assertFalse((bool) $target->verified);
+        $this->assertNotNull($target->verification_token);
+        $this->assertSame(64, strlen($target->verification_token));
+        $this->assertNotNull($target->verification_token_sent_at);
+        Mail::assertQueued(VerifyAccountMail::class);
+    }
+
+    public function test_verifying_a_user_manually_clears_the_pending_token(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create([
+            'verified' => false,
+            'verification_token' => str_repeat('a', 64),
+            'verification_token_sent_at' => now(),
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'verified' => 1])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/admin/users?select='.$target->id);
+
+        $target->refresh();
+
+        $this->assertTrue((bool) $target->verified);
+        $this->assertNull($target->verification_token);
+        $this->assertNull($target->verification_token_sent_at);
     }
 
     public function test_system_admin_can_change_level_of_regular_user(): void
