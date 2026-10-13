@@ -306,12 +306,20 @@ class GoogleAuthController extends Controller
             ]);
             $dest = parse_url($dest, PHP_URL_PATH).'?'.http_build_query(['oauth_logged_in' => 1]);
 
+            if (! $user->hasCompleteProfile()) {
+                $dest = self::profileCompletionTarget($destLocale, $dest);
+            }
+
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
         }
 
         $dest = $ctx['redirect'] ?? '';
         if ($dest === '') {
             $dest = '/'.Locale::toShort($user->locale);
+        }
+
+        if (! $user->hasCompleteProfile()) {
+            $dest = self::profileCompletionTarget($destLocale, $dest);
         }
 
         return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));

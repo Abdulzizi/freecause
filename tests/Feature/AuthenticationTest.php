@@ -117,7 +117,7 @@ class AuthenticationTest extends TestCase
                 'redirect' => '/en/create-petition',
             ],
         ])->get('/en/oauth/google/callback')
-            ->assertRedirect('/en/create-petition');
+            ->assertRedirect('/en/profile?return=%2Fen%2Fcreate-petition');
 
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
@@ -352,7 +352,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password123',
             'agree_terms' => 'on',
             'redirect' => '/en/create-petition',
-        ])->assertRedirect('/en/create-petition');
+        ])->assertRedirect('/en/profile?return=%2Fen%2Fcreate-petition');
 
         $this->assertAuthenticated();
     }

@@ -8,6 +8,7 @@ use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class ProfileGateTest extends TestCase
@@ -61,12 +62,14 @@ class ProfileGateTest extends TestCase
         $this->assertSame(0, $petition->signatures()->count());
     }
 
-    public function test_user_with_incomplete_profile_is_redirected_before_opening_the_create_form(): void
+    public function test_create_form_stays_reachable_with_a_completion_notice(): void
     {
         $this->actingAs($this->incompleteUser())
             ->get('/en/create-petition')
-            ->assertRedirectContains('/en/profile?return=')
-            ->assertSessionHas('profile_required');
+            ->assertOk()
+            ->assertSee(__('profile.complete_required_create'))
+            ->assertSee(__('profile.finish_profile'))
+            ->assertSee('/en/profile', false);
     }
 
     public function test_user_with_incomplete_profile_cannot_submit_the_create_form(): void
@@ -125,18 +128,18 @@ class ProfileGateTest extends TestCase
         $user = $this->incompleteUser();
 
         $this->actingAs($user)
-            ->get('/en/create-petition')
+            ->get('/en/my-petitions')
             ->assertRedirectContains('/en/profile?return=');
 
         $this->actingAs($user)
-            ->post('/en/profile?return=/en/create-petition', [
+            ->post('/en/profile?return=/en/my-petitions', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
                 'country' => 'US',
                 'gender' => 'female',
                 'locale' => 'en',
             ])
-            ->assertRedirect('/en/create-petition')
+            ->assertRedirect('/en/my-petitions')
             ->assertSessionHasNoErrors();
 
         $user->refresh();
@@ -204,5 +207,84 @@ class ProfileGateTest extends TestCase
             'message' => 'Help me, I cannot complete my profile.',
         ]);
         $this->assertStringNotContainsString('/en/profile', (string) $contact->headers->get('Location'));
+    }
+
+    public function test_gated_redirect_names_the_attempted_action(): void
+    {
+        $petition = $this->petition();
+        $user = $this->incompleteUser();
+
+        $this->actingAs($user)
+            ->post("/en/petition/gate-test-petition/{$petition->id}/sign", [
+                'agree1' => 'agree',
+                'agree2' => 'agree',
+                'agree3' => 'agree',
+            ])
+            ->assertRedirectContains('reason=sign')
+            ->assertRedirectContains('return=');
+
+        $this->actingAs($user)
+            ->post('/en/report')
+            ->assertRedirectContains('reason=report');
+
+        $this->actingAs($user)
+            ->get('/en/preferences')
+            ->assertRedirectContains('reason=preferences');
+    }
+
+    public function test_profile_page_explains_the_action_and_marks_the_missing_fields(): void
+    {
+        $this->actingAs($this->incompleteUser())
+            ->get('/en/profile?reason=sign&return=/en/my-petitions')
+            ->assertOk()
+            ->assertSee(__('profile.complete_required_sign'))
+            ->assertSee(__('profile.jump_to_fields'))
+            ->assertSee('href="#country-field"', false)
+            ->assertSee('aria-invalid="true"', false);
+    }
+
+    public function test_petition_page_warns_before_signing(): void
+    {
+        $petition = $this->petition();
+
+        $this->actingAs($this->incompleteUser())
+            ->get("/en/petition/gate-test-petition/{$petition->id}")
+            ->assertOk()
+            ->assertSee(__('profile.complete_required_sign'))
+            ->assertSee(__('profile.finish_profile'))
+            ->assertSee('/en/profile', false);
+    }
+
+    public function test_login_sends_users_with_an_incomplete_profile_to_the_profile(): void
+    {
+        $user = $this->incompleteUser();
+        $user->password = Hash::make('password123');
+        $user->save();
+
+        $this->post('/en/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ])->assertRedirect('/en/profile');
+    }
+
+    public function test_complete_users_see_no_completion_notice(): void
+    {
+        $petition = $this->petition();
+        $user = User::factory()->create(['verified' => true]);
+
+        $this->actingAs($user)
+            ->get("/en/petition/gate-test-petition/{$petition->id}")
+            ->assertOk()
+            ->assertDontSee(__('profile.complete_required_sign'));
+
+        $this->actingAs($user)
+            ->get('/en/create-petition')
+            ->assertOk()
+            ->assertDontSee(__('profile.complete_required_create'));
+
+        $this->actingAs($user)
+            ->get('/en/profile')
+            ->assertOk()
+            ->assertDontSee(__('profile.complete_required'));
     }
 }

@@ -43,6 +43,15 @@
             {{ $tSignedAlready }}
         </p>
     @else
+        @if (! auth()->user()->hasCompleteProfile())
+            @once
+                <x-ui.alert variant="warning" class="mb-3">
+                    <p class="mb-2">{{ __('profile.complete_required_sign') }}</p>
+                    <x-ui.button variant="secondary" size="sm" :href="lroute('profile', ['return' => request()->fullUrl()])">{{ __('profile.finish_profile') }}</x-ui.button>
+                </x-ui.alert>
+            @endonce
+        @endif
+
         <form action="{{ $signPageUrl }}" method="POST" data-sign-busy data-validate data-msg-required="{{ __('common.required') }}" data-msg-email="{{ __('sign.email_warning') }}" class="fc-sign-form fc-sign-form--{{ $variant }}">
             @csrf
             <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>

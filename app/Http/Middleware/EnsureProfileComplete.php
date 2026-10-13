@@ -27,9 +27,20 @@ class EnsureProfileComplete
         if ($user instanceof User && ! $user->hasCompleteProfile()) {
             $return = $request->isMethod('GET') ? $request->fullUrl() : url()->previous();
             $profileUrl = lroute('profile');
+            $params = [];
 
             if (is_string($return) && $return !== '') {
-                $profileUrl .= (str_contains($profileUrl, '?') ? '&' : '?').http_build_query(['return' => $return]);
+                $params['return'] = $return;
+            }
+
+            $reason = $this->reasonFor($request);
+
+            if ($reason !== '') {
+                $params['reason'] = $reason;
+            }
+
+            if ($params !== []) {
+                $profileUrl .= (str_contains($profileUrl, '?') ? '&' : '?').http_build_query($params);
             }
 
             return redirect()
@@ -38,5 +49,21 @@ class EnsureProfileComplete
         }
 
         return $next($request);
+    }
+
+    private function reasonFor(Request $request): string
+    {
+        $name = (string) $request->route()?->getName();
+
+        return match (true) {
+            str_starts_with($name, 'petition.sign'),
+            str_starts_with($name, 'petition.claim') => 'sign',
+            str_starts_with($name, 'petition.store') => 'create',
+            str_starts_with($name, 'petition.edit'),
+            str_starts_with($name, 'petition.update') => 'edit',
+            str_starts_with($name, 'report.') => 'report',
+            str_starts_with($name, 'preferences.') => 'preferences',
+            default => '',
+        };
     }
 }

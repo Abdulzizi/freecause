@@ -13,24 +13,41 @@
             && (int) ($googleDeleteProof['verified_at'] ?? 0) >= now()->subMinutes(5)->timestamp;
 
         $card = 'rounded-lg bg-surface p-6 shadow-elev-1';
-        $input = 'block w-full max-md:min-h-12 rounded-md border border-border bg-surface px-3 py-2 text-base md:text-sm leading-normal text-ink transition focus:border-brand focus:ring-2 focus:ring-brand/25 focus:outline-none';
+        $inputBase = 'block w-full max-md:min-h-12 rounded-md border bg-surface px-3 py-2 text-base md:text-sm leading-normal text-ink transition focus:ring-2 focus:outline-none';
+        $input = $inputBase.' border-border focus:border-brand focus:ring-brand/25';
+        $inputInvalid = $inputBase.' border-danger focus:border-danger focus:ring-danger/25';
         $label = 'text-sm font-medium text-ink';
         $btnBrand = 'fcui-btn fcui-btn--danger fcui-btn--md max-md:min-h-12';
         $btnOutline = 'fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12';
+
+        $mustComplete = ! $u->hasCompleteProfile();
+        $missingCountry = ! old('country', $u->country);
+        $missingGender = ! old('gender', $u->gender);
+        $reasonKey = match (request('reason')) {
+            'sign' => 'complete_required_sign',
+            'create' => 'complete_required_create',
+            'edit' => 'complete_required_edit',
+            'report' => 'complete_required_report',
+            'preferences' => 'complete_required_preferences',
+            default => 'complete_required',
+        };
     @endphp
 
     <section class="fc-section bg-band">
         <div class="mx-auto max-w-5xl px-4">
+            @if ($mustComplete)
+                <div class="mb-6">
+                    <x-ui.alert variant="warning">
+                        <p class="mb-2">{{ __('profile.'.$reasonKey) }}</p>
+                        <a class="inline-flex max-md:min-h-12 items-center text-sm font-medium text-brand no-underline hover:underline" href="#{{ $missingCountry ? 'country-field' : 'gender-field' }}">{{ __('profile.jump_to_fields') }}</a>
+                    </x-ui.alert>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
 
                 <aside class="lg:col-span-5 xl:col-span-4">
                     <div class="{{ $card }}">
-
-                        @if (session('profile_required'))
-                            <x-ui.alert variant="warning" class="mb-4">
-                                {{ __('profile.complete_required') }}
-                            </x-ui.alert>
-                        @endif
 
                         <h1 class="mb-4 text-lg font-semibold text-ink">{{ __('profile.my_data') }}</h1>
                         <x-ui.button :href="lroute('preferences.show')" variant="secondary" size="sm" class="mb-4">{{ __('preferences.manage_preferences') }}</x-ui.button>
@@ -247,28 +264,40 @@
                                 <input class="{{ $input }}" id="city" name="city" value="{{ old('city', $u->city) }}">
                             </div>
 
-                            <div class="grid grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
+                            <div id="country-field" class="grid scroll-mt-16 grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
                                 <label class="{{ $label }}" for="country">{{ __('profile.country') }}</label>
-                                <select class="{{ $input }}" id="country" name="country" required>
-                                    <option value="">{{ __('profile.select_country') }}</option>
-                                    @foreach ($countries as $countryCode => $countryName)
-                                        <option value="{{ $countryCode }}" @selected(old('country', $u->country) === $countryCode)>
-                                            {{ $countryName }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div>
+                                    <select class="{{ $mustComplete && $missingCountry ? $inputInvalid : $input }}" id="country" name="country" required
+                                        @if ($mustComplete && $missingCountry) aria-invalid="true" aria-describedby="country-required" @endif>
+                                        <option value="">{{ __('profile.select_country') }}</option>
+                                        @foreach ($countries as $countryCode => $countryName)
+                                            <option value="{{ $countryCode }}" @selected(old('country', $u->country) === $countryCode)>
+                                                {{ $countryName }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($mustComplete && $missingCountry)
+                                        <span id="country-required" class="mt-1 block text-sm text-danger">{{ __('common.required') }}</span>
+                                    @endif
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
+                            <div id="gender-field" class="grid scroll-mt-16 grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
                                 <label class="{{ $label }}" for="gender">{{ __('profile.gender') }}</label>
-                                <select class="{{ $input }}" id="gender" name="gender" required>
-                                    <option value="">{{ __('profile.select_gender') }}</option>
-                                    @foreach (\App\Models\User::GENDERS as $genderValue)
-                                        <option value="{{ $genderValue }}" @selected(old('gender', $u->gender) === $genderValue)>
-                                            {{ __('profile.gender_'.$genderValue) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div>
+                                    <select class="{{ $mustComplete && $missingGender ? $inputInvalid : $input }}" id="gender" name="gender" required
+                                        @if ($mustComplete && $missingGender) aria-invalid="true" aria-describedby="gender-required" @endif>
+                                        <option value="">{{ __('profile.select_gender') }}</option>
+                                        @foreach (\App\Models\User::GENDERS as $genderValue)
+                                            <option value="{{ $genderValue }}" @selected(old('gender', $u->gender) === $genderValue)>
+                                                {{ __('profile.gender_'.$genderValue) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($mustComplete && $missingGender)
+                                        <span id="gender-required" class="mt-1 block text-sm text-danger">{{ __('common.required') }}</span>
+                                    @endif
+                                </div>
                             </div>
 
                             @php $preferredLanguage = old('locale', \App\Support\Locale::toShort($u->locale)); @endphp

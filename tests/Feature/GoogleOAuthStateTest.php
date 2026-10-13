@@ -58,7 +58,7 @@ class GoogleOAuthStateTest extends TestCase
         $this->queueGoogleUser();
 
         $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
-            ->assertRedirect('/en/create-petition')
+            ->assertRedirect('/en/profile?return=%2Fen%2Fcreate-petition')
             ->assertSessionMissing('state')
             ->assertSessionMissing('oauth_ctx');
 
@@ -80,7 +80,7 @@ class GoogleOAuthStateTest extends TestCase
         $this->queueGoogleUser();
 
         $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
-            ->assertRedirect('/fr/petition/save-the-forest/42/sign/confirm?oauth_logged_in=1');
+            ->assertRedirect('/fr/profile?return=%2Ffr%2Fpetition%2Fsave-the-forest%2F42%2Fsign%2Fconfirm%3Foauth_logged_in%3D1');
 
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
@@ -138,7 +138,7 @@ class GoogleOAuthStateTest extends TestCase
         $state = $this->startGoogleLogin('/en/oauth/google?flow=login');
         $this->queueGoogleUser();
 
-        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])->assertRedirect('/en');
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])->assertRedirect('/en/profile');
         $this->assertAuthenticated();
 
         $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])

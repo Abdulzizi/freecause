@@ -41,6 +41,13 @@
                         </ul>
                     </x-ui.alert>
                 @endif
+
+                @if (! $isEdit && ! auth()->user()->hasCompleteProfile())
+                    <x-ui.alert variant="warning" class="mb-4">
+                        <p class="mb-2">{{ __('profile.complete_required_create') }}</p>
+                        <x-ui.button variant="secondary" size="sm" :href="lroute('profile', ['return' => request()->fullUrl()])">{{ __('profile.finish_profile') }}</x-ui.button>
+                    </x-ui.alert>
+                @endif
             @endauth
 
             @if(!$isEdit)

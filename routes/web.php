@@ -309,7 +309,7 @@ Route::prefix('{locale}')
 
         Route::get('/', [HomeController::class, 'index'])->name('home');
 
-        Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create')->middleware('profile.complete');
+        Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
 
         Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
             ->withoutMiddleware($withoutSession)

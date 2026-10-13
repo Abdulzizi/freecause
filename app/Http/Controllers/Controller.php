@@ -15,4 +15,17 @@ abstract class Controller
 
         return $fallback;
     }
+
+    public static function profileCompletionTarget(string $locale, string $dest): string
+    {
+        $locale = normalize_locale($locale);
+        $profile = "/{$locale}/profile";
+        $dest = trim($dest);
+
+        if ($dest === '' || $dest === "/{$locale}" || $dest === $profile) {
+            return $profile;
+        }
+
+        return $profile.'?'.http_build_query(['return' => $dest]);
+    }
 }

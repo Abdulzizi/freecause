@@ -176,6 +176,10 @@ class AuthController extends Controller
 
         $dest = self::sanitizeRedirectPath($request->input('redirect'), "/{$locale}");
 
+        if (! $user->hasCompleteProfile()) {
+            $dest = self::profileCompletionTarget($locale, $dest);
+        }
+
         return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
     }
 
@@ -240,6 +244,10 @@ class AuthController extends Controller
             }
             if ($dest === '') {
                 $dest = '/'.Locale::toShort($user->locale);
+            }
+
+            if (! $user->hasCompleteProfile()) {
+                $dest = self::profileCompletionTarget($locale, $dest);
             }
 
             return redirect()->to(WpSso::loginUrl($user->email, $user->name, $dest));
