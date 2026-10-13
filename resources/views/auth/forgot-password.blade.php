@@ -28,11 +28,11 @@
                                     :error="$errors->first('email')"
                                     autocomplete="email"
                                     autofocus
-                                    class="min-h-12"
+                                    class="max-md:min-h-12"
                                 />
                             </div>
 
-                            <x-ui.button type="submit" variant="danger" class="w-full min-h-12">{{ __('auth.send_reset') }}</x-ui.button>
+                            <x-ui.button type="submit" variant="danger" class="w-full max-md:min-h-12">{{ __('auth.send_reset') }}</x-ui.button>
 
                             <div class="text-center mt-4">
                                 <a href="{{ lroute('login') }}" class="text-muted text-sm">{{ __('auth.back_login') }}</a>

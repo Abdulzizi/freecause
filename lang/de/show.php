@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Ergänzen Sie alles, was unser Team bei der Prüfung unterstützt.',
     'report_submit' => 'Meldung senden',
     'report_sent' => 'Danke für Ihre Meldung. Unser Team prüft sie.',
+    'report_comment_title' => 'Diesen Kommentar melden',
+    'report_failed' => 'Deine Meldung konnte nicht gesendet werden. Wähle einen Grund und versuche es erneut.',
     'report_missing' => 'Dieser Inhalt kann nicht mehr gemeldet werden.',
     'report_guidelines' => 'Community-Richtlinien lesen',
     'reason_spam' => 'Spam oder Werbung',

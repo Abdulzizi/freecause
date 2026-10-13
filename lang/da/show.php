@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Tilføj oplysninger, der hjælper vores team.',
     'report_submit' => 'Send rapport',
     'report_sent' => 'Tak for din rapport. Vores team gennemgår den.',
+    'report_comment_title' => 'Rapporter denne kommentar',
+    'report_failed' => 'Din rapport kunne ikke sendes. Vælg en årsag, og prøv igen.',
     'report_missing' => 'Indholdet kan ikke længere rapporteres.',
     'report_guidelines' => 'Læs vores retningslinjer',
     'reason_spam' => 'Spam eller reklame',

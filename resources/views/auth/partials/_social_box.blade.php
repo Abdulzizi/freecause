@@ -6,7 +6,7 @@
 <div class="flex justify-center gap-2 flex-wrap mb-4">
 
     <a href="{{ lroute('oauth.google', ['flow' => $flow ?? 'register', 'redirect' => $redirect]) }}"
-        class="btn fc-google-btn fc-oauth-btn min-h-12">
+        class="btn fc-google-btn fc-oauth-btn max-md:min-h-12">
         <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-4.5 h-4.5 block shrink-0" aria-hidden="true">
         {{ __('auth.continue_google') }}
     </a>

@@ -6,8 +6,8 @@
     $isAuthed = auth()->check();
 
     $labelClass = $useLabels ? 'block mb-1 text-xs text-ink' : 'block mb-1 text-xs text-ink md:sr-only';
-    $inputClass = 'block w-full px-2 py-2 text-base md:text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted max-md:placeholder:text-transparent min-h-12 md:min-h-0';
-    $submitClass = 'fcui-btn fcui-btn--md fcui-btn--danger w-full md:w-auto min-h-12 md:min-h-0';
+    $inputClass = 'block w-full px-2 py-2 text-base md:text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted max-md:placeholder:text-transparent max-md:min-h-12 md:min-h-0';
+    $submitClass = 'fcui-btn fcui-btn--md fcui-btn--danger w-full md:w-auto max-md:min-h-12 md:min-h-0';
 
     $tSignedAlready = __('sign.already_signed');
     $tSignedHint = __('sign.signed_hint');

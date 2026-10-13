@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Añade lo que ayude a nuestro equipo a revisarlo.',
     'report_submit' => 'Enviar denuncia',
     'report_sent' => 'Gracias por tu denuncia. Nuestro equipo la revisará.',
+    'report_comment_title' => 'Denunciar este comentario',
+    'report_failed' => 'No se pudo enviar tu denuncia. Elige un motivo e inténtalo de nuevo.',
     'report_missing' => 'Ese contenido ya no está disponible.',
     'report_guidelines' => 'Lee nuestras normas comunitarias',
     'reason_spam' => 'Spam o publicidad',

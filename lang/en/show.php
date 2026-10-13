@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Add anything that helps our team review this report.',
     'report_submit' => 'Submit report',
     'report_sent' => 'Thank you for your report. Our moderation team will review it.',
+    'report_comment_title' => 'Report this comment',
+    'report_failed' => 'Your report could not be sent. Please choose a reason and try again.',
     'report_missing' => 'That content is no longer available to report.',
     'report_guidelines' => 'Read our community guidelines',
     'reason_spam' => 'Spam or advertising',

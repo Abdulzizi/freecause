@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Aggiungi ciò che aiuta il nostro team.',
     'report_submit' => 'Invia segnalazione',
     'report_sent' => 'Grazie per la segnalazione. Il nostro team la esaminerà.',
+    'report_comment_title' => 'Segnala questo commento',
+    'report_failed' => 'La segnalazione non è stata inviata. Scegli un motivo e riprova.',
     'report_missing' => 'Questo contenuto non è più disponibile.',
     'report_guidelines' => 'Leggi le linee guida',
     'reason_spam' => 'Spam o pubblicità',

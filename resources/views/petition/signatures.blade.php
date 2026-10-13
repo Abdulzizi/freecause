@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="w-full md:w-1/4 shrink-0 md:text-right px-3">
-                        <x-ui.button variant="danger" :href="$signUrl" class="w-full min-h-12 md:w-auto">
+                        <x-ui.button variant="danger" :href="$signUrl" class="w-full max-md:min-h-12 md:w-auto">
                             {{ __('sig.sign_link') }}
                         </x-ui.button>
                     </div>

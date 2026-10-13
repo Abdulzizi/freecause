@@ -59,12 +59,12 @@
                                 <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
                                     @csrf
                                     <div class="mb-4">
-                                        <input class="block w-full min-h-12 px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
+                                        <input class="block w-full max-md:min-h-12 px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <x-ui.button type="submit" variant="danger" class="min-h-12">{{ __('sign.claim_btn') }}</x-ui.button>
+                                    <x-ui.button type="submit" variant="danger" class="max-md:min-h-12">{{ __('sign.claim_btn') }}</x-ui.button>
                                 </form>
                                 <p class="mt-4 mb-0 text-muted text-sm">
                                     {{ __('sign.claim_verify_note') }}
@@ -91,7 +91,7 @@
                         @endphp
 
                         <div class="mb-2.5">
-                            <a class="flex min-h-12 items-center px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
+                            <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
                             </a>
@@ -109,12 +109,12 @@
                     data-share-title="{{ $petitionTitle }}"
                     data-share-url="{{ $petitionUrl }}"
                     aria-label="{{ $inviteBtnText }}"
-                    class="hidden min-h-12 md:inline-flex">
+                    class="hidden max-md:min-h-12 md:inline-flex">
                     {{ $inviteBtnText }}
                 </x-ui.button>
 
                 <x-ui.button variant="danger" type="button"
-                    class="w-full min-h-12 md:hidden"
+                    class="w-full max-md:min-h-12 md:hidden"
                     data-sheet-open="thanks-share"
                     aria-haspopup="dialog">
                     {{ $inviteBtnText }}

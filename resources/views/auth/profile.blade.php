@@ -13,10 +13,10 @@
             && (int) ($googleDeleteProof['verified_at'] ?? 0) >= now()->subMinutes(5)->timestamp;
 
         $card = 'rounded-lg bg-surface p-6 shadow-elev-1';
-        $input = 'block w-full min-h-12 rounded-md border border-border bg-surface px-3 py-2 text-base leading-normal text-ink transition focus:border-brand focus:ring-2 focus:ring-brand/25 focus:outline-none';
+        $input = 'block w-full max-md:min-h-12 rounded-md border border-border bg-surface px-3 py-2 text-base md:text-sm leading-normal text-ink transition focus:border-brand focus:ring-2 focus:ring-brand/25 focus:outline-none';
         $label = 'text-sm font-medium text-ink';
-        $btnBrand = 'fcui-btn fcui-btn--danger fcui-btn--md min-h-12';
-        $btnOutline = 'fcui-btn fcui-btn--secondary fcui-btn--md min-h-12';
+        $btnBrand = 'fcui-btn fcui-btn--danger fcui-btn--md max-md:min-h-12';
+        $btnOutline = 'fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12';
     @endphp
 
     <section class="fc-section bg-band">
@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <a class="inline-flex min-h-12 items-center text-sm font-medium text-brand no-underline hover:underline" href="{{ lroute('account.petitions') }}">
+                            <a class="inline-flex max-md:min-h-12 items-center text-sm font-medium text-brand no-underline hover:underline" href="{{ lroute('account.petitions') }}">
                                 {{ __('profile.my_petitions') }}
                             </a>
                         </div>
@@ -162,14 +162,14 @@
                                         </div>
                                     @endunless
 
-                                    <label class="flex min-h-12 items-start gap-2 py-2 text-xs text-ink">
+                                    <label class="flex max-md:min-h-12 items-start gap-2 py-2 text-xs text-ink">
                                         <input type="checkbox" name="confirm_delete" value="1" required data-account-delete-confirm
                                             class="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-border text-brand focus:ring-brand/40">
                                         <span>{{ __('profile.confirm_delete_lbl') }}</span>
                                     </label>
 
                                     <button type="submit" data-account-delete-submit
-                                        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-danger px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
+                                        class="inline-flex max-md:min-h-12 items-center justify-center gap-2 rounded-md bg-danger px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
                                         {{ __('profile.delete') }} <span aria-hidden="true">&raquo;</span>
                                     </button>
                                 </form>
@@ -216,15 +216,15 @@
                             <div class="grid grid-cols-1 gap-2 md:grid-cols-[160px_1fr] md:gap-4">
                                 <span class="{{ $label }} md:pt-2">{{ __('profile.identify_as') }}</span>
                                 <div class="flex flex-wrap gap-x-6 gap-y-2 md:pt-2">
-                                    <label class="inline-flex min-h-12 items-center gap-2 text-sm text-ink">
+                                    <label class="inline-flex max-md:min-h-12 items-center gap-2 text-sm text-ink">
                                         <input type="radio" name="identify_mode" value="full" @checked($idMode === 'full')
                                             class="h-4 w-4 border-border text-brand focus:ring-brand/40"> {{ __('profile.id_full') }}
                                     </label>
-                                    <label class="inline-flex min-h-12 items-center gap-2 text-sm text-ink">
+                                    <label class="inline-flex max-md:min-h-12 items-center gap-2 text-sm text-ink">
                                         <input type="radio" name="identify_mode" value="name" @checked($idMode === 'name')
                                             class="h-4 w-4 border-border text-brand focus:ring-brand/40"> {{ __('profile.id_name') }}
                                     </label>
-                                    <label class="inline-flex min-h-12 items-center gap-2 text-sm text-ink">
+                                    <label class="inline-flex max-md:min-h-12 items-center gap-2 text-sm text-ink">
                                         <input type="radio" name="identify_mode" value="nick" @checked($idMode === 'nick')
                                             class="h-4 w-4 border-border text-brand focus:ring-brand/40"> {{ __('profile.id_nick') }}
                                     </label>

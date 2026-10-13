@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Ajoutez tout élément utile à notre équipe.',
     'report_submit' => 'Envoyer le signalement',
     'report_sent' => 'Merci pour votre signalement. Notre équipe va l’examiner.',
+    'report_comment_title' => 'Signaler ce commentaire',
+    'report_failed' => 'Votre signalement n’a pas pu être envoyé. Choisissez un motif et réessayez.',
     'report_missing' => 'Ce contenu n’est plus disponible.',
     'report_guidelines' => 'Lire nos règles communautaires',
     'reason_spam' => 'Spam ou publicité',

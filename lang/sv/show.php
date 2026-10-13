@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Lägg till det som hjälper vårt team.',
     'report_submit' => 'Skicka anmälan',
     'report_sent' => 'Tack för din anmälan. Vårt team granskar den.',
+    'report_comment_title' => 'Anmäl denna kommentar',
+    'report_failed' => 'Din anmälan kunde inte skickas. Välj en orsak och försök igen.',
     'report_missing' => 'Innehållet är inte längre tillgängligt.',
     'report_guidelines' => 'Läs våra riktlinjer',
     'reason_spam' => 'Spam eller reklam',

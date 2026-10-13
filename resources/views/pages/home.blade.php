@@ -41,18 +41,18 @@
     <div class="pt-6 md:pt-8">
         <x-ui.container>
             <details class="fcui-card fc-reveal" open>
-                <summary class="min-h-12 cursor-pointer px-4 py-3 font-semibold text-ink md:px-6">{{ __('home.onboarding_title') }}</summary>
+                <summary class="max-md:min-h-12 cursor-pointer px-4 py-3 font-semibold text-ink md:px-6">{{ __('home.onboarding_title') }}</summary>
 
                 <ol class="list-none p-0 m-0 grid gap-2 px-4 pb-4 text-sm text-ink md:grid-cols-3 md:gap-4 md:px-6 md:pb-6">
-                    <li class="flex items-center gap-2 min-h-12">
+                    <li class="flex items-center gap-2 max-md:min-h-12">
                         <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">1</span>
                         <span>{{ __('home.btn_browse_petitions') }}</span>
                     </li>
-                    <li class="flex items-center gap-2 min-h-12">
+                    <li class="flex items-center gap-2 max-md:min-h-12">
                         <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">2</span>
                         <span>{{ __('show.btn_sign_now') }}</span>
                     </li>
-                    <li class="flex items-center gap-2 min-h-12">
+                    <li class="flex items-center gap-2 max-md:min-h-12">
                         <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">3</span>
                         <span>{{ __('show.share') }}</span>
                     </li>
@@ -195,7 +195,7 @@
                                                         @endphp
 
                                                         <li class="group">
-                                                            <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif class="block min-h-12">
+                                                            <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif class="block max-md:min-h-12">
 
                                                                 <div
                                                                     class="flex justify-between mb-1">
@@ -292,7 +292,7 @@
             <x-ui.chip-row class="-mx-3 md:hidden">
                 @foreach ($categories as $cat)
                     <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
-                        class="fcui-chip min-h-12">{{ $cat->tr_name }}</a>
+                        class="fcui-chip max-md:min-h-12">{{ $cat->tr_name }}</a>
                 @endforeach
             </x-ui.chip-row>
 

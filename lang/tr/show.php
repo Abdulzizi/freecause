@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Ekibimize yardımcı olacak bilgileri ekleyin.',
     'report_submit' => 'Bildirimi gönder',
     'report_sent' => 'Bildiriminiz için teşekkürler. Ekibimiz inceleyecek.',
+    'report_comment_title' => 'Bu yorumu bildir',
+    'report_failed' => 'Bildiriminiz gönderilemedi. Bir neden seçip tekrar deneyin.',
     'report_missing' => 'Bu içerik artık bildirilemez.',
     'report_guidelines' => 'Topluluk kurallarını okuyun',
     'reason_spam' => 'Spam veya reklam',

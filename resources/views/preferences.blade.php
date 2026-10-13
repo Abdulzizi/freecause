@@ -24,16 +24,16 @@
 
                 <div class="mt-6 flex flex-col gap-3 sm:flex-row">
                     @auth
-                        <x-ui.button :href="lroute('preferences.show')" class="min-h-12">
+                        <x-ui.button :href="lroute('preferences.show')" class="max-md:min-h-12">
                             {{ __('preferences.manage_preferences') }}
                         </x-ui.button>
                     @else
-                        <x-ui.button :href="lroute('login')" class="min-h-12">
+                        <x-ui.button :href="lroute('login')" class="max-md:min-h-12">
                             {{ __('preferences.sign_in') }}
                         </x-ui.button>
                     @endauth
 
-                    <x-ui.button :href="lroute('home')" variant="secondary" class="min-h-12">
+                    <x-ui.button :href="lroute('home')" variant="secondary" class="max-md:min-h-12">
                         {{ __('preferences.back_home') }}
                     </x-ui.button>
                 </div>
@@ -44,16 +44,16 @@
 
                 <div class="mt-6 flex flex-col gap-3 sm:flex-row">
                     @auth
-                        <x-ui.button :href="lroute('preferences.show')" class="min-h-12">
+                        <x-ui.button :href="lroute('preferences.show')" class="max-md:min-h-12">
                             {{ __('preferences.manage_preferences') }}
                         </x-ui.button>
                     @else
-                        <x-ui.button :href="lroute('login')" class="min-h-12">
+                        <x-ui.button :href="lroute('login')" class="max-md:min-h-12">
                             {{ __('preferences.sign_in') }}
                         </x-ui.button>
                     @endauth
 
-                    <x-ui.button :href="lroute('home')" variant="secondary" class="min-h-12">
+                    <x-ui.button :href="lroute('home')" variant="secondary" class="max-md:min-h-12">
                         {{ __('preferences.back_home') }}
                     </x-ui.button>
                 </div>
@@ -69,7 +69,7 @@
                         @csrf
 
                         <div class="space-y-2">
-                            <label class="flex min-h-12 items-start gap-3 py-2">
+                            <label class="flex max-md:min-h-12 items-start gap-3 py-2">
                                 <input type="hidden" name="notify_milestones" value="0">
                                 <input type="checkbox" name="notify_milestones" value="1"
                                     @checked(old('notify_milestones', $user->notify_milestones))
@@ -80,7 +80,7 @@
                                 </span>
                             </label>
 
-                            <label class="flex min-h-12 items-start gap-3 py-2">
+                            <label class="flex max-md:min-h-12 items-start gap-3 py-2">
                                 <input type="hidden" name="notify_product" value="0">
                                 <input type="checkbox" name="notify_product" value="1"
                                     @checked(old('notify_product', $user->notify_product))
@@ -97,7 +97,7 @@
                         </x-ui.alert>
 
                         <div>
-                            <x-ui.button type="submit" class="w-full min-h-12 sm:w-auto">
+                            <x-ui.button type="submit" class="w-full max-md:min-h-12 sm:w-auto">
                                 {{ __('preferences.save') }}
                             </x-ui.button>
                         </div>
@@ -112,7 +112,7 @@
                         @csrf
                         <input type="hidden" name="unsubscribe_all" value="1">
 
-                        <x-ui.button type="submit" variant="secondary" class="w-full min-h-12 sm:w-auto">
+                        <x-ui.button type="submit" variant="secondary" class="w-full max-md:min-h-12 sm:w-auto">
                             {{ __('preferences.unsubscribe_all') }}
                         </x-ui.button>
                     </form>

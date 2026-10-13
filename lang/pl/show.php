@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Dodaj wszystko, co pomoże naszemu zespołowi.',
     'report_submit' => 'Wyślij zgłoszenie',
     'report_sent' => 'Dziękujemy za zgłoszenie. Nasz zespół je sprawdzi.',
+    'report_comment_title' => 'Zgłoś ten komentarz',
+    'report_failed' => 'Nie udało się wysłać zgłoszenia. Wybierz powód i spróbuj ponownie.',
     'report_missing' => 'Ta treść nie jest już dostępna.',
     'report_guidelines' => 'Przeczytaj nasze zasady',
     'reason_spam' => 'Spam lub reklama',

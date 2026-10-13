@@ -173,7 +173,7 @@
                 </div>
 
                 @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
-                    <x-ui.alert variant="error" class="mb-4">Your report could not be sent. Please choose a reason and try again.</x-ui.alert>
+                    <x-ui.alert variant="error" class="mb-4">{{ __('show.report_failed') }}</x-ui.alert>
                 @endif
 
                 <div class="md:hidden mt-1 mb-4">
@@ -240,7 +240,7 @@
                                 <legend class="fcui-field__label">{{ __('show.report_question') }}</legend>
 
                                 @foreach (\App\Models\Report::reasons() as $reason)
-                                    <label class="flex min-h-12 items-center gap-2 text-base">
+                                    <label class="flex max-md:min-h-12 items-center gap-2 text-base">
                                         <input type="radio" name="reason" value="{{ $reason }}" required @checked($loop->first)>
                                         <span>{{ $reportReasons[$reason] }}</span>
                                     </label>
@@ -253,8 +253,7 @@
                             </label>
 
                             <p class="mb-0 text-sm text-muted">
-                                Reports are reviewed against our
-                                <a class="text-brand" href="{{ $guidelinesUrl }}">community guidelines</a>.
+                                <a class="text-brand underline" href="{{ $guidelinesUrl }}">{{ __('show.report_guidelines') }}</a>.
                             </p>
 
                             <x-ui.button type="submit" class="w-full">{{ __('show.report_submit') }}</x-ui.button>
@@ -359,7 +358,7 @@
                                                         <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
 
                                                         <label class="fcui-field">
-                                                            <span class="fcui-field__label">Report this comment</span>
+                                                            <span class="fcui-field__label">{{ __('show.report_comment_title') }}</span>
                                                             <select name="reason" class="fcui-input" required>
                                                                 @foreach (\App\Models\Report::reasons() as $reason)
                                                                     <option value="{{ $reason }}">{{ $reportReasons[$reason] }}</option>

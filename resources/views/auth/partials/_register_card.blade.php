@@ -32,7 +32,7 @@
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('name') : null"
                 autocomplete="given-name"
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -46,7 +46,7 @@
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('surname') : null"
                 autocomplete="family-name"
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -61,7 +61,7 @@
                 :error="$isRegisterSubmit ? $errors->first('email') : null"
                 autocomplete="email"
                 data-email-suggest
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -76,7 +76,7 @@
                 autocomplete="new-password"
                 data-strength
                 data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -92,7 +92,7 @@
                 :label="__('sign.nickname')"
                 :value="old('nickname')"
                 :error="$isRegisterSubmit ? $errors->first('nickname') : null"
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -105,7 +105,7 @@
                 :value="old('city')"
                 :error="$isRegisterSubmit ? $errors->first('city') : null"
                 autocomplete="address-level2"
-                class="min-h-12"
+                class="max-md:min-h-12"
             />
         </div>
 
@@ -117,7 +117,7 @@
         </div>
 
         <div class="hidden md:block">
-            <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm min-h-12">{{ __('auth.submit') }}</x-ui.button>
+            <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm max-md:min-h-12">{{ __('auth.submit') }}</x-ui.button>
         </div>
 
         <x-ui.sticky-action :label="__('auth.submit')" />

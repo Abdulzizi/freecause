@@ -137,7 +137,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required data-maxcount="120" class="min-h-12" />
+                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required data-maxcount="120" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-3">
@@ -171,7 +171,7 @@
                                     <div class="col-md-6">
                                         <label class="block mb-2">{{ __('form.goal_signatures') }}</label>
 
-                                        <select class="form-select min-h-12" name="goal_signatures" required>
+                                        <select class="form-select max-md:min-h-12" name="goal_signatures" required>
                                             <option value="">{{ __('create.select_one') }}</option>
 
                                             @php
@@ -190,7 +190,7 @@
 
                                 <div class="col-md-6">
                                     <label class="block mb-2">{{ __('form.category') }}</label>
-                                    <select class="form-select min-h-12" name="category_id" required>
+                                    <select class="form-select max-md:min-h-12" name="category_id" required>
                                         <option value="">{{ __('create.select_one') }}</option>
                                         @foreach ($categories as $c)
                                             <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
@@ -202,7 +202,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <x-ui.input name="tags" :label="__('form.tags')" :value="$oldTags" :hint="__('create.tags_hint')" class="min-h-12" />
+                                <x-ui.input name="tags" :label="__('form.tags')" :value="$oldTags" :hint="__('create.tags_hint')" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-3" data-image-field>
@@ -214,7 +214,7 @@
 
                                 <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
 
-                                <input type="file" class="form-control min-h-12 @error('image') is-invalid @enderror"
+                                <input type="file" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
                                     name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                     data-image-input data-max-size="4194304">
 
@@ -255,7 +255,7 @@
 
                                 <div class="mt-2">
                                     <label class="block mb-2">{{ __('form.image_external') }}</label>
-                                    <input class="form-control min-h-12 @error('image_url') is-invalid @enderror"
+                                    <input class="form-control max-md:min-h-12 @error('image_url') is-invalid @enderror"
                                         name="image_url" value="{{ $oldImageUrl }}" placeholder="https://" data-image-url>
                                     @error('image_url')
                                         <div class="invalid-feedback block">{{ $message }}</div>
@@ -264,28 +264,28 @@
                             </div>
 
                             <div class="mb-3">
-                                <x-ui.input name="youtube" :label="__('form.youtube')" :value="$oldYoutube" class="min-h-12" />
+                                <x-ui.input name="youtube" :label="__('form.youtube')" :value="$oldYoutube" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-3">
-                                <x-ui.input name="target" :label="__('form.target')" :value="$oldTarget" class="min-h-12" />
+                                <x-ui.input name="target" :label="__('form.target')" :value="$oldTarget" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-3">
-                                <x-ui.input name="community" :label="__('form.community')" :value="$oldCommunity" class="min-h-12" />
+                                <x-ui.input name="community" :label="__('form.community')" :value="$oldCommunity" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-3">
-                                <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" class="min-h-12" />
+                                <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" class="max-md:min-h-12" />
                             </div>
 
                             <div class="mb-6">
-                                <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" class="min-h-12" />
+                                <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" class="max-md:min-h-12" />
                             </div>
 
                             <div class="text-center max-md:[&_.fcui-btn]:w-full">
                                 <span data-autosave-status class="text-sm text-muted me-3"></span>
-                                <x-ui.button type="submit" variant="danger" class="px-12 min-h-12 hidden md:inline-flex"
+                                <x-ui.button type="submit" variant="danger" class="px-12 max-md:min-h-12 hidden md:inline-flex"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
                                 </x-ui.button>

@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Voeg toe wat ons team helpt bij de beoordeling.',
     'report_submit' => 'Melding verzenden',
     'report_sent' => 'Bedankt voor je melding. Ons team beoordeelt deze.',
+    'report_comment_title' => 'Deze reactie melden',
+    'report_failed' => 'Je melding kon niet worden verzonden. Kies een reden en probeer opnieuw.',
     'report_missing' => 'Deze inhoud is niet meer beschikbaar.',
     'report_guidelines' => 'Lees onze communityrichtlijnen',
     'reason_spam' => 'Spam of advertenties',

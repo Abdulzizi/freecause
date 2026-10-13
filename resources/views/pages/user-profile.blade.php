@@ -56,7 +56,7 @@
 
                             @forelse ($recentPetitions as $p)
                                 <div class="border-b border-border text-sm" style="--fc-i: {{ min($loop->index, 12) }}">
-                                    <a class="flex min-h-12 items-center text-brand break-words" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
+                                    <a class="py-1.5 max-md:flex max-md:items-center max-md:min-h-12 text-brand break-words" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
                                         {{ $p->title }}
                                     </a>
                                 </div>
@@ -72,7 +72,7 @@
 
                             @forelse ($recentSignatures as $s)
                                 <div class="border-b border-border text-sm" style="--fc-i: {{ min($loop->index, 12) }}">
-                                    <a class="flex min-h-12 items-center text-brand break-words" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
+                                    <a class="py-1.5 max-md:flex max-md:items-center max-md:min-h-12 text-brand break-words" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
                                         {{ $s->title }}
                                     </a>
                                 </div>

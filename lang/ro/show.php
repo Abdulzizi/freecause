@@ -44,6 +44,8 @@ return [
     'report_details_ph' => 'Adaugă ce ajută echipa noastră.',
     'report_submit' => 'Trimite raportul',
     'report_sent' => 'Mulțumim pentru raport. Echipa noastră îl va verifica.',
+    'report_comment_title' => 'Raportează acest comentariu',
+    'report_failed' => 'Raportul nu a putut fi trimis. Alege un motiv și încearcă din nou.',
     'report_missing' => 'Acest conținut nu mai este disponibil.',
     'report_guidelines' => 'Citește regulile comunității',
     'reason_spam' => 'Spam sau publicitate',
