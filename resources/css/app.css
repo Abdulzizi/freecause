@@ -1945,7 +1945,7 @@ select.fc-filter-field {
         min-height: 0;
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding-bottom: calc(1rem + var(--fc-safe-bottom));
+        padding-bottom: calc(1.5rem + var(--fc-safe-bottom));
     }
 
     .fcui-sheet-list__item {
