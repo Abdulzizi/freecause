@@ -20,7 +20,7 @@
 
 @section('content')
     <x-ui.section>
-            <div class="bg-white shadow-elev-1 rounded-md p-12 text-center max-w-[900px] mx-auto">
+            <div class="bg-white shadow-elev-1 rounded-md p-6 md:p-12 text-center max-w-[900px] mx-auto">
 
                 <h1 class="mb-6 text-xl md:text-2xl font-medium break-words [overflow-wrap:anywhere]">
                     {{ $h2Line1 }}<br>
@@ -28,7 +28,7 @@
                 </h1>
 
                 @if (auth()->check() || ! empty($signData))
-                <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block">
+                <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block w-full md:w-auto">
                     @csrf
                     <x-ui.alert variant="error" class="mt-2" data-sign-network-error hidden>{{ __('sign.connection_error') }}</x-ui.alert>
 
@@ -47,9 +47,11 @@
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', 'agree') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
-                    <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-lg px-5 py-3 text-xl font-semibold no-underline hover:bg-brand-hover max-md:w-full max-md:text-lg max-md:px-4 max-md:py-2.5" type="submit">
+                    <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-lg px-5 py-3 text-xl font-semibold no-underline hover:bg-brand-hover max-md:hidden" type="submit">
                         {{ $btnText }} <span>»</span>
                     </button>
+
+                    <x-ui.sticky-action :label="$btnText" />
                 </form>
                 @else
                 <div class="text-start">
@@ -59,6 +61,7 @@
                         'tr' => $tr,
                         'locale' => $locale,
                         'hasSigned' => false,
+                        'stickySubmit' => true,
                     ])
                 </div>
                 @endif

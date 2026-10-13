@@ -14,7 +14,7 @@
 
 @section('content')
 
-    <section id="welcomes" class="bg-band fc-section fc-hero">
+    <section id="welcomes" class="bg-band fc-section fc-hero max-md:py-8">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 items-center justify-center">
                 <div class="w-full md:w-2/3 shrink-0 grow-0 px-3 text-center">
@@ -27,7 +27,7 @@
                         {!! \App\Services\ContentRenderer::render($content['h2'] ?? __('home.h2')) !!}
                     </h2>
 
-                    <div class="fc-hero-item mt-7 mb-4">
+                    <div class="fc-hero-item mt-7 mb-4 max-md:mt-5">
                         <x-ui.button :href="lroute('petition.create')" variant="primary" size="lg">
                             {{ __('home.btn_create_petition') }}
                         </x-ui.button>
@@ -46,7 +46,7 @@
 
                         <ul class="nav nav-tabs" id="myTab">
                             <li class="nav-item">
-                                <button class="nav-link active" data-bs-toggle="tab"
+                                <button class="nav-link active max-md:min-h-12" data-bs-toggle="tab"
                                     data-bs-target="#featured-petition-tab-pane">
                                     <svg class="inline-block mr-1.5" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 2.6 10.6h1.3v10.8h5.3v-5.8h5.6v5.8h5.3V10.6h1.3L12 2.5Z"/></svg>
                                     {{ __('home.tab_featured') }}
@@ -54,7 +54,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
+                                <button class="nav-link max-md:min-h-12" data-bs-toggle="tab" data-bs-target="#recent-activities-tab-pane">
                                     <svg class="inline-block mr-1.5" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
                                     {{ __('home.tab_recent') }}
                                 </button>
@@ -94,7 +94,7 @@
                                                         </div>
 
                                                         <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-sm:mb-4">
-                                                                <h3>{{ $featuredPetition->tr_title }}</h3>
+                                                                <h3 class="break-words">{{ $featuredPetition->tr_title }}</h3>
                                                                 <p>
                                                                     <strong>
                                                                         {{ __('home.petition_target_label') }}
@@ -134,7 +134,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <x-ui.button :href="$featuredUrl" variant="primary">
+                                                        <x-ui.button :href="$featuredUrl" variant="primary" class="max-md:min-h-12">
                                                             {{ __('home.featured_read_more') }}
                                                         </x-ui.button>
                                                     @endif
@@ -172,11 +172,11 @@
                                                         @endphp
 
                                                         <li class="group">
-                                                            <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif>
+                                                            <a href="{{ $url }}" @if($hasPetition) data-prefetch @endif class="block min-h-12">
 
                                                                 <div
                                                                     class="flex justify-between mb-1">
-                                                                    <p class="text-sm">
+                                                                    <p class="text-sm break-words min-w-0">
                                                                         <span>
                                                                             {{ $sig->name }}
                                                                         </span>
@@ -191,7 +191,7 @@
                                                                     </span>
                                                                 </div>
 
-                                                                <p class="text-sm">
+                                                                <p class="text-sm break-words">
                                                                     {{ $sig->petition_title }}
                                                                 </p>
 
@@ -266,7 +266,14 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
+            <x-ui.chip-row class="-mx-3 md:hidden">
+                @foreach ($categories as $cat)
+                    <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
+                        class="fcui-chip min-h-12">{{ $cat->tr_name }}</a>
+                @endforeach
+            </x-ui.chip-row>
+
+            <div class="hidden md:flex flex-wrap -mx-3 fc-reveal fc-stagger">
                 @foreach ($categories as $cat)
                     <div class="w-full lg:w-1/4 sm:w-1/2 shrink-0 grow-0 px-3 mb-4" style="--fc-i: {{ min($loop->index, 12) }}">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
@@ -302,7 +309,7 @@
                                     @endif
                                 </div>
                                 <div class="p-5 bg-white min-h-36">
-                                    <h3 class="text-base md:text-base mb-2.5 text-ink">{{ $post->post_title }}</h3>
+                                    <h3 class="text-base md:text-base mb-2.5 text-ink break-words">{{ $post->post_title }}</h3>
                                     <span class="text-brand">
                                     {{ __('home.blog_read_more') }}
                                     <span class="ml-1.5">›</span>

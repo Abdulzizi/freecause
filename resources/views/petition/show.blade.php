@@ -39,6 +39,9 @@
     $boxGoal = __('show.box_goal');
     $goalSignaturesText = __('show.goal_signatures', ['count' => number_format($goalCurrent)]);
     $goalLabelText = __('show.goal_label', ['count' => number_format($goalTotal)]);
+    $goalPct = $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0;
+    $goalSignaturesWord = ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText));
+    $goalLabelPrefix = trim(str_replace(number_format($goalTotal), '', $goalLabelText));
 
     $boxLatest = __('show.box_latest');
     $latestEmpty = __('show.latest_empty');
@@ -100,9 +103,15 @@
                         {{ $petitionTitle }}
                     </h1>
 
-                    @if (!$hasSigned)
-                        <x-ui.button variant="danger" href="{{ $signTarget }}" data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">{{ $btnSignNow }}</x-ui.button>
-                    @endif
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="fcui-icon-btn md:hidden" data-sheet-open="petitionShare" aria-haspopup="dialog" aria-label="{{ __('show.share') }}">
+                            <x-lucide-share-2 aria-hidden="true" />
+                        </button>
+
+                        @if (!$hasSigned)
+                            <x-ui.button variant="danger" href="{{ $signTarget }}" data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">{{ $btnSignNow }}</x-ui.button>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 mb-4">
@@ -129,7 +138,28 @@
                     @endif
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 mb-4">
+                <div class="md:hidden mt-1 mb-4">
+                    <div class="flex items-center justify-between gap-2 text-sm fc-tabular">
+                        <span class="font-semibold"><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ $goalSignaturesWord }}</span>
+                        <span class="text-muted">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></span>
+                    </div>
+                    <div class="fc-progress-reveal h-2.5 bg-surface-2 rounded-full overflow-hidden mt-2">
+                        <div class="h-full bg-success fcui-progress-fill" style="--pct: {{ $goalPct }}%"></div>
+                    </div>
+                </div>
+
+                <div class="md:hidden sticky top-0 z-sticky -mx-6 bg-white">
+                    <x-ui.chip-row>
+                        <a class="fcui-chip fcui-tap" href="#petition-about">{{ __('pet.pdf_description') }}</a>
+                        <a class="fcui-chip fcui-tap" href="#petition-comments">{{ $boxShoutbox }}</a>
+                        <a class="fcui-chip fcui-tap" href="#petition-signatures">{{ $boxLatest }}</a>
+                        @if (($related ?? collect())->isNotEmpty())
+                            <a class="fcui-chip fcui-tap" href="#petition-related">{{ __('show.related') }}</a>
+                        @endif
+                    </x-ui.chip-row>
+                </div>
+
+                <div class="hidden md:flex flex-wrap items-center gap-2 mb-4">
                     <span class="text-sm font-semibold text-muted">{{ __('show.share') }}:</span>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-facebook text-white"
@@ -154,10 +184,21 @@
                     </button>
                 </div>
 
+                <x-ui.action-sheet id="petitionShare" :title="__('show.share')" :actions="[
+                    ['label' => 'Facebook', 'href' => 'https://www.facebook.com/sharer/sharer.php?u='.urlencode(request()->url()), 'external' => true, 'icon' => 'share-2'],
+                    ['label' => 'Twitter', 'href' => 'https://twitter.com/intent/tweet?url='.urlencode(request()->url()).'&text='.urlencode($petitionTitle), 'external' => true, 'icon' => 'external-link'],
+                    ['label' => 'WhatsApp', 'href' => 'https://wa.me/?text='.urlencode($petitionTitle.' '.request()->url()), 'external' => true, 'icon' => 'message-square'],
+                ]">
+                    <button type="button" class="fcui-sheet-list__item w-full" data-copy="{{ request()->url() }}" data-copied-label="{{ __('show.link_copied') }}">
+                        <x-lucide-copy aria-hidden="true" />
+                        <span>{{ __('show.copy_link') }}</span>
+                    </button>
+                </x-ui.action-sheet>
+
                 <div class="flex flex-wrap -mx-3">
                     <div class="w-full lg:w-2/3 shrink-0 px-3">
                         @php $wv = $coverVariants; @endphp
-                        <a href="#" class="relative block overflow-hidden rounded-lg bg-dark h-[380px]" data-bs-toggle="modal" data-bs-target="#imgModal">
+                        <a href="#" class="relative block overflow-hidden rounded-lg bg-dark h-56 md:h-[380px]" data-bs-toggle="modal" data-bs-target="#imgModal">
                             @if ($wv)
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="100vw">
@@ -165,18 +206,18 @@
                             </picture>
                             <picture>
                                 <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 992px) 640px, 100vw">
-                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative z-10 block w-full h-[380px] object-contain" loading="eager" fetchpriority="high" decoding="async">
+                                <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative z-10 block w-full h-56 md:h-[380px] object-contain" loading="eager" fetchpriority="high" decoding="async">
                             </picture>
                             @else
                             <img src="{{ $petitionImg }}" alt="" class="absolute inset-[-15px] w-[calc(100%+30px)] h-[calc(100%+30px)] object-cover blur-[18px] opacity-[0.55] rounded-none" aria-hidden="true" loading="lazy" decoding="async">
-                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative z-10 block w-full h-[380px] object-contain" loading="eager" fetchpriority="high" decoding="async">
+                            <img src="{{ $petitionImg }}" alt="{{ $petitionTitle }}" data-blurup class="fcui-blurup relative z-10 block w-full h-56 md:h-[380px] object-contain" loading="eager" fetchpriority="high" decoding="async">
                             @endif
                             @if ($petitionCredit)
                                 <span class="absolute right-2 bottom-2 rounded-md bg-dark/55 px-2 py-1 text-xs text-on-dark">{{ $petitionCredit }}</span>
                             @endif
                         </a>
 
-                        <div class="mt-4">
+                        <div id="petition-about" class="mt-4 scroll-mt-16">
                             <div class="text-base leading-[1.75] text-ink [&_p]:mb-3 [&_p]:text-sm [&_p]:leading-[1.75] [&_ul]:my-2.5 [&_ul]:mt-0 [&_ul]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2.5 [&_ol]:mt-0 [&_ol]:mb-3.5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1.5 [&_li]:text-sm [&_li]:leading-[1.75] [&_li>ul]:mt-2 [&_li>ol]:mt-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-bold [&_h4]:mt-3.5 [&_h4]:text-sm [&_h4]:font-bold">
                                 {!! $tr->description !!}
                             </div>
@@ -213,7 +254,7 @@
                             ])
                         </div>
 
-                        <div class="mt-6">
+                        <div id="petition-comments" class="mt-6 scroll-mt-16">
                             <h2 class="text-lg font-semibold">{{ $boxShoutbox }}</h2>
                             @include('partials.gradient-divider')
 
@@ -283,13 +324,12 @@
                             <h2 class="text-lg font-semibold">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
-                            <div class="fc-progress-reveal h-1.5 bg-surface-2 rounded-full overflow-hidden mt-4">
-                                <div class="h-1.5 bg-success fcui-progress-fill" style="--pct: {{ $goalCurrent > 0 && $goalTotal > 0 ? max(round($goalCurrent / $goalTotal * 100, 2), 1.5) : 0 }}%"></div>
+                            <div class="fc-progress-reveal h-2.5 md:h-1.5 bg-surface-2 rounded-full overflow-hidden mt-4">
+                                <div class="h-full bg-success fcui-progress-fill" style="--pct: {{ $goalPct }}%"></div>
                             </div>
 
                             <div class="flex justify-between mt-2 text-sm">
-                                <div class="fc-tabular"><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ ltrim(str_replace(number_format($goalCurrent), '', $goalSignaturesText)) }}</div>
-                                @php $goalLabelPrefix = trim(str_replace(number_format($goalTotal), '', $goalLabelText)); @endphp
+                                <div class="fc-tabular"><span data-countup data-countup-to="{{ $goalCurrent }}">{{ number_format($goalCurrent) }}</span> {{ $goalSignaturesWord }}</div>
                                 <div class="fc-tabular text-muted">{{ $goalLabelPrefix }} <span data-abbr data-abbr-value="{{ $goalTotal }}">{{ number_format($goalTotal) }}</span></div>
                             </div>
 
@@ -304,7 +344,7 @@
                             @endif
                         </div>
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div id="petition-signatures" class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150 scroll-mt-16">
                             <div class="font-bold text-base flex items-center justify-between">
                                 <span>{{ $boxLatest }}</span>
                             </div>
@@ -470,7 +510,7 @@
             </div>
 
             @if (($related ?? collect())->isNotEmpty())
-                <div class="mt-10">
+                <div id="petition-related" class="mt-10 scroll-mt-16">
                     <h2 class="text-lg font-bold mb-4">{{ __('show.related') }}</h2>
                     <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                         @foreach ($related as $rel)
@@ -490,7 +530,7 @@
                 </div>
             @endif
 
-            <button type="button" class="fcui-scrolltop" data-scroll-top aria-label="Back to top">
+            <button type="button" class="fcui-scrolltop max-md:bottom-32" data-scroll-top aria-label="Back to top">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="12" y1="19" x2="12" y2="5"></line>
                     <polyline points="5 12 12 5 19 12"></polyline>
@@ -500,8 +540,8 @@
         </x-ui.section>
 
     @if (!$hasSigned)
-        <div class="fcui-sticky-signbar">
-            <a href="{{ $signTarget }}" class="fcui-btn fcui-btn--md fcui-btn--danger block text-center w-full" data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">{{ $btnSignNow }}</a>
+        <div data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">
+            <x-ui.sticky-action :href="$signTarget" :label="$btnSignNow" :context="$goalSignaturesText" />
         </div>
     @endif
 

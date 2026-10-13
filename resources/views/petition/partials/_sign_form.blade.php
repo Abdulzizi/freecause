@@ -2,7 +2,12 @@
     $variant = $variant ?? 'stack';
     $col = $variant === 'split' ? 'w-full md:w-1/2 shrink-0 px-1' : 'w-full px-1';
     $useLabels = $variant === 'split';
+    $stickySubmit = $stickySubmit ?? false;
     $isAuthed = auth()->check();
+
+    $labelClass = $useLabels ? 'block mb-1 text-xs text-ink' : 'block mb-1 text-xs text-ink md:sr-only';
+    $inputClass = 'block w-full px-2 py-2 text-base md:text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted max-md:placeholder:text-transparent min-h-12 md:min-h-0';
+    $submitClass = 'fcui-btn fcui-btn--md fcui-btn--danger w-full md:w-auto min-h-12 md:min-h-0';
 
     $tSignedAlready = __('sign.already_signed');
     $tSignedHint = __('sign.signed_hint');
@@ -57,15 +62,9 @@
                 @endif
 
                 <div class="w-full mb-3">
-                    @if ($useLabels)
-                        <label class="block mb-1 text-xs text-ink" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
-                            value="{{ old('comment', $defaultComment) }}" required>
-                    @else
-                        <label for="sign_comment_auth_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500"
-                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
-                    @endif
+                    <label class="{{ $labelClass }}" for="sign_comment_auth_{{ $variant }}">{{ $lblComment }}</label>
+                    <input class="{{ $inputClass }}" type="text" name="comment" id="sign_comment_auth_{{ $variant }}" data-maxcount="500" @if (!$useLabels) placeholder="{{ $phComment }}" @endif
+                        value="{{ old('comment', $defaultComment) }}" required>
                     <span data-error-for="comment" hidden class="text-sm text-brand mt-1 block"></span>
                 </div>
 
@@ -124,10 +123,14 @@
                 </div>
 
                 <div class="w-full">
-                    <button class="fcui-btn fcui-btn--md fcui-btn--danger" type="submit">{{ $tBtnSign }}</button>
+                    <button class="{{ $submitClass }}@if ($stickySubmit) max-md:hidden @endif" type="submit">{{ $tBtnSign }}</button>
                 </div>
 
             </div>
+
+            @if ($stickySubmit)
+                <x-ui.sticky-action :label="$tBtnSign" />
+            @endif
         </form>
 
     @endif
@@ -158,26 +161,14 @@
             @endif
 
             <div class="{{ $col }} mb-3">
-                @if ($useLabels)
-                    <label class="block mb-1 text-xs text-ink" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
-                    <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}" required>
-                @else
-                    <label for="sign_name_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblName }}</label>
-                    <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="name" id="sign_name_{{ $variant }}" value="{{ old('name') }}"
-                        placeholder="{{ $phName }}" required>
-                @endif
+                <label class="{{ $labelClass }}" for="sign_name_{{ $variant }}">{{ $lblName }}</label>
+                <input class="{{ $inputClass }}" type="text" name="name" id="sign_name_{{ $variant }}" @if (!$useLabels) placeholder="{{ $phName }}" @endif value="{{ old('name') }}" required>
                 <span data-error-for="name" hidden class="text-sm text-brand mt-1 block"></span>
             </div>
 
             <div class="{{ $col }} mb-3">
-                @if ($useLabels)
-                    <label class="block mb-1 text-xs text-ink" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
-                    <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}" required aria-required="true">
-                @else
-                    <label for="sign_email_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblEmail }}</label>
-                    <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest value="{{ old('email') }}"
-                        placeholder="{{ $phEmail }}" required aria-required="true">
-                @endif
+                <label class="{{ $labelClass }}" for="sign_email_{{ $variant }}">{{ $lblEmail }}</label>
+                <input class="{{ $inputClass }}" type="email" name="email" id="sign_email_{{ $variant }}" data-email-suggest @if (!$useLabels) placeholder="{{ $phEmail }}" @endif value="{{ old('email') }}" required aria-required="true">
                 <span data-error-for="email" hidden class="text-sm text-brand mt-1 block"></span>
             </div>
 
@@ -189,15 +180,9 @@
 
             <div class="fc-sign-advanced hidden">
                 <div class="w-full mb-3">
-                    @if ($useLabels)
-                        <label class="block mb-1 text-xs text-ink" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
-                        <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
-                            value="{{ old('comment', $defaultComment) }}" required>
-                    @else
-                        <label for="sign_comment_guest_{{ $variant }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $lblComment }}</label>
-                        <input class="block w-full px-2 py-2 text-sm text-ink bg-white border border-border rounded-sm appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 placeholder:italic placeholder:text-muted" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500"
-                            value="{{ old('comment', $defaultComment) }}" placeholder="{{ $phComment }}" required>
-                    @endif
+                    <label class="{{ $labelClass }}" for="sign_comment_guest_{{ $variant }}">{{ $lblComment }}</label>
+                    <input class="{{ $inputClass }}" type="text" name="comment" id="sign_comment_guest_{{ $variant }}" data-maxcount="500" @if (!$useLabels) placeholder="{{ $phComment }}" @endif
+                        value="{{ old('comment', $defaultComment) }}" required>
                     <span data-error-for="comment" hidden class="text-sm text-brand mt-1 block"></span>
                 </div>
             </div>
@@ -224,9 +209,13 @@
                     </div>
                 </div>
 
-                <button class="fcui-btn fcui-btn--md fcui-btn--danger" type="submit">{{ $tBtnSign }}</button>
+                <button class="{{ $submitClass }}@if ($stickySubmit) max-md:hidden @endif" type="submit">{{ $tBtnSign }}</button>
             </div>
         </div>
+
+        @if ($stickySubmit)
+            <x-ui.sticky-action :label="$tBtnSign" />
+        @endif
     </form>
     @endif
 @endif

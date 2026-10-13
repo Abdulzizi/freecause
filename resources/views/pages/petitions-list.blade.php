@@ -17,18 +17,18 @@
 
             <div class="bg-white shadow-elev-1 rounded-lg p-4">
 
-                <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <div class="flex items-center justify-between flex-wrap gap-2 mb-2 max-md:contents">
                     <h1 class="text-base leading-normal m-0 font-bold break-words">{{ $heading ?? __('list.petitions') }}</h1>
-                    <form method="GET" action="" data-live-search class="flex gap-2 max-w-[300px] w-full">
+                    <form method="GET" action="" data-live-search class="flex gap-2 w-full max-w-[300px] max-md:max-w-full max-md:sticky max-md:top-0 max-md:z-sticky max-md:bg-white max-md:-mx-4 max-md:px-4 max-md:py-3">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('list.search_placeholder') }}"
                                aria-label="{{ __('list.search') }}"
-                               class="block w-full px-2 py-1 text-sm leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand-light focus:outline-none focus:ring-4 focus:ring-brand/25">
-                        <button type="submit" class="inline-flex items-center justify-center px-2 py-1 bg-brand text-white border border-brand rounded-md cursor-pointer hover:bg-brand-hover" aria-label="{{ __('list.search') }}">
+                               class="block w-full px-2 py-1 text-sm leading-normal text-ink bg-white border border-border rounded-md appearance-none max-md:min-h-12 max-md:text-base focus:border-brand-light focus:outline-none focus:ring-4 focus:ring-brand/25">
+                        <button type="submit" class="inline-flex items-center justify-center px-2 py-1 bg-brand text-white border border-brand rounded-md cursor-pointer max-md:min-h-12 max-md:min-w-12 hover:bg-brand-hover" aria-label="{{ __('list.search') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         </button>
                         @if(request('q'))
-                            <a href="{{ request()->url() }}" class="inline-flex items-center justify-center px-2 py-1 text-muted bg-white border border-muted rounded-md no-underline hover:bg-muted hover:text-white"
+                            <a href="{{ request()->url() }}" class="inline-flex items-center justify-center px-2 py-1 text-muted bg-white border border-muted rounded-md no-underline max-md:min-h-12 max-md:min-w-12 hover:bg-muted hover:text-white"
                                aria-label="{{ __('list.clear') }}" title="{{ __('list.clear') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </a>
@@ -43,18 +43,30 @@
                 </div>
 
                 @if (! $search && isset($sort))
-                    <div class="flex items-center flex-wrap gap-2 mb-4">
+                    @php
+                        $sortBase = request()->except(['sort', 'page']);
+                        $sortNewestUrl = request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'newest']));
+                        $sortSignedUrl = request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'signed']));
+                    @endphp
+                    <div class="flex items-center flex-wrap gap-2 mb-4 max-md:hidden">
                         <span class="text-sm text-muted me-1">{{ __('list.sort_by') }}:</span>
-                        @php
-                            $sortBase = request()->except(['sort', 'page']);
-                        @endphp
-                        <a href="{{ request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'newest'])) }}"
+                        <a href="{{ $sortNewestUrl }}"
                            class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'newest' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'newest') aria-current="true" @endif>{{ __('list.sort_newest') }}</a>
-                        <a href="{{ request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'signed'])) }}"
+                        <a href="{{ $sortSignedUrl }}"
                            class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'signed' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
                     </div>
+
+                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md min-h-12 mb-4 md:hidden" data-sheet-open="sort-sheet" aria-haspopup="dialog">
+                        <x-lucide-arrow-down-up aria-hidden="true" />
+                        {{ __('list.sort_by') }}
+                    </button>
+
+                    <x-ui.action-sheet id="sort-sheet" :title="__('list.sort_by')" :actions="[
+                        ['href' => $sortNewestUrl, 'label' => __('list.sort_newest'), 'icon' => $sort === 'newest' ? 'check' : 'circle'],
+                        ['href' => $sortSignedUrl, 'label' => __('list.sort_signed'), 'icon' => $sort === 'signed' ? 'check' : 'circle'],
+                    ]" />
                 @endif
 
                 <div class="flex flex-col gap-2 fc-reveal fc-stagger">
@@ -62,7 +74,7 @@
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" data-prefetch style="--fc-i: {{ min($loop->index, 12) }}; view-transition-name: petition-{{ $petition->id }}" class="group flex justify-between items-center px-3.5 py-2.5 border border-border rounded-md text-brand text-sm bg-white transition-all duration-200 ease-out hover:bg-brand hover:text-white hover:border-brand hover:shadow-elev-2 hover:-translate-y-px hover:no-underline">
+                        ]) }}" data-prefetch style="--fc-i: {{ min($loop->index, 12) }}; view-transition-name: petition-{{ $petition->id }}" class="group flex justify-between items-center min-h-12 px-3.5 py-2.5 border border-border rounded-md text-brand text-sm bg-white transition-all duration-200 ease-out hover:bg-brand hover:text-white hover:border-brand hover:shadow-elev-2 hover:-translate-y-px hover:no-underline">
                             <span class="break-words min-w-0">
                                 @php
                                     $titleHtml = e($petition->tr_title);
