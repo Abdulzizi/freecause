@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'Preferências de email',
+    'lead' => 'Escolha que emails a FreeCause lhe envia. Os emails de conta são sempre enviados.',
+    'milestones_title' => 'Marcos da petição',
+    'milestones_help' => 'Quando uma petição que criou atinge 100, 1 000, 10 000 ou 100 000 assinaturas.',
+    'product_title' => 'Novidades do produto',
+    'product_help' => 'Atualizações ocasionais sobre novas funcionalidades e campanhas.',
+    'transactional_note' => 'A verificação, a reposição de palavra-passe e os emails de conta são transacionais: são sempre enviados enquanto a conta estiver ativa.',
+    'save' => 'Guardar preferências',
+    'saved' => 'As suas preferências de email foram guardadas.',
+    'currently_unsubscribed' => 'Neste momento está cancelado de todos os emails opcionais. Guarde uma categoria abaixo para voltar a subscrever.',
+    'unsubscribe_all_title' => 'Cancelar tudo',
+    'unsubscribe_all_help' => 'Desative marcos e novidades do produto num passo.',
+    'unsubscribe_all' => 'Cancelar todos os emails',
+    'unsubscribed' => 'Foi cancelado dos emails de marcos e de produto.',
+    'unsubscribed_help' => 'A verificação, a reposição de palavra-passe e os emails de conta continuam a ser enviados enquanto a conta estiver ativa.',
+    'invalid_token' => 'Este link de cancelamento é inválido ou expirou. Se continua a receber emails, inicie sessão para gerir as preferências.',
+    'manage_preferences' => 'Gerir preferências',
+    'sign_in' => 'Iniciar sessão',
+    'back_home' => 'Voltar ao início',
+];

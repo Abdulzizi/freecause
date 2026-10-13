@@ -25,6 +25,7 @@
         ['label' => __('pages.terms_of_service'), 'href' => lroute('page.show', ['slug' => 'terms-of-service'])],
         ['label' => __('pages.privacy_policy'), 'href' => lroute('page.show', ['slug' => 'privacy-policy'])],
         ['label' => $personalDataTitle, 'href' => lroute('personal-data-processing')],
+        ['label' => __('preferences.manage_preferences'), 'href' => lroute('preferences.show')],
     ];
 @endphp
 

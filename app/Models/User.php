@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -44,6 +45,9 @@ class User extends Authenticatable
         'nickname',
         'google_id',
         'password_changed_at',
+        'notify_milestones',
+        'notify_product',
+        'unsubscribed_at',
     ];
 
     protected $hidden = [
@@ -55,6 +59,9 @@ class User extends Authenticatable
         'verification_token_sent_at' => 'datetime',
         'verified' => 'boolean',
         'banned_until' => 'datetime',
+        'notify_milestones' => 'boolean',
+        'notify_product' => 'boolean',
+        'unsubscribed_at' => 'datetime',
     ];
 
     public function petitions()
@@ -109,5 +116,30 @@ class User extends Authenticatable
     public function isGoogleOnly(): bool
     {
         return filled($this->google_id) && ! $this->hasLocalPassword();
+    }
+
+    public function wantsMilestoneEmails(): bool
+    {
+        return (bool) $this->notify_milestones && $this->unsubscribed_at === null;
+    }
+
+    public function wantsProductEmails(): bool
+    {
+        return (bool) $this->notify_product && $this->unsubscribed_at === null;
+    }
+
+    public function ensureUnsubscribeToken(): string
+    {
+        if (filled($this->unsubscribe_token)) {
+            return $this->unsubscribe_token;
+        }
+
+        do {
+            $token = Str::random(64);
+        } while (static::query()->where('unsubscribe_token', $token)->exists());
+
+        $this->forceFill(['unsubscribe_token' => $token])->save();
+
+        return $token;
     }
 }

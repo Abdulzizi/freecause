@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'Preferințe de e-mail',
+    'lead' => 'Alege ce e-mailuri îți trimite FreeCause. E-mailurile de cont sunt trimise mereu.',
+    'milestones_title' => 'Repere ale petiției',
+    'milestones_help' => 'Când o petiție creată de tine ajunge la 100, 1.000, 10.000 sau 100.000 de semnături.',
+    'product_title' => 'Noutăți despre produs',
+    'product_help' => 'Actualizări ocazionale despre funcții noi și campanii.',
+    'transactional_note' => 'Verificarea, resetarea parolei și e-mailurile de cont sunt tranzacționale: sunt trimise mereu cât timp contul este activ.',
+    'save' => 'Salvează preferințele',
+    'saved' => 'Preferințele tale de e-mail au fost salvate.',
+    'currently_unsubscribed' => 'Momentan ești dezabonat de la toate e-mailurile opționale. Salvează o categorie mai jos pentru a te reabona.',
+    'unsubscribe_all_title' => 'Dezabonează-te de la toate',
+    'unsubscribe_all_help' => 'Oprește reperele și noutățile despre produs într-un pas.',
+    'unsubscribe_all' => 'Dezabonează-te de la toate e-mailurile',
+    'unsubscribed' => 'Ai fost dezabonat de la e-mailurile de repere și de produs.',
+    'unsubscribed_help' => 'Verificarea, resetarea parolei și e-mailurile de cont sunt încă trimise cât timp contul este activ.',
+    'invalid_token' => 'Acest link de dezabonare este invalid sau a expirat. Dacă primești în continuare e-mailuri, autentifică-te pentru a gestiona preferințele.',
+    'manage_preferences' => 'Gestionează preferințele',
+    'sign_in' => 'Autentificare',
+    'back_home' => 'Înapoi acasă',
+];

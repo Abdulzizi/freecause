@@ -77,7 +77,9 @@ class PetitionSigning
         }
 
         try {
-            return DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser) {
+            $counted = false;
+
+            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser, &$counted) {
                 $userLevel = UserLevel::where('name', 'user')->first();
                 $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
 
@@ -115,6 +117,7 @@ class PetitionSigning
                 );
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
+                    $counted = true;
                     PetitionStats::increment($petition->id);
                 }
 
@@ -147,6 +150,12 @@ class PetitionSigning
 
             throw $e;
         }
+
+        if ($counted) {
+            PetitionStats::notifyMilestoneIfCrossed($petition->id);
+        }
+
+        return $response;
     }
 
     public static function signAsAuthed(Request $request, string $locale, Petition $petition): RedirectResponse
@@ -161,7 +170,9 @@ class PetitionSigning
         $u = auth()->user();
 
         try {
-            return DB::transaction(function () use ($data, $locale, $petition, $u) {
+            $counted = false;
+
+            $response = DB::transaction(function () use ($data, $locale, $petition, $u, &$counted) {
                 $sig = Signature::firstOrCreate(
                     ['petition_id' => $petition->id, 'email' => $u->email],
                     [
@@ -178,6 +189,7 @@ class PetitionSigning
                 }
 
                 if ($sig->wasRecentlyCreated) {
+                    $counted = true;
                     PetitionStats::increment($petition->id);
                 }
 
@@ -237,5 +249,11 @@ class PetitionSigning
                 'status' => 1,
             ]);
         }
+
+        if ($counted) {
+            PetitionStats::notifyMilestoneIfCrossed($petition->id);
+        }
+
+        return $response;
     }
 }

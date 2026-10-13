@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'Preferencje e-mail',
+    'lead' => 'Wybierz, które e-maile wysyła FreeCause. E-maile konta są wysyłane zawsze.',
+    'milestones_title' => 'Kamienie milowe petycji',
+    'milestones_help' => 'Gdy petycja, którą utworzysz, osiągnie 100, 1 000, 10 000 lub 100 000 podpisów.',
+    'product_title' => 'Nowości produktu',
+    'product_help' => 'Okazjonalne informacje o nowych funkcjach i kampaniach.',
+    'transactional_note' => 'Weryfikacja, reset hasła i e-maile konta są transakcyjne — wysyłamy je zawsze, gdy konto jest aktywne.',
+    'save' => 'Zapisz preferencje',
+    'saved' => 'Twoje preferencje e-mail zostały zapisane.',
+    'currently_unsubscribed' => 'Obecnie nie subskrybujesz żadnych opcjonalnych e-maili. Zapisz kategorię poniżej, aby wrócić.',
+    'unsubscribe_all_title' => 'Zrezygnuj ze wszystkiego',
+    'unsubscribe_all_help' => 'Wyłącz kamienie milowe i nowości produktu w jednym kroku.',
+    'unsubscribe_all' => 'Zrezygnuj ze wszystkich e-maili',
+    'unsubscribed' => 'Zrezygnowałeś z e-maili o kamieniach milowych i produkcie.',
+    'unsubscribed_help' => 'Weryfikacja, reset hasła i e-maile konta są nadal wysyłane, gdy konto jest aktywne.',
+    'invalid_token' => 'Ten link rezygnacji jest nieprawidłowy lub wygasł. Jeśli nadal dostajesz e-maile, zaloguj się, aby zarządzać preferencjami.',
+    'manage_preferences' => 'Zarządzaj preferencjami',
+    'sign_in' => 'Zaloguj się',
+    'back_home' => 'Powrót do strony głównej',
+];

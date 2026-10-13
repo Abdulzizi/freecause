@@ -2,15 +2,54 @@
 
 namespace App\Services;
 
+use App\Mail\PetitionMilestoneMail;
+use App\Models\Petition;
+use App\Models\User;
+use App\Support\AppLog;
 use App\Support\CacheVersion;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class PetitionStats
 {
+    public const MILESTONES = [100, 1000, 10000, 100000];
+
     public static function increment(int $petitionId, int $by = 1): void
     {
         self::incrementMany([$petitionId => $by]);
+    }
+
+    public static function notifyMilestoneIfCrossed(int $petitionId): void
+    {
+        try {
+            $count = (int) DB::table('petitions')->where('id', $petitionId)->value('signature_count');
+
+            if (! in_array($count, self::MILESTONES, true)) {
+                return;
+            }
+
+            $petition = Petition::with('user')->find($petitionId);
+            $owner = $petition?->user;
+
+            if (! $owner instanceof User || ! $owner->wantsMilestoneEmails()) {
+                return;
+            }
+
+            Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $count));
+
+            AppLog::info(
+                'Milestone email queued',
+                'Petition ID: '.$petitionId.' | Milestone: '.$count,
+                'petition.milestone'
+            );
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Milestone email failed',
+                'Petition ID: '.$petitionId.' | '.$e->getMessage(),
+                'petition.milestone'
+            );
+        }
     }
 
     public static function incrementMany(array $byPetitionId): void

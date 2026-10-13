@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'E-Mail-Einstellungen',
+    'lead' => 'Wähle, welche E-Mails FreeCause dir sendet. Konto-E-Mails werden immer zugestellt.',
+    'milestones_title' => 'Petitions-Meilensteine',
+    'milestones_help' => 'Wenn eine von dir erstellte Petition 100, 1.000, 10.000 oder 100.000 Unterschriften erreicht.',
+    'product_title' => 'Produktneuigkeiten',
+    'product_help' => 'Gelegentliche Updates zu neuen Funktionen und Kampagnen.',
+    'transactional_note' => 'Bestätigung, Passwort-Reset und Konto-E-Mails sind transaktional und werden immer gesendet, solange dein Konto aktiv ist.',
+    'save' => 'Einstellungen speichern',
+    'saved' => 'Deine E-Mail-Einstellungen wurden gespeichert.',
+    'currently_unsubscribed' => 'Du hast derzeit alle optionalen E-Mails abbestellt. Speichere unten eine Kategorie, um wieder zu abonnieren.',
+    'unsubscribe_all_title' => 'Alle abbestellen',
+    'unsubscribe_all_help' => 'Meilensteine und Produktneuigkeiten in einem Schritt deaktivieren.',
+    'unsubscribe_all' => 'Alle E-Mails abbestellen',
+    'unsubscribed' => 'Du wurdest von Meilenstein- und Produkt-E-Mails abgemeldet.',
+    'unsubscribed_help' => 'Bestätigung, Passwort-Reset und Konto-E-Mails werden weiterhin gesendet, solange dein Konto aktiv ist.',
+    'invalid_token' => 'Dieser Abmeldelink ist ungültig oder abgelaufen. Wenn du weiterhin E-Mails erhältst, melde dich an, um deine Einstellungen zu verwalten.',
+    'manage_preferences' => 'Einstellungen verwalten',
+    'sign_in' => 'Anmelden',
+    'back_home' => 'Zurück zur Startseite',
+];

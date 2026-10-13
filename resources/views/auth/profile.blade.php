@@ -27,6 +27,7 @@
                     <div class="{{ $card }}">
 
                         <h1 class="mb-4 text-lg font-semibold text-ink">{{ __('profile.my_data') }}</h1>
+                        <x-ui.button :href="lroute('preferences.show')" variant="secondary" size="sm" class="mb-4">{{ __('preferences.manage_preferences') }}</x-ui.button>
 
                         <div class="space-y-2.5 text-sm">
                             <div class="flex flex-wrap gap-x-2">

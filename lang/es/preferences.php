@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'Preferencias de correo',
+    'lead' => 'Elige qué correos te envía FreeCause. Los correos de cuenta se envían siempre.',
+    'milestones_title' => 'Hitos de la petición',
+    'milestones_help' => 'Cuando una petición que creaste alcanza 100, 1.000, 10.000 o 100.000 firmas.',
+    'product_title' => 'Novedades del producto',
+    'product_help' => 'Actualizaciones ocasionales sobre nuevas funciones y campañas.',
+    'transactional_note' => 'La verificación, el restablecimiento de contraseña y los correos de cuenta son transaccionales, así que siempre se envían mientras tu cuenta esté activa.',
+    'save' => 'Guardar preferencias',
+    'saved' => 'Tus preferencias de correo se han guardado.',
+    'currently_unsubscribed' => 'Actualmente estás dado de baja de todos los correos opcionales. Guarda una categoría abajo para volver a suscribirte.',
+    'unsubscribe_all_title' => 'Darse de baja de todo',
+    'unsubscribe_all_help' => 'Desactiva hitos y novedades del producto en un paso.',
+    'unsubscribe_all' => 'Darse de baja de todos los correos',
+    'unsubscribed' => 'Te has dado de baja de los correos de hitos y del producto.',
+    'unsubscribed_help' => 'La verificación, el restablecimiento de contraseña y los correos de cuenta siguen enviándose mientras tu cuenta esté activa.',
+    'invalid_token' => 'Este enlace de baja no es válido o ha caducado. Si sigues recibiendo correos, inicia sesión para gestionar tus preferencias.',
+    'manage_preferences' => 'Gestionar preferencias',
+    'sign_in' => 'Iniciar sesión',
+    'back_home' => 'Volver al inicio',
+];
