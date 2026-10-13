@@ -40,6 +40,25 @@ export function init(ctx) {
         window.setTimeout(finish, 300);
     });
 
+    const bottomNav = document.querySelector('[data-bottom-nav]');
+
+    if (bottomNav) {
+        let lastY = window.scrollY;
+        const threshold = 24;
+
+        const onScroll = function () {
+            const y = window.scrollY;
+            const delta = y - lastY;
+            if (Math.abs(delta) < threshold) {
+                return;
+            }
+            bottomNav.classList.toggle('is-hidden', delta > 0 && y > 120);
+            lastY = y;
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+    }
+
     const scrollTopBtn = document.querySelector('[data-scroll-top]');
     if (scrollTopBtn) {
         const toggleScrollTop = function () {

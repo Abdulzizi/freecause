@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Annulla',
+    'close' => 'Chiudi',
     'confirm' => 'Conferma',
     'delete' => 'Elimina',
     'edit' => 'Modifica',

@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Avbryt',
+    'close' => 'Stäng',
     'confirm' => 'Bekrafta',
     'delete' => 'Ta bort',
     'edit' => 'Redigera',

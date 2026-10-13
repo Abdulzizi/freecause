@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Iptal',
+    'close' => 'Kapat',
     'confirm' => 'Onayla',
     'delete' => 'Sil',
     'edit' => 'Duzenle',

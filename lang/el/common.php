@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Akirosi',
+    'close' => 'Κλείσιμο',
     'confirm' => 'Epivevea',
     'delete' => 'Diagrafi',
     'edit' => 'Epexergasia',

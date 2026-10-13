@@ -7,6 +7,8 @@ return [
     'footer_links' => '\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}',
     'help' => 'Yardım',
     'home' => 'Ana Sayfa',
+    'menu' => 'Menü',
+    'my_petitions' => 'Dilekçelerim',
     'logout' => 'Çıkış yap',
     'magazine' => 'Dergi',
     'magazine_back_home' => 'Ana sayfaya dön',

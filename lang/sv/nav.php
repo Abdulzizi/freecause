@@ -7,6 +7,8 @@ return [
     'footer_links' => '\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}',
     'help' => 'Hjälp',
     'home' => 'Hem',
+    'menu' => 'Meny',
+    'my_petitions' => 'Mina namninsamlingar',
     'logout' => 'Logga ut',
     'magazine' => 'Magasin',
     'magazine_back_home' => 'Tillbaka till startsidan',

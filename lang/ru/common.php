@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Otmena',
+    'close' => 'Закрыть',
     'confirm' => 'Podtverdit',
     'delete' => 'Udalit',
     'edit' => 'Redaktirovat',

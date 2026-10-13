@@ -2,6 +2,7 @@
 
 return [
     'cancel' => 'Cancel',
+    'close' => 'Close',
     'confirm' => 'Confirm',
     'delete' => 'Delete',
     'edit' => 'Edit',

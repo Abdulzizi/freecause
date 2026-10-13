@@ -7,6 +7,8 @@ return [
     'footer_links' => '\\n                    {PRIVACY_POLICY_ROOT_LINK}\\n                    {ETHICAL_CODE_LINK}\\n                    {CONTACTS_LINK}\\n                    {TOS_LINK}',
     'help' => 'Hulp',
     'home' => 'Startpagina',
+    'menu' => 'Menu',
+    'my_petitions' => 'Mijn petities',
     'logout' => 'Uitloggen',
     'magazine' => 'Tijdschrift',
     'magazine_back_home' => 'Terug naar home',

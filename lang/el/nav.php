@@ -7,6 +7,8 @@ return [
     'footer_links' => '\n                    {PRIVACY_POLICY_ROOT_LINK}\n                    {ETHICAL_CODE_LINK}\n                    {CONTACTS_LINK}\n                    {TOS_LINK}',
     'help' => 'Βοήθεια',
     'home' => 'Αρχική',
+    'menu' => 'Μενού',
+    'my_petitions' => 'Οι υπογραφές μου',
     'logout' => 'Αποσύνδεση',
     'magazine' => 'Περιοδικό',
     'magazine_back_home' => 'Επιστροφή στην αρχική',

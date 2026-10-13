@@ -6,7 +6,7 @@
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
-        .widget { width: 100%; height: 100vh; border: 1px solid #e6e3dd; border-radius: 6px; background: #ffffff; overflow: hidden; padding: 8px; }
+        .widget { width: 100%; height: 100dvh; border: 1px solid #e6e3dd; border-radius: 6px; background: #ffffff; overflow: hidden; padding: 8px; }
         .logo { display: block; height: 28%; background: url('{{ asset("legacy/images/widget-pbadge-{$type}-logo.png") }}') left top / contain no-repeat; }
         .title { display: block; color: #a00117; overflow: hidden; text-decoration: none; white-space: nowrap; text-overflow: ellipsis; }
         .progress { height: 24%; margin: 5px 0; background: #6b655d; border-radius: 4px; overflow: hidden; }
