@@ -42,7 +42,7 @@
 
                         <div class="max-w-[520px] fc-reveal fc-stagger">
                             @forelse($created as $p)
-                                <a class="flex items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 mb-2.5 text-ink hover:bg-brand-soft fc-lift"
+                                <a class="flex items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 mb-2.5 text-ink hover:bg-brand-soft fc-lift" style="--fc-i: {{ min($loop->index, 12) }}"
                                     href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
                                     <div class="text-sm leading-[1.2] flex-1">{{ $p->tr_title }}</div>
                                     <div class="text-sm text-ink whitespace-nowrap">{{ optional($p->created_at)->format('j F Y') }}</div>

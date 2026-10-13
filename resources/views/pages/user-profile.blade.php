@@ -71,7 +71,7 @@
                             </h2>
 
                             @forelse ($recentSignatures as $s)
-                                <div class="py-1.5 border-b border-border text-sm">
+                                <div class="py-1.5 border-b border-border text-sm" style="--fc-i: {{ min($loop->index, 12) }}">
                                     <a class="text-brand break-words" href="{{ route('petition.show', ['slug' => $s->slug, 'id' => $s->petition_id]) }}">
                                         {{ $s->title }}
                                     </a>
