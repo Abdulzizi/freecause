@@ -58,11 +58,6 @@
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
                     </div>
 
-                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 whitespace-nowrap md:hidden" data-sheet-open="sort-sheet" aria-haspopup="dialog">
-                        <x-lucide-arrow-down-up aria-hidden="true" />
-                        {{ __('list.sort_by') }}
-                    </button>
-
                     <x-ui.action-sheet id="sort-sheet" :title="__('list.sort_by')" :actions="[
                         ['href' => $sortNewestUrl, 'label' => __('list.sort_newest'), 'icon' => $sort === 'newest' ? 'check' : 'circle'],
                         ['href' => $sortSignedUrl, 'label' => __('list.sort_signed'), 'icon' => $sort === 'signed' ? 'check' : 'circle'],
@@ -90,10 +85,22 @@
                         </x-ui.chip-row>
                     </div>
 
-                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 whitespace-nowrap md:hidden" data-sheet-open="category-sheet" aria-haspopup="dialog">
-                        <x-lucide-list aria-hidden="true" />
-                        {{ isset($categoryTr) ? $categoryTr->name : __('list.categories') }}
-                    </button>
+                    <div class="flex gap-2 mb-4 md:hidden">
+                        @if (! $search && isset($sort))
+                            <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--sm max-md:min-h-12 flex-1 min-w-0" data-sheet-open="sort-sheet" aria-haspopup="dialog">
+                                <x-lucide-arrow-down-up aria-hidden="true" />
+                                <span class="truncate">{{ $sort === 'signed' ? __('list.sort_signed') : __('list.sort_newest') }}</span>
+                                <x-lucide-chevron-down class="size-3.5 shrink-0" aria-hidden="true" />
+                            </button>
+                        @endif
+                        @if ($categoryLinks->isNotEmpty())
+                            <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--sm max-md:min-h-12 flex-1 min-w-0" data-sheet-open="category-sheet" aria-haspopup="dialog">
+                                <x-lucide-list aria-hidden="true" />
+                                <span class="truncate">{{ isset($categoryTr) ? $categoryTr->name : __('list.categories') }}</span>
+                                <x-lucide-chevron-down class="size-3.5 shrink-0" aria-hidden="true" />
+                            </button>
+                        @endif
+                    </div>
 
                     <x-ui.action-sheet id="category-sheet" :title="__('list.all_petitions')" :actions="$categoryLinks->map(fn ($chip) => [
                         'href' => $chip['href'],

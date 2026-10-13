@@ -1813,7 +1813,8 @@ select.fc-filter-field {
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         padding-block: 0.25rem;
-        padding-inline: max(1rem, var(--fc-safe-left)) max(1rem, var(--fc-safe-right));
+        padding-inline: max(1.5rem, var(--fc-safe-left)) max(1.5rem, var(--fc-safe-right));
+        scroll-padding-inline: max(1.5rem, var(--fc-safe-left)) max(1.5rem, var(--fc-safe-right));
         mask-image: linear-gradient(to right, transparent 0, var(--fc-mask) 12px, var(--fc-mask) calc(100% - 12px), transparent 100%);
     }
 
