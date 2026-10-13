@@ -72,7 +72,7 @@
                                             <div class="featured-box relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md fc-lift">
                                                 <div class="grow shrink basis-auto p-5 max-sm:p-4">
 
-                                                    <span class="bg-brand/5 text-danger px-5 py-1 rounded-sm text-sm mb-5 inline-block">
+                                                    <span class="bg-brand/5 text-danger px-5 py-1 rounded-sm text-sm mb-4 inline-block">
                                                         {{ __('home.featured_badge') }}
                                                     </span>
 
