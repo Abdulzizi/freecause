@@ -5,23 +5,23 @@
     $requiresVerification = ! $isCreated && (string) ($status ?? '0') === '0';
 
     $pageTitle = $isCreated
-        ? __('petition.thanks.title_created')
-        : __('petition.thanks.title_signed');
+        ? __('thanks.title_created')
+        : __('thanks.title_signed');
 
     $h1Text = $isCreated
-        ? __('petition.thanks.h1_created')
-        : __('petition.thanks.h1_signed');
+        ? __('thanks.h1_created')
+        : __('thanks.h1_signed');
 
     $pText = $isCreated
-        ? __('petition.thanks.p_created')
-        : __('petition.thanks.p_signed');
+        ? __('thanks.p_created')
+        : __('thanks.p_signed');
 
-    $suggestionsTitle = __('petition.thanks.suggestions');
-    $suggestionsEmpty = __('petition.thanks.no_suggestions');
-    $inviteBtnText = __('petition.thanks.invite');
+    $suggestionsTitle = __('thanks.suggestions');
+    $suggestionsEmpty = __('thanks.no_suggestions');
+    $inviteBtnText = __('thanks.invite');
 
     $petitionUrl = isset($tr) && $tr ? lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]) : '#';
-    $petitionTitle = $tr->title ?? __('petition.thanks.petition_fallback');
+    $petitionTitle = $tr->title ?? __('thanks.petition_fallback');
     $shareEmailUrl = 'mailto:?'.http_build_query([
         'subject' => $petitionTitle,
         'body' => $petitionTitle."\r\n\r\n".$petitionUrl,
@@ -93,7 +93,7 @@
                         <div class="mb-2.5">
                             <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
                                 href="{{ $sUrl }}">
-                                {{ $p->tr_title ?? __('petition.thanks.petition_fallback') }}
+                                {{ $p->tr_title ?? __('thanks.petition_fallback') }}
                             </a>
                         </div>
                     @empty

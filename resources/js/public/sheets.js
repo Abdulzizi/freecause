@@ -9,6 +9,18 @@ export function init() {
     let lastTrigger = null;
     let openSheet = null;
 
+    Array.from(document.querySelectorAll('[data-sheet-open]')).forEach(function (opener) {
+        const sheet = document.getElementById(opener.dataset.sheetOpen);
+        if (!sheet) {
+            return;
+        }
+
+        opener.setAttribute('aria-controls', sheet.id);
+        if (!opener.hasAttribute('aria-expanded')) {
+            opener.setAttribute('aria-expanded', 'false');
+        }
+    });
+
     function lockScroll() {
         body.classList.add('fc-sheet-open');
     }
@@ -35,6 +47,10 @@ export function init() {
         openSheet = sheet;
         lockScroll();
 
+        if (lastTrigger) {
+            lastTrigger.setAttribute('aria-expanded', 'true');
+        }
+
         const focusTarget = sheet.querySelector('[data-sheet-autofocus]') || sheet.querySelector('[data-sheet-close]');
         if (focusTarget) {
             focusTarget.focus({ preventScroll: true });
@@ -54,6 +70,10 @@ export function init() {
 
         openSheet = null;
         unlockScroll();
+
+        if (lastTrigger) {
+            lastTrigger.setAttribute('aria-expanded', 'false');
+        }
 
         if (!options || options.returnFocus !== false) {
             if (lastTrigger && document.contains(lastTrigger)) {

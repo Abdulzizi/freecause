@@ -5,6 +5,7 @@ return [
     'total' => 'łącznie',
     'sign_link' => 'Podpisz tę petycję »',
     'no_signatures' => 'Brak podpisów. Bądź pierwszy!',
+    'default_comment' => 'Popieram tę petycję',
     'no_comments' => 'Brak komentarzy.',
     'anonymous' => 'Anonimowy',
     'continue' => 'czytaj dalej »',

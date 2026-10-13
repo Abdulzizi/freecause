@@ -913,25 +913,8 @@
         opacity: 1;
     }
 
-    .fcui-sticky-signbar {
-        position: fixed;
-        bottom: 0;
-        inset-inline-start: 0;
-        inset-inline-end: 0;
-        z-index: 1090;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        width: 100%;
-        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-        background-color: var(--fc-surface);
-        box-shadow: 0 -4px 16px rgba(48, 42, 34, 0.14);
-    }
 
     @media (min-width: 768px) {
-        .fcui-sticky-signbar {
-            display: none;
-        }
     }
 
     .fcui-blurup {
@@ -2036,5 +2019,13 @@ select.fc-filter-field {
     .fcui-icon-btn svg {
         width: 22px;
         height: 22px;
+    }
+
+    body.fc-public .navbar :where(a, button, [tabindex]):focus-visible,
+    body.fc-public .fcui-bottom-nav__item:focus-visible,
+    body.fc-public .fcui-sheet :where(a, button, input, select, textarea):focus-visible {
+        outline: 2px solid var(--fc-focus);
+        outline-offset: 2px;
+        border-radius: var(--fc-r-sm);
     }
 }

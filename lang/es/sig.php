@@ -5,6 +5,7 @@ return [
     'total' => 'total',
     'sign_link' => 'Firma esta petición »',
     'no_signatures' => 'Aún no hay firmas. ¡Sé el primero en firmar!',
+    'default_comment' => 'Apoyo esta petición',
     'no_comments' => 'Aún no hay comentarios.',
     'anonymous' => 'Anónimo',
     'continue' => 'seguir leyendo »',
