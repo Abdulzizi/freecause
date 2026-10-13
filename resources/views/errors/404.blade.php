@@ -71,8 +71,10 @@
                         </div>
                 @endif
 
-                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="mt-6">{{ __('errors.back_home') }}</x-ui.button>
+                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="mt-6 hidden min-h-12 md:inline-flex">{{ __('errors.back_home') }}</x-ui.button>
             </div>
+
+            <x-ui.sticky-action :href="url('/'.app()->getLocale())" :label="__('errors.back_home')" />
 
         </x-ui.container>
     </section>

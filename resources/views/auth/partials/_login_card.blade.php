@@ -24,6 +24,8 @@
                 :label="__('auth.email')"
                 :value="old('email')"
                 :required="true"
+                autocomplete="email"
+                class="min-h-12"
             />
         </div>
 
@@ -33,10 +35,12 @@
                 name="password"
                 :label="__('auth.password')"
                 :required="true"
+                autocomplete="current-password"
+                class="min-h-12"
             />
         </div>
 
-        <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm">
+        <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm min-h-12 w-full md:w-auto">
             {{ __('auth.login') }}
         </x-ui.button>
 

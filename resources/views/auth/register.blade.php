@@ -15,7 +15,7 @@
 
                             <div class="text-center mb-6">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'register']) }}"
-                                    class="btn fc-google-btn fc-oauth-btn">
+                                    class="btn fc-google-btn fc-oauth-btn min-h-12">
                                     <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-4.5 h-4.5 block shrink-0" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
@@ -56,6 +56,7 @@
                                             :required="true"
                                             :error="$errors->first('name')"
                                             autocomplete="given-name"
+                                            class="min-h-12"
                                         />
                                     </div>
 
@@ -69,6 +70,7 @@
                                             :required="true"
                                             :error="$errors->first('surname')"
                                             autocomplete="family-name"
+                                            class="min-h-12"
                                         />
                                     </div>
 
@@ -83,6 +85,7 @@
                                             :error="$errors->first('email')"
                                             autocomplete="email"
                                             data-email-suggest
+                                            class="min-h-12"
                                         />
                                     </div>
 
@@ -97,6 +100,7 @@
                                             autocomplete="new-password"
                                             data-strength
                                             data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
+                                            class="min-h-12"
                                         />
                                     </div>
 
@@ -108,6 +112,7 @@
                                             :label="__('sign.nickname')"
                                             :value="old('nickname')"
                                             :error="$errors->first('nickname')"
+                                            class="min-h-12"
                                         />
                                     </div>
 
@@ -119,6 +124,8 @@
                                             :label="__('sign.city')"
                                             :value="old('city')"
                                             :error="$errors->first('city')"
+                                            autocomplete="address-level2"
+                                            class="min-h-12"
                                         />
                                     </div>
                                 </div>
@@ -130,11 +137,13 @@
                                         target="_blank" rel="noopener">{{ __('auth.accept_terms') }}</a>
                                 </div>
 
-                                <div class="text-center">
-                                    <x-ui.button type="submit" variant="danger" class="px-6 py-2 rounded-lg min-w-40">
+                                <div class="hidden text-center md:block">
+                                    <x-ui.button type="submit" variant="danger" class="px-6 py-2 rounded-lg min-w-40 min-h-12">
                                         {{ __('auth.submit') }}
                                     </x-ui.button>
                                 </div>
+
+                                <x-ui.sticky-action :label="__('auth.submit')" />
 
                                 <div class="text-center mt-4">
                                     <span class="text-muted">{{ __('auth.already_member') }}</span>

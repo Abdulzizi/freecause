@@ -24,47 +24,59 @@
 
         <div class="mb-4">
             <x-ui.input
+                id="register_name"
                 type="text"
                 name="name"
                 :label="__('auth.name')"
                 :value="old('name')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('name') : null"
+                autocomplete="given-name"
+                class="min-h-12"
             />
         </div>
 
         <div class="mb-4">
             <x-ui.input
+                id="register_surname"
                 type="text"
                 name="surname"
                 :label="__('auth.surname')"
                 :value="old('surname')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('surname') : null"
+                autocomplete="family-name"
+                class="min-h-12"
             />
         </div>
 
         <div class="mb-4">
             <x-ui.input
+                id="register_email"
                 type="email"
                 name="email"
                 :label="__('auth.email')"
                 :value="old('email')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('email') : null"
+                autocomplete="email"
                 data-email-suggest
+                class="min-h-12"
             />
         </div>
 
         <div class="mb-4">
             <x-ui.input
+                id="register_password"
                 type="password"
                 name="password"
                 :label="__('auth.password')"
                 :required="true"
                 :error="$isRegisterSubmit ? $errors->first('password') : null"
+                autocomplete="new-password"
                 data-strength
                 data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
+                class="min-h-12"
             />
         </div>
 
@@ -74,21 +86,26 @@
 
         <div class="mb-4">
             <x-ui.input
+                id="register_nickname"
                 type="text"
                 name="nickname"
                 :label="__('sign.nickname')"
                 :value="old('nickname')"
                 :error="$isRegisterSubmit ? $errors->first('nickname') : null"
+                class="min-h-12"
             />
         </div>
 
         <div class="mb-4">
             <x-ui.input
+                id="register_city"
                 type="text"
                 name="city"
                 :label="__('sign.city')"
                 :value="old('city')"
                 :error="$isRegisterSubmit ? $errors->first('city') : null"
+                autocomplete="address-level2"
+                class="min-h-12"
             />
         </div>
 
@@ -99,6 +116,10 @@
             </label>
         </div>
 
-        <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm">{{ __('auth.submit') }}</x-ui.button>
+        <div class="hidden md:block">
+            <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm min-h-12">{{ __('auth.submit') }}</x-ui.button>
+        </div>
+
+        <x-ui.sticky-action :label="__('auth.submit')" />
     </form>
 </div>

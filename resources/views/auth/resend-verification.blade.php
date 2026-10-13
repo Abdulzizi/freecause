@@ -32,10 +32,11 @@
                                         :required="true"
                                         autocomplete="email"
                                         autofocus
+                                        class="min-h-12"
                                     />
                                 </div>
 
-                                <x-ui.button type="submit" variant="danger" class="w-full">{{ __('auth.resend_email_btn') }}</x-ui.button>
+                                <x-ui.button type="submit" variant="danger" class="w-full min-h-12">{{ __('auth.resend_email_btn') }}</x-ui.button>
 
                                 <div class="text-center mt-4">
                                     <a href="{{ lroute('login') }}" class="text-muted">{{ __('auth.back_login') }}</a>

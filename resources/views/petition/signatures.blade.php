@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="w-full md:w-1/4 shrink-0 md:text-right px-3">
-                        <x-ui.button variant="danger" :href="$signUrl">
+                        <x-ui.button variant="danger" :href="$signUrl" class="w-full min-h-12 md:w-auto">
                             {{ __('sig.sign_link') }}
                         </x-ui.button>
                     </div>
@@ -73,7 +73,7 @@
 
                 <div class="font-bold text-base mb-4">
                     {{ __('sig.all_signatures') }}
-                    <span class="text-muted font-normal text-sm">
+                    <span class="text-muted font-normal text-sm fc-tabular">
                         ({{ number_format($goalCurrent) }} {{ __('sig.total') }})
                     </span>
                 </div>
@@ -86,7 +86,7 @@
 
                 @forelse($signatures as $sig)
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
-                        <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5">
+                        <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5 fc-tabular">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.
                         </div>
                         <div class="grow">
@@ -97,7 +97,7 @@
                                         · {{ $sig->user->city }}
                                     </span>
                                 @endif
-                                <span class="text-muted ms-auto text-xs">
+                                <span class="text-muted ms-auto text-xs fc-tabular">
                                     {{ optional($sig->created_at)->format('j F Y') }}
                                 </span>
                             </div>

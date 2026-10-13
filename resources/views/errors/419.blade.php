@@ -27,6 +27,8 @@
                     <a href="{{ url()->previous() }}" class="text-brand">{{ __('errors.419_back') }}</a>
                 </p>
             </div>
+
+            <x-ui.sticky-action :href="url('/'.app()->getLocale())" :label="__('errors.back_home')" />
         </x-ui.container>
     </section>
 @endsection

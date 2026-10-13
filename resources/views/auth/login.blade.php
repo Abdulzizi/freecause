@@ -15,7 +15,7 @@
 
                             <div class="text-center mb-6">
                                 <a href="{{ lroute('oauth.google', ['flow' => 'login']) }}"
-                                    class="btn fc-google-btn fc-oauth-btn">
+                                    class="btn fc-google-btn fc-oauth-btn min-h-12">
                                     <img src="{{ asset('legacy/images-v2/google-g.svg') }}" alt="" width="18" height="18" class="w-4.5 h-4.5 block shrink-0" aria-hidden="true">
                                     {{ __('auth.continue_google') }}
                                 </a>
@@ -68,6 +68,7 @@
                                         :required="true"
                                         autocomplete="email"
                                         autofocus
+                                        class="min-h-12"
                                     />
                                 </div>
 
@@ -80,6 +81,7 @@
                                         :placeholder="__('auth.password_placeholder')"
                                         :required="true"
                                         autocomplete="current-password"
+                                        class="min-h-12"
                                     />
                                 </div>
 
@@ -88,7 +90,7 @@
                                     <label class="form-check-label" for="remember">{{ __('auth.remember_me') }}</label>
                                 </div>
 
-                                <x-ui.button type="submit" variant="danger" class="w-full py-2 rounded-lg">
+                                <x-ui.button type="submit" variant="danger" class="w-full min-h-12 py-2 rounded-lg">
                                     {{ __('auth.login') }}
                                 </x-ui.button>
 

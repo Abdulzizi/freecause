@@ -26,8 +26,10 @@
                 <p class="text-sm text-muted mb-5">
                     {{ __('errors.429_support') }}
                 </p>
-                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())">{{ __('errors.back_home') }}</x-ui.button>
+                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="hidden min-h-12 md:inline-flex">{{ __('errors.back_home') }}</x-ui.button>
             </div>
+
+            <x-ui.sticky-action :href="url('/'.app()->getLocale())" :label="__('errors.back_home')" />
         </x-ui.container>
     </section>
 @endsection

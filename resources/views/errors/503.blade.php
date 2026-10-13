@@ -22,8 +22,10 @@
                 <p class="text-sm text-muted mb-5">
                     {{ __('errors.503_hint') }}
                 </p>
-                <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.503_btn') }}</x-ui.button>
+                <x-ui.button variant="danger" :href="url('/'.$locale)" class="hidden min-h-12 md:inline-flex">{{ __('errors.503_btn') }}</x-ui.button>
             </div>
+
+            <x-ui.sticky-action :href="url('/'.$locale)" :label="__('errors.503_btn')" />
 
         </x-ui.container>
     </section>

@@ -27,8 +27,10 @@
                 <p class="text-sm text-muted mb-5">
                     {{ __('errors.500_hint') }}
                 </p>
-                <x-ui.button variant="danger" :href="url('/'.$locale)">{{ __('errors.back_home') }}</x-ui.button>
+                <x-ui.button variant="danger" :href="url('/'.$locale)" class="hidden min-h-12 md:inline-flex">{{ __('errors.back_home') }}</x-ui.button>
             </div>
+
+            <x-ui.sticky-action :href="url('/'.$locale)" :label="__('errors.back_home')" />
 
         </x-ui.container>
     </section>

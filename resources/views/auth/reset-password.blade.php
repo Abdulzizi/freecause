@@ -24,6 +24,7 @@
                                     :value="old('email')"
                                     :required="true"
                                     :error="$errors->first('email')"
+                                    class="min-h-12"
                                 />
                             </div>
 
@@ -37,6 +38,7 @@
                                     :error="$errors->first('password')"
                                     data-strength
                                     data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'
+                                    class="min-h-12"
                                 />
                             </div>
 
@@ -47,10 +49,11 @@
                                     name="password_confirmation"
                                     :label="__('auth.confirm_password')"
                                     :required="true"
+                                    class="min-h-12"
                                 />
                             </div>
 
-                            <x-ui.button type="submit" variant="danger" class="w-full">{{ __('auth.reset_submit') }}</x-ui.button>
+                            <x-ui.button type="submit" variant="danger" class="w-full min-h-12">{{ __('auth.reset_submit') }}</x-ui.button>
                         </form>
                     </div>
                 </div>
