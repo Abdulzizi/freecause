@@ -73,6 +73,7 @@ class ProfileCrudTest extends TestCase
                 'nickname' => 'amazing-grace',
                 'city' => 'New York',
                 'country' => 'US',
+                'gender' => 'female',
                 'locale' => 'en',
                 'identify_mode' => 'nick',
             ])
@@ -85,6 +86,7 @@ class ProfileCrudTest extends TestCase
         $this->assertSame('amazing-grace', $user->nickname);
         $this->assertSame('New York', $user->city);
         $this->assertSame('US', $user->country);
+        $this->assertSame('female', $user->gender);
         $this->assertSame('nick', $user->identify_mode);
     }
 
@@ -137,6 +139,8 @@ class ProfileCrudTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'male',
                 'locale' => 'en',
                 'new_email' => 'new-address@example.com',
                 'new_email_confirmation' => 'new-address@example.com',
@@ -157,6 +161,8 @@ class ProfileCrudTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'male',
                 'locale' => 'en',
                 'new_email' => $taken->email,
                 'new_email_confirmation' => $taken->email,
@@ -176,6 +182,8 @@ class ProfileCrudTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'male',
                 'locale' => 'en',
                 'new_email' => 'fresh-address@example.com',
                 'new_email_confirmation' => 'fresh-address@example.com',
@@ -207,6 +215,8 @@ class ProfileCrudTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'male',
                 'locale' => 'en',
                 'new_email' => 'stable@example.com',
                 'new_email_confirmation' => 'stable@example.com',

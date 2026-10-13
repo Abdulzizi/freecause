@@ -279,7 +279,7 @@ Route::prefix('{locale}')
 
             Route::post('/account/unlink/google', [AuthController::class, 'unlinkGoogle'])->name('account.unlink.google');
 
-            Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware('throttle:5,1');
+            Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware(['throttle:5,1', 'profile.complete']);
 
             Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->name('petition.edit');
             Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update');
@@ -309,7 +309,7 @@ Route::prefix('{locale}')
 
         Route::get('/', [HomeController::class, 'index'])->name('home');
 
-        Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create');
+        Route::get('/create-petition', [PetitionController::class, 'create'])->name('petition.create')->middleware('profile.complete');
 
         Route::get('/petition/{slug}/{id}', [PetitionController::class, 'show'])
             ->withoutMiddleware($withoutSession)
@@ -317,7 +317,7 @@ Route::prefix('{locale}')
             ->name('petition.show');
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
-        Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware('throttle:10,1');
+        Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware(['throttle:10,1', 'profile.complete']);
         Route::post('/petition/{slug}/{id}/claim', [PetitionController::class, 'claimAccount'])->name('petition.claim')->middleware('throttle:10,1');
         Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
             ->where('status', '([0-9]+|created)?')

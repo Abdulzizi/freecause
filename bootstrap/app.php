@@ -48,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => CheckPermission::class,
             'no.cache' => NoCacheHeaders::class,
             'optional.session' => OptionalSession::class,
+            'profile.complete' => \App\Http\Middleware\EnsureProfileComplete::class,
         ]);
 
         $middleware->preventRequestsDuringMaintenance([

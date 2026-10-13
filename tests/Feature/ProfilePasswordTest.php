@@ -37,6 +37,8 @@ class ProfilePasswordTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Grace',
                 'last_name' => 'Hopper',
+                'country' => 'US',
+                'gender' => 'female',
                 'locale' => 'en',
                 'new_password' => 'brand-new-pass',
                 'new_password_confirmation' => 'brand-new-pass',
@@ -66,6 +68,8 @@ class ProfilePasswordTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'female',
                 'locale' => 'en',
                 'current_password' => 'wrong-current',
                 'new_password' => 'another-new-pass',
@@ -91,6 +95,8 @@ class ProfilePasswordTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Ada',
                 'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'female',
                 'locale' => 'en',
                 'current_password' => 'correct-current',
                 'new_password' => 'another-new-pass',

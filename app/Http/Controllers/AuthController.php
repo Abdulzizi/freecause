@@ -275,7 +275,8 @@ class AuthController extends Controller
 
         $u->nickname = $data['nickname'] ?? null;
         $u->city = $data['city'] ?? null;
-        $u->country = $data['country'] ?? null;
+        $u->country = $data['country'];
+        $u->gender = $data['gender'];
         $u->locale = Locale::toFull($data['locale']);
         $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
@@ -346,6 +347,12 @@ class AuthController extends Controller
             toast(__('profile.email_change_pending'), 'info');
         } else {
             toast(__('profile.updated_success'), 'success');
+        }
+
+        $return = $request->query('return');
+
+        if (is_string($return) && str_starts_with($return, '/') && ! str_starts_with($return, '//')) {
+            return redirect()->to($return);
         }
 
         return redirect()->to("/{$data['locale']}/profile");

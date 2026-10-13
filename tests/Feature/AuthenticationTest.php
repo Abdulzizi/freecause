@@ -489,6 +489,9 @@ class AuthenticationTest extends TestCase
             ->assertSee('id="country"', false)
             ->assertSee('value="US" selected', false)
             ->assertSee('United States')
+            ->assertSee('id="gender"', false)
+            ->assertSee('value="male"', false)
+            ->assertSee('Prefer not to say')
             ->assertSee('id="locale"', false)
             ->assertSee('value="en" selected', false)
             ->assertSee('Preferred language')
@@ -516,6 +519,7 @@ class AuthenticationTest extends TestCase
                 'last_name' => 'User',
                 'identify_mode' => 'full',
                 'country' => 'FR',
+                'gender' => 'female',
                 'locale' => 'fr',
             ])
             ->assertRedirect('/fr/profile');

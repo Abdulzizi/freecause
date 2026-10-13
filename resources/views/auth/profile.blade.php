@@ -26,6 +26,12 @@
                 <aside class="lg:col-span-5 xl:col-span-4">
                     <div class="{{ $card }}">
 
+                        @if (session('profile_required'))
+                            <x-ui.alert variant="warning" class="mb-4">
+                                {{ __('profile.complete_required') }}
+                            </x-ui.alert>
+                        @endif
+
                         <h1 class="mb-4 text-lg font-semibold text-ink">{{ __('profile.my_data') }}</h1>
                         <x-ui.button :href="lroute('preferences.show')" variant="secondary" size="sm" class="mb-4">{{ __('preferences.manage_preferences') }}</x-ui.button>
 
@@ -243,11 +249,23 @@
 
                             <div class="grid grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
                                 <label class="{{ $label }}" for="country">{{ __('profile.country') }}</label>
-                                <select class="{{ $input }}" id="country" name="country">
+                                <select class="{{ $input }}" id="country" name="country" required>
                                     <option value="">{{ __('profile.select_country') }}</option>
                                     @foreach ($countries as $countryCode => $countryName)
                                         <option value="{{ $countryCode }}" @selected(old('country', $u->country) === $countryCode)>
                                             {{ $countryName }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
+                                <label class="{{ $label }}" for="gender">{{ __('profile.gender') }}</label>
+                                <select class="{{ $input }}" id="gender" name="gender" required>
+                                    <option value="">{{ __('profile.select_gender') }}</option>
+                                    @foreach (\App\Models\User::GENDERS as $genderValue)
+                                        <option value="{{ $genderValue }}" @selected(old('gender', $u->gender) === $genderValue)>
+                                            {{ __('profile.gender_'.$genderValue) }}
                                         </option>
                                     @endforeach
                                 </select>

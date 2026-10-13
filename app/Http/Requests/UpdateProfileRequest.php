@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use App\Support\Countries;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -22,7 +23,8 @@ class UpdateProfileRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:60'],
             'nickname' => ['nullable', 'string', 'max:80'],
             'city' => ['nullable', 'string', 'max:80'],
-            'country' => ['nullable', Rule::in(Countries::codes())],
+            'country' => ['required', Rule::in(Countries::codes())],
+            'gender' => ['required', Rule::in(User::GENDERS)],
             'locale' => [
                 'required',
                 Rule::exists('languages', 'code')->where(fn ($query) => $query->where('is_active', true)),

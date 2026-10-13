@@ -27,6 +27,8 @@ class User extends Authenticatable
         });
     }
 
+    public const GENDERS = ['male', 'female', 'prefer_not_to_say', 'none'];
+
     protected $fillable = [
         'name',
         'first_name',
@@ -42,6 +44,7 @@ class User extends Authenticatable
         'identify_mode',
         'city',
         'country',
+        'gender',
         'nickname',
         'google_id',
         'password_changed_at',
@@ -116,6 +119,11 @@ class User extends Authenticatable
     public function isGoogleOnly(): bool
     {
         return filled($this->google_id) && ! $this->hasLocalPassword();
+    }
+
+    public function hasCompleteProfile(): bool
+    {
+        return filled($this->country) && filled($this->gender);
     }
 
     public function wantsMilestoneEmails(): bool

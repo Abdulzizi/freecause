@@ -47,6 +47,8 @@ class UserFactory extends Factory
             'nickname' => $this->faker->optional(0.5)->userName(),
             'city' => $this->faker->optional(0.7)->city(),
             'identify_mode' => $this->faker->randomElement(['full', 'name', 'nick']),
+            'country' => 'US',
+            'gender' => $this->faker->randomElement(['male', 'female', 'prefer_not_to_say', 'none']),
             'email' => $this->faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'locale' => $locale,
