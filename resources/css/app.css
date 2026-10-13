@@ -686,7 +686,7 @@
         background-color: var(--fc-surface);
         border-radius: var(--fc-r-lg);
         box-shadow: var(--fc-elev-1);
-        overflow: hidden;
+        overflow: clip;
     }
 
     .fcui-card__header {

@@ -576,8 +576,8 @@ textarea.form-control-lg{min-height:calc(1.5em + 1rem + 2px)}
 .position-relative{position:relative!important}
 .position-absolute{position:absolute!important}
 .top-0{top:0!important}
-.border{border:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important}
-.border-0{border:0!important}
+.border{border:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)}
+.border-0{border:0}
 .w-100{width:100%!important}
 .h-100{height:100%!important}
 .flex-grow-1{flex-grow:1!important}
@@ -630,7 +630,7 @@ textarea.form-control-lg{min-height:calc(1.5em + 1rem + 2px)}
 .text-muted{--bs-text-opacity:1;color:#6c757d}
 .bg-secondary{--bs-bg-opacity:1;background-color:rgba(var(--bs-secondary-rgb),var(--bs-bg-opacity))!important}
 .bg-light{--bs-bg-opacity:1;background-color:rgba(var(--bs-light-rgb),var(--bs-bg-opacity))!important}
-.bg-white{--bs-bg-opacity:1;background-color:rgba(var(--bs-white-rgb),var(--bs-bg-opacity))!important}
+.bg-white{--bs-bg-opacity:1;background-color:rgba(var(--bs-white-rgb),var(--bs-bg-opacity))}
 .rounded{border-radius:var(--bs-border-radius)}
 .rounded-3{border-radius:var(--bs-border-radius-lg)!important}
 @media (min-width:768px){  .p-md-5{padding:3rem!important}

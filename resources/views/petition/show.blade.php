@@ -219,7 +219,7 @@
 
                             <div class="fc-reveal fc-stagger">
                                 @forelse ($shoutbox as $comment)
-                                    <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
+                                    <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}" style="--fc-i: {{ min($loop->index, 12) }}">
                                         <div class="grow">
                                             <div class="flex items-center gap-2 flex-wrap">
                                                 @if ($comment->user)
@@ -312,7 +312,7 @@
 
                             <div class="text-sm mt-4 fc-reveal fc-stagger">
                                 @forelse($latest as $i => $sig)
-                                    <div class="py-2 border-b border-border last:border-b-0">
+                                    <div class="py-2 border-b border-border last:border-b-0" style="--fc-i: {{ min($loop->index, 12) }}">
                                         <div class="font-bold mb-0.5">
                                             {{ $sig->created_at?->format('j F Y') }}
                                         </div>
@@ -474,7 +474,7 @@
                     <h2 class="text-lg font-bold mb-4">{{ __('show.related') }}</h2>
                     <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                         @foreach ($related as $rel)
-                            <div class="w-full md:w-1/3 shrink-0 px-3 mb-6">
+                            <div class="w-full md:w-1/3 shrink-0 px-3 mb-6" style="--fc-i: {{ min($loop->index, 12) }}">
                                 <a href="{{ lroute('petition.show', ['slug' => $rel->tr_slug, 'id' => $rel->id]) }}"
                                    class="block h-full no-underline bg-white rounded-md shadow-elev-1 overflow-hidden fc-lift">
                                     <div class="p-4">

@@ -55,7 +55,7 @@
                             </h2>
 
                             @forelse ($recentPetitions as $p)
-                                <div class="py-1.5 border-b border-border text-sm">
+                                <div class="py-1.5 border-b border-border text-sm" style="--fc-i: {{ min($loop->index, 12) }}">
                                     <a class="text-brand break-words" href="{{ route('petition.show', ['slug' => $p->slug, 'id' => $p->id]) }}">
                                         {{ $p->title }}
                                     </a>

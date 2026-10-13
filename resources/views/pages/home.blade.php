@@ -268,7 +268,7 @@
 
             <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                 @foreach ($categories as $cat)
-                    <div class="w-full lg:w-1/4 sm:w-1/2 shrink-0 grow-0 px-3 mb-4">
+                    <div class="w-full lg:w-1/4 sm:w-1/2 shrink-0 grow-0 px-3 mb-4" style="--fc-i: {{ min($loop->index, 12) }}">
                         <a href="{{ lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]) }}"
                             class="bg-white border border-border rounded-lg p-6 text-center no-underline text-ink fc-lift block">
                             <span class="text-2xl mb-2 hidden"><i class="bi {{ \App\Support\CategoryIcons::get($cat->id) }}"></i></span>
@@ -291,7 +291,7 @@
 
             <div class="flex flex-wrap -mx-3 fc-reveal fc-stagger">
                 @foreach ($magazinePosts as $post)
-                    <div class="w-full md:w-1/3 shrink-0 grow-0 px-3 mb-6">
+                    <div class="w-full md:w-1/3 shrink-0 grow-0 px-3 mb-6" style="--fc-i: {{ min($loop->index, 12) }}">
                         <a class="block h-full no-underline" href="/magazine/{{ $post->post_name }}">
                             <div class="shadow-elev-1 rounded-lg overflow-hidden fc-lift">
                                 <div>
