@@ -139,7 +139,7 @@
         'active' => request()->routeIs('home', 'root'),
     ],
     [
-        'label' => $explore,
+        'label' => __('list.petitions'),
         'href' => lroute('petitions.index'),
         'icon' => 'search',
         'active' => request()->routeIs('petitions.*', 'petition.show', 'petition.signatures'),

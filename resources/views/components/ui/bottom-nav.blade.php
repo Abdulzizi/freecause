@@ -16,7 +16,7 @@
                     @if (! empty($item['icon']))
                         <x-dynamic-component :component="'lucide-'.$item['icon']" aria-hidden="true" />
                     @endif
-                    <span>{{ $item['label'] }}</span>
+                    <span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{{ $item['label'] }}</span>
                 </a>
             @else
                 <button
@@ -28,7 +28,7 @@
                     @if (! empty($item['icon']))
                         <x-dynamic-component :component="'lucide-'.$item['icon']" aria-hidden="true" />
                     @endif
-                    <span>{{ $item['label'] }}</span>
+                    <span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{{ $item['label'] }}</span>
                 </button>
             @endif
         @endforeach

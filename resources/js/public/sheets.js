@@ -8,6 +8,7 @@ export function init() {
 
     let lastTrigger = null;
     let openSheet = null;
+    let pushedEntry = false;
 
     Array.from(document.querySelectorAll('[data-sheet-open]')).forEach(function (opener) {
         const sheet = document.getElementById(opener.dataset.sheetOpen);
@@ -26,7 +27,7 @@ export function init() {
     }
 
     function unlockScroll() {
-        if (!Array.from(document.querySelectorAll('dialog[data-sheet][open]')).length) {
+        if (!document.querySelector('dialog[data-sheet][open]')) {
             body.classList.remove('fc-sheet-open');
         }
     }
@@ -51,40 +52,50 @@ export function init() {
             lastTrigger.setAttribute('aria-expanded', 'true');
         }
 
+        if (!pushedEntry) {
+            try {
+                history.pushState({ fcSheet: sheet.id }, '', location.href);
+                pushedEntry = true;
+            } catch (error) {
+                pushedEntry = false;
+            }
+        }
+
         const focusTarget = sheet.querySelector('[data-sheet-autofocus]') || sheet.querySelector('[data-sheet-close]');
         if (focusTarget) {
             focusTarget.focus({ preventScroll: true });
         }
     }
 
-    function hide(sheet, options) {
-        if (!sheet || !sheet.open) {
+    function close(sheet, consumeHistory, returnFocus) {
+        if (!sheet) {
             return;
         }
 
-        if (typeof sheet.close === 'function') {
-            sheet.close();
-        } else {
-            sheet.removeAttribute('open');
+        const trigger = lastTrigger;
+
+        if (sheet.open) {
+            if (typeof sheet.close === 'function') {
+                sheet.close();
+            } else {
+                sheet.removeAttribute('open');
+            }
         }
 
         openSheet = null;
         unlockScroll();
 
-        if (lastTrigger) {
-            lastTrigger.setAttribute('aria-expanded', 'false');
+        if (trigger) {
+            trigger.setAttribute('aria-expanded', 'false');
         }
 
-        if (!options || options.returnFocus !== false) {
-            if (lastTrigger && document.contains(lastTrigger)) {
-                lastTrigger.focus({ preventScroll: true });
-            }
+        if (consumeHistory && pushedEntry) {
+            pushedEntry = false;
+            history.back();
         }
 
-        if (!options || options.popHistory !== false) {
-            if (history.state && history.state.fcSheet === sheet.id) {
-                history.back();
-            }
+        if (returnFocus !== false && trigger && document.contains(trigger)) {
+            trigger.focus({ preventScroll: true });
         }
     }
 
@@ -93,8 +104,10 @@ export function init() {
         if (opener) {
             event.preventDefault();
             const sheet = document.getElementById(opener.dataset.sheetOpen);
-            if (sheet) {
-                history.pushState({ fcSheet: sheet.id }, '', location.href);
+            if (sheet && sheet !== openSheet) {
+                if (openSheet) {
+                    close(openSheet, false, false);
+                }
                 show(sheet, opener);
             }
             return;
@@ -103,61 +116,65 @@ export function init() {
         const closer = event.target.closest('[data-sheet-close]');
         if (closer) {
             event.preventDefault();
-            hide(closer.closest('dialog[data-sheet]') || openSheet);
+            close(closer.closest('dialog[data-sheet]') || openSheet, true);
         }
     });
 
     sheets.forEach(function (sheet) {
         sheet.addEventListener('click', function (event) {
             if (event.target === sheet) {
-                hide(sheet);
+                close(sheet, true);
             }
         });
 
         sheet.addEventListener('close', function () {
-            openSheet = null;
-            unlockScroll();
-            if (!history.state || history.state.fcSheet !== sheet.id) {
-                return;
+            if (openSheet === sheet) {
+                openSheet = null;
+                unlockScroll();
             }
-            history.back();
         });
 
         sheet.addEventListener('cancel', function (event) {
             event.preventDefault();
-            hide(sheet, { popHistory: false });
+            close(sheet, true);
         });
 
         const grip = sheet.querySelector('[data-sheet-grip]');
-        if (grip) {
-            let startY = null;
-
-            sheet.addEventListener('touchstart', function (event) {
-                startY = event.touches[0].clientY;
-            }, { passive: true });
-
-            sheet.addEventListener('touchend', function (event) {
-                if (startY === null) {
-                    return;
-                }
-                const delta = event.changedTouches[0].clientY - startY;
-                startY = null;
-                if (delta > 90) {
-                    hide(sheet);
-                }
-            }, { passive: true });
+        if (!grip) {
+            return;
         }
+
+        let startY = null;
+
+        sheet.addEventListener('touchstart', function (event) {
+            startY = event.touches[0].clientY;
+        }, { passive: true });
+
+        sheet.addEventListener('touchend', function (event) {
+            if (startY === null) {
+                return;
+            }
+
+            const delta = event.changedTouches[0].clientY - startY;
+            startY = null;
+
+            if (delta > 90) {
+                close(sheet, true);
+            }
+        }, { passive: true });
     });
 
     window.addEventListener('popstate', function () {
+        pushedEntry = false;
+
         if (openSheet) {
-            hide(openSheet, { popHistory: false, returnFocus: false });
+            close(openSheet, false);
         }
     });
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && openSheet) {
-            hide(openSheet);
+            close(openSheet, true);
         }
     });
 }
