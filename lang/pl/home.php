@@ -47,5 +47,4 @@ return [
     'what_p3' => 'Bez przestrzeni do walki z naszymi przyczynami, bez względu na to, jak małe czy codzienne mogą się wydawać, prawdziwa wolność czuje się pozbawiona zasięgu.',
     'what_p4' => 'Dlatego zbudowaliśmy <span class="red">FreeCause - Petycja Online</span>- darmową, niezależną i wykonaną dla Ciebie.',
     'what_title' => 'Co to jest petycja online',
-    'onboarding_title' => 'Jak to działa',
 ];

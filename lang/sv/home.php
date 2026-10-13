@@ -47,5 +47,4 @@ return [
     'what_p3' => 'Utan ett utrymme att kämpa för våra orsaker, oavsett hur små eller vardagliga de än verkar, känns sann frihet utom räckhåll.',
     'what_p4' => 'Det är därför vi byggde <span class="red">FreeCause - Online Petition</span>- fri, oberoende och gjord för dig.',
     'what_title' => 'Vad är online petition',
-    'onboarding_title' => 'Så fungerar det',
 ];

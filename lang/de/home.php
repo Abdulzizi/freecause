@@ -47,5 +47,4 @@ return [
     'what_p3' => 'Ohne einen Raum, um unsere Ursachen zu verteidigen, egal wie klein oder täglich sie auch erscheinen mögen, fühlt sich wahre Freiheit außer Reichweite.',
     'what_p4' => 'Deshalb haben wir <span class="red">FreeCause - Online Petition</span>– kostenlos, unabhängig und für Sie gemacht.',
     'what_title' => 'Was ist Online-Petition',
-    'onboarding_title' => 'So funktioniert es',
 ];

@@ -38,28 +38,6 @@
         </x-ui.container>
     </section>
 
-    <div class="pt-6 md:pt-8">
-        <x-ui.container>
-            <details class="fcui-card fc-reveal" open>
-                <summary class="max-md:min-h-12 cursor-pointer px-4 py-3 font-semibold text-ink md:px-6">{{ __('home.onboarding_title') }}</summary>
-
-                <ol class="list-none p-0 m-0 grid gap-2 px-4 pb-4 text-sm text-ink md:grid-cols-3 md:gap-4 md:px-6 md:pb-6">
-                    <li class="flex items-center gap-2 max-md:min-h-12">
-                        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">1</span>
-                        <span>{{ __('home.btn_browse_petitions') }}</span>
-                    </li>
-                    <li class="flex items-center gap-2 max-md:min-h-12">
-                        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">2</span>
-                        <span>{{ __('show.btn_sign_now') }}</span>
-                    </li>
-                    <li class="flex items-center gap-2 max-md:min-h-12">
-                        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-soft font-semibold text-brand" aria-hidden="true">3</span>
-                        <span>{{ __('show.share') }}</span>
-                    </li>
-                </ol>
-            </details>
-        </x-ui.container>
-    </div>
 
     <section class="fc-section">
         <x-ui.container>

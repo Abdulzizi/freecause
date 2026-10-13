@@ -47,5 +47,4 @@ return [
     'what_p3' => 'Senza uno spazio per esprimersi, anche le cause più semplici restano invisibili.',
     'what_p4' => 'Per questo FreeCause è gratuito, indipendente e pensato per te.',
     'what_title' => 'Cos’è una petizione online',
-    'onboarding_title' => 'Come funziona',
 ];

@@ -47,5 +47,4 @@ return [
     'what_p3' => 'Zonder ruimte om onze oorzaken te bepleiten, hoe klein of dagelijks ze ook lijken, voelt echte vrijheid zich onbereikbaar.',
     'what_p4' => 'Daarom hebben we <span class="red">FreeCause - Online Petition</span>— gratis, onafhankelijk en voor u gemaakt.',
     'what_title' => 'Wat is online petitie',
-    'onboarding_title' => 'Hoe het werkt',
 ];
