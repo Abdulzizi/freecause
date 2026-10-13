@@ -27,7 +27,7 @@ return new class extends Migration
                 ],
                 [
                     'q' => 'How do I get more information about FreeCause?',
-                    'a' => 'To learn more, go to our website and visit the Information page and our <a href="{ETHICAL_CODE_LINK}">Ethical Code</a>.',
+                    'a' => 'To learn more, go to our website and visit the Information page and our <a href="{ETHICAL_CODE_URL}">Ethical Code</a>.',
                 ],
                 [
                     'q' => "Tips on how to subscribe. For example, what it should be done if the system doesn't accept your email address or password you typed?",
@@ -42,7 +42,7 @@ return new class extends Migration
                 ],
                 [
                     'q' => 'Is it guaranteed the confidentiality of my personal data?',
-                    'a' => 'FreeCause will treat your personal data very seriously. After signing a petition, you will receive an email confirmation stating that your signature has been recorded. FreeCause will not use your information and your email for other petitions or for other purposes, unless you authorize us to do it. In any case, we pledge to not disclose to third parties your personal information. The only person who will be aware that you have signed the petition is the host or the person who made the petition that you have decided to sign. Read also our <a href="{ETHICAL_CODE_LINK}">Ethical Code</a>.',
+                    'a' => 'FreeCause will treat your personal data very seriously. After signing a petition, you will receive an email confirmation stating that your signature has been recorded. FreeCause will not use your information and your email for other petitions or for other purposes, unless you authorize us to do it. In any case, we pledge to not disclose to third parties your personal information. The only person who will be aware that you have signed the petition is the host or the person who made the petition that you have decided to sign. Read also our <a href="{ETHICAL_CODE_URL}">Ethical Code</a>.',
                 ],
                 [
                     'q' => "How do I know if the petition I've signed has been successful?",
@@ -113,7 +113,7 @@ return new class extends Migration
                 ],
                 [
                     'q' => 'FreeCause will use the information and signatures I gathered, for other purposes?',
-                    'a' => 'FreeCause treats privacy very seriously. The list of signatures will not be used under any circumstances, except to send the confirmation email to the signatory of a petition or if  the petitioner authorize us to contact others for petitions or other related events. Only in this case we can contact the complainant. In no cases we shall sell, trade or share signatory information with third parties. To learn more about privacy read also our code of ethics.<br><br>Enter to read our <a href="{ETHICAL_CODE_LINK}">Ethical Code</a>.',
+                    'a' => 'FreeCause treats privacy very seriously. The list of signatures will not be used under any circumstances, except to send the confirmation email to the signatory of a petition or if  the petitioner authorize us to contact others for petitions or other related events. Only in this case we can contact the complainant. In no cases we shall sell, trade or share signatory information with third parties. To learn more about privacy read also our code of ethics.<br><br>Enter to read our <a href="{ETHICAL_CODE_URL}">Ethical Code</a>.',
                 ],
                 [
                     'q' => 'Can my petition be put in the "Featured Petition" or in evidence on the home page of FreeCause?',

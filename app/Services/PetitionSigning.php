@@ -125,7 +125,7 @@ class PetitionSigning
                 );
 
                 session()->forget("sign.{$petition->id}");
-                session()->flash('sign_claim', [
+                session()->put('sign_claim', [
                     'email' => $email,
                     'is_new' => ! $existingUser,
                     'name' => $data['name'],

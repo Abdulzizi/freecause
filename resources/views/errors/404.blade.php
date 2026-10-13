@@ -22,20 +22,18 @@
 
             <div class="bg-white shadow-elev-1 rounded-lg p-6 mb-12 fc-enter">
                 <div class="flex justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none" aria-hidden="true">
-                        <ellipse cx="100" cy="132" rx="70" ry="8" fill="#f6d4d4"></ellipse>
-                        <circle cx="100" cy="66" r="52" fill="#fff5f5"></circle>
-                        <circle cx="100" cy="66" r="52" stroke="#f6d4d4" stroke-width="2"></circle>
-                        <text x="100" y="84" text-anchor="middle" font-family="sans-serif" font-size="46" font-weight="700" fill="#cc1f1f">404</text>
-                        <circle cx="46" cy="34" r="6" fill="#ce2020"></circle>
-                        <circle cx="158" cy="40" r="4" fill="#f6a5a5"></circle>
-                        <circle cx="150" cy="96" r="5" fill="#ce2020"></circle>
-                        <path d="M40 104c6-6 14-6 20 0" stroke="#f6a5a5" stroke-width="3" stroke-linecap="round" fill="none"></path>
-                        <path d="M74 48l10 10M84 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
-                        <path d="M116 48l10 10M126 48l-10 10" stroke="#cc1f1f" stroke-width="3" stroke-linecap="round"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="156" viewBox="0 0 240 170" fill="none" aria-hidden="true">
+                        <rect x="52" y="16" width="120" height="138" rx="10" fill="var(--fc-surface)" stroke="var(--fc-border-strong)" stroke-width="2"></rect>
+                        <path d="M144 16h18a10 10 0 0 1 10 10v10h-18a10 10 0 0 1-10-10z" fill="var(--fc-surface-2)" stroke="var(--fc-border-strong)" stroke-width="2" stroke-linejoin="round"></path>
+                        <line x1="74" y1="78" x2="150" y2="78" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
+                        <line x1="74" y1="98" x2="134" y2="98" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
+                        <line x1="74" y1="118" x2="142" y2="118" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
+                        <line x1="74" y1="138" x2="112" y2="138" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
+                        <circle cx="176" cy="112" r="32" fill="var(--fc-brand-soft)" stroke="var(--fc-brand)" stroke-width="4"></circle>
+                        <path d="M158 96a24 24 0 0 1 18-14" stroke="var(--fc-surface)" stroke-width="4" stroke-linecap="round"></path>
+                        <line x1="199" y1="135" x2="224" y2="160" stroke="var(--fc-brand)" stroke-width="8" stroke-linecap="round"></line>
                     </svg>
                 </div>
-                <div class="fcui-section-title capitalize text-xl md:text-2xl">404</div>
 
                 <p class="text-sm text-muted mb-1.5">
                     {{ __('errors.404_lead') }}

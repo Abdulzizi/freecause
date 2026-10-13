@@ -1241,6 +1241,8 @@ class PetitionTest extends TestCase
             ->assertOk()
             ->assertViewHas('canClaim', true);
 
+        $this->get('/en')->assertOk();
+
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
             ->assertRedirect('/en/login');
 
@@ -1248,10 +1250,53 @@ class PetitionTest extends TestCase
         $this->assertNotNull($user->password);
         $this->assertTrue(Hash::check('secret123', $user->password));
 
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])->assertStatus(404);
+        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
+            ->assertRedirect('/en/login')
+            ->assertSessionHas('toast.type', 'warning');
 
         $this->assertSame($usersBeforeSign + 1, User::count());
         $this->assertSame(1, User::where('email', $email)->count());
+    }
+
+    public function test_claim_without_a_signing_session_redirects_to_login(): void
+    {
+        $petition = $this->makePublishedPetition('claim-no-session');
+
+        $this->post("/en/petition/claim-no-session/{$petition->id}/claim", ['password' => 'secret123'])
+            ->assertRedirect('/en/login')
+            ->assertSessionHas('toast.type', 'warning');
+    }
+
+    public function test_claim_form_survives_intermediate_requests(): void
+    {
+        $petition = $this->makePublishedPetition('claim-survives');
+        $email = 'claim-survives@example.com';
+        $signUrl = "/en/petition/claim-survives/{$petition->id}";
+
+        $this->post("{$signUrl}/sign/confirm", [
+            'name' => 'Survives',
+            'email' => $email,
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertOk();
+
+        $this->post("{$signUrl}/sign", [
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+            'comment' => 'I support this petition',
+        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+
+        foreach (['/en', '/en/petitions', '/en/faqs'] as $path) {
+            $this->get($path)->assertOk();
+        }
+
+        $this->get("{$signUrl}/thanksforsigning/1")->assertOk()->assertViewHas('canClaim', true);
+
+        $this->post("{$signUrl}/claim", ['password' => 'survives123'])
+            ->assertRedirect('/en/login');
     }
 
     public function test_claim_rejected_when_account_already_has_password(): void

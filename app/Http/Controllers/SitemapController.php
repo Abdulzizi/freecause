@@ -90,7 +90,7 @@ class SitemapController extends Controller
                 );
             }
 
-            $entries[] = $this->pageEntry(canonical_url('magazine'));
+            $entries[] = $this->pageEntry(canonical_url('magazine/'));
 
             return $this->urlset($entries);
         }));
@@ -189,7 +189,7 @@ class SitemapController extends Controller
                 $post = is_array($post) ? (object) $post : $post;
 
                 $entries[] = $this->pageEntry(
-                    canonical_url('magazine/'.$post->post_name),
+                    canonical_url('magazine/'.$post->post_name.'/'),
                     ! empty($post->post_modified) ? $this->dateOnly((string) $post->post_modified) : null
                 );
             }

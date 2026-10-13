@@ -563,7 +563,6 @@ class PetitionController extends Controller
         $canClaim = false;
 
         if ($claim) {
-            $request->session()->keep(['sign_claim']);
             $claimUser = User::where('email', $claim['email'])->first();
             $canClaim = $claimUser && ! filled($claimUser->password);
         }
@@ -586,12 +585,17 @@ class PetitionController extends Controller
         $data = $request->validated();
 
         $claim = $request->session()->get('sign_claim');
-        abort_unless($claim, 404);
 
-        $email = $claim['email'];
+        $user = $claim
+            ? User::lockForUpdate()->where('email', $claim['email'])->first()
+            : null;
 
-        $user = User::lockForUpdate()->where('email', $email)->first();
-        abort_unless($user, 404);
+        if (! $claim || ! $user) {
+            $request->session()->forget('sign_claim');
+            toast(__('sign.claim_expired'), 'warning');
+
+            return redirect()->route('login', ['locale' => $locale]);
+        }
 
         if (filled($user->password)) {
             return back()->withErrors([

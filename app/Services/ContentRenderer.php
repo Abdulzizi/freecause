@@ -148,6 +148,7 @@ class ContentRenderer
             '{PRIVACY_POLICY_LINK}' => $privacyPolicyLink,
 
             '{PRIVACY_POLICY_URL}' => $privacyPolicyUrl,
+            '{ETHICAL_CODE_URL}' => lroute('page.show', ['slug' => 'ethical-code']),
 
             '{CREATE_PETITION_URL}' => $createPetitionUrl,
             '{HOW_TO_CREATE_URL}' => $createPetitionUrl,
