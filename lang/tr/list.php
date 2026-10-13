@@ -3,6 +3,7 @@
 return [
     'petitions' => 'Kampanyalar',
     'all_petitions' => 'Tüm kampanyalar',
+    'categories' => 'Kategoriler',
     'category_petitions' => ':name kampanyaları',
     'search_results' => '":q" için arama sonuçları',
     'signatures' => 'imza',

@@ -3,6 +3,7 @@
 return [
     'petitions' => 'Namninsamlingar',
     'all_petitions' => 'Alla namninsamlingar',
+    'categories' => 'Kategorier',
     'category_petitions' => 'Namninsamlingar: :name',
     'search_results' => 'Sökresultat för ":q"',
     'signatures' => 'underskrifter',

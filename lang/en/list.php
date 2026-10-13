@@ -3,6 +3,7 @@
 return [
     'petitions' => 'Petitions',
     'all_petitions' => 'All Petitions',
+    'categories' => 'Categories',
     'category_petitions' => ':name Petitions',
     'search_results' => 'Search results for ":q"',
     'signatures' => 'signatures',

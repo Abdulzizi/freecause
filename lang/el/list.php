@@ -3,6 +3,7 @@
 return [
     'petitions' => 'Αναφορές',
     'all_petitions' => 'Όλες οι αναφορές',
+    'categories' => 'Κατηγορίες',
     'category_petitions' => 'Αναφορές: :name',
     'search_results' => 'Αποτελέσματα αναζήτησης για «:q»',
     'signatures' => 'υπογραφές',

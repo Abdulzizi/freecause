@@ -3,6 +3,7 @@
 return [
     'petitions' => 'Petiții',
     'all_petitions' => 'Toate petițiile',
+    'categories' => 'Categorii',
     'category_petitions' => 'Petiții: :name',
     'search_results' => 'Rezultate pentru „:q”',
     'signatures' => 'semnături',

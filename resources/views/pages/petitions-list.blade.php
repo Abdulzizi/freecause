@@ -58,7 +58,7 @@
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
                     </div>
 
-                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 md:hidden" data-sheet-open="sort-sheet" aria-haspopup="dialog">
+                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 whitespace-nowrap md:hidden" data-sheet-open="sort-sheet" aria-haspopup="dialog">
                         <x-lucide-arrow-down-up aria-hidden="true" />
                         {{ __('list.sort_by') }}
                     </button>
@@ -90,9 +90,9 @@
                         </x-ui.chip-row>
                     </div>
 
-                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 md:hidden" data-sheet-open="category-sheet" aria-haspopup="dialog">
+                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md max-md:min-h-12 mb-4 whitespace-nowrap md:hidden" data-sheet-open="category-sheet" aria-haspopup="dialog">
                         <x-lucide-list aria-hidden="true" />
-                        {{ isset($categoryTr) ? $categoryTr->name : __('list.all_petitions') }}
+                        {{ isset($categoryTr) ? $categoryTr->name : __('list.categories') }}
                     </button>
 
                     <x-ui.action-sheet id="category-sheet" :title="__('list.all_petitions')" :actions="$categoryLinks->map(fn ($chip) => [
@@ -107,12 +107,12 @@
                     <x-ui.skeleton :lines="4" />
                 </div>
 
-                <div class="flex flex-col gap-2 fc-reveal fc-stagger" data-results>
+                <div class="flex flex-col gap-2" data-results>
                     @forelse($petitions as $petition)
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
-                        ]) }}" data-prefetch style="--fc-i: {{ min($loop->index, 12) }}; view-transition-name: petition-{{ $petition->id }}" class="group flex justify-between items-center max-md:min-h-12 px-3.5 py-2.5 border border-border rounded-md text-brand text-sm bg-white transition-all duration-200 ease-out hover:bg-brand hover:text-white hover:border-brand hover:shadow-elev-2 hover:-translate-y-px hover:no-underline">
+                        ]) }}" data-prefetch style="view-transition-name: petition-{{ $petition->id }}" class="group flex justify-between items-center max-md:min-h-12 px-3.5 py-2.5 border border-border rounded-md text-brand text-sm bg-white transition-all duration-200 ease-out hover:bg-brand hover:text-white hover:border-brand hover:shadow-elev-2 hover:-translate-y-px hover:no-underline">
                             <span class="break-words min-w-0">
                                 @php
                                     $titleHtml = e($petition->tr_title);
