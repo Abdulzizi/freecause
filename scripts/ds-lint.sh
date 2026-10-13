@@ -41,6 +41,13 @@ scan "disallowed radius" 'rounded-(xs|xl|2xl|3xl|4xl)([^a-z-]|$)|rounded-\[|roun
 scan "disallowed elevation" 'shadow-(2xs|xs|sm|md|lg|xl|2xl)([^a-z-]|$)|shadow-\[' "${VIEWS[@]}"
 scan "arbitrary colour utility" '(bg|text|border|ring|outline|fill|stroke|from|via|to|decoration|placeholder|caret|accent|divide)-\[#' "${VIEWS[@]}"
 
+scan "dead bootstrap responsive class" 'class="[^"]*(^|[[:space:]])(d|p|m|w|h|text|align-items|justify-content|flex|order|gap|border|rounded|float|overflow)-(sm|md|xl)-[a-z0-9]' "${VIEWS[@]}"
+
+img_hits=$(python3 scripts/ds-lint-alt.py resources/views 2>/dev/null || true)
+if [ -n "$img_hits" ]; then
+    report "image without alt" "$img_hits" "$(printf '%s\n' "$img_hits" | grep -c . || true)"
+fi
+
 hex_hits=$(grep -rnE 'style="[^"]*#[0-9a-fA-F]{3,8}' "${VIEWS[@]}" --include='*.blade.php' --exclude-dir=blatui --exclude-dir=emails 2>/dev/null || true)
 if [ -n "$hex_hits" ] && [ -f "$ALLOW_FILE" ]; then
     hex_hits=$(printf '%s\n' "$hex_hits" | grep -vEf <(grep -vE '^[[:space:]]*(#|$)' "$ALLOW_FILE") || true)

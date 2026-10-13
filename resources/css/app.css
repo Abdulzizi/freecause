@@ -2012,7 +2012,7 @@ select.fc-filter-field {
     }
 
     body.fc-public .navbar {
-        padding-top: var(--fc-safe-top);
+        padding-top: calc(var(--bs-navbar-padding-y, 0.5rem) + var(--fc-safe-top));
     }
 
     .fcui-icon-btn {
