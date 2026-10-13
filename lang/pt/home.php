@@ -47,4 +47,5 @@ return [
     'what_p3' => 'Sem espaço para defender as nossas causas, por mais pequenas ou diárias que pareça, a verdadeira liberdade sente-se fora de alcance.',
     'what_p4' => 'É por isso que construímos <span class="red">FreeCause - Petição On-line</span>— gratuito, independente e feito por você.',
     'what_title' => 'O que é uma petição on-line',
+    'onboarding_title' => 'Como funciona',
 ];

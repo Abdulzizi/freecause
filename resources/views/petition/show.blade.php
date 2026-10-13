@@ -36,6 +36,30 @@
 
     $boxShoutbox = __('show.box_shoutbox');
 
+    $canReport = ! $stateless;
+
+    $guidelinesUrl = lroute('page.show', ['slug' => 'ethical-code']);
+    $contactsUrl = lroute('page.show', ['slug' => 'contacts']);
+    $reportUrl = lroute('report.store');
+
+    $reportReasons = [
+        'spam' => __('show.reason_spam'),
+        'abuse' => __('show.reason_abuse'),
+        'misinformation' => __('show.reason_misinfo'),
+        'copyright' => __('show.reason_copyright'),
+        'other' => __('show.reason_other'),
+    ];
+
+    $shareActions = [
+        ['label' => 'Facebook', 'href' => 'https://www.facebook.com/sharer/sharer.php?u='.urlencode(request()->url()), 'external' => true, 'icon' => 'share-2'],
+        ['label' => 'Twitter', 'href' => 'https://twitter.com/intent/tweet?url='.urlencode(request()->url()).'&text='.urlencode($petitionTitle), 'external' => true, 'icon' => 'external-link'],
+        ['label' => 'WhatsApp', 'href' => 'https://wa.me/?text='.urlencode($petitionTitle.' '.request()->url()), 'external' => true, 'icon' => 'message-square'],
+    ];
+
+    $shareActions[] = $canReport
+        ? ['label' => 'Report', 'icon' => 'flag', 'sheet' => 'reportSheet']
+        : ['label' => 'Report', 'icon' => 'flag', 'href' => $contactsUrl];
+
     $boxGoal = __('show.box_goal');
     $goalSignaturesText = __('show.goal_signatures', ['count' => number_format($goalCurrent)]);
     $goalLabelText = __('show.goal_label', ['count' => number_format($goalTotal)]);
@@ -104,6 +128,16 @@
                     </h1>
 
                     <div class="flex items-center gap-2">
+                        @if ($canReport)
+                            <button type="button" class="fcui-icon-btn" data-sheet-open="reportSheet" aria-haspopup="dialog" aria-label="Report" title="Report">
+                                <x-lucide-flag aria-hidden="true" />
+                            </button>
+                        @else
+                            <a class="fcui-icon-btn" href="{{ $contactsUrl }}" aria-label="Report" title="Report">
+                                <x-lucide-flag aria-hidden="true" />
+                            </a>
+                        @endif
+
                         <button type="button" class="fcui-icon-btn md:hidden" data-sheet-open="petitionShare" aria-haspopup="dialog" aria-label="{{ __('show.share') }}">
                             <x-lucide-share-2 aria-hidden="true" />
                         </button>
@@ -137,6 +171,10 @@
                         </x-ui.badge>
                     @endif
                 </div>
+
+                @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
+                    <x-ui.alert variant="error" class="mb-4">Your report could not be sent. Please choose a reason and try again.</x-ui.alert>
+                @endif
 
                 <div class="md:hidden mt-1 mb-4">
                     <div class="flex items-center justify-between gap-2 text-sm fc-tabular">
@@ -184,16 +222,45 @@
                     </button>
                 </div>
 
-                <x-ui.action-sheet id="petitionShare" :title="__('show.share')" :actions="[
-                    ['label' => 'Facebook', 'href' => 'https://www.facebook.com/sharer/sharer.php?u='.urlencode(request()->url()), 'external' => true, 'icon' => 'share-2'],
-                    ['label' => 'Twitter', 'href' => 'https://twitter.com/intent/tweet?url='.urlencode(request()->url()).'&text='.urlencode($petitionTitle), 'external' => true, 'icon' => 'external-link'],
-                    ['label' => 'WhatsApp', 'href' => 'https://wa.me/?text='.urlencode($petitionTitle.' '.request()->url()), 'external' => true, 'icon' => 'message-square'],
-                ]">
+                <x-ui.action-sheet id="petitionShare" :title="__('show.share')" :actions="$shareActions">
                     <button type="button" class="fcui-sheet-list__item w-full" data-copy="{{ request()->url() }}" data-copied-label="{{ __('show.link_copied') }}">
                         <x-lucide-copy aria-hidden="true" />
                         <span>{{ __('show.copy_link') }}</span>
                     </button>
                 </x-ui.action-sheet>
+
+                @if ($canReport)
+                    <x-ui.bottom-sheet id="reportSheet" title="{{ __('show.report_title') }}" variant="center">
+                        <form method="POST" action="{{ $reportUrl }}" class="flex flex-col gap-3">
+                            @csrf
+                            <input type="hidden" name="reportable_type" value="petition">
+                            <input type="hidden" name="reportable_id" value="{{ $petition->id }}">
+
+                            <fieldset class="flex flex-col m-0 p-0 border-0">
+                                <legend class="fcui-field__label">{{ __('show.report_question') }}</legend>
+
+                                @foreach (\App\Models\Report::reasons() as $reason)
+                                    <label class="flex min-h-12 items-center gap-2 text-base">
+                                        <input type="radio" name="reason" value="{{ $reason }}" required @checked($loop->first)>
+                                        <span>{{ $reportReasons[$reason] }}</span>
+                                    </label>
+                                @endforeach
+                            </fieldset>
+
+                            <label class="fcui-field">
+                                <span class="fcui-field__label">{{ __('show.report_details') }}</span>
+                                <textarea name="details" rows="3" maxlength="500" class="fcui-input" placeholder="{{ __('show.report_details_ph') }}"></textarea>
+                            </label>
+
+                            <p class="mb-0 text-sm text-muted">
+                                Reports are reviewed against our
+                                <a class="text-brand" href="{{ $guidelinesUrl }}">community guidelines</a>.
+                            </p>
+
+                            <x-ui.button type="submit" class="w-full">{{ __('show.report_submit') }}</x-ui.button>
+                        </form>
+                    </x-ui.bottom-sheet>
+                @endif
 
                 <div class="flex flex-wrap -mx-3">
                     <div class="w-full lg:w-2/3 shrink-0 px-3">
@@ -278,6 +345,34 @@
                                             <p class="mb-0 mt-1 text-muted text-sm">
                                                 "{{ $comment->text }}"
                                             </p>
+
+                                            @if ($canReport)
+                                                <details class="mt-1">
+                                                    <summary class="fcui-tap inline-flex cursor-pointer items-center gap-1 text-xs text-muted">
+                                                        <x-lucide-flag class="w-4 h-4" aria-hidden="true" />
+                                                        Report
+                                                    </summary>
+
+                                                    <form method="POST" action="{{ $reportUrl }}" class="mt-2 flex flex-col gap-2">
+                                                        @csrf
+                                                        <input type="hidden" name="reportable_type" value="comment">
+                                                        <input type="hidden" name="reportable_id" value="{{ $comment->id }}">
+
+                                                        <label class="fcui-field">
+                                                            <span class="fcui-field__label">Report this comment</span>
+                                                            <select name="reason" class="fcui-input" required>
+                                                                @foreach (\App\Models\Report::reasons() as $reason)
+                                                                    <option value="{{ $reason }}">{{ $reportReasons[$reason] }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </label>
+
+                                                        <textarea name="details" rows="2" maxlength="500" class="fcui-input" placeholder="{{ __('show.report_details') }}"></textarea>
+
+                                                        <x-ui.button type="submit" variant="secondary" size="sm" class="self-start">{{ __('show.report_submit') }}</x-ui.button>
+                                                    </form>
+                                                </details>
+                                            @endif
                                         </div>
                                     </div>
                                 @empty

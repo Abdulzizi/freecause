@@ -77,12 +77,21 @@ class CategoryPetitionController extends Controller
             $petitions = $petitions->withQueryString();
         }
 
+        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
+            return Category::select(['categories.id', 'categories.sort_order'])
+                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
+                ->where('categories.is_active', true)
+                ->orderBy('categories.sort_order')
+                ->get();
+        });
+
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,
             'heading' => __('list.category_petitions', ['name' => $tr->name]),
             'category' => $category,
             'categoryTr' => $tr,
             'search' => $search,
+            'categories' => $categories,
             'petitions' => $petitions,
         ]);
     }

@@ -120,6 +120,14 @@ class PetitionController extends Controller
         $search = trim((string) request('q', ''));
         $page = max(1, min((int) request('page', 1), 500));
 
+        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
+            return Category::select(['categories.id', 'categories.sort_order'])
+                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
+                ->where('categories.is_active', true)
+                ->orderBy('categories.sort_order')
+                ->get();
+        });
+
         $query = Petition::query()
             ->select([
                 'petitions.id',
@@ -167,6 +175,7 @@ class PetitionController extends Controller
             'pageTitle' => $search ? __('list.search_results', ['q' => $search]) : __('list.all_petitions'),
             'heading' => $search ? __('list.search_results', ['q' => $search]) : __('list.petitions'),
             'search' => $search,
+            'categories' => $categories,
             'sort' => $search ? null : (in_array(request('sort'), ['signed', 'newest'], true) ? request('sort') : 'newest'),
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,

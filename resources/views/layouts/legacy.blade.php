@@ -34,6 +34,15 @@
             ($globalMetaDefault['head_additional_html'] ??
             ($homeMetaDefault['head_additional_html'] ?? '')));
         $canonicalPageUrl = canonical_url().(request()->getQueryString() ? '?'.request()->getQueryString() : '');
+
+        $ogTitle = trim((string) $__env->getSection('og_title', $__env->getSection('title', 'FreeCause')));
+        $ogDescription = trim((string) $__env->getSection('og_description', strip_tags($metaDescription)));
+        $ogUrl = trim((string) $__env->getSection('og_url', $canonicalPageUrl));
+        $ogType = trim((string) $__env->getSection('og_type', 'website'));
+        $ogImage = trim((string) $__env->getSection('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png')));
+        if ($ogImage !== '' && ! str_starts_with($ogImage, 'http://') && ! str_starts_with($ogImage, 'https://')) {
+            $ogImage = url($ogImage);
+        }
     @endphp
 
     <title>
@@ -56,18 +65,16 @@
     <link rel="canonical" href="{{ $canonicalPageUrl }}">
 
     <meta property="og:site_name" content="FreeCause">
-    <meta property="og:type" content="website">
-    @hasSection('og_title')
-        <meta property="og:title" content="@yield('og_title')">
-        <meta property="og:description" content="@yield('og_description')">
-        <meta property="og:image" content="@yield('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png'))">
-        <meta property="og:url" content="@yield('og_url', $canonicalPageUrl)">
-    @else
-        <meta property="og:title" content="@yield('title', 'FreeCause')">
-        <meta property="og:description" content="{{ strip_tags($metaDescription) }}">
-        <meta property="og:image" content="{{ asset('legacy/images-v2/freecause_logo_icon_clear.png') }}">
-        <meta property="og:url" content="{{ $canonicalPageUrl }}">
-    @endif
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:title" content="{!! $ogTitle !!}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:url" content="{{ $ogUrl }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{!! $ogTitle !!}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
     {!! \App\Services\ContentRenderer::render($headExtra) !!}
 

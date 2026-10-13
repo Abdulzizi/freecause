@@ -47,4 +47,5 @@ return [
     'what_p3' => 'Uden plads til at kæmpe for vores årsager, uanset hvor små eller daglige de måtte synes, føler virkelig frihed sig ude af rækkevidde.',
     'what_p4' => 'Derfor byggede vi <span class="red">FreeCause - Online Petition</span>- gratis, uafhængig og lavet til dig.',
     'what_title' => 'Hvad er online andragende',
+    'onboarding_title' => 'Sådan virker det',
 ];

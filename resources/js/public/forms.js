@@ -94,11 +94,29 @@ export function init() {
     document.querySelectorAll('form[data-live-search]').forEach(function (form) {
         const input = form.querySelector('input[name="q"]');
         if (!input) return;
+
+        const skeleton = document.querySelector('[data-skeleton]');
+        const results = document.querySelector('[data-results]');
+
+        const busy = function () {
+            if (skeleton) skeleton.removeAttribute('hidden');
+            if (results) results.setAttribute('aria-busy', 'true');
+        };
+
         const submit = window.fcDebounce(function () {
+            busy();
             form.submit();
         }, 450);
+
         input.addEventListener('input', function () {
             submit();
+        });
+
+        form.addEventListener('submit', busy);
+
+        window.addEventListener('pageshow', function () {
+            if (skeleton) skeleton.setAttribute('hidden', 'hidden');
+            if (results) results.removeAttribute('aria-busy');
         });
     });
 

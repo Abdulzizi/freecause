@@ -13,6 +13,16 @@
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="FreeCause">
         </a>
 
+        <form class="hidden md:flex md:items-center md:gap-1 md:mx-4" method="GET" action="{{ lroute('petitions.index') }}" role="search">
+            <label for="fc-nav-search" class="sr-only">{{ __('list.search') }}</label>
+            <input id="fc-nav-search" type="search" name="q" value="{{ request('q') }}"
+                   placeholder="{{ __('list.search_placeholder') }}"
+                   class="w-40 lg:w-56 px-2 py-1 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand-light focus:outline-none focus:ring-4 focus:ring-brand/25">
+            <button type="submit" class="inline-flex items-center justify-center px-2 py-1 bg-brand text-white border border-brand rounded-md cursor-pointer hover:bg-brand-hover" aria-label="{{ __('list.search') }}">
+                <x-lucide-search class="size-4" aria-hidden="true" />
+            </button>
+        </form>
+
         <div class="flex items-center gap-2 md:hidden ms-auto">
             <a href="{{ lroute('petitions.index') }}" class="fcui-icon-btn" aria-label="{{ __('list.search') }}">
                 <x-lucide-search aria-hidden="true" />

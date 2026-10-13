@@ -49,4 +49,5 @@ return [
     'what_p3' => 'Davalarımızı savunacak bir alan olmadan, ne kadar küçük ya da sıradan görünseler de, gerçek özgürlük ulaşılmaz kalır.',
     'what_p4' => '<span class="red">FreeCause - Online Petition</span>\'ı bu yüzden kurduk—ücretsiz, bağımsız ve sizin için.',
     'what_title' => 'Çevrimiçi dilekçe nedir',
+    'onboarding_title' => 'Nasıl çalışır',
 ];

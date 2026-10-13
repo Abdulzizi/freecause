@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'title' => 'Email preferences',
+    'lead' => 'Choose which emails FreeCause sends you. Account emails are always delivered.',
+    'milestones_title' => 'Petition milestones',
+    'milestones_help' => 'When a petition you created reaches 100, 1,000, 10,000 or 100,000 signatures.',
+    'product_title' => 'Product news',
+    'product_help' => 'Occasional updates about new FreeCause features and campaigns.',
+    'transactional_note' => 'Verification, password reset and account emails are transactional, so they are always sent while your account is active.',
+    'save' => 'Save preferences',
+    'saved' => 'Your email preferences have been saved.',
+    'currently_unsubscribed' => 'You are currently unsubscribed from all optional emails. Save a category below to resubscribe.',
+    'unsubscribe_all_title' => 'Unsubscribe from all',
+    'unsubscribe_all_help' => 'Turn off milestone emails and product news in one step.',
+    'unsubscribe_all' => 'Unsubscribe from all emails',
+    'unsubscribed' => 'You have been unsubscribed from milestone and product emails.',
+    'unsubscribed_help' => 'Verification, password reset and account emails are still delivered while your account is active.',
+    'invalid_token' => 'This unsubscribe link is invalid or has expired. If you keep receiving emails you want to stop, sign in to manage your preferences.',
+    'manage_preferences' => 'Manage preferences',
+    'sign_in' => 'Sign in',
+    'back_home' => 'Back to home',
+];

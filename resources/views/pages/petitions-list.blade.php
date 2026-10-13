@@ -69,7 +69,45 @@
                     ]" />
                 @endif
 
-                <div class="flex flex-col gap-2 fc-reveal fc-stagger">
+                @php
+                    $categoryLinks = collect($categories ?? [])->map(fn ($cat) => [
+                        'href' => lroute('petitions.byCategory', ['categorySlug' => $cat->tr_slug, 'category' => $cat->id]),
+                        'label' => $cat->tr_name,
+                        'active' => isset($category) && (int) $category->id === (int) $cat->id,
+                    ])->values();
+                @endphp
+
+                @if ($categoryLinks->isNotEmpty())
+                    <div class="hidden md:block -mx-4 mb-4">
+                        <x-ui.chip-row>
+                            <a href="{{ lroute('petitions.index') }}"
+                               class="fcui-chip {{ isset($category) ? '' : 'is-active' }}"
+                               @if (! isset($category)) aria-current="true" @endif>{{ __('list.all_petitions') }}</a>
+                            @foreach ($categoryLinks as $chip)
+                                <a href="{{ $chip['href'] }}" class="fcui-chip {{ $chip['active'] ? 'is-active' : '' }}"
+                                   @if ($chip['active']) aria-current="true" @endif>{{ $chip['label'] }}</a>
+                            @endforeach
+                        </x-ui.chip-row>
+                    </div>
+
+                    <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--md min-h-12 mb-4 md:hidden" data-sheet-open="category-sheet" aria-haspopup="dialog">
+                        <x-lucide-list aria-hidden="true" />
+                        {{ isset($categoryTr) ? $categoryTr->name : __('list.all_petitions') }}
+                    </button>
+
+                    <x-ui.action-sheet id="category-sheet" :title="__('list.all_petitions')" :actions="$categoryLinks->map(fn ($chip) => [
+                        'href' => $chip['href'],
+                        'label' => $chip['label'],
+                        'icon' => $chip['active'] ? 'check' : 'circle',
+                    ])->all()" />
+                @endif
+
+                <div data-skeleton hidden aria-hidden="true" class="flex flex-col gap-2">
+                    <x-ui.skeleton variant="title" />
+                    <x-ui.skeleton :lines="4" />
+                </div>
+
+                <div class="flex flex-col gap-2 fc-reveal fc-stagger" data-results>
                     @forelse($petitions as $petition)
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
@@ -89,23 +127,46 @@
                             </span>
                         </a>
                     @empty
-                        <div class="flex flex-col items-center justify-center text-center py-12 px-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true" class="mb-4">
-                                <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
-                                <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
-                                <rect x="38" y="30" width="44" height="56" rx="4" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
-                                <path d="M66 30v12h12" fill="#fff5f5" stroke="#cc1f1f" stroke-width="2.5" stroke-linejoin="round"></path>
-                                <line x1="46" y1="52" x2="74" y2="52" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
-                                <line x1="46" y1="62" x2="74" y2="62" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
-                                <line x1="46" y1="72" x2="62" y2="72" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
-                                <circle cx="80" cy="82" r="16" fill="#cc1f1f"></circle>
-                                <path d="M74 82h12M80 76v12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"></path>
-                            </svg>
-                            <p class="text-muted mb-4">{{ __('list.none') }}</p>
-                            <a href="{{ lroute('petition.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-brand text-white border border-brand rounded-md no-underline hover:bg-brand-hover hover:no-underline">
-                                {{ __('home.btn_create_petition') }}
-                            </a>
-                        </div>
+                        @php
+                            $isSearchEmpty = is_string($search) && $search !== '';
+                            $clearSearchUrl = request()->fullUrlWithQuery(['q' => null, 'page' => null]);
+                            $emptyText = $isSearchEmpty
+                                ? __('list.empty_search')
+                                : (isset($category) ? __('list.empty_category') : __('list.empty_all'));
+                        @endphp
+
+                        <x-ui.empty :title="__('list.none')" :text="$emptyText">
+                            <x-slot:icon>
+                                @if ($isSearchEmpty)
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                                        <circle cx="60" cy="60" r="56" fill="#fff5f5"></circle>
+                                        <circle cx="60" cy="60" r="56" stroke="#f6d4d4" stroke-width="2"></circle>
+                                        <rect x="38" y="30" width="44" height="56" rx="4" fill="#ffffff" stroke="#cc1f1f" stroke-width="2.5"></rect>
+                                        <path d="M66 30v12h12" fill="#fff5f5" stroke="#cc1f1f" stroke-width="2.5" stroke-linejoin="round"></path>
+                                        <line x1="46" y1="52" x2="74" y2="52" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                        <line x1="46" y1="62" x2="74" y2="62" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                        <line x1="46" y1="72" x2="62" y2="72" stroke="#f6a5a5" stroke-width="2.5" stroke-linecap="round"></line>
+                                        <circle cx="80" cy="82" r="16" fill="#cc1f1f"></circle>
+                                        <path d="M74 82h12M80 76v12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"></path>
+                                    </svg>
+                                @endif
+                            </x-slot:icon>
+
+                            <x-slot:action>
+                                <div class="flex flex-wrap items-center justify-center gap-2">
+                                    @if ($isSearchEmpty)
+                                        <x-ui.button :href="$clearSearchUrl" class="max-md:min-h-12">{{ __('list.clear') }}</x-ui.button>
+                                    @elseif (isset($category))
+                                        <x-ui.button :href="lroute('petitions.index')" class="max-md:min-h-12">{{ __('home.btn_browse_petitions') }}</x-ui.button>
+                                    @endif
+                                    <x-ui.button variant="ghost" :href="lroute('petition.create')" class="max-md:min-h-12">
+                                        {{ __('home.btn_create_petition') }}
+                                    </x-ui.button>
+                                </div>
+                            </x-slot:action>
+                        </x-ui.empty>
                     @endforelse
                 </div>
 

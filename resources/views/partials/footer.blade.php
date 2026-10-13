@@ -7,8 +7,25 @@
     $layoutContent = $service->getPageWithFallback('layout', $locale, $fallbackLocale);
 
     $about  = $layoutContent['footer_about'] ?? '';
-    $links  = $layoutContent['footer_links'] ?? '';
     $bottom = $layoutContent['footer_bottom'] ?? '';
+
+    $personalDataTitle = cache()->remember("page_title_personal_data_processing_{$locale}", 3600, fn () => App\Models\PageTranslation::query()
+        ->where('slug', 'personal-data-processing')
+        ->where('locale', $locale)
+        ->value('title') ?? 'Personal Data Processing');
+
+    $footerLinks = [
+        ['label' => __('nav.home'), 'href' => lroute('home')],
+        ['label' => __('nav.explore'), 'href' => lroute('petitions.index')],
+        ['label' => __('pages.how_to_write_a_petition'), 'href' => lroute('how-to-write-a-petition')],
+        ['label' => __('pages.donations'), 'href' => lroute('donations')],
+        ['label' => __('pages.faqs'), 'href' => lroute('faqs')],
+        ['label' => __('contacts.title'), 'href' => lroute('contacts')],
+        ['label' => __('pages.ethical_code'), 'href' => lroute('page.show', ['slug' => 'ethical-code'])],
+        ['label' => __('pages.terms_of_service'), 'href' => lroute('page.show', ['slug' => 'terms-of-service'])],
+        ['label' => __('pages.privacy_policy'), 'href' => lroute('page.show', ['slug' => 'privacy-policy'])],
+        ['label' => $personalDataTitle, 'href' => lroute('personal-data-processing')],
+    ];
 @endphp
 
 <section class="site-footer bg-dark text-on-dark font-[Arial,sans-serif]">
@@ -22,9 +39,20 @@
                         {!! \App\Services\ContentRenderer::render($about) !!}
                     </div>
 
-                    <div class="flex flex-row flex-wrap gap-x-5 gap-y-2 pt-5 pb-8 mt-8 max-md:flex-col max-md:items-center [&_a]:text-on-dark [&_a]:no-underline [&_a]:text-sm [&_a]:hover:underline">
-                        {!! \App\Services\ContentRenderer::render($links) !!}
-                    </div>
+                    <nav aria-label="{{ __('nav.menu') }}" class="pt-5 pb-8 mt-8 border-t border-on-dark/20">
+                        <ul class="flex flex-row flex-wrap items-center gap-x-5 gap-y-2 m-0 p-0 list-none max-md:flex-col">
+                            @foreach ($footerLinks as $link)
+                                <li>
+                                    <a href="{{ $link['href'] }}" class="text-on-dark no-underline text-sm hover:underline">
+                                        {{ $link['label'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                            <li>
+                                @include('partials.language_switch')
+                            </li>
+                        </ul>
+                    </nav>
 
                 </div>
 

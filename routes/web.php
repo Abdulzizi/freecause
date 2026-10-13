@@ -323,6 +323,9 @@ Route::prefix('{locale}')
             ->where('status', '([0-9]+|created)?')
             ->name('petition.thanks');
 
+        require __DIR__.'/reports.php';
+        require __DIR__.'/preferences.php';
+
         Route::get('/{slug}', [PageController::class, 'show'])
             ->withoutMiddleware($withoutSession)
             ->middleware('optional.session')
