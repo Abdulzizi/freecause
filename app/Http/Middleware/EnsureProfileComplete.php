@@ -9,8 +9,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureProfileComplete
 {
+    private const ALWAYS_ALLOWED = [
+        'profile',
+        'account.profile.update',
+        'account.delete',
+        'account.delete.google',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
+        if (in_array($request->route()?->getName(), self::ALWAYS_ALLOWED, true)) {
+            return $next($request);
+        }
+
         $user = $request->user();
 
         if ($user instanceof User && ! $user->hasCompleteProfile()) {

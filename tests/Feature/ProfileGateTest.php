@@ -161,4 +161,48 @@ class ProfileGateTest extends TestCase
             ->assertRedirect('/en/profile')
             ->assertSessionHasNoErrors();
     }
+
+    public function test_account_and_participation_actions_are_gated(): void
+    {
+        $petition = $this->petition();
+        $user = $this->incompleteUser();
+
+        $gated = [
+            ['get', '/en/my-petitions'],
+            ['get', "/en/petition/gate-test-petition/{$petition->id}/edit"],
+            ['get', '/en/preferences'],
+            ['post', '/en/preferences'],
+            ['post', '/en/report'],
+            ['post', "/en/petition/gate-test-petition/{$petition->id}/claim"],
+        ];
+
+        foreach ($gated as [$method, $url]) {
+            $this->actingAs($user)
+                ->{$method}($url)
+                ->assertRedirectContains('/en/profile');
+        }
+    }
+
+    public function test_profile_page_never_redirects_to_itself(): void
+    {
+        $this->actingAs($this->incompleteUser())
+            ->get('/en/profile')
+            ->assertOk()
+            ->assertSee('id="gender"', false);
+    }
+
+    public function test_logout_and_support_contact_stay_reachable(): void
+    {
+        $user = $this->incompleteUser();
+
+        $logout = $this->actingAs($user)->post('/en/logout');
+        $this->assertStringNotContainsString('/en/profile', (string) $logout->headers->get('Location'));
+
+        $contact = $this->actingAs($user)->post('/en/contacts', [
+            'name' => 'Ada Lovelace',
+            'email' => $user->email,
+            'message' => 'Help me, I cannot complete my profile.',
+        ]);
+        $this->assertStringNotContainsString('/en/profile', (string) $contact->headers->get('Location'));
+    }
 }
