@@ -207,8 +207,12 @@
     }
 
     @media (max-width: 767.98px) {
-        body.fc-public:has(.fcui-sticky-signbar) .fcui-scrolltop {
-            bottom: calc(4.5rem + env(safe-area-inset-bottom));
+        body.fc-public:has(.fcui-bottom-nav) .fcui-scrolltop {
+            bottom: calc(var(--fc-nav-h) + 0.75rem + var(--fc-safe-bottom));
+        }
+
+        body.fc-public:has(.fcui-bottom-nav):has(.fcui-sticky-action) .fcui-scrolltop {
+            bottom: calc(var(--fc-nav-h) + var(--fc-action-h) + 0.75rem + var(--fc-safe-bottom));
         }
     }
 
@@ -1697,12 +1701,19 @@ select.fc-filter-field {
 }
 
 @layer components {
-    body.fc-public:has(.fcui-bottom-nav) {
-        padding-bottom: calc(var(--fc-nav-h) + var(--fc-safe-bottom));
-    }
+    @media (max-width: 767.98px) {
+        body.fc-public:has(.fcui-bottom-nav) {
+            padding-bottom: calc(var(--fc-nav-h) + var(--fc-safe-bottom));
+        }
 
-    body.fc-public:has(.fcui-bottom-nav):has(.fcui-sticky-action) main {
-        padding-bottom: calc(var(--fc-action-h) + var(--fc-safe-bottom));
+        body.fc-public:has(.fcui-bottom-nav):has(.fcui-sticky-action) main {
+            padding-bottom: calc(var(--fc-action-h) + var(--fc-safe-bottom));
+        }
+
+        .fcui-pagination__item {
+            min-width: var(--fc-tap-min);
+            height: var(--fc-tap-min);
+        }
     }
 
     .fcui-topbar {
@@ -1802,7 +1813,7 @@ select.fc-filter-field {
         -webkit-overflow-scrolling: touch;
         padding-block: 0.25rem;
         padding-inline: max(1rem, var(--fc-safe-left)) max(1rem, var(--fc-safe-right));
-        mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, var(--fc-mask) 12px, var(--fc-mask) calc(100% - 12px), transparent 100%);
     }
 
     .fcui-chip-row::-webkit-scrollbar {

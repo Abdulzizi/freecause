@@ -136,6 +136,7 @@
     --fc-nav-h: 56px;
     --fc-action-h: 64px;
     --fc-tap-min: 48px;
+    --fc-mask: #000;
 }
 
 @utility z-sticky {

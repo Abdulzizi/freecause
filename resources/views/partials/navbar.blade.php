@@ -13,7 +13,7 @@
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="FreeCause">
         </a>
 
-        <div class="d-flex align-items-center gap-2 d-md-none ms-auto">
+        <div class="flex items-center gap-2 md:hidden ms-auto">
             <a href="{{ lroute('petitions.index') }}" class="fcui-icon-btn" aria-label="{{ __('list.search') }}">
                 <x-lucide-search aria-hidden="true" />
             </a>
@@ -26,7 +26,7 @@
         </div>
 
         <div class="collapse navbar-collapse" id="fcNav">
-            <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-md-center">
+            <ul class="navbar-nav ms-auto mb-2 md:mb-0 md:items-center">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('petitions.index') }}">
                         {{ $explore }}
@@ -52,7 +52,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->display_name }}</a>
                     </li>
-                    <li class="nav-item ms-md-2 me-md-3">
+                    <li class="nav-item md:ms-2 md:me-3">
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
                             <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
@@ -63,13 +63,13 @@
                     </li>
                 @endif
 
-                <li class="nav-item mt-2 mt-md-0 ms-md-3">
-                    <a class="fcui-btn fcui-btn--md fcui-btn--primary w-100 w-md-auto" href="{{ lroute('petition.create') }}">
+                <li class="nav-item mt-2 md:mt-0 md:ms-3">
+                    <a class="fcui-btn fcui-btn--md fcui-btn--primary w-full md:w-auto" href="{{ lroute('petition.create') }}">
                         {{ $startFree }}
                     </a>
                 </li>
 
-                <li class="nav-item ms-md-4 d-none d-md-block">
+                <li class="nav-item md:ms-4 hidden md:block">
                     @include('partials.language_switch')
                 </li>
             </ul>

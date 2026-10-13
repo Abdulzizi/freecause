@@ -34,7 +34,7 @@ scan() {
     fi
 }
 
-scan "important utility (! suffix)" '[\w)\]]!(?=[[:space:]"'"'"'{}\)\]<,]|$)' "${CODE[@]}"
+scan "important utility (! suffix)" '([a-z]+-[a-z0-9-]+!|(block|flex|grid|hidden|inline|contents|table|italic|underline|truncate|uppercase|lowercase|capitalize|antialiased|invisible|static|relative|absolute|fixed|sticky|isolate|collapse)!)(["[:space:]]|$)' "${CODE[@]}"
 scan "arbitrary type size (text-[…])" 'text-\[[0-9]' "${VIEWS[@]}"
 scan "arbitrary spacing (p/m/gap-[…])" '(^|[[:space:]"'"'"'])(-?)(p|px|py|pt|pb|pl|pr|ps|pe|m|mx|my|mt|mb|ml|mr|ms|me|gap|gap-x|gap-y)-\[[0-9]' "${VIEWS[@]}"
 scan "disallowed radius" 'rounded-(xs|xl|2xl|3xl|4xl)([^a-z-]|$)|rounded-\[|rounded([[:space:]"'"'"']|$)' "${VIEWS[@]}"
