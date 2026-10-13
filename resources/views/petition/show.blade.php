@@ -375,7 +375,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-muted text-sm">{{ __('sig.no_comments') }}</div>
+                                    <x-ui.empty :text="__('sig.no_comments')" class="fcui-empty--compact" />
                                 @endforelse
 
                                 @if ($shoutbox->hasPages())

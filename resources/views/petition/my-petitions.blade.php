@@ -21,7 +21,7 @@
                                     <div class="text-sm text-ink whitespace-nowrap fc-tabular">{{ $date->format('j F Y') }}</div>
                                 </a>
                             @empty
-                                <div class="text-sm text-muted py-2.5 px-0">{{ __('myp.signed_empty') }}</div>
+                                <x-ui.empty :text="__('myp.signed_empty')" class="fcui-empty--compact" />
                             @endforelse
 
                             @if($tab === 'signed' && $signed instanceof \Illuminate\Contracts\Pagination\Paginator)
@@ -48,7 +48,7 @@
                                     <div class="text-sm text-ink whitespace-nowrap fc-tabular">{{ optional($p->created_at)->format('j F Y') }}</div>
                                 </a>
                             @empty
-                                <div class="text-sm text-muted py-2.5 px-0">{{ __('myp.created_empty') }}</div>
+                                <x-ui.empty :text="__('myp.created_empty')" class="fcui-empty--compact" />
                             @endforelse
 
                             @if($tab === 'created' && $created instanceof \Illuminate\Contracts\Pagination\Paginator)

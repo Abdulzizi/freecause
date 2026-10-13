@@ -78,7 +78,7 @@
                 @endphp
 
                 @if ($categoryLinks->isNotEmpty())
-                    <div class="hidden md:block -mx-4 mb-4">
+                    <div class="hidden md:block mb-4">
                         <x-ui.chip-row>
                             <a href="{{ lroute('petitions.index') }}"
                                class="fcui-chip {{ isset($category) ? '' : 'is-active' }}"

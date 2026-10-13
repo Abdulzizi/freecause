@@ -1561,8 +1561,14 @@ select.fc-filter-field {
     }
 
     .fcui-empty__icon {
-        margin-inline: auto;
+        display: flex;
+        justify-content: center;
         color: var(--fc-text-subtle);
+    }
+
+    .fcui-empty__icon > svg {
+        width: 6rem;
+        height: 6rem;
     }
 
     .fcui-empty__title {
@@ -1578,6 +1584,18 @@ select.fc-filter-field {
 
     .fcui-empty__action {
         margin-top: 1.25rem;
+    }
+
+    .fcui-empty--compact {
+        padding: 0.5rem 0;
+        border: 0;
+        background: transparent;
+        text-align: start;
+    }
+
+    .fcui-empty--compact .fcui-empty__text {
+        margin-top: 0;
+        font-size: var(--text-sm);
     }
 
     .fcui-pagination {
