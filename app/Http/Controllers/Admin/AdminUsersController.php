@@ -221,16 +221,31 @@ class AdminUsersController extends Controller
             }
         }
 
-        if ($isSelf && ! $request->boolean('verified')) {
-            return back()->withErrors(['verified' => 'You cannot deactivate your own account.'])->withInput();
+        if ($isSelf && $request->has('verified') && ! $request->boolean('verified')) {
+            return back()->withErrors(['verified' => 'You cannot un-verify your own account.'])->withInput();
         }
 
         $wasVerified = (bool) $user->verified;
-        $nowVerified = $request->boolean('verified');
-        $needsReverification = $wasVerified && ! $nowVerified;
+        $nowVerified = $request->has('verified') ? $request->boolean('verified') : $wasVerified;
+        $emailChanged = array_key_exists('email', $data)
+            && strtolower(trim((string) $data['email'])) !== strtolower(trim((string) $user->email));
+
+        $needsReverification = ($wasVerified && ! $nowVerified) || ($emailChanged && $nowVerified);
+
+        if ($needsReverification) {
+            $nowVerified = false;
+        }
+
+        if ($needsReverification && ! Settings::get('smtp_enabled', false)) {
+            return back()->withErrors([
+                'verified' => $emailChanged
+                    ? 'Changing a verified user\'s email needs a verification email, but sending is off. Enable SMTP first.'
+                    : 'Un-verifying needs a verification email, but email sending is disabled. Enable SMTP first, or suspend the account instead.',
+            ])->withInput();
+        }
 
         try {
-            DB::transaction(function () use ($request, $data, $user, $levelChangesRequested, $needsReverification) {
+            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified) {
                 if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
@@ -251,7 +266,7 @@ class AdminUsersController extends Controller
                 $user->identify_mode = $data['identify_mode'] ?? $user->identify_mode;
                 $user->email = $data['email'] ?? $user->email;
                 $user->locale = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
-                $user->verified = $request->boolean('verified');
+                $user->verified = $nowVerified;
 
                 if ($needsReverification) {
                     $user->verification_token = Str::random(64);
@@ -281,6 +296,46 @@ class AdminUsersController extends Controller
 
         return redirect()
             ->route('admin.users', ['select' => $user->id])
+            ->with('success', 'saved');
+    }
+
+    public function resendVerification(User $user)
+    {
+        if ($user->verified) {
+            return back()->with('error', 'This account is already verified.');
+        }
+
+        if (! Settings::get('smtp_enabled', false)) {
+            return back()->with('error', 'Email sending is disabled. Enable SMTP in site settings first.');
+        }
+
+        try {
+            $user->verification_token = Str::random(64);
+            $user->verification_token_sent_at = now();
+            $user->save();
+
+            Mail::to($user->email)->queue(new VerifyAccountMail($user, $user->locale ?: default_locale()));
+
+            AppLog::info(
+                'Verification email resent by admin',
+                'User ID: '.$user->id.' | Admin ID: '.(admin_user()?->id ?? 0),
+                'admin.users'
+            );
+        } catch (\Throwable $e) {
+            AppLog::error(
+                'Admin verification resend failed',
+                'User ID: '.$user->id.' | '.$e->getMessage(),
+                'admin.users'
+            );
+
+            return back()->with('error', 'Verification email could not be sent.');
+        }
+
+        return redirect()
+            ->route('admin.users', array_filter([
+                'select' => $user->id,
+                'locale' => request()->filled('locale') ? request('locale') : null,
+            ]))
             ->with('success', 'saved');
     }
 

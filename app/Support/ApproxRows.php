@@ -17,6 +17,7 @@ trait ApproxRows
             'pages',
             'logs',
             'banned_ips',
+            'reports',
         ];
 
         if (! in_array($table, $allowed, true)) {

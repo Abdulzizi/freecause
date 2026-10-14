@@ -251,6 +251,7 @@
 
                 <x-admin.form-field label="verified" for="user-verified">
                     <span class="fc-switch">
+                        <input type="hidden" name="verified" value="0">
                         <input id="user-verified" type="checkbox" name="verified" value="1"
                             {{ $selectedUser->verified ?? 0 ? 'checked' : '' }}>
                         <span class="fc-switch__track" aria-hidden="true"></span>
@@ -279,6 +280,21 @@
                 <x-blatui.button type="submit">save</x-blatui.button>
             </div>
         </form>
+
+        @if ($selectedUser && ! $selectedUser->verified)
+            <x-admin.section-panel title="verification email">
+                @if ($selectedUser->verification_token_sent_at)
+                    <p class="text-sm text-muted mb-2">Last sent {{ $selectedUser->verification_token_sent_at }}</p>
+                @else
+                    <p class="text-sm text-muted mb-2">No verification email sent yet.</p>
+                @endif
+
+                <form method="POST" action="{{ route('admin.users.resendVerification', $selectedUser->id) }}">
+                    @csrf
+                    <x-blatui.button type="submit" variant="outline" size="sm">resend verification email</x-blatui.button>
+                </form>
+            </x-admin.section-panel>
+        @endif
         @elseif ($selectedUser)
             <p class="text-sm text-muted">View-only access</p>
             <dl class="grid grid-cols-[120px_1fr] gap-2 text-sm max-md:grid-cols-[90px_1fr]">

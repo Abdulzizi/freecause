@@ -18,6 +18,7 @@
                 ['route' => 'admin.signatures', 'label' => 'signatures', 'is' => 'admin.signatures', 'module' => 'signatures'],
                 ['route' => 'admin.pages', 'label' => 'pages', 'is' => 'admin.pages', 'module' => 'pages'],
                 ['route' => 'admin.spam', 'label' => 'spam', 'is' => 'admin.spam', 'module' => 'spam'],
+                ['route' => 'admin.reports', 'label' => 'reports', 'is' => 'admin.reports', 'module' => 'reports'],
                 ['route' => 'admin.stats', 'label' => 'statistics', 'is' => 'admin.stats', 'module' => 'stats'],
                 ['route' => 'admin.logs', 'label' => 'logs', 'is' => 'admin.logs', 'module' => 'logs'],
                 ['route' => 'admin.languages.index', 'label' => 'languages', 'is' => 'admin.languages.index', 'module' => 'languages'],

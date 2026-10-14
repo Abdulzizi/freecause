@@ -16,6 +16,7 @@ class Permission extends Model
             'categories' => ['view', 'edit', 'delete'],
             'pages' => ['view', 'edit'],
             'signatures' => ['view', 'edit', 'delete'],
+            'reports' => ['view', 'edit'],
             'spam' => ['view', 'edit', 'delete'],
             'logs' => ['view', 'delete'],
             'stats' => ['view'],

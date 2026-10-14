@@ -33,6 +33,15 @@ class Report extends Model
         ];
     }
 
+    public static function statuses(): array
+    {
+        return [
+            'open',
+            'resolved',
+            'dismissed',
+        ];
+    }
+
     public function reportable(): MorphTo
     {
         return $this->morphTo();
