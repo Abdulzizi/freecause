@@ -91,8 +91,10 @@ scope eventually, but only after static UI strings are wired up.
 ### Repo
 
 - **14 locales**, source `en`: `da de el en es fr it nl pl pt ro ru sv tr`.
-- **`lang/{locale}/*.php`** — 20 flat PHP-array files per locale, ~537 keys in
+- **`lang/{locale}/*.php`** — 22 flat PHP-array files per locale, ~537 keys in
   `en`, placeholders in Laravel style (`:count`, `:name`, `:login_url`, …).
+  `emails.php` carries transactional/digest mail copy (new keys land in `en` and
+  are copied as English into the other locales until Crowdin catches up).
 - Existing translations are **partial**: some keys are real (`fr home.h1`),
   others fall back to English (`es/tr/ru home.h1`).
 - Locale resolution: `app/Http/Middleware/SetLocale.php` drives `/xx/` URL

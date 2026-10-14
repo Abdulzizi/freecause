@@ -4,6 +4,8 @@ Single VPS (Ubuntu 24.04): nginx + PHP 8.3-FPM + MySQL 8. The app runs from
 `/var/www/freecause/current` (Deployer layout — see [`../deploy/README.md`](../deploy/README.md)).
 Supervisor group `freecause-release-queue:*` (2 workers, `www-data`). Daily
 `backup:run` at 02:00 to the S3 `backups` disk, retention cleanup at 02:30.
+`emails:petition-digest` runs weekly (Monday 08:00) — per-owner petition digest,
+gated on `verified` + `notify_product`; scheduled in `routes/console.php`.
 
 Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
 

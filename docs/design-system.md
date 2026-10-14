@@ -102,6 +102,13 @@ Scope excludes `resources/views/components/blatui` (CLI-generated) and
 `resources/views/emails` (needs inline styles). Exceptions can be registered in
 `scripts/ds-lint-allow.txt` (one regex per line, `#` comments).
 
+The same run invokes `scripts/ds-lint-a11y.py` — a static scan over
+`resources/views` (excluding `blatui`/`emails`/`admin`) that fails on missing
+`img` alt, unlabelled form controls, empty links/buttons, and focusable elements
+inside `aria-hidden="true"`. Genuine false positives go in
+`scripts/ds-lint-a11y-allow.txt` (`path:rule-id` per line); rules and the state
+matrix live in [`ux-states.md`](ux-states.md).
+
 CI: blocking step in `.github/workflows/ci.yml` (`Design system lint`).
 
 ## Deliberate exceptions

@@ -1,0 +1,7 @@
+# ds-lint-a11y allow list — one "path:rule-id" per line, '#' comments.
+# Only genuine false positives of the static checker, never real defects.
+
+# Bootstrap image modal keeps aria-hidden="true" in the markup and is display:none
+# until shown; the close button is unreachable while hidden, so axe does not flag
+# it either. The static scan cannot see the display:none.
+resources/views/petition/show.blade.php:focus-in-aria-hidden

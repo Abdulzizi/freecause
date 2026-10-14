@@ -43,9 +43,9 @@ scan "arbitrary colour utility" '(bg|text|border|ring|outline|fill|stroke|from|v
 
 scan "dead bootstrap responsive class" 'class="[^"]*(^|[[:space:]])(d|p|m|w|h|text|align-items|justify-content|flex|order|gap|border|rounded|float|overflow)-(sm|md|xl)-[a-z0-9]' "${VIEWS[@]}"
 
-img_hits=$(python3 scripts/ds-lint-alt.py resources/views 2>/dev/null || true)
-if [ -n "$img_hits" ]; then
-    report "image without alt" "$img_hits" "$(printf '%s\n' "$img_hits" | grep -c . || true)"
+a11y_hits=$(python3 scripts/ds-lint-a11y.py resources/views 2>/dev/null || true)
+if [ -n "$a11y_hits" ]; then
+    report "accessibility (alt / labels / aria-hidden)" "$a11y_hits" "$(printf '%s\n' "$a11y_hits" | grep -c . || true)"
 fi
 
 hex_hits=$(grep -rnE 'style="[^"]*#[0-9a-fA-F]{3,8}' "${VIEWS[@]}" --include='*.blade.php' --exclude-dir=blatui --exclude-dir=emails 2>/dev/null || true)

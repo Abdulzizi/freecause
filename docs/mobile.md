@@ -38,3 +38,14 @@ strict CSP forbids inline scripts.
   CTA links to the sessionful confirm page (`$signTarget`); never render the inline form in the
   stateless branch.
 - No arbitrary values, no `!` suffixes (see `docs/design-system.md`); `ds-lint` must stay green.
+
+## Recent mobile surfaces
+
+- **Global form busy-lock** — `public/legacy/js-v2/form-busy.js` disables the submit control on any
+  public POST form, injects an inline network-error message, and restores state on `pageshow`.
+- **Listing sort/category bar** — equal-width mobile bar; `?sort=trending` renders as a chip
+  (`pages/petitions-list.blade.php`), desktop layout untouched.
+- **Petition search** — desktop navbar gets the input; recent searches persist in
+  `localStorage` (`fc.recentSearches`). Mobile entry stays the existing sheet.
+- **Closed petitions** — `petition/offline.blade.php` renders the closed state, related
+  petitions and next actions with no signature UI.

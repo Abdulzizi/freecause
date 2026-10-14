@@ -75,6 +75,8 @@ Local dev server: `http://localhost:8000`.
 | `php artisan test --filter=X` | Targeted tests                           |
 | `./vendor/bin/pint app database tests routes config` | PSR-12 fixes — always pass explicit paths (a bare run reformats the WordPress tree under `public/magazine/`) |
 | `php artisan cache:warm` | Warm versioned petition/settings cache keys   |
+| `bash scripts/ds-lint.sh` | Design-system + a11y gate (blocking in CI)  |
+| `php scripts/lang-audit.php` | Locale key-parity check across all 14 locales |
 
 Tests run against sqlite in-memory: `CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=:memory:`.
 
@@ -109,6 +111,7 @@ Entry at `/admin/login`. Main sections and routes:
 | Categories     | `/admin/categories`    |
 | Pages          | `/admin/pages`         |
 | Spam/IP bans   | `/admin/spam`          |
+| Reports        | `/admin/reports`       |
 | Stats          | `/admin/stats`         |
 | Logs           | `/admin/logs`          |
 | Languages      | `/admin/languages`     |
@@ -138,6 +141,7 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 - **Rollback**: run the **Deploy** workflow with `action=rollback`, or `dep -f deploy/deploy.php rollback production`. Full runbook in `deploy/README.md`.
 - **Queue workers**: Supervisor group `freecause-release-queue:*`, command pointing at `/var/www/freecause/current`. After changing mail/DB-driven settings, restart them rather than redeploying.
 - **Backups**: daily `backup:run` at 02:00 writes to the S3 `backups` disk with retention cleanup at 02:30. Do not run `backup:clean` manually against that disk.
+- **Scheduled mail**: `emails:petition-digest` runs weekly (Monday 08:00) for petition owners with `verified` + `notify_product` (scheduled in `routes/console.php`).
 - **Health/version**: `GET /up` must return 200; `GET /version` reports the deployed commit (`app:stamp-version`). The deploy smoke test compares it to the pushed commit.
 - **Caching**: settings, translations, and petition stats are cached with versioned keys; cache is invalidated on sign writes. An edge CDN may still hold stale files after config changes, so purge by URL when needed.
 

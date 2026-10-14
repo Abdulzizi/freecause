@@ -5,22 +5,26 @@ const vm = require('node:vm');
 
 function setup() {
     const handlers = {};
-    const error = { hidden: true };
+    const error = { hidden: true, textContent: 'connection error' };
     const button = { disabled: false, style: { opacity: '' }, attrs: {}, children: [],
         setAttribute(k, v) { this.attrs[k] = v; },
         removeAttribute(k) { delete this.attrs[k]; },
         prepend(node) { this.children.push(node); } };
-    const form = { tagName: 'FORM', enabled: true, attrs: {},
-        hasAttribute() { return this.enabled; },
-        querySelector(selector) { return selector.includes('network-error') ? error : button; },
+    const form = { tagName: 'FORM', method: 'post', attrs: {},
+        hasAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attrs, name); },
+        getAttribute(name) { return name in this.attrs ? this.attrs[name] : null; },
         setAttribute(k, v) { this.attrs[k] = v; },
-        removeAttribute(k) { delete this.attrs[k]; } };
+        removeAttribute(k) { delete this.attrs[k]; },
+        querySelector(selector) { return selector.includes('network-error') ? error : button; },
+        querySelectorAll() { return [error]; },
+        appendChild() {} };
     button.form = form;
     const navigator = { onLine: true };
     vm.runInNewContext(fs.readFileSync('public/legacy/js-v2/form-busy.js', 'utf8'), {
         Map, navigator,
         document: { addEventListener(k, fn) { handlers[k] = fn; },
-            createElement() { return { setAttribute() {}, remove() { button.children.pop(); } }; } },
+            createElement() { return { setAttribute() {}, remove() { button.children.pop(); } }; },
+            querySelectorAll() { return []; } },
         window: { addEventListener(k, fn) { handlers[k] = fn; } },
     });
     function submit(defaultPrevented = false, submitter = button) {
@@ -48,9 +52,19 @@ test('guest validation cancellation leaves the sign button usable', () => {
     assert.equal(s.button.children.length, 0);
 });
 test('unrelated forms and foreign submitters are unchanged', () => {
-    const s = setup(); s.form.enabled = false; s.submit();
+    const s = setup();
+
+    s.form.method = 'get';
+    s.submit();
     assert.equal(s.button.disabled, false);
-    s.form.enabled = true; s.submit(false, { form: {} });
+
+    s.form.method = 'post';
+    s.form.attrs['data-busy-ignore'] = '';
+    s.submit();
+    assert.equal(s.button.disabled, false);
+
+    delete s.form.attrs['data-busy-ignore'];
+    s.submit(false, { form: {} });
     assert.equal(s.button.disabled, false);
 });
 test('offline request stays on the form with error and can retry online', () => {
@@ -61,6 +75,17 @@ test('offline request stays on the form with error and can retry online', () => 
     s.navigator.onLine = true;
     assert.equal(s.submit().defaultPrevented, false);
     assert.equal(s.error.hidden, true);
+});
+test('localised error text is preserved and data-network-error-text still wins', () => {
+    const s = setup();
+    s.error.textContent = 'Baglanti hatasi. Yeniden deneyin.';
+    s.navigator.onLine = false;
+    s.submit();
+    assert.equal(s.error.textContent, 'Baglanti hatasi. Yeniden deneyin.');
+
+    s.form.attrs['data-network-error-text'] = 'Offline now.';
+    s.submit();
+    assert.equal(s.error.textContent, 'Offline now.');
 });
 test('back navigation restores busy button and supports keyboard submit', () => {
     const s = setup(); s.submit(); s.handlers.pageshow();
