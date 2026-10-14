@@ -153,19 +153,25 @@ class AuthController extends Controller
                     'auth.register'
                 );
 
+                $this->markPendingVerification($request, $user, $locale);
+
                 return redirect()
-                    ->to("/{$locale}/login")
+                    ->route('verification.notice', ['locale' => $locale])
                     ->with('error', __('auth.register_failed'));
             }
 
+            $this->markPendingVerification($request, $user, $locale);
+
             return redirect()
-                ->to("/{$locale}/login")
+                ->route('verification.notice', ['locale' => $locale])
                 ->with('success', __('auth.register_check_email'));
         }
 
         if ($needsVerif && ! $smtpEnabled) {
+            $this->markPendingVerification($request, $user, $locale);
+
             return redirect()
-                ->to("/{$locale}/login")
+                ->route('verification.notice', ['locale' => $locale])
                 ->with('success', __('auth.register_pending'));
         }
 
@@ -192,10 +198,6 @@ class AuthController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
-            if (! $user->verified) {
-                return back()->withErrors(['email' => __('auth.err_verify_first')])->onlyInput('email', 'auth_form');
-            }
-
             if ($user->hasLevel('banned')) {
                 AppLog::warning(
                     'Banned user attempted login',
@@ -229,6 +231,16 @@ class AuthController extends Controller
         }
 
         if ($loggedIn) {
+            if (! $user->verified) {
+                Auth::guard('web')->logout();
+
+                $request->session()->put('verify_email', $user->email);
+
+                return redirect()
+                    ->route('verification.notice', ['locale' => $locale])
+                    ->withErrors(['email' => __('auth.err_verify_first')]);
+            }
+
             $request->session()->regenerate();
 
             $user = Auth::user();
@@ -359,11 +371,9 @@ class AuthController extends Controller
 
         $return = $request->query('return');
 
-        if (is_string($return) && str_starts_with($return, '/') && ! str_starts_with($return, '//')) {
-            return redirect()->to($return);
-        }
-
-        return redirect()->to("/{$data['locale']}/profile");
+        return redirect()->to(
+            self::sanitizeRedirectPath(is_string($return) ? $return : null, "/{$data['locale']}/profile")
+        );
     }
 
     public function delete(DeleteAccountRequest $request, string $locale)
@@ -424,7 +434,7 @@ class AuthController extends Controller
         return redirect()->to("/{$locale}")->with('success', __('profile.account_deleted_success'));
     }
 
-    public function verify(string $locale, string $token)
+    public function verify(Request $request, string $locale, string $token)
     {
         $user = User::where('verification_token', $token)->first();
 
@@ -478,7 +488,35 @@ class AuthController extends Controller
             PetitionStats::incrementMany($increments);
         });
 
-        return redirect()->to("/{$locale}")->with('success', __('auth.verify_success'));
+        if ($request->session()->pull('verify_autologin')) {
+            $user->refresh();
+
+            if (! $user->verified) {
+                toast(__('auth.verify_invalid'), 'error');
+
+                return redirect()->to("/{$locale}");
+            }
+
+            auth()->login($user);
+            $request->session()->regenerate();
+            $request->session()->forget('verify_email');
+
+            toast(__('auth.verify_success'), 'success');
+
+            $intended = $request->session()->pull('verify_intended');
+
+            if ($intended && ! $user->hasCompleteProfile()) {
+                $intended = self::profileCompletionTarget($locale, $intended);
+            }
+
+            return redirect()->to($intended ?: "/{$locale}");
+        }
+
+        $request->session()->forget(['verify_email', 'verify_intended']);
+
+        return redirect()
+            ->route('verification.verified', ['locale' => $locale])
+            ->with('success', __('auth.verify_success'));
     }
 
     public function unlinkGoogle(Request $request)
@@ -545,9 +583,28 @@ class AuthController extends Controller
             $status = Password::INVALID_TOKEN;
         }
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect("/{$locale}/login")->with('success', __($status))
-            : back()->withErrors(['email' => __($status)]);
+        if ($status !== Password::PASSWORD_RESET) {
+            return back()->withErrors(['email' => __($status)]);
+        }
+
+        $user = User::where('email', strtolower(trim((string) $request->input('email'))))->first();
+
+        if (! $user) {
+            return redirect("/{$locale}/login")->with('success', __($status));
+        }
+
+        auth()->login($user);
+        $request->session()->regenerate();
+
+        toast(__($status), 'success');
+
+        $dest = self::sanitizeRedirectPath($request->input('redirect'), "/{$locale}");
+
+        if (! $user->hasCompleteProfile()) {
+            $dest = self::profileCompletionTarget($locale, $dest);
+        }
+
+        return redirect()->to($dest);
     }
 
     public function showResendVerification(string $locale)
@@ -609,5 +666,51 @@ class AuthController extends Controller
         }
 
         return back()->with('success', __('auth.resend_sent'));
+    }
+
+    private function markPendingVerification(Request $request, User $user, string $locale): void
+    {
+        $request->session()->put('verify_email', $user->email);
+        $request->session()->put('verify_autologin', true);
+        $request->session()->put(
+            'verify_intended',
+            self::sanitizeRedirectPath($request->input('redirect'), "/{$locale}")
+        );
+    }
+
+    public function showVerifyNotice(Request $request, string $locale)
+    {
+        $email = (string) $request->session()->get('verify_email');
+
+        return view('auth.verify-email', [
+            'locale' => $locale,
+            'email' => $email !== '' ? $email : null,
+            'maskedEmail' => $this->maskEmail($email),
+            'smtpEnabled' => (bool) Settings::get('smtp_enabled', false),
+        ]);
+    }
+
+    public function showVerified(string $locale)
+    {
+        if (Auth::check()) {
+            return redirect()->to("/{$locale}");
+        }
+
+        return view('auth.verified', compact('locale'));
+    }
+
+    private function maskEmail(?string $email): ?string
+    {
+        if (! $email || ! str_contains($email, '@')) {
+            return null;
+        }
+
+        [$name, $domain] = explode('@', $email, 2);
+
+        if ($name === '') {
+            return null;
+        }
+
+        return mb_substr($name, 0, 1).str_repeat('•', max(3, mb_strlen($name) - 1)).'@'.$domain;
     }
 }

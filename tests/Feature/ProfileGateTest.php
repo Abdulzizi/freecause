@@ -129,7 +129,7 @@ class ProfileGateTest extends TestCase
 
         $this->actingAs($user)
             ->get('/en/my-petitions')
-            ->assertRedirectContains('/en/profile?return=');
+            ->assertRedirectContains('/en/profile?return=%2Fen%2Fmy-petitions');
 
         $this->actingAs($user)
             ->post('/en/profile?return=/en/my-petitions', [

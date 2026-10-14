@@ -13,6 +13,7 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Laravel\Socialite\Facades\Socialite;
 use Mockery;
 use Tests\TestCase;
@@ -326,6 +327,97 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_unverified_login_lands_on_the_verification_notice(): void
+    {
+        User::factory()->create([
+            'email' => 'pending@example.com',
+            'password' => bcrypt('password123'),
+            'verified' => false,
+        ]);
+
+        $this->post('/en/login', [
+            'email' => 'pending@example.com',
+            'password' => 'password123',
+        ])->assertRedirect('/en/verify-email');
+
+        $this->get('/en/verify-email')
+            ->assertOk()
+            ->assertSee('p••••••@example.com')
+            ->assertSee(__('auth.verify_notice_heading'));
+    }
+
+    public function test_register_then_verify_in_the_same_session_auto_logs_in(): void
+    {
+        Settings::set('require_email_verification', true);
+        Settings::set('smtp_enabled', true);
+        Mail::fake();
+
+        $this->post('/en/register', [
+            'name' => 'Pending',
+            'surname' => 'User',
+            'email' => 'pending@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+        ])->assertRedirect('/en/verify-email');
+
+        $user = User::where('email', 'pending@example.com')->firstOrFail();
+
+        $this->get("/en/verify/{$user->verification_token}")
+            ->assertRedirectContains('/en/profile');
+
+        $this->assertAuthenticatedAs($user->fresh());
+        $this->assertTrue((bool) $user->fresh()->verified);
+    }
+
+    public function test_verify_link_in_a_fresh_session_lands_on_the_verified_page(): void
+    {
+        Settings::set('require_email_verification', true);
+        Settings::set('smtp_enabled', true);
+        Mail::fake();
+
+        $this->post('/en/register', [
+            'name' => 'Pending',
+            'surname' => 'User',
+            'email' => 'pending@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+        ])->assertRedirect('/en/verify-email');
+
+        $user = User::where('email', 'pending@example.com')->firstOrFail();
+        $token = $user->verification_token;
+
+        $this->flushSession();
+
+        $this->get("/en/verify/{$token}")
+            ->assertRedirect('/en/email-verified');
+
+        $this->assertGuest();
+    }
+
+    public function test_password_reset_auto_logs_in_and_returns_to_the_intended_url(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'reset@example.com',
+            'password' => bcrypt('old-password-123'),
+            'verified' => true,
+            'country' => 'NL',
+            'gender' => 'female',
+        ]);
+
+        $token = Password::createToken($user);
+
+        $this->post('/en/reset-password', [
+            'token' => $token,
+            'email' => 'reset@example.com',
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+            'redirect' => '/en/petitions',
+        ])->assertRedirect('/en/petitions');
+
+        $this->assertAuthenticatedAs($user->fresh());
+        $this->assertTrue(Hash::check('new-password-123', $user->fresh()->password));
+    }
+
     public function test_user_can_register(): void
     {
         $response = $this->post('/en/register', [
@@ -419,7 +511,7 @@ class AuthenticationTest extends TestCase
             'email' => 'pending@example.com',
             'password' => 'password123',
             'agree_terms' => 'on',
-        ])->assertRedirect('/en/login');
+        ])->assertRedirect('/en/verify-email');
 
         $user = User::where('email', 'pending@example.com')->firstOrFail();
 

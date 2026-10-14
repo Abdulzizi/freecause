@@ -25,7 +25,9 @@ class EnsureProfileComplete
         $user = $request->user();
 
         if ($user instanceof User && ! $user->hasCompleteProfile()) {
-            $return = $request->isMethod('GET') ? $request->fullUrl() : url()->previous();
+            $return = $request->isMethod('GET')
+                ? $request->getRequestUri()
+                : (parse_url((string) url()->previous(), PHP_URL_PATH) ?: '/');
             $profileUrl = lroute('profile');
             $params = [];
 
