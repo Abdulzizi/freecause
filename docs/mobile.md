@@ -42,10 +42,13 @@ strict CSP forbids inline scripts.
 ## Recent mobile surfaces
 
 - **Global form busy-lock** — `public/legacy/js-v2/form-busy.js` disables the submit control on any
-  public POST form, injects an inline network-error message, and restores state on `pageshow`.
+  public POST form, injects an inline network-error message (prefers the localized text already in
+  the DOM, falling back to the English copy), and restores state on `pageshow`.
 - **Listing sort/category bar** — equal-width mobile bar; `?sort=trending` renders as a chip
   (`pages/petitions-list.blade.php`), desktop layout untouched.
-- **Petition search** — desktop navbar gets the input; recent searches persist in
-  `localStorage` (`fc.recentSearches`). Mobile entry stays the existing sheet.
+- **Petition search** — the desktop navbar input and its `localStorage` recent
+  searches (`fc.recentSearches`) were **removed at the client's request**; the header now
+  keeps only the mobile magnifier icon linking to the petitions list. Petition search itself
+  lives on the listing page (`data-live-search`, `name="q"`), plus the FAQ page search.
 - **Closed petitions** — `petition/offline.blade.php` renders the closed state, related
   petitions and next actions with no signature UI.

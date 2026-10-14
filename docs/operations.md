@@ -27,7 +27,12 @@ wiring — the DSN itself never lands in git.
 - **Mail** is DB-settings driven; restart queue workers after changing
   mail/settings rather than redeploying.
 - **Large-table DDL** (users/signatures ~18M rows) can take minutes — plan a
-  window and prefer online DDL for new indexes.
+  window and prefer online DDL for new indexes. Remote commands run with
+  Deployer's `default_timeout`, raised **300 → 900s** in `deploy/deploy.php`
+  after a 300s kill on 2026-10-14 (`add_gender_to_users` on the 18M-row `users`
+  table). Migrations that already recorded in `migrations` do not re-run, so a
+  rollback after such a kill leaves the schema ahead of the served code until
+  the next deploy.
 - **Cloudflare** can serve stale files at the edge; purge by URL after
   robots/config changes whose freshness matters.
 

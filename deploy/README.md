@@ -39,6 +39,11 @@ Without reviewers, `environment: production` is a no-op.
 - Host `rehearsal`: a throwaway layout with `manage_services=false` so it cannot
   touch live supervisor/PHP-FPM.
 - `bin/php` = `php8.3`; FPM service `php8.3-fpm`; `keep_releases` = 5.
+- `default_timeout` = **900s** (Deployer defaults to 300). Set after
+  2026-10-14, when `artisan:migrate` was killed at 300s while altering the
+  18M-row `users` table: the run auto-rolled back but all 5 migrations had
+  already committed (batch 13), leaving schema ahead of served code until the
+  next deploy.
 - Assets are built in CI and uploaded (`deploy:assets`) — the server needs no
   Node. The upload targets `{{release_path}}/public` (rsync copies a directory in
   as its basename, so targeting `public/build` nested it as `public/build/build`).

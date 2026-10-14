@@ -80,8 +80,9 @@ only the shared layout queries.
 
 Note: the batched aggregates are bounded with `WHERE created_at >= (week ago)` so they
 reuse the `created_at` index range — an unbounded `SUM(CASE …)` variant caused a
-full-table scan that exceeded the 300s `cache:warm` deploy timeout (deploy auto-rolled
-back; fixed with the range-bounded form, same numbers).
+full-table scan that exceeded the then-default 300s `cache:warm` deploy timeout
+(deploy auto-rolled back; fixed with the range-bounded form, same numbers; that
+ceiling is now 900s in `deploy/deploy.php`).
 
 ## Full-navigation flows (code inspection)
 

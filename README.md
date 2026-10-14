@@ -76,6 +76,7 @@ Local dev server: `http://localhost:8000`.
 | `./vendor/bin/pint app database tests routes config` | PSR-12 fixes — always pass explicit paths (a bare run reformats the WordPress tree under `public/magazine/`) |
 | `php artisan cache:warm` | Warm versioned petition/settings cache keys   |
 | `bash scripts/ds-lint.sh` | Design-system + a11y gate (blocking in CI)  |
+| `node --test tests/js/*.test.cjs` | JS unit tests (forms/busy handling; runs in CI) |
 | `php scripts/lang-audit.php` | Locale key-parity check across all 14 locales |
 
 Tests run against sqlite in-memory: `CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=:memory:`.
@@ -138,6 +139,10 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
   git tag v2026.10.08-example
   git push origin v2026.10.08-example   # mirror to backup too
   ```
+  Remote commands run with Deployer's `default_timeout`, set to **900s** in
+  `deploy/deploy.php` (default 300) — migrations on the 18M-row `users` table
+  blow past 300 and a kill mid-`migrate` auto-rolls back while the migrations
+  stay committed (see `docs/operations.md`).
 - **Rollback**: run the **Deploy** workflow with `action=rollback`, or `dep -f deploy/deploy.php rollback production`. Full runbook in `deploy/README.md`.
 - **Queue workers**: Supervisor group `freecause-release-queue:*`, command pointing at `/var/www/freecause/current`. After changing mail/DB-driven settings, restart them rather than redeploying.
 - **Backups**: daily `backup:run` at 02:00 writes to the S3 `backups` disk with retention cleanup at 02:30. Do not run `backup:clean` manually against that disk.
@@ -148,6 +153,9 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 ## Documentation
 
 - `deploy/README.md` — deploy/rollback runbook, Deployer recipe, shared dirs, Environment setup.
+- `docs/operations.md` — server facts, operational traps (incl. the 900s deploy timeout), parked backlog.
+- `docs/design-system.md` — tokens, layers, components, and the `ds-lint` gate rules.
+- `docs/ux-states.md` — public loading/empty/error/success state matrix and a11y gate rules.
 - `docs/performance-edge-cache.md` — edge-cache design and why listings bypass.
 - `docs/performance-qa.md` — manual performance QA checklist.
 
