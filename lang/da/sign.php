@@ -52,4 +52,6 @@ return [
     'submit' => 'Underskriv petition',
     'surname' => 'Efternavn',
     'thanks' => 'Tak fordi du underskrev!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

@@ -16,5 +16,6 @@ return [
     'empty_search' => 'Nothing matched your search. Try a different word.',
     'sort_by' => 'Sort',
     'sort_newest' => 'Newest',
+    'sort_trending' => 'Trending',
     'sort_signed' => 'Most signed',
 ];

@@ -2,6 +2,9 @@
 
 return [
     'offline_title' => 'This petition is currently offline.',
+    'offline_badge' => 'Closed',
+    'offline_closed_on' => 'Closed on :date',
+    'offline_next' => 'Petitions you can support instead',
     'explore' => 'Explore petitions',
     'pdf_description' => 'Description',
     'pdf_latest' => 'Latest Signatures',

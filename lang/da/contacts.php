@@ -14,4 +14,5 @@ return [
     'sending' => 'Sender din besked…',
     'sent' => 'Din besked er sendt. Vi vender hurtigt tilbage til dig.',
     'failed' => 'Det lykkedes ikke at sende beskeden. Prøv igen senere.',
+    'send_another' => 'Send another message',
 ];

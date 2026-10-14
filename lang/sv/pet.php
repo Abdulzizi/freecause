@@ -13,4 +13,7 @@ return [
     'widget_signatures' => 'Underskrifter:',
     'widget_goal' => 'Mål:',
     'widget_sign' => 'Skriv under',
+    'offline_badge' => 'Closed',
+    'offline_closed_on' => 'Closed on :date',
+    'offline_next' => 'Petitions you can support instead',
 ];

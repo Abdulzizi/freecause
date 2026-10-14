@@ -8,6 +8,7 @@ return [
     'update' => 'Update',
     'login_required' => 'Please login or register above to submit.',
     'markup_hint' => 'allowed: br, p, strong, em, u, ul, ol, li',
+    'help_link' => 'Tips for writing a petition',
     'title_create' => 'Create petition - FreeCause',
     'title_edit' => 'Edit petition - FreeCause',
     'heading_create' => 'Start a free petition',

@@ -20,4 +20,5 @@ return [
     'or' => 'OU',
     'submitting' => 'A criar petição…',
     'err_image_conflict' => 'Escolha carregar uma imagem OU usar um link de imagem externo (não ambos).',
+    'help_link' => 'Tips for writing a petition',
 ];

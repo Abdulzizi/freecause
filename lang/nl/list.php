@@ -17,4 +17,5 @@ return [
     'sort_by' => 'Sorteren',
     'sort_newest' => 'Nieuwste',
     'sort_signed' => 'Meest ondertekend',
+    'sort_trending' => 'Trending',
 ];

@@ -13,4 +13,7 @@ return [
     'widget_signatures' => 'Semnături:',
     'widget_goal' => 'Obiectiv:',
     'widget_sign' => 'Semnează',
+    'offline_badge' => 'Closed',
+    'offline_closed_on' => 'Closed on :date',
+    'offline_next' => 'Petitions you can support instead',
 ];

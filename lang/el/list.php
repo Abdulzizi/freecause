@@ -17,4 +17,5 @@ return [
     'sort_by' => 'Ταξινόμηση',
     'sort_newest' => 'Νεότερα',
     'sort_signed' => 'Πιο υπογεγραμμένα',
+    'sort_trending' => 'Trending',
 ];

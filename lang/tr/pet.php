@@ -13,4 +13,7 @@ return [
     'widget_signatures' => 'İmzalar:',
     'widget_goal' => 'Hedef:',
     'widget_sign' => 'İmzala',
+    'offline_badge' => 'Closed',
+    'offline_closed_on' => 'Closed on :date',
+    'offline_next' => 'Petitions you can support instead',
 ];

@@ -14,4 +14,5 @@ return [
     'sending' => 'A enviar a sua mensagem…',
     'sent' => 'A sua mensagem foi enviada. Entraremos em contacto consigo em breve.',
     'failed' => 'Não foi possível enviar a mensagem. Tente novamente mais tarde.',
+    'send_another' => 'Send another message',
 ];

@@ -20,4 +20,5 @@ return [
     'or' => 'VEYA',
     'submitting' => 'Dilekçe oluşturuluyor…',
     'err_image_conflict' => 'Lütfen bir resim yüklemeyi VEYA harici bir resim bağlantısı kullanmayı seçin (ikisini birden değil).',
+    'help_link' => 'Tips for writing a petition',
 ];

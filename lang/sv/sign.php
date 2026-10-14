@@ -52,4 +52,6 @@ return [
     'submit' => 'Skriv under petition',
     'surname' => 'Efternamn',
     'thanks' => 'Tack för att du undertecknade!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

@@ -14,4 +14,5 @@ return [
     'sending' => 'Se trimite mesajul dumneavoastră…',
     'sent' => 'Mesajul dumneavoastră a fost trimis. Vă vom răspunde în curând.',
     'failed' => 'Trimiterea mesajului a eșuat. Vă rugăm să încercați din nou mai târziu.',
+    'send_another' => 'Send another message',
 ];

@@ -20,4 +20,5 @@ return [
     'or' => 'ИЛИ',
     'submitting' => 'Создание петиции…',
     'err_image_conflict' => 'Выберите либо загрузку изображения, либо внешнюю ссылку на изображение (не оба варианта).',
+    'help_link' => 'Tips for writing a petition',
 ];

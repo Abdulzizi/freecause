@@ -14,4 +14,5 @@ return [
     'sending' => 'Uw bericht wordt verzonden…',
     'sent' => 'Uw bericht is verzonden. Wij nemen spoedig contact met u op.',
     'failed' => 'Het verzenden van het bericht is mislukt. Probeer het later opnieuw.',
+    'send_another' => 'Send another message',
 ];

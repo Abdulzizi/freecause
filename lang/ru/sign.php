@@ -52,4 +52,6 @@ return [
     'submit' => 'Podpisat peticiyu',
     'surname' => 'Familiya',
     'thanks' => 'Spasibo za podpis!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

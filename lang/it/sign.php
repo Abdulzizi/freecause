@@ -52,4 +52,6 @@ return [
     'submit' => 'Firma petizione',
     'surname' => 'Cognome',
     'thanks' => 'Grazie per aver firmato!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

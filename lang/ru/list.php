@@ -17,4 +17,5 @@ return [
     'sort_by' => 'Сортировка',
     'sort_newest' => 'Новейшие',
     'sort_signed' => 'Самые подписанные',
+    'sort_trending' => 'Trending',
 ];

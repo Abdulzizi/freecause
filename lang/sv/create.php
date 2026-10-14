@@ -20,4 +20,5 @@ return [
     'or' => 'ELLER',
     'submitting' => 'Skapar namninsamling…',
     'err_image_conflict' => 'Välj antingen att ladda upp en bild ELLER använda en extern bildlänk (inte båda).',
+    'help_link' => 'Tips for writing a petition',
 ];

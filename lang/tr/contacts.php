@@ -14,4 +14,5 @@ return [
     'sending' => 'Mesajınız gönderiliyor…',
     'sent' => 'Mesajınız gönderildi. En kısa sürede size dönüş yapacağız.',
     'failed' => 'Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.',
+    'send_another' => 'Send another message',
 ];

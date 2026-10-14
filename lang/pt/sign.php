@@ -52,4 +52,6 @@ return [
     'submit' => 'Assinar peticao',
     'surname' => 'Apelido',
     'thanks' => 'Obrigado por assinar!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

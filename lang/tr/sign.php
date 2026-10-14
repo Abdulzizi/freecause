@@ -52,4 +52,6 @@ return [
     'submit' => 'Petitionsi imzala',
     'surname' => 'Soyad',
     'thanks' => 'Imzaladiginiz icin tesekkurler!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

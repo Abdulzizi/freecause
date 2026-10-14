@@ -20,4 +20,5 @@ return [
     'or' => 'OPPURE',
     'submitting' => 'Creazione della petizione…',
     'err_image_conflict' => 'Scegli di caricare un\'immagine OPPURE usare un link a un\'immagine esterna (non entrambi).',
+    'help_link' => 'Tips for writing a petition',
 ];

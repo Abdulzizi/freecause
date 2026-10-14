@@ -17,4 +17,5 @@ return [
     'sort_by' => 'Sortează',
     'sort_newest' => 'Cele mai noi',
     'sort_signed' => 'Cele mai semnate',
+    'sort_trending' => 'Trending',
 ];

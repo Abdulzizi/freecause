@@ -52,4 +52,6 @@ return [
     'submit' => 'Firmar petición',
     'surname' => 'Apellido',
     'thanks' => '¡Gracias por firmar!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

@@ -20,4 +20,5 @@ return [
     'or' => 'of',
     'submitting' => 'Petitie wordt aangemaakt…',
     'err_image_conflict' => 'Kies een upload van een afbeelding of gebruik een externe afbeeldingslink (niet beide).',
+    'help_link' => 'Tips for writing a petition',
 ];

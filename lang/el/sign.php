@@ -52,4 +52,6 @@ return [
     'submit' => 'Ypograpi',
     'surname' => 'Epitheto',
     'thanks' => 'Sas eyxaristo gia tin ypografi!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

@@ -52,4 +52,6 @@ return [
     'submit' => 'Semneaza petitia',
     'surname' => 'Prenume',
     'thanks' => 'Multumim pentru semnatura!',
+    'claim_success' => 'Your account is ready. You are now signed in.',
+    'guidelines_link' => 'Read our community guidelines',
 ];

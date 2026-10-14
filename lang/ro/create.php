@@ -20,4 +20,5 @@ return [
     'or' => 'SAU',
     'submitting' => 'Se creează petiția…',
     'err_image_conflict' => 'Alegeți fie încărcarea unei imagini, fie un link extern către o imagine (nu ambele).',
+    'help_link' => 'Tips for writing a petition',
 ];

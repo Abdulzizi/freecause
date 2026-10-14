@@ -20,4 +20,5 @@ return [
     'or' => 'Ή',
     'submitting' => 'Δημιουργία αίτησης…',
     'err_image_conflict' => 'Επιλέξτε είτε τη μεταφόρτωση μιας εικόνας είτε έναν εξωτερικό σύνδεσμο εικόνας (όχι και τα δύο).',
+    'help_link' => 'Tips for writing a petition',
 ];

@@ -8,4 +8,7 @@ return [
     'how_to_write_a_petition' => 'Cómo escribir una petición',
     'privacy_policy' => 'Política de privacidad',
     'terms_of_service' => 'Términos de servicio',
+    'faq_search_empty' => 'No help articles match your search. Try a different word, or contact support.',
+    'faq_search_label' => 'Search help articles',
+    'faq_search_placeholder' => 'Search help…',
 ];

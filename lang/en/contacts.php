@@ -13,5 +13,6 @@ return [
     'title' => 'Contacts',
     'sending' => 'Sending your message…',
     'sent' => 'Your message has been sent. We will get back to you soon.',
+    'send_another' => 'Send another message',
     'failed' => 'Failed to send message. Please try again later.',
 ];

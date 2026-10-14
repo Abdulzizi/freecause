@@ -20,4 +20,5 @@ return [
     'or' => 'ELLER',
     'submitting' => 'Opretter underskriftsindsamling…',
     'err_image_conflict' => 'Vælg venligst enten at uploade et billede ELLER bruge et eksternt billedlink (ikke begge).',
+    'help_link' => 'Tips for writing a petition',
 ];

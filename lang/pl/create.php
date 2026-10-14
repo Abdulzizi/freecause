@@ -20,4 +20,5 @@ return [
     'or' => 'LUB',
     'submitting' => 'Tworzenie petycji…',
     'err_image_conflict' => 'Wybierz przesłanie obrazu LUB użycie zewnętrznego linku do obrazu (nie oba).',
+    'help_link' => 'Tips for writing a petition',
 ];

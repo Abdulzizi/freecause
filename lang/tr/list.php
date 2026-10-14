@@ -17,4 +17,5 @@ return [
     'sort_by' => 'Sırala',
     'sort_newest' => 'En yeni',
     'sort_signed' => 'En çok imzalanan',
+    'sort_trending' => 'Trending',
 ];
