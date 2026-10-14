@@ -34,6 +34,11 @@ class CacheKeys
         return 'petitions:index:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
     }
 
+    public static function petitionsTrending(string $locale, int $page): string
+    {
+        return 'petitions:trending:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
+    }
+
     public static function petitionsByCategory(string $locale, int $categoryId, int $page): string
     {
         return 'petitions:byCategory:'.$locale.':'.$categoryId.':page:'.$page.':'.CacheVersion::get('list');

@@ -17,6 +17,7 @@ Schedule::command('signatures:reconcile')->dailyAt('03:00');
 Schedule::command('backup:run')->dailyAt('02:00');
 Schedule::command('backup:clean')->dailyAt('02:30');
 Schedule::command('cache:warm')->hourly();
+Schedule::command('emails:petition-digest')->weeklyOn(1, '08:00');
 
 Schedule::call(fn () => app(DashboardController::class)->warm())->everyFiveMinutes();
 Schedule::command('queue:monitor', [
