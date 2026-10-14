@@ -9,6 +9,7 @@ set('repository', 'https://github.com/Abdulzizi/freecause.git');
 set('keep_releases', 5);
 set('ssh_multiplexing', true);
 set('git_tty', false);
+set('default_timeout', 900);
 
 set('bin/php', 'php8.3');
 set('php_fpm_service', 'php8.3-fpm');
