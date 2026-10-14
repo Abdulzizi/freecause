@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminLanguagesController;
 use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
+use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminSpamController;
 use App\Http\Controllers\Admin\AdminStatsController;
@@ -124,7 +125,7 @@ $legacyUnprefixedWords = [
     'signatures', 'referers', 'download-signatures', 'invite-friends', 'tag', 'pic', 'feed',
     'user',
     'login', 'register', 'logout', 'profile', 'my-petitions', 'create-petition', 'edit-petition',
-    'verify', 'reset-password', 'resend-verification', 'forgot-password',
+    'verify', 'reset-password', 'resend-verification', 'forgot-password', 'verify-email', 'email-verified',
     'contacts', 'donations', 'info', 'terms-of-service', 'privacy-policy', 'ethical-code',
     'how-to-write-a-petition', 'personal-data-processing',
     'ebay', 'zalando', 'amazon', 'expedia', 'booking', 'external',
@@ -175,6 +176,10 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/users/{user}/ban', [AdminUsersController::class, 'ban'])->middleware('permission:users,edit')->name('users.ban');
         Route::post('/users/{user}/unban', [AdminUsersController::class, 'unban'])->middleware('permission:users,edit')->name('users.unban');
         Route::post('/users/bulk-delete', [AdminUsersController::class, 'bulkDelete'])->middleware('permission:users,delete')->name('users.bulkDelete');
+        Route::post('/users/{user}/resend-verification', [AdminUsersController::class, 'resendVerification'])->middleware('permission:users,edit')->name('users.resendVerification');
+
+        Route::get('/reports', [AdminReportsController::class, 'index'])->middleware('permission:reports,view')->name('reports');
+        Route::post('/reports/status', [AdminReportsController::class, 'updateStatus'])->middleware('permission:reports,edit')->name('reports.status');
 
         Route::get('/petitions', [AdminPetitionsController::class, 'index'])->middleware('permission:petitions,view')->name('petitions');
         Route::post('/petitions/save', [AdminPetitionsController::class, 'save'])->middleware('permission:petitions,edit')->name('petitions.save');
@@ -265,6 +270,8 @@ Route::prefix('{locale}')
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:6,1');
         Route::get('/resend-verification', [AuthController::class, 'showResendVerification'])->name('verification.resend.form');
         Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:6,1');
+        Route::get('/verify-email', [AuthController::class, 'showVerifyNotice'])->name('verification.notice');
+        Route::get('/email-verified', [AuthController::class, 'showVerified'])->name('verification.verified');
 
         Route::middleware(['auth', 'profile.complete'])->group(function () {
             Route::get('/profile', [AuthController::class, 'profile'])->name('profile');

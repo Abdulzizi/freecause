@@ -148,7 +148,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="block mb-2">{{ __('form.description') }}</label>
+                                <label class="block mb-2" for="petition_description">{{ __('form.description') }}</label>
 
                                 <div class="border border-border rounded-sm overflow-hidden">
                                     <div id="fc-quill-toolbar" class="flex items-center gap-1.5 p-1.5 bg-surface-2 border-b border-border">
@@ -170,15 +170,18 @@
                                         required>{!! $oldDesc !!}</textarea>
                                 </div>
 
-                                <div class="block pt-2 px-0.5 text-sm text-muted">{{ __('create.markup_hint') }}</div>
+                                <div class="block pt-2 px-0.5 text-sm text-muted">
+                                    {{ __('create.markup_hint') }}
+                                    <a class="text-brand underline" href="{{ lroute('how-to-write-a-petition') }}">{{ __('create.help_link') }}</a>
+                                </div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 @unless($isEdit)
                                     <div class="col-md-6">
-                                        <label class="block mb-2">{{ __('form.goal_signatures') }}</label>
+                                        <label class="block mb-2" for="goal_signatures">{{ __('form.goal_signatures') }}</label>
 
-                                        <select class="form-select max-md:min-h-12" name="goal_signatures" required>
+                                        <select id="goal_signatures" class="form-select max-md:min-h-12" name="goal_signatures" required>
                                             <option value="">{{ __('create.select_one') }}</option>
 
                                             @php
@@ -196,8 +199,8 @@
                                 @endunless
 
                                 <div class="col-md-6">
-                                    <label class="block mb-2">{{ __('form.category') }}</label>
-                                    <select class="form-select max-md:min-h-12" name="category_id" required>
+                                    <label class="block mb-2" for="category_id">{{ __('form.category') }}</label>
+                                    <select id="category_id" class="form-select max-md:min-h-12" name="category_id" required>
                                         <option value="">{{ __('create.select_one') }}</option>
                                         @foreach ($categories as $c)
                                             <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
@@ -213,7 +216,7 @@
                             </div>
 
                             <div class="mb-3" data-image-field>
-                                <label class="block mb-2">{{ __('form.image') }}</label>
+                                <label class="block mb-2" for="petition-image">{{ __('form.image') }}</label>
 
                                 <p class="text-muted text-sm mb-2" data-image-instructions>
                                     {{ __('create.image_instructions') }}
@@ -221,7 +224,7 @@
 
                                 <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
 
-                                <input type="file" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
+                                <input type="file" id="petition-image" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
                                     name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                     data-image-input data-max-size="4194304">
 

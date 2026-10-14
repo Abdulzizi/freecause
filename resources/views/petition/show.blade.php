@@ -562,7 +562,7 @@
                                             $widgetCode = '<script src="'.url("/widgets/pbadge/{$petition->id}/{$widgetType}").'"></script>';
                                         @endphp
                                         <div class="mb-2"><strong>{{ str_replace('x', '×', $widgetType) }}</strong></div>
-                                        <textarea class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" rows="3" readonly>{{ $widgetCode }}</textarea>
+                                        <textarea class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" rows="3" readonly aria-label="{{ $widgetType }} embed code">{{ $widgetCode }}</textarea>
                                         <div class="mb-6 overflow-auto">
                                             <img src="{{ asset("legacy/images/widget-pbadge-{$widgetType}-example.png") }}"
                                                 alt="{{ $widgetType }} petition widget preview" loading="lazy" decoding="async">

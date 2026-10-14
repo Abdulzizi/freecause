@@ -114,6 +114,48 @@ class PetitionTest extends TestCase
         $this->get('/en/petitions?sort=nonsense')->assertOk();
     }
 
+    public function test_listing_sort_by_trending_orders_by_recent_signatures(): void
+    {
+        $quiet = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'signature_count' => 50000]);
+        $hot = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'signature_count' => 10]);
+
+        PetitionTranslation::create([
+            'petition_id' => $quiet->id,
+            'locale' => 'en',
+            'title' => 'Quiet Megapetition',
+            'slug' => 'quiet-megapetition',
+            'description' => 'Description',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $hot->id,
+            'locale' => 'en',
+            'title' => 'Hot Newcomer',
+            'slug' => 'hot-newcomer',
+            'description' => 'Description',
+        ]);
+
+        Signature::factory()->count(5)->create([
+            'petition_id' => $hot->id,
+            'confirmed' => true,
+            'created_at' => now()->subDay(),
+        ]);
+
+        Signature::factory()->count(2)->create([
+            'petition_id' => $quiet->id,
+            'confirmed' => true,
+            'created_at' => now()->subDays(90),
+        ]);
+
+        $html = $this->get('/en/petitions?sort=trending')->assertOk()->getContent();
+
+        $this->assertNotFalse(strpos($html, 'Quiet Megapetition'), 'Trending must still list petitions without recent signatures');
+        $this->assertLessThan(
+            strpos($html, 'Quiet Megapetition'),
+            strpos($html, 'Hot Newcomer'),
+            'Petition with the most recent signatures should rank first when sort=trending'
+        );
+    }
+
     public function test_category_search_filters_only_that_category(): void
     {
         $matching = Petition::factory()->create([
@@ -695,7 +737,7 @@ class PetitionTest extends TestCase
         ]);
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 0]);
 
-        $this->get("/en/verify/{$user->verification_token}")->assertRedirect('/en');
+        $this->get("/en/verify/{$user->verification_token}")->assertRedirect('/en/email-verified');
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'verified' => true]);
         $this->assertDatabaseHas('signatures', [
@@ -1244,16 +1286,24 @@ class PetitionTest extends TestCase
         $this->get('/en')->assertOk();
 
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login');
+            ->assertRedirectContains('/en/profile');
 
         $user = User::where('email', $email)->firstOrFail();
         $this->assertNotNull($user->password);
         $this->assertTrue(Hash::check('secret123', $user->password));
+        $this->assertAuthenticatedAs($user);
 
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
+        $storedPassword = $user->password;
+
+        $user->forceFill(['country' => 'US', 'gender' => 'female'])->save();
+
+        $this->actingAs($user->fresh());
+
+        $this->post("{$signUrl}/claim", ['password' => 'another123'])
             ->assertRedirect('/en/login')
             ->assertSessionHas('toast.type', 'warning');
 
+        $this->assertSame($storedPassword, $user->fresh()->password);
         $this->assertSame($usersBeforeSign + 1, User::count());
         $this->assertSame(1, User::where('email', $email)->count());
     }
@@ -1296,7 +1346,7 @@ class PetitionTest extends TestCase
         $this->get("{$signUrl}/thanksforsigning/1")->assertOk()->assertViewHas('canClaim', true);
 
         $this->post("{$signUrl}/claim", ['password' => 'survives123'])
-            ->assertRedirect('/en/login');
+            ->assertRedirectContains('/en/profile');
     }
 
     public function test_claim_rejected_when_account_already_has_password(): void

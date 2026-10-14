@@ -1,8 +1,47 @@
-/** Busy feedback for native petition signing POSTs. */
+/** Busy feedback and network-failure handling for native form POSTs. */
 (function () {
     'use strict';
 
+    var offlineText = 'You appear to be offline. Reconnect and submit again.';
     var pending = new Map();
+
+    function errorNode(form, selector) {
+        var node = selector ? form.querySelector(selector) : null;
+
+        if (!node) {
+            node = form.querySelector('[data-network-error]');
+        }
+
+        if (!node) {
+            node = document.createElement('p');
+            node.className = 'fcui-field__error';
+            node.setAttribute('role', 'alert');
+            node.setAttribute('data-network-error', '');
+            node.hidden = true;
+            form.appendChild(node);
+        }
+
+        return node;
+    }
+
+    function messageFor(form, node) {
+        return form.getAttribute('data-network-error-text')
+            || (node ? node.textContent.trim() : '')
+            || offlineText;
+    }
+
+    function showError(form, text) {
+        var node = errorNode(form, '[data-sign-network-error]');
+        node.textContent = text || messageFor(form, node);
+        node.hidden = false;
+    }
+
+    function hideError(form) {
+        var nodes = form.querySelectorAll('[data-network-error], [data-sign-network-error]');
+        nodes.forEach(function (node) {
+            node.hidden = true;
+        });
+    }
 
     function restore() {
         pending.forEach(function (state, form) {
@@ -15,10 +54,24 @@
         pending.clear();
     }
 
+    function isEligible(form) {
+        if (!form || form.tagName !== 'FORM') {
+            return false;
+        }
+        if (form.getAttribute('target') === '_blank') {
+            return false;
+        }
+        if (form.hasAttribute('data-no-busy') || form.hasAttribute('data-busy-ignore')) {
+            return false;
+        }
+        return form.method.toLowerCase() === 'post';
+    }
+
     // Bubble after the form's guest validation handler has had a chance to cancel.
     document.addEventListener('submit', function (event) {
         var form = event.target;
-        if (!form || form.tagName !== 'FORM' || !form.hasAttribute('data-sign-busy') || event.defaultPrevented) {
+
+        if (!isEligible(form) || event.defaultPrevented) {
             return;
         }
         if (pending.has(form)) {
@@ -31,13 +84,13 @@
             return;
         }
 
-        var error = form.querySelector('[data-sign-network-error]');
         if (navigator.onLine === false) {
             event.preventDefault();
-            if (error) error.hidden = false;
+            showError(form);
             return;
         }
-        if (error) error.hidden = true;
+
+        hideError(form);
 
         var spinner = document.createElement('span');
         spinner.className = 'fc-sign-spinner';
@@ -50,6 +103,19 @@
         button.disabled = true;
         // Leave the native POST intact. Do not unlock on a timer: a slow request
         // could still succeed, making an automatic retry a duplicate signature.
+    });
+
+    window.addEventListener('offline', function () {
+        document.querySelectorAll('form[method="post"]').forEach(function (form) {
+            if (form.hasAttribute('data-busy-ignore')) {
+                return;
+            }
+            showError(form);
+        });
+    });
+
+    window.addEventListener('online', function () {
+        document.querySelectorAll('form[method="post"]').forEach(hideError);
     });
 
     // Back/forward cache restores the original document, including disabled buttons.

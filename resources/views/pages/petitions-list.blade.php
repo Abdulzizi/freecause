@@ -47,12 +47,16 @@
                         $sortBase = request()->except(['sort', 'page']);
                         $sortNewestUrl = request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'newest']));
                         $sortSignedUrl = request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'signed']));
+                        $sortTrendingUrl = request()->fullUrlWithQuery(array_merge($sortBase, ['sort' => 'trending']));
                     @endphp
                     <div class="flex items-center flex-wrap gap-2 mb-4 max-md:hidden">
                         <span class="text-sm text-muted me-1">{{ __('list.sort_by') }}:</span>
                         <a href="{{ $sortNewestUrl }}"
                            class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'newest' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'newest') aria-current="true" @endif>{{ __('list.sort_newest') }}</a>
+                        <a href="{{ $sortTrendingUrl }}"
+                           class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'trending' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
+                           @if ($sort === 'trending') aria-current="true" @endif>{{ __('list.sort_trending') }}</a>
                         <a href="{{ $sortSignedUrl }}"
                            class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'signed' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
@@ -60,6 +64,7 @@
 
                     <x-ui.action-sheet id="sort-sheet" :title="__('list.sort_by')" :actions="[
                         ['href' => $sortNewestUrl, 'label' => __('list.sort_newest'), 'icon' => $sort === 'newest' ? 'check' : 'circle'],
+                        ['href' => $sortTrendingUrl, 'label' => __('list.sort_trending'), 'icon' => $sort === 'trending' ? 'check' : 'circle'],
                         ['href' => $sortSignedUrl, 'label' => __('list.sort_signed'), 'icon' => $sort === 'signed' ? 'check' : 'circle'],
                     ]" />
                 @endif
@@ -89,7 +94,7 @@
                         @if (! $search && isset($sort))
                             <button type="button" class="fcui-btn fcui-btn--secondary fcui-btn--sm max-md:min-h-12 flex-1 min-w-0" data-sheet-open="sort-sheet" aria-haspopup="dialog">
                                 <x-lucide-arrow-down-up aria-hidden="true" />
-                                <span class="truncate">{{ $sort === 'signed' ? __('list.sort_signed') : __('list.sort_newest') }}</span>
+                                <span class="truncate">{{ ['signed' => __('list.sort_signed'), 'trending' => __('list.sort_trending')][$sort] ?? __('list.sort_newest') }}</span>
                                 <x-lucide-chevron-down class="size-3.5 shrink-0" aria-hidden="true" />
                             </button>
                         @endif

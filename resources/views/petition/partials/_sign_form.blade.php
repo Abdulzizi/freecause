@@ -131,6 +131,10 @@
                     </div>
                 </div>
 
+                <p class="text-sm text-muted mb-3">
+                    <a class="text-brand underline" href="{{ lroute('page.show', ['slug' => 'ethical-code']) }}">{{ __('sign.guidelines_link') }}</a>
+                </p>
+
                 <div class="w-full">
                     <button class="{{ $submitClass }}@if ($stickySubmit) max-md:hidden @endif" type="submit">{{ $tBtnSign }}</button>
                 </div>

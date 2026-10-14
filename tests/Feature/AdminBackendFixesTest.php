@@ -95,7 +95,7 @@ class AdminBackendFixesTest extends TestCase
         Settings::set('smtp_enabled', true, 'global');
 
         $this->actingAs($admin, 'admin')
-            ->post('/admin/users/save', ['id' => $target->id])
+            ->post('/admin/users/save', ['id' => $target->id, 'verified' => 0])
             ->assertSessionHasNoErrors()
             ->assertRedirect('/admin/users?select='.$target->id);
 
@@ -127,6 +127,87 @@ class AdminBackendFixesTest extends TestCase
         $this->assertTrue((bool) $target->verified);
         $this->assertNull($target->verification_token);
         $this->assertNull($target->verification_token_sent_at);
+    }
+
+    public function test_admin_resend_verification_is_blocked_without_smtp(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create([
+            'verified' => false,
+            'verification_token' => str_repeat('b', 64),
+        ]);
+
+        Settings::set('smtp_enabled', false, 'global');
+        Mail::fake();
+
+        $this->actingAs($admin, 'admin')
+            ->post("/admin/users/{$target->id}/resend-verification")
+            ->assertSessionHas('error');
+
+        $this->assertSame(str_repeat('b', 64), $target->fresh()->verification_token);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_admin_resend_verification_rotates_the_token_and_queues_a_link(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create([
+            'verified' => false,
+            'verification_token' => str_repeat('c', 64),
+        ]);
+
+        Settings::set('smtp_enabled', true, 'global');
+        Mail::fake();
+
+        $this->actingAs($admin, 'admin')
+            ->post("/admin/users/{$target->id}/resend-verification")
+            ->assertRedirect('/admin/users?select='.$target->id);
+
+        $target->refresh();
+
+        $this->assertNotSame(str_repeat('c', 64), $target->verification_token);
+        $this->assertSame(64, strlen($target->verification_token));
+        $this->assertNotNull($target->verification_token_sent_at);
+        Mail::assertQueued(VerifyAccountMail::class);
+    }
+
+    public function test_changing_a_verified_email_forces_reverification_and_queues_a_link(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create(['verified' => true, 'email' => 'old-address@example.com']);
+
+        Settings::set('smtp_enabled', true, 'global');
+        Mail::fake();
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'email' => 'new-address@example.com'])
+            ->assertSessionHasNoErrors();
+
+        $target->refresh();
+
+        $this->assertSame('new-address@example.com', $target->email);
+        $this->assertFalse((bool) $target->verified);
+        $this->assertNotNull($target->verification_token);
+        Mail::assertQueued(VerifyAccountMail::class);
+    }
+
+    public function test_changing_a_verified_email_is_blocked_when_smtp_is_off(): void
+    {
+        $admin = $this->systemAdmin();
+        $target = User::factory()->create(['verified' => true, 'email' => 'keep-me@example.com']);
+
+        Settings::set('smtp_enabled', false, 'global');
+        Mail::fake();
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'email' => 'blocked@example.com'])
+            ->assertSessionHasErrors('verified');
+
+        $target->refresh();
+
+        $this->assertSame('keep-me@example.com', $target->email);
+        $this->assertTrue((bool) $target->verified);
+        Mail::assertNothingQueued();
     }
 
     public function test_system_admin_can_change_level_of_regular_user(): void

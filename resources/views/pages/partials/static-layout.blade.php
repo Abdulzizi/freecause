@@ -19,7 +19,14 @@
                     <h2 class="fcui-section-title capitalize text-lg">{{ $title }}</h2>
 
                     @if (($slug ?? null) === 'faqs')
-                        <div>
+                        <div class="mb-4" data-faq-search>
+                            <label class="sr-only" for="faq-search">{{ __('pages.faq_search_label') }}</label>
+                            <input id="faq-search" type="search" class="fcui-input w-full"
+                                   placeholder="{{ __('pages.faq_search_placeholder') }}"
+                                   autocomplete="off" data-faq-search-input>
+                            <p class="mt-2 text-sm text-muted" data-faq-search-empty hidden>{{ __('pages.faq_search_empty') }}</p>
+                        </div>
+                        <div data-faq-search-root>
                             {!! \App\Services\ContentRenderer::renderFaqAccordion($content) !!}
                         </div>
                     @else

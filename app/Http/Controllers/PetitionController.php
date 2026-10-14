@@ -153,7 +153,7 @@ class PetitionController extends Controller
             $query->orderByDesc('petitions.signature_count');
             $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $sort = in_array(request('sort'), ['signed', 'newest'], true) ? request('sort') : 'newest';
+            $sort = in_array(request('sort'), ['signed', 'newest', 'trending'], true) ? request('sort') : 'newest';
 
             if ($sort === 'signed') {
                 $petitions = $query
@@ -161,6 +161,25 @@ class PetitionController extends Controller
                     ->orderByDesc('petitions.id')
                     ->paginate(15, ['*'], 'page', $page)
                     ->withQueryString();
+            } elseif ($sort === 'trending') {
+                $recent = Signature::query()
+                    ->where('confirmed', true)
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->selectRaw('petition_id, count(*) as recent_count')
+                    ->groupBy('petition_id');
+
+                $cacheKey = CacheKeys::petitionsTrending($locale, $page);
+
+                $petitions = cache()->remember($cacheKey, now()->addMinutes(10), function () use ($query, $recent, $page) {
+                    return $query
+                        ->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
+                        ->orderByDesc('trend.recent_count')
+                        ->orderByDesc('petitions.signature_count')
+                        ->orderByDesc('petitions.id')
+                        ->paginate(15, ['petitions.*'], 'page', $page);
+                });
+
+                $petitions = $petitions->withQueryString();
             } else {
                 $cacheKey = CacheKeys::petitionsIndex($locale, $page);
                 $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
@@ -176,7 +195,7 @@ class PetitionController extends Controller
             'heading' => $search ? __('list.search_results', ['q' => $search]) : __('list.petitions'),
             'search' => $search,
             'categories' => $categories,
-            'sort' => $search ? null : (in_array(request('sort'), ['signed', 'newest'], true) ? request('sort') : 'newest'),
+            'sort' => $search ? null : (in_array(request('sort'), ['signed', 'newest', 'trending'], true) ? request('sort') : 'newest'),
             'petitions' => $petitions,
             'petitionTitle' => fn ($row) => $row->tr_title,
             'petitionUrl' => fn ($row) => lroute('petition.show', [
@@ -221,8 +240,30 @@ class PetitionController extends Controller
             ]);
         }
 
+        $related = cache()->remember(
+            "petition:related:{$petition->id}:{$locale}",
+            now()->addMinutes(10),
+            function () use ($petition, $locale, $defaultLocale) {
+                if (! $petition->category_id) {
+                    return collect();
+                }
+
+                return Petition::query()
+                    ->select(['petitions.id', 'petitions.signature_count', 'petitions.cover_image'])
+                    ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
+                    ->where('petitions.category_id', $petition->category_id)
+                    ->where('petitions.id', '!=', $petition->id)
+                    ->where('petitions.status', 'published')
+                    ->where('petitions.is_active', 1)
+                    ->where(fn ($q) => $q->whereNotNull('pt_locale.title')->orWhereNotNull('pt_default.title'))
+                    ->orderByDesc('petitions.signature_count')
+                    ->limit(3)
+                    ->get();
+            }
+        );
+
         if ($petition->status === 'published' && ! $petition->is_active) {
-            return response()->view('petition.offline', compact('petition', 'tr', 'locale'));
+            return response()->view('petition.offline', compact('petition', 'tr', 'locale', 'related'));
         }
 
         $hasSigned = auth()->check()
@@ -289,28 +330,6 @@ class PetitionController extends Controller
                 ->where('is_spam', false)
                 ->where('created_at', '>=', now()->subDay())
                 ->count()
-        );
-
-        $related = cache()->remember(
-            "petition:related:{$petition->id}:{$locale}",
-            now()->addMinutes(10),
-            function () use ($petition, $locale, $defaultLocale) {
-                if (! $petition->category_id) {
-                    return collect();
-                }
-
-                return Petition::query()
-                    ->select(['petitions.id', 'petitions.signature_count', 'petitions.cover_image'])
-                    ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
-                    ->where('petitions.category_id', $petition->category_id)
-                    ->where('petitions.id', '!=', $petition->id)
-                    ->where('petitions.status', 'published')
-                    ->where('petitions.is_active', 1)
-                    ->where(fn ($q) => $q->whereNotNull('pt_locale.title')->orWhereNotNull('pt_default.title'))
-                    ->orderByDesc('petitions.signature_count')
-                    ->limit(3)
-                    ->get();
-            }
         );
 
         return view('petition.show', compact(
@@ -615,9 +634,18 @@ class PetitionController extends Controller
         $user->forceFill(['password' => Hash::make($data['password'])])->save();
         $request->session()->forget('sign_claim');
 
-        toast('Your password has been set. You can now log in.', 'success');
+        auth()->login($user);
+        $request->session()->regenerate();
 
-        return redirect()->route('login', ['locale' => $locale]);
+        toast(__('sign.claim_success'), 'success');
+
+        $dest = lroute('petition.show', ['slug' => $slug, 'id' => $id]);
+
+        if (! $user->hasCompleteProfile()) {
+            $dest = self::profileCompletionTarget($locale, $dest);
+        }
+
+        return redirect()->to($dest);
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)

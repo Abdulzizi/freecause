@@ -91,6 +91,39 @@ export function init() {
         });
     });
 
+    document.querySelectorAll('[data-faq-search-input]').forEach(function (input) {
+        const root = document.querySelector('[data-faq-search-root]');
+        if (!root) return;
+
+        const empty = document.querySelector('[data-faq-search-empty]');
+
+        const run = function () {
+            const query = input.value.trim().toLowerCase();
+            let visible = 0;
+
+            root.querySelectorAll('.accordion-item').forEach(function (item) {
+                const match = query === '' || (item.textContent || '').toLowerCase().indexOf(query) !== -1;
+                item.hidden = !match;
+                if (match) visible++;
+            });
+
+            root.querySelectorAll('.accordion').forEach(function (accordion) {
+                const any = Array.prototype.some.call(accordion.querySelectorAll('.accordion-item'), function (item) {
+                    return !item.hidden;
+                });
+                const heading = accordion.previousElementSibling;
+
+                if (heading && heading.tagName === 'H2') heading.hidden = !any;
+                accordion.hidden = !any;
+            });
+
+            if (empty) empty.hidden = visible !== 0;
+        };
+
+        input.addEventListener('input', window.fcDebounce ? window.fcDebounce(run, 150) : run);
+        run();
+    });
+
     document.querySelectorAll('form[data-live-search]').forEach(function (form) {
         const input = form.querySelector('input[name="q"]');
         if (!input) return;
@@ -112,7 +145,9 @@ export function init() {
             submit();
         });
 
-        form.addEventListener('submit', busy);
+        form.addEventListener('submit', function () {
+            busy();
+        });
 
         window.addEventListener('pageshow', function () {
             if (skeleton) skeleton.setAttribute('hidden', 'hidden');
@@ -363,6 +398,15 @@ export function init() {
             })
             .then(function () {
                 contactForm.reset();
+
+                const success = document.getElementById('contactSuccess');
+                if (success) {
+                    contactForm.hidden = true;
+                    success.hidden = false;
+                    success.focus?.();
+                    return;
+                }
+
                 window.clientToast.success(contactForm.dataset.sent);
             })
             .catch(function (err) {
@@ -373,4 +417,15 @@ export function init() {
                 btn.value = original;
             });
     });
+
+    const contactReset = document.querySelector('[data-contact-reset]');
+    const contactSuccess = document.getElementById('contactSuccess');
+
+    if (contactReset && contactSuccess && contactForm) {
+        contactReset.addEventListener('click', function () {
+            contactSuccess.hidden = true;
+            contactForm.hidden = false;
+            contactForm.querySelector('input, textarea, select')?.focus();
+        });
+    }
 }
