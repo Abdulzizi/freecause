@@ -1,0 +1,41 @@
+name: Ops (unban SSH)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ip:
+        description: 'IP to unban'
+        required: true
+
+jobs:
+  unban:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf 'Host *\n  StrictHostKeyChecking accept-new\n  IdentityFile ~/.ssh/id_deploy\n' > ~/.ssh/config
+
+      - name: Diagnose and unban
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          TARGET_IP: ${{ inputs.ip }}
+        run: |
+          set -uo pipefail
+          SSH="ssh -i ~/.ssh/id_deploy -o ConnectTimeout=20 root@${DEPLOY_HOST}"
+          echo "== fail2ban jails =="
+          $SSH 'fail2ban-client status 2>/dev/null || echo "(fail2ban not running)"' || true
+          echo "== sshd jail bans =="
+          $SSH 'fail2ban-client status sshd 2>/dev/null | sed -n "/Banned IP(s)/p" || true' || true
+          echo "== unban =="
+          $SSH "fail2ban-client unban ${TARGET_IP} 2>&1 || echo '(not banned there or fail2ban absent)'" || true
+          echo "== host firewall =="
+          $SSH 'ufw status verbose 2>/dev/null | head -25 || true' || true
+          $SSH 'iptables -L INPUT -n --line-numbers 2>/dev/null | head -25 || true' || true
+          echo "== sshd listening =="
+          $SSH 'ss -lntp 2>/dev/null | grep ":22 " || echo "(sshd not on 22)"' || true
