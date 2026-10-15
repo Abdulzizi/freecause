@@ -166,18 +166,20 @@ task('db:snapshot', function () {
     $stamp = date('Ymd-His');
     $file = "{$dir}/pre-migrate-{$stamp}.sql.gz";
 
-    // Pass the password via env (MYSQL_PWD) rather than the command line so it
-    // is not visible in `ps`. single-transaction keeps it non-locking on InnoDB.
+    // MYSQL_PWD keeps the password out of mysqldump's argv; %dbpass% is filled
+    // in by Deployer's secrets mechanism after logging, so a failing command is
+    // echoed into CI logs with the placeholder, not the value (run 38713948217
+    // printed it verbatim). pipefail so a mysqldump error cannot be masked by
+    // gzip's exit 0. single-transaction keeps it non-locking on InnoDB.
     $portOpt = $port !== '' ? "--port={$port}" : '';
     run(sprintf(
-        "MYSQL_PWD=%s mysqldump --single-transaction --quick --no-tablespaces -h %s %s -u %s %s | gzip > %s",
-        escapeshellarg($pass),
+        'set -o pipefail; MYSQL_PWD=%%dbpass%% mysqldump --single-transaction --quick --no-tablespaces -h %s %s -u %s %s | gzip > %s',
         escapeshellarg($host),
         $portOpt,
         escapeshellarg($user),
         escapeshellarg($db),
         $file
-    ));
+    ), secrets: ['dbpass' => escapeshellarg($pass)]);
 
     // Retain the last 7 snapshots.
     run("ls -1t {$dir}/pre-migrate-*.sql.gz 2>/dev/null | tail -n +8 | xargs -r rm -f");
