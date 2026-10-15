@@ -3,8 +3,11 @@
 // Adsterra banner slots for the petition page. IDs/keys live here (env-overridable)
 // so they can change without a template deploy. Set ADS_ENABLED=false to kill all slots.
 return [
-    // master switch -- disables every slot at once
-    'enabled' => env('ADS_ENABLED', true),
+    // master switch -- disables every slot at once.
+    // Default OFF: the site's strict CSP must allow bicea.org (script-src + frame-src)
+    // and the inline atOptions blocks before ads can render; flipping this on without
+    // that would show empty reserved boxes. Enable via admin once CSP is extended.
+    'enabled' => env('ADS_ENABLED', false),
 
     // network script host (Adsterra). Centralized so a domain change is one edit.
     'host' => env('ADS_HOST', 'https://bicea.org'),
@@ -47,9 +50,8 @@ return [
             'w' => 320,
             'h' => 50,
         ],
-        // 160x300 skyscraper -- client's emailed snippet duplicated the 320x50 code by mistake.
-        // ponytail: left key empty so the slot renders its reserved box but no (wrong) script
-        // until the real embed arrives. Fill ADS_SLOT_SKYSCRAPER (or this default) to activate.
+        // 160x300 skyscraper -- the client's first emailed snippet duplicated the
+        // 320x50 code by mistake; this key is the corrected embed for the 160x300 zone.
         'skyscraper' => [ // 160x300
             'format' => 'iframe',
             'key' => env('ADS_SLOT_SKYSCRAPER', '888932ea1f0a9f1aac53eb56d7f9155e'),
