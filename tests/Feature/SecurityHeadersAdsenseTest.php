@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\AddSecurityHeaders;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class SecurityHeadersAdsenseTest extends TestCase
 {
+    use RefreshDatabase;
+
     private function cspFor(string $path): string
     {
         $request = Request::create($path, 'GET');
@@ -58,5 +61,29 @@ class SecurityHeadersAdsenseTest extends TestCase
         $csp = $this->cspFor('/en');
 
         $this->assertStringNotContainsString('unsafe-eval', $csp);
+    }
+
+    public function test_public_csp_allows_adsterra_network(): void
+    {
+        $csp = $this->cspFor('/en/petition/x/1');
+
+        $this->assertStringContainsString('https://bicea.org', $csp);
+        $this->assertStringContainsString("script-src 'self'", $csp);
+    }
+
+    public function test_ad_slot_config_endpoint_serves_atoptions_javascript(): void
+    {
+        $response = $this->get('/ads/config/rectangle');
+
+        $response->assertOk();
+        $this->assertStringContainsString('application/javascript', (string) $response->headers->get('Content-Type'));
+
+        $body = (string) $response->getContent();
+        $this->assertStringContainsString('atOptions', $body);
+        $this->assertStringContainsString((string) config('ads.slots.rectangle.key'), $body);
+        $this->assertStringContainsString("'height': 250", $body);
+
+        $this->get('/ads/config/doesnotexist')->assertNotFound();
+        $this->get('/ads/config/native')->assertNotFound();
     }
 }

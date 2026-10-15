@@ -33,16 +33,9 @@
                 {{-- native: async loader + its own container (rendered above) --}}
                 <script async data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
             @else
-                {{-- iframe banner: atOptions must be set immediately before each loader --}}
-                <script>
-                    atOptions = {
-                        'key': '{{ $key }}',
-                        'format': 'iframe',
-                        'height': {{ $h }},
-                        'width': {{ $w }},
-                        'params': {}
-                    };
-                </script>
+                {{-- iframe banner: atOptions from same-origin config script (CSP script-src 'self'),
+                     loaded synchronously so it completes before the network loader below --}}
+                <script src="{{ route('ads.config', ['slot' => $name]) }}"></script>
                 <script src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
             @endif
         @endpush
