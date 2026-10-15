@@ -453,7 +453,7 @@
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
                                             <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                                class="text-brand">{{ $sig->name ?? __('sig.anonymous') }}</a>
+                                                class="text-brand">{{ $sig->display_name ?? __('sig.anonymous') }}</a>
                                             <span class="text-muted">|</span>
                                             <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>

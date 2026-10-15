@@ -103,6 +103,23 @@ class ProfileCrudTest extends TestCase
             ->assertSessionHasErrors(['first_name', 'last_name']);
     }
 
+    public function test_profile_update_rejects_nick_mode_without_a_nickname(): void
+    {
+        $this->actingAs($this->passwordUser(['nickname' => null]))
+            ->from('/en/profile')
+            ->post('/en/profile', [
+                'first_name' => 'Ada',
+                'last_name' => 'Lovelace',
+                'nickname' => '',
+                'country' => 'US',
+                'gender' => 'female',
+                'locale' => 'en',
+                'identify_mode' => 'nick',
+            ])
+            ->assertRedirect('/en/profile')
+            ->assertSessionHasErrors('nickname');
+    }
+
     public function test_profile_update_rejects_an_invalid_country(): void
     {
         $this->actingAs($this->passwordUser())

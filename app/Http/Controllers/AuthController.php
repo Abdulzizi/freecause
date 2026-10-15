@@ -119,6 +119,7 @@ class AuthController extends Controller
                 'ip' => $request->ip(),
                 'level_id' => $userLevel?->id,
                 'nickname' => $data['nickname'] ?? null,
+                'identify_mode' => filled($data['nickname'] ?? null) ? 'nick' : 'full', // legacy: nickname given => display nickname
                 'city' => $data['city'] ?? null,
 
                 'verified' => $needsVerif ? false : true,

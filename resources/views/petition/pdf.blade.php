@@ -47,7 +47,7 @@
 
     @forelse($signatures as $sig)
         <div class="signature">
-            <strong>{{ $sig->name ?? __('pet.anonymous') }}</strong>
+            <strong>{{ $sig->display_name ?? __('pet.anonymous') }}</strong>
             <span class="muted">
                 ({{ optional($sig->created_at)->format('Y-m-d') }})
             </span><br>

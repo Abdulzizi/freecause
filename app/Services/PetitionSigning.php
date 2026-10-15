@@ -204,7 +204,7 @@ class PetitionSigning
                     ['petition_id' => $petition->id, 'email' => $u->email],
                     [
                         'user_id' => $u->id,
-                        'name' => $u->name,
+                        'name' => $u->display_name, // frozen snapshot; live display via Signature::display_name
                         'locale' => $locale,
                         'text' => $data['comment'] ?? 'I support this petition',
                         'ip_address' => request()->ip(),

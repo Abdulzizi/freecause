@@ -21,7 +21,7 @@ class UpdateProfileRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:60'],
             'last_name' => ['required', 'string', 'max:60'],
-            'nickname' => ['nullable', 'string', 'max:80'],
+            'nickname' => ['nullable', 'string', 'max:80', 'required_if:identify_mode,nick'],
             'city' => ['nullable', 'string', 'max:80'],
             'country' => ['required', Rule::in(Countries::codes())],
             'gender' => ['required', Rule::in(User::GENDERS)],
@@ -34,6 +34,13 @@ class UpdateProfileRequest extends FormRequest
             'new_email_confirmation' => ['nullable', 'same:new_email'],
             'current_password' => [Rule::requiredIf(fn () => filled($this->input('new_password')) && $user?->hasLocalPassword())],
             'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nickname.required_if' => __('profile.nick_required'),
         ];
     }
 }

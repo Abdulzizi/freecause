@@ -489,6 +489,32 @@ class AuthenticationTest extends TestCase
         ])->assertSessionHasErrors('nickname');
     }
 
+    public function test_registration_seeds_identify_mode_from_nickname(): void
+    {
+        $this->post('/en/register', [
+            'name' => 'Nick',
+            'surname' => 'Named',
+            'email' => 'nicked@example.com',
+            'password' => 'password123',
+            'nickname' => 'nickname1',
+            'agree_terms' => 'on',
+        ]);
+
+        $withNick = User::where('email', 'nicked@example.com')->firstOrFail();
+        $this->assertSame('nick', $withNick->identify_mode);
+
+        $this->post('/en/register', [
+            'name' => 'Plain',
+            'surname' => 'User',
+            'email' => 'plain@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+        ]);
+
+        $noNick = User::where('email', 'plain@example.com')->firstOrFail();
+        $this->assertSame('full', $noNick->identify_mode);
+    }
+
     public function test_registration_requires_terms_acceptance(): void
     {
         $response = $this->post('/en/register', [

@@ -294,6 +294,7 @@ class PetitionController extends Controller
             "petition:latest_sigs:{$petition->id}",
             now()->addMinutes(5),
             fn () => Signature::where('petition_id', $petition->id)
+                ->with('user')
                 ->where('confirmed', true)
                 ->where('is_spam', false)
                 ->latest('created_at')

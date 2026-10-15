@@ -387,6 +387,43 @@ class PetitionTest extends TestCase
             ->assertSee('This petition is currently offline.');
     }
 
+    public function test_authed_signature_shows_nickname_when_identify_mode_is_nick(): void
+    {
+        $user = User::factory()->create([
+            'verified' => true,
+            'name' => 'Charles Reponsible',
+            'first_name' => 'Charles',
+            'last_name' => 'Reponsible',
+            'nickname' => 'charlesrep',
+            'identify_mode' => 'nick',
+        ]);
+
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Nick Petition',
+            'slug' => 'nick-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->actingAs($user)->post("/en/petition/nick-petition/{$petition->id}/sign", [
+            'agree1' => 'agree',
+            'agree2' => 'agree',
+            'agree3' => 'agree',
+            'comment' => 'I support this petition',
+        ])->assertRedirect();
+
+        $resp = $this->get("/en/petition/nick-petition/{$petition->id}/signatures")->assertOk();
+        $resp->assertSee('charlesrep');
+        $resp->assertDontSee('Charles Reponsible');
+
+        // live: switching pref to full flips the displayed name with no re-sign
+        $user->update(['identify_mode' => 'full']);
+        $full = $this->get("/en/petition/nick-petition/{$petition->id}/signatures")->assertOk();
+        $full->assertSee('Charles Reponsible');
+    }
+
     public function test_guest_signing_uses_confirmation_step(): void
     {
         $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);

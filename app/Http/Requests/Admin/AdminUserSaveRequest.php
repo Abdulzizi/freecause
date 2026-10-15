@@ -26,7 +26,7 @@ class AdminUserSaveRequest extends FormRequest
             'username' => ['nullable', 'string', 'max:120'],
             'first_name' => ['nullable', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
-            'nickname' => ['nullable', 'string', 'max:120'],
+            'nickname' => ['nullable', 'string', 'max:120', 'required_if:identify_mode,nick'],
             'city' => ['nullable', 'string', 'max:120'],
             'identify_mode' => ['nullable', 'in:full,name,nick'],
             'password' => ['nullable', 'string', 'min:8'],

@@ -34,4 +34,10 @@ class Signature extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // live display: honor signer's current identify_mode; frozen name for guests
+    public function getDisplayNameAttribute(): ?string
+    {
+        return $this->user?->display_name ?? $this->name;
+    }
 }

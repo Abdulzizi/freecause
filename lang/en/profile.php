@@ -15,6 +15,7 @@ return [
     'id_full' => 'Full Name',
     'id_name' => 'First Name',
     'id_nick' => 'Nickname',
+    'nick_required' => 'Enter a nickname to display your signature as a nickname.',
     'country' => 'Country',
     'select_country' => 'Select a country',
     'gender' => 'Gender',
