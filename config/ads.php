@@ -52,7 +52,7 @@ return [
         // until the real embed arrives. Fill ADS_SLOT_SKYSCRAPER (or this default) to activate.
         'skyscraper' => [ // 160x300
             'format' => 'iframe',
-            'key' => env('ADS_SLOT_SKYSCRAPER', ''),
+            'key' => env('ADS_SLOT_SKYSCRAPER', '888932ea1f0a9f1aac53eb56d7f9155e'),
             'path' => '22',
             'w' => 160,
             'h' => 300,

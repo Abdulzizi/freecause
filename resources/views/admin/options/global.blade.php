@@ -174,7 +174,7 @@
                 <x-ui.input name="ads_slot_rectangle_key" :value="$ads_slot_rectangle_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
             <x-admin.form-field label="skyscraper key (160×300, sidebar sticky)">
-                <x-ui.input name="ads_slot_skyscraper_key" :value="$ads_slot_skyscraper_key" placeholder="awaiting client snippet" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+                <x-ui.input name="ads_slot_skyscraper_key" :value="$ads_slot_skyscraper_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
             <x-admin.form-field label="banner key (468×60, left column)">
                 <x-ui.input name="ads_slot_banner468_key" :value="$ads_slot_banner468_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
