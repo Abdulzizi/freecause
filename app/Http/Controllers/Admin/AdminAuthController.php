@@ -30,7 +30,7 @@ class AdminAuthController extends Controller
         $user = User::where($field, $login)->first();
 
         if (! $user) {
-            return back()->withErrors(['login' => 'invalid credentials'])->withInput();
+            return back()->withErrors(['login' => 'Invalid credentials.'])->withInput();
         }
 
         try {
@@ -49,13 +49,13 @@ class AdminAuthController extends Controller
         }
 
         if (! $passwordValid) {
-            return back()->withErrors(['login' => 'invalid credentials'])->withInput();
+            return back()->withErrors(['login' => 'Invalid credentials.'])->withInput();
         }
 
         $user->load('level');
 
         if (! $user->canAccessAdmin()) {
-            return back()->withErrors(['login' => 'not authorized'])->withInput();
+            return back()->withErrors(['login' => 'You are not authorized to access the admin area.'])->withInput();
         }
 
         Auth::guard('admin')->login($user);

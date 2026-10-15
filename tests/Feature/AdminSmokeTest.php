@@ -102,7 +102,7 @@ class AdminSmokeTest extends TestCase
 
         $html = $this->followRedirects($response)->getContent();
 
-        $this->assertSame(1, substr_count($html, 'invalid credentials'));
+        $this->assertSame(1, substr_count($html, 'Invalid credentials.'));
     }
 
     public function test_admin_login_rejects_user_without_level(): void
