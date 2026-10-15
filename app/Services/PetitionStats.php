@@ -20,12 +20,60 @@ class PetitionStats
         self::incrementMany([$petitionId => $by]);
     }
 
-    public static function notifyMilestoneIfCrossed(int $petitionId): void
+    /**
+     * Increment signature counts in bulk. Returns a map of petitionId =>
+     * previousCount (the count BEFORE this increment) so callers can detect
+     * milestones crossed and send notifications AFTER their transaction
+     * commits — notification must never fire inside a transaction that may
+     * roll back.
+     *
+     * @param  array<int,int>  $byPetitionId
+     * @return array<int,int>
+     */
+    public static function incrementMany(array $byPetitionId): array
+    {
+        $touched = [];
+        $previous = [];
+
+        foreach ($byPetitionId as $id => $by) {
+            $id = (int) $id;
+            $by = (int) $by;
+
+            if ($id <= 0 || $by <= 0) {
+                continue;
+            }
+
+            $previous[$id] = (int) DB::table('petitions')->where('id', $id)->value('signature_count');
+            DB::table('petitions')->where('id', $id)->increment('signature_count', $by);
+            $touched[] = $id;
+        }
+
+        self::invalidate($touched);
+
+        return $previous;
+    }
+
+    /**
+     * Notify the owner for every milestone CROSSED when the signature count
+     * moved from $previousCount to its current value. Passing null for
+     * $previousCount preserves the legacy exact-equality behaviour (fire only
+     * when the current count lands exactly on a milestone).
+     */
+    public static function notifyMilestoneIfCrossed(int $petitionId, ?int $previousCount = null): void
     {
         try {
             $count = (int) DB::table('petitions')->where('id', $petitionId)->value('signature_count');
 
-            if (! in_array($count, self::MILESTONES, true)) {
+            $crossed = array_values(array_filter(self::MILESTONES, function (int $m) use ($count, $previousCount): bool {
+                if ($previousCount === null) {
+                    return $m === $count;
+                }
+
+                // Any milestone strictly above the old count and at/below the new one.
+                return $m > $previousCount && $m <= $count;
+            }));
+
+            if ($crossed === []) {
                 return;
             }
 
@@ -36,11 +84,14 @@ class PetitionStats
                 return;
             }
 
-            Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $count));
+            // Notify for the highest milestone crossed (one email per transition).
+            $milestone = max($crossed);
+
+            Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $milestone));
 
             AppLog::info(
                 'Milestone email queued',
-                'Petition ID: '.$petitionId.' | Milestone: '.$count,
+                'Petition ID: '.$petitionId.' | Milestone: '.$milestone,
                 'petition.milestone'
             );
         } catch (\Throwable $e) {
@@ -50,25 +101,6 @@ class PetitionStats
                 'petition.milestone'
             );
         }
-    }
-
-    public static function incrementMany(array $byPetitionId): void
-    {
-        $touched = [];
-
-        foreach ($byPetitionId as $id => $by) {
-            $id = (int) $id;
-            $by = (int) $by;
-
-            if ($id <= 0 || $by <= 0) {
-                continue;
-            }
-
-            DB::table('petitions')->where('id', $id)->increment('signature_count', $by);
-            $touched[] = $id;
-        }
-
-        self::invalidate($touched);
     }
 
     public static function recalculate(int $petitionId): int

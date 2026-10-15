@@ -61,6 +61,10 @@
         </div>
 
         <div>
+            @if (\App\Support\Spam::turnstileEnabled())
+                <div class="mb-3 cf-turnstile" data-sitekey="{{ \App\Support\Settings::get('turnstile_site_key', '', 'global') }}"></div>
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            @endif
             <x-ui.button type="submit" variant="danger" class="w-full py-2 rounded-lg">
                 {{ __('contacts.submit') }}
             </x-ui.button>

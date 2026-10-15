@@ -82,13 +82,19 @@ class Spam
 
     public static function rateLimit(string $type, int $limit = 20): bool
     {
+        // Track attempts under a dedicated type suffix so this counter is not
+        // polluted by genuine spam-event rows that callers log under $type
+        // (e.g. Spam::log('petition', ...)). Count the attempts recorded so
+        // far in the window, then record this one.
+        $attemptType = $type.':rl';
+
         $count = DB::table('spam_logs')
             ->where('ip', request()->ip())
-            ->where('type', $type)
+            ->where('type', $attemptType)
             ->where('created_at', '>=', now()->subMinutes(5))
             ->count();
 
-        self::log($type, 'Rate limit attempt');
+        self::log($attemptType, 'Rate limit attempt');
 
         if ($count >= $limit) {
             self::banCurrentIp('Auto ban: too many '.$type.' attempts');

@@ -87,6 +87,77 @@ task('php-fpm:reload', function () {
     run('sudo systemctl reload {{php_fpm_service}}');
 });
 
+desc('Snapshot the database before migrating (recovery point for schema deploys)');
+task('db:snapshot', function () {
+    // Self-hosted MySQL on the deploy host. Dump to shared/ (persists across
+    // releases) BEFORE any ALTER runs, so a failed/locking migration on the
+    // large users table can be restored. Reads creds from the deployed .env.
+    $envPath = '{{deploy_path}}/shared/.env';
+
+    if (! test("[ -f {$envPath} ]")) {
+        writeln('<comment>db:snapshot: no shared/.env yet (first deploy?); skipping.</comment>');
+
+        return;
+    }
+
+    $get = function (string $key) use ($envPath): string {
+        // Last matching key wins; strip quotes/CR.
+        $raw = run("grep -E '^{$key}=' {$envPath} | tail -n1 | cut -d= -f2- || true");
+
+        return trim($raw, " \t\r\n\"'");
+    };
+
+    $conn = $get('DB_CONNECTION');
+    if ($conn !== '' && $conn !== 'mysql' && $conn !== 'mariadb') {
+        writeln("<comment>db:snapshot: DB_CONNECTION={$conn} is not MySQL; skipping mysqldump.</comment>");
+
+        return;
+    }
+
+    $host = $get('DB_HOST') ?: '127.0.0.1';
+    $port = $get('DB_PORT') ?: '3306';
+    $db = $get('DB_DATABASE');
+    $user = $get('DB_USERNAME');
+    $pass = $get('DB_PASSWORD');
+
+    if ($db === '' || $user === '') {
+        writeln('<comment>db:snapshot: DB_DATABASE/DB_USERNAME missing; skipping.</comment>');
+
+        return;
+    }
+
+    $dir = '{{deploy_path}}/shared/db-snapshots';
+    run("mkdir -p {$dir}");
+
+    // Require at least 2 GB free before dumping an ~18M-row table.
+    $freeKb = (int) run("df -Pk {$dir} | awk 'NR==2 {print \$4}'");
+    if ($freeKb > 0 && $freeKb < 2 * 1024 * 1024) {
+        throw new \RuntimeException("db:snapshot: only {$freeKb} KB free under {$dir}; refusing to dump. Free space or snapshot out of band.");
+    }
+
+    $stamp = date('Ymd-His');
+    $file = "{$dir}/pre-migrate-{$stamp}.sql.gz";
+
+    // Pass the password via env (MYSQL_PWD) rather than the command line so it
+    // is not visible in `ps`. single-transaction keeps it non-locking on InnoDB.
+    $portOpt = $port !== '' ? "--port={$port}" : '';
+    run(sprintf(
+        "MYSQL_PWD=%s mysqldump --single-transaction --quick --no-tablespaces -h %s %s -u %s %s | gzip > %s",
+        escapeshellarg($pass),
+        escapeshellarg($host),
+        $portOpt,
+        escapeshellarg($user),
+        escapeshellarg($db),
+        $file
+    ));
+
+    // Retain the last 7 snapshots.
+    run("ls -1t {$dir}/pre-migrate-*.sql.gz 2>/dev/null | tail -n +8 | xargs -r rm -f");
+
+    writeln("<info>db:snapshot: wrote {$file}</info>");
+});
+
+before('artisan:migrate', 'db:snapshot');
 before('artisan:migrate', 'artisan:down');
 after('deploy:vendors', 'artisan:migrate');
 after('deploy:symlink', 'artisan:up');

@@ -20,19 +20,45 @@ use Illuminate\Support\Str;
 
 class PetitionSigning
 {
+    /**
+     * Single source of truth for guest sign-form validation rules.
+     * The guest form posts the agreement checkboxes as 'on'/'1'.
+     *
+     * @return array<string,array<int,string>>
+     */
+    public static function guestRules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:60'],
+            'email' => ['required', 'email', 'max:190'],
+            'comment' => ['nullable', 'string', 'max:500'],
+            'agree1' => ['required', 'in:on,1'],
+            'agree2' => ['required', 'in:on,1'],
+            'agree3' => ['required', 'in:on,1'],
+        ];
+    }
+
+    /**
+     * Single source of truth for authenticated sign-form validation rules.
+     * The authed form posts the agreement checkboxes as 'agree'.
+     *
+     * @return array<string,array<int,string>>
+     */
+    public static function authedRules(): array
+    {
+        return [
+            'comment' => ['nullable', 'string', 'max:500'],
+            'agree1' => ['required', 'in:agree'],
+            'agree2' => ['required', 'in:agree'],
+            'agree3' => ['required', 'in:agree'],
+        ];
+    }
+
     public static function signAsGuest(Request $request, Petition $petition, string $locale): RedirectResponse
     {
         $tr = $petition->translationOrFallback($locale, default_locale());
 
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:60'],
-            'email' => ['required', 'email', 'max:190'],
-            'comment' => ['nullable', 'string', 'max:500'],
-
-            'agree1' => ['required', 'in:on,1'],
-            'agree2' => ['required', 'in:on,1'],
-            'agree3' => ['required', 'in:on,1'],
-        ]);
+        $data = $request->validate(self::guestRules());
 
         if (! Spam::verifyTurnstile($request->input('cf-turnstile-response'))) {
             toast(__('sign.captcha_failed'), 'error');
@@ -166,12 +192,7 @@ class PetitionSigning
 
     public static function signAsAuthed(Request $request, string $locale, Petition $petition): RedirectResponse
     {
-        $data = $request->validate([
-            'comment' => ['nullable', 'string', 'max:500'],
-            'agree1' => ['required', 'in:agree'],
-            'agree2' => ['required', 'in:agree'],
-            'agree3' => ['required', 'in:agree'],
-        ]);
+        $data = $request->validate(self::authedRules());
 
         $u = auth()->user();
 

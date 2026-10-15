@@ -17,7 +17,10 @@ class HealthController extends Controller
             'storage' => $this->checkStorage(),
         ];
 
-        $healthy = ! in_array(false, array_column($checks, 'healthy'));
+        // Each sub-check returns a 'healthy' bool; the probe is healthy only
+        // when every one of them is true. (Previously read a key the
+        // sub-checks never set, so /up always returned 200.)
+        $healthy = ! in_array(false, array_column($checks, 'healthy'), true);
 
         return response()->json([
             'status' => $healthy ? 'ok' : 'degraded',
@@ -32,10 +35,10 @@ class HealthController extends Controller
             DB::connection()->getPdo();
             DB::select('SELECT 1');
 
-            return ['database' => true];
+            return ['healthy' => true];
         } catch (\Exception $e) {
             return [
-                'database' => false,
+                'healthy' => false,
                 'error' => 'Database connection failed',
             ];
         }
@@ -53,10 +56,10 @@ class HealthController extends Controller
 
             Cache::forget($key);
 
-            return ['cache' => true];
+            return ['healthy' => true];
         } catch (\Exception $e) {
             return [
-                'cache' => false,
+                'healthy' => false,
                 'error' => 'Cache operation failed',
             ];
         }
@@ -65,17 +68,22 @@ class HealthController extends Controller
     private function checkStorage(): array
     {
         try {
-            $path = storage_path('framework/cache/.gitkeep');
-            $dir = dirname($path);
+            $dir = storage_path('framework/cache');
 
-            if (! is_dir($dir)) {
-                mkdir($dir, 0755, true);
+            if (! is_dir($dir) && ! mkdir($dir, 0755, true) && ! is_dir($dir)) {
+                throw new \Exception('Storage directory not writable');
             }
 
-            return ['storage' => true];
+            $probe = $dir.'/.health-'.getmypid();
+            if (file_put_contents($probe, '1') === false) {
+                throw new \Exception('Storage write failed');
+            }
+            @unlink($probe);
+
+            return ['healthy' => true];
         } catch (\Exception $e) {
             return [
-                'storage' => false,
+                'healthy' => false,
                 'error' => 'Storage write failed',
             ];
         }

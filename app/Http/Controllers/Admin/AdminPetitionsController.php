@@ -341,6 +341,7 @@ class AdminPetitionsController extends Controller
                 $viewUrl = route('petition.show', ['locale' => $data['locale'], 'slug' => $row->slug, 'id' => $data['id']]);
             }
         } catch (\Throwable $e) {
+            Log::warning('Could not build petition view_url after save: '.$e->getMessage());
         }
 
         return redirect()
