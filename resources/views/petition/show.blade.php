@@ -107,6 +107,9 @@
 @section('content')
     <x-ui.section>
 
+            {{-- ad: 728x90 leaderboard, desktop only, above breadcrumb --}}
+            <x-ads.slot name="leaderboard" class="hidden lg:block text-center mb-4" />
+
             <x-ui.breadcrumb class="mb-4" :items="$crumbs" />
 
             <div class="bg-white shadow-elev-1 rounded-md p-6">
@@ -171,6 +174,9 @@
                         </x-ui.badge>
                     @endif
                 </div>
+
+                {{-- ad: 320x50, mobile only, below Active badge above progress bar (not fixed-bottom) --}}
+                <x-ads.slot name="mobile" class="lg:hidden text-center mb-4" />
 
                 @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
                     <x-ui.alert variant="error" class="mb-4">{{ __('show.report_failed') }}</x-ui.alert>
@@ -289,6 +295,9 @@
                             </div>
                         </div>
 
+                        {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}
+                        <x-ads.slot name="banner468" class="hidden md:block text-center my-6" />
+
                         <div class="border-t border-border my-6"></div>
 
                         <div id="signFormBottom" class="bg-surface-2 rounded-md p-6 border border-border">
@@ -383,6 +392,9 @@
                                 @endif
                             </div>
                         </div>
+
+                        {{-- ad: native, left column, last element before related petitions, full column width --}}
+                        <x-ads.slot name="native" class="mt-6" />
                     </div>
 
                     <div class="w-full lg:w-1/3 shrink-0 px-3">
@@ -413,6 +425,9 @@
                                 'content' => $formContent,
                             ])
                         </div>
+
+                        {{-- ad: 300x250, sidebar, between top sign form and goal box --}}
+                        <x-ads.slot name="rectangle" class="text-center mb-6" />
 
                         <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
                             <h2 class="text-lg font-semibold">{{ $boxGoal }}</h2>
@@ -473,6 +488,11 @@
                                 <x-ui.button variant="danger" size="sm" class="mt-2"
                                     :href="lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id])">{{ $latestBrowseAll }}</x-ui.button>
                             </div>
+                        </div>
+
+                        {{-- ad: 160x300 skyscraper, sidebar after signatures before info box, sticky, desktop only --}}
+                        <div class="hidden lg:block mb-6" style="position: sticky; top: 80px;">
+                            <x-ads.slot name="skyscraper" class="text-center" />
                         </div>
 
                         <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
