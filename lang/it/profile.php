@@ -15,6 +15,7 @@ return [
     'id_full' => 'Nome completo',
     'id_name' => 'Nome',
     'id_nick' => 'Soprannome',
+    'nick_required' => 'Inserisci un soprannome per mostrare la tua firma come soprannome.',
     'country' => 'Paese',
     'select_country' => 'Seleziona un paese',
     'gender' => 'Genere',

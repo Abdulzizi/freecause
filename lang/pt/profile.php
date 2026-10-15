@@ -15,6 +15,7 @@ return [
     'id_full' => 'Nome completo',
     'id_name' => 'Nome',
     'id_nick' => 'Apelido',
+    'nick_required' => 'Insira um apelido para exibir sua assinatura como apelido.',
     'country' => 'País',
     'select_country' => 'Selecione um país',
     'gender' => 'Gênero',

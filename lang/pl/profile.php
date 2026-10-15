@@ -15,6 +15,7 @@ return [
     'id_full' => 'Pełne imię i nazwisko',
     'id_name' => 'Imię',
     'id_nick' => 'Pseudonim',
+    'nick_required' => 'Wpisz pseudonim, aby Twój podpis był wyświetlany jako pseudonim.',
     'country' => 'Kraj',
     'select_country' => 'Wybierz kraj',
     'gender' => 'Płeć',

@@ -15,6 +15,7 @@ return [
     'id_full' => 'Fuldt navn',
     'id_name' => 'Fornavn',
     'id_nick' => 'Kaldenavn',
+    'nick_required' => 'Indtast et kælenavn, så din signatur vises som kælenavn.',
     'country' => 'Land',
     'select_country' => 'Vælg land',
     'gender' => 'Køn',

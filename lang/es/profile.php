@@ -15,6 +15,7 @@ return [
     'id_full' => 'Nombre completo',
     'id_name' => 'Nombre',
     'id_nick' => 'Apodo',
+    'nick_required' => 'Introduce un apodo para que tu firma se muestre como apodo.',
     'country' => 'País',
     'select_country' => 'Selecciona un país',
     'gender' => 'Género',

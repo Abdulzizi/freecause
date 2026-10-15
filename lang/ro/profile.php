@@ -15,6 +15,7 @@ return [
     'id_full' => 'Nume complet',
     'id_name' => 'Prenume',
     'id_nick' => 'Pseudonim',
+    'nick_required' => 'Introdu un nickname pentru a-ți afișa semnătura ca nickname.',
     'country' => 'Țară',
     'select_country' => 'Selectați o țară',
     'gender' => 'Gen',
