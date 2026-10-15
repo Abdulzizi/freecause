@@ -89,6 +89,23 @@ task('php-fpm:reload', function () {
     run('sudo systemctl reload {{php_fpm_service}}');
 });
 
+desc('Install/refresh the Laravel scheduler supervisor program (schedule:work)');
+task('scheduler:sync', function () {
+    if (! get('manage_services')) {
+        writeln('manage_services=false: skipping scheduler sync');
+
+        return;
+    }
+    // Point supervisor at the committed conf (runs schedule:work from current/).
+    // Replaces the legacy per-minute `schedule:run` root crontab that pointed at
+    // the retired in-place checkout. Idempotent: cp + reread/update + restart.
+    run('sudo cp {{release_path}}/deploy/supervisor/freecause-release-scheduler.conf /etc/supervisor/conf.d/freecause-release-scheduler.conf');
+    run('sudo supervisorctl reread && sudo supervisorctl update');
+    run('sudo supervisorctl restart freecause-release-scheduler || true');
+    // Drop the stale schedule:run cron line if it is still present.
+    run('crontab -l 2>/dev/null | grep -v "freecause-release-v2026.09.19/artisan schedule:run" | crontab - || true');
+});
+
 desc('Snapshot the database before migrating (recovery point for schema deploys)');
 task('db:snapshot', function () {
     // Self-hosted MySQL on the deploy host. Dump to shared/ (persists across
@@ -174,6 +191,7 @@ after('deploy:vendors', 'artisan:migrate');
 after('deploy:symlink', 'artisan:up');
 after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');
+after('deploy:symlink', 'scheduler:sync');
 after('deploy:symlink', 'php-fpm:reload');
 
 after('deploy:failed', 'artisan:up');

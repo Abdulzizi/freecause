@@ -16,6 +16,13 @@ Production runs on the **Deployer 8** layout at `/var/www/freecause`
 - `deploy/deploy.php` — Deployer recipe (release dirs, shared dirs, migrate,
   cache warm, queue restart, PHP-FPM reload).
 - `deploy/supervisor/freecause-release-queue.conf` — supervisor program template.
+- `deploy/supervisor/freecause-release-scheduler.conf` — supervisor program
+  running `php artisan schedule:work`. **Must be installed** (symlink/copy into
+  the supervisor conf.d and `supervisorctl reread && supervisorctl update`)
+  alongside the queue program — without it the scheduler in `routes/console.php`
+  (backups, `signatures:reconcile`, `cache:warm`, weekly digest, `queue:monitor`,
+  log pruning) never runs. `schedule:work` targets the stable `current/` symlink,
+  so it needs no per-release re-point.
 - `deploy/cutover.sh` — seeds `shared/` from an in-place install (dry-run by
   default; `--apply` to execute).
 
@@ -43,7 +50,17 @@ Without reviewers, `environment: production` is a no-op.
   2026-10-14, when `artisan:migrate` was killed at 300s while altering the
   18M-row `users` table: the run auto-rolled back but all 5 migrations had
   already committed (batch 13), leaving schema ahead of served code until the
-  next deploy.
+  next deploy. The `users.password` nullability migration now runs an explicit
+  `ALTER ... MODIFY ... ALGORITHM=INPLACE, LOCK=NONE` on MySQL (was a Blueprint
+  `->change()` that could lock-copy the whole table); the remaining pending
+  `users` migrations are nullable-column adds (INSTANT on MySQL 8) and
+  index adds (INPLACE/LOCK=NONE), so none should take a metadata-blocking lock.
+- **Pre-migrate snapshot:** `db:snapshot` runs before `artisan:migrate` (and
+  before maintenance mode), `mysqldump --single-transaction`ing the DB to
+  `shared/db-snapshots/pre-migrate-<ts>.sql.gz` (last 7 retained). It reads
+  creds from `shared/.env`, passes the password via `MYSQL_PWD` (not argv), and
+  refuses if under 2 GB free. Assumes self-hosted MySQL on the deploy host; for
+  a managed DB (RDS etc.) replace this task with a provider snapshot API call.
 - Assets are built in CI and uploaded (`deploy:assets`) — the server needs no
   Node. The upload targets `{{release_path}}/public` (rsync copies a directory in
   as its basename, so targeting `public/build` nested it as `public/build/build`).
