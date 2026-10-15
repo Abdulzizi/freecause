@@ -57,7 +57,9 @@ after('deploy:update_code', 'deploy:assets');
 
 desc('Record the deployed version for /version');
 task('deploy:version', function () {
-    $commit = run('cd {{deploy_path}}/.dep/repo && git rev-parse --short HEAD');
+    // Stamp the ref actually deployed, not the mirror's HEAD (= default branch):
+    // a tag deploy while main has moved made the smoke check roll back good code.
+    $commit = run('cd {{deploy_path}}/.dep/repo && git rev-parse --short {{target}}^{commit}');
     run('{{bin/php}} {{bin/artisan}} app:stamp-version "{{target}}" --commit="'.$commit.'"');
 });
 after('deploy:vendors', 'deploy:version');
@@ -122,6 +124,15 @@ task('db:snapshot', function () {
 
     if ($db === '' || $user === '') {
         writeln('<comment>db:snapshot: DB_DATABASE/DB_USERNAME missing; skipping.</comment>');
+
+        return;
+    }
+
+    // Dumping the ~18M-row DB takes ~7 min of silent SSH, which the connection
+    // cannot survive; skip entirely when there is nothing to migrate.
+    $status = run('cd {{release_path}} && {{bin/php}} {{bin/artisan}} migrate:status --pending --no-ansi 2>&1 || true');
+    if (str_contains($status, 'No pending migrations')) {
+        writeln('<comment>db:snapshot: no pending migrations; skipping mysqldump.</comment>');
 
         return;
     }
