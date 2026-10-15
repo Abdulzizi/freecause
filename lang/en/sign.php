@@ -15,6 +15,7 @@ return [
     'btn_arrow' => '»',
     'btn_sign' => 'Sign',
     'btn_sign_arrow' => '»',
+    'captcha_failed' => 'Captcha verification failed. Please try again.',
     'claim_btn' => 'Create my account',
     'claim_existing' => 'This email already belongs to a FreeCause account — log in to manage it.',
     'claim_expired' => 'Your sign-in session expired. Please log in or sign the petition again.',

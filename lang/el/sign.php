@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Η επαλήθευση captcha απέτυχε. Παρακαλώ δοκιμάστε ξανά.',
     'agree1' => 'Sumfono me orous xris',
     'agree1_title' => 'Επιβεβαιώνω την εγγραφή και συμφωνώ με τους <a class="red" href=":terms_url">Όρους Χρήσης και Περιορισμούς Υπηρεσιών</a>',
     'agree2' => 'Sumfono me politiki aporr',

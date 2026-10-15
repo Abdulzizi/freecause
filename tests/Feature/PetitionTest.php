@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -421,6 +422,73 @@ class PetitionTest extends TestCase
         $this->followRedirects($response)->assertSee('Thank you for having signed:');
         $this->assertDatabaseHas('users', ['email' => 'guest-confirm@example.com']);
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
+    }
+
+    public function test_guest_signing_blocked_when_turnstile_fails(): void
+    {
+        Settings::set('turnstile_enabled', true, 'global');
+        Settings::set('turnstile_site_key', 'site-key', 'global');
+        Settings::set('turnstile_secret', 'secret-key', 'global');
+
+        Http::fake([
+            'challenges.cloudflare.com/*' => Http::response(['success' => false], 200),
+        ]);
+
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Turnstile Petition',
+            'slug' => 'turnstile-petition',
+            'description' => 'Description',
+        ]);
+
+        $response = $this->post("/en/petition/turnstile-petition/{$petition->id}/sign", [
+            'name' => 'Bot',
+            'email' => 'bot@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+            'cf-turnstile-response' => 'bad-token',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'bot@example.com']);
+        $this->assertDatabaseMissing('users', ['email' => 'bot@example.com']);
+    }
+
+    public function test_guest_signing_passes_when_turnstile_succeeds(): void
+    {
+        Settings::set('turnstile_enabled', true, 'global');
+        Settings::set('turnstile_site_key', 'site-key', 'global');
+        Settings::set('turnstile_secret', 'secret-key', 'global');
+
+        Http::fake([
+            'challenges.cloudflare.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Turnstile Pass',
+            'slug' => 'turnstile-pass',
+            'description' => 'Description',
+        ]);
+
+        $response = $this->post("/en/petition/turnstile-pass/{$petition->id}/sign", [
+            'name' => 'Human',
+            'email' => 'human@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+            'cf-turnstile-response' => 'good-token',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'human@example.com']);
     }
 
     public function test_thanks_page_uses_the_signed_petition_locale(): void

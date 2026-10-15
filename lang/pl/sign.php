@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Weryfikacja captcha nie powiodła się. Spróbuj ponownie.',
     'agree1' => 'Akceptuje Regulamin',
     'agree1_title' => 'Potwierdzam rejestrację i akceptuję <a class="red" href=":terms_url">Warunki Korzystania z Usług</a>',
     'agree2' => 'Akceptuje Polityke Prywatnosci',

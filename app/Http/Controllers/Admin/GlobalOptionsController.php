@@ -42,6 +42,10 @@ class GlobalOptionsController extends Controller
         'email_verify_footer' => '',
         'email_contact_subject' => 'New contact form submission',
         'email_contact_enabled' => true,
+
+        'turnstile_enabled' => false,
+        'turnstile_site_key' => '',
+        'turnstile_secret' => '',
     ];
 
     private array $systemOnlyKeys = [
@@ -61,6 +65,9 @@ class GlobalOptionsController extends Controller
         'logging_enabled',
         'logging_cookie_name',
         'logging_cookie_value',
+        'turnstile_enabled',
+        'turnstile_site_key',
+        'turnstile_secret',
     ];
 
     public function edit()
@@ -77,8 +84,10 @@ class GlobalOptionsController extends Controller
 
         $data['google_client_secret'] = '';
         $data['smtp_pass'] = '';
+        $data['turnstile_secret'] = '';
         $data['google_client_secret_set'] = trim((string) Settings::get('google_client_secret', '', 'global')) !== '';
         $data['smtp_pass_set'] = trim((string) Settings::get('smtp_pass', '', 'global')) !== '';
+        $data['turnstile_secret_set'] = trim((string) Settings::get('turnstile_secret', '', 'global')) !== '';
 
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
         $data['is_system_admin'] = $isSystemAdmin;
@@ -99,7 +108,7 @@ class GlobalOptionsController extends Controller
 
         $errors = [];
 
-        $secretKeys = ['google_client_secret', 'smtp_pass'];
+        $secretKeys = ['google_client_secret', 'smtp_pass', 'turnstile_secret'];
 
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 

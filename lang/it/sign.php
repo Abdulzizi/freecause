@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Verifica captcha non riuscita. Riprova.',
     'agree1' => 'Accetto i Termini di Servizio',
     'agree1_title' => 'Confermo la registrazione e accetto le <a class="red" href=":terms_url">Condizioni d’uso</a>',
     'agree2' => 'Accetto la Privacy Policy',

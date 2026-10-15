@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Verificarea captcha a eșuat. Vă rugăm încercați din nou.',
     'agree1' => 'Accept Termenii de Serviciu',
     'agree1_title' => 'Confirm înregistrarea și sunt de acord cu <a class="red" href=":terms_url">Utilizarea și Limitările Serviciilor</a>',
     'agree2' => 'Accept Politica de Confidentialitate',

@@ -34,6 +34,12 @@ class PetitionSigning
             'agree3' => ['required', 'in:on,1'],
         ]);
 
+        if (! Spam::verifyTurnstile($request->input('cf-turnstile-response'))) {
+            toast(__('sign.captcha_failed'), 'error');
+
+            return back()->withInput();
+        }
+
         $spamText = implode(' ', [
             $data['name'] ?? '',
             $data['comment'] ?? '',

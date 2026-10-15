@@ -3,9 +3,42 @@
 namespace App\Support;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class Spam
 {
+    public static function turnstileEnabled(): bool
+    {
+        return (bool) Settings::get('turnstile_enabled', false, 'global')
+            && trim((string) Settings::get('turnstile_site_key', '', 'global')) !== ''
+            && trim((string) Settings::get('turnstile_secret', '', 'global')) !== '';
+    }
+
+    public static function verifyTurnstile(?string $token): bool
+    {
+        if (! self::turnstileEnabled()) {
+            return true;
+        }
+
+        if ($token === null || trim($token) === '') {
+            return false;
+        }
+
+        try {
+            $response = Http::asForm()
+                ->timeout(5)
+                ->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                    'secret' => (string) Settings::get('turnstile_secret', '', 'global'),
+                    'response' => $token,
+                    'remoteip' => request()->ip(),
+                ]);
+
+            return $response->successful() && ($response->json('success') === true);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
     protected static array $badKeywords = [
         'viagra',
         'casino',

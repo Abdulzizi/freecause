@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Captcha-verifieringen misslyckades. Försök igen.',
     'agree1' => 'Jag accepterar Anvandnarvillkoren',
     'agree1_title' => 'Jag bekräftar registreringen och godkänner <a class="red" href=":terms_url">Användning och begränsningar av tjänster</a>',
     'agree2' => 'Jag accepterar Integritetspolicyn',

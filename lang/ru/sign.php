@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Не удалось пройти проверку captcha. Пожалуйста, попробуйте снова.',
     'agree1' => 'Ya soglasen s Usloviyami ispolzovaniya',
     'agree1_title' => 'Подтверждаю регистрацию и соглашаюсь с <a class="red" href=":terms_url">Условиями использования и ограничениями сервисов</a>',
     'agree2' => 'Ya soglasen s Politiko konfidentsialnosti',

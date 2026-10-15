@@ -129,6 +129,28 @@
         </x-admin.section-panel>
         @endif
 
+        @if ($is_system_admin)
+        <x-admin.section-panel title="captcha (cloudflare turnstile)">
+            <input type="hidden" name="turnstile_enabled" value="0">
+
+            <x-admin.form-field label=""><label class="font-normal flex items-center gap-2">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="turnstile_enabled" value="1" {{ $turnstile_enabled ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
+                    enable turnstile on the petition sign form
+                </label></x-admin.form-field>
+
+            <x-admin.form-field label="site key">
+                <x-ui.input name="turnstile_site_key" :value="$turnstile_site_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="secret key">
+                <x-ui.input name="turnstile_secret" type="password" value="" :placeholder="$turnstile_secret_set ? '•••••••• (leave blank to keep)' : 'not set'" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" autocomplete="new-password" />
+            </x-admin.form-field>
+            <p class="text-xs text-muted mt-1 mb-0">get keys at <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener" class="no-underline text-brand">cloudflare dashboard — turnstile</a></p>
+        </x-admin.section-panel>
+        @endif
+
         <x-admin.section-panel title="miscellaneous">
             <x-admin.form-field label="max featured petitions per country">
                 <x-ui.input name="max_featured_petitions_per_country" type="number" :value="$max_featured_petitions_per_country" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />

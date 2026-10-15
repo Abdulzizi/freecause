@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Captcha doğrulaması başarısız oldu. Lütfen tekrar deneyin.',
     'agree1' => 'Kullanım Kosullarini kabul ediyorum',
     'agree1_title' => 'Kaydı onaylıyorum ve <a class="red" href=":terms_url">Hizmetlerin Kullanımı ve Sınırlamaları</a>nı kabul ediyorum',
     'agree2' => 'Gizlilik Politikasini kabul ediyorum',

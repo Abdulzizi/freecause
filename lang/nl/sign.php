@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Captcha-verificatie mislukt. Probeer het opnieuw.',
     'agree1' => 'Ik ga akkoord met de Servicevoorwaarden',
     'agree1_title' => 'Ik bevestig de registratie en ga akkoord met de <a class="red" href=":terms_url">Gebruiksvoorwaarden en Beperkingen van Diensten</a>',
     'agree2' => 'Ik ga akkoord met het Privacybeleid',

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'captcha_failed' => 'Captcha-Überprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.',
     'agree1' => 'Ich stimme den Nutzungsbedingungen zu',
     'agree1_title' => 'Ich bestätige die Registrierung und akzeptiere die <a class="red" href=":terms_url">Nutzung und Einschränkungen der Dienste</a>',
     'agree2' => 'Ich stimme der Datenschutzerklärung zu',
