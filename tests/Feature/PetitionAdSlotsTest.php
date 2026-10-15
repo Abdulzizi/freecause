@@ -54,6 +54,8 @@ class PetitionAdSlotsTest extends TestCase
     public function test_configured_slots_emit_their_loader_script_but_empty_key_does_not(): void
     {
         config(['ads.enabled' => true]);
+        // force one slot's key empty to prove the box-only (no script) path
+        config(['ads.slots.skyscraper.key' => '']);
 
         [$petition, $slug] = $this->publishedPetition();
 
@@ -65,7 +67,7 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString(config('ads.slots.rectangle.key'), $html);
         $this->assertStringContainsString('container-'.config('ads.slots.native.key'), $html);
 
-        // skyscraper has an empty key by default -> box renders, no script/data-ad-id value
+        // an empty key renders the reserved box but no script / no data-ad-id value
         $this->assertStringContainsString('fc-ad fc-ad--skyscraper', $html);
         $this->assertStringContainsString('data-ad-id=""', $html);
     }
