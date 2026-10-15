@@ -85,5 +85,6 @@ class SecurityHeadersAdsenseTest extends TestCase
 
         $this->get('/ads/config/doesnotexist')->assertNotFound();
         $this->get('/ads/config/native')->assertNotFound();
+        $this->get('/ads/config/banner468')->assertOk();
     }
 }

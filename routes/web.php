@@ -54,7 +54,7 @@ Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(requ
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 Route::get('/version', VersionController::class);
-Route::get('/ads/config/{slot}', AdsConfigController::class)->whereAlpha('slot')->name('ads.config');
+Route::get('/ads/config/{slot}', AdsConfigController::class)->name('ads.config');
 
 Route::get('/speculationrules.json', function () {
     $urlExclusions = [
