@@ -11,10 +11,6 @@
         <x-blatui.alert tone="success" class="mb-4">{{ session('success') }}</x-blatui.alert>
     @endif
 
-    @if ($errors->any())
-        <x-blatui.alert variant="destructive" class="mb-4">{{ $errors->first() }}</x-blatui.alert>
-    @endif
-
     <x-blatui.card variant="sectioned" class="max-w-[400px] mx-auto">
         <x-blatui.card-header>
             <x-blatui.card-title>Login</x-blatui.card-title>

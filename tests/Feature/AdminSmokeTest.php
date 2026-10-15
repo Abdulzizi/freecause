@@ -91,6 +91,20 @@ class AdminSmokeTest extends TestCase
         $this->assertGuest('admin');
     }
 
+    public function test_admin_login_shows_the_invalid_credentials_message_only_once(): void
+    {
+        $response = $this->from('/admin/login')->post('/admin/login', [
+            'login' => 'nobody',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertRedirect('/admin/login');
+
+        $html = $this->followRedirects($response)->getContent();
+
+        $this->assertSame(1, substr_count($html, 'invalid credentials'));
+    }
+
     public function test_admin_login_rejects_user_without_level(): void
     {
         $noLevel = User::factory()->create(['level_id' => null]);
