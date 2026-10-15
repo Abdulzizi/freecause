@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\GlobalOptionsUpdateRequest;
 use App\Models\Language;
 use App\Models\Permission;
 use App\Models\UserLevel;
+use App\Support\Ads;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -46,6 +47,16 @@ class GlobalOptionsController extends Controller
         'turnstile_enabled' => false,
         'turnstile_site_key' => '',
         'turnstile_secret' => '',
+
+        // Adsterra banner config (admin-overridable; config/ads.php is the fallback)
+        'ads_enabled' => false,
+        'ads_host' => '',
+        'ads_slot_leaderboard_key' => '',
+        'ads_slot_rectangle_key' => '',
+        'ads_slot_skyscraper_key' => '',
+        'ads_slot_banner468_key' => '',
+        'ads_slot_native_key' => '',
+        'ads_slot_mobile_key' => '',
     ];
 
     private array $systemOnlyKeys = [
@@ -68,6 +79,15 @@ class GlobalOptionsController extends Controller
         'turnstile_enabled',
         'turnstile_site_key',
         'turnstile_secret',
+
+        'ads_enabled',
+        'ads_host',
+        'ads_slot_leaderboard_key',
+        'ads_slot_rectangle_key',
+        'ads_slot_skyscraper_key',
+        'ads_slot_banner468_key',
+        'ads_slot_native_key',
+        'ads_slot_mobile_key',
     ];
 
     public function edit()
@@ -85,6 +105,11 @@ class GlobalOptionsController extends Controller
         $data['google_client_secret'] = '';
         $data['smtp_pass'] = '';
         $data['turnstile_secret'] = '';
+
+        // ads_enabled toggle must reflect the RESOLVED state (config default when
+        // no Setting row exists), else an unsaved page would show it off while
+        // ads are live from config.
+        $data['ads_enabled'] = Ads::enabled();
         $data['google_client_secret_set'] = trim((string) Settings::get('google_client_secret', '', 'global')) !== '';
         $data['smtp_pass_set'] = trim((string) Settings::get('smtp_pass', '', 'global')) !== '';
         $data['turnstile_secret_set'] = trim((string) Settings::get('turnstile_secret', '', 'global')) !== '';

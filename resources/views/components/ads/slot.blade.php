@@ -1,11 +1,11 @@
 @props(['name'])
 
 @php
-    // resolve slot config; bail silently if ads disabled or slot unknown.
+    // resolve slot config via the Settings-aware resolver (admin overrides config).
     // NB: prop is "name" not "slot" -- $slot is Blade's reserved component-content var.
-    $adsOn = (bool) config('ads.enabled', false);
-    $cfg = config("ads.slots.$name");
-    $host = rtrim((string) config('ads.host', ''), '/');
+    $adsOn = \App\Support\Ads::enabled();
+    $cfg = \App\Support\Ads::slot($name);
+    $host = \App\Support\Ads::host();
     $hasKey = $adsOn && $cfg && !empty($cfg['key']);
 @endphp
 

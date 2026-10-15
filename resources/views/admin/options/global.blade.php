@@ -151,6 +151,44 @@
         </x-admin.section-panel>
         @endif
 
+        @if ($is_system_admin)
+        <x-admin.section-panel title="ads / monetization (adsterra)">
+            <input type="hidden" name="ads_enabled" value="0">
+
+            <x-admin.form-field label=""><label class="font-normal flex items-center gap-2">
+                    <span class="fc-switch">
+                        <input type="checkbox" name="ads_enabled" value="1" {{ $ads_enabled ? 'checked' : '' }}>
+                        <span class="fc-switch__track" aria-hidden="true"></span>
+                    </span>
+                    enable adsterra banners on the petition page (master switch)
+                </label></x-admin.form-field>
+
+            <x-admin.form-field label="network host">
+                <x-ui.input name="ads_host" :value="$ads_host" placeholder="https://bicea.org" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+
+            <x-admin.form-field label="leaderboard key (728×90, desktop top)">
+                <x-ui.input name="ads_slot_leaderboard_key" :value="$ads_slot_leaderboard_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="rectangle key (300×250, sidebar)">
+                <x-ui.input name="ads_slot_rectangle_key" :value="$ads_slot_rectangle_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="skyscraper key (160×300, sidebar sticky)">
+                <x-ui.input name="ads_slot_skyscraper_key" :value="$ads_slot_skyscraper_key" placeholder="awaiting client snippet" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="banner key (468×60, left column)">
+                <x-ui.input name="ads_slot_banner468_key" :value="$ads_slot_banner468_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="native key (below comments)">
+                <x-ui.input name="ads_slot_native_key" :value="$ads_slot_native_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile key (320×50, mobile only)">
+                <x-ui.input name="ads_slot_mobile_key" :value="$ads_slot_mobile_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <p class="text-xs text-muted mt-1 mb-0">dimensions and placement are fixed in code; only the adsterra zone keys and the master switch are editable here. a blank key falls back to the config/env default for that slot (set the master switch off to hide all slots).</p>
+        </x-admin.section-panel>
+        @endif
+
         <x-admin.section-panel title="miscellaneous">
             <x-admin.form-field label="max featured petitions per country">
                 <x-ui.input name="max_featured_petitions_per_country" type="number" :value="$max_featured_petitions_per_country" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
