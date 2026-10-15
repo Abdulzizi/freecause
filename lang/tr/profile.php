@@ -15,6 +15,7 @@ return [
     'id_full' => 'Tam Ad',
     'id_name' => 'Ad',
     'id_nick' => 'Takma ad',
+    'nick_required' => 'İmzanızın takma ad olarak görünmesi için bir takma ad girin.',
     'country' => 'Ülke',
     'select_country' => 'Ülke seçin',
     'gender' => 'Cinsiyet',

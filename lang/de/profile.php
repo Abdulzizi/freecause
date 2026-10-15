@@ -15,6 +15,7 @@ return [
     'id_full' => 'Vollständiger Name',
     'id_name' => 'Vorname',
     'id_nick' => 'Spitzname',
+    'nick_required' => 'Gib einen Spitznamen ein, damit deine Unterschrift als Spitzname angezeigt wird.',
     'country' => 'Land',
     'select_country' => 'Land auswählen',
     'gender' => 'Geschlecht',

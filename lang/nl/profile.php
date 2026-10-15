@@ -15,6 +15,7 @@ return [
     'id_full' => 'Volledige naam',
     'id_name' => 'Voornaam',
     'id_nick' => 'Bijnaam',
+    'nick_required' => 'Voer een bijnaam in zodat je handtekening als bijnaam wordt weergegeven.',
     'country' => 'Land',
     'select_country' => 'Selecteer een land',
     'gender' => 'Geslacht',

@@ -15,6 +15,7 @@ return [
     'id_full' => 'Fullständigt namn',
     'id_name' => 'Förnamn',
     'id_nick' => 'Smeknamn',
+    'nick_required' => 'Ange ett smeknamn så att din signatur visas som smeknamn.',
     'country' => 'Land',
     'select_country' => 'Välj ett land',
     'gender' => 'Kön',

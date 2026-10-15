@@ -15,6 +15,7 @@ return [
     'id_full' => 'Nom complet',
     'id_name' => 'Prénom',
     'id_nick' => 'Pseudo',
+    'nick_required' => 'Saisissez un pseudo pour afficher votre signature sous forme de pseudo.',
     'country' => 'Pays',
     'select_country' => 'Sélectionnez un pays',
     'gender' => 'Sexe',
