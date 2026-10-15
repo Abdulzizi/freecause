@@ -38,6 +38,20 @@ class PetitionController extends Controller
         abort_unless(auth()->check() && (int) $petition->user_id === (int) auth()->id(), 403);
     }
 
+    /**
+     * Export authorization: the petition owner OR a logged-in admin.
+     * Matches the legacy rule (owner_id == user || VALID_ADMIN) for
+     * signature downloads. Kept separate from requireOwner(), which must
+     * stay owner-only for edit/update.
+     */
+    private function requireOwnerOrAdmin(Petition $petition): void
+    {
+        $isOwner = auth()->check() && (int) $petition->user_id === (int) auth()->id();
+        $isAdmin = admin_user()?->canAccessAdmin() ?? false;
+
+        abort_unless($isOwner || $isAdmin, 403);
+    }
+
     private function requireEditable(Petition $petition): void
     {
         $this->requireOwner($petition);
@@ -694,20 +708,8 @@ class PetitionController extends Controller
         }
 
         $rules = auth()->check()
-            ? [
-                'comment' => ['nullable', 'string', 'max:500'],
-                'agree1' => ['required', 'in:agree'],
-                'agree2' => ['required', 'in:agree'],
-                'agree3' => ['required', 'in:agree'],
-            ]
-            : [
-                'name' => ['required', 'string', 'max:60'],
-                'email' => ['required', 'email', 'max:190'],
-                'comment' => ['nullable', 'string', 'max:500'],
-                'agree1' => ['required', 'in:on,1'],
-                'agree2' => ['required', 'in:on,1'],
-                'agree3' => ['required', 'in:on,1'],
-            ];
+            ? PetitionSigning::authedRules()
+            : PetitionSigning::guestRules();
 
         session(["sign.{$petition->id}" => $request->validate($rules)]);
 
@@ -874,7 +876,7 @@ class PetitionController extends Controller
     public function downloadTxt(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
-        $this->requireOwner($petition);
+        $this->requireOwnerOrAdmin($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
         if ($trOrRedirect instanceof RedirectResponse) {
@@ -882,51 +884,57 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
-        $signatures = Signature::query()
-            ->where('petition_id', $petition->id)
-            ->orderBy('created_at')
-            ->limit(100)
-            ->get();
-
-        $lines = [];
-
-        $lines[] = strtoupper($tr->title ?? 'Petition');
-        $lines[] = 'URL: '.url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
-        $lines[] = '';
-        $lines[] = '--- DESCRIPTION ---';
-        $lines[] = trim(strip_tags($tr->description ?? ''));
-        $lines[] = '';
-        $lines[] = 'Total signatures: '.(int) ($petition->signature_count ?? 0);
-        $lines[] = '';
-
-        $lines[] = '--- SIGNATURES (latest '.$signatures->count().') ---';
-
-        if ($signatures->isEmpty()) {
-            $lines[] = 'No signatures yet.';
-        } else {
-            foreach ($signatures as $i => $sig) {
-                $num = $i + 1;
-                $name = $sig->name ?: 'Anonymous';
-                $date = optional($sig->created_at)->format('Y-m-d');
-                $comment = trim($sig->text ?? 'I support this petition');
-
-                $lines[] = "{$num}. {$name} ({$date})";
-                $lines[] = "   {$comment}";
-            }
-        }
-
-        $txt = implode("\n", $lines);
         $filename = 'petition-'.$petition->id.'.txt';
+        $total = (int) ($petition->signature_count ?? 0);
 
-        return response($txt)
-            ->header('Content-Type', 'text/plain; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
+        $header = [];
+        $header[] = strtoupper($tr->title ?? 'Petition');
+        $header[] = 'URL: '.url("/{$locale}/petition/{$tr->slug}/{$petition->id}");
+        $header[] = '';
+        $header[] = '--- DESCRIPTION ---';
+        $header[] = trim(strip_tags($tr->description ?? ''));
+        $header[] = '';
+        $header[] = 'Total signatures: '.$total;
+        $header[] = '';
+        $header[] = '--- SIGNATURES ---';
+
+        // Stream ALL signatures (chunked cursor) rather than the latest 100,
+        // matching the legacy export which paged through every signature.
+        return response()->streamDownload(function () use ($petition, $header) {
+            $out = fopen('php://output', 'w');
+
+            fwrite($out, implode("\n", $header)."\n");
+
+            $num = 0;
+            Signature::query()
+                ->where('petition_id', $petition->id)
+                ->orderBy('created_at')
+                ->chunkById(1000, function ($rows) use ($out, &$num) {
+                    foreach ($rows as $sig) {
+                        $num++;
+                        $name = $sig->name ?: 'Anonymous';
+                        $date = optional($sig->created_at)->format('Y-m-d');
+                        $comment = trim($sig->text ?? 'I support this petition');
+
+                        fwrite($out, "{$num}. {$name} ({$date})\n");
+                        fwrite($out, "   {$comment}\n");
+                    }
+                });
+
+            if ($num === 0) {
+                fwrite($out, "No signatures yet.\n");
+            }
+
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+        ]);
     }
 
     public function downloadPdf(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
-        $this->requireOwner($petition);
+        $this->requireOwnerOrAdmin($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
         if ($trOrRedirect instanceof RedirectResponse) {
@@ -934,10 +942,12 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
+        // PDF renders in-memory, so cap the embedded list; the full,
+        // uncapped export is available as TXT/CSV (streamed).
         $signatures = Signature::query()
             ->where('petition_id', $petition->id)
             ->orderBy('created_at')
-            ->limit(100)
+            ->limit(5000)
             ->get();
 
         try {
@@ -954,6 +964,53 @@ class PetitionController extends Controller
 
             return $this->downloadTxt($request, $locale, $slug, $id);
         }
+    }
+
+    public function downloadCsv(Request $request, string $locale, string $slug, int $id)
+    {
+        $petition = Petition::query()->findOrFail($id);
+        $this->requireOwnerOrAdmin($petition);
+
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
+        }
+
+        $filename = 'petition-'.$petition->id.'-signatures.csv';
+
+        // Stream ALL signatures as CSV (chunked cursor) so the export is
+        // memory-safe on large petitions.
+        return response()->streamDownload(function () use ($petition) {
+            $out = fopen('php://output', 'w');
+
+            // UTF-8 BOM so spreadsheet apps read accents correctly.
+            fwrite($out, "\xEF\xBB\xBF");
+
+            fputcsv($out, ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at']);
+
+            $num = 0;
+            Signature::query()
+                ->where('petition_id', $petition->id)
+                ->orderBy('created_at')
+                ->chunkById(1000, function ($rows) use ($out, &$num) {
+                    foreach ($rows as $sig) {
+                        $num++;
+                        fputcsv($out, [
+                            $num,
+                            $sig->name ?: 'Anonymous',
+                            $sig->email ?? '',
+                            trim($sig->text ?? ''),
+                            $sig->locale ?? '',
+                            $sig->confirmed ? '1' : '0',
+                            optional($sig->created_at)->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                });
+
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     private function makeUniqueSlug(string $title, string $locale, ?int $ignoreTranslationId = null): string

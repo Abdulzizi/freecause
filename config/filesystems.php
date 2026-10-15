@@ -61,8 +61,17 @@ return [
         ],
 
         'backups' => [
-            'driver' => 'local',
+            'driver' => env('BACKUP_DISK_DRIVER', 'local'),
             'root' => storage_path('app/backups'),
+            // For an off-host backup target (recommended in production), set
+            // BACKUP_DISK_DRIVER=s3 and the S3/R2 vars below. A local driver
+            // keeps backups on the same VPS, which does not survive host loss.
+            'key' => env('BACKUP_S3_KEY', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('BACKUP_S3_SECRET', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('BACKUP_S3_REGION', env('AWS_DEFAULT_REGION')),
+            'bucket' => env('BACKUP_S3_BUCKET'),
+            'endpoint' => env('BACKUP_S3_ENDPOINT', env('AWS_ENDPOINT')),
+            'use_path_style_endpoint' => env('BACKUP_S3_USE_PATH_STYLE', env('AWS_USE_PATH_STYLE_ENDPOINT', false)),
             'throw' => false,
             'report' => false,
         ],

@@ -221,7 +221,7 @@ class AuthController extends Controller
 
         if (! $loggedIn && $legacyHash) {
             [$hash, $salt] = explode(':', $user->password, 2);
-            if (md5(md5($credentials['password']).$salt) === $hash) {
+            if (hash_equals($hash, md5(md5($credentials['password']).$salt))) {
                 $user->password = Hash::make($credentials['password']);
                 $user->password_changed_at = now();
                 $user->save();
@@ -456,7 +456,9 @@ class AuthController extends Controller
             return redirect()->to("/{$locale}/resend-verification");
         }
 
-        DB::transaction(function () use ($user) {
+        $previousCounts = [];
+
+        DB::transaction(function () use ($user, &$previousCounts) {
 
             $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
 
@@ -485,8 +487,15 @@ class AuthController extends Controller
             foreach ($pending as $row) {
                 $increments[(int) $row->petition_id] = (int) $row->total;
             }
-            PetitionStats::incrementMany($increments);
+            $previousCounts = PetitionStats::incrementMany($increments);
         });
+
+        // After commit: notify owners of any milestone crossed by this
+        // bulk confirmation (e.g. 98 -> 103 crosses 100). Previously no
+        // milestone email fired on bulk confirms at all.
+        foreach ($previousCounts as $petitionId => $previousCount) {
+            PetitionStats::notifyMilestoneIfCrossed($petitionId, $previousCount);
+        }
 
         if ($request->session()->pull('verify_autologin')) {
             $user->refresh();

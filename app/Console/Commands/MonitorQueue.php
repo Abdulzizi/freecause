@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 
 class MonitorQueue extends Command
 {
@@ -17,9 +18,25 @@ class MonitorQueue extends Command
     {
         $alerts = [];
 
-        $pendingJobs = DB::table('jobs')->count();
+        // Read the backlog from the CONFIGURED queue backend. Prod runs
+        // QUEUE_CONNECTION=redis, so counting DB::table('jobs') always
+        // returned 0 and backlog/stale alerts could never fire.
+        $connection = config('queue.default');
+        $driver = config("queue.connections.{$connection}.driver");
+
+        try {
+            $pendingJobs = Queue::connection($connection)->size();
+        } catch (\Throwable $e) {
+            $pendingJobs = $driver === 'database' ? DB::table('jobs')->count() : 0;
+        }
+
+        // failed_jobs is backend-agnostic (always the database failed driver).
         $failedJobs = DB::table('failed_jobs')->count();
-        $oldestJob = DB::table('jobs')->orderBy('available_at')->value('available_at');
+
+        // Oldest-job age is only derivable from the database driver's jobs table.
+        $oldestJob = $driver === 'database'
+            ? DB::table('jobs')->orderBy('available_at')->value('available_at')
+            : null;
 
         $this->info('Queue Health Check - '.now()->toDateTimeString());
         $this->line("Pending jobs: {$pendingJobs}");

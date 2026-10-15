@@ -55,6 +55,19 @@ class LegacyRedirectTest extends TestCase
             ->assertHeader('Location', 'http://localhost/de/petitions?page=3');
     }
 
+    public function test_legacy_download_signatures_url_redirects_to_canonical_export(): void
+    {
+        $this->get('/en/download-signatures/save-the-reef/4242')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/en/petition/save-the-reef/4242/download/txt');
+    }
+
+    public function test_legacy_download_signatures_without_id_is_404(): void
+    {
+        $this->get('/en/download-signatures/save-the-reef')
+            ->assertNotFound();
+    }
+
     public function test_bare_localized_list_word_redirects_to_canonical_list(): void
     {
         $this->get('/pt/peticoes')
@@ -198,8 +211,15 @@ class LegacyRedirectTest extends TestCase
         $this->get('/en/signatures/qualcosa/123')->assertStatus(404);
     }
 
-    public function test_download_signatures_stays_intentionally_404_deferred(): void
+    public function test_download_signatures_redirects_to_canonical_export(): void
     {
+        // No longer deferred: the legacy /download-signatures/<slug>/<id> URL
+        // now maps to the canonical authenticated export route.
+        $this->get('/en/download-signatures/my-cause/123')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/en/petition/my-cause/123/download/txt');
+
+        // Malformed (no slug/id pair) still 404s.
         $this->get('/en/download-signatures/123')->assertStatus(404);
     }
 

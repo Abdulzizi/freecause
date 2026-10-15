@@ -6,6 +6,7 @@ use App\Http\Requests\ContactRequest;
 use App\Mail\ContactMail;
 use App\Support\AppLog;
 use App\Support\Settings;
+use App\Support\Spam;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
@@ -17,6 +18,46 @@ class ContactController extends Controller
         }
 
         $data = $request->validated();
+
+        // Spam defenses, consistent with the sign/register flows: CAPTCHA
+        // (no-op when Turnstile is disabled by the admin), keyword filter,
+        // and per-IP rate limit. The contact form previously had none,
+        // leaving it an unauthenticated mail-relay / spam vector.
+        if (! Spam::verifyTurnstile($request->input('cf-turnstile-response'))) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => __('sign.captcha_failed')], 422);
+            }
+
+            toast(__('sign.captcha_failed'), 'error');
+
+            return back()->withInput();
+        }
+
+        $spamText = implode(' ', [$data['name'], $data['text']]);
+
+        if (Spam::isSpam($spamText)) {
+            Spam::log('contact', json_encode($data));
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Suspicious activity detected.'], 422);
+            }
+
+            toast('Suspicious activity detected.', 'error');
+
+            return back()->withInput();
+        }
+
+        if (Spam::rateLimit('contact')) {
+            Spam::log('contact', 'Rate limit exceeded');
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Too many messages. Please try again later.'], 429);
+            }
+
+            toast('Too many messages. Please try again later.', 'error');
+
+            return back()->withInput();
+        }
 
         $adminEmail = Settings::get('email_to_staff', '', 'global') ?: config('mail.from.address');
         $subject = Settings::get('email_contact_subject', '', 'global') ?: null;

@@ -157,7 +157,7 @@ class LegacyWordRedirect
             'topics', 'results' => $this->redirectWithQuery($request, "/$locale/petitions"),
             'recover' => $this->redirectWithQuery($request, "/$locale/forgot-password"),
 
-            'download' => abort(404),
+            'download' => $this->download($request, $locale, $tail),
             default => abort(404),
         };
     }
@@ -245,6 +245,19 @@ class LegacyWordRedirect
         $rest = implode('/', $tail);
 
         return $this->redirectWithQuery($request, "/$locale/user".($rest !== '' ? "/$rest" : ''));
+    }
+
+    private function download(Request $request, string $locale, array $tail): RedirectResponse
+    {
+        // Legacy: /<locale>/download-signatures/<slug>/<id> (default mode txt).
+        // Map to the canonical authenticated export route; auth + owner/admin
+        // checks are enforced there.
+        $slug = $tail[0] ?? null;
+        $id = $tail[1] ?? null;
+
+        abort_unless($slug !== null && $id !== null && ctype_digit((string) $id), 404);
+
+        return $this->redirectWithQuery($request, "/$locale/petition/{$slug}/{$id}/download/txt");
     }
 
     private function search(Request $request, string $locale, array $tail)

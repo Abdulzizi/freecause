@@ -292,6 +292,7 @@ Route::prefix('{locale}')
             Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update');
             Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])->name('petition.download.txt');
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
+            Route::get('/petition/{slug}/{id}/download/csv', [PetitionController::class, 'downloadCsv'])->name('petition.download.csv');
         });
 
         Route::get('/faqs', fn (string $locale) => app(PageController::class)->showFixed($locale, 'faqs'))

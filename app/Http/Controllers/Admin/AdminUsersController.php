@@ -488,6 +488,7 @@ class AdminUsersController extends Controller
             'ban' => $this->bulkBan(app(AdminUserBanRequest::class)),
             'unban' => $this->bulkUnban($request),
             'delete' => $this->bulkDelete($request),
+            default => response()->json(['ok' => false, 'error' => 'Unknown action'], 400),
         };
     }
 
