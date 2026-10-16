@@ -14,6 +14,15 @@
 
 @section('content')
 
+    {{-- Ads: leaderboard (desktop) --}}
+    <div class="text-center mb-4 hidden lg:block">
+        <x-ads.slot name="leaderboard" />
+    </div>
+    {{-- Ads: mobile banner --}}
+    <div class="mb-4 text-center lg:hidden">
+        <x-ads.slot name="mobile" />
+    </div>
+
     <section id="welcomes" class="bg-band fc-section fc-hero max-md:py-8">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 items-center justify-center">
@@ -330,6 +339,11 @@
         </x-ui.container>
     </section>
     @endif
+
+    {{-- Ads: native --}}
+    <div class="my-6">
+        <x-ads.slot name="native" />
+    </div>
 @endsection
 
 @push('head')

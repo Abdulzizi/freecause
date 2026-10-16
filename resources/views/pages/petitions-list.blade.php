@@ -6,6 +6,15 @@
     <section class="fc-section">
         <x-ui.container>
 
+            {{-- Ads: leaderboard (desktop) --}}
+            <div class="text-center mb-4 hidden lg:block">
+                <x-ads.slot name="leaderboard" />
+            </div>
+            {{-- Ads: mobile banner --}}
+            <div class="mb-4 text-center lg:hidden">
+                <x-ads.slot name="mobile" />
+            </div>
+
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb text-sm mb-0">
                     <li class="breadcrumb-item">
@@ -183,6 +192,11 @@
                 </div>
 
                 @include('partials.pagination', ['paginator' => $petitions])
+
+                {{-- Ads: banner468 (tablet+) --}}
+                <div class="text-center mb-4 hidden md:block">
+                    <x-ads.slot name="banner468" />
+                </div>
             </div>
 
             <x-ad-unit placement="listing_inline" class="mt-6" />
