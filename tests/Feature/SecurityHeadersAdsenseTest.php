@@ -69,6 +69,7 @@ class SecurityHeadersAdsenseTest extends TestCase
 
         $this->assertStringContainsString('https://bicea.org', $csp);
         $this->assertStringContainsString("script-src 'self'", $csp);
+        $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
     }
 
     public function test_ad_slot_config_endpoint_serves_atoptions_javascript(): void
