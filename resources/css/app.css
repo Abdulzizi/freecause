@@ -1530,12 +1530,22 @@ select.fc-filter-field {
 
     .fcui-breadcrumb ol {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         gap: 0.375rem;
         margin: 0;
         padding: 0;
         list-style: none;
+    }
+
+    .fcui-breadcrumb li {
+        white-space: nowrap;
+    }
+
+    .fcui-breadcrumb li:last-child {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .fcui-breadcrumb a {
