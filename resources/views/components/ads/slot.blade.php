@@ -24,7 +24,7 @@
          ads at the page bottom --}}
     <div {{ $attributes->merge(['class' => "fc-ad fc-ad--{$name}"]) }}
          data-ad-id="{{ $key }}"
-         style="min-height: {{ $h }}px; max-width: {{ $w }}px; margin-inline: auto; overflow: hidden;">
+         style="min-height: {{ $h }}px; max-width: {{ $w }}px; margin-inline: auto;">
         @if ($hasKey)
             @if ($fmt === 'native')
                 {{-- native: script must come BEFORE the container div so it finds #container-{key} in DOM --}}
