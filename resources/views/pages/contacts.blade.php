@@ -4,6 +4,15 @@
 @section('body_class', 'contacts')
 
 @section('content')
+    {{-- ad: leaderboard, desktop only --}}
+    <div class="mb-4 text-center hidden lg:block">
+        <x-ads.slot name="leaderboard" />
+    </div>
+    {{-- ad: mobile banner, mobile only --}}
+    <div class="mb-4 text-center lg:hidden">
+        <x-ads.slot name="mobile" />
+    </div>
+
     <x-ui.page-head :band="true" :title="__('contacts.title')" :breadcrumb="[
         ['label' => 'Home', 'url' => lroute('home')],
         ['label' => __('contacts.title')],

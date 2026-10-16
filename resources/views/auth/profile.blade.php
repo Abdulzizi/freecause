@@ -33,6 +33,15 @@
         };
     @endphp
 
+    {{-- ad: leaderboard, desktop only --}}
+    <div class="mb-4 text-center hidden lg:block">
+        <x-ads.slot name="leaderboard" />
+    </div>
+    {{-- ad: mobile banner, mobile only --}}
+    <div class="mb-4 text-center lg:hidden">
+        <x-ads.slot name="mobile" />
+    </div>
+
     <section class="fc-section bg-band">
         <div class="mx-auto max-w-5xl px-4">
             @if ($mustComplete)
