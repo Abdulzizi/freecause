@@ -18,19 +18,20 @@
         $path = $cfg['path'] ?? '22';
     @endphp
 
-    {{-- reserved box: min-height = banner height so no layout shift while the ad loads --}}
+    {{-- reserved box: min-height = banner height so no layout shift while the ad loads.
+         Scripts render INLINE inside the box: the iframe loader document.writes the
+         banner at its own DOM position, so end-of-body placement would stack all
+         ads at the page bottom --}}
     <div {{ $attributes->merge(['class' => "fc-ad fc-ad--{$name}"]) }}
          data-ad-id="{{ $key }}"
          style="min-height: {{ $h }}px; max-width: {{ $w }}px; margin-inline: auto;">
-        @if ($hasKey && $fmt === 'native')
+        @if ($fmt === 'native')
             <div id="container-{{ $key }}"></div>
         @endif
-    </div>
 
-    @if ($hasKey)
-        @push('scripts')
+        @if ($hasKey)
             @if ($fmt === 'native')
-                {{-- native: async loader + its own container (rendered above) --}}
+                {{-- native: async loader targets its container div above --}}
                 <script async data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
             @else
                 {{-- iframe banner: atOptions from same-origin config script (CSP script-src 'self'),
@@ -38,6 +39,6 @@
                 <script src="{{ route('ads.config', ['slot' => $name]) }}"></script>
                 <script src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
             @endif
-        @endpush
-    @endif
+        @endif
+    </div>
 @endif
