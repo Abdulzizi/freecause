@@ -221,11 +221,15 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            $port = match ($encryption) {
-                'tls' => 587,
-                'ssl' => 465,
-                default => 25,
-            };
+            // use explicit setting, then env, then derive from encryption
+            $settingsPort = (int) Settings::get('smtp_port', 0);
+            $port = $settingsPort > 0
+                ? $settingsPort
+                : match ($encryption) {
+                    'tls' => 587,
+                    'ssl' => 465,
+                    default => (int) env('MAIL_PORT', 587),
+                };
 
             Config::set('mail.default', 'smtp');
             Config::set('mail.mailers.smtp.host', $host);
