@@ -25,14 +25,11 @@
     <div {{ $attributes->merge(['class' => "fc-ad fc-ad--{$name}"]) }}
          data-ad-id="{{ $key }}"
          style="min-height: {{ $h }}px; max-width: {{ $w }}px; margin-inline: auto; overflow: hidden;">
-        @if ($fmt === 'native')
-            <div id="container-{{ $key }}"></div>
-        @endif
-
         @if ($hasKey)
             @if ($fmt === 'native')
-                {{-- native: async loader targets its container div above --}}
+                {{-- native: script must come BEFORE the container div so it finds #container-{key} in DOM --}}
                 <script async data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
+                <div id="container-{{ $key }}"></div>
             @else
                 {{-- iframe banner: atOptions from same-origin config script (CSP script-src 'self'),
                      loaded synchronously so it completes before the network loader below --}}
