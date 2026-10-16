@@ -491,7 +491,7 @@
                         </div>
 
                         {{-- ad: 160x300 skyscraper, sidebar after signatures before info box, sticky, desktop only --}}
-                        <div class="hidden lg:block mb-6" style="position: sticky; top: 80px;">
+                        <div class="hidden lg:block mb-6 z-sticky" style="position: sticky; top: 80px;">
                             <x-ads.slot name="skyscraper" class="text-center" />
                         </div>
 
