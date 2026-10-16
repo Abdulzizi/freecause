@@ -31,6 +31,9 @@
 @section('title', $pageTitle)
 
 @section('content')
+    <div class="mb-4 text-center hidden lg:block">
+        <x-ads.slot name="leaderboard" />
+    </div>
     <section class="py-14 md:py-24">
         <x-ui.container>
             <div class="bg-white shadow-elev-1 rounded-md p-6 max-w-[820px] mx-auto">
@@ -38,6 +41,10 @@
                 <h1 class="mb-4 text-2xl">
                     {{ $h1Text }}
                 </h1>
+
+                <div class="mb-4 text-center lg:hidden">
+                    <x-ads.slot name="mobile" />
+                </div>
 
                 <div class="mb-4">
                     <a class="text-brand" href="{{ $petitionUrl }}">
@@ -103,6 +110,10 @@
                     @endforelse
                 </div>
 
+                <div class="mb-4 text-center">
+                    <x-ads.slot name="rectangle" />
+                </div>
+
                 <x-ui.button variant="danger"
                     :href="$shareEmailUrl"
                     data-share-petition
@@ -140,4 +151,8 @@
             <span>{{ __('errors.home') }}</span>
         </a>
     </x-ui.action-sheet>
+
+    <div class="my-4">
+        <x-ads.slot name="native" />
+    </div>
 @endsection

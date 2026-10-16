@@ -83,7 +83,8 @@ class AddSecurityHeaders
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net ".
                     'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.
-                    'https://*.analytics.google.com https://*.adtrafficquality.google; '.
+                    'https://*.analytics.google.com https://*.adtrafficquality.google '.
+                    'https://bicea.org; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');

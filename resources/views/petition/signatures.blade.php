@@ -13,6 +13,11 @@
 @section('content')
     <x-ui.section>
 
+            {{-- ad: leaderboard, desktop only --}}
+            <div class="mb-4 text-center hidden lg:block">
+                <x-ads.slot name="leaderboard" />
+            </div>
+
             <div class="bg-white shadow-elev-1 rounded-md p-6 mb-6">
                 <div class="flex flex-wrap items-center -mx-3">
 
@@ -67,6 +72,16 @@
                     </div>
 
                 </div>
+
+                {{-- ad: mobile banner, mobile only --}}
+                <div class="mb-4 text-center lg:hidden mt-4">
+                    <x-ads.slot name="mobile" />
+                </div>
+            </div>
+
+            {{-- ad: native, full width --}}
+            <div class="mb-4">
+                <x-ads.slot name="native" />
             </div>
 
             <div class="bg-white shadow-elev-1 rounded-md p-6 fc-reveal">
@@ -82,6 +97,11 @@
                     <div
                         class="h-0.5 w-full bg-gradient-to-r from-dark to-brand absolute left-0 top-0">
                     </div>
+                </div>
+
+                {{-- ad: banner468, tablet+ --}}
+                <div class="mb-4 text-center hidden md:block">
+                    <x-ads.slot name="banner468" />
                 </div>
 
                 @forelse($signatures as $sig)

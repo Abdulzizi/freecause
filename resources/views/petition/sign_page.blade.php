@@ -19,6 +19,9 @@
 @endpush
 
 @section('content')
+    <div class="mb-4 text-center hidden lg:block">
+        <x-ads.slot name="leaderboard" />
+    </div>
     <x-ui.section>
             <div class="bg-white shadow-elev-1 rounded-md p-6 md:p-12 text-center max-w-[900px] mx-auto">
 
@@ -26,6 +29,10 @@
                     {{ $h2Line1 }}<br>
                     {{ $h2Line2 }}
                 </h1>
+
+                <div class="mb-4 text-center lg:hidden">
+                    <x-ads.slot name="mobile" />
+                </div>
 
                 @if (auth()->check() || ! empty($signData))
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block w-full md:w-auto">
@@ -67,4 +74,8 @@
                 @endif
             </div>
         </x-ui.section>
+
+    <div class="mb-4 text-center">
+        <x-ads.slot name="rectangle" />
+    </div>
 @endsection
