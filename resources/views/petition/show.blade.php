@@ -130,28 +130,9 @@
                         {{ $petitionTitle }}
                     </h1>
 
-                    <div class="flex items-center gap-2">
-                        @if ($canReport)
-                            <button type="button" class="fcui-icon-btn" data-sheet-open="reportSheet" aria-haspopup="dialog" aria-label="Report" title="Report">
-                                <x-lucide-flag aria-hidden="true" />
-                            </button>
-                        @else
-                            <a class="fcui-icon-btn" href="{{ $contactsUrl }}" aria-label="Report" title="Report">
-                                <x-lucide-flag aria-hidden="true" />
-                            </a>
-                        @endif
-
-                        <button type="button" class="fcui-icon-btn md:hidden" data-sheet-open="petitionShare" aria-haspopup="dialog" aria-label="{{ __('show.share') }}">
-                            <x-lucide-share-2 aria-hidden="true" />
-                        </button>
-
-                        @if (!$hasSigned)
-                            <x-ui.button variant="danger" href="{{ $signTarget }}" data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">{{ $btnSignNow }}</x-ui.button>
-                        @endif
-                    </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 mb-4">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
                     @if ($petition->is_active)
                         <x-ui.badge variant="success">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0">
@@ -172,6 +153,26 @@
                         <x-ui.badge variant="neutral">
                             {{ $petition->category->name }}
                         </x-ui.badge>
+                    @endif
+                </div>
+
+                <div class="flex items-center gap-2 mb-4">
+                    @if ($canReport)
+                        <button type="button" class="fcui-icon-btn" data-sheet-open="reportSheet" aria-haspopup="dialog" aria-label="Report" title="Report">
+                            <x-lucide-flag aria-hidden="true" />
+                        </button>
+                    @else
+                        <a class="fcui-icon-btn" href="{{ $contactsUrl }}" aria-label="Report" title="Report">
+                            <x-lucide-flag aria-hidden="true" />
+                        </a>
+                    @endif
+
+                    <button type="button" class="fcui-icon-btn md:hidden" data-sheet-open="petitionShare" aria-haspopup="dialog" aria-label="{{ __('show.share') }}">
+                        <x-lucide-share-2 aria-hidden="true" />
+                    </button>
+
+                    @if (!$hasSigned)
+                        <x-ui.button variant="danger" href="{{ $signTarget }}" data-sign-cta data-cached="{{ $stateless ? '1' : '0' }}">{{ $btnSignNow }}</x-ui.button>
                     @endif
                 </div>
 
