@@ -74,13 +74,6 @@ class MonitorQueue extends Command
             }
         }
 
-        $supervisorStatus = $this->checkSupervisor();
-        if (! $supervisorStatus['healthy']) {
-            $msg = "Supervisor workers unhealthy: {$supervisorStatus['details']}";
-            $alerts[] = $msg;
-            $this->error($msg);
-        }
-
         if (! empty($alerts) && $this->option('alert-email')) {
             $this->sendAlert($this->option('alert-email'), $alerts);
         }
@@ -92,41 +85,6 @@ class MonitorQueue extends Command
         ]);
 
         return empty($alerts) ? 0 : 1;
-    }
-
-    private function checkSupervisor(): array
-    {
-        try {
-            $output = [];
-            exec('supervisorctl status freecause-release-queue:* 2>&1', $output, $exitCode);
-
-            $running = 0;
-            $total = 0;
-            $details = [];
-
-            foreach ($output as $line) {
-                if (trim($line) === '') {
-                    continue;
-                }
-                $total++;
-                if (str_contains($line, 'RUNNING')) {
-                    $running++;
-                } else {
-                    $parts = preg_split('/\s+/', trim($line));
-                    $details[] = $parts[0] ?? 'unknown'.': '.($parts[1] ?? 'unknown');
-                }
-            }
-
-            return [
-                'healthy' => $running === $total && $total > 0,
-                'details' => empty($details) ? "{$running}/{$total} running" : implode(', ', $details),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'healthy' => false,
-                'details' => $e->getMessage(),
-            ];
-        }
     }
 
     private function sendAlert(string $email, array $alerts): void
