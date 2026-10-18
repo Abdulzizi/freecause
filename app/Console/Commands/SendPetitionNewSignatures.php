@@ -28,11 +28,13 @@ class SendPetitionNewSignatures extends Command
             ->selectRaw('petition_id, COUNT(*) as total')
             ->pluck('total', 'petition_id');
 
+        $petitions = Petition::with('user')->whereIn('id', $counts->keys())->get()->keyBy('id');
+
         $sent = 0;
         $skipped = 0;
 
         foreach ($counts as $petitionId => $total) {
-            $petition = Petition::with('user')->find($petitionId);
+            $petition = $petitions->get($petitionId);
             $owner = $petition?->user;
 
             if (! $owner || ! $owner->wantsNewSignatureEmails()) {
