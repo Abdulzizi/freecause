@@ -291,16 +291,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="block mb-1 text-sm font-medium text-ink">{{ __('form.country') }}</label>
-                                <select name="country" id="fc-country" class="form-control max-md:min-h-12 w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand">
+                                <label class="block mb-1 text-sm font-medium text-ink" for="fc-country">{{ __('form.country') }}</label>
+                                <select name="country" id="fc-country" class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand">
                                     <option value="">-- {{ __('form.country_select') }} --</option>
                                 </select>
                             </div>
 
                             <div class="mb-6">
-                                <label class="block mb-1 text-sm font-medium text-ink">{{ __('form.city') }}</label>
+                                <label class="block mb-1 text-sm font-medium text-ink" for="fc-city">{{ __('form.city') }}</label>
                                 <input type="text" name="city" id="fc-city" value="{{ $oldCity }}"
-                                    class="form-control max-md:min-h-12 w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                                    class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                                     autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" />
                                 <datalist id="fc-city-list"></datalist>
                             </div>
