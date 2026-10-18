@@ -15,6 +15,7 @@
     $oldCommunity = old('community', $petition->community ?? '');
     $oldCommunityUrl = old('community_url', $petition->community_url ?? '');
     $oldCity = old('city', $petition->city ?? '');
+    $oldCountry = old('country', $petition->country ?? '');
     $activeAuthTab = old('auth_form') === 'register' ? 'register' : 'login';
 @endphp
 
@@ -289,8 +290,19 @@
                                 <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" class="max-md:min-h-12" />
                             </div>
 
+                            <div class="mb-3">
+                                <label class="block mb-1 text-sm font-medium text-ink">{{ __('form.country') }}</label>
+                                <select name="country" id="fc-country" class="form-control max-md:min-h-12 w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand">
+                                    <option value="">-- {{ __('form.country_select') }} --</option>
+                                </select>
+                            </div>
+
                             <div class="mb-6">
-                                <x-ui.input name="city" :label="__('form.city')" :value="$oldCity" class="max-md:min-h-12" />
+                                <label class="block mb-1 text-sm font-medium text-ink">{{ __('form.city') }}</label>
+                                <input type="text" name="city" id="fc-city" value="{{ $oldCity }}"
+                                    class="form-control max-md:min-h-12 w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                                    autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" />
+                                <datalist id="fc-city-list"></datalist>
                             </div>
 
                             <div class="text-center max-md:[&_.fcui-btn]:w-full">
@@ -316,4 +328,69 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" integrity="sha384-QUJ+ckWz1M+a7w0UfG1sEn4pPrbQwSxGm/1TIPyioqXBrwuT9l4f9gdHWLDLbVWI" crossorigin="anonymous"></script>
     <script src="{{ asset('legacy/js-v2/petition-create.js') }}"></script>
     <script src="{{ asset('legacy/js-v2/petition-autosave.js') }}"></script>
+@endpush
+
+@push('scripts')
+<script>
+(function () {
+    // country list: ISO 3166-1 alpha-2 + name, sorted by name
+    const COUNTRIES = [
+        ['AF','Afghanistan'],['AL','Albania'],['DZ','Algeria'],['AR','Argentina'],['AU','Australia'],
+        ['AT','Austria'],['BE','Belgium'],['BR','Brazil'],['BG','Bulgaria'],['CA','Canada'],
+        ['CL','Chile'],['CN','China'],['CO','Colombia'],['HR','Croatia'],['CZ','Czechia'],
+        ['DK','Denmark'],['EG','Egypt'],['EE','Estonia'],['FI','Finland'],['FR','France'],
+        ['DE','Germany'],['GR','Greece'],['HU','Hungary'],['IN','India'],['ID','Indonesia'],
+        ['IR','Iran'],['IE','Ireland'],['IL','Israel'],['IT','Italy'],['JP','Japan'],
+        ['JO','Jordan'],['KE','Kenya'],['LV','Latvia'],['LB','Lebanon'],['LT','Lithuania'],
+        ['LU','Luxembourg'],['MY','Malaysia'],['MX','Mexico'],['MA','Morocco'],['NL','Netherlands'],
+        ['NZ','New Zealand'],['NG','Nigeria'],['NO','Norway'],['PK','Pakistan'],['PE','Peru'],
+        ['PH','Philippines'],['PL','Poland'],['PT','Portugal'],['RO','Romania'],['RU','Russia'],
+        ['SA','Saudi Arabia'],['RS','Serbia'],['SK','Slovakia'],['SI','Slovenia'],['ZA','South Africa'],
+        ['ES','Spain'],['SE','Sweden'],['CH','Switzerland'],['TW','Taiwan'],['TH','Thailand'],
+        ['TN','Tunisia'],['TR','Turkey'],['UA','Ukraine'],['GB','United Kingdom'],['US','United States'],
+        ['UY','Uruguay'],['VE','Venezuela'],['VN','Vietnam'],
+    ].sort((a,b) => a[1].localeCompare(b[1]));
+
+    const sel = document.getElementById('fc-country');
+    const cityIn = document.getElementById('fc-city');
+    const cityList = document.getElementById('fc-city-list');
+    const preselect = {{ json_encode($oldCountry) }};
+
+    COUNTRIES.forEach(([code, name]) => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = name;
+        if (code === preselect) opt.selected = true;
+        sel.appendChild(opt);
+    });
+
+    let cityTimer = null;
+    cityIn.addEventListener('input', function () {
+        const q = this.value.trim();
+        const cc = sel.value;
+        clearTimeout(cityTimer);
+        if (q.length < 2) { cityList.innerHTML = ''; return; }
+        cityTimer = setTimeout(() => {
+            const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=6&featuretype=city&addressdetails=0'
+                + (cc ? '&countrycodes=' + cc : '')
+                + '&q=' + encodeURIComponent(q);
+            fetch(url, { headers: { 'Accept-Language': document.documentElement.lang || 'en' } })
+                .then(r => r.json())
+                .then(data => {
+                    cityList.innerHTML = '';
+                    const seen = new Set();
+                    data.forEach(item => {
+                        const label = item.display_name.split(',')[0].trim();
+                        if (seen.has(label)) return;
+                        seen.add(label);
+                        const o = document.createElement('option');
+                        o.value = label;
+                        cityList.appendChild(o);
+                    });
+                })
+                .catch(() => {});
+        }, 300);
+    });
+})();
+</script>
 @endpush

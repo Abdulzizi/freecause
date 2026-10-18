@@ -1008,7 +1008,7 @@ class PetitionTest extends TestCase
 
         $this->assertDatabaseHas('petitions', [
             'user_id' => $this->user->id,
-            'status' => 'draft',
+            'status' => 'published',
         ]);
     }
 
