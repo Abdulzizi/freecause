@@ -17,6 +17,7 @@ class Petition extends Model
         'target',
         'tags',
         'city',
+        'country',
         'community',
         'community_url',
         'youtube_url',

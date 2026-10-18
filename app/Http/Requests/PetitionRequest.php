@@ -48,6 +48,7 @@ class PetitionRequest extends FormRequest
             'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
+            'country' => ['nullable', 'string', 'size:2'],
         ] + ($creating
             ? ['goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000']]
             : ['remove_image' => ['nullable', 'boolean']]);

@@ -113,6 +113,15 @@ class LegacyWordRedirect
             return $next($request);
         }
 
+        // WordPress legacy paths -> magazine
+        $path = '/'.$request->path();
+        if (preg_match('#^/(?:category|tag)/[^/]#', $path) ||
+            preg_match('#^/page/\\d#', $path) ||
+            preg_match('#^/\\d{4}/\\d{2}/#', $path) ||
+            preg_match('#^/feed/?$#', $path)) {
+            return redirect('/magazine/', 301);
+        }
+
         $segments = array_values(array_filter(explode('/', $request->path()), static fn ($s) => $s !== ''));
         $first = $segments[0] ?? null;
         if ($first === null) {

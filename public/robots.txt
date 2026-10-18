@@ -9,6 +9,11 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: */download/pdf
 Disallow: */download/txt
+Disallow: /widgets/
+Disallow: /widget-render/
+Disallow: /oauth/
+Disallow: /*?status=
+Disallow: /*?view=pages
 Crawl-delay: 2
 
 Sitemap: https://www.freecause.com/sitemap.xml

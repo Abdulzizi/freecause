@@ -33,7 +33,8 @@
             ($homeMeta['head_additional_html'] ??
             ($globalMetaDefault['head_additional_html'] ??
             ($homeMetaDefault['head_additional_html'] ?? '')));
-        $canonicalPageUrl = canonical_url().(request()->getQueryString() ? '?'.request()->getQueryString() : '');
+        $_canonicalParams = array_diff_key(request()->query(), array_flip(['status', 'view', 'page']));
+        $canonicalPageUrl = canonical_url().($_canonicalParams !== [] ? '?'.http_build_query($_canonicalParams) : '');
 
         $ogTitle = trim((string) $__env->getSection('og_title', $__env->getSection('title', 'FreeCause')));
         $ogDescription = trim((string) $__env->getSection('og_description', strip_tags($metaDescription)));
@@ -63,6 +64,10 @@
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
     <link rel="canonical" href="{{ $canonicalPageUrl }}">
+
+    @if (request()->is('*/widgets/*', '*/widget-render/*', '*/oauth/*', '*/user/*') || request()->has('status') || request()->query('view') === 'pages')
+        <meta name="robots" content="noindex, follow">
+    @endif
 
     <meta property="og:site_name" content="FreeCause">
     <meta property="og:type" content="{{ $ogType }}">

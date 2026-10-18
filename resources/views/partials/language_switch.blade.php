@@ -7,10 +7,12 @@
 @endphp
 
 <details class="relative group">
-    <summary class="list-none cursor-pointer p-0 border-0 bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-full">
+    <summary class="list-none cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-full border border-border bg-white hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
         @if ($current?->flag)
-            <img class="block w-8 h-8 rounded-full" src="{{ asset($current->flag) }}" alt="{{ $current->name }}">
+            <img class="block w-5 h-5 rounded-full" src="{{ asset($current->flag) }}" alt="">
         @endif
+        <span class="text-xs font-medium text-ink">{{ strtoupper($current->code ?? '') }}</span>
+        <x-lucide-chevron-down class="size-3 text-muted" aria-hidden="true" />
     </summary>
 
     <div class="absolute end-0 top-full mt-2 w-max min-w-[12rem] rounded-lg shadow-elev-2 bg-surface border border-border z-sticky">

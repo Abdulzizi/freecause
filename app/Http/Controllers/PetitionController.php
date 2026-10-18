@@ -483,12 +483,14 @@ class PetitionController extends Controller
 
                 $petition = new Petition;
                 $petition->user_id = auth()->id();
-                $petition->status = 'draft';
+                $petition->status = 'published';
+                $petition->is_active = 1;
                 $petition->goal_signatures = $data['goal_signatures'];
                 $petition->category_id = $data['category_id'];
                 $petition->target = $data['target'] ?? null;
                 $petition->tags = $tags;
                 $petition->city = $data['city'] ?? null;
+                $petition->country = $data['country'] ?? null;
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
                 $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
@@ -827,6 +829,7 @@ class PetitionController extends Controller
                 $petition->tags = $tags;
                 $petition->city = $data['city'] ?? null;
                 $petition->community = $data['community'] ?? null;
+                $petition->country = $data['country'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
 
                 $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);

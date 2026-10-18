@@ -14,7 +14,7 @@ class CanonicalHost
         $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
 
         $host = strtolower($request->getHost());
-        $isPublicDomain = in_array($host, ['freecause.com', 'www.freecause.com'], true);
+        $isPublicDomain = in_array($host, ['freecause.com', 'www.freecause.com', 'client.freecause.com', 'www.client.freecause.com'], true);
 
         if ($isPublicDomain && $host !== $canonicalHost) {
             $target = rtrim($canonicalUrl, '/').'/'.ltrim($request->path(), '/');

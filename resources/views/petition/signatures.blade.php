@@ -111,7 +111,11 @@
                         </div>
                         <div class="grow">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <strong class="text-sm">{{ $sig->display_name ?? __('sig.anonymous') }}</strong>
+                                @if ($sig->user_id)
+                                    <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($sig->user->name ?? 'user') ?: 'user', 'id' => $sig->user_id]) }}" class="text-sm fw-bold">{{ $sig->display_name ?? __('sig.anonymous') }}</a>
+                                @else
+                                    <strong class="text-sm">{{ $sig->display_name ?? __('sig.anonymous') }}</strong>
+                                @endif
                                 @if ($sig->user?->city)
                                     <span class="text-muted text-sm">
                                         · {{ $sig->user->city }}
