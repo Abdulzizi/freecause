@@ -38,7 +38,7 @@ class PetitionDigestTest extends TestCase
 
         Mail::fake();
 
-        Artisan::call('emails:petition-digest');
+        Artisan::call('petition:send-digest');
 
         Mail::assertQueued(PetitionDigestMail::class);
 
@@ -72,7 +72,7 @@ class PetitionDigestTest extends TestCase
 
         Mail::fake();
 
-        Artisan::call('emails:petition-digest');
+        Artisan::call('petition:send-digest');
 
         Mail::assertNothingQueued();
     }
@@ -90,7 +90,7 @@ class PetitionDigestTest extends TestCase
 
         Mail::fake();
 
-        Artisan::call('emails:petition-digest');
+        Artisan::call('petition:send-digest');
 
         Mail::assertNothingQueued();
     }
@@ -106,7 +106,7 @@ class PetitionDigestTest extends TestCase
 
         Mail::fake();
 
-        Artisan::call('emails:petition-digest');
+        Artisan::call('petition:send-digest');
 
         Mail::assertNothingQueued();
     }

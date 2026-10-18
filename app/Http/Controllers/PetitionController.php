@@ -93,6 +93,13 @@ class PetitionController extends Controller
 
     private function storeCoverImage(UploadedFile $file): string
     {
+        $size = @getimagesize($file->getPathname());
+        if ($size !== false && max($size[0], $size[1]) > 2000) {
+            throw ValidationException::withMessages([
+                'image' => 'The image must not exceed 2000 pixels on its longest side.',
+            ]);
+        }
+
         $path = $file->store('petitions', 'public');
         $absolute = Storage::disk('public')->path($path);
 
@@ -159,11 +166,19 @@ class PetitionController extends Controller
             ->where('petitions.is_active', 1);
 
         if ($search !== '') {
-            $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
-            $query->where(function ($q) use ($like) {
-                $q->where('pt_locale.title', 'LIKE', $like)
-                    ->orWhere('pt_default.title', 'LIKE', $like);
-            });
+            $driver = DB::connection()->getDriverName();
+            if (in_array($driver, ['mysql', 'mariadb'], true)) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$search])
+                        ->orWhereRaw('MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)', [$search]);
+                });
+            } else {
+                $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('pt_locale.title', 'LIKE', $like)
+                        ->orWhere('pt_default.title', 'LIKE', $like);
+                });
+            }
             $query->orderByDesc('petitions.signature_count');
             $petitions = $query->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
@@ -433,6 +448,19 @@ class PetitionController extends Controller
         return PetitionSigning::signAsGuest($request, $petition, $locale);
     }
 
+    public function shoutboxStore(Request $request, string $locale, string $slug, int $id): RedirectResponse
+    {
+        $petition = Petition::query()->where('id', $id)->where('status', 'published')->where('is_active', 1)->firstOrFail();
+        $data = $request->validate(['comment' => ['required', 'string', 'max:500']]);
+        $u = $request->user();
+        Signature::create(['petition_id' => $petition->id, 'user_id' => $u->id, 'name' => $u->display_name, 'email' => $u->email, 'locale' => $locale, 'text' => $data['comment'], 'confirmed' => true, 'ip_address' => $request->ip()]);
+        toast('Comment posted!', 'success');
+        $tr = $petition->translationOrFallback($locale);
+        abort_if(! $tr, 404);
+
+        return redirect()->to(route('petition.show', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id]).'#petition-comments');
+    }
+
     public function create(string $locale)
     {
         $defaultLocale = default_locale();
@@ -540,8 +568,7 @@ class PetitionController extends Controller
                     'locale' => $locale,
                     'slug' => $slug,
                     'id' => $petition->id,
-                    'status' => 'created',
-                ]);
+                ])->with('petition_mode', 'created');
             });
         } catch (\Throwable $e) {
             if ($newCoverImage) {
@@ -553,7 +580,7 @@ class PetitionController extends Controller
         }
     }
 
-    public function thanks(Request $request, string $locale, string $slug, int $id, $status = 0)
+    public function thanks(Request $request, string $locale, string $slug, int $id)
     {
         $requestedLocale = normalize_locale($locale);
         $defaultLocale = default_locale();
@@ -564,21 +591,21 @@ class PetitionController extends Controller
 
         abort_if(! $tr, 404);
 
+        $mode = $request->session()->get('petition_mode', 'signed');
+        $verified = $request->session()->get('petition_verified', true);
+
         if ($tr->slug !== $slug || $tr->locale !== $requestedLocale) {
             return redirect()->route('petition.thanks', [
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => $status,
-            ]);
+            ])->with('petition_mode', $mode)->with('petition_verified', $verified);
         }
 
         $locale = $tr->locale;
         App::setLocale($locale);
         URL::defaults(['locale' => $locale]);
         $request->session()->put('locale', $locale);
-
-        $mode = ((string) $status === 'created') ? 'created' : 'signed';
 
         $suggestions = Petition::query()
             ->select([
@@ -612,16 +639,30 @@ class PetitionController extends Controller
             $canClaim = $claimUser && ! filled($claimUser->password);
         }
 
+        $count = (int) ($petition->signature_count ?? 0);
+        $ladder = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+        $nextMilestone = null;
+        foreach ($ladder as $m) {
+            if ($m > $count) {
+                $nextMilestone = $m;
+                break;
+            }
+        }
+        $nextMilestone ??= end($ladder);
+        $shareUrl = lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]);
+
         return view('petition.thanks', compact(
             'petition',
             'suggestions',
             'locale',
             'mode',
-            'status',
+            'verified',
             'tr',
             'content',
             'claim',
-            'canClaim'
+            'canClaim',
+            'nextMilestone',
+            'shareUrl'
         ));
     }
 

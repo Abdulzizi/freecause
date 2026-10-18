@@ -61,6 +61,26 @@ export function init(ctx) {
         window.requestAnimationFrame(step);
     });
 
+    document.querySelectorAll('[data-progress]').forEach(function (el) {
+        if (el.dataset.fcProgress === '1') return;
+        el.dataset.fcProgress = '1';
+        const pct = parseFloat(el.dataset.pct || '0');
+        if (prefersReducedMotion) return;
+        el.style.width = '0%';
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+                el.style.width = pct + '%';
+            });
+        });
+    });
+    window.addEventListener('pageshow', function (e) {
+        if (!e.persisted) return;
+        document.querySelectorAll('[data-progress]').forEach(function (el) {
+            el.style.transition = 'none';
+            el.style.width = (parseFloat(el.dataset.pct || '0')) + '%';
+        });
+    });
+
     document.querySelectorAll('img[data-blurup]').forEach(function (img) {
         const markLoaded = function () {
             img.classList.add('is-loaded');

@@ -5,6 +5,8 @@ return [
     'lead' => 'Choose which emails FreeCause sends you. Account emails are always delivered.',
     'milestones_title' => 'Petition milestones',
     'milestones_help' => 'When a petition you created reaches 100, 1,000, 10,000 or 100,000 signatures.',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
     'product_title' => 'Product news',
     'product_help' => 'Occasional updates about new FreeCause features and campaigns.',
     'transactional_note' => 'Verification, password reset and account emails are transactional, so they are always sent while your account is active.',

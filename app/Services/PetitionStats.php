@@ -87,7 +87,7 @@ class PetitionStats
             // Notify for the highest milestone crossed (one email per transition).
             $milestone = max($crossed);
 
-            Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $milestone));
+            DB::afterCommit(fn () => Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $milestone)));
 
             AppLog::info(
                 'Milestone email queued',

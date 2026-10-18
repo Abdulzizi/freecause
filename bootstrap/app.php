@@ -11,6 +11,7 @@ use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\ConditionalLogging;
 use App\Http\Middleware\DebugForIp;
 use App\Http\Middleware\EdgeCacheHeaders;
+use App\Http\Middleware\EnsureProfileComplete;
 use App\Http\Middleware\LegacyWordRedirect;
 use App\Http\Middleware\NoCacheHeaders;
 use App\Http\Middleware\OptionalSession;
@@ -48,7 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => CheckPermission::class,
             'no.cache' => NoCacheHeaders::class,
             'optional.session' => OptionalSession::class,
-            'profile.complete' => \App\Http\Middleware\EnsureProfileComplete::class,
+            'profile.complete' => EnsureProfileComplete::class,
         ]);
 
         $middleware->preventRequestsDuringMaintenance([
@@ -85,8 +86,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 429);
             }
 
-            return back()->withErrors([
-                'email' => 'Too many attempts. Please try again in a minute.',
-            ]);
+            toast('Too many attempts. Please slow down and try again in a minute.', 'warning');
+
+            return back()->withErrors(['email' => 'Too many attempts. Please try again in a minute.']);
         });
     })->create();

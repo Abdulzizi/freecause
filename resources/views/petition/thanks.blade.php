@@ -2,7 +2,7 @@
 
 @php
     $isCreated = ($mode ?? 'signed') === 'created';
-    $requiresVerification = ! $isCreated && (string) ($status ?? '0') === '0';
+    $requiresVerification = ! $isCreated && ! ($verified ?? true);
 
     $pageTitle = $isCreated
         ? __('thanks.title_created')
@@ -89,6 +89,22 @@
                     {{ $suggestionsTitle }}
                 </h2>
 
+                @if (($mode ?? 'signed') === 'signed')
+                    <div class="mb-8 rounded-sm border border-border bg-surface-2 p-4">
+                        <h2 class="mb-3 text-lg">Help {{ $tr->title ?? '' }} reach {{ number_format($nextMilestone ?? 50) }}</h2>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl ?? $petitionUrl) }}"
+                               target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-facebook text-white">Facebook</a>
+                            <a href="https://twitter.com/intent/tweet?url={{ urlencode($shareUrl ?? $petitionUrl) }}&text={{ urlencode($petitionTitle) }}"
+                               target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-dark text-on-dark">X</a>
+                            <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.($shareUrl ?? $petitionUrl)) }}"
+                               target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-white">WhatsApp</a>
+                        </div>
+                    </div>
+                @endif
                 <div class="mb-8">
                     @forelse($suggestions as $p)
                         @php

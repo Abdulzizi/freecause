@@ -519,6 +519,10 @@ class AuthController extends Controller
                 $intended = self::profileCompletionTarget($locale, $intended);
             }
 
+            if (! $user->hasCompleteProfile()) {
+                $request->session()->flash('profile_completion', __('profile.complete_required'));
+            }
+
             return redirect()->to($intended ?: "/{$locale}");
         }
 

@@ -34,18 +34,21 @@ class PreferencesController extends Controller
 
         $request->validate([
             'notify_milestones' => ['nullable', 'boolean'],
+            'notify_new_signatures' => ['nullable', 'boolean'],
             'notify_product' => ['nullable', 'boolean'],
             'unsubscribe_all' => ['nullable', 'boolean'],
         ]);
 
         if ($request->boolean('unsubscribe_all')) {
             $user->notify_milestones = false;
+            $user->notify_new_signatures = false;
             $user->notify_product = false;
             $user->unsubscribed_at = now();
         } else {
             $user->notify_milestones = $request->boolean('notify_milestones');
+            $user->notify_new_signatures = $request->boolean('notify_new_signatures');
             $user->notify_product = $request->boolean('notify_product');
-            $user->unsubscribed_at = ($user->notify_milestones || $user->notify_product) ? null : now();
+            $user->unsubscribed_at = ($user->notify_milestones || $user->notify_new_signatures || $user->notify_product) ? null : now();
         }
 
         try {
@@ -84,6 +87,7 @@ class PreferencesController extends Controller
 
         try {
             $user->notify_milestones = false;
+            $user->notify_new_signatures = false;
             $user->notify_product = false;
             $user->unsubscribed_at = now();
             $user->save();

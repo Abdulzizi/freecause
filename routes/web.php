@@ -197,12 +197,12 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/categories/delete', [AdminCategoriesController::class, 'destroy'])->middleware('permission:categories,delete')->name('categories.destroy');
 
         Route::get('/signatures', [AdminSignaturesController::class, 'index'])->middleware('permission:signatures,view')->name('signatures');
-        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->name('signatures.bulkAction');
+        Route::post('/signatures/bulk-action', [AdminSignaturesController::class, 'bulkAction'])->middleware('permission:signatures,edit')->name('signatures.bulkAction');
         Route::post('/signatures/{signature}/action', [AdminSignaturesController::class, 'action'])->middleware('permission:signatures,edit')->name('signatures.action');
 
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
-        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->name('pages.bulkAction');
+        Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->middleware('permission:pages,edit')->name('pages.bulkAction');
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
         Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');
@@ -329,9 +329,15 @@ Route::prefix('{locale}')
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware(['throttle:10,1', 'profile.complete']);
         Route::post('/petition/{slug}/{id}/claim', [PetitionController::class, 'claimAccount'])->name('petition.claim')->middleware(['throttle:10,1', 'profile.complete']);
-        Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', [PetitionController::class, 'thanks'])
-            ->where('status', '([0-9]+|created)?')
-            ->name('petition.thanks');
+        Route::post('/petition/{slug}/{id}/shoutbox', [PetitionController::class, 'shoutboxStore'])->name('petition.shoutbox')->middleware(['auth', 'throttle:10,1']);
+        Route::get('/petition/{slug}/{id}/thanks', [PetitionController::class, 'thanks'])->name('petition.thanks');
+        Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', function (string $locale, string $slug, int $id, $status = null) {
+            $mode = $status === 'created' ? 'created' : session('petition_mode', 'signed');
+            $verified = session('petition_verified', (string) ($status ?? '1') !== '0');
+
+            return redirect()->route('petition.thanks', ['locale' => $locale, 'slug' => $slug, 'id' => $id], 301)
+                ->with('petition_mode', $mode)->with('petition_verified', $verified);
+        })->where('status', '([0-9]+|created)?')->name('petition.thanks.legacy');
 
         require __DIR__.'/reports.php';
         require __DIR__.'/preferences.php';

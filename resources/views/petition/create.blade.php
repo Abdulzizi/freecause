@@ -5,7 +5,7 @@
     $oldTitle = old('title', $tr->title ?? '');
     $oldDesc = old('description', $tr->description ?? '');
 
-    $oldGoal = old('goal_signatures', $petition->goal_signatures ?? null);
+    $oldGoal = old('goal_signatures', $petition->goal_signatures ?? 100);
     $oldCategory = old('category_id', $petition->category_id ?? null);
 
     $oldTags = old('tags', $petition->tags ?? '');

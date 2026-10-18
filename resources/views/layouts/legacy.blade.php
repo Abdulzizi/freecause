@@ -109,6 +109,11 @@
     @endif
 
     <main id="fc-main">
+        @if (session('profile_completion'))
+        <div class="bg-brand-soft border border-brand text-ink px-4 py-2 text-sm text-center" role="status">
+            {{ session('profile_completion') }} <a href="{{ lroute('profile') }}" class="underline font-semibold">{{ __('profile.finish_profile') }}</a>
+        </div>
+        @endif
         @yield('content')
     </main>
 
@@ -133,6 +138,7 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
+    @include('partials.mobile-nav')
 </body>
 
 </html>

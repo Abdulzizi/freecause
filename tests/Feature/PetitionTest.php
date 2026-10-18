@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\VerifyAccountMail;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\Petition;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -455,7 +457,7 @@ class PetitionTest extends TestCase
             'comment' => 'I support this petition',
         ]);
 
-        $response->assertRedirect("/en/petition/confirm-petition/{$petition->id}/thanksforsigning/1");
+        $response->assertRedirect("/en/petition/confirm-petition/{$petition->id}/thanks");
         $this->followRedirects($response)->assertSee('Thank you for having signed:');
         $this->assertDatabaseHas('users', ['email' => 'guest-confirm@example.com']);
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
@@ -577,7 +579,7 @@ class PetitionTest extends TestCase
             'agree3' => '1',
         ]);
 
-        $thanksUrl = "/pt/petition/proteja-a-rede-eletrica/{$petition->id}/thanksforsigning/1";
+        $thanksUrl = "/pt/petition/proteja-a-rede-eletrica/{$petition->id}/thanks";
 
         $response->assertRedirect($thanksUrl);
 
@@ -590,7 +592,7 @@ class PetitionTest extends TestCase
             ->assertDontSee('Thank you for having signed:')
             ->assertDontSee('Petitions you might like');
 
-        $this->get("/en/petition/proteja-a-rede-eletrica/{$petition->id}/thanksforsigning/1")
+        $this->get("/en/petition/proteja-a-rede-eletrica/{$petition->id}/thanks")
             ->assertRedirect($thanksUrl);
     }
 
@@ -618,7 +620,7 @@ class PetitionTest extends TestCase
             'body' => "Protect Trees & Rivers\r\n\r\n{$petitionUrl}",
         ], '', '&', PHP_QUERY_RFC3986);
 
-        $this->get("/en/petition/protect-trees-rivers/{$petition->id}/thanksforsigning/1")
+        $this->get("/en/petition/protect-trees-rivers/{$petition->id}/thanks")
             ->assertOk()
             ->assertSee('data-share-petition', false)
             ->assertSee('data-share-title="Protect Trees &amp; Rivers"', false)
@@ -764,7 +766,7 @@ class PetitionTest extends TestCase
             'confirmed' => true,
         ]);
 
-        $response->assertRedirect("/en/petition/test-petition/{$petition->id}/thanksforsigning/1");
+        $response->assertRedirect("/en/petition/test-petition/{$petition->id}/thanks");
 
         $petition->refresh();
         $this->assertEquals(1, $petition->signature_count);
@@ -831,7 +833,7 @@ class PetitionTest extends TestCase
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
-        ])->assertRedirect("/en/petition/verification-petition/{$petition->id}/thanksforsigning/0");
+        ])->assertRedirect("/en/petition/verification-petition/{$petition->id}/thanks");
 
         $user = User::where('email', 'pending@example.com')->firstOrFail();
         $this->assertNotNull($user->verification_token_sent_at);
@@ -851,6 +853,23 @@ class PetitionTest extends TestCase
             'confirmed' => true,
         ]);
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
+    }
+
+    public function test_guest_verify_link_resolves_on_non_default_locales(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        foreach (['it', 'pt'] as $locale) {
+            $user = User::factory()->create([
+                'verified' => false,
+                'locale' => $locale,
+                'verification_token' => Str::random(64),
+                'verification_token_sent_at' => now(),
+            ]);
+            $url = (new VerifyAccountMail($user, $locale))->render();
+            $this->assertStringContainsString('/'.$locale.'/verify/'.$user->verification_token, $url);
+            $this->get('/'.$locale.'/verify/'.$user->verification_token)->assertRedirect('/'.$locale.'/email-verified');
+        }
     }
 
     public function test_authenticated_confirm_page_signs_with_its_rendered_values(): void
@@ -880,7 +899,7 @@ class PetitionTest extends TestCase
         $response = $this->post("/en/petition/confirm-authed/{$petition->id}/sign", $agreements);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect("/en/petition/confirm-authed/{$petition->id}/thanksforsigning/1");
+        $response->assertRedirect("/en/petition/confirm-authed/{$petition->id}/thanks");
         $this->assertDatabaseHas('signatures', [
             'petition_id' => $petition->id,
             'user_id' => $this->user->id,
@@ -922,7 +941,7 @@ class PetitionTest extends TestCase
         $response = $this->post("/en/petition/consent-value/{$petition->id}/sign", $agreements);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect("/en/petition/consent-value/{$petition->id}/thanksforsigning/1");
+        $response->assertRedirect("/en/petition/consent-value/{$petition->id}/thanks");
         $this->assertDatabaseHas('signatures', [
             'petition_id' => $petition->id,
             'email' => 'consent-guest@example.com',
@@ -1382,9 +1401,9 @@ class PetitionTest extends TestCase
             'agree2' => '1',
             'agree3' => '1',
             'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+        ])->assertRedirect("{$signUrl}/thanks");
 
-        $this->get("{$signUrl}/thanksforsigning/1")
+        $this->get("{$signUrl}/thanks")
             ->assertOk()
             ->assertViewHas('canClaim', true);
 
@@ -1442,13 +1461,13 @@ class PetitionTest extends TestCase
             'agree2' => '1',
             'agree3' => '1',
             'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+        ])->assertRedirect("{$signUrl}/thanks");
 
         foreach (['/en', '/en/petitions', '/en/faqs'] as $path) {
             $this->get($path)->assertOk();
         }
 
-        $this->get("{$signUrl}/thanksforsigning/1")->assertOk()->assertViewHas('canClaim', true);
+        $this->get("{$signUrl}/thanks")->assertOk()->assertViewHas('canClaim', true);
 
         $this->post("{$signUrl}/claim", ['password' => 'survives123'])
             ->assertRedirectContains('/en/profile');
@@ -1471,7 +1490,7 @@ class PetitionTest extends TestCase
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
-        ])->assertRedirect("{$signUrl}/thanksforsigning/1");
+        ])->assertRedirect("{$signUrl}/thanks");
 
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
             ->assertStatus(302)

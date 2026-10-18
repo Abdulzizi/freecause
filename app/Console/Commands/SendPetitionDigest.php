@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendPetitionDigest extends Command
 {
-    protected $signature = 'emails:petition-digest {--dry-run : Count recipients without sending} {--limit= : Maximum number of users to process}';
+    protected $signature = 'petition:send-digest {--dry-run : Count recipients without sending} {--limit= : Maximum number of users to process}';
 
     protected $description = 'Send the petition digest to verified users who opted in to product emails';
 

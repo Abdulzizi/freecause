@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'petition_new_signatures' => [
+        'subject' => ':count new signatures on FreeCause',
+        'heading' => ':count new signatures',
+        'intro' => ':title received :count new signatures in the last hour.',
+        'guest_note' => 'These signatures came from guest signers.',
+        'footer' => 'You are receiving this email because you created a petition on FreeCause.',
+        'unsubscribe' => 'Unsubscribe from these emails',
+    ],
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',

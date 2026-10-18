@@ -49,6 +49,7 @@ class User extends Authenticatable
         'google_id',
         'password_changed_at',
         'notify_milestones',
+        'notify_new_signatures',
         'notify_product',
         'unsubscribed_at',
     ];
@@ -63,6 +64,7 @@ class User extends Authenticatable
         'verified' => 'boolean',
         'banned_until' => 'datetime',
         'notify_milestones' => 'boolean',
+        'notify_new_signatures' => 'boolean',
         'notify_product' => 'boolean',
         'unsubscribed_at' => 'datetime',
     ];
@@ -129,6 +131,11 @@ class User extends Authenticatable
     public function wantsMilestoneEmails(): bool
     {
         return (bool) $this->notify_milestones && $this->unsubscribed_at === null;
+    }
+
+    public function wantsNewSignatureEmails(): bool
+    {
+        return (bool) $this->notify_new_signatures && $this->unsubscribed_at === null;
     }
 
     public function wantsProductEmails(): bool

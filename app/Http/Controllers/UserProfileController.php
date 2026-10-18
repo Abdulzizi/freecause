@@ -27,8 +27,12 @@ class UserProfileController extends Controller
                     ->where('status', 'published')
                     ->count();
 
-                $signatureCount = DB::table('signatures')
-                    ->where('user_id', $id)
+                $signatureCount = DB::table('signatures as s')
+                    ->join('petitions as p', 'p.id', '=', 's.petition_id')
+                    ->where('s.user_id', $id)
+                    ->where('s.confirmed', true)
+                    ->where('s.is_spam', false)
+                    ->where('p.status', 'published')
                     ->count();
 
                 $recentPetitions = DB::table('petitions as p')
@@ -66,6 +70,9 @@ class UserProfileController extends Controller
                         'columns' => ['title' => 'title', 'slug' => 'slug'],
                     ])
                     ->where('s.user_id', $id)
+                    ->where('s.confirmed', true)
+                    ->where('s.is_spam', false)
+                    ->where('p.status', 'published')
                     ->whereRaw('(pt_locale.title IS NOT NULL OR pt_default.title IS NOT NULL)')
                     ->orderByDesc('s.id')
                     ->limit(5)

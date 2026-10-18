@@ -58,6 +58,13 @@
 
                     <div class="w-full md:w-2/3 shrink-0 grow-0 px-3">
 
+                        @php($tab = request('tab') === 'signed' ? 'signed' : 'created')
+                        <div class="flex gap-4 mb-4 text-sm font-bold">
+                            <a href="?tab=created">{{ __('userprofile.created_tab') }}</a>
+                            <a href="?tab=signed">{{ __('userprofile.signed_tab') }}</a>
+                        </div>
+
+                        @if ($tab === 'created')
                         <div class="mb-6 fc-reveal fc-stagger">
                             <h2 class="text-base font-bold mb-4 break-words">
                                 {{ __('userprofile.recent_petitions', ['name' => $user->display_name]) }}
@@ -74,6 +81,7 @@
                             @endforelse
                         </div>
 
+                        @else
                         <div class="fc-reveal fc-stagger">
                             <h2 class="text-base font-bold mb-4 break-words">
                                 {{ __('userprofile.recent_signatures', ['name' => $user->display_name]) }}
@@ -89,6 +97,7 @@
                                 <div class="text-sm text-muted">{{ __('userprofile.no_signatures') }}</div>
                             @endforelse
                         </div>
+                        @endif
 
                     </div>
                 </div>

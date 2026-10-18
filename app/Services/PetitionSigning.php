@@ -170,8 +170,7 @@ class PetitionSigning
                     'locale' => $tr->locale,
                     'slug' => $tr->slug,
                     'id' => $petition->id,
-                    'status' => $user->verified ? 1 : 0,
-                ]);
+                ])->with('petition_verified', (bool) $user->verified);
             });
         } catch (QueryException $e) {
             if (($e->errorInfo[0] ?? null) === '23000') {
@@ -240,8 +239,7 @@ class PetitionSigning
                     'locale' => $tr->locale,
                     'slug' => $tr->slug,
                     'id' => $petition->id,
-                    'status' => 1,
-                ]);
+                ])->with('petition_verified', true);
             });
         } catch (QueryException $e) {
 
@@ -273,8 +271,7 @@ class PetitionSigning
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-                'status' => 1,
-            ]);
+            ])->with('petition_verified', true);
         }
 
         if ($counted) {

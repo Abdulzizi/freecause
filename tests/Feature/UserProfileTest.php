@@ -59,6 +59,8 @@ class UserProfileTest extends TestCase
         Signature::factory()->create([
             'petition_id' => $petition->id,
             'user_id' => $this->profileUser->id,
+            'confirmed' => true,
+            'is_spam' => false,
         ]);
 
         $response = $this->get('/en/user/scraper-target/'.$this->profileUser->id);
@@ -82,6 +84,8 @@ class UserProfileTest extends TestCase
         Signature::factory()->create([
             'petition_id' => $petition->id,
             'user_id' => $this->profileUser->id,
+            'confirmed' => true,
+            'is_spam' => false,
         ]);
 
         $this->get('/en/user/scraper-target/'.$this->profileUser->id)->assertStatus(200);
@@ -94,6 +98,20 @@ class UserProfileTest extends TestCase
 
         $this->assertSame(1, Cache::get($cacheKey)['signatureCount']);
         $this->assertSame(1, Cache::get($cacheKey)['petitionCount']);
+    }
+
+    public function test_profile_cache_invalidated_on_user_save(): void
+    {
+        $this->addPublishedPetition($this->profileUser);
+        $cacheKey = 'user:profile:data:'.$this->profileUser->id.':en';
+
+        $this->get('/en/user/scraper-target/'.$this->profileUser->id)->assertStatus(200);
+        $this->assertTrue(Cache::has($cacheKey));
+
+        $this->profileUser->first_name = 'Updated';
+        $this->profileUser->save();
+
+        $this->assertFalse(Cache::has($cacheKey));
     }
 
     public function test_profile_page_does_not_lookup_petition_translations(): void

@@ -1324,20 +1324,17 @@ select.fc-filter-field {
 .fcui-progress-fill {
     width: var(--pct, 0%);
     transform-origin: left center;
-    animation: fcui-progress-grow 0.9s ease-out both;
 }
-@keyframes fcui-progress-grow {
-    from {
-        transform: scaleX(0);
-    }
-    to {
-        transform: scaleX(1);
-    }
+.fcui-progress-fill[data-progress] {
+    transition: width 0.8s ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
-    .fcui-progress-fill {
-        animation: none;
+    .fcui-progress-fill[data-progress] {
+        transition: none;
     }
+}
+.fcui-cover-placeholder {
+    background: linear-gradient(135deg, var(--fc-brand), var(--fc-brand-active));
 }
 
 .fc-switch {

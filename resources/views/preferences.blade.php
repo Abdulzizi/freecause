@@ -90,6 +90,17 @@
                             </label>
 
                             <label class="flex max-md:min-h-12 items-start gap-3 py-2">
+                                <input type="hidden" name="notify_new_signatures" value="0">
+                                <input type="checkbox" name="notify_new_signatures" value="1"
+                                    @checked(old('notify_new_signatures', $user->notify_new_signatures))
+                                    class="mt-1 h-5 w-5 shrink-0 rounded-sm border-border text-brand focus:ring-brand/40">
+                                <span class="min-w-0">
+                                    <span class="block text-base font-medium text-ink">{{ __('preferences.new_signatures_title') }}</span>
+                                    <span class="mt-1 block text-sm leading-relaxed text-muted">{{ __('preferences.new_signatures_help') }}</span>
+                                </span>
+                            </label>
+
+                            <label class="flex max-md:min-h-12 items-start gap-3 py-2">
                                 <input type="hidden" name="notify_product" value="0">
                                 <input type="checkbox" name="notify_product" value="1"
                                     @checked(old('notify_product', $user->notify_product))

@@ -8,7 +8,9 @@ use App\Models\Language;
 use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Models\User;
 use App\Observers\FlushesListingCaches;
+use App\Observers\UserProfileCacheFlusher;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(FlushesListingCaches::class);
         PetitionTranslation::observe(FlushesListingCaches::class);
         CategoryTranslation::observe(FlushesListingCaches::class);
+        User::observe(UserProfileCacheFlusher::class);
 
         $this->bootRateLimiting();
 
