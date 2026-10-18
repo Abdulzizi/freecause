@@ -453,7 +453,12 @@ class PetitionController extends Controller
         $petition = Petition::query()->where('id', $id)->where('status', 'published')->where('is_active', 1)->firstOrFail();
         $data = $request->validate(['comment' => ['required', 'string', 'max:500']]);
         $u = $request->user();
-        Signature::create(['petition_id' => $petition->id, 'user_id' => $u->id, 'name' => $u->display_name, 'email' => $u->email, 'locale' => $locale, 'text' => $data['comment'], 'confirmed' => true, 'ip_address' => $request->ip()]);
+        $sig = Signature::query()->where('petition_id', $petition->id)->where(fn ($q) => $q->where('user_id', $u->id)->orWhere('email', $u->email))->first();
+        if ($sig) {
+            $sig->forceFill(['text' => $data['comment']])->save();
+        } else {
+            Signature::create(['petition_id' => $petition->id, 'user_id' => $u->id, 'name' => $u->display_name, 'email' => $u->email, 'locale' => $locale, 'text' => $data['comment'], 'confirmed' => true, 'ip_address' => $request->ip()]);
+        }
         toast('Comment posted!', 'success');
         $tr = $petition->translationOrFallback($locale);
         abort_if(! $tr, 404);
@@ -672,24 +677,36 @@ class PetitionController extends Controller
 
         $claim = $request->session()->get('sign_claim');
 
-        $user = $claim
-            ? User::lockForUpdate()->where('email', $claim['email'])->first()
-            : null;
-
-        if (! $claim || ! $user) {
+        if (! $claim) {
             $request->session()->forget('sign_claim');
             toast(__('sign.claim_expired'), 'warning');
 
             return redirect()->route('login', ['locale' => $locale]);
         }
 
-        if (filled($user->password)) {
+        $user = DB::transaction(function () use ($claim, $data) {
+            $locked = User::lockForUpdate()->where('email', $claim['email'])->first();
+            if (! $locked || filled($locked->password)) {
+                return $locked;
+            }
+            $locked->forceFill(['password' => Hash::make($data['password'])])->save();
+
+            return $locked;
+        });
+
+        if (! $user) {
+            $request->session()->forget('sign_claim');
+            toast(__('sign.claim_expired'), 'warning');
+
+            return redirect()->route('login', ['locale' => $locale]);
+        }
+
+        if (! Hash::check($data['password'], $user->password)) {
             return back()->withErrors([
                 'password' => 'This account already has a password — please log in.',
             ]);
         }
 
-        $user->forceFill(['password' => Hash::make($data['password'])])->save();
         $request->session()->forget('sign_claim');
 
         auth()->login($user);
@@ -786,7 +803,7 @@ class PetitionController extends Controller
                 'signatures.created_at as signed_at',
             ])
             ->join('signatures', 'signatures.petition_id', '=', 'petitions.id')
-            ->where('signatures.email', $u->email)
+            ->where(fn ($q) => $q->where('signatures.email', $u->email)->orWhere('signatures.user_id', $u->id))
             ->tap($withTr)
             ->orderByDesc('signatures.created_at');
 
@@ -992,7 +1009,7 @@ class PetitionController extends Controller
         $signatures = Signature::query()
             ->where('petition_id', $petition->id)
             ->orderBy('created_at')
-            ->limit(5000)
+            ->limit(1000)
             ->get();
 
         try {
@@ -1025,30 +1042,32 @@ class PetitionController extends Controller
 
         // Stream ALL signatures as CSV (chunked cursor) so the export is
         // memory-safe on large petitions.
-        return response()->streamDownload(function () use ($petition) {
+        $showEmail = (bool) (admin_user()?->canAccessAdmin());
+        $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'confirmed', 'signed_at'];
+        return response()->streamDownload(function () use ($petition, $showEmail, $header) {
             $out = fopen('php://output', 'w');
 
             // UTF-8 BOM so spreadsheet apps read accents correctly.
             fwrite($out, "\xEF\xBB\xBF");
 
-            fputcsv($out, ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at']);
+            fputcsv($out, $header);
 
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
                 ->orderBy('created_at')
-                ->chunkById(1000, function ($rows) use ($out, &$num) {
+                ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
-                        fputcsv($out, [
-                            $num,
-                            $sig->name ?: 'Anonymous',
-                            $sig->email ?? '',
-                            trim($sig->text ?? ''),
-                            $sig->locale ?? '',
-                            $sig->confirmed ? '1' : '0',
-                            optional($sig->created_at)->format('Y-m-d H:i:s'),
-                        ]);
+                        $row = [$num, $sig->name ?: 'Anonymous'];
+                        if ($showEmail) {
+                            $row[] = $sig->email ?? '';
+                        }
+                        $row[] = trim($sig->text ?? '');
+                        $row[] = $sig->locale ?? '';
+                        $row[] = $sig->confirmed ? '1' : '0';
+                        $row[] = optional($sig->created_at)->format('Y-m-d H:i:s');
+                        fputcsv($out, $row);
                     }
                 });
 
