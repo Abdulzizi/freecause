@@ -199,6 +199,14 @@ class PetitionSigning
             $counted = false;
 
             $response = DB::transaction(function () use ($data, $locale, $petition, $u, &$counted) {
+                $dup = Signature::where('petition_id', $petition->id)->where(fn ($q) => $q->where('email', $u->email)->orWhere('user_id', $u->id))->exists();
+                if ($dup) {
+                    $tr = $petition->translationOrFallback($locale);
+                    abort_if(! $tr, 404);
+                    toast('You already signed this petition.', 'info');
+
+                    return redirect()->route('petition.thanks', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id])->with('petition_verified', true);
+                }
                 $sig = Signature::firstOrCreate(
                     ['petition_id' => $petition->id, 'email' => $u->email],
                     [
