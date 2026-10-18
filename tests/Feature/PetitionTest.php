@@ -1521,6 +1521,34 @@ class PetitionTest extends TestCase
         $this->assertSame(1, User::where('email', 'double-submit@example.com')->count());
     }
 
+    public function test_shoutbox_upserts_comment_on_double_sign(): void
+    {
+        $petition = $this->makePublishedPetition('shoutbox-upsert-petition');
+
+        Signature::create([
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+            'email' => $this->user->email,
+            'name' => $this->user->name,
+            'locale' => 'en',
+            'text' => 'First comment',
+            'confirmed' => true,
+        ]);
+
+        $response = $this->actingAs($this->user)->post("/en/petition/shoutbox-upsert-petition/{$petition->id}/shoutbox", [
+            'comment' => 'Updated comment',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertStringContainsString('#petition-comments', $response->headers->get('Location'));
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+            'text' => 'Updated comment',
+        ]);
+    }
+
     private function makePublishedPetition(string $slug): Petition
     {
         $petition = Petition::factory()->create([
