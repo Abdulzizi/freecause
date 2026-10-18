@@ -199,7 +199,10 @@
                 </div>
             </div>
 
-            <x-ad-unit placement="listing_inline" class="mt-6" />
+            {{-- ad: native, full width --}}
+            <div class="mb-4">
+                <x-ads.slot name="native" />
+            </div>
 
         </x-ui.container>
     </section>
