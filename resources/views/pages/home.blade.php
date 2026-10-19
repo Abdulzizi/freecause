@@ -91,16 +91,19 @@
                                                         @if ($featuredPetition)
                                                         <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-sm:mb-4">
                                                             @php $wv = \App\Support\ImageVariants::urls($featuredPetition->cover_image); @endphp
-                                                            @if ($wv)
-                                                            <picture>
-                                                                <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
-                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full aspect-[16/9] object-cover" data-blurup
+                                                            <div class="relative w-full aspect-[16/9] overflow-hidden rounded-md bg-surface-2">
+                                                                <x-ui.skeleton class="absolute inset-0 h-full w-full" aria-hidden="true" />
+                                                                @if ($wv)
+                                                                <picture class="absolute inset-0">
+                                                                    <source type="image/webp" srcset="{{ $wv['400'] }} 400w, {{ $wv['800'] }} 800w" sizes="(min-width: 768px) 50vw, 100vw">
+                                                                    <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup fcui-cover-fade relative img-fluid w-full aspect-[16/9] object-cover" data-blurup
+                                                                        loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
+                                                                </picture>
+                                                                @else
+                                                                <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup fcui-cover-fade relative img-fluid w-full aspect-[16/9] object-cover" data-blurup
                                                                     loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
-                                                            </picture>
-                                                            @else
-                                                            <img src="{{ $featuredPetition->coverUrl() }}" class="fcui-blurup img-fluid w-full aspect-[16/9] object-cover" data-blurup
-                                                                loading="eager" decoding="async" alt="{{ $featuredPetition->tr_title }}">
-                                                            @endif
+                                                                @endif
+                                                            </div>
                                                         </div>
 
                                                         <div class="w-full md:w-1/2 shrink-0 grow-0 px-3 mb-6 max-sm:mb-4">

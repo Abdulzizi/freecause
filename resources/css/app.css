@@ -934,6 +934,14 @@
         transform: scale(1);
     }
 
+    .fcui-cover-fade {
+        opacity: 0;
+    }
+
+    .fcui-cover-fade.is-loaded {
+        opacity: 1;
+    }
+
     .fcui-pwwrap {
         position: relative;
         display: block;

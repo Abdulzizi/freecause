@@ -15,18 +15,18 @@
         <x-lucide-chevron-down class="size-3 text-muted" aria-hidden="true" />
     </summary>
 
-    <div class="absolute end-0 top-full mt-2 w-max min-w-[12rem] rounded-lg shadow-elev-2 bg-surface border border-border z-sticky">
+    <div class="absolute end-0 top-full mt-2 w-max min-w-[12rem] max-w-[calc(100vw-2rem)] rounded-lg shadow-elev-2 bg-surface border border-border z-sticky">
         <x-ui.container class="py-4">
             <div class="flex flex-wrap gap-2">
                 @foreach ($languages as $lang)
-                    <a class="flex items-center gap-2 px-2 py-1 rounded-lg bg-white border border-border text-sm text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand {{ $lang->code === $locale ? 'border-brand bg-brand/5' : '' }}"
+                    <a class="flex min-w-0 max-w-full items-center gap-2 px-2 py-1 min-h-11 rounded-lg bg-white border border-border text-sm text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand {{ $lang->code === $locale ? 'border-brand bg-brand/5' : '' }}"
                         href="{{ locale_url($lang->code) }}"
                         data-no-progress
                         @if ($lang->code === $locale) aria-current="true" @endif>
                         @if ($lang->flag)
                             <img class="w-6 h-6 rounded-full" src="{{ asset($lang->flag) }}" width="20" alt="{{ $lang->name }}">
                         @endif
-                        <span>{{ $lang->name }}</span>
+                        <span class="truncate min-w-0">{{ $lang->name }}</span>
                     </a>
                 @endforeach
             </div>
