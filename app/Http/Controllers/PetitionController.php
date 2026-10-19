@@ -19,6 +19,7 @@ use App\Support\CacheKeys;
 use App\Support\ImageVariants;
 use App\Support\Slug;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -435,12 +436,6 @@ class PetitionController extends Controller
             ->visible()
             ->firstOrFail();
 
-        $signSessionKey = "sign.{$petition->id}";
-
-        if ($request->session()->has($signSessionKey)) {
-            $request->merge($request->session()->get($signSessionKey));
-        }
-
         $defaultLocale = default_locale();
 
         $tr = $petition->translationOrFallback($locale, $defaultLocale);
@@ -465,8 +460,8 @@ class PetitionController extends Controller
         $petition = Petition::query()->where('id', $id)->visible()->firstOrFail();
         $data = $request->validate(['comment' => ['required', 'string', 'max:500']]);
         $u = $request->user();
-        $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->first();
-        abort_unless($sig, 403);
+        $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->where('confirmed', true)->where('is_spam', false)->first();
+        abort_unless($sig && $u->verified, 403);
         $sig->forceFill(['text' => $data['comment']])->save();
         toast('Comment posted!', 'success');
         $tr = $petition->translationOrFallback($locale);
@@ -565,16 +560,29 @@ class PetitionController extends Controller
                     ->exists();
 
                 if (! $alreadySigned) {
-                    Signature::create([
-                        'petition_id' => $petition->id,
-                        'user_id' => $user->id,
-                        'name' => $user->name ?? 'Anonymous',
-                        'email' => $user->email,
-                        'locale' => $locale,
-                    ]);
+                    try {
+                        $sig = Signature::firstOrCreate(
+                            ['petition_id' => $petition->id, 'email' => $user->email],
+                            [
+                                'user_id' => $user->id,
+                                'name' => $user->name ?? 'Anonymous',
+                                'locale' => $locale,
+                                'text' => 'I support this petition',
+                                'confirmed' => true,
+                            ]
+                        );
+                    } catch (QueryException $e) {
+                        if (($e->errorInfo[0] ?? null) !== '23000') {
+                            throw $e;
+                        }
+                        $sig = null;
+                    }
 
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
-                    PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
+                    $previousCount = null;
+                    if (($sig ?? null)?->wasRecentlyCreated) {
+                        $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                        PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
+                    }
                 }
 
                 toast('Petition created successfully.', 'success');

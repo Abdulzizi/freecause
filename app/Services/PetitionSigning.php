@@ -92,14 +92,12 @@ class PetitionSigning
 
         $existingUser = User::where('email', $email)->first();
 
-        $alreadySigned = Signature::where('petition_id', $petition->id)
-            ->where(function ($q) use ($email, $existingUser) {
-                $q->where('email', $email);
+        if ($existingUser) {
+            return back()->withErrors(['email' => __('sign.verify_first')]);
+        }
 
-                if ($existingUser) {
-                    $q->orWhere('user_id', $existingUser->id);
-                }
-            })
+        $alreadySigned = Signature::where('petition_id', $petition->id)
+            ->where('email', $email)
             ->exists();
 
         if ($alreadySigned) {
@@ -112,11 +110,11 @@ class PetitionSigning
             $counted = false;
             $previousCount = null;
 
-            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser, &$counted, &$previousCount) {
+            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, &$counted, &$previousCount) {
                 $userLevel = UserLevel::where('name', 'user')->first();
                 $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
 
-                $user = $existingUser ?? User::create([
+                $user = User::create([
                     'name' => $data['name'],
                     'first_name' => $data['name'],
                     'last_name' => null,
@@ -129,12 +127,14 @@ class PetitionSigning
                     'verification_token_sent_at' => $needsVerification ? now() : null,
                 ]);
 
-                if (! $existingUser && $needsVerification && Settings::get('smtp_enabled', false)) {
-                    try {
-                        Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
-                    } catch (\Throwable $e) {
-                        AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
-                    }
+                if ($needsVerification && Settings::get('smtp_enabled', false)) {
+                    DB::afterCommit(function () use ($user, $locale) {
+                        try {
+                            Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
+                        } catch (\Throwable $e) {
+                            AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
+                        }
+                    });
                 }
 
                 $sig = Signature::firstOrCreate(
@@ -164,7 +164,7 @@ class PetitionSigning
                 if ($user->verified) {
                     session()->put('sign_claim', [
                         'email' => $email,
-                        'is_new' => ! $existingUser,
+                        'is_new' => true,
                         'name' => $data['name'],
                     ]);
                 }
