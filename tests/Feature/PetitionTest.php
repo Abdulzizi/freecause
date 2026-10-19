@@ -451,6 +451,8 @@ class PetitionTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'guest-confirm@example.com']);
 
         $response = $this->post("/en/petition/confirm-petition/{$petition->id}/sign", [
+            'name' => 'Guest',
+            'email' => 'guest-confirm@example.com',
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
@@ -652,9 +654,9 @@ class PetitionTest extends TestCase
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
-        ])->assertRedirect();
+        ])->assertSessionHasErrors(['email']);
 
-        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
         $this->assertSame($usersBefore, User::count());
     }
 
@@ -938,7 +940,11 @@ class PetitionTest extends TestCase
         $confirmation->assertOk();
         $confirmation->assertSee("/en/petition/consent-value/{$petition->id}/sign\"", false);
 
-        $response = $this->post("/en/petition/consent-value/{$petition->id}/sign", $agreements);
+        $response = $this->post("/en/petition/consent-value/{$petition->id}/sign", array_merge($agreements, [
+            'name' => 'Consent Guest',
+            'email' => 'consent-guest@example.com',
+            'comment' => 'I support this petition',
+        ]));
 
         $response->assertSessionHasNoErrors();
         $response->assertRedirect("/en/petition/consent-value/{$petition->id}/thanks");
@@ -1397,6 +1403,8 @@ class PetitionTest extends TestCase
         $usersBeforeSign = User::count();
 
         $this->post("{$signUrl}/sign", [
+            'name' => 'Claim',
+            'email' => $email,
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
@@ -1457,6 +1465,8 @@ class PetitionTest extends TestCase
         ])->assertOk();
 
         $this->post("{$signUrl}/sign", [
+            'name' => 'Survives',
+            'email' => $email,
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
@@ -1475,22 +1485,23 @@ class PetitionTest extends TestCase
 
     public function test_claim_rejected_when_account_already_has_password(): void
     {
-        $user = User::factory()->create([
-            'email' => 'passworded@example.com',
-            'password' => Hash::make('password123'),
-            'verified' => true,
-        ]);
         $petition = $this->makePublishedPetition('claim-passworded-petition');
+        $email = 'passworded@example.com';
         $signUrl = "/en/petition/claim-passworded-petition/{$petition->id}";
 
         $this->post("{$signUrl}/sign", [
             'name' => 'Existing',
-            'email' => $user->email,
+            'email' => $email,
             'comment' => 'I support this petition',
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
         ])->assertRedirect("{$signUrl}/thanks");
+
+        // Signing is complete, so the account exists; give it a password to
+        // simulate an owner who later reset their credentials.
+        $user = User::where('email', $email)->firstOrFail();
+        $user->forceFill(['password' => Hash::make('password123')])->save();
 
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
             ->assertStatus(302)

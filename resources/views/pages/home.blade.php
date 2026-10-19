@@ -191,7 +191,7 @@
                                                                     class="flex justify-between mb-1">
                                                                     <p class="text-sm break-words min-w-0">
                                                                         <span>
-                                                                            {{ $sig->display_name }}
+                                                                            {{ $sig->display_name ?? $sig->name ?? '' }}
                                                                         </span>
 
                                                                         <strong>

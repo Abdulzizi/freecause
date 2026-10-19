@@ -20,4 +20,6 @@ return [
     'manage_preferences' => 'Hantera inställningar',
     'sign_in' => 'Logga in',
     'back_home' => 'Tillbaka hem',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
 ];

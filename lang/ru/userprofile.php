@@ -9,4 +9,6 @@ return [
     'no_petitions' => 'Пока нет петиций.',
     'recent_signatures' => 'Недавние подписи пользователя :name',
     'no_signatures' => 'Пока нет подписей.',
+    'created_tab' => 'Created',
+    'signed_tab' => 'Signed',
 ];

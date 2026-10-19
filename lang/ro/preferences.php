@@ -20,4 +20,6 @@ return [
     'manage_preferences' => 'Gestionează preferințele',
     'sign_in' => 'Autentificare',
     'back_home' => 'Înapoi acasă',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
 ];

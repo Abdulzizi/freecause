@@ -20,4 +20,6 @@ return [
     'manage_preferences' => 'Zarządzaj preferencjami',
     'sign_in' => 'Zaloguj się',
     'back_home' => 'Powrót do strony głównej',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
 ];

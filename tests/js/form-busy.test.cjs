@@ -9,6 +9,7 @@ function setup() {
     const button = { disabled: false, style: { opacity: '' }, attrs: {}, children: [],
         setAttribute(k, v) { this.attrs[k] = v; },
         removeAttribute(k) { delete this.attrs[k]; },
+        querySelector() { return null; },
         prepend(node) { this.children.push(node); } };
     const form = { tagName: 'FORM', method: 'post', attrs: {},
         hasAttribute(name) { return Object.prototype.hasOwnProperty.call(this.attrs, name); },

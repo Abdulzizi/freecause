@@ -20,4 +20,6 @@ return [
     'manage_preferences' => 'Administrer indstillinger',
     'sign_in' => 'Log ind',
     'back_home' => 'Tilbage til forsiden',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
 ];

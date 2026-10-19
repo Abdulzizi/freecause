@@ -13,4 +13,12 @@ return [
         'footer' => 'You are receiving this email because you opted in to product updates from FreeCause.',
         'unsubscribe' => 'Unsubscribe from these emails',
     ],
+    'petition_new_signatures' => [
+        'subject' => ':count new signatures on FreeCause',
+        'heading' => ':count new signatures',
+        'intro' => ':title received :count new signatures in the last hour.',
+        'guest_note' => 'These signatures came from guest signers.',
+        'footer' => 'You are receiving this email because you created a petition on FreeCause.',
+        'unsubscribe' => 'Unsubscribe from these emails',
+    ],
 ];

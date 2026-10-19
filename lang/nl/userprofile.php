@@ -9,4 +9,6 @@ return [
     'no_petitions' => 'Nog geen petities.',
     'recent_signatures' => 'Recente handtekeningen van :name',
     'no_signatures' => 'Nog geen handtekeningen.',
+    'created_tab' => 'Created',
+    'signed_tab' => 'Signed',
 ];

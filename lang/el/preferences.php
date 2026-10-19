@@ -20,4 +20,6 @@ return [
     'manage_preferences' => 'Διαχείριση ρυθμίσεων',
     'sign_in' => 'Σύνδεση',
     'back_home' => 'Επιστροφή στην αρχική',
+    'new_signatures_title' => 'New signatures',
+    'new_signatures_help' => 'Email me when someone signs my petition (batched hourly).',
 ];

@@ -9,4 +9,6 @@ return [
     'no_petitions' => 'Aucune pétition pour le moment.',
     'recent_signatures' => 'Signatures récentes de :name',
     'no_signatures' => 'Aucune signature pour le moment.',
+    'created_tab' => 'Created',
+    'signed_tab' => 'Signed',
 ];

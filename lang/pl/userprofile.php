@@ -9,4 +9,6 @@ return [
     'no_petitions' => 'Brak petycji.',
     'recent_signatures' => 'Ostatnie podpisy użytkownika :name',
     'no_signatures' => 'Brak podpisów.',
+    'created_tab' => 'Created',
+    'signed_tab' => 'Signed',
 ];

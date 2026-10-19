@@ -9,4 +9,6 @@ return [
     'no_petitions' => 'Ingen underskriftsindsamlinger endnu.',
     'recent_signatures' => 'Seneste underskrifter af :name',
     'no_signatures' => 'Ingen underskrifter endnu.',
+    'created_tab' => 'Created',
+    'signed_tab' => 'Signed',
 ];
