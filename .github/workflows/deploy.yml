@@ -23,7 +23,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  ci:
+    if: ${{ github.event_name == 'push' || inputs.action == 'deploy' }}
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: [ci]
+    if: ${{ always() && (needs.ci.result == 'success' || needs.ci.result == 'skipped') }}
     environment: production
     runs-on: ubuntu-latest
     steps:
