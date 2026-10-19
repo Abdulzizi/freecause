@@ -21,7 +21,7 @@ class UpdateProfileRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:60'],
             'last_name' => ['required', 'string', 'max:60'],
-            'nickname' => ['nullable', 'string', 'max:80', 'required_if:identify_mode,nick'],
+            'nickname' => ['nullable', 'regex:/^[A-Za-z0-9]{3,32}$/', Rule::unique('users', 'nickname')->ignore($user->id), 'required_if:identify_mode,nick'],
             'city' => ['nullable', 'string', 'max:80'],
             'country' => ['required', Rule::in(Countries::codes())],
             'gender' => ['required', Rule::in(User::GENDERS)],

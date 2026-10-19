@@ -160,11 +160,13 @@ class PetitionSigning
                 );
 
                 session()->forget("sign.{$petition->id}");
-                session()->put('sign_claim', [
-                    'email' => $email,
-                    'is_new' => ! $existingUser,
-                    'name' => $data['name'],
-                ]);
+                if ($user->verified) {
+                    session()->put('sign_claim', [
+                        'email' => $email,
+                        'is_new' => ! $existingUser,
+                        'name' => $data['name'],
+                    ]);
+                }
 
                 return redirect()->route('petition.thanks', [
                     'locale' => $tr->locale,

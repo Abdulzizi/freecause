@@ -452,12 +452,9 @@ class PetitionController extends Controller
         $petition = Petition::query()->where('id', $id)->visible()->firstOrFail();
         $data = $request->validate(['comment' => ['required', 'string', 'max:500']]);
         $u = $request->user();
-        $sig = Signature::query()->where('petition_id', $petition->id)->where(fn ($q) => $q->where('user_id', $u->id)->orWhere('email', $u->email))->first();
-        if ($sig) {
-            $sig->forceFill(['text' => $data['comment']])->save();
-        } else {
-            Signature::create(['petition_id' => $petition->id, 'user_id' => $u->id, 'name' => $u->display_name, 'email' => $u->email, 'locale' => $locale, 'text' => $data['comment'], 'confirmed' => true, 'ip_address' => $request->ip()]);
-        }
+        $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->first();
+        abort_unless($sig, 403);
+        $sig->forceFill(['text' => $data['comment']])->save();
         toast('Comment posted!', 'success');
         $tr = $petition->translationOrFallback($locale);
         abort_if(! $tr, 404);
@@ -683,24 +680,21 @@ class PetitionController extends Controller
             return redirect()->route('login', ['locale' => $locale]);
         }
 
-        $user = DB::transaction(function () use ($claim, $data) {
+        $claimed = false;
+
+        $user = DB::transaction(function () use ($claim, $data, &$claimed) {
             $locked = User::lockForUpdate()->where('email', $claim['email'])->first();
-            if (! $locked || filled($locked->password)) {
+            abort_unless($locked && $locked->verified && is_null($locked->verification_token), 403);
+            if (filled($locked->password)) {
                 return $locked;
             }
             $locked->forceFill(['password' => Hash::make($data['password'])])->save();
+            $claimed = true;
 
             return $locked;
         });
 
-        if (! $user) {
-            $request->session()->forget('sign_claim');
-            toast(__('sign.claim_expired'), 'warning');
-
-            return redirect()->route('login', ['locale' => $locale]);
-        }
-
-        if (! Hash::check($data['password'], $user->password)) {
+        if (! $claimed) {
             return back()->withErrors([
                 'password' => 'This account already has a password — please log in.',
             ]);
@@ -1098,7 +1092,11 @@ class PetitionController extends Controller
             return $matches[1];
         }
 
-        return $value;
+        if (preg_match('/^[\w-]{11}$/', $value)) {
+            return $value;
+        }
+
+        return null;
     }
 
     public function signatures(Request $request, string $locale, string $slug, int $id)

@@ -184,6 +184,8 @@ class GoogleAuthController extends Controller
                 ]);
             }
 
+            abort_unless(hash_equals(strtolower(trim((string) $currentUser->email)), $email), 403);
+
             try {
                 $currentUser->google_id = $google->getId();
                 DB::transaction(fn () => $currentUser->save());
