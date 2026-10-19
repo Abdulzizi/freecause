@@ -55,7 +55,7 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 
 ## Parked backlog
 
-- Brevo SMTP activation (dashboard action).
+- smtp2go SMTP activation (dashboard action).
 - Rotate the Google OAuth client secret and load it into the prod `.env`.
 - WordPress hardening: rotate WP salts / SSO secret, review `wp-file-manager`,
   consider denying direct PHP execution under `/magazine/`.

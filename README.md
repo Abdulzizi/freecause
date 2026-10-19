@@ -97,7 +97,7 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI="${APP_URL}/en/oauth/google/callback"
 ```
 
-Mail (Brevo SMTP) and much of the runtime branding are DB-settings driven and editable from the admin panel under Options, so changing them requires a queue restart rather than a redeploy.
+Mail (smtp2go SMTP, DB-driven) and much of the runtime branding are DB-settings driven and editable from the admin panel under Options, so changing them requires a queue restart rather than a redeploy.
 
 ## Admin panel
 
