@@ -72,12 +72,14 @@
                     </div>
                 </div>
 
-                <nav class="md:hidden hidden" aria-label="Petition creation progress" data-stepper>
+                @auth
+                <nav class="md:hidden" aria-label="Petition creation progress" data-stepper>
                     <span class="w-2 h-2 rounded-full bg-brand" aria-current="step"></span>
                     <span class="w-2 h-2 rounded-full bg-border"></span>
                     <span class="w-2 h-2 rounded-full bg-border"></span>
                     <span class="text-sm text-muted tabular-nums ms-2">1/3</span>
                 </nav>
+                @endauth
 
                 @guest
                     <div class="mb-4 max-w-[720px] mx-auto [&_.nav-link]:w-full [&_.nav-link]:text-ink [&_.nav-link]:font-semibold max-md:[&_.nav-link]:py-2 max-md:[&_.nav-link]:px-2 max-md:[&_.tab-pane>div]:p-4 max-md:[&_.tab-pane>div]:border-t-0 max-md:[&_.tab-pane>div]:rounded-t-none max-md:[&_.tab-pane>div]:rounded-b-lg max-md:[&_.tab-pane>div]:shadow-none max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full max-md:[&_.btn]:w-full">

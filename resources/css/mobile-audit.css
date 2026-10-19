@@ -1,0 +1,18 @@
+@layer components {
+    html, body { overflow-x: clip; }
+    body.fc-public img, body.fc-public iframe, body.fc-public table { max-width: 100%; }
+    body.fc-public .container, body.fc-public .row { max-width: 100%; }
+    body.fc-public .row { margin-inline: 0; }
+    body.fc-public .min-w-\[240px\] { min-width: 0; }
+    body.fc-public .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    body.fc-public .ql-toolbar, body.fc-public #fc-quill-toolbar { overflow-x: auto; white-space: nowrap; max-width: 100%; }
+    body.fc-public .ql-toolbar::-webkit-scrollbar, body.fc-public #fc-quill-toolbar::-webkit-scrollbar { display: none; }
+    body.fc-public .site-footer a { min-height: var(--fc-tap-min); display: inline-flex; align-items: center; }
+    body.fc-public nav[data-stepper] { display: flex; align-items: center; justify-content: center; gap: 0.375rem; margin-bottom: 1rem; }
+    @media (max-width: 767.98px) {
+        body.fc-public :where(a[href], button):not(.fcui-chip):not(.fcui-bottom-nav__item) { min-height: var(--fc-tap-min); }
+        body.fc-public :where(input, select, textarea) { font-size: 16px; }
+        body.fc-public :where(input[type='radio'], input[type='checkbox']) { min-width: var(--fc-tap-min); min-height: var(--fc-tap-min); }
+        body.fc-public .fcui-scrolltop { bottom: calc(var(--fc-nav-h) + var(--fc-action-h) + var(--fc-safe-bottom) + 0.75rem); }
+    }
+}

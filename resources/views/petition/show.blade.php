@@ -196,7 +196,7 @@
                     </div>
                 </div>
 
-                <div class="md:hidden sticky top-0 z-sticky -mx-6 bg-white">
+                <div class="md:hidden sticky z-sticky -mx-6 bg-white" style="top: var(--fc-safe-top)">
                     <x-ui.chip-row>
                         <a class="fcui-chip fcui-tap" href="#petition-about">{{ __('pet.pdf_description') }}</a>
                         <a class="fcui-chip fcui-tap" href="#petition-comments">{{ $boxShoutbox }}</a>

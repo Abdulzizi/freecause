@@ -2,6 +2,13 @@ export function init(ctx) {
     const announce = ctx.announce;
     const prefersReducedMotion = ctx.prefersReducedMotion;
 
+    document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-close-details]');
+        if (!trigger) return;
+        const details = trigger.closest('details');
+        if (details) details.removeAttribute('open');
+    });
+
     document.querySelectorAll('ins.adsbygoogle[data-adsense]').forEach(function (slot) {
         if (slot.dataset.fcAdsPushed === '1') return;
         slot.dataset.fcAdsPushed = '1';
@@ -17,7 +24,7 @@ export function init(ctx) {
         if (!float) return;
         let closed = false;
         try {
-            closed = window.sessionStorage.getItem('fc_ad_float_closed') === '1';
+            closed = window.sessionStorage.getItem('fc_ad_float_closed_v2') === '1';
         } catch (error) {
             closed = false;
         }
@@ -27,7 +34,7 @@ export function init(ctx) {
         }
         button.addEventListener('click', function () {
             try {
-                window.sessionStorage.setItem('fc_ad_float_closed', '1');
+                window.sessionStorage.setItem('fc_ad_float_closed_v2', '1');
             } catch (error) {
             }
             float.remove();
@@ -40,7 +47,7 @@ export function init(ctx) {
         const spacer = document.querySelector('.fc-ad-anchor-spacer');
         let closed = false;
         try {
-            closed = window.sessionStorage.getItem('fc_ad_anchor_closed') === '1';
+            closed = window.sessionStorage.getItem('fc_ad_anchor_closed_v2') === '1';
         } catch (error) {
             closed = false;
         }
@@ -51,7 +58,7 @@ export function init(ctx) {
         }
         button.addEventListener('click', function () {
             try {
-                window.sessionStorage.setItem('fc_ad_anchor_closed', '1');
+                window.sessionStorage.setItem('fc_ad_anchor_closed_v2', '1');
             } catch (error) {
                 // storage disabled: the anchor just reappears on the next page
             }

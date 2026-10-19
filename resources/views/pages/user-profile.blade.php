@@ -33,7 +33,8 @@
 
                 <div class="flex flex-wrap -mx-3">
 
-                    <div class="w-full md:w-1/3 shrink-0 grow-0 px-3">
+                    <div class="w-full md:w-1/3 shrink-0 grow-0 px-3 min-w-0">
+                        <div class="table-responsive">
                         <table class="w-full text-sm border-collapse fc-tabular">
                             <tr class="border-b border-border">
                                 <td class="py-2.5 text-muted">{{ __('userprofile.registration_date') }}</td>
@@ -54,6 +55,7 @@
                                 </td>
                             </tr>
                         </table>
+                        </div>
                     </div>
 
                     <div class="w-full md:w-2/3 shrink-0 grow-0 px-3">

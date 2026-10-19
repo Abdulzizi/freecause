@@ -82,5 +82,5 @@
     <div class="mb-4 text-center">
         <x-ads.slot name="rectangle" />
     </div>
-    <x-ads.slot name="mobile_strip" sticky class="lg:hidden text-center sticky bottom-2 z-sticky" />
+    <x-ads.slot name="mobile_strip" class="lg:hidden text-center" />
 @endsection

@@ -131,8 +131,10 @@
                 <div class="flex flex-col gap-2" data-results>
                     @forelse($petitions as $petition)
                         @if ($loop->index > 0 && $loop->index % 2 === 0)
-                            @php($listAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini'])
-                            @include('partials.ads-infeed', ['slot' => $listAdZones[(int) ($loop->index / 2) % count($listAdZones)]])
+                        @php
+                            $listAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini']
+                        @endphp
+                        @include('partials.ads-infeed', ['slot' => $listAdZones[(int) ($loop->index / 2) % count($listAdZones)]])
                         @endif
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
@@ -147,7 +149,7 @@
                                 @endphp
                                 {!! $titleHtml !!}
                             </span>
-                            <span class="fc-tabular text-muted group-hover:text-white ms-4 text-nowrap text-sm">
+                            <span class="fc-tabular text-muted group-hover:text-white ms-4 max-md:ms-2 max-md:shrink-0 text-nowrap text-sm">
                                 <span data-abbr data-abbr-value="{{ (int) ($petition->signature_count ?? 0) }}">{{ number_format($petition->signature_count ?? 0) }}</span> {{ __('list.signatures') }}
                             </span>
                         </a>

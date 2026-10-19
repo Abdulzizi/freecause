@@ -84,6 +84,8 @@ class AddSecurityHeaders
                     'https://tpc.googlesyndication.com https://www.googletagservices.com '.
                     'https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com '.
+                    'https://www.google-analytics.com https://*.google-analytics.com '.
+                    'https://*.analytics.google.com '.
                     'https://ep2.adtrafficquality.google '.
                     $inlineHashes.'; '.
                 "style-src 'self' 'unsafe-inline' ".

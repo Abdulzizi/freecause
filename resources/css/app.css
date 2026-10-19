@@ -8,6 +8,7 @@
 @import './ads-anchor.css';
 @import './ads-floating.css';
 @import './ads-mobile.css';
+@import './mobile-audit.css';
 @import './ads-rail.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

@@ -73,7 +73,7 @@
                     </x-ui.alert>
                 @endif
 
-                <div class="rounded-lg bg-surface p-6 shadow-elev-1">
+                <div class="rounded-lg bg-surface p-4 sm:p-6 shadow-elev-1">
                     <form method="POST" action="{{ lroute('preferences.update') }}" class="space-y-6">
                         @csrf
 

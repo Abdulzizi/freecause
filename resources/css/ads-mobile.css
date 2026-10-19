@@ -1,33 +1,23 @@
 @layer components {
-    .fc-ad-infeed {
-        margin-block: 0.75rem;
+    :is(.fc-ad-infeed, .fc-ad-mini) {
         min-height: 0;
         overflow: hidden;
     }
 
-    .fc-ad-infeed .fc-ad {
-        max-width: 100%;
-        overflow: hidden;
-    }
-
-    .fc-ad-infeed .fc-ad iframe {
-        width: min(100%, 320px);
-        display: block;
-        margin-inline: auto;
+    .fc-ad-infeed {
+        margin-block: 0.75rem;
     }
 
     .fc-ad-mini {
         margin-block: 0.5rem;
-        min-height: 0;
-        overflow: hidden;
     }
 
-    .fc-ad-mini .fc-ad {
+    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor, .fc-ad-float) .fc-ad {
         max-width: 100%;
         overflow: hidden;
     }
 
-    .fc-ad-mini .fc-ad iframe {
+    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor, .fc-ad-float) .fc-ad iframe {
         width: min(100%, 320px);
         display: block;
         margin-inline: auto;

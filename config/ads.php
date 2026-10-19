@@ -116,4 +116,13 @@ return [
             'h' => 300,
         ],
     ],
+
+    'placements' => [
+        'anchor' => ['mobile'],
+        'float' => ['mobile_float'],
+        'infeed' => ['mobile_feed', 'mobile_card', 'mobile_native_small'],
+        'inline' => ['mobile_inline', 'mobile_mini', 'mobile_banner'],
+        'page_top' => ['leaderboard'],
+        'page_mid' => ['banner468', 'rectangle', 'native'],
+    ],
 ];

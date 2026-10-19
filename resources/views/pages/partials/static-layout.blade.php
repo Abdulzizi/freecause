@@ -8,7 +8,7 @@
         <div class="w-full shrink-0 grow-0 px-3">
 
             <div class="fcui-card relative flex flex-col min-w-0">
-                <div class="grow shrink basis-auto p-6">
+                <div class="grow shrink basis-auto p-4 sm:p-6">
 
                     @if (($fallback ?? false))
                         <div class="rounded-md border border-warning/30 bg-warning-soft px-4 py-3 text-sm text-warning mb-4" role="status">

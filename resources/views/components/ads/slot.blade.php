@@ -12,7 +12,7 @@
     $anchorOnly = $name === 'mobile' && ! $sticky;
     // otherwise the first occurrence of a slot in the request wins, so the layout's
     // default stack fills gaps without duplicating a zone a page already places inline.
-    $show = ! $anchorOnly && $adsOn && $cfg && (! $hasKey || \App\Support\Ads::renderOnce($name));
+    $show = ! $anchorOnly && $adsOn && $hasKey && \App\Support\Ads::renderOnce($name);
 @endphp
 
 @if ($show)

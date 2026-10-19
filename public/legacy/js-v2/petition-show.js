@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let alert = form.querySelector('.fc-sign-error');
             if (!alert) {
                 alert = document.createElement('div');
-                alert.className = 'alert alert-danger mt-2 fc-sign-error';
+                alert.className = 'fcui-alert fcui-alert--error mt-2 fc-sign-error';
                 alert.setAttribute('role', 'alert');
                 form.insertBefore(alert, form.firstChild);
             }

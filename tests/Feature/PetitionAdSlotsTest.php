@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Support\Ads;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -67,9 +68,8 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString('/ads/frame/rectangle', $html);
         $this->assertStringContainsString('/ads/frame/native', $html);
 
-        // an empty key renders the reserved box but no frame / no data-ad-id value
-        $this->assertStringContainsString('fc-ad fc-ad--skyscraper', $html);
-        $this->assertStringContainsString('data-ad-id=""', $html);
+        // an empty key renders nothing: no box, no frame
+        $this->assertStringNotContainsString('fc-ad--skyscraper', $html);
         $this->assertStringNotContainsString('/ads/frame/skyscraper', $html);
     }
 
@@ -138,5 +138,38 @@ class PetitionAdSlotsTest extends TestCase
         foreach (['leaderboard', 'rectangle', 'skyscraper', 'banner468', 'native', 'mobile'] as $slot) {
             $this->assertStringContainsString("fc-ad fc-ad--{$slot}", $html, "missing slot on it locale: {$slot}");
         }
+    }
+
+    public function test_pick_rotates_through_keyed_unrendered_slots(): void
+    {
+        config(['ads.enabled' => true]);
+        config([
+            'ads.slots.mobile_feed.key' => 'k1',
+            'ads.slots.mobile_card.key' => 'k2',
+            'ads.slots.mobile_native_small.key' => 'k3',
+        ]);
+
+        $this->assertSame('mobile_feed', Ads::pick('infeed'));
+        $this->assertSame('mobile_card', Ads::pick('infeed'));
+        $this->assertSame('mobile_native_small', Ads::pick('infeed'));
+        $this->assertSame('mobile_feed', Ads::pick('infeed'));
+    }
+
+    public function test_pick_skips_rendered_and_keyless_slots(): void
+    {
+        config(['ads.enabled' => true]);
+        config([
+            'ads.slots.mobile_feed.key' => 'k1',
+            'ads.slots.mobile_card.key' => '',
+            'ads.slots.mobile_native_small.key' => 'k3',
+        ]);
+        Ads::renderOnce('mobile_feed');
+
+        $this->assertSame('mobile_native_small', Ads::pick('infeed'));
+
+        Ads::renderOnce('mobile_native_small');
+
+        $this->assertNull(Ads::pick('infeed'));
+        $this->assertNull(Ads::pick('unknown'));
     }
 }

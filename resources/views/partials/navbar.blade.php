@@ -18,7 +18,7 @@
                 <x-lucide-search aria-hidden="true" />
             </a>
 
-            @include('partials.language_switch')
+            @include('partials.language_switch', ['mobile' => true])
 
             <button class="fcui-icon-btn" type="button" data-sheet-open="mobile-menu" aria-label="{{ __('nav.menu') }}" aria-haspopup="dialog">
                 <x-lucide-menu aria-hidden="true" />
