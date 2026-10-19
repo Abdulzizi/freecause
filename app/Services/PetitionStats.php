@@ -63,7 +63,6 @@ class PetitionStats
                     return $m === $count;
                 }
 
-                // Any milestone strictly above the old count and at/below the new one.
                 return $m > $previousCount && $m <= $count;
             }));
 
@@ -78,8 +77,11 @@ class PetitionStats
                 return;
             }
 
-            // Notify for the highest milestone crossed (one email per transition).
             $milestone = max($crossed);
+            $lock = Cache::lock("milestone:{$petitionId}:{$milestone}", 600);
+            if (! $lock->get()) {
+                return;
+            }
 
             DB::afterCommit(fn () => Mail::to($owner->email)->queue(new PetitionMilestoneMail($petition, $owner, $milestone)));
 
@@ -102,6 +104,7 @@ class PetitionStats
         $count = DB::table('signatures')
             ->where('petition_id', $petitionId)
             ->where('confirmed', 1)
+            ->where('is_spam', 0)
             ->count();
 
         DB::table('petitions')->where('id', $petitionId)->update(['signature_count' => $count]);
@@ -123,6 +126,7 @@ class PetitionStats
             $count = DB::table('signatures')
                 ->where('petition_id', $id)
                 ->where('confirmed', 1)
+                ->where('is_spam', 0)
                 ->count();
 
             DB::table('petitions')->where('id', $id)->update(['signature_count' => $count]);

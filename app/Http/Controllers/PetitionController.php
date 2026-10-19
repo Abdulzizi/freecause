@@ -22,6 +22,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -162,8 +163,7 @@ class PetitionController extends Controller
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
             })
-            ->where('petitions.status', 'published')
-            ->where('petitions.is_active', 1);
+            ->visible();
 
         if ($search !== '') {
             $driver = DB::connection()->getDriverName();
@@ -199,21 +199,35 @@ class PetitionController extends Controller
 
                 $cacheKey = CacheKeys::petitionsTrending($locale, $page);
 
-                $petitions = cache()->remember($cacheKey, now()->addMinutes(10), function () use ($query, $recent, $page) {
-                    return $query
+                $cached = cache()->remember($cacheKey, now()->addMinutes(10), function () use ($query, $recent, $page) {
+                    $p = (clone $query)
                         ->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
                         ->orderByDesc('trend.recent_count')
                         ->orderByDesc('petitions.signature_count')
                         ->orderByDesc('petitions.id')
-                        ->paginate(15, ['petitions.*'], 'page', $page);
+                        ->paginate(15, ['petitions.id'], 'page', $page);
+
+                    return ['ids' => $p->items(), 'total' => $p->total()];
                 });
+                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
+                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
+                    ->with('translations')
+                    ->orderByRaw('FIELD(petitions.id, '.implode(',', array_map('intval', $ids)).')')->get();
+                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page);
 
                 $petitions = $petitions->withQueryString();
             } else {
                 $cacheKey = CacheKeys::petitionsIndex($locale, $page);
-                $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                    return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
+                $cached = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
+                    $p = (clone $query)->orderByDesc('petitions.id')->paginate(15, ['petitions.id'], 'page', $page);
+
+                    return ['ids' => $p->items(), 'total' => $p->total()];
                 });
+                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
+                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
+                    ->with('translations')
+                    ->orderByRaw('FIELD(petitions.id, '.implode(',', array_map('intval', $ids)).')')->get();
+                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page);
 
                 $petitions = $petitions->withQueryString();
             }
@@ -240,7 +254,7 @@ class PetitionController extends Controller
         $defaultLocale = default_locale();
 
         $petition = Petition::query()
-            ->with(['category', 'user'])
+            ->with(['category', 'user', 'translations'])
             ->where('id', $id)
             ->where(function ($q) {
                 $q->where(function ($q2) {
@@ -278,6 +292,7 @@ class PetitionController extends Controller
                 }
 
                 return Petition::query()
+                    ->with('translations')
                     ->select(['petitions.id', 'petitions.signature_count', 'petitions.cover_image'])
                     ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
                     ->where('petitions.category_id', $petition->category_id)
@@ -560,7 +575,8 @@ class PetitionController extends Controller
                         'locale' => $locale,
                     ]);
 
-                    PetitionStats::increment($petition->id);
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
                 toast('Petition created successfully.', 'success');
@@ -719,6 +735,7 @@ class PetitionController extends Controller
     public function signPage(Request $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()
+            ->with('translations')
             ->whereKey($id)
             ->where('status', 'published')
             ->where('is_active', true)
@@ -1104,7 +1121,7 @@ class PetitionController extends Controller
         $locale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $petition = Petition::with('category', 'user')
+        $petition = Petition::with('category', 'user', 'translations')
             ->where('id', $id)
             ->visible()
             ->firstOrFail();

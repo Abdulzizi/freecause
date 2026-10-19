@@ -6,6 +6,7 @@ use App\Mail\PetitionNewSignaturesMail;
 use App\Models\Petition;
 use App\Support\AppLog;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -17,6 +18,22 @@ class SendPetitionNewSignatures extends Command
     protected $description = 'Send hourly batched new-signature notifications to petition owners';
 
     public function handle(): int
+    {
+        $lock = Cache::lock('new-sigs', 600);
+        if (! $lock->get()) {
+            $this->info('New signatures: already running');
+
+            return self::SUCCESS;
+        }
+
+        try {
+            return $this->runDigest();
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function runDigest(): int
     {
         $dryRun = (bool) $this->option('dry-run');
 
@@ -32,6 +49,7 @@ class SendPetitionNewSignatures extends Command
             $total = DB::table('signatures')
                 ->where('petition_id', $petitionId)
                 ->where('confirmed', 1)
+                ->where('is_spam', 0)
                 ->where('created_at', '>=', $since)
                 ->count();
 
@@ -51,6 +69,7 @@ class SendPetitionNewSignatures extends Command
             $signers = DB::table('signatures')
                 ->where('petition_id', $petitionId)
                 ->where('confirmed', 1)
+                ->where('is_spam', 0)
                 ->where('created_at', '>=', $since)
                 ->whereNotNull('user_id')
                 ->orderByDesc('id')
@@ -74,7 +93,8 @@ class SendPetitionNewSignatures extends Command
             }
 
             if (! $dryRun) {
-                DB::table('petitions')->where('id', $petitionId)->update(['last_notified_at' => now()]);
+                $max = DB::table('signatures')->where('petition_id', $petitionId)->max('created_at');
+                DB::afterCommit(fn () => DB::table('petitions')->where('id', $petitionId)->update(['last_notified_at' => $max ?? now()]));
             }
             $sent++;
         }

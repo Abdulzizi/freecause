@@ -30,9 +30,9 @@ class UpdateProfileRequest extends FormRequest
                 Rule::exists('languages', 'code')->where(fn ($query) => $query->where('is_active', true)),
             ],
             'identify_mode' => ['nullable', Rule::in(['full', 'name', 'nick'])],
-            'new_email' => ['nullable', 'email', 'max:190'],
-            'new_email_confirmation' => ['nullable', 'same:new_email'],
-            'current_password' => [Rule::requiredIf(fn () => filled($this->input('new_password')) && $user?->hasLocalPassword())],
+            'new_email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user?->id)],
+            'new_email_confirmation' => ['required_with:new_email', 'same:new_email'],
+            'current_password' => [Rule::requiredIf(fn () => filled($this->input('new_password')) && (bool) $user?->hasLocalPassword()), 'current_password:web'],
             'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
         ];
     }

@@ -110,8 +110,9 @@ class PetitionSigning
 
         try {
             $counted = false;
+            $previousCount = null;
 
-            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser, &$counted) {
+            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $existingUser, &$counted, &$previousCount) {
                 $userLevel = UserLevel::where('name', 'user')->first();
                 $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
 
@@ -150,7 +151,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
                     $counted = true;
-                    PetitionStats::increment($petition->id);
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
                 }
 
                 AppLog::info(
@@ -185,7 +186,7 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
         }
 
         return $response;
@@ -199,8 +200,9 @@ class PetitionSigning
 
         try {
             $counted = false;
+            $previousCount = null;
 
-            $response = DB::transaction(function () use ($data, $locale, $petition, $u, &$counted) {
+            $response = DB::transaction(function () use ($data, $locale, $petition, $u, &$counted, &$previousCount) {
                 $dup = Signature::where('petition_id', $petition->id)->where(fn ($q) => $q->where('email', $u->email)->orWhere('user_id', $u->id))->exists();
                 if ($dup) {
                     $tr = $petition->translationOrFallback($locale);
@@ -226,7 +228,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated) {
                     $counted = true;
-                    PetitionStats::increment($petition->id);
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
                 }
 
                 session()->forget("sign.{$petition->id}");
@@ -285,7 +287,7 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
         }
 
         return $response;

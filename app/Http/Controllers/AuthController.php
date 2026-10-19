@@ -330,7 +330,11 @@ class AuthController extends Controller
         }
 
         if (! empty($data['new_password'])) {
-            if ($u->hasLocalPassword() && ! Hash::check($data['current_password'] ?? '', $u->password)) {
+            if (! $u->hasLocalPassword()) {
+                if (! $request->session()->get('password.confirmed_at') || now()->timestamp - (int) $request->session()->get('password.confirmed_at') > 10800) {
+                    return back()->withInput()->withErrors(['current_password' => __('auth.confirm_password')]);
+                }
+            } elseif (! Hash::check($data['current_password'] ?? '', $u->password)) {
                 return back()
                     ->withInput()
                     ->withErrors(['current_password' => __('profile.current_password_incorrect')]);
