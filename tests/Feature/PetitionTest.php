@@ -1192,6 +1192,8 @@ class PetitionTest extends TestCase
             'user_id' => $this->user->id,
             'category_id' => $this->category->id,
             'goal_signatures' => 100,
+            'status' => 'published',
+            'is_active' => true,
         ]);
         PetitionTranslation::create([
             'petition_id' => $petition->id,
@@ -1224,6 +1226,8 @@ class PetitionTest extends TestCase
             'user_id' => $this->user->id,
             'category_id' => $this->category->id,
             'cover_image' => 'petitions/original.png',
+            'status' => 'published',
+            'is_active' => true,
         ]);
         PetitionTranslation::create([
             'petition_id' => $petition->id,
