@@ -12,6 +12,54 @@ export function init(ctx) {
         }
     });
 
+    document.querySelectorAll('[data-ad-anchor-close]').forEach(function (button) {
+        const anchor = button.closest('#fc-ad-anchor');
+        if (!anchor) return;
+        const spacer = document.querySelector('.fc-ad-anchor-spacer');
+        let closed = false;
+        try {
+            closed = window.sessionStorage.getItem('fc_ad_anchor_closed') === '1';
+        } catch (error) {
+            closed = false;
+        }
+        if (closed) {
+            anchor.remove();
+            spacer?.remove();
+            return;
+        }
+        button.addEventListener('click', function () {
+            try {
+                window.sessionStorage.setItem('fc_ad_anchor_closed', '1');
+            } catch (error) {
+                // storage disabled: the anchor just reappears on the next page
+            }
+            anchor.remove();
+            spacer?.remove();
+        });
+    });
+
+    document.querySelectorAll('iframe[data-ad-fluid]').forEach(function (frame) {
+        const fit = function () {
+            let frameDoc;
+            try {
+                frameDoc = frame.contentDocument;
+            } catch (error) {
+                return;
+            }
+            if (!frameDoc || !frameDoc.body) return;
+            const height = Math.max(frameDoc.documentElement.scrollHeight, frameDoc.body.scrollHeight);
+            if (height > 0) frame.style.height = height + 'px';
+        };
+        frame.addEventListener('load', function () {
+            fit();
+            let tries = 0;
+            const timer = window.setInterval(function () {
+                fit();
+                if (++tries > 12) window.clearInterval(timer);
+            }, 500);
+        });
+    });
+
     document.querySelectorAll('[data-share-petition]').forEach(function (shareLink) {
         shareLink.addEventListener('click', async function (event) {
             if (typeof navigator.share !== 'function') {

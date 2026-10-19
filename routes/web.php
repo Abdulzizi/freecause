@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AdsConfigController;
+use App\Http\Controllers\AdsFrameController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\ContactController;
@@ -56,6 +57,7 @@ Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(requ
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 Route::get('/version', VersionController::class);
 Route::get('/ads/config/{slot}', AdsConfigController::class)->name('ads.config');
+Route::get('/ads/frame/{slot}', AdsFrameController::class)->name('ads.frame');
 
 Route::get('/speculationrules.json', function () {
     $urlExclusions = [

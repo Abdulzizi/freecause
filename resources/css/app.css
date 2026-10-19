@@ -5,6 +5,8 @@
 
 @import './tokens.css';
 @import './legacy-compat.css' layer(legacy);
+@import './ads-anchor.css';
+@import './ads-rail.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

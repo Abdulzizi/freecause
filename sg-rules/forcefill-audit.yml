@@ -1,0 +1,8 @@
+id: forcefill-audit
+language: php
+severity: hint
+message: 'forceFill needs explicit allowlist review'
+ignores:
+  - tests/**
+rule:
+  pattern: 'forceFill($$$)'

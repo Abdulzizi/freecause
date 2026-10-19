@@ -1,0 +1,9 @@
+id: db-in-foreach
+language: php
+severity: hint
+message: 'check loop context for N+1'
+ignores:
+  - database/migrations/**
+  - tests/**
+rule:
+  pattern: 'DB::table($$$)->get()'

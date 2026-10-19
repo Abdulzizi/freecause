@@ -1,0 +1,8 @@
+id: chunkbyid-order
+language: php
+severity: warning
+message: 'chunkById requires orderBy(id)'
+ignores:
+  - database/migrations/**
+rule:
+  pattern: 'chunkById($$$)'

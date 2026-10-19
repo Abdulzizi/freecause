@@ -1,41 +1,47 @@
-@props(['name'])
+@props(['name', 'sticky' => false])
 
 @php
     // resolve slot config via the Settings-aware resolver (admin overrides config).
     // NB: prop is "name" not "slot" -- $slot is Blade's reserved component-content var.
     $adsOn = \App\Support\Ads::enabled();
     $cfg = \App\Support\Ads::slot($name);
-    $host = \App\Support\Ads::host();
     $hasKey = $adsOn && $cfg && !empty($cfg['key']);
+    // The 320x50 "mobile" zone belongs to the sticky anchor (partials.ads-anchor).
+    // Blade renders a page's content before the layout, so an inline copy would always
+    // claim the zone first and leave the anchor empty -- inline uses render nothing.
+    $anchorOnly = $name === 'mobile' && ! $sticky;
+    // otherwise the first occurrence of a slot in the request wins, so the layout's
+    // default stack fills gaps without duplicating a zone a page already places inline.
+    $show = ! $anchorOnly && $adsOn && $cfg && (! $hasKey || \App\Support\Ads::renderOnce($name));
 @endphp
 
-@if ($adsOn && $cfg)
+@if ($show)
     @php
         $w = (int) ($cfg['w'] ?? 0);
         $h = (int) ($cfg['h'] ?? 0);
-        $fmt = $cfg['format'] ?? 'iframe';
         $key = $cfg['key'] ?? '';
-        $path = $cfg['path'] ?? '22';
+        // native content is fluid and taller than the reserved height; the parent
+        // script grows the frame to the ad's real height (same-origin) so it never clips
+        $fluid = ($cfg['format'] ?? 'iframe') === 'native';
     @endphp
 
     {{-- reserved box: min-height = banner height so no layout shift while the ad loads.
-         Scripts render INLINE inside the box: the iframe loader document.writes the
-         banner at its own DOM position, so end-of-body placement would stack all
-         ads at the page bottom --}}
+         The network code runs inside its own same-origin document (route ads.frame):
+         the Adsterra loader document.writes an inline <script>, which the public
+         site's strict CSP blocks, so each slot is sandboxed into a frame that
+         carries a relaxed policy and no site content. --}}
     <div {{ $attributes->merge(['class' => "fc-ad fc-ad--{$name}"]) }}
          data-ad-id="{{ $key }}"
-         style="min-height: {{ $h }}px; max-width: {{ $w }}px; margin-inline: auto;">
+         style="min-height: {{ $h }}px; max-width: min(100%, {{ $w }}px); margin-inline: auto;">
         @if ($hasKey)
-            @if ($fmt === 'native')
-                {{-- native: script must come BEFORE the container div so it finds #container-{key} in DOM --}}
-                <script async data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
-                <div id="container-{{ $key }}"></div>
-            @else
-                {{-- iframe banner: atOptions from same-origin config script (CSP script-src 'self'),
-                     loaded synchronously so it completes before the network loader below --}}
-                <script src="{{ route('ads.config', ['slot' => $name]) }}"></script>
-                <script src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
-            @endif
+            <iframe
+                src="{{ route('ads.frame', ['slot' => $name]) }}"
+                width="{{ $w }}" height="{{ $h }}"
+                title="Advertisement"
+                scrolling="no"
+                @if ($fluid) data-ad-fluid="1" @endif
+                style="width: {{ $w }}px; max-width: 100%; height: {{ $h }}px; border: 0; display: block; margin-inline: auto;"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
         @endif
     </div>
 @endif

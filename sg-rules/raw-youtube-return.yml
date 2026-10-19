@@ -1,0 +1,8 @@
+id: raw-youtube-return
+language: php
+severity: error
+message: 'youtubeId must return null on no-match'
+files:
+  - '**/PetitionController.php'
+rule:
+  pattern: 'return $value;'

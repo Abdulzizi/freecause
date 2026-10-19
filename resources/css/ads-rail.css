@@ -1,0 +1,34 @@
+@layer components {
+    .fc-ad-rail {
+        display: none;
+        inset-inline-end: max(1rem, var(--fc-safe-right));
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: min(160px, calc(100vw - 2rem));
+        max-height: calc(100vh - var(--fc-safe-top) - var(--fc-safe-bottom) - 2rem);
+        overflow: clip;
+        z-index: var(--fc-z-sticky);
+    }
+
+    .fc-ad-rail .fc-ad {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .fc-ad-rail iframe {
+        max-width: 100%;
+    }
+
+    @media (min-width: 1700px) {
+        .fc-ad-rail {
+            display: block;
+        }
+    }
+
+    @media print {
+        .fc-ad-rail {
+            display: none;
+        }
+    }
+}

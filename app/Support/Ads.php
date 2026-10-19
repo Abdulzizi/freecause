@@ -58,4 +58,27 @@ class Ads
     {
         return array_keys((array) config('ads.slots', []));
     }
+
+    // True the first time a slot name is rendered for the current request, false
+    // after. The layout emits a default ad stack on every page; this keeps pages
+    // that already place a slot inline from emitting the same zone twice, which
+    // Adsterra treats as an error (duplicate code corrupts stats and CPM).
+    public static function renderOnce(string $name): bool
+    {
+        $request = request();
+
+        if ($request === null) {
+            return true;
+        }
+
+        $key = 'ads_slot_rendered_'.$name;
+
+        if ($request->attributes->has($key)) {
+            return false;
+        }
+
+        $request->attributes->set($key, true);
+
+        return true;
+    }
 }

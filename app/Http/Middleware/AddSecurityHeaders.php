@@ -41,6 +41,21 @@ class AddSecurityHeaders
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net https://cdn.ckeditor.com; ".
                 "object-src 'none'; ".
                 "base-uri 'self';";
+        } elseif ($request->is('ads/frame/*')) {
+            // Ad network slot in its own document: the Adsterra loader injects an
+            // inline <script> that the public CSP forbids, so this frame runs with a
+            // relaxed policy. It contains only ad markup, never site or user content.
+            $csp =
+                "default-src 'self' https: http: data: blob:; ".
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; ".
+                "style-src 'self' 'unsafe-inline' https: http:; ".
+                "img-src 'self' data: blob: https: http:; ".
+                "font-src 'self' data: https: http:; ".
+                "frame-src 'self' https: http:; ".
+                "connect-src 'self' https: http:; ".
+                "object-src 'none'; ".
+                "base-uri 'self';".
+                ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         } else {
             $inlineHashes = '';
 

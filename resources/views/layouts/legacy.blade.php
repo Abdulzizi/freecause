@@ -98,6 +98,16 @@
     <a href="#fc-main" class="fc-skip-link">{{ __('Skip to content') }}</a>
     @include('partials.navbar')
 
+    @unless (isset($exception))
+        {{-- Rendered before the page body on purpose: the sticky anchor (mobile) and the
+             side rail (desktop) emit the "mobile"/"skyscraper" zones, and Ads::renderOnce
+             gives the zone to the first slot rendered in the request. Claiming them here
+             keeps a page's own inline copy from winning and leaving the anchor empty.
+             Both are position:fixed, so DOM order does not affect where they appear. --}}
+        @include('partials.ads-anchor')
+        @include('partials.ads-rail')
+    @endunless
+
     @php
         $announcementActive = \App\Support\Settings::get('announcement_active', false, 'global');
         $announcementText   = \App\Support\Settings::get('announcement_text', '', 'global');
@@ -109,12 +119,19 @@
     @endif
 
     <main id="fc-main">
+        @unless (isset($exception))
+            {{-- Top banner: desktop only. The 320x50 "mobile" zone is consumed by the
+                 sticky anchor below and a zone must never appear twice on one page. --}}
+            <div class="hidden lg:block text-center my-4"><x-ads.slot name="leaderboard" /></div>
+        @endunless
+
         @if (session('profile_completion'))
         <div class="bg-brand-soft border border-brand text-ink px-4 py-2 text-sm text-center" role="status">
             {{ session('profile_completion') }} <a href="{{ lroute('profile') }}" class="underline font-semibold">{{ __('profile.finish_profile') }}</a>
         </div>
         @endif
         @yield('content')
+
     </main>
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>
@@ -138,6 +155,11 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
+    @unless (isset($exception))
+        @if (\App\Support\Ads::enabled() && \App\Support\Ads::slot('mobile') && ! empty(\App\Support\Ads::slot('mobile')['key']))
+            <div class="fc-ad-anchor-spacer" aria-hidden="true"></div>
+        @endif
+    @endunless
     @include('partials.mobile-nav')
 </body>
 

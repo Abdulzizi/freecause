@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var stepBar = nav.querySelector('[data-step-bar]');
     var backBtn = document.createElement('button');
     backBtn.type = 'button';
-    backBtn.className = 'fcui-btn fcui-btn--secondary fcui-tap w-full mt-2';
+    backBtn.className = 'fcui-btn fcui-btn--secondary fcui-tap w-full mb-2';
     backBtn.textContent = form.dataset.backLabel || 'Back';
     if (sticky) sticky.insertBefore(backBtn, sticky.firstChild);
     var nextBtn = null;

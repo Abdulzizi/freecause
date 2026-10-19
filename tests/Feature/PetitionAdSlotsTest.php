@@ -51,10 +51,10 @@ class PetitionAdSlotsTest extends TestCase
         }
     }
 
-    public function test_configured_slots_emit_their_loader_script_but_empty_key_does_not(): void
+    public function test_configured_slots_point_at_their_frame_but_empty_key_does_not(): void
     {
         config(['ads.enabled' => true]);
-        // force one slot's key empty to prove the box-only (no script) path
+        // force one slot's key empty to prove the box-only (no frame) path
         config(['ads.slots.skyscraper.key' => '']);
 
         [$petition, $slug] = $this->publishedPetition();
@@ -63,13 +63,42 @@ class PetitionAdSlotsTest extends TestCase
             ->assertOk()
             ->getContent();
 
-        // iframe banner (300x250) + native both load their key
-        $this->assertStringContainsString(config('ads.slots.rectangle.key'), $html);
-        $this->assertStringContainsString('container-'.config('ads.slots.native.key'), $html);
+        // configured slots render an isolated ad frame
+        $this->assertStringContainsString('/ads/frame/rectangle', $html);
+        $this->assertStringContainsString('/ads/frame/native', $html);
 
-        // an empty key renders the reserved box but no script / no data-ad-id value
+        // an empty key renders the reserved box but no frame / no data-ad-id value
         $this->assertStringContainsString('fc-ad fc-ad--skyscraper', $html);
         $this->assertStringContainsString('data-ad-id=""', $html);
+        $this->assertStringNotContainsString('/ads/frame/skyscraper', $html);
+    }
+
+    public function test_ad_frame_serves_the_loader_with_a_relaxed_csp(): void
+    {
+        config(['ads.enabled' => true]);
+
+        $response = $this->get('/ads/frame/rectangle')->assertOk();
+
+        // must stay frameable by our own pages, never by other origins
+        $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+
+        $body = $response->getContent();
+        $this->assertStringContainsString('/ads/config/rectangle', $body);
+        $this->assertStringContainsString(config('ads.slots.rectangle.key'), $body);
+
+        // the frame needs inline/eval because the network loader injects inline script;
+        // the public page CSP (tested in SecurityHeadersAdsenseTest) keeps forbidding it
+        $csp = (string) $response->headers->get('Content-Security-Policy');
+        $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval'", $csp);
+    }
+
+    public function test_ad_frame_404s_for_unknown_or_keyless_slot(): void
+    {
+        config(['ads.enabled' => true]);
+        config(['ads.slots.skyscraper.key' => '']);
+
+        $this->get('/ads/frame/doesnotexist')->assertNotFound();
+        $this->get('/ads/frame/skyscraper')->assertNotFound();
     }
 
     public function test_master_flag_disables_every_slot(): void

@@ -1,0 +1,8 @@
+id: no-shoutbox-create
+language: php
+severity: warning
+message: 'Use update-only in shoutboxStore (abort_unless 403)'
+ignores:
+  - tests/**
+rule:
+  pattern: 'Signature::create($$$)'
