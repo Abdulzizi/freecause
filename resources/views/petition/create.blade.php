@@ -17,6 +17,7 @@
     $oldCity = old('city', $petition->city ?? '');
     $oldCountry = old('country', $petition->country ?? '');
     $activeAuthTab = old('auth_form') === 'register' ? 'register' : 'login';
+    $countries = collect(['AF'=>'Afghanistan','AL'=>'Albania','DZ'=>'Algeria','AR'=>'Argentina','AU'=>'Australia','AT'=>'Austria','BE'=>'Belgium','BR'=>'Brazil','BG'=>'Bulgaria','CA'=>'Canada','CL'=>'Chile','CN'=>'China','CO'=>'Colombia','HR'=>'Croatia','CZ'=>'Czechia','DK'=>'Denmark','EG'=>'Egypt','EE'=>'Estonia','FI'=>'Finland','FR'=>'France','DE'=>'Germany','GR'=>'Greece','HU'=>'Hungary','IN'=>'India','ID'=>'Indonesia','IR'=>'Iran','IE'=>'Ireland','IL'=>'Israel','IT'=>'Italy','JP'=>'Japan','JO'=>'Jordan','KE'=>'Kenya','LV'=>'Latvia','LB'=>'Lebanon','LT'=>'Lithuania','LU'=>'Luxembourg','MY'=>'Malaysia','MX'=>'Mexico','MA'=>'Morocco','NL'=>'Netherlands','NZ'=>'New Zealand','NG'=>'Nigeria','NO'=>'Norway','PK'=>'Pakistan','PE'=>'Peru','PH'=>'Philippines','PL'=>'Poland','PT'=>'Portugal','RO'=>'Romania','RU'=>'Russia','SA'=>'Saudi Arabia','RS'=>'Serbia','SK'=>'Slovakia','SI'=>'Slovenia','ZA'=>'South Africa','ES'=>'Spain','SE'=>'Sweden','CH'=>'Switzerland','TW'=>'Taiwan','TH'=>'Thailand','TN'=>'Tunisia','TR'=>'Turkey','UA'=>'Ukraine','GB'=>'United Kingdom','US'=>'United States','UY'=>'Uruguay','VE'=>'Venezuela','VN'=>'Vietnam'])->sort();
 @endphp
 
 @extends('layouts.legacy')
@@ -36,8 +37,8 @@
                 @if ($errors->any())
                     <x-ui.alert variant="error">
                         <ul class="mb-0">
-                            @foreach ($errors->all() as $e)
-                                <li>{{ $e }}</li>
+                            @foreach ($errors->keys() as $field)
+                                <li><a href="#field-{{ $field }}" class="underline">{{ $errors->first($field) }}</a></li>
                             @endforeach
                         </ul>
                     </x-ui.alert>
@@ -52,7 +53,8 @@
             @endauth
 
             @if(!$isEdit)
-                <h1 class="text-center mb-6 max-md:text-xl max-md:mb-4">{{ __('create.heading_create') }}</h1>
+                <h1 class="text-2xl tracking-tight mb-6 max-md:mb-4">{{ __('create.heading_create') }}</h1>
+                <p class="text-muted text-sm mb-6">Start your petition in a minute</p>
 
                 <div class="flex flex-wrap items-center justify-center gap-16 mb-10 max-md:hidden" aria-label="Petition creation progress">
                     <div class="flex items-center gap-4 min-w-[240px]" aria-current="step">
@@ -70,6 +72,13 @@
                         <div class="text-xl font-medium text-ink whitespace-nowrap">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
+
+                <nav class="md:hidden flex items-center justify-center gap-2 mb-6" aria-label="Petition creation progress">
+                    <span class="w-2 h-2 rounded-full bg-brand" aria-current="step"></span>
+                    <span class="w-2 h-2 rounded-full bg-border"></span>
+                    <span class="w-2 h-2 rounded-full bg-border"></span>
+                    <span class="text-sm text-muted tabular-nums ms-2">1/3</span>
+                </nav>
 
                 @guest
                     <div class="mb-4 max-w-[720px] mx-auto [&_.nav-link]:w-full [&_.nav-link]:text-ink [&_.nav-link]:font-semibold max-md:[&_.nav-link]:py-2 max-md:[&_.nav-link]:px-2 max-md:[&_.tab-pane>div]:p-4 max-md:[&_.tab-pane>div]:border-t-0 max-md:[&_.tab-pane>div]:rounded-t-none max-md:[&_.tab-pane>div]:rounded-b-lg max-md:[&_.tab-pane>div]:shadow-none max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full max-md:[&_.btn]:w-full">
@@ -127,7 +136,7 @@
                     </div>
                 @endguest
             @else
-                <h1 class="text-center mb-6 max-md:text-xl max-md:mb-4">{{ __('create.heading_edit') }}</h1>
+                <h1 class="text-2xl tracking-tight mb-6 max-md:mb-4">{{ __('create.heading_edit') }}</h1>
             @endif
 
             @auth
@@ -136,7 +145,6 @@
 
                         <div class="mb-4">
                             <div class="font-semibold">{{ __('create.petition_data') }}</div>
-                            <div class="h-0.5 bg-brand w-full mt-1.5"></div>
                         </div>
 
                         <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
@@ -144,176 +152,210 @@
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
 
-                            <div class="mb-3">
-                                <x-ui.input name="title" :label="__('form.title')" :value="$oldTitle" required data-maxcount="120" class="max-md:min-h-12" />
-                            </div>
+                            <fieldset class="mb-6 border-2 border-brand rounded-md p-4" id="field-title">
+                                <legend class="px-2 font-semibold">Story</legend>
+                                <div class="mb-3">
+                                    <x-ui.input id="field-title" name="title" :label="__('form.title')" :value="$oldTitle" :error="$errors->first('title')" required data-maxcount="120" class="max-md:min-h-12" />
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="block mb-2" for="petition_description">{{ __('form.description') }}</label>
+                                <div class="mb-3">
+                                    <label class="block mb-2" for="petition_description">{{ __('form.description') }}</label>
 
-                                <div class="border border-border rounded-sm overflow-hidden">
-                                    <div id="fc-quill-toolbar" class="flex items-center gap-1.5 p-1.5 bg-surface-2 border-b border-border">
-                                        <button class="ql-bold" type="button" title="Bold (Ctrl+B)"></button>
-                                        <button class="ql-italic" type="button" title="Italic (Ctrl+I)"></button>
-                                        <button class="ql-underline" type="button" title="Underline (Ctrl+U)"></button>
+                                    <div class="border border-border rounded-sm overflow-hidden">
+                                        <div id="fc-quill-toolbar" class="flex items-center gap-1.5 p-1.5 bg-surface-2 border-b border-border" role="toolbar" aria-label="Formatting options">
+                                            <button class="ql-bold" type="button" aria-label="Bold"></button>
+                                            <button class="ql-italic" type="button" aria-label="Italic"></button>
+                                            <button class="ql-underline" type="button" aria-label="Underline"></button>
 
-                                        <span class="w-px h-5 bg-border-strong mx-1.5"></span>
+                                            <span class="w-px h-5 bg-border-strong mx-1.5"></span>
 
-                                        <button class="ql-list" value="bullet" type="button" title="Bullet list"></button>
-                                        <button class="ql-list" value="ordered" type="button" title="Numbered list"></button>
+                                            <button class="ql-list" value="bullet" type="button" aria-label="Bullet list"></button>
+                                            <button class="ql-list" value="ordered" type="button" aria-label="Numbered list"></button>
 
-                                        <span class="flex-1"></span>
+                                            <span class="flex-1"></span>
+                                        </div>
+
+                                        <div id="petition_editor" role="textbox" aria-multiline="true" tabindex="0" aria-label="{{ __('form.description') }}" class="min-h-[260px] text-sm leading-[1.45] [&_.ql-editor]:min-h-[260px] [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pl-[22px] [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pl-[22px] [&_.ql-editor_li]:list-item"></div>
+
+                                        <textarea id="petition_description" class="sr-only" name="description" aria-label="{{ __('form.description') }}"
+                                            required @error('description') aria-invalid="true" aria-describedby="field-description-error" @enderror>{!! $oldDesc !!}</textarea>
                                     </div>
+                                    @error('description')
+                                        <p id="field-description-error" class="text-danger text-sm mt-1">{{ $message }}</p>
+                                    @enderror
 
-                                    <div id="petition_editor" class="min-h-[260px] text-sm leading-[1.45] [&_.ql-editor]:min-h-[260px] [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pl-[22px] [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pl-[22px] [&_.ql-editor_li]:list-item"></div>
-
-                                    <textarea id="petition_description" class="hidden" name="description"
-                                        required>{!! $oldDesc !!}</textarea>
+                                    <div class="block pt-2 px-0.5 text-sm text-muted">
+                                        {{ __('create.markup_hint') }}
+                                        <a class="text-brand underline" href="{{ lroute('how-to-write-a-petition') }}">{{ __('create.help_link') }}</a>
+                                    </div>
                                 </div>
 
-                                <div class="block pt-2 px-0.5 text-sm text-muted">
-                                    {{ __('create.markup_hint') }}
-                                    <a class="text-brand underline" href="{{ lroute('how-to-write-a-petition') }}">{{ __('create.help_link') }}</a>
-                                </div>
-                            </div>
+                                <div class="row g-3 mb-3">
+                                    @unless($isEdit)
+                                        <div class="col-md-6">
+                                            <label class="block mb-2" for="field-goal_signatures">{{ __('form.goal_signatures') }}</label>
 
-                            <div class="row g-3 mb-3">
-                                @unless($isEdit)
+                                            <select id="field-goal_signatures" class="form-select max-md:min-h-12 @error('goal_signatures') is-invalid @enderror" name="goal_signatures" required @error('goal_signatures') aria-invalid="true" aria-describedby="field-goal_signatures-error" @enderror>
+                                                <option value="">{{ __('create.select_one') }}</option>
+
+                                                @php
+                                                    $goals = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
+                                                    $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' ' . __('create.signatures_sfx');
+                                                @endphp
+
+                                                @foreach ($goals as $g)
+                                                    <option value="{{ $g }}" @selected((int) $oldGoal === (int) $g)>
+                                                        {{ $goalLabel($g) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('goal_signatures')
+                                                <div id="field-goal_signatures-error" class="invalid-feedback block">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endunless
+
                                     <div class="col-md-6">
-                                        <label class="block mb-2" for="goal_signatures">{{ __('form.goal_signatures') }}</label>
-
-                                        <select id="goal_signatures" class="form-select max-md:min-h-12" name="goal_signatures" required>
+                                        <label class="block mb-2" for="field-category_id">{{ __('form.category') }}</label>
+                                        <select id="field-category_id" class="form-select max-md:min-h-12 @error('category_id') is-invalid @enderror" name="category_id" required @error('category_id') aria-invalid="true" aria-describedby="field-category_id-error" @enderror>
                                             <option value="">{{ __('create.select_one') }}</option>
-
-                                            @php
-                                                $goals = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
-                                                $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' ' . __('create.signatures_sfx');
-                                            @endphp
-
-                                            @foreach ($goals as $g)
-                                                <option value="{{ $g }}" @selected((int) $oldGoal === (int) $g)>
-                                                    {{ $goalLabel($g) }}
+                                            @foreach ($categories as $c)
+                                                <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
+                                                    {{ $c->name }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('category_id')
+                                            <div id="field-category_id-error" class="invalid-feedback block">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                @endunless
-
-                                <div class="col-md-6">
-                                    <label class="block mb-2" for="category_id">{{ __('form.category') }}</label>
-                                    <select id="category_id" class="form-select max-md:min-h-12" name="category_id" required>
-                                        <option value="">{{ __('create.select_one') }}</option>
-                                        @foreach ($categories as $c)
-                                            <option value="{{ $c->id }}" @selected((int) $oldCategory === (int) $c->id)>
-                                                {{ $c->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
                                 </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <x-ui.input name="tags" :label="__('form.tags')" :value="$oldTags" :hint="__('create.tags_hint')" class="max-md:min-h-12" />
-                            </div>
+                                <div class="mb-3">
+                                    <x-ui.input id="field-tags" name="tags" :label="__('form.tags')" :value="$oldTags" :hint="__('create.tags_hint')" :error="$errors->first('tags')" class="max-md:min-h-12" />
+                                </div>
+                            </fieldset>
 
-                            <div class="mb-3" data-image-field>
-                                <label class="block mb-2" for="petition-image">{{ __('form.image') }}</label>
+                            <fieldset class="mb-6">
+                                <legend class="font-semibold">Media</legend>
+                                <details open>
+                                    <summary class="cursor-pointer text-sm text-brand">Photos and video</summary>
+                                    <div class="mb-3" data-image-field>
+                                        <label class="block mb-2" for="petition-image">{{ __('form.image') }}</label>
 
-                                <p class="text-muted text-sm mb-2" data-image-instructions>
-                                    {{ __('create.image_instructions') }}
-                                </p>
+                                        <p class="text-muted text-sm mb-2" data-image-instructions>
+                                            {{ __('create.image_instructions') }}
+                                        </p>
 
-                                <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
+                                        <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
 
-                                <input type="file" id="petition-image" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
-                                    name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
-                                    data-image-input data-max-size="4194304">
+                                        <input type="file" id="petition-image" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
+                                            name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
+                                            data-image-input data-max-size="4194304" @error('image') aria-invalid="true" aria-describedby="petition-image-error" @enderror>
 
-                                <small class="text-muted block mt-1" data-image-formats>
-                                    {{ __('create.image_formats') }}
-                                </small>
-
-                                @error('image')
-                                    <div class="invalid-feedback block">{{ $message }}</div>
-                                @enderror
-
-                                <div class="mt-4 hidden" data-image-preview>
-                                    <img src="" alt="{{ __('create.image_preview_alt') }}" class="img-thumbnail max-h-[220px] w-auto h-auto object-contain" data-image-preview-img>
-                                    <div class="flex items-center justify-between mt-2">
-                                        <small class="text-muted">
-                                            <span data-image-name></span>
-                                            <span class="ms-1" data-image-size></span>
+                                        <small class="text-muted block mt-1" data-image-formats>
+                                            {{ __('create.image_formats') }}
                                         </small>
-                                        <button type="button" class="fcui-btn fcui-btn--sm fcui-btn--secondary" data-image-remove>
-                                            {{ __('create.remove') }}
-                                        </button>
-                                    </div>
-                                </div>
 
-                                @if($isEdit && ($petition->cover_image || $petition->image_url))
-                                    <div class="mt-4">
-                                        <img src="{{ $petition->coverUrl() }}" class="img-thumbnail max-h-[220px]" alt="{{ $tr->title }}">
-                                        <div class="block min-h-6 pl-6 mb-0.5 mt-2">
-                                            <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
-                                            <label class="form-check-label" for="remove-petition-image">{{ __('create.remove_current_image') }}</label>
+                                        @error('image')
+                                            <div id="petition-image-error" class="invalid-feedback block">{{ $message }}</div>
+                                        @enderror
+
+                                        <div class="mt-4 hidden" data-image-preview>
+                                            <img src="" alt="{{ __('create.image_preview_alt') }}" class="rounded-md border-border shadow-elev-1 max-h-[220px] w-auto h-auto object-contain" data-image-preview-img>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <small class="text-muted">
+                                                    <span data-image-name></span>
+                                                    <span class="ms-1" data-image-size></span>
+                                                </small>
+                                                <button type="button" class="fcui-btn fcui-btn--sm fcui-btn--secondary fcui-tap" data-image-remove>
+                                                    {{ __('create.remove') }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        @if($oldImageUrl)
+                                            <div class="mt-4">
+                                                <img src="{{ $oldImageUrl }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $oldTitle }}" onerror="this.style.display='none'">
+                                            </div>
+                                        @elseif($isEdit && ($petition->cover_image || $petition->image_url))
+                                            <div class="mt-4">
+                                                <img src="{{ $petition->coverUrl() }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $tr->title }}" onerror="this.style.display='none'">
+                                                <div class="block min-h-6 pl-6 mb-0.5 mt-2">
+                                                    <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
+                                                    <label class="form-check-label" for="remove-petition-image">{{ __('create.remove_current_image') }}</label>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <div class="flex items-center text-center gap-3 my-4 text-muted text-xs before:flex-1 before:h-px before:bg-border after:flex-1 after:h-px after:bg-border before:content-[''] after:content-['']" role="separator">
+                                            <span>{{ __('create.or') }}</span>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            <label class="block mb-2" for="field-image_url">{{ __('form.image_external') }}</label>
+                                            <input id="field-image_url" class="form-control max-md:min-h-12 @error('image_url') is-invalid @enderror"
+                                                name="image_url" value="{{ $oldImageUrl }}" placeholder="https://" data-image-url @error('image_url') aria-invalid="true" aria-describedby="field-image_url-error" @enderror>
+                                            @error('image_url')
+                                                <div id="field-image_url-error" class="invalid-feedback block">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
-                                @endif
 
-                                <div class="flex items-center text-center gap-3 my-4 text-muted font-semibold text-sm uppercase tracking-[0.05em] before:flex-1 before:h-px before:bg-border after:flex-1 after:h-px after:bg-border before:content-[''] after:content-['']" role="separator" aria-label="or">
-                                    <span>{{ __('create.or') }}</span>
+                                    <div class="mb-3">
+                                        <x-ui.input id="field-youtube" name="youtube" :label="__('form.youtube')" :value="$oldYoutube" :error="$errors->first('youtube')" class="max-md:min-h-12" />
+                                    </div>
+                                </details>
+                            </fieldset>
+
+                            <fieldset class="mb-6">
+                                <legend class="font-semibold">Targeting</legend>
+                                <div class="mb-3">
+                                    <x-ui.input id="field-target" name="target" :label="__('form.target')" :value="$oldTarget" :error="$errors->first('target')" class="max-md:min-h-12" />
                                 </div>
 
-                                <div class="mt-2">
-                                    <label class="block mb-2">{{ __('form.image_external') }}</label>
-                                    <input class="form-control max-md:min-h-12 @error('image_url') is-invalid @enderror"
-                                        name="image_url" value="{{ $oldImageUrl }}" placeholder="https://" data-image-url>
-                                    @error('image_url')
-                                        <div class="invalid-feedback block">{{ $message }}</div>
+                                <div class="mb-3">
+                                    <x-ui.input id="field-community" name="community" :label="__('form.community')" :value="$oldCommunity" :error="$errors->first('community')" class="max-md:min-h-12" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <x-ui.input id="field-community_url" name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" :error="$errors->first('community_url')" class="max-md:min-h-12" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="block mb-1 text-sm font-medium text-ink" for="field-country">{{ __('form.country') }}</label>
+                                    <select name="country" id="field-country" class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand @error('country') is-invalid @enderror" @error('country') aria-invalid="true" aria-describedby="field-country-error" @enderror>
+                                        <option value="">-- {{ __('form.country_select') }} --</option>
+                                        @foreach ($countries as $code => $name)
+                                            <option value="{{ $code }}" @selected($oldCountry === $code)>{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('country')
+                                        <div id="field-country-error" class="invalid-feedback block">{{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <x-ui.input name="youtube" :label="__('form.youtube')" :value="$oldYoutube" class="max-md:min-h-12" />
-                            </div>
-
-                            <div class="mb-3">
-                                <x-ui.input name="target" :label="__('form.target')" :value="$oldTarget" class="max-md:min-h-12" />
-                            </div>
-
-                            <div class="mb-3">
-                                <x-ui.input name="community" :label="__('form.community')" :value="$oldCommunity" class="max-md:min-h-12" />
-                            </div>
-
-                            <div class="mb-3">
-                                <x-ui.input name="community_url" :label="__('form.community_url')" :value="$oldCommunityUrl" class="max-md:min-h-12" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="block mb-1 text-sm font-medium text-ink" for="fc-country">{{ __('form.country') }}</label>
-                                <select name="country" id="fc-country" class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand">
-                                    <option value="">-- {{ __('form.country_select') }} --</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block mb-1 text-sm font-medium text-ink" for="fc-city">{{ __('form.city') }}</label>
-                                <input type="text" name="city" id="fc-city" value="{{ $oldCity }}"
-                                    class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
-                                    autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" />
-                                <datalist id="fc-city-list"></datalist>
-                            </div>
+                                <div class="mb-6">
+                                    <label class="block mb-1 text-sm font-medium text-ink" for="field-city">{{ __('form.city') }}</label>
+                                    <input type="text" name="city" id="field-city" value="{{ $oldCity }}"
+                                        class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand @error('city') is-invalid @enderror"
+                                        autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" @error('city') aria-invalid="true" aria-describedby="field-city-error" @enderror />
+                                    <datalist id="fc-city-list"></datalist>
+                                    @error('city')
+                                        <div id="field-city-error" class="invalid-feedback block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </fieldset>
 
                             <div class="text-center max-md:[&_.fcui-btn]:w-full">
-                                <span data-autosave-status class="text-sm text-muted me-3"></span>
-                                <x-ui.button type="submit" variant="danger" class="px-12 max-md:min-h-12 hidden md:inline-flex"
+                                <span data-autosave-status role="status" class="text-sm text-muted me-3">Draft saves automatically</span>
+                                <x-ui.button type="submit" variant="primary" class="max-md:hidden max-md:min-h-12"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
                                 </x-ui.button>
                             </div>
 
-                            <x-ui.sticky-action :label="$isEdit ? __('create.update') : __('form.submit')" />
+                            <x-ui.sticky-action class="md:hidden" :label="$isEdit ? __('create.update') : __('form.submit')" />
                         </form>
 
                     </div>
@@ -333,37 +375,10 @@
 @push('scripts')
 <script>
 (function () {
-    // country list: ISO 3166-1 alpha-2 + name, sorted by name
-    const COUNTRIES = [
-        ['AF','Afghanistan'],['AL','Albania'],['DZ','Algeria'],['AR','Argentina'],['AU','Australia'],
-        ['AT','Austria'],['BE','Belgium'],['BR','Brazil'],['BG','Bulgaria'],['CA','Canada'],
-        ['CL','Chile'],['CN','China'],['CO','Colombia'],['HR','Croatia'],['CZ','Czechia'],
-        ['DK','Denmark'],['EG','Egypt'],['EE','Estonia'],['FI','Finland'],['FR','France'],
-        ['DE','Germany'],['GR','Greece'],['HU','Hungary'],['IN','India'],['ID','Indonesia'],
-        ['IR','Iran'],['IE','Ireland'],['IL','Israel'],['IT','Italy'],['JP','Japan'],
-        ['JO','Jordan'],['KE','Kenya'],['LV','Latvia'],['LB','Lebanon'],['LT','Lithuania'],
-        ['LU','Luxembourg'],['MY','Malaysia'],['MX','Mexico'],['MA','Morocco'],['NL','Netherlands'],
-        ['NZ','New Zealand'],['NG','Nigeria'],['NO','Norway'],['PK','Pakistan'],['PE','Peru'],
-        ['PH','Philippines'],['PL','Poland'],['PT','Portugal'],['RO','Romania'],['RU','Russia'],
-        ['SA','Saudi Arabia'],['RS','Serbia'],['SK','Slovakia'],['SI','Slovenia'],['ZA','South Africa'],
-        ['ES','Spain'],['SE','Sweden'],['CH','Switzerland'],['TW','Taiwan'],['TH','Thailand'],
-        ['TN','Tunisia'],['TR','Turkey'],['UA','Ukraine'],['GB','United Kingdom'],['US','United States'],
-        ['UY','Uruguay'],['VE','Venezuela'],['VN','Vietnam'],
-    ].sort((a,b) => a[1].localeCompare(b[1]));
-
-    const sel = document.getElementById('fc-country');
-    const cityIn = document.getElementById('fc-city');
+    const sel = document.getElementById('field-country');
+    const cityIn = document.getElementById('field-city');
     const cityList = document.getElementById('fc-city-list');
-    const preselect = {{ json_encode($oldCountry) }};
-
-    COUNTRIES.forEach(([code, name]) => {
-        const opt = document.createElement('option');
-        opt.value = code;
-        opt.textContent = name;
-        if (code === preselect) opt.selected = true;
-        sel.appendChild(opt);
-    });
-
+    if (!sel || !cityIn) return;
     let cityTimer = null;
     cityIn.addEventListener('input', function () {
         const q = this.value.trim();
@@ -372,14 +387,14 @@
         if (q.length < 2) { cityList.innerHTML = ''; return; }
         cityTimer = setTimeout(() => {
             const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=6&featuretype=city&addressdetails=0'
-                + (cc ? '&countrycodes=' + cc : '')
+                + (cc ? '&countrycodes=' + cc.toLowerCase() : '')
                 + '&q=' + encodeURIComponent(q);
             fetch(url, { headers: { 'Accept-Language': document.documentElement.lang || 'en' } })
                 .then(r => r.json())
                 .then(data => {
                     cityList.innerHTML = '';
                     const seen = new Set();
-                    data.forEach(item => {
+                    (data || []).forEach(item => {
                         const label = item.display_name.split(',')[0].trim();
                         if (seen.has(label)) return;
                         seen.add(label);
@@ -388,9 +403,10 @@
                         cityList.appendChild(o);
                     });
                 })
-                .catch(() => {});
+                .catch(() => { cityList.innerHTML = ''; });
         }, 300);
     });
+    sel.addEventListener('change', function () { cityList.innerHTML = ''; });
 })();
 </script>
 @endpush

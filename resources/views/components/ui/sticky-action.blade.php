@@ -12,6 +12,6 @@
     @if ($href)
         <x-ui.button variant="danger" :href="$href" class="w-full fcui-tap">{{ $label ?? $slot }}</x-ui.button>
     @else
-        <x-ui.button type="submit" variant="danger" class="w-full fcui-tap">{{ $label ?? $slot }}</x-ui.button>
+        <x-ui.button type="submit" variant="primary" class="w-full fcui-tap">{{ $label ?? $slot }}</x-ui.button>
     @endif
 </div>
