@@ -82,7 +82,7 @@
         padding-block: clamp(1.25rem, 3vw, 2rem) clamp(0.875rem, 2vw, 1.25rem);
     }
 
-    body.fc-public #fc-main > section:first-child:not(.fc-hero) {
+    body.fc-public #fc-main > section:first-of-type:not(.fc-hero) {
         padding-block-start: clamp(1.25rem, 3vw, 2rem);
     }
 
