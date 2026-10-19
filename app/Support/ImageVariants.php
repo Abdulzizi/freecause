@@ -27,17 +27,19 @@ class ImageVariants
 
         $disk = Storage::disk('public');
 
-        if (! $disk->exists($variants['w800']) || ! $disk->exists($variants['w400'])) {
+        if (! $disk->exists($variants['w400'])) {
             return null;
         }
 
-        return [
-            '800' => asset('storage/'.$variants['w800']),
-            '400' => asset('storage/'.$variants['w400']),
-        ];
+        $out = ['400' => asset('storage/'.$variants['w400'])];
+        if ($disk->exists($variants['w800'])) {
+            $out['800'] = asset('storage/'.$variants['w800']);
+        }
+
+        return $out;
     }
 
-    public static function ensure(string $absPath): ?array
+    public static function ensure(string $absPath, ?int $origWidth = null): ?array
     {
         try {
             if (! is_file($absPath)) {
@@ -49,8 +51,12 @@ class ImageVariants
             }
 
             $variants = self::absoluteVariantPaths($absPath);
+            $widths = self::VARIANTS;
+            if ($origWidth !== null && $origWidth <= 800) {
+                unset($widths['w800']);
+            }
 
-            foreach (self::VARIANTS as $label => $width) {
+            foreach ($widths as $label => $width) {
                 $dest = $variants[$label];
 
                 if (is_file($dest)) {
@@ -64,10 +70,12 @@ class ImageVariants
                     ->save($dest);
             }
 
-            if (! is_file($variants['w800']) || ! is_file($variants['w400'])) {
-                report(new \RuntimeException('WebP variants incomplete after conversion'));
+            foreach (array_keys($widths) as $label) {
+                if (! is_file($variants[$label])) {
+                    report(new \RuntimeException('WebP variants incomplete after conversion'));
 
-                return null;
+                    return null;
+                }
             }
 
             return $variants;

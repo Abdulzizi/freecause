@@ -18,6 +18,7 @@ use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\ImageVariants;
 use App\Support\Slug;
+use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -57,9 +58,9 @@ class PetitionController extends Controller
     private function requireEditable(Petition $petition): void
     {
         $this->requireOwner($petition);
-
+        abort_unless($petition->is_active && $petition->status === 'published', 403);
         abort_if(
-            $petition->signatures()->where('user_id', '!=', $petition->user_id)->exists(),
+            $petition->signatures()->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
             403,
             'Petition can no longer be edited after another person has signed.'
         );
@@ -96,6 +97,7 @@ class PetitionController extends Controller
     private function storeCoverImage(UploadedFile $file): string
     {
         $size = @getimagesize($file->getPathname());
+        $origWidth = $size !== false ? (int) $size[0] : 801;
         if ($size !== false && max($size[0], $size[1]) > 2000) {
             throw ValidationException::withMessages([
                 'image' => 'The image must not exceed 2000 pixels on its longest side.',
@@ -106,8 +108,9 @@ class PetitionController extends Controller
         $absolute = Storage::disk('public')->path($path);
 
         try {
-            Image::read($absolute)->scaleDown(width: 800, height: 800)->save($absolute);
-            ImageVariants::ensure($absolute);
+            $img = Image::read($absolute)->orient();
+            $img->scaleDown(width: 800, height: 800)->save($absolute);
+            ImageVariants::ensure($absolute, $origWidth);
 
             if (! Storage::disk('public')->exists($path)) {
                 throw ValidationException::withMessages([
@@ -486,6 +489,18 @@ class PetitionController extends Controller
 
     public function store(PetitionRequest $request, string $locale)
     {
+        if (Spam::rateLimit('petition.create', 5)) {
+            Spam::log('petition.create', 'Rate limit exceeded');
+
+            return back()->withErrors(['title' => 'Too many petition attempts.'])->withInput();
+        }
+
+        $data = $request->validated();
+        if (Spam::isSpam(($data['title'] ?? '').' '.($data['description'] ?? ''))) {
+            Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
+
+            return back()->withErrors(['title' => 'Suspicious activity detected.'])->withInput();
+        }
         $uploaded = $request->file('image');
         if ($uploaded !== null && ! $uploaded->isValid()) {
             $reason = $uploaded->getError();
@@ -512,6 +527,9 @@ class PetitionController extends Controller
         }
 
         $newCoverImage = null;
+        if ($request->hasFile('image')) {
+            $newCoverImage = $this->storeCoverImage($request->file('image'));
+        }
 
         try {
             return DB::transaction(function () use ($request, $data, $locale, &$newCoverImage) {
@@ -534,7 +552,6 @@ class PetitionController extends Controller
                 $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
-                    $newCoverImage = $this->storeCoverImage($request->file('image'));
                     $petition->cover_image = $newCoverImage;
                 }
 
@@ -542,47 +559,40 @@ class PetitionController extends Controller
 
                 $slug = $this->makeUniqueSlug($data['title'], $locale);
 
-                $petition->translations()->create([
-                    'locale' => $locale,
-                    'title' => $data['title'],
-                    'slug' => $slug,
-                    'description' => sanitizePetitionHtml($data['description']),
-                ]);
+                $tries = 0;
+                while (true) {
+                    try {
+                        $petition->translations()->create([
+                            'locale' => $locale,
+                            'title' => $data['title'],
+                            'slug' => $slug,
+                            'description' => sanitizePetitionHtml($data['description']),
+                        ]);
+                        break;
+                    } catch (QueryException $e) {
+                        if (($e->errorInfo[0] ?? null) !== '23000' || ++$tries >= 5) {
+                            throw $e;
+                        }
+                        $slug = Slug::dedupe($data['title'].'-'.$tries, fn () => false, 'petition', 255);
+                    }
+                }
 
                 $user = auth()->user();
 
-                $alreadySigned = Signature::query()
-                    ->where('petition_id', $petition->id)
-                    ->where(function ($q) use ($user) {
-                        $q->where('user_id', $user->id)
-                            ->orWhere('email', $user->email);
-                    })
-                    ->exists();
+                $sig = Signature::firstOrCreate(
+                    ['petition_id' => $petition->id, 'email' => $user->email],
+                    [
+                        'user_id' => $user->id,
+                        'name' => $user->name ?? 'Anonymous',
+                        'locale' => $locale,
+                        'text' => 'I support this petition',
+                        'confirmed' => true,
+                    ]
+                );
 
-                if (! $alreadySigned) {
-                    try {
-                        $sig = Signature::firstOrCreate(
-                            ['petition_id' => $petition->id, 'email' => $user->email],
-                            [
-                                'user_id' => $user->id,
-                                'name' => $user->name ?? 'Anonymous',
-                                'locale' => $locale,
-                                'text' => 'I support this petition',
-                                'confirmed' => true,
-                            ]
-                        );
-                    } catch (QueryException $e) {
-                        if (($e->errorInfo[0] ?? null) !== '23000') {
-                            throw $e;
-                        }
-                        $sig = null;
-                    }
-
-                    $previousCount = null;
-                    if (($sig ?? null)?->wasRecentlyCreated) {
-                        $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
-                        PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
-                    }
+                if ($sig->wasRecentlyCreated) {
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
                 toast('Petition created successfully.', 'success');
@@ -871,7 +881,7 @@ class PetitionController extends Controller
     public function update(PetitionRequest $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
-        $this->requireEditable($petition);
+        $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
         if ($trOrRedirect instanceof RedirectResponse) {
@@ -895,6 +905,9 @@ class PetitionController extends Controller
 
         try {
             $response = DB::transaction(function () use ($request, $data, $petition, $tr, &$newCoverImage) {
+                $locked = Petition::query()->lockForUpdate()->findOrFail($petition->id);
+                $this->requireEditable($locked);
+                $petition->setRawAttributes($locked->getAttributes());
 
                 $tags = $this->normalizeTags($data['tags'] ?? null);
 

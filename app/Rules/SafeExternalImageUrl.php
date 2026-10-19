@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Cache;
 
 class SafeExternalImageUrl implements ValidationRule
 {
@@ -53,7 +54,7 @@ class SafeExternalImageUrl implements ValidationRule
             return;
         }
 
-        $result = $this->inspect($url);
+        $result = Cache::remember('imgchk:'.sha1($url), 86400, fn () => $this->inspect($url));
 
         $messages = [
             'unreachable' => 'The image link could not be reached. Check the URL and try again.',

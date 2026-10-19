@@ -291,7 +291,7 @@ Route::prefix('{locale}')
             Route::post('/create-petition', [PetitionController::class, 'store'])->name('petition.store')->middleware('throttle:5,1');
 
             Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->name('petition.edit');
-            Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update');
+            Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update')->middleware('throttle:10,1');
             Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])->name('petition.download.txt');
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
             Route::get('/petition/{slug}/{id}/download/csv', [PetitionController::class, 'downloadCsv'])->name('petition.download.csv');
