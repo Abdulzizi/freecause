@@ -50,6 +50,34 @@ return [
             'w' => 320,
             'h' => 50,
         ],
+        'mobile_feed' => [ // 300x100 compact in-feed
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_FEED', ''),
+            'path' => '22',
+            'w' => 300,
+            'h' => 100,
+        ],
+        'mobile_inline' => [ // 320x50 inline interstitial-ish
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_INLINE', ''),
+            'path' => '22',
+            'w' => 320,
+            'h' => 50,
+        ],
+        'mobile_mini' => [ // 300x50 compact strip
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_MINI', ''),
+            'path' => '22',
+            'w' => 300,
+            'h' => 50,
+        ],
+        'mobile_strip' => [ // 320x50 overflow strip
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_STRIP', ''),
+            'path' => '22',
+            'w' => 320,
+            'h' => 50,
+        ],
         // 160x300 skyscraper -- the client's first emailed snippet duplicated the
         // 320x50 code by mistake; this key is the corrected embed for the 160x300 zone.
         'skyscraper' => [ // 160x300

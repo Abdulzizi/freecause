@@ -72,6 +72,12 @@
             display: block;
             height: var(--fc-ad-anchor-h);
         }
+
+        .fc-ad-anchor .fc-ad iframe[data-ad-fluid] {
+            max-width: min(100%, 20rem);
+            max-height: 5rem;
+            overflow: hidden;
+        }
     }
 
     @media (prefers-reduced-motion: reduce) {

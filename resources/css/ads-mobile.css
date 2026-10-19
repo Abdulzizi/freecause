@@ -1,0 +1,35 @@
+@layer components {
+    .fc-ad-infeed {
+        margin-block: 0.75rem;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .fc-ad-infeed .fc-ad {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .fc-ad-infeed .fc-ad iframe {
+        width: min(100%, 320px);
+        display: block;
+        margin-inline: auto;
+    }
+
+    .fc-ad-mini {
+        margin-block: 0.5rem;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .fc-ad-mini .fc-ad {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .fc-ad-mini .fc-ad iframe {
+        width: min(100%, 320px);
+        display: block;
+        margin-inline: auto;
+    }
+}

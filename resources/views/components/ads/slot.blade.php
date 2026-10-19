@@ -40,7 +40,7 @@
                 title="Advertisement"
                 scrolling="no"
                 @if ($fluid) data-ad-fluid="1" @endif
-                style="width: {{ $w }}px; max-width: 100%; height: {{ $h }}px; border: 0; display: block; margin-inline: auto;"
+                style="width: {{ $w }}px; max-width: 100%; {{ $fluid ? 'max-height: 320px;' : '' }} height: {{ $h }}px; border: 0; display: block; margin-inline: auto; overflow: hidden;"
                 sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
         @endif
     </div>

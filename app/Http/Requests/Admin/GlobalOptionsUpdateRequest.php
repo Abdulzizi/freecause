@@ -29,6 +29,10 @@ class GlobalOptionsUpdateRequest extends FormRequest
             'ads_slot_banner468_key' => ['nullable', 'string', 'max:190'],
             'ads_slot_native_key' => ['nullable', 'string', 'max:190'],
             'ads_slot_mobile_key' => ['nullable', 'string', 'max:190'],
+            'ads_slot_mobile_feed_key' => ['nullable', 'string', 'max:190'],
+            'ads_slot_mobile_inline_key' => ['nullable', 'string', 'max:190'],
+            'ads_slot_mobile_mini_key' => ['nullable', 'string', 'max:190'],
+            'ads_slot_mobile_strip_key' => ['nullable', 'string', 'max:190'],
         ];
     }
 }

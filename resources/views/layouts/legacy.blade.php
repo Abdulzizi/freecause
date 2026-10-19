@@ -132,6 +132,8 @@
         @endif
         @yield('content')
 
+        @include('partials.ads-mini', ['slot' => 'mobile_mini'])
+
     </main>
 
     <script src="{{ asset('legacy/js-v2/bootstrap.bundle.min.js') }}"></script>

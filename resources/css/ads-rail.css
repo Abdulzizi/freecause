@@ -20,6 +20,38 @@
         max-width: 100%;
     }
 
+    .fc-ad {
+        max-width: 100%;
+        overflow: clip;
+        margin-inline: auto;
+    }
+
+    .fc-ad iframe {
+        max-width: 100%;
+        display: block;
+        margin-inline: auto;
+        border: 0;
+        overflow: hidden;
+    }
+
+    @media (max-width: 767.98px) {
+        .fc-ad {
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .fc-ad iframe:not([data-ad-fluid]) {
+            max-height: 6.25rem;
+            width: min(100%, 20rem);
+            height: auto;
+        }
+
+        .fc-ad iframe[data-ad-fluid] {
+            max-width: 100%;
+            max-height: 20rem;
+        }
+    }
+
     @media (min-width: 1700px) {
         .fc-ad-rail {
             display: block;

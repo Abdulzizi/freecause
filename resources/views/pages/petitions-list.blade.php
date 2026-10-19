@@ -130,6 +130,9 @@
 
                 <div class="flex flex-col gap-2" data-results>
                     @forelse($petitions as $petition)
+                        @if ($loop->index > 0 && $loop->index % 4 === 0)
+                            @include('partials.ads-infeed', ['slot' => $loop->index % 8 === 0 ? 'mobile_inline' : 'mobile_feed'])
+                        @endif
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
@@ -197,6 +200,7 @@
                 <div class="text-center mb-4 hidden md:block">
                     <x-ads.slot name="banner468" />
                 </div>
+                @include('partials.ads-mini', ['slot' => 'mobile_strip'])
             </div>
 
             {{-- ad: native, full width --}}
