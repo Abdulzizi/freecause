@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -66,7 +67,7 @@ class MonitorQueue extends Command
         }
 
         if ($oldestJob) {
-            $age = now()->diffInMinutes($oldestJob);
+            $age = Carbon::createFromTimestamp((int) $oldestJob)->diffInMinutes(now());
             if ($age > 30) {
                 $msg = "Stale job detected: oldest job is {$age} minutes old";
                 $alerts[] = $msg;

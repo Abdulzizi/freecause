@@ -11,6 +11,7 @@ use App\Models\PetitionTranslation;
 use App\Models\User;
 use App\Observers\FlushesListingCaches;
 use App\Observers\UserProfileCacheFlusher;
+use App\Support\MailQuota;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -19,9 +20,11 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
@@ -51,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserProfileCacheFlusher::class);
 
         $this->bootRateLimiting();
+
+        $this->bootMailQuotaGuard();
 
         try {
             if (! Schema::hasTable('settings')) {
@@ -203,6 +208,19 @@ class AppServiceProvider extends ServiceProvider
                     'categories' => collect(),
                     'navbarContent' => collect(),
                 ]);
+            }
+        });
+    }
+
+    private function bootMailQuotaGuard(): void
+    {
+        Event::listen(JobExceptionOccurred::class, function (JobExceptionOccurred $event): void {
+            try {
+                if (MailQuota::causedBy($event->exception)) {
+                    MailQuota::trip();
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Mail quota guard failed: '.$e->getMessage());
             }
         });
     }

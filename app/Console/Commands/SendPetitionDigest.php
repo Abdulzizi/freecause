@@ -7,6 +7,7 @@ use App\Models\Petition;
 use App\Models\User;
 use App\Support\AppLog;
 use App\Support\Locale;
+use App\Support\MailQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
@@ -46,6 +47,13 @@ class SendPetitionDigest extends Command
                 &$seen,
                 &$petitionsByLocale
             ) {
+                if (MailQuota::tripped()) {
+                    AppLog::error('Petition digest aborted', 'Mail provider quota exhausted, stopped dispatching.', 'emails.digest');
+                    $this->warn('Mail quota exhausted - digest aborted.');
+
+                    return false;
+                }
+
                 foreach ($users as $user) {
                     if ($limit > 0 && $processed >= $limit) {
                         return false;

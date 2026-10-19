@@ -6,6 +6,7 @@ use App\Mail\PetitionDigestMail;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\User;
+use App\Support\MailQuota;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -109,6 +110,28 @@ class PetitionDigestTest extends TestCase
         Artisan::call('petition:send-digest');
 
         Mail::assertNothingQueued();
+    }
+
+    public function test_aborts_dispatch_once_mail_quota_is_tripped(): void
+    {
+        $this->publishedPetition();
+
+        User::factory()->create([
+            'email' => 'digest@example.com',
+            'locale' => 'en',
+            'verified' => true,
+            'notify_product' => true,
+            'unsubscribed_at' => null,
+        ]);
+
+        MailQuota::trip();
+
+        Mail::fake();
+
+        Artisan::call('petition:send-digest');
+
+        Mail::assertNothingQueued();
+        $this->assertDatabaseHas('logs', ['title' => 'Petition digest aborted']);
     }
 
     private function publishedPetition(): Petition
