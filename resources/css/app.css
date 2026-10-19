@@ -1818,11 +1818,17 @@ select.fc-filter-field {
         border-top: 1px solid var(--fc-border);
         background: var(--fc-surface);
         box-shadow: 0 -4px 16px rgba(31, 30, 28, 0.08);
+        transition: transform var(--fc-dur-base) var(--fc-ease-standard), visibility var(--fc-dur-base) var(--fc-ease-standard);
     }
 
     body.fc-public:has(.fcui-bottom-nav) .fcui-sticky-action {
         bottom: calc(var(--fc-nav-h) + var(--fc-safe-bottom));
         padding-bottom: 0.5rem;
+    }
+
+    body.fc-public:has(.fcui-bottom-nav.is-hidden) .fcui-sticky-action {
+        transform: translateY(calc(100% + var(--fc-nav-h) + var(--fc-safe-bottom)));
+        visibility: hidden;
     }
 
     @media (min-width: 768px) {
@@ -2029,7 +2035,8 @@ select.fc-filter-field {
     @media (prefers-reduced-motion: reduce) {
         .fcui-sheet[open],
         .fcui-sheet::backdrop,
-        .fcui-bottom-nav {
+        .fcui-bottom-nav,
+        .fcui-sticky-action {
             animation: none;
             transition: none;
         }

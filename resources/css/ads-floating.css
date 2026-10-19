@@ -60,6 +60,10 @@
     }
 
     @media (max-width: 767.98px) {
+        body.fc-public:has(.fcui-sticky-action) #fc-ad-float.fc-ad-float {
+            display: none;
+        }
+
         .fc-ad-float {
             transition: transform var(--fc-dur-base) var(--fc-ease-standard);
         }

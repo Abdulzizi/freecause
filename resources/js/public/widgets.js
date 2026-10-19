@@ -19,22 +19,17 @@ export function init(ctx) {
         }
     });
 
-    document.querySelectorAll('[data-ad-float-close]').forEach(function (button) {
-        const float = button.closest('#fc-ad-float');
-        if (!float) return;
-        button.addEventListener('click', function () {
-            float.remove();
-        });
-    });
-
-    document.querySelectorAll('[data-ad-anchor-close]').forEach(function (button) {
-        const anchor = button.closest('#fc-ad-anchor');
-        if (!anchor) return;
-        const spacer = document.querySelector('.fc-ad-anchor-spacer');
-        button.addEventListener('click', function () {
-            anchor.remove();
-            spacer?.remove();
-        });
+    document.addEventListener('click', function (event) {
+        const floatClose = event.target.closest('[data-ad-float-close]');
+        if (floatClose) {
+            floatClose.closest('#fc-ad-float')?.remove();
+            return;
+        }
+        const anchorClose = event.target.closest('[data-ad-anchor-close]');
+        if (anchorClose) {
+            anchorClose.closest('#fc-ad-anchor')?.remove();
+            document.querySelector('.fc-ad-anchor-spacer')?.remove();
+        }
     });
 
     document.querySelectorAll('iframe[data-ad-fluid]').forEach(function (frame) {

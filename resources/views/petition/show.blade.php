@@ -179,9 +179,6 @@
                 {{-- ad: 320x50, mobile only, below Active badge above progress bar (not fixed-bottom) --}}
                 <x-ads.slot name="mobile" class="lg:hidden text-center mb-4" />
 
-                <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
-                <x-ads.slot name="mobile_native_small" class="lg:hidden text-center mb-4" />
-
                 @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
                     <x-ui.alert variant="error" class="mb-4">{{ __('show.report_failed') }}</x-ui.alert>
                 @endif
@@ -206,6 +203,8 @@
                         @endif
                     </x-ui.chip-row>
                 </div>
+
+                <x-ads.slot name="mobile_mini" class="lg:hidden text-center my-4" />
 
                 <div class="hidden md:flex flex-wrap items-center gap-2 mb-4">
                     <span class="text-sm font-semibold text-muted">{{ __('show.share') }}:</span>
@@ -307,6 +306,8 @@
                         </a>
                         @endif
 
+                        <x-ads.slot name="mobile_native_small" class="lg:hidden text-center my-4" />
+
                         <div id="petition-about" class="mt-4 scroll-mt-16">
                             <div class="text-base leading-[1.75] text-ink [&_p]:mb-3 [&_p]:text-sm [&_p]:leading-[1.75] [&_ul]:my-2.5 [&_ul]:mt-0 [&_ul]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2.5 [&_ol]:mt-0 [&_ol]:mb-3.5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1.5 [&_li]:text-sm [&_li]:leading-[1.75] [&_li>ul]:mt-2 [&_li>ol]:mt-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-bold [&_h4]:mt-3.5 [&_h4]:text-sm [&_h4]:font-bold">
                                 {!! $tr->description !!}
@@ -314,12 +315,9 @@
                         </div>
 
                         <x-ads.slot name="mobile_feed" class="lg:hidden text-center my-4" />
-                        <x-ads.slot name="mobile_card" class="lg:hidden text-center my-4" />
 
                         {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}
                         <x-ads.slot name="banner468" class="hidden md:block text-center my-6" />
-                        <x-ads.slot name="mobile_inline" class="lg:hidden text-center my-4" />
-                        <x-ads.slot name="mobile_banner" class="lg:hidden text-center my-4" />
 
                         <div class="border-t border-border my-6"></div>
 
@@ -351,6 +349,8 @@
                                 'content' => $formContent,
                             ])
                         </div>
+
+                        <x-ads.slot name="mobile_card" class="lg:hidden text-center my-4" />
 
                         <div id="petition-comments" class="mt-6 scroll-mt-16">
                             <h2 class="text-lg font-semibold">{{ $boxShoutbox }}</h2>
@@ -476,6 +476,8 @@
                             @endif
                         </div>
 
+                        <x-ads.slot name="mobile_inline" class="lg:hidden text-center my-4" />
+
                         <div id="petition-signatures" class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150 scroll-mt-16">
                             <div class="font-bold text-base flex items-center justify-between">
                                 <span>{{ $boxLatest }}</span>
@@ -512,6 +514,8 @@
                                     :href="lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id])">{{ $latestBrowseAll }}</x-ui.button>
                             </div>
                         </div>
+
+                        <x-ads.slot name="mobile_banner" class="lg:hidden text-center my-4" />
 
                         {{-- ad: 160x300 skyscraper, sidebar after signatures before info box, sticky, desktop only --}}
                         <div class="hidden lg:block mb-6 z-sticky" style="position: sticky; top: 80px;">
@@ -670,11 +674,6 @@
                         @endforeach
                     </div>
                 </div>
-            @endif
-
-            @php $desktopBottom = \App\Support\Ads::pick('page_mid'); @endphp
-            @if ($desktopBottom)
-                <x-ads.slot :name="$desktopBottom" class="hidden lg:block text-center mt-8" />
             @endif
 
             <button type="button" class="fcui-scrolltop max-md:bottom-32" data-scroll-top aria-label="Back to top">
