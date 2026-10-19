@@ -12,7 +12,10 @@
     @media (max-width: 767.98px) {
         body.fc-public :where(a[href], button):not(.fcui-chip):not(.fcui-bottom-nav__item) { min-height: var(--fc-tap-min); }
         body.fc-public :where(input, select, textarea) { font-size: 16px; }
-        body.fc-public :where(input[type='radio'], input[type='checkbox']) { min-width: var(--fc-tap-min); min-height: var(--fc-tap-min); }
+        body.fc-public :where(input[type='radio'], input[type='checkbox']):not(.form-check-input) { min-width: var(--fc-tap-min); min-height: var(--fc-tap-min); }
+        body.fc-public .form-check { min-height: var(--fc-tap-min); display: flex; align-items: center; gap: 0.5rem; }
+        body.fc-public .form-check-input { width: 1em; height: 1em; min-width: 0; min-height: 0; flex-shrink: 0; }
+        body.fc-public .form-check-label { min-height: var(--fc-tap-min); display: inline-flex; align-items: center; }
         body.fc-public .fcui-scrolltop { bottom: calc(var(--fc-nav-h) + var(--fc-action-h) + var(--fc-safe-bottom) + 0.75rem); }
     }
 }

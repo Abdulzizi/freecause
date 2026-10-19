@@ -11,6 +11,11 @@
         z-index: var(--fc-z-sticky);
     }
 
+    .fc-ad-rail--left {
+        inset-inline-end: auto;
+        inset-inline-start: max(1rem, var(--fc-safe-left));
+    }
+
     .fc-ad-rail .fc-ad {
         max-width: 100%;
         overflow: hidden;

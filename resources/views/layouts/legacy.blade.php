@@ -107,6 +107,7 @@
              keeps a page's own inline copy from winning and leaving the anchor empty.
               Both are position:fixed, so DOM order does not affect where they appear. --}}
         @include('partials.ads-rail')
+        @include('partials.ads-rail-left')
     @endunless
 
     @php

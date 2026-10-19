@@ -6,7 +6,7 @@
     $adsOn = \App\Support\Ads::enabled();
     $cfg = \App\Support\Ads::slot($name);
     if ($cfg && empty($cfg['key']) && str_starts_with($name, 'mobile_') && $name !== 'mobile_float') {
-        foreach (['rectangle', 'native', 'mobile', 'banner468', 'leaderboard'] as $cand) {
+        foreach (['banner468', 'mobile_banner', 'mobile_inline', 'mobile_mini', 'mobile_strip', 'mobile_feed', 'mobile_native_small', 'mobile_card', 'leaderboard', 'rectangle', 'native'] as $cand) {
             $cc = \App\Support\Ads::slot($cand);
             if ($cc && ! empty($cc['key']) && ! request()->attributes->has('ads_slot_rendered_'.$cand)) {
                 $name = $cand;

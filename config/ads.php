@@ -115,6 +115,13 @@ return [
             'w' => 160,
             'h' => 300,
         ],
+        'skyscraper_left' => [ // 160x300
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_SKYSCRAPER_LEFT', ''),
+            'path' => '22',
+            'w' => 160,
+            'h' => 300,
+        ],
     ],
 
     'placements' => [
