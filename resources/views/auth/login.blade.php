@@ -87,7 +87,7 @@
                                     />
                                 </div>
 
-                                <div class="block min-h-6 pl-6 mb-4">
+                                <div class="form-check mb-4">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="remember">{{ __('auth.remember_me') }}</label>
                                 </div>

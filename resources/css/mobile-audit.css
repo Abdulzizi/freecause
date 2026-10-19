@@ -14,8 +14,12 @@
         body.fc-public :where(input, select, textarea) { font-size: 16px; }
         body.fc-public :where(input[type='radio'], input[type='checkbox']):not(.form-check-input) { min-width: var(--fc-tap-min); min-height: var(--fc-tap-min); }
         body.fc-public .form-check { min-height: var(--fc-tap-min); display: flex; align-items: center; gap: 0.5rem; }
-        body.fc-public .form-check-input { width: 1em; height: 1em; min-width: 0; min-height: 0; flex-shrink: 0; }
+        body.fc-public .form-check-input { width: 16px; height: 16px; min-width: 0; min-height: 0; margin-top: 0; flex-shrink: 0; }
         body.fc-public .form-check-label { min-height: var(--fc-tap-min); display: inline-flex; align-items: center; }
+        body.fc-public .fcui-breadcrumb a { min-height: var(--fc-tap-min); display: inline-flex; align-items: center; }
+        body.fc-public .fcui-pwtoggle { width: var(--fc-tap-min); height: var(--fc-tap-min); min-width: var(--fc-tap-min); min-height: var(--fc-tap-min); }
         body.fc-public .fcui-scrolltop { bottom: calc(var(--fc-nav-h) + var(--fc-action-h) + var(--fc-safe-bottom) + 0.75rem); }
+        body.fc-public .fc-section { padding-block: 2.5rem; }
+        body.fc-public .fcui-page-head + .fcui-section { padding-top: 1rem; }
     }
 }

@@ -642,6 +642,11 @@
 
                         <x-ad-unit placement="petition_sidebar" class="mt-6" min-height="250px" />
 
+                        @php $desktopExtra = \App\Support\Ads::pick('page_mid'); @endphp
+                        @if ($desktopExtra)
+                            <x-ads.slot :name="$desktopExtra" class="hidden lg:block text-center mt-6" />
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -665,6 +670,11 @@
                         @endforeach
                     </div>
                 </div>
+            @endif
+
+            @php $desktopBottom = \App\Support\Ads::pick('page_mid'); @endphp
+            @if ($desktopBottom)
+                <x-ads.slot :name="$desktopBottom" class="hidden lg:block text-center mt-8" />
             @endif
 
             <button type="button" class="fcui-scrolltop max-md:bottom-32" data-scroll-top aria-label="Back to top">

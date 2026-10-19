@@ -109,7 +109,7 @@
                 <div class="mb-8">
                     @forelse($suggestions as $p)
                         @if ($loop->index > 0 && $loop->index % 2 === 0)
-                            @php($thanksAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner'])
+                            @php $thanksAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner']; @endphp
                             @include('partials.ads-infeed', ['slot' => $thanksAdZones[(int) ($loop->index / 2) % count($thanksAdZones)]])
                         @endif
                         @php

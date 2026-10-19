@@ -110,7 +110,7 @@
 
                 @forelse($signatures as $sig)
                     @if ($loop->index > 0 && $loop->index % 4 === 0)
-                        @php($sigAdZones = ['mobile_banner', 'mobile_mini'])
+                        @php $sigAdZones = ['mobile_banner', 'mobile_mini']; @endphp
                         @include('partials.ads-infeed', ['slot' => $sigAdZones[(int) ($loop->index / 4) % count($sigAdZones)]])
                     @endif
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
