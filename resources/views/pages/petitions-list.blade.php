@@ -28,7 +28,7 @@
 
                 <div class="flex items-center justify-between flex-wrap gap-2 mb-2 max-md:contents">
                     <h1 class="text-base leading-normal m-0 font-bold break-words">{{ $heading ?? __('list.petitions') }}</h1>
-                    <form method="GET" action="" data-live-search class="flex gap-2 w-full max-w-[300px] max-md:max-w-full max-md:sticky max-md:top-0 max-md:z-sticky max-md:bg-white max-md:-mx-4 max-md:px-4 max-md:py-3">
+                    <form method="GET" action="" data-live-search class="flex gap-2 w-full max-w-[300px] max-md:max-w-full max-md:bg-white max-md:py-2">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="{{ __('list.search_placeholder') }}"
                                aria-label="{{ __('list.search') }}"
@@ -130,8 +130,9 @@
 
                 <div class="flex flex-col gap-2" data-results>
                     @forelse($petitions as $petition)
-                        @if ($loop->index > 0 && $loop->index % 4 === 0)
-                            @include('partials.ads-infeed', ['slot' => $loop->index % 8 === 0 ? 'mobile_inline' : 'mobile_feed'])
+                        @if ($loop->index > 0 && $loop->index % 2 === 0)
+                            @php($listAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini'])
+                            @include('partials.ads-infeed', ['slot' => $listAdZones[(int) ($loop->index / 2) % count($listAdZones)]])
                         @endif
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
@@ -201,6 +202,7 @@
                     <x-ads.slot name="banner468" />
                 </div>
                 @include('partials.ads-mini', ['slot' => 'mobile_strip'])
+                @include('partials.ads-mini', ['slot' => 'mobile_card'])
             </div>
 
             {{-- ad: native, full width --}}

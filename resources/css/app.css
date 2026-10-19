@@ -6,6 +6,7 @@
 @import './tokens.css';
 @import './legacy-compat.css' layer(legacy);
 @import './ads-anchor.css';
+@import './ads-floating.css';
 @import './ads-mobile.css';
 @import './ads-rail.css';
 

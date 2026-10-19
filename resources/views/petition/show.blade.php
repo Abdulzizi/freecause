@@ -112,7 +112,7 @@
 
             <x-ui.breadcrumb class="mb-4" :items="$crumbs" />
 
-            <div class="bg-white shadow-elev-1 rounded-md p-6">
+            <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6">
                 <div data-confetti-on-load data-confetti-threshold="{{ in_array(true, [$pct>=100, $pct>=75, $pct>=50, $pct>=25], true) ? 1 : 0 }}" hidden></div>
                 @if ($pct >= 80 && $pct < 100 && !$hasSigned)
                     <div class="flex items-center gap-2 bg-brand/5 border border-brand text-brand rounded-md px-4 py-3 mb-4 text-sm font-semibold" role="status">
@@ -180,6 +180,7 @@
                 <x-ads.slot name="mobile" class="lg:hidden text-center mb-4" />
 
                 <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
+                <x-ads.slot name="mobile_native_small" class="lg:hidden text-center mb-4" />
 
                 @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
                     <x-ui.alert variant="error" class="mb-4">{{ __('show.report_failed') }}</x-ui.alert>
@@ -313,14 +314,16 @@
                         </div>
 
                         <x-ads.slot name="mobile_feed" class="lg:hidden text-center my-4" />
+                        <x-ads.slot name="mobile_card" class="lg:hidden text-center my-4" />
 
                         {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}
                         <x-ads.slot name="banner468" class="hidden md:block text-center my-6" />
                         <x-ads.slot name="mobile_inline" class="lg:hidden text-center my-4" />
+                        <x-ads.slot name="mobile_banner" class="lg:hidden text-center my-4" />
 
                         <div class="border-t border-border my-6"></div>
 
-                        <div id="signFormBottom" class="bg-surface-2 rounded-md p-6 border border-border">
+                        <div id="signFormBottom" class="bg-surface-2 rounded-md p-4 sm:p-6 border border-border">
                             <h2 class="text-lg font-semibold">{{ $boxSignTitle }}</h2>
 
                             @include('partials.gradient-divider')
@@ -418,7 +421,7 @@
                     </div>
 
                     <div class="w-full lg:w-1/3 shrink-0 px-3">
-                        <div id="signFormTop" class="bg-surface-2 rounded-md p-6 mb-6 border border-border">
+                        <div id="signFormTop" class="bg-surface-2 rounded-md p-4 sm:p-6 mb-6 border border-border">
                             <h2 class="text-lg font-semibold">{{ $boxSignTitle }}</h2>
                             @include('partials.gradient-divider')
 
@@ -449,7 +452,7 @@
                         {{-- ad: 300x250, sidebar, between top sign form and goal box --}}
                         <x-ads.slot name="rectangle" class="text-center mb-6" />
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
                             <h2 class="text-lg font-semibold">{{ $boxGoal }}</h2>
                             @include('partials.gradient-divider')
 
@@ -473,7 +476,7 @@
                             @endif
                         </div>
 
-                        <div id="petition-signatures" class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150 scroll-mt-16">
+                        <div id="petition-signatures" class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150 scroll-mt-16">
                             <div class="font-bold text-base flex items-center justify-between">
                                 <span>{{ $boxLatest }}</span>
                             </div>
@@ -515,7 +518,7 @@
                             <x-ads.slot name="skyscraper" class="text-center" />
                         </div>
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
                             <h2 class="text-lg font-semibold">{{ $boxInformation }}</h2>
                             @include('partials.gradient-divider')
 
@@ -547,7 +550,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
                             <h2 class="text-lg font-semibold">{{ $boxTags }}</h2>
                             @include('partials.gradient-divider')
                             <div class="mt-4 text-sm">
@@ -563,7 +566,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">
                             <h2 class="text-lg font-semibold">{{ $boxEmbed }}</h2>
                             @include('partials.gradient-divider')
 
@@ -583,7 +586,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-md p-6 shadow-elev-1 hover:shadow-elev-2 transition-shadow duration-150">
+                        <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 hover:shadow-elev-2 transition-shadow duration-150">
                             <button id="widgetsToggle" class="w-full border-0 bg-transparent p-0 inline-flex items-center cursor-pointer focus:outline-none focus:shadow-none" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#widgetsBody" aria-expanded="false"
                                 aria-controls="widgetsBody">
@@ -614,7 +617,7 @@
 
                         @auth
                             @if ((int) auth()->id() === (int) $petition->user_id)
-                                <div class="bg-white rounded-md p-6 shadow-elev-1 my-6 hover:shadow-elev-2 transition-shadow duration-150">
+                                <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 my-6 hover:shadow-elev-2 transition-shadow duration-150">
                                     <h2 class="text-lg font-semibold">{{ __('show.operations') }}</h2>
                                     @include('partials.gradient-divider')
 

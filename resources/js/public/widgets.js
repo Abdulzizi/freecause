@@ -12,6 +12,28 @@ export function init(ctx) {
         }
     });
 
+    document.querySelectorAll('[data-ad-float-close]').forEach(function (button) {
+        const float = button.closest('#fc-ad-float');
+        if (!float) return;
+        let closed = false;
+        try {
+            closed = window.sessionStorage.getItem('fc_ad_float_closed') === '1';
+        } catch (error) {
+            closed = false;
+        }
+        if (closed) {
+            float.remove();
+            return;
+        }
+        button.addEventListener('click', function () {
+            try {
+                window.sessionStorage.setItem('fc_ad_float_closed', '1');
+            } catch (error) {
+            }
+            float.remove();
+        });
+    });
+
     document.querySelectorAll('[data-ad-anchor-close]').forEach(function (button) {
         const anchor = button.closest('#fc-ad-anchor');
         if (!anchor) return;

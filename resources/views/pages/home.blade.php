@@ -171,8 +171,11 @@
                                                 <ul class="most-listing">
 
                                                     @forelse($recentActivities as $sig)
-                                                        @if ($loop->index > 0 && $loop->index % 4 === 0)
-                                                            <li class="lg:hidden" aria-hidden="true">@include('partials.ads-infeed', ['slot' => $loop->index % 8 === 0 ? 'mobile_inline' : 'mobile_feed'])</li>
+                                                        @if ($loop->index > 0 && $loop->index % 2 === 0)
+                                                            @php
+                                                                $homeAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini'];
+                                                            @endphp
+                                                            <li class="lg:hidden" aria-hidden="true">@include('partials.ads-infeed', ['slot' => $homeAdZones[(int) ($loop->index / 2) % count($homeAdZones)]])</li>
                                                         @endif
                                                         @php
                                                             $hasPetition =
@@ -347,6 +350,7 @@
 
     {{-- Ads: native --}}
     @include('partials.ads-mini', ['slot' => 'mobile_strip'])
+    @include('partials.ads-mini', ['slot' => 'mobile_banner'])
     <div class="my-6">
         <x-ads.slot name="native" />
     </div>

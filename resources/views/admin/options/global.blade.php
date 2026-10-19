@@ -185,6 +185,30 @@
             <x-admin.form-field label="mobile key (320×50, mobile only)">
                 <x-ui.input name="ads_slot_mobile_key" :value="$ads_slot_mobile_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
+            <x-admin.form-field label="mobile feed key (300×100, in-feed)">
+                <x-ui.input name="ads_slot_mobile_feed_key" :value="$ads_slot_mobile_feed_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile inline key (320×50, inline)">
+                <x-ui.input name="ads_slot_mobile_inline_key" :value="$ads_slot_mobile_inline_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile mini key (300×50, compact strip)">
+                <x-ui.input name="ads_slot_mobile_mini_key" :value="$ads_slot_mobile_mini_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile strip key (320×50, overflow strip)">
+                <x-ui.input name="ads_slot_mobile_strip_key" :value="$ads_slot_mobile_strip_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile native small key (native 320×100)">
+                <x-ui.input name="ads_slot_mobile_native_small_key" :value="$ads_slot_mobile_native_small_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile banner key (banner 320×50)">
+                <x-ui.input name="ads_slot_mobile_banner_key" :value="$ads_slot_mobile_banner_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile card key (native 300×100)">
+                <x-ui.input name="ads_slot_mobile_card_key" :value="$ads_slot_mobile_card_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
+            <x-admin.form-field label="mobile float key (banner 320×50)">
+                <x-ui.input name="ads_slot_mobile_float_key" :value="$ads_slot_mobile_float_key" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
+            </x-admin.form-field>
             <p class="text-xs text-muted mt-1 mb-0">dimensions and placement are fixed in code; only the adsterra zone keys and the master switch are editable here. a blank key falls back to the config/env default for that slot (set the master switch off to hide all slots).</p>
         </x-admin.section-panel>
         @endif

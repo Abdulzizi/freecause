@@ -78,6 +78,34 @@ return [
             'w' => 320,
             'h' => 50,
         ],
+        'mobile_native_small' => [ // 320x100 compact native
+            'format' => 'native',
+            'key' => env('ADS_SLOT_MOBILE_NATIVE_SMALL', ''),
+            'path' => '21',
+            'w' => 320,
+            'h' => 100,
+        ],
+        'mobile_banner' => [ // 320x50 banner
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_BANNER', ''),
+            'path' => '22',
+            'w' => 320,
+            'h' => 50,
+        ],
+        'mobile_card' => [ // 300x100 card native
+            'format' => 'native',
+            'key' => env('ADS_SLOT_MOBILE_CARD', ''),
+            'path' => '21',
+            'w' => 300,
+            'h' => 100,
+        ],
+        'mobile_float' => [ // 320x50 floating banner
+            'format' => 'iframe',
+            'key' => env('ADS_SLOT_MOBILE_FLOAT', ''),
+            'path' => '22',
+            'w' => 320,
+            'h' => 50,
+        ],
         // 160x300 skyscraper -- the client's first emailed snippet duplicated the
         // 320x50 code by mistake; this key is the corrected embed for the 160x300 zone.
         'skyscraper' => [ // 160x300

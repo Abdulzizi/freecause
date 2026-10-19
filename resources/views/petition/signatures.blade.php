@@ -18,7 +18,7 @@
                 <x-ads.slot name="leaderboard" />
             </div>
 
-            <div class="bg-white shadow-elev-1 rounded-md p-6 mb-6">
+            <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6 mb-6">
                 <div class="flex flex-wrap items-center -mx-3">
 
                     @php $wv = \App\Support\ImageVariants::urls($petition->cover_image); @endphp
@@ -78,6 +78,7 @@
                     <x-ads.slot name="mobile" />
                 </div>
                 <x-ads.slot name="mobile_feed" class="lg:hidden text-center mb-4" />
+                <x-ads.slot name="mobile_native_small" class="lg:hidden text-center mb-4" />
             </div>
 
             {{-- ad: native, full width --}}
@@ -85,7 +86,7 @@
                 <x-ads.slot name="native" />
             </div>
 
-            <div class="bg-white shadow-elev-1 rounded-md p-6 fc-reveal">
+            <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6 fc-reveal">
 
                 <div class="font-bold text-base mb-4">
                     {{ __('sig.all_signatures') }}
@@ -105,8 +106,13 @@
                     <x-ads.slot name="banner468" />
                 </div>
                 <x-ads.slot name="mobile_inline" class="lg:hidden text-center mb-4" />
+                <x-ads.slot name="mobile_card" class="lg:hidden text-center mb-4" />
 
                 @forelse($signatures as $sig)
+                    @if ($loop->index > 0 && $loop->index % 4 === 0)
+                        @php($sigAdZones = ['mobile_banner', 'mobile_mini'])
+                        @include('partials.ads-infeed', ['slot' => $sigAdZones[(int) ($loop->index / 4) % count($sigAdZones)]])
+                    @endif
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
                         <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5 fc-tabular">
                             {{ ($signatures->currentPage() - 1) * $signatures->perPage() + $loop->iteration }}.

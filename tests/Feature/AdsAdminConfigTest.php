@@ -118,4 +118,25 @@ class AdsAdminConfigTest extends TestCase
         // system-only key must be untouched by a non-system admin
         $this->assertSame('ORIGINAL', Settings::get('ads_slot_rectangle_key', null, 'global'));
     }
+
+    public function test_mobile_slots_registered_with_blank_keys_and_admin_editable(): void
+    {
+        foreach (['mobile_feed', 'mobile_inline', 'mobile_mini', 'mobile_strip', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_float'] as $slot) {
+            $cfg = config("ads.slots.$slot");
+            $this->assertIsArray($cfg, $slot);
+            $this->assertSame('', $cfg['key'], $slot);
+            $this->assertSame('', Ads::slot($slot)['key'] ?? null, $slot);
+        }
+
+        $this->actingAs($this->systemAdmin(), 'admin')
+            ->post(route('admin.options.global.update'), [
+                'ads_slot_mobile_banner_key' => 'MOBILE_BANNER_KEY',
+                'ads_slot_mobile_card_key' => 'MOBILE_CARD_KEY',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('MOBILE_BANNER_KEY', Settings::get('ads_slot_mobile_banner_key', null, 'global'));
+        $this->assertSame('MOBILE_BANNER_KEY', Ads::slot('mobile_banner')['key']);
+        $this->assertSame('MOBILE_CARD_KEY', Ads::slot('mobile_card')['key']);
+    }
 }

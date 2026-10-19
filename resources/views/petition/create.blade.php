@@ -38,7 +38,7 @@
             @auth
                 @if ($errors->any())
                     <x-ui.alert variant="error">
-                        <ul class="mb-0">
+                        <ul class="mb-0 space-y-1 text-sm">
                             @foreach ($errors->keys() as $field)
                                 <li><a href="#field-{{ $field === 'description' ? 'petition_description' : str_replace('.', '_', $field) }}" class="underline">{{ $errors->first($field) }}</a></li>
                             @endforeach
