@@ -3,7 +3,12 @@
 return [
     'cancel' => 'Iptal',
     'category' => 'Kategori (zorunlu)',
-    'city' => 'Sehir',
+    'city' => 'Şehir',
+    'city_placeholder' => 'Bir şehir adı yazın',
+    'city_suggestions' => 'Şehir önerileri',
+    'city_searching' => 'Şehirler aranıyor…',
+    'country' => 'Ülke',
+    'country_select' => 'Bir ülke seçin',
     'community' => 'Petition topluluğu',
     'community_url' => 'Topluluk URLsi',
     'description' => 'Metin (zorunlu)',

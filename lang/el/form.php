@@ -3,7 +3,12 @@
 return [
     'cancel' => 'Akirosi',
     'category' => 'Katigoria (yparchi)',
-    'city' => 'Poli',
+    'city' => 'Πόλη',
+    'city_placeholder' => 'Πληκτρολογήστε μια πόλη',
+    'city_suggestions' => 'Προτάσεις πόλεων',
+    'city_searching' => 'Αναζήτηση πόλεων…',
+    'country' => 'Χώρα',
+    'country_select' => 'Επιλέξτε χώρα',
     'community' => 'Kinotita tis aitis',
     'community_url' => 'URL kinotitas',
     'description' => 'Keimeno (yparchi)',

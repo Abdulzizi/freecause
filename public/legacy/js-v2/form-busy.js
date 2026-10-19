@@ -48,7 +48,9 @@
             state.button.disabled = false;
             state.button.removeAttribute('aria-busy');
             state.button.style.opacity = state.opacity;
-            state.spinner.remove();
+            if (state.spinner) {
+                state.spinner.remove();
+            }
             form.removeAttribute('aria-busy');
         });
         pending.clear();
@@ -92,11 +94,14 @@
 
         hideError(form);
 
-        var spinner = document.createElement('span');
-        spinner.className = 'fc-sign-spinner';
-        spinner.setAttribute('aria-hidden', 'true');
+        var spinner = null;
+        if (!button.querySelector('.fcui-btn__spinner, .fcui-spinner')) {
+            spinner = document.createElement('span');
+            spinner.className = 'fc-sign-spinner';
+            spinner.setAttribute('aria-hidden', 'true');
+            button.prepend(spinner);
+        }
         pending.set(form, { button: button, spinner: spinner, opacity: button.style.opacity });
-        button.prepend(spinner);
         button.style.opacity = '0.65';
         button.setAttribute('aria-busy', 'true');
         form.setAttribute('aria-busy', 'true');

@@ -16,8 +16,10 @@
     $oldCommunityUrl = old('community_url', $petition->community_url ?? '');
     $oldCity = old('city', $petition->city ?? '');
     $oldCountry = old('country', $petition->country ?? '');
+    $countries = \App\Support\Countries::all();
+    $citySuggestionsUrl = route('geo.cities', ['locale' => app()->getLocale()]);
     $activeAuthTab = old('auth_form') === 'register' ? 'register' : 'login';
-    $countries = collect(['AF'=>'Afghanistan','AL'=>'Albania','DZ'=>'Algeria','AR'=>'Argentina','AU'=>'Australia','AT'=>'Austria','BE'=>'Belgium','BR'=>'Brazil','BG'=>'Bulgaria','CA'=>'Canada','CL'=>'Chile','CN'=>'China','CO'=>'Colombia','HR'=>'Croatia','CZ'=>'Czechia','DK'=>'Denmark','EG'=>'Egypt','EE'=>'Estonia','FI'=>'Finland','FR'=>'France','DE'=>'Germany','GR'=>'Greece','HU'=>'Hungary','IN'=>'India','ID'=>'Indonesia','IR'=>'Iran','IE'=>'Ireland','IL'=>'Israel','IT'=>'Italy','JP'=>'Japan','JO'=>'Jordan','KE'=>'Kenya','LV'=>'Latvia','LB'=>'Lebanon','LT'=>'Lithuania','LU'=>'Luxembourg','MY'=>'Malaysia','MX'=>'Mexico','MA'=>'Morocco','NL'=>'Netherlands','NZ'=>'New Zealand','NG'=>'Nigeria','NO'=>'Norway','PK'=>'Pakistan','PE'=>'Peru','PH'=>'Philippines','PL'=>'Poland','PT'=>'Portugal','RO'=>'Romania','RU'=>'Russia','SA'=>'Saudi Arabia','RS'=>'Serbia','SK'=>'Slovakia','SI'=>'Slovenia','ZA'=>'South Africa','ES'=>'Spain','SE'=>'Sweden','CH'=>'Switzerland','TW'=>'Taiwan','TH'=>'Thailand','TN'=>'Tunisia','TR'=>'Turkey','UA'=>'Ukraine','GB'=>'United Kingdom','US'=>'United States','UY'=>'Uruguay','VE'=>'Venezuela','VN'=>'Vietnam'])->sort();
+
 @endphp
 
 @extends('layouts.legacy')
@@ -38,7 +40,7 @@
                     <x-ui.alert variant="error">
                         <ul class="mb-0">
                             @foreach ($errors->keys() as $field)
-                                <li><a href="#field-{{ $field }}" class="underline">{{ $errors->first($field) }}</a></li>
+                                <li><a href="#field-{{ $field === 'description' ? 'petition_description' : str_replace('.', '_', $field) }}" class="underline">{{ $errors->first($field) }}</a></li>
                             @endforeach
                         </ul>
                     </x-ui.alert>
@@ -53,9 +55,6 @@
             @endauth
 
             @if(!$isEdit)
-                <h1 class="text-2xl tracking-tight mb-6 max-md:mb-4">{{ __('create.heading_create') }}</h1>
-                <p class="text-muted text-sm mb-6">Start your petition in a minute</p>
-
                 <div class="flex flex-wrap items-center justify-center gap-16 mb-10 max-md:hidden" aria-label="Petition creation progress">
                     <div class="flex items-center gap-4 min-w-[240px]" aria-current="step">
                         <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:100%_0%]"></span>
@@ -73,7 +72,7 @@
                     </div>
                 </div>
 
-                <nav class="md:hidden flex items-center justify-center gap-2 mb-6" aria-label="Petition creation progress">
+                <nav class="md:hidden hidden" aria-label="Petition creation progress" data-stepper>
                     <span class="w-2 h-2 rounded-full bg-brand" aria-current="step"></span>
                     <span class="w-2 h-2 rounded-full bg-border"></span>
                     <span class="w-2 h-2 rounded-full bg-border"></span>
@@ -143,17 +142,13 @@
                 <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md border-0 shadow-elev-1">
                     <div class="grow shrink basis-auto p-6 max-md:p-4">
 
-                        <div class="mb-4">
-                            <div class="font-semibold">{{ __('create.petition_data') }}</div>
-                        </div>
-
-                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
+                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" data-msg-type="{{ __('create.err_file_type') }}" data-msg-size="{{ __('create.err_file_size') }}" data-msg-conflict="{{ __('create.err_image_conflict') }}" data-step-label="{{ __('create.step_of') }}" data-next-label="{{ __('create.next') }}" data-back-label="{{ __('create.back') }}" data-draft-saved="{{ __('create.draft_saved') }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
                             ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
 
-                            <fieldset class="mb-6 border-2 border-brand rounded-md p-4" id="field-title">
-                                <legend class="px-2 font-semibold">Story</legend>
+                            <fieldset class="mb-6 border-2 border-brand rounded-md p-4" data-form-step>
+                                <legend class="px-2 font-semibold">{{ __('create.step_story') }}</legend>
                                 <div class="mb-3">
                                     <x-ui.input id="field-title" name="title" :label="__('form.title')" :value="$oldTitle" :error="$errors->first('title')" required data-maxcount="120" class="max-md:min-h-12" />
                                 </div>
@@ -178,7 +173,7 @@
                                         <div id="petition_editor" role="textbox" aria-multiline="true" tabindex="0" aria-label="{{ __('form.description') }}" class="min-h-[260px] text-sm leading-[1.45] [&_.ql-editor]:min-h-[260px] [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pl-[22px] [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pl-[22px] [&_.ql-editor_li]:list-item"></div>
 
                                         <textarea id="petition_description" class="sr-only" name="description" aria-label="{{ __('form.description') }}"
-                                            required @error('description') aria-invalid="true" aria-describedby="field-description-error" @enderror>{!! $oldDesc !!}</textarea>
+                                            @error('description') aria-invalid="true" aria-describedby="field-description-error" @enderror>{{ $oldDesc }}</textarea>
                                     </div>
                                     @error('description')
                                         <p id="field-description-error" class="text-danger text-sm mt-1">{{ $message }}</p>
@@ -236,10 +231,10 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset class="mb-6">
-                                <legend class="font-semibold">Media</legend>
+                            <fieldset class="mb-6" data-form-step>
+                                <legend class="font-semibold">{{ __('create.step_media') }}</legend>
                                 <details open>
-                                    <summary class="cursor-pointer text-sm text-brand">Photos and video</summary>
+                                    <summary class="cursor-pointer text-sm text-brand">{{ __('create.media_toggle') }}</summary>
                                     <div class="mb-3" data-image-field>
                                         <label class="block mb-2" for="petition-image">{{ __('form.image') }}</label>
 
@@ -308,8 +303,8 @@
                                 </details>
                             </fieldset>
 
-                            <fieldset class="mb-6">
-                                <legend class="font-semibold">Targeting</legend>
+                            <fieldset class="mb-6" data-form-step>
+                                <legend class="font-semibold">{{ __('create.step_targeting') }}</legend>
                                 <div class="mb-3">
                                     <x-ui.input id="field-target" name="target" :label="__('form.target')" :value="$oldTarget" :error="$errors->first('target')" class="max-md:min-h-12" />
                                 </div>
@@ -339,8 +334,9 @@
                                     <label class="block mb-1 text-sm font-medium text-ink" for="field-city">{{ __('form.city') }}</label>
                                     <input type="text" name="city" id="field-city" value="{{ $oldCity }}"
                                         class="form-control max-md:min-h-12 w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand @error('city') is-invalid @enderror"
-                                        autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" @error('city') aria-invalid="true" aria-describedby="field-city-error" @enderror />
+                                        autocomplete="off" list="fc-city-list" placeholder="{{ __('form.city_placeholder') }}" data-city-suggestions="{{ $citySuggestionsUrl }}" data-searching-label="{{ __('form.city_searching') }}" data-suggestions-label="{{ __('form.city_suggestions') }}" @error('city') aria-invalid="true" aria-describedby="field-city-error" @enderror />
                                     <datalist id="fc-city-list"></datalist>
+                                    <p class="mt-1 text-xs text-muted" aria-live="polite" data-city-status></p>
                                     @error('city')
                                         <div id="field-city-error" class="invalid-feedback block">{{ $message }}</div>
                                     @enderror
@@ -348,7 +344,7 @@
                             </fieldset>
 
                             <div class="text-center max-md:[&_.fcui-btn]:w-full">
-                                <span data-autosave-status role="status" class="text-sm text-muted me-3">Draft saves automatically</span>
+                                <span data-autosave-status role="status" class="text-sm text-muted me-3">{{ __('create.draft_auto') }}</span>
                                 <x-ui.button type="submit" variant="primary" class="max-md:hidden max-md:min-h-12"
                                     :loadingText="$isEdit ? __('create.update') : __('create.submitting')">
                                     {{ $isEdit ? __('create.update') : __('form.submit') }}
@@ -368,45 +364,7 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" integrity="sha384-QUJ+ckWz1M+a7w0UfG1sEn4pPrbQwSxGm/1TIPyioqXBrwuT9l4f9gdHWLDLbVWI" crossorigin="anonymous"></script>
-    <script src="{{ asset('legacy/js-v2/petition-create.js') }}"></script>
-    <script src="{{ asset('legacy/js-v2/petition-autosave.js') }}"></script>
+    <script src="{{ asset('legacy/js-v2/petition-create.js') }}?v={{ filemtime(public_path('legacy/js-v2/petition-create.js')) }}"></script>
+    <script src="{{ asset('legacy/js-v2/petition-autosave.js') }}?v={{ filemtime(public_path('legacy/js-v2/petition-autosave.js')) }}"></script>
 @endpush
 
-@push('scripts')
-<script>
-(function () {
-    const sel = document.getElementById('field-country');
-    const cityIn = document.getElementById('field-city');
-    const cityList = document.getElementById('fc-city-list');
-    if (!sel || !cityIn) return;
-    let cityTimer = null;
-    cityIn.addEventListener('input', function () {
-        const q = this.value.trim();
-        const cc = sel.value;
-        clearTimeout(cityTimer);
-        if (q.length < 2) { cityList.innerHTML = ''; return; }
-        cityTimer = setTimeout(() => {
-            const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=6&featuretype=city&addressdetails=0'
-                + (cc ? '&countrycodes=' + cc.toLowerCase() : '')
-                + '&q=' + encodeURIComponent(q);
-            fetch(url, { headers: { 'Accept-Language': document.documentElement.lang || 'en' } })
-                .then(r => r.json())
-                .then(data => {
-                    cityList.innerHTML = '';
-                    const seen = new Set();
-                    (data || []).forEach(item => {
-                        const label = item.display_name.split(',')[0].trim();
-                        if (seen.has(label)) return;
-                        seen.add(label);
-                        const o = document.createElement('option');
-                        o.value = label;
-                        cityList.appendChild(o);
-                    });
-                })
-                .catch(() => { cityList.innerHTML = ''; });
-        }, 300);
-    });
-    sel.addEventListener('change', function () { cityList.innerHTML = ''; });
-})();
-</script>
-@endpush

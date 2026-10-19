@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var nameEl = form.querySelector('[data-image-name]');
     var sizeEl = form.querySelector('[data-image-size]');
     var removeBtn = form.querySelector('[data-image-remove]');
-    var submitBtn = form.querySelector('[data-submit-btn]');
+    var submitBtn = null;
 
     var MAX_SIZE = fileInput ? parseInt(fileInput.getAttribute('data-max-size'), 10) || 4194304 : 4194304;
     var ACCEPTED = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -56,10 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var fb = input.parentElement.querySelector('.invalid-feedback');
         if (!fb) {
             fb = document.createElement('div');
-            fb.className = 'invalid-feedback d-block';
+            fb.className = 'invalid-feedback block';
             input.parentElement.appendChild(fb);
         }
-        fb.classList.add('d-block');
+        fb.classList.remove('hidden');
+        fb.classList.add('block');
         fb.textContent = message;
     }
 
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             URL.revokeObjectURL(objectUrl);
             objectUrl = null;
         }
-        if (preview) preview.classList.add('d-none');
+        if (preview) preview.classList.add('hidden');
         if (previewImg) previewImg.removeAttribute('src');
         if (nameEl) nameEl.textContent = '';
         if (sizeEl) sizeEl.textContent = '';
@@ -89,11 +90,11 @@ document.addEventListener('DOMContentLoaded', function () {
             /\.(jpe?g|png|gif|webp)$/i.test(file.name);
 
         if (!typeOk) {
-            setError(fileInput, 'Unsupported file type. Use JPG, PNG, GIF, or WebP.');
+            setError(fileInput, form.dataset.msgType || 'Unsupported file type.');
             return false;
         }
         if (file.size > MAX_SIZE) {
-            setError(fileInput, 'The image may not be larger than 4 MB.');
+            setError(fileInput, form.dataset.msgSize || 'File too large.');
             return false;
         }
         return true;
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 previewImg.src = objectUrl;
                 if (nameEl) nameEl.textContent = file.name;
                 if (sizeEl) sizeEl.textContent = '(' + formatSize(file.size) + ')';
-                preview.classList.remove('d-none');
+                preview.classList.remove('hidden');
             }
 
             syncMutualExclusion();
@@ -130,13 +131,47 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.addEventListener('click', function () {
             if (fileInput) fileInput.value = '';
             clearError(fileInput);
+            if (urlInput) {
+                urlInput.value = '';
+                clearError(urlInput);
+            }
             resetPreview();
             syncMutualExclusion();
         });
     }
 
+    var urlTimer = null;
+
+    function showUrlPreview() {
+        var hasFile = !!(fileInput && fileInput.files && fileInput.files.length > 0);
+        if (hasFile) return;
+        var url = urlInput ? urlInput.value.trim() : '';
+        if (!/^https?:\/\/.+\..+/.test(url)) {
+            resetPreview();
+            return;
+        }
+        if (preview && previewImg) {
+            previewImg.src = url;
+            if (nameEl) nameEl.textContent = url;
+            if (sizeEl) sizeEl.textContent = '';
+            preview.classList.remove('hidden');
+        }
+    }
+
+    if (previewImg) {
+        previewImg.addEventListener('error', function () {
+            var hasFile = !!(fileInput && fileInput.files && fileInput.files.length > 0);
+            if (!hasFile) resetPreview();
+        });
+    }
+
     if (urlInput) {
-        urlInput.addEventListener('input', syncMutualExclusion);
+        urlInput.addEventListener('input', function () {
+            clearError(urlInput);
+            syncMutualExclusion();
+            if (urlTimer) clearTimeout(urlTimer);
+            urlTimer = setTimeout(showUrlPreview, 400);
+        });
     }
 
     function syncMutualExclusion() {
@@ -158,8 +193,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (file && urlInput && urlInput.value.trim() !== '') {
             e.preventDefault();
-            setError(fileInput, 'Choose either an uploaded image OR an external link, not both.');
-            setError(urlInput, 'Choose either an uploaded image OR an external link, not both.');
+            var msg = form.dataset.msgConflict || 'Choose one option.';
+            setError(fileInput, msg);
+            setError(urlInput, msg);
             focusFirstError();
             return;
         }
@@ -171,9 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (submitBtn) {
-            var busy = submitBtn.getAttribute('data-submitting-text');
             submitBtn.disabled = true;
-            if (busy) submitBtn.textContent = busy;
         }
     });
 
@@ -187,4 +221,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
     focusFirstError();
     syncMutualExclusion();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('[data-petition-form]');
+    var nav = document.querySelector('[data-stepper]');
+    if (!form || !nav) return;
+    var mq = window.matchMedia('(max-width: 767px)');
+    function isMobile() { return mq.matches; }
+    function steps() { return Array.prototype.slice.call(form.querySelectorAll('[data-form-step]')); }
+    if (steps().length !== 3) return;
+    var sticky = form.querySelector('[data-sticky-action]');
+    var stickyBtn = sticky ? sticky.querySelector('button[type="submit"]') : null;
+    var current = 0;
+    var stepTpl = (form.dataset.stepLabel || 'Step {n} of 3').replace('{total}', '3');
+    nav.classList.add('items-center', 'justify-center', 'gap-2', 'mb-6');
+    nav.innerHTML = '<span class="text-sm text-muted tabular-nums" data-step-text></span>' +
+        '<span class="flex-1 h-1 rounded-full bg-border overflow-hidden"><span class="block h-full bg-brand" data-step-bar style="width:33%"></span></span>';
+    var stepText = nav.querySelector('[data-step-text]');
+    var stepBar = nav.querySelector('[data-step-bar]');
+    var backBtn = document.createElement('button');
+    backBtn.type = 'button';
+    backBtn.className = 'fcui-btn fcui-btn--secondary fcui-tap w-full mt-2';
+    backBtn.textContent = form.dataset.backLabel || 'Back';
+    if (sticky) sticky.insertBefore(backBtn, sticky.firstChild);
+    var nextBtn = null;
+    if (stickyBtn) {
+        nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = stickyBtn.className;
+        nextBtn.textContent = form.dataset.nextLabel || 'Next';
+        stickyBtn.parentNode.insertBefore(nextBtn, stickyBtn);
+    }
+    function show(i) {
+        current = Math.max(0, Math.min(2, i));
+        steps().forEach(function (s, idx) { s.hidden = isMobile() && idx !== current; });
+        nav.classList.toggle('hidden', !isMobile());
+        nav.classList.toggle('flex', isMobile());
+        if (stepText) stepText.textContent = stepTpl.replace('{n}', String(current + 1));
+        if (stepBar) stepBar.style.width = ((current + 1) / 3 * 100) + '%';
+        var last = current === 2;
+        if (nextBtn) nextBtn.hidden = !isMobile() || last;
+        if (stickyBtn) stickyBtn.hidden = isMobile() && !last;
+        if (backBtn) backBtn.hidden = !isMobile() || current === 0;
+        if (isMobile()) steps()[current].scrollIntoView({ block: 'start' });
+    }
+    function validStep() {
+        var fields = steps()[current].querySelectorAll('input,select,textarea');
+        for (var k = 0; k < fields.length; k++) {
+            if (fields[k].id === 'petition_description') continue;
+            if (!fields[k].reportValidity()) return false;
+        }
+        return true;
+    }
+    if (nextBtn) nextBtn.addEventListener('click', function () { if (validStep()) show(current + 1); });
+    backBtn.addEventListener('click', function () { show(current - 1); });
+    mq.addEventListener ? mq.addEventListener('change', function () { show(current); }) : mq.addListener(function () { show(current); });
+    var bad = form.querySelector('.is-invalid');
+    if (bad) {
+        steps().forEach(function (s, idx) { if (s.contains(bad)) current = idx; });
+    }
+    show(current);
 });

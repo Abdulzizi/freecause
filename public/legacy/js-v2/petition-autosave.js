@@ -99,7 +99,7 @@
         }
         try {
             storage.setItem(key, JSON.stringify(data));
-            setStatus('Draft saved');
+            setStatus(form.getAttribute('data-draft-saved') || 'Draft saved');
         } catch (e) {
             setStatus('');
         }
@@ -152,6 +152,7 @@
             window.clearTimeout(debounceTimer);
             debounceTimer = null;
         }
+        if (typeof form.checkValidity === 'function' && !form.checkValidity()) return;
         clearDraft();
     });
 })();

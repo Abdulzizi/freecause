@@ -489,34 +489,26 @@ class PetitionController extends Controller
 
     public function store(PetitionRequest $request, string $locale)
     {
-        if (Spam::rateLimit('petition.create', 5)) {
-            Spam::log('petition.create', 'Rate limit exceeded');
-
-            return back()->withErrors(['title' => 'Too many petition attempts.'])->withInput();
-        }
-
         $data = $request->validated();
-        if (Spam::isSpam(($data['title'] ?? '').' '.($data['description'] ?? ''))) {
+        if (Spam::isSpam(($data['title'] ?? '').' '.strip_tags($data['description'] ?? ''))) {
             Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
 
-            return back()->withErrors(['title' => 'Suspicious activity detected.'])->withInput();
+            return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
         }
         $uploaded = $request->file('image');
         if ($uploaded !== null && ! $uploaded->isValid()) {
             $reason = $uploaded->getError();
             $message = in_array($reason, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
-                ? 'The image may not be larger than 4 MB.'
-                : 'The image failed to upload. Please try again.';
+                ? __('create.err_image_too_large')
+                : __('create.err_image_upload_failed');
 
             return back()
                 ->withErrors(['image' => $message])
                 ->withInput();
         }
 
-        $data = $request->validated();
-
         if ($this->imageConflict($request, $data)) {
-            $conflict = 'Please choose either upload an image OR use an external image link (not both).';
+            $conflict = __('create.err_image_conflict');
 
             return back()
                 ->withErrors([
@@ -595,7 +587,7 @@ class PetitionController extends Controller
                     PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
-                toast('Petition created successfully.', 'success');
+                toast(__('create.toast_created'), 'success');
 
                 return redirect()->route('petition.thanks', [
                     'locale' => $locale,
@@ -928,7 +920,9 @@ class PetitionController extends Controller
 
                     $petition->cover_image = $newCoverImage;
                     $petition->image_url = null;
-                } elseif ($request->boolean('remove_image') || filled($petition->image_url)) {
+                } elseif ($request->boolean('remove_image')) {
+                    $petition->cover_image = null;
+                } elseif (filled($data['image_url'] ?? null) && ($data['image_url'] ?? null) !== $petition->image_url) {
                     $petition->cover_image = null;
                 }
 
@@ -939,7 +933,7 @@ class PetitionController extends Controller
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
-                toast('Petition updated successfully.', 'success');
+                toast(__('create.toast_updated'), 'success');
 
                 return redirect()->route('petition.show', [
                     'locale' => $tr->locale,

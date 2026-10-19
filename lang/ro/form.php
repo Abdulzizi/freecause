@@ -3,7 +3,12 @@
 return [
     'cancel' => 'Anuleaza',
     'category' => 'Categorie (obligatoriu)',
-    'city' => 'Oras',
+    'city' => 'Oraș',
+    'city_placeholder' => 'Introduceți numele unui oraș',
+    'city_suggestions' => 'Sugestii de orașe',
+    'city_searching' => 'Se caută orașe…',
+    'country' => 'Țară',
+    'country_select' => 'Selectați o țară',
     'community' => 'Comunitatea petitiei',
     'community_url' => 'URL comunitate',
     'description' => 'Text (obligatoriu)',

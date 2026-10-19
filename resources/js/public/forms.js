@@ -18,6 +18,7 @@ export function init() {
 
                 form.querySelectorAll('[data-loading]').forEach(function (el) {
                     if (el.dataset.fcLoadingActive === '1') return;
+                    if (el.offsetParent === null && el.type !== 'hidden') return;
                     el.dataset.fcLoadingActive = '1';
 
                     if (typeof el.disabled === 'boolean') {
@@ -32,6 +33,58 @@ export function init() {
                     }
                 });
             }, 0);
+        });
+    });
+
+    document.querySelectorAll('[data-city-suggestions]').forEach(function (city) {
+        const country = document.getElementById('field-country');
+        const list = document.getElementById('fc-city-list');
+        const status = document.querySelector('[data-city-status]');
+        if (!country || !list) return;
+
+        let timer;
+        let controller;
+        const search = function () {
+            clearTimeout(timer);
+            if (controller) controller.abort();
+            const query = city.value.trim();
+            if (query.length < 2 || !country.value) {
+                list.replaceChildren();
+                if (status) status.textContent = '';
+                return;
+            }
+
+            if (status) status.textContent = city.dataset.searchingLabel || '';
+            timer = window.setTimeout(async function () {
+                controller = new AbortController();
+                const params = new URLSearchParams({ q: query, country: country.value });
+                try {
+                    const response = await fetch(city.dataset.citySuggestions + '?' + params, {
+                        headers: { Accept: 'application/json' },
+                        signal: controller.signal,
+                    });
+                    if (!response.ok) return;
+                    const suggestions = await response.json();
+                    list.replaceChildren(...suggestions.map(function (name) {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        return option;
+                    }));
+                    if (status) status.textContent = suggestions.length ? city.dataset.suggestionsLabel : '';
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        list.replaceChildren();
+                        if (status) status.textContent = '';
+                    }
+                }
+            }, 250);
+        };
+
+        city.addEventListener('input', search);
+        country.addEventListener('change', function () {
+            list.replaceChildren();
+            if (status) status.textContent = '';
+            search();
         });
     });
 

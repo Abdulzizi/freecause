@@ -22,6 +22,7 @@ use App\Http\Controllers\AdsConfigController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\GeoController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
@@ -237,6 +238,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
 Route::prefix('{locale}')
     ->middleware(['optional.session', 'setLocale', 'block.banned.ip', 'block.banned.user'])
     ->group(function () use ($withoutSession) {
+        Route::get('/geo/cities', [GeoController::class, 'cities'])->withoutMiddleware($withoutSession)->middleware('throttle:30,1')->name('geo.cities');
         Route::get('/petitions', [PetitionController::class, 'index'])
             ->withoutMiddleware($withoutSession)
             ->name('petitions.index');

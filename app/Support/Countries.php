@@ -27,4 +27,9 @@ final class Countries
     {
         return explode(' ', self::ISO_CODES);
     }
+
+    public static function isValid(string $code): bool
+    {
+        return in_array(strtoupper($code), self::codes(), true);
+    }
 }
