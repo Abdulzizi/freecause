@@ -211,9 +211,8 @@ class PetitionController extends Controller
                 });
                 $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
                 $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')
-                    ->orderByRaw('FIELD(petitions.id, '.implode(',', array_map('intval', $ids)).')')->get();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page);
+                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
+                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
 
                 $petitions = $petitions->withQueryString();
             } else {
@@ -225,9 +224,8 @@ class PetitionController extends Controller
                 });
                 $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
                 $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')
-                    ->orderByRaw('FIELD(petitions.id, '.implode(',', array_map('intval', $ids)).')')->get();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page);
+                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
+                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
 
                 $petitions = $petitions->withQueryString();
             }

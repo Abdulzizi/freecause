@@ -95,13 +95,12 @@ class HomeController extends Controller
             $maxFeatured = 5;
         }
 
-        $pool = cache()->remember(CacheKeys::homePool($locale), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $pool = cache()->remember(CacheKeys::homePool($locale, $excludedIds, $maxFeatured), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->translated($locale, 'pt_locale', 'pt_default', [], $defaultLocale)
                 ->whereNotNull('pt_locale.title')
                 ->where('pt_locale.is_featured', 1)
-                ->where('petitions.status', 'published')
-                ->where('petitions.is_active', 1)
+                ->visible()
                 ->whereNotIn('petitions.id', $excludedIds)
                 ->orderByDesc('petitions.signature_count')
                 ->limit($maxFeatured)
@@ -112,7 +111,7 @@ class HomeController extends Controller
         $usingFallbackPool = false;
         if (empty($pool) && $locale !== $defaultLocale) {
             $usingFallbackPool = true;
-            $pool = cache()->remember(CacheKeys::homePool($defaultLocale), 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
+            $pool = cache()->remember(CacheKeys::homePool($defaultLocale, $excludedIds, $maxFeatured), 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
                 return Petition::select(['petitions.id'])
                     ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
                         $join->on('pt_default.petition_id', '=', 'petitions.id')
@@ -120,8 +119,7 @@ class HomeController extends Controller
                     })
                     ->whereNotNull('pt_default.title')
                     ->where('pt_default.is_featured', 1)
-                    ->where('petitions.status', 'published')
-                    ->where('petitions.is_active', 1)
+                    ->visible()
                     ->whereNotIn('petitions.id', $excludedIds)
                     ->orderByDesc('petitions.signature_count')
                     ->limit($maxFeatured)
@@ -133,8 +131,8 @@ class HomeController extends Controller
         $featuredPetition = null;
 
         if (! empty($pool)) {
-            $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale), 60, function () use ($locale, $defaultLocale, $pool) {
-                $featuredId = $pool[(int) floor(time() / 60) % count($pool)];
+            $featuredId = $pool[(int) floor(time() / 60) % count($pool)];
+            $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale, $featuredId), 60, function () use ($locale, $defaultLocale, $featuredId) {
 
                 return Petition::select(['petitions.*'])
                     ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug', 'description' => 'tr_description'], $defaultLocale)

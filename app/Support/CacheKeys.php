@@ -14,14 +14,14 @@ class CacheKeys
         return 'home:recent:'.CacheVersion::get('home').':'.$locale;
     }
 
-    public static function homePool(string $locale): string
+    public static function homePool(string $locale, array $excludedIds = [], int $maxFeatured = 0): string
     {
-        return 'home:pool:'.CacheVersion::get('home').':'.$locale;
+        return 'home:pool:'.CacheVersion::get('home').':'.$locale.':'.md5(implode(',', $excludedIds).':'.$maxFeatured);
     }
 
-    public static function homeFeatured(string $locale): string
+    public static function homeFeatured(string $locale, int $featuredId): string
     {
-        return 'home:featured:'.CacheVersion::get('home').':'.$locale;
+        return 'home:featured:'.CacheVersion::get('home').':'.$locale.':'.$featuredId;
     }
 
     public static function homeMagazinePosts(): string
@@ -31,16 +31,16 @@ class CacheKeys
 
     public static function petitionsIndex(string $locale, int $page): string
     {
-        return 'petitions:index:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:index:v2:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
     }
 
     public static function petitionsTrending(string $locale, int $page): string
     {
-        return 'petitions:trending:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:trending:v2:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
     }
 
     public static function petitionsByCategory(string $locale, int $categoryId, int $page): string
     {
-        return 'petitions:byCategory:'.$locale.':'.$categoryId.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:byCategory:v2:'.$locale.':'.$categoryId.':page:'.$page.':'.CacheVersion::get('list');
     }
 }

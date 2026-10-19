@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use App\Support\CacheKeys;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CategoryPetitionController extends Controller
 {
@@ -57,9 +58,8 @@ class CategoryPetitionController extends Controller
                 $q->whereNotNull('pt_locale.title')
                     ->orWhereNotNull('pt_default.title');
             })
-            ->where('petitions.status', 'published')
-            ->where('petitions.is_active', 1)
-            ->where('petitions.category_id', $category->id);
+            ->where('petitions.category_id', $category->id)
+            ->visible();
 
         if ($search !== '') {
             $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
@@ -70,9 +70,14 @@ class CategoryPetitionController extends Controller
             $petitions = $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
             $cacheKey = CacheKeys::petitionsByCategory($locale, $category->id, $page);
-            $petitions = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                return $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page);
+            $cached = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
+                $p = (clone $query)->orderByDesc('petitions.id')->paginate(15, ['petitions.id'], 'page', $page);
+
+                return ['ids' => $p->items(), 'total' => $p->total()];
             });
+            $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
+            $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
+            $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
 
             $petitions = $petitions->withQueryString();
         }
