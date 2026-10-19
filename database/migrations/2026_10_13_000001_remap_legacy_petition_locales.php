@@ -1,6 +1,6 @@
 <?php
 
-use App\Support\PetitionCache;
+use App\Support\CacheVersion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -112,7 +112,7 @@ return new class extends Migration
     private function bumpCaches(): void
     {
         try {
-            PetitionCache::bump();
+            CacheVersion::bumpAll();
         } catch (Throwable) {
         }
     }

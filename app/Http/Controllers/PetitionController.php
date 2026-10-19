@@ -419,8 +419,7 @@ class PetitionController extends Controller
     {
         $petition = Petition::query()
             ->where('id', $id)
-            ->where('status', 'published')
-            ->where('is_active', 1)
+            ->visible()
             ->firstOrFail();
 
         $signSessionKey = "sign.{$petition->id}";
@@ -450,7 +449,7 @@ class PetitionController extends Controller
 
     public function shoutboxStore(Request $request, string $locale, string $slug, int $id): RedirectResponse
     {
-        $petition = Petition::query()->where('id', $id)->where('status', 'published')->where('is_active', 1)->firstOrFail();
+        $petition = Petition::query()->where('id', $id)->visible()->firstOrFail();
         $data = $request->validate(['comment' => ['required', 'string', 'max:500']]);
         $u = $request->user();
         $sig = Signature::query()->where('petition_id', $petition->id)->where(fn ($q) => $q->where('user_id', $u->id)->orWhere('email', $u->email))->first();
@@ -960,8 +959,6 @@ class PetitionController extends Controller
         $header[] = '';
         $header[] = '--- SIGNATURES ---';
 
-        // Stream ALL signatures (chunked cursor) rather than the latest 100,
-        // matching the legacy export which paged through every signature.
         return response()->streamDownload(function () use ($petition, $header) {
             $out = fopen('php://output', 'w');
 
@@ -970,7 +967,7 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')
+                ->orderBy('created_at')->orderBy('id')
                 ->chunkById(1000, function ($rows) use ($out, &$num) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1044,6 +1041,7 @@ class PetitionController extends Controller
         // memory-safe on large petitions.
         $showEmail = (bool) (admin_user()?->canAccessAdmin());
         $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'confirmed', 'signed_at'];
+
         return response()->streamDownload(function () use ($petition, $showEmail, $header) {
             $out = fopen('php://output', 'w');
 
@@ -1055,7 +1053,7 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')
+                ->orderBy('created_at')->orderBy('id')
                 ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1110,8 +1108,7 @@ class PetitionController extends Controller
 
         $petition = Petition::with('category', 'user')
             ->where('id', $id)
-            ->where('status', 'published')
-            ->where('is_active', 1)
+            ->visible()
             ->firstOrFail();
 
         $tr = PetitionTranslation::where('petition_id', $petition->id)

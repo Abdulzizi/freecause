@@ -17,7 +17,6 @@ use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
 use App\Support\Locale;
-use App\Support\PetitionCache;
 use App\Support\Slug;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -326,7 +325,7 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            PetitionCache::bump();
+            CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition save: '.$e->getMessage());
         }
@@ -391,7 +390,7 @@ class AdminPetitionsController extends Controller
         });
 
         try {
-            PetitionCache::bump();
+            CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition create: '.$e->getMessage());
         }
@@ -448,7 +447,7 @@ class AdminPetitionsController extends Controller
         });
 
         try {
-            PetitionCache::bump();
+            CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after translate-missing: '.$e->getMessage());
         }
@@ -519,7 +518,7 @@ class AdminPetitionsController extends Controller
         }
 
         try {
-            PetitionCache::bump();
+            CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition bulk action: '.$e->getMessage());
         }

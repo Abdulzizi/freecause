@@ -19,9 +19,9 @@ class CacheKeys
         return 'home:pool:'.CacheVersion::get('home').':'.$locale;
     }
 
-    public static function homeFeatured(string $locale, int $slot): string
+    public static function homeFeatured(string $locale): string
     {
-        return 'home:featured:'.CacheVersion::get('home').':'.$locale.':'.$slot;
+        return 'home:featured:'.CacheVersion::get('home').':'.$locale;
     }
 
     public static function homeMagazinePosts(): string

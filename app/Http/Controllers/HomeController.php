@@ -95,8 +95,6 @@ class HomeController extends Controller
             $maxFeatured = 5;
         }
 
-        $slot = (int) floor(time() / 60);
-
         $pool = cache()->remember(CacheKeys::homePool($locale), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
                 ->translated($locale, 'pt_locale', 'pt_default', [], $defaultLocale)
@@ -135,9 +133,9 @@ class HomeController extends Controller
         $featuredPetition = null;
 
         if (! empty($pool)) {
-            $featuredId = $pool[$slot % count($pool)];
+            $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale), 60, function () use ($locale, $defaultLocale, $pool) {
+                $featuredId = $pool[(int) floor(time() / 60) % count($pool)];
 
-            $featuredPetition = cache()->remember(CacheKeys::homeFeatured($locale, $slot), 65, function () use ($locale, $defaultLocale, $featuredId) {
                 return Petition::select(['petitions.*'])
                     ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug', 'description' => 'tr_description'], $defaultLocale)
                     ->where('petitions.id', $featuredId)
