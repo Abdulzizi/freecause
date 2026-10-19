@@ -77,6 +77,7 @@
                 <div class="mb-4 text-center lg:hidden mt-4">
                     <x-ads.slot name="mobile" />
                 </div>
+                <x-ads.slot name="mobile_feed" class="lg:hidden text-center mb-4" />
             </div>
 
             {{-- ad: native, full width --}}
@@ -103,6 +104,7 @@
                 <div class="mb-4 text-center hidden md:block">
                     <x-ads.slot name="banner468" />
                 </div>
+                <x-ads.slot name="mobile_inline" class="lg:hidden text-center mb-4" />
 
                 @forelse($signatures as $sig)
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">

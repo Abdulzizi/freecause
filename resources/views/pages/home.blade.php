@@ -171,6 +171,9 @@
                                                 <ul class="most-listing">
 
                                                     @forelse($recentActivities as $sig)
+                                                        @if ($loop->index > 0 && $loop->index % 4 === 0)
+                                                            <li class="lg:hidden" aria-hidden="true">@include('partials.ads-infeed', ['slot' => $loop->index % 8 === 0 ? 'mobile_inline' : 'mobile_feed'])</li>
+                                                        @endif
                                                         @php
                                                             $hasPetition =
                                                                 !empty($sig->petition_id) &&
@@ -343,6 +346,7 @@
     @endif
 
     {{-- Ads: native --}}
+    @include('partials.ads-mini', ['slot' => 'mobile_strip'])
     <div class="my-6">
         <x-ads.slot name="native" />
     </div>

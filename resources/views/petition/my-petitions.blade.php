@@ -21,6 +21,9 @@
 
                         <div class="max-w-[520px] fc-reveal fc-stagger">
                             @forelse($signed as $p)
+                                @if ($loop->index > 0 && $loop->index % 4 === 0)
+                                    @include('partials.ads-infeed', ['slot' => $loop->index % 8 === 0 ? 'mobile_inline' : 'mobile_feed'])
+                                @endif
                                 @php
                                     $date = $p->signed_at ? \Carbon\Carbon::parse($p->signed_at) : $p->created_at;
                                 @endphp
@@ -51,6 +54,9 @@
 
                         <div class="max-w-[520px] fc-reveal fc-stagger">
                             @forelse($created as $p)
+                                @if ($loop->index > 0 && $loop->index % 4 === 0)
+                                    @include('partials.ads-infeed', ['slot' => 'mobile_mini'])
+                                @endif
                                 <a class="flex max-md:min-h-12 items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 mb-2.5 text-ink hover:bg-brand-soft fc-lift" style="--fc-i: {{ min($loop->index, 12) }}"
                                     href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
                                     <div class="text-sm leading-[1.2] flex-1">{{ $p->tr_title }}</div>
@@ -75,5 +81,6 @@
 
                 </div>
             </div>
+            @include('partials.ads-mini', ['slot' => 'mobile_strip'])
     </x-ui.section>
 @endsection

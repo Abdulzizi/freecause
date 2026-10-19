@@ -34,6 +34,8 @@
                     <x-ads.slot name="mobile" />
                 </div>
 
+                <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
+
                 @if (auth()->check() || ! empty($signData))
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block w-full md:w-auto">
                     @csrf
@@ -78,4 +80,5 @@
     <div class="mb-4 text-center">
         <x-ads.slot name="rectangle" />
     </div>
+    <x-ads.slot name="mobile_strip" sticky class="lg:hidden text-center sticky bottom-2 z-sticky" />
 @endsection

@@ -179,6 +179,8 @@
                 {{-- ad: 320x50, mobile only, below Active badge above progress bar (not fixed-bottom) --}}
                 <x-ads.slot name="mobile" class="lg:hidden text-center mb-4" />
 
+                <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
+
                 @if (isset($errors) && ($errors->has('reportable_type') || $errors->has('reportable_id') || $errors->has('reason') || $errors->has('details')))
                     <x-ui.alert variant="error" class="mb-4">{{ __('show.report_failed') }}</x-ui.alert>
                 @endif
@@ -310,8 +312,11 @@
                             </div>
                         </div>
 
+                        <x-ads.slot name="mobile_feed" class="lg:hidden text-center my-4" />
+
                         {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}
                         <x-ads.slot name="banner468" class="hidden md:block text-center my-6" />
+                        <x-ads.slot name="mobile_inline" class="lg:hidden text-center my-4" />
 
                         <div class="border-t border-border my-6"></div>
 
