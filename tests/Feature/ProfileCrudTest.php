@@ -70,7 +70,7 @@ class ProfileCrudTest extends TestCase
             ->post('/en/profile', [
                 'first_name' => 'Grace',
                 'last_name' => 'Hopper',
-                'nickname' => 'amazing-grace',
+                'nickname' => 'amazinggrace',
                 'city' => 'New York',
                 'country' => 'US',
                 'gender' => 'female',
@@ -83,7 +83,7 @@ class ProfileCrudTest extends TestCase
         $user->refresh();
         $this->assertSame('Grace', $user->first_name);
         $this->assertSame('Hopper', $user->last_name);
-        $this->assertSame('amazing-grace', $user->nickname);
+        $this->assertSame('amazinggrace', $user->nickname);
         $this->assertSame('New York', $user->city);
         $this->assertSame('US', $user->country);
         $this->assertSame('female', $user->gender);

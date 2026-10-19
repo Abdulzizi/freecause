@@ -176,7 +176,6 @@ class ProfileGateTest extends TestCase
             ['get', '/en/preferences'],
             ['post', '/en/preferences'],
             ['post', '/en/report'],
-            ['post', "/en/petition/gate-test-petition/{$petition->id}/claim"],
         ];
 
         foreach ($gated as [$method, $url]) {

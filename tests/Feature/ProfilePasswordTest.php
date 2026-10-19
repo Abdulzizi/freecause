@@ -33,7 +33,9 @@ class ProfilePasswordTest extends TestCase
 
         $this->assertFalse($user->hasLocalPassword());
 
+        // Setting a first password now requires a recent password confirmation.
         $this->actingAs($user)
+            ->withSession(['password.confirmed_at' => now()->timestamp])
             ->post('/en/profile', [
                 'first_name' => 'Grace',
                 'last_name' => 'Hopper',

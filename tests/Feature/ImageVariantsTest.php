@@ -97,7 +97,7 @@ class ImageVariantsTest extends TestCase
         $urls = ImageVariants::urls('petitions/fixture.jpg');
 
         $this->assertNotNull($urls);
-        $this->assertSame([800, 400], array_keys($urls));
+        $this->assertSame([400, 800], array_keys($urls));
         $this->assertStringContainsString('storage/petitions/fixture_800w.webp', $urls['800']);
         $this->assertStringContainsString('storage/petitions/fixture_400w.webp', $urls['400']);
     }

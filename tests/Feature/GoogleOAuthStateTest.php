@@ -204,7 +204,7 @@ class GoogleOAuthStateTest extends TestCase
     public function test_authenticated_user_can_link_google_from_profile(): void
     {
         $user = User::factory()->create([
-            'email' => 'local-user@example.test',
+            'email' => 'google-state@example.test',
             'google_id' => null,
             'password_changed_at' => now(),
             'verified' => true,
@@ -226,6 +226,26 @@ class GoogleOAuthStateTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
         $this->assertSame('synthetic-google-user', $user->fresh()->google_id);
+    }
+
+    public function test_linking_google_rejects_a_mismatched_email(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'local-user@example.test',
+            'google_id' => null,
+            'password_changed_at' => now(),
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user);
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=link');
+
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])
+            ->assertForbidden();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNull($user->fresh()->google_id);
     }
 
     public function test_linking_a_google_identity_already_used_by_another_account_is_rejected(): void

@@ -64,7 +64,9 @@ class PetitionSignatureExportTest extends TestCase
         $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
 
         $body = $response->streamedContent();
-        $this->assertStringContainsString('name,email,comment,locale,confirmed,signed_at', $body);
+        // Owners export signatures without signer emails (privacy); admins keep them.
+        $this->assertStringContainsString('#,name,comment,locale,confirmed,signed_at', $body);
+        $this->assertStringNotContainsString('name,email,comment', $body);
     }
 
     public function test_csv_export_is_not_capped_at_100_rows(): void

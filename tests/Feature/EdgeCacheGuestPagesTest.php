@@ -104,6 +104,8 @@ class EdgeCacheGuestPagesTest extends TestCase
 
         $final = $this->post($signUrl, [
             '_token' => $this->csrfToken($confirm->getContent()),
+            'name' => 'No JS Guest',
+            'email' => 'no-js@example.com',
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
