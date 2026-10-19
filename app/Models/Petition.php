@@ -25,6 +25,10 @@ class Petition extends Model
         'cover_image',
     ];
 
+    protected $casts = [
+        'last_notified_at' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

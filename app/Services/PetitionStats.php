@@ -20,16 +20,6 @@ class PetitionStats
         self::incrementMany([$petitionId => $by]);
     }
 
-    /**
-     * Increment signature counts in bulk. Returns a map of petitionId =>
-     * previousCount (the count BEFORE this increment) so callers can detect
-     * milestones crossed and send notifications AFTER their transaction
-     * commits — notification must never fire inside a transaction that may
-     * roll back.
-     *
-     * @param  array<int,int>  $byPetitionId
-     * @return array<int,int>
-     */
     public static function incrementMany(array $byPetitionId): array
     {
         $touched = [];
@@ -43,8 +33,12 @@ class PetitionStats
                 continue;
             }
 
-            $previous[$id] = (int) DB::table('petitions')->where('id', $id)->value('signature_count');
-            DB::table('petitions')->where('id', $id)->increment('signature_count', $by);
+            $previous[$id] = DB::transaction(function () use ($id, $by) {
+                $value = (int) DB::table('petitions')->where('id', $id)->lockForUpdate()->value('signature_count');
+                DB::table('petitions')->where('id', $id)->increment('signature_count', $by);
+
+                return $value;
+            });
             $touched[] = $id;
         }
 
