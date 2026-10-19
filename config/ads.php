@@ -119,7 +119,7 @@ return [
 
     'placements' => [
         'anchor' => ['mobile'],
-        'float' => ['mobile_float'],
+        'float' => ['mobile_float', 'mobile'],
         'infeed' => ['mobile_feed', 'mobile_card', 'mobile_native_small'],
         'inline' => ['mobile_inline', 'mobile_mini', 'mobile_banner'],
         'page_top' => ['leaderboard'],

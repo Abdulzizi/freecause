@@ -5,6 +5,16 @@
     // NB: prop is "name" not "slot" -- $slot is Blade's reserved component-content var.
     $adsOn = \App\Support\Ads::enabled();
     $cfg = \App\Support\Ads::slot($name);
+    if ($cfg && empty($cfg['key']) && str_starts_with($name, 'mobile_') && $name !== 'mobile_float') {
+        foreach (['rectangle', 'native', 'mobile', 'banner468', 'leaderboard'] as $cand) {
+            $cc = \App\Support\Ads::slot($cand);
+            if ($cc && ! empty($cc['key']) && ! request()->attributes->has('ads_slot_rendered_'.$cand)) {
+                $name = $cand;
+                $cfg = $cc;
+                break;
+            }
+        }
+    }
     $hasKey = $adsOn && $cfg && !empty($cfg['key']);
     // The 320x50 "mobile" zone belongs to the sticky anchor (partials.ads-anchor).
     // Blade renders a page's content before the layout, so an inline copy would always

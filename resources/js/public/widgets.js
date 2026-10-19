@@ -22,21 +22,7 @@ export function init(ctx) {
     document.querySelectorAll('[data-ad-float-close]').forEach(function (button) {
         const float = button.closest('#fc-ad-float');
         if (!float) return;
-        let closed = false;
-        try {
-            closed = window.sessionStorage.getItem('fc_ad_float_closed_v2') === '1';
-        } catch (error) {
-            closed = false;
-        }
-        if (closed) {
-            float.remove();
-            return;
-        }
         button.addEventListener('click', function () {
-            try {
-                window.sessionStorage.setItem('fc_ad_float_closed_v2', '1');
-            } catch (error) {
-            }
             float.remove();
         });
     });
@@ -45,23 +31,7 @@ export function init(ctx) {
         const anchor = button.closest('#fc-ad-anchor');
         if (!anchor) return;
         const spacer = document.querySelector('.fc-ad-anchor-spacer');
-        let closed = false;
-        try {
-            closed = window.sessionStorage.getItem('fc_ad_anchor_closed_v2') === '1';
-        } catch (error) {
-            closed = false;
-        }
-        if (closed) {
-            anchor.remove();
-            spacer?.remove();
-            return;
-        }
         button.addEventListener('click', function () {
-            try {
-                window.sessionStorage.setItem('fc_ad_anchor_closed_v2', '1');
-            } catch (error) {
-                // storage disabled: the anchor just reappears on the next page
-            }
             anchor.remove();
             spacer?.remove();
         });
