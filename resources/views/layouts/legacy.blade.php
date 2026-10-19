@@ -98,14 +98,14 @@
     <a href="#fc-main" class="fc-skip-link">{{ __('Skip to content') }}</a>
     @include('partials.navbar')
 
+    @include('partials.ads-anchor')
+    @include('partials.ads-floating')
     @unless (isset($exception))
         {{-- Rendered before the page body on purpose: the sticky anchor (mobile) and the
              side rail (desktop) emit the "mobile"/"skyscraper" zones, and Ads::renderOnce
              gives the zone to the first slot rendered in the request. Claiming them here
              keeps a page's own inline copy from winning and leaving the anchor empty.
-             Both are position:fixed, so DOM order does not affect where they appear. --}}
-        @include('partials.ads-anchor')
-        @include('partials.ads-floating')
+              Both are position:fixed, so DOM order does not affect where they appear. --}}
         @include('partials.ads-rail')
     @endunless
 
@@ -120,7 +120,9 @@
     @endif
 
     <main id="fc-main">
-        @unless (isset($exception))
+    @include('partials.ads-anchor')
+    @include('partials.ads-floating')
+    @unless (isset($exception))
             {{-- Top banner: desktop only. The 320x50 "mobile" zone is consumed by the
                  sticky anchor below and a zone must never appear twice on one page. --}}
             <div class="hidden lg:block text-center my-4"><x-ads.slot name="leaderboard" /></div>
