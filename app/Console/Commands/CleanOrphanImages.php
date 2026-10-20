@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Support\ImageVariants;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Support\ImageVariants;
 
 class CleanOrphanImages extends Command
 {

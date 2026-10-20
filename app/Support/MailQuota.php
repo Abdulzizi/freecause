@@ -13,6 +13,16 @@ class MailQuota
         return (bool) Cache::get(self::KEY);
     }
 
+    public static function paused(): bool
+    {
+        return ! Settings::get('smtp_enabled', false) || self::tripped();
+    }
+
+    public static function productPaused(string $key): bool
+    {
+        return self::paused() || ! Settings::get($key, true);
+    }
+
     public static function trip(): void
     {
         Cache::put(self::KEY, 1, now()->endOfDay());

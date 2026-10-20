@@ -10,6 +10,7 @@ use App\Support\Locale;
 use App\Support\MailQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class SendPetitionDigest extends Command
@@ -20,9 +21,37 @@ class SendPetitionDigest extends Command
 
     public function handle(): int
     {
+        $lock = Cache::lock('petition-digest', 21600);
+        if (! $lock->get()) {
+            $this->info('Petition digest: already running');
+
+            return self::SUCCESS;
+        }
+
+        try {
+            return $this->runDigest();
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function runDigest(): int
+    {
         $dryRun = (bool) $this->option('dry-run');
         $limit = max(0, (int) $this->option('limit'));
         $defaultLocale = default_locale();
+
+        if (! $dryRun && MailQuota::productPaused('petition_digest_enabled')) {
+            if (MailQuota::tripped()) {
+                AppLog::error('Petition digest aborted', 'Mail provider quota exhausted, stopped dispatching.', 'emails.digest');
+
+                $this->warn('Mail quota exhausted - digest aborted.');
+            } else {
+                $this->warn('Product mail paused - petition digest skipped.');
+            }
+
+            return self::SUCCESS;
+        }
 
         $sent = 0;
         $skipped = 0;
@@ -114,6 +143,7 @@ class SendPetitionDigest extends Command
     private function recentPetitions(string $locale, string $defaultLocale): Collection
     {
         return Petition::query()
+            ->with('translations')
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
