@@ -46,11 +46,13 @@ class SendPetitionNewSignatures extends Command
         foreach ($petitions as $petition) {
             $petitionId = $petition->id;
             $since = $petition->last_notified_at ?? now()->subHour();
+            $cutoff = now();
             $total = DB::table('signatures')
                 ->where('petition_id', $petitionId)
                 ->where('confirmed', 1)
                 ->where('is_spam', 0)
-                ->where('created_at', '>=', $since)
+                ->where('created_at', '>', $since)
+                ->where('created_at', '<=', $cutoff)
                 ->count();
 
             if ($total === 0) {
@@ -70,7 +72,8 @@ class SendPetitionNewSignatures extends Command
                 ->where('petition_id', $petitionId)
                 ->where('confirmed', 1)
                 ->where('is_spam', 0)
-                ->where('created_at', '>=', $since)
+                ->where('created_at', '>', $since)
+                ->where('created_at', '<=', $cutoff)
                 ->whereNotNull('user_id')
                 ->orderByDesc('id')
                 ->limit(3)
@@ -93,8 +96,7 @@ class SendPetitionNewSignatures extends Command
             }
 
             if (! $dryRun) {
-                $max = DB::table('signatures')->where('petition_id', $petitionId)->max('created_at');
-                DB::afterCommit(fn () => DB::table('petitions')->where('id', $petitionId)->update(['last_notified_at' => $max ?? now()]));
+                DB::afterCommit(fn () => DB::table('petitions')->where('id', $petitionId)->update(['last_notified_at' => $cutoff]));
             }
             $sent++;
         }

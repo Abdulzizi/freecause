@@ -49,4 +49,20 @@ class PetitionNewSignaturesTest extends TestCase
 
         Mail::assertNothingQueued();
     }
+
+    public function test_does_not_resend_on_second_run_without_new_signatures(): void
+    {
+        $owner = User::factory()->create(['locale' => 'en', 'notify_new_signatures' => true]);
+        $petition = Petition::factory()->create(['user_id' => $owner->id, 'status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Save the Park', 'slug' => 'save-the-park', 'description' => 'D']);
+        Signature::factory()->create(['petition_id' => $petition->id, 'confirmed' => true, 'created_at' => now()->subMinutes(5)]);
+
+        Mail::fake();
+        Artisan::call('emails:petition-new-signatures');
+        Mail::assertQueued(PetitionNewSignaturesMail::class, 1);
+
+        Mail::fake();
+        Artisan::call('emails:petition-new-signatures');
+        Mail::assertNothingQueued();
+    }
 }
