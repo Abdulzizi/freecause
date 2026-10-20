@@ -104,7 +104,7 @@
                 <div class="mb-8">
                     @forelse($suggestions as $p)
                         @if ($loop->index > 0 && $loop->index % 4 === 0)
-                            @include('partials.ads-infeed', ['slot' => 'native'])
+                            <x-ads.infeed name="native" />
                         @endif
                         @php
                             $sUrl = !empty($p->tr_slug)

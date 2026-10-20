@@ -42,19 +42,23 @@ class AddSecurityHeaders
                 "object-src 'none'; ".
                 "base-uri 'self';";
         } elseif ($request->is('ads/frame/*')) {
-            // Ad network slot in its own document: the Adsterra loader injects an
-            // inline <script> that the public CSP forbids, so this frame runs with a
-            // relaxed policy. It contains only ad markup, never site or user content.
+            $appOrigin = '';
+            $appUrl = (array) parse_url((string) config('app.url'));
+            if (! empty($appUrl['host'])) {
+                $appOrigin = ' '.($appUrl['scheme'] ?? 'https').'://'.$appUrl['host']
+                    .(! empty($appUrl['port']) ? ':'.$appUrl['port'] : '');
+            }
             $csp =
-                "default-src 'self' https: http: data: blob:; ".
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; ".
-                "style-src 'self' 'unsafe-inline' https: http:; ".
-                "img-src 'self' data: blob: https: http:; ".
-                "font-src 'self' data: https: http:; ".
-                "frame-src 'self' https: http:; ".
-                "connect-src 'self' https: http:; ".
+                "default-src 'self' https: data: blob:; ".
+                "script-src 'self' 'unsafe-inline' https:".$appOrigin.'; '.
+                "style-src 'self' 'unsafe-inline' https:; ".
+                "img-src 'self' data: blob: https:; ".
+                "font-src 'self' data: https:; ".
+                "frame-src 'self' https:; ".
+                "connect-src 'self' https:; ".
                 "object-src 'none'; ".
-                "base-uri 'self';".
+                "base-uri 'self'; ".
+                "frame-ancestors 'self';".
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         } else {
             $inlineHashes = '';

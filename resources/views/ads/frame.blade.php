@@ -18,5 +18,19 @@
     <script src="{{ route('ads.config', ['slot' => $slot]) }}"></script>
     <script data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
 @endif
+<script>
+(function () {
+    var last = 0;
+    function post() {
+        var h = Math.ceil(document.documentElement.scrollHeight);
+        if (h !== last) {
+            last = h;
+            parent.postMessage({ fcAdHeight: h }, '*');
+        }
+    }
+    new ResizeObserver(post).observe(document.documentElement);
+    post();
+})();
+</script>
 </body>
 </html>

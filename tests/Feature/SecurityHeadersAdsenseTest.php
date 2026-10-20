@@ -74,6 +74,8 @@ class SecurityHeadersAdsenseTest extends TestCase
 
     public function test_ad_slot_config_endpoint_serves_atoptions_javascript(): void
     {
+        config(['ads.enabled' => true]);
+
         $response = $this->get('/ads/config/rectangle');
 
         $response->assertOk();

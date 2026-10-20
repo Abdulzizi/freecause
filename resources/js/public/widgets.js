@@ -27,25 +27,14 @@ export function init(ctx) {
         }
     });
 
-    document.querySelectorAll('iframe[data-ad-fluid]').forEach(function (frame) {
-        const fit = function () {
-            let frameDoc;
-            try {
-                frameDoc = frame.contentDocument;
-            } catch (error) {
-                return;
-            }
-            if (!frameDoc || !frameDoc.body) return;
-            const height = Math.max(frameDoc.documentElement.scrollHeight, frameDoc.body.scrollHeight);
-            if (height > 0) frame.style.height = height + 'px';
-        };
-        frame.addEventListener('load', function () {
-            fit();
-            let tries = 0;
-            const timer = window.setInterval(function () {
-                fit();
-                if (++tries > 12) window.clearInterval(timer);
-            }, 500);
+    window.addEventListener('message', function (e) {
+        const h = e.data?.fcAdHeight;
+        if (typeof h !== 'number') return;
+        document.querySelectorAll('.fc-ad iframe').forEach(function (frame) {
+            if (frame.contentWindow !== e.source) return;
+            const capped = Math.min(Math.max(h, 0), 1000);
+            frame.style.height = capped + 'px';
+            frame.style.maxHeight = capped + 'px';
         });
     });
 

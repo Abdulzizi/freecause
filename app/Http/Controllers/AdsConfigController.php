@@ -8,6 +8,8 @@ class AdsConfigController extends Controller
 {
     public function __invoke(string $slot)
     {
+        abort_unless(Ads::enabled(), 404);
+
         $cfg = Ads::slot($slot);
 
         abort_if($cfg === null || ($cfg['format'] ?? '') === 'native', 404);

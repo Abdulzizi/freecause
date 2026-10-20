@@ -70,11 +70,11 @@ class PetitionAdSlotsTest extends TestCase
 
         preg_match('/<iframe[^>]*\/ads\/frame\/rectangle[^>]*>/', $html, $rectangleFrame);
         $this->assertNotEmpty($rectangleFrame, 'missing rectangle frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
 
         preg_match('/<iframe[^>]*\/ads\/frame\/native[^>]*>/', $html, $nativeFrame);
         $this->assertNotEmpty($nativeFrame, 'missing native frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
 
         // an empty key renders nothing: no box, no frame
         $this->assertStringNotContainsString('fc-ad--skyscraper', $html);
@@ -94,10 +94,14 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString('/ads/config/rectangle', $body);
         $this->assertStringContainsString(config('ads.slots.rectangle.key'), $body);
 
-        // the frame needs inline/eval because the network loader injects inline script;
+        // the frame needs inline because the network loader injects inline script;
         // the public page CSP (tested in SecurityHeadersAdsenseTest) keeps forbidding it
         $csp = (string) $response->headers->get('Content-Security-Policy');
-        $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval'", $csp);
+        $this->assertStringContainsString("script-src 'self' 'unsafe-inline'", $csp);
+        $this->assertStringNotContainsString('unsafe-eval', $csp);
+        $this->assertDoesNotMatchRegularExpression('/[\s;]http:[\s;]/', $csp);
+        $this->assertStringContainsString("frame-ancestors 'self'", $csp);
+        $this->assertStringContainsString((string) config('app.url'), $csp);
     }
 
     public function test_ad_frame_404s_for_unknown_or_keyless_slot(): void

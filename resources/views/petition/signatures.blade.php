@@ -99,7 +99,7 @@
                 </div>
                 @forelse($signatures as $sig)
                     @if ($loop->index > 0 && $loop->index % 4 === 0)
-                        @include('partials.ads-infeed', ['slot' => 'rectangle'])
+                        <x-ads.infeed name="rectangle" />
                     @endif
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
                         <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5 fc-tabular">
