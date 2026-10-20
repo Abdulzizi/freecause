@@ -7,15 +7,6 @@
     <section class="fc-section">
         <x-ui.container>
 
-            {{-- Ads: leaderboard (desktop) --}}
-            <div class="text-center mb-4 hidden lg:block">
-                <x-ads.slot name="leaderboard" />
-            </div>
-            {{-- Ads: mobile banner --}}
-            <div class="mb-4 text-center lg:hidden">
-                <x-ads.slot name="mobile" />
-            </div>
-
             <div class="mb-6">
                 <h1 class="mb-2 text-2xl font-semibold break-words">
                     {{ $user->display_name }}

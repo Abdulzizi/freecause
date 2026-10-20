@@ -42,11 +42,6 @@
                     {{ $h1Text }}
                 </h1>
 
-                <div class="mb-4 text-center lg:hidden">
-                    <x-ads.slot name="mobile" />
-                </div>
-                <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
-
                 <div class="mb-4">
                     <a class="text-brand" href="{{ $petitionUrl }}">
                         {{ $petitionTitle }}
@@ -108,9 +103,8 @@
                 @endif
                 <div class="mb-8">
                     @forelse($suggestions as $p)
-                        @if ($loop->index > 0 && $loop->index % 2 === 0)
-                            @php $thanksAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner']; @endphp
-                            @include('partials.ads-infeed', ['slot' => $thanksAdZones[(int) ($loop->index / 2) % count($thanksAdZones)]])
+                        @if ($loop->index > 0 && $loop->index % 4 === 0)
+                            @include('partials.ads-infeed', ['slot' => 'native'])
                         @endif
                         @php
                             $sUrl = !empty($p->tr_slug)
@@ -134,8 +128,6 @@
                 <div class="mb-4 text-center">
                     <x-ads.slot name="rectangle" />
                 </div>
-                <x-ads.slot name="mobile_card" class="lg:hidden text-center mb-4" />
-
                 <x-ui.button variant="danger"
                     :href="$shareEmailUrl"
                     data-share-petition
@@ -174,7 +166,7 @@
         </a>
     </x-ui.action-sheet>
 
-    <div class="my-4">
-        <x-ads.slot name="native" />
+    <div class="my-4 text-center">
+        <x-ads.slot name="banner468" />
     </div>
 @endsection

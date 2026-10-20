@@ -3,8 +3,6 @@
 @section('title', __('auth.resend_verification_title'))
 
 @section('content')
-<x-ads.slot name="leaderboard" />
-<x-ads.slot name="mobile" />
     <section class="fc-section">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 justify-center">

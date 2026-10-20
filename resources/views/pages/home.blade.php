@@ -14,15 +14,6 @@
 
 @section('content')
 
-    {{-- Ads: leaderboard (desktop) --}}
-    <div class="text-center mb-4 hidden lg:block">
-        <x-ads.slot name="leaderboard" />
-    </div>
-    {{-- Ads: mobile banner --}}
-    <div class="mb-4 text-center lg:hidden">
-        <x-ads.slot name="mobile" />
-    </div>
-
     <section id="welcomes" class="bg-band fc-section fc-hero max-md:py-8">
         <x-ui.container>
             <div class="flex flex-wrap -mx-3 items-center justify-center">
@@ -171,12 +162,6 @@
                                                 <ul class="most-listing">
 
                                                     @forelse($recentActivities as $sig)
-                                                        @if ($loop->index > 0 && $loop->index % 2 === 0)
-                                                            @php
-                                                                $homeAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini'];
-                                                            @endphp
-                                                            <li class="lg:hidden" aria-hidden="true">@include('partials.ads-infeed', ['slot' => $homeAdZones[(int) ($loop->index / 2) % count($homeAdZones)]])</li>
-                                                        @endif
                                                         @php
                                                             $hasPetition =
                                                                 !empty($sig->petition_id) &&
@@ -349,8 +334,6 @@
     @endif
 
     {{-- Ads: native --}}
-    @include('partials.ads-mini', ['slot' => 'mobile_strip'])
-    @include('partials.ads-mini', ['slot' => 'mobile_banner'])
     <div class="my-6">
         <x-ads.slot name="native" />
     </div>

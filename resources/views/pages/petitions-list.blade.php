@@ -6,15 +6,6 @@
     <section class="fc-section">
         <x-ui.container>
 
-            {{-- Ads: leaderboard (desktop) --}}
-            <div class="text-center mb-4 hidden lg:block">
-                <x-ads.slot name="leaderboard" />
-            </div>
-            {{-- Ads: mobile banner --}}
-            <div class="mb-4 text-center lg:hidden">
-                <x-ads.slot name="mobile" />
-            </div>
-
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb text-sm mb-0">
                     <li class="breadcrumb-item">
@@ -130,12 +121,6 @@
 
                 <div class="flex flex-col gap-2" data-results>
                     @forelse($petitions as $petition)
-                        @if ($loop->index > 0 && $loop->index % 2 === 0)
-                        @php
-                            $listAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_mini']
-                        @endphp
-                        @include('partials.ads-infeed', ['slot' => $listAdZones[(int) ($loop->index / 2) % count($listAdZones)]])
-                        @endif
                         <a href="{{ lroute('petition.show', [
                             'slug' => $petition->tr_slug,
                             'id' => $petition->id,
@@ -203,8 +188,6 @@
                 <div class="text-center mb-4 hidden md:block">
                     <x-ads.slot name="banner468" />
                 </div>
-                @include('partials.ads-mini', ['slot' => 'mobile_strip'])
-                @include('partials.ads-mini', ['slot' => 'mobile_card'])
             </div>
 
             {{-- ad: native, full width --}}

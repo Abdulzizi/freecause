@@ -119,24 +119,31 @@ class AdsAdminConfigTest extends TestCase
         $this->assertSame('ORIGINAL', Settings::get('ads_slot_rectangle_key', null, 'global'));
     }
 
-    public function test_mobile_slots_registered_with_blank_keys_and_admin_editable(): void
+    public function test_only_six_slots_registered_and_placements_reference_them(): void
     {
-        foreach (['mobile_feed', 'mobile_inline', 'mobile_mini', 'mobile_strip', 'mobile_native_small', 'mobile_banner', 'mobile_card', 'mobile_float'] as $slot) {
-            $cfg = config("ads.slots.$slot");
-            $this->assertIsArray($cfg, $slot);
-            $this->assertSame('', $cfg['key'], $slot);
-            $this->assertSame('', Ads::slot($slot)['key'] ?? null, $slot);
+        $expected = ['native', 'leaderboard', 'banner468', 'rectangle', 'mobile', 'skyscraper'];
+        $this->assertSame($expected, Ads::slotNames());
+
+        foreach (config('ads.placements', []) as $placement => $pool) {
+            foreach ((array) $pool as $slot) {
+                $this->assertContains($slot, $expected, "$placement references unsupported slot: $slot");
+            }
         }
+
+        $this->assertNull(Ads::slot('mobile_feed'));
+        $this->assertNull(Ads::slot('mobile_float'));
+        $this->assertNull(Ads::slot('skyscraper_left'));
+        $this->assertNull(Ads::pick('float'));
 
         $this->actingAs($this->systemAdmin(), 'admin')
             ->post(route('admin.options.global.update'), [
-                'ads_slot_mobile_banner_key' => 'MOBILE_BANNER_KEY',
-                'ads_slot_mobile_card_key' => 'MOBILE_CARD_KEY',
+                'ads_slot_mobile_key' => 'MOBILE_KEY',
+                'ads_slot_native_key' => 'NATIVE_KEY',
             ])
             ->assertRedirect();
 
-        $this->assertSame('MOBILE_BANNER_KEY', Settings::get('ads_slot_mobile_banner_key', null, 'global'));
-        $this->assertSame('MOBILE_BANNER_KEY', Ads::slot('mobile_banner')['key']);
-        $this->assertSame('MOBILE_CARD_KEY', Ads::slot('mobile_card')['key']);
+        $this->assertSame('MOBILE_KEY', Settings::get('ads_slot_mobile_key', null, 'global'));
+        $this->assertSame('MOBILE_KEY', Ads::slot('mobile')['key']);
+        $this->assertSame('NATIVE_KEY', Ads::slot('native')['key']);
     }
 }

@@ -57,14 +57,6 @@ class GlobalOptionsController extends Controller
         'ads_slot_banner468_key' => '',
         'ads_slot_native_key' => '',
         'ads_slot_mobile_key' => '',
-        'ads_slot_mobile_feed_key' => '',
-        'ads_slot_mobile_inline_key' => '',
-        'ads_slot_mobile_mini_key' => '',
-        'ads_slot_mobile_strip_key' => '',
-        'ads_slot_mobile_native_small_key' => '',
-        'ads_slot_mobile_banner_key' => '',
-        'ads_slot_mobile_card_key' => '',
-        'ads_slot_mobile_float_key' => '',
     ];
 
     private array $systemOnlyKeys = [
@@ -96,14 +88,6 @@ class GlobalOptionsController extends Controller
         'ads_slot_banner468_key',
         'ads_slot_native_key',
         'ads_slot_mobile_key',
-        'ads_slot_mobile_feed_key',
-        'ads_slot_mobile_inline_key',
-        'ads_slot_mobile_mini_key',
-        'ads_slot_mobile_strip_key',
-        'ads_slot_mobile_native_small_key',
-        'ads_slot_mobile_banner_key',
-        'ads_slot_mobile_card_key',
-        'ads_slot_mobile_float_key',
     ];
 
     public function edit()

@@ -68,6 +68,14 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString('/ads/frame/rectangle', $html);
         $this->assertStringContainsString('/ads/frame/native', $html);
 
+        preg_match('/<iframe[^>]*\/ads\/frame\/rectangle[^>]*>/', $html, $rectangleFrame);
+        $this->assertNotEmpty($rectangleFrame, 'missing rectangle frame');
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
+
+        preg_match('/<iframe[^>]*\/ads\/frame\/native[^>]*>/', $html, $nativeFrame);
+        $this->assertNotEmpty($nativeFrame, 'missing native frame');
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
+
         // an empty key renders nothing: no box, no frame
         $this->assertStringNotContainsString('fc-ad--skyscraper', $html);
         $this->assertStringNotContainsString('/ads/frame/skyscraper', $html);
@@ -144,30 +152,30 @@ class PetitionAdSlotsTest extends TestCase
     {
         config(['ads.enabled' => true]);
         config([
-            'ads.slots.mobile_feed.key' => 'k1',
-            'ads.slots.mobile_card.key' => 'k2',
-            'ads.slots.mobile_native_small.key' => 'k3',
+            'ads.slots.banner468.key' => 'k1',
+            'ads.slots.rectangle.key' => 'k2',
+            'ads.slots.native.key' => 'k3',
         ]);
 
-        $this->assertSame('mobile_feed', Ads::pick('infeed'));
-        $this->assertSame('mobile_card', Ads::pick('infeed'));
-        $this->assertSame('mobile_native_small', Ads::pick('infeed'));
-        $this->assertSame('mobile_feed', Ads::pick('infeed'));
+        $this->assertSame('banner468', Ads::pick('infeed'));
+        $this->assertSame('rectangle', Ads::pick('infeed'));
+        $this->assertSame('native', Ads::pick('infeed'));
+        $this->assertSame('banner468', Ads::pick('infeed'));
     }
 
     public function test_pick_skips_rendered_and_keyless_slots(): void
     {
         config(['ads.enabled' => true]);
         config([
-            'ads.slots.mobile_feed.key' => 'k1',
-            'ads.slots.mobile_card.key' => '',
-            'ads.slots.mobile_native_small.key' => 'k3',
+            'ads.slots.banner468.key' => 'k1',
+            'ads.slots.rectangle.key' => '',
+            'ads.slots.native.key' => 'k3',
         ]);
-        Ads::renderOnce('mobile_feed');
+        Ads::renderOnce('banner468');
 
-        $this->assertSame('mobile_native_small', Ads::pick('infeed'));
+        $this->assertSame('native', Ads::pick('infeed'));
 
-        Ads::renderOnce('mobile_native_small');
+        Ads::renderOnce('native');
 
         $this->assertNull(Ads::pick('infeed'));
         $this->assertNull(Ads::pick('unknown'));

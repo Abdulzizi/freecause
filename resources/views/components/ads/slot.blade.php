@@ -1,20 +1,12 @@
-@props(['name', 'sticky' => false])
+@props(['name', 'sticky' => false, 'claimed' => false])
 
 @php
     // resolve slot config via the Settings-aware resolver (admin overrides config).
     // NB: prop is "name" not "slot" -- $slot is Blade's reserved component-content var.
+    // A slot renders only under its own configured zone key; an unnamed or keyless slot
+    // renders nothing rather than aliasing onto another zone.
     $adsOn = \App\Support\Ads::enabled();
     $cfg = \App\Support\Ads::slot($name);
-    if ($cfg && empty($cfg['key']) && str_starts_with($name, 'mobile_') && $name !== 'mobile_float') {
-        foreach (['banner468', 'mobile_banner', 'mobile_inline', 'mobile_mini', 'mobile_strip', 'mobile_feed', 'mobile_native_small', 'mobile_card', 'leaderboard', 'rectangle', 'native'] as $cand) {
-            $cc = \App\Support\Ads::slot($cand);
-            if ($cc && ! empty($cc['key']) && ! request()->attributes->has('ads_slot_rendered_'.$cand)) {
-                $name = $cand;
-                $cfg = $cc;
-                break;
-            }
-        }
-    }
     $hasKey = $adsOn && $cfg && !empty($cfg['key']);
     // The 320x50 "mobile" zone belongs to the sticky anchor (partials.ads-anchor).
     // Blade renders a page's content before the layout, so an inline copy would always
@@ -22,7 +14,7 @@
     $anchorOnly = $name === 'mobile' && ! $sticky;
     // otherwise the first occurrence of a slot in the request wins, so the layout's
     // default stack fills gaps without duplicating a zone a page already places inline.
-    $show = ! $anchorOnly && $adsOn && $hasKey && \App\Support\Ads::renderOnce($name);
+    $show = ! $anchorOnly && $adsOn && $hasKey && ($claimed || \App\Support\Ads::renderOnce($name));
 @endphp
 
 @if ($show)

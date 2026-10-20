@@ -14,15 +14,6 @@
     />
 
     <x-ui.section>
-        {{-- ad: leaderboard, desktop only --}}
-        <div class="mb-4 text-center hidden lg:block">
-            <x-ads.slot name="leaderboard" />
-        </div>
-        {{-- ad: mobile banner, mobile only --}}
-        <div class="mb-4 text-center lg:hidden">
-            <x-ads.slot name="mobile" />
-        </div>
-
         <div class="mx-auto max-w-3xl">
             @if ($state === 'unsubscribed')
                 <x-ui.alert variant="success">

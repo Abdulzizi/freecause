@@ -30,14 +30,6 @@
                     {{ $h2Line2 }}
                 </h1>
 
-                <div class="mb-4 text-center lg:hidden">
-                    <x-ads.slot name="mobile" />
-                </div>
-
-                <x-ads.slot name="mobile_mini" class="lg:hidden text-center mb-4" />
-                <x-ads.slot name="mobile_inline" class="lg:hidden text-center mb-4" />
-                <x-ads.slot name="mobile_native_small" class="lg:hidden text-center mb-4" />
-
                 @if (auth()->check() || ! empty($signData))
                 <form action="{{ $signUrl }}" method="POST" data-sign-busy class="inline-block w-full md:w-auto">
                     @csrf
@@ -82,5 +74,4 @@
     <div class="mb-4 text-center">
         <x-ads.slot name="rectangle" />
     </div>
-    <x-ads.slot name="mobile_strip" class="lg:hidden text-center" />
 @endsection

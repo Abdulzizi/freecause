@@ -7,10 +7,6 @@
     <div class="mb-4 text-center hidden lg:block">
         <x-ads.slot name="leaderboard" />
     </div>
-    {{-- ad: mobile banner, mobile only --}}
-    <div class="mb-4 text-center lg:hidden">
-        <x-ads.slot name="mobile" />
-    </div>
 
     <x-ui.section>
         <div class="bg-white border border-border rounded-sm shadow-elev-2 overflow-hidden mt-5">
@@ -21,9 +17,8 @@
 
                         <div class="max-w-[520px] fc-reveal fc-stagger">
                             @forelse($signed as $p)
-                                @if ($loop->index > 0 && $loop->index % 2 === 0)
-                                @php $signedAdZones = ['mobile_feed', 'mobile_inline', 'mobile_native_small']; @endphp
-                                    @include('partials.ads-infeed', ['slot' => $signedAdZones[(int) ($loop->index / 2) % count($signedAdZones)]])
+                                @if ($loop->index > 0 && $loop->index % 4 === 0)
+                                    @include('partials.ads-infeed', ['slot' => 'native'])
                                 @endif
                                 @php
                                     $date = $p->signed_at ? \Carbon\Carbon::parse($p->signed_at) : $p->created_at;
@@ -55,9 +50,8 @@
 
                         <div class="max-w-[520px] fc-reveal fc-stagger">
                             @forelse($created as $p)
-                                @if ($loop->index > 0 && $loop->index % 2 === 0)
-                                    @php $createdAdZones = ['mobile_mini', 'mobile_banner', 'mobile_card']; @endphp
-                                    @include('partials.ads-infeed', ['slot' => $createdAdZones[(int) ($loop->index / 2) % count($createdAdZones)]])
+                                @if ($loop->index > 0 && $loop->index % 4 === 0)
+                                    @include('partials.ads-infeed', ['slot' => 'banner468'])
                                 @endif
                                 <a class="flex max-md:min-h-12 items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 mb-2.5 text-ink hover:bg-brand-soft fc-lift" style="--fc-i: {{ min($loop->index, 12) }}"
                                     href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
@@ -83,7 +77,5 @@
 
                 </div>
             </div>
-            @include('partials.ads-mini', ['slot' => 'mobile_strip'])
-            @include('partials.ads-mini', ['slot' => 'mobile_native_small'])
     </x-ui.section>
 @endsection

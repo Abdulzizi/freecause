@@ -12,12 +12,12 @@
         margin-block: 0.5rem;
     }
 
-    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor, .fc-ad-float) .fc-ad {
+    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor) .fc-ad {
         max-width: 100%;
         overflow: hidden;
     }
 
-    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor, .fc-ad-float) .fc-ad iframe {
+    :is(.fc-ad-infeed, .fc-ad-mini, .fc-ad-anchor) .fc-ad iframe {
         width: min(100%, 320px);
         display: block;
         margin-inline: auto;

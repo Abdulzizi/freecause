@@ -20,11 +20,6 @@ export function init(ctx) {
     });
 
     document.addEventListener('click', function (event) {
-        const floatClose = event.target.closest('[data-ad-float-close]');
-        if (floatClose) {
-            floatClose.closest('#fc-ad-float')?.remove();
-            return;
-        }
         const anchorClose = event.target.closest('[data-ad-anchor-close]');
         if (anchorClose) {
             anchorClose.closest('#fc-ad-anchor')?.remove();

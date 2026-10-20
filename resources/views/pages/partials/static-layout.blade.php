@@ -35,8 +35,6 @@
                         </div>
                     @endif
 
-                    <x-ad-unit placement="article_footer" class="mt-6" />
-
                 </div>
             </div>
 

@@ -73,14 +73,6 @@
 
                 </div>
 
-                {{-- ad: mobile banner, mobile only --}}
-                <div class="mb-4 text-center lg:hidden mt-4">
-                    <x-ads.slot name="mobile" />
-                </div>
-                <x-ads.slot name="mobile_feed" class="lg:hidden text-center mb-4" />
-                <x-ads.slot name="mobile_native_small" class="lg:hidden text-center mb-4" />
-            </div>
-
             {{-- ad: native, full width --}}
             <div class="mb-4">
                 <x-ads.slot name="native" />
@@ -105,13 +97,9 @@
                 <div class="mb-4 text-center hidden md:block">
                     <x-ads.slot name="banner468" />
                 </div>
-                <x-ads.slot name="mobile_inline" class="lg:hidden text-center mb-4" />
-                <x-ads.slot name="mobile_card" class="lg:hidden text-center mb-4" />
-
                 @forelse($signatures as $sig)
                     @if ($loop->index > 0 && $loop->index % 4 === 0)
-                        @php $sigAdZones = ['mobile_banner', 'mobile_mini']; @endphp
-                        @include('partials.ads-infeed', ['slot' => $sigAdZones[(int) ($loop->index / 4) % count($sigAdZones)]])
+                        @include('partials.ads-infeed', ['slot' => 'rectangle'])
                     @endif
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
                         <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5 fc-tabular">

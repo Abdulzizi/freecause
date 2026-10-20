@@ -99,15 +99,8 @@
     @include('partials.navbar')
 
     @include('partials.ads-anchor')
-    @include('partials.ads-floating')
     @unless (isset($exception))
-        {{-- Rendered before the page body on purpose: the sticky anchor (mobile) and the
-             side rail (desktop) emit the "mobile"/"skyscraper" zones, and Ads::renderOnce
-             gives the zone to the first slot rendered in the request. Claiming them here
-             keeps a page's own inline copy from winning and leaving the anchor empty.
-              Both are position:fixed, so DOM order does not affect where they appear. --}}
         @include('partials.ads-rail')
-        @include('partials.ads-rail-left')
     @endunless
 
     @php
@@ -121,13 +114,9 @@
     @endif
 
     <main id="fc-main">
-    @include('partials.ads-anchor')
-    @include('partials.ads-floating')
-    @unless (isset($exception))
-            {{-- Top banner: desktop only. The 320x50 "mobile" zone is consumed by the
-                 sticky anchor below and a zone must never appear twice on one page. --}}
+        @if (\App\Support\Ads::enabled() && ($lbCfg = \App\Support\Ads::slot('leaderboard')) && ! empty($lbCfg['key']) && ! request()->attributes->has('ads_slot_rendered_leaderboard'))
             <div class="hidden lg:block text-center my-4"><x-ads.slot name="leaderboard" /></div>
-        @endunless
+        @endif
 
         @if (session('profile_completion'))
         <div class="bg-brand-soft border border-brand text-ink px-4 py-2 text-sm text-center" role="status">
@@ -135,8 +124,6 @@
         </div>
         @endif
         @yield('content')
-
-        @include('partials.ads-mini', ['slot' => 'mobile_mini'])
 
     </main>
 
