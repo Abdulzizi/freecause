@@ -7,6 +7,7 @@ use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\User;
 use App\Support\MailQuota;
+use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,6 +24,8 @@ class PetitionDigestTest extends TestCase
         parent::setUp();
 
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
+
+        Settings::set('smtp_enabled', true, 'global');
     }
 
     public function test_sends_digest_to_verified_opted_in_user_with_unsubscribe_url(): void
@@ -132,6 +135,44 @@ class PetitionDigestTest extends TestCase
 
         Mail::assertNothingQueued();
         $this->assertDatabaseHas('logs', ['title' => 'Petition digest aborted']);
+    }
+
+    public function test_skips_digest_while_mail_is_paused(): void
+    {
+        $this->publishedPetition();
+
+        User::factory()->create([
+            'email' => 'digest@example.com',
+            'locale' => 'en',
+            'verified' => true,
+            'notify_product' => true,
+            'unsubscribed_at' => null,
+        ]);
+
+        Settings::set('smtp_enabled', false);
+
+        Mail::fake();
+
+        $this->assertTrue(MailQuota::paused());
+
+        Artisan::call('petition:send-digest');
+
+        Mail::assertNothingQueued();
+    }
+
+    public function test_dry_run_reports_while_mail_is_paused(): void
+    {
+        $this->publishedPetition();
+
+        Settings::set('smtp_enabled', false);
+
+        Mail::fake();
+
+        $exitCode = Artisan::call('petition:send-digest', ['--dry-run' => true]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('dry_run=yes', Artisan::output());
+        Mail::assertNothingQueued();
     }
 
     private function publishedPetition(): Petition

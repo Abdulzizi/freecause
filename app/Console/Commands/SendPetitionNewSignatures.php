@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\PetitionNewSignaturesMail;
 use App\Models\Petition;
 use App\Support\AppLog;
+use App\Support\MailQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,12 @@ class SendPetitionNewSignatures extends Command
     private function runDigest(): int
     {
         $dryRun = (bool) $this->option('dry-run');
+
+        if (! $dryRun && MailQuota::productPaused('petition_new_signatures_enabled')) {
+            $this->warn('Product mail paused - new signature notifications skipped.');
+
+            return self::SUCCESS;
+        }
 
         $petitions = Petition::with('user')->whereNotNull('user_id')->orderBy('id')->get();
 

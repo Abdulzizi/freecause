@@ -24,6 +24,18 @@ class SendPetitionDigest extends Command
         $limit = max(0, (int) $this->option('limit'));
         $defaultLocale = default_locale();
 
+        if (! $dryRun && MailQuota::productPaused('petition_digest_enabled')) {
+            if (MailQuota::tripped()) {
+                AppLog::error('Petition digest aborted', 'Mail provider quota exhausted, stopped dispatching.', 'emails.digest');
+
+                $this->warn('Mail quota exhausted - digest aborted.');
+            } else {
+                $this->warn('Product mail paused - petition digest skipped.');
+            }
+
+            return self::SUCCESS;
+        }
+
         $sent = 0;
         $skipped = 0;
         $failed = 0;

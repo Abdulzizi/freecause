@@ -59,6 +59,15 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // Product/notification mail is opt-in. The column default is also false
+    // on MySQL, but this is the authoritative default for every Eloquent
+    // insert path (registration, guest signing, OAuth, factories).
+    protected $attributes = [
+        'notify_milestones' => false,
+        'notify_new_signatures' => false,
+        'notify_product' => false,
+    ];
+
     protected $casts = [
         'verification_token_sent_at' => 'datetime',
         'verified' => 'boolean',
