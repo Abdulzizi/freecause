@@ -77,54 +77,54 @@
                     <span data-error-for="comment" hidden class="text-sm text-brand mt-1 block"></span>
                 </div>
 
-                <div class="mb-3">
+                <div class="w-full md:w-auto mb-3">
                     <div class="font-bold">
                         {!! $agree1Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree1" value="agree"
+                    <div class="mt-2 flex flex-col gap-1">
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree1" value="agree"
                                 {{ old('agree1', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree1" value="no"
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree1" value="no"
                                 {{ old('agree1') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="w-full md:w-auto mb-3">
                     <div class="font-bold">
                         {!! $agree2Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree2" value="agree"
+                    <div class="mt-2 flex flex-col gap-1">
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree2" value="agree"
                                 {{ old('agree2', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree2" value="no"
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree2" value="no"
                                 {{ old('agree2') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="w-full md:w-auto mb-3">
                     <div class="font-bold">
                         {!! $agree3Title !!}
                     </div>
-                    <div class="mt-2">
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree3" value="agree"
+                    <div class="mt-2 flex flex-col gap-1">
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree3" value="agree"
                                 {{ old('agree3', 'agree') === 'agree' ? 'checked' : '' }}>
                             {{ $agreeYes }}
                         </label>
-                        <label class="block text-sm">
-                            <input class="scale-90 mr-1" type="radio" name="agree3" value="no"
+                        <label class="flex items-center gap-2 text-sm min-h-12">
+                            <input class="form-check-input shrink-0 float-none ml-0 mt-0" type="radio" name="agree3" value="no"
                                 {{ old('agree3') === 'no' ? 'checked' : '' }}>
                             {{ $agreeNo }}
                         </label>
