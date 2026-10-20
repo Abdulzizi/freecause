@@ -70,11 +70,11 @@ class PetitionAdSlotsTest extends TestCase
 
         preg_match('/<iframe[^>]*\/ads\/frame\/rectangle[^>]*>/', $html, $rectangleFrame);
         $this->assertNotEmpty($rectangleFrame, 'missing rectangle frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-top-navigation-by-user-activation"', $rectangleFrame[0]);
 
         preg_match('/<iframe[^>]*\/ads\/frame\/native[^>]*>/', $html, $nativeFrame);
         $this->assertNotEmpty($nativeFrame, 'missing native frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms allow-top-navigation-by-user-activation"', $nativeFrame[0]);
 
         // an empty key renders nothing: no box, no frame
         $this->assertStringNotContainsString('fc-ad--skyscraper', $html);

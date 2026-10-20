@@ -87,6 +87,7 @@ class AddSecurityHeaders
                     'https://www.google-analytics.com https://*.google-analytics.com '.
                     'https://*.analytics.google.com '.
                     'https://ep2.adtrafficquality.google '.
+                    'https://static.cloudflareinsights.com '.
                     $inlineHashes.'; '.
                 "style-src 'self' 'unsafe-inline' ".
                     'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
@@ -104,6 +105,7 @@ class AddSecurityHeaders
                     'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.
                     'https://*.analytics.google.com https://*.adtrafficquality.google '.
                     'https://ep2.adtrafficquality.google '.
+                    'https://cloudflareinsights.com '.
                     'https://bicea.org; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".

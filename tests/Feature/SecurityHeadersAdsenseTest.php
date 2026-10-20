@@ -72,6 +72,14 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
     }
 
+    public function test_public_csp_allows_cloudflare_web_analytics_beacon(): void
+    {
+        $csp = $this->cspFor('/en');
+
+        $this->assertStringContainsString('https://static.cloudflareinsights.com', $csp);
+        $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/cloudflareinsights\.com/', $csp);
+    }
+
     public function test_ad_slot_config_endpoint_serves_atoptions_javascript(): void
     {
         $response = $this->get('/ads/config/rectangle');
