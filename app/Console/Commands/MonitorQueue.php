@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -14,6 +15,8 @@ class MonitorQueue extends Command
     protected $signature = 'queue:monitor {--alert-email= : Email to send alerts to}';
 
     protected $description = 'Monitor queue health and alert on issues';
+
+    private const CHECKPOINT_KEY = 'queue:monitor:last-checked-at';
 
     public function handle(): int
     {
@@ -34,6 +37,15 @@ class MonitorQueue extends Command
         // failed_jobs is backend-agnostic (always the database failed driver).
         $failedJobs = DB::table('failed_jobs')->count();
 
+        // Only failures NEWER than the last check are actionable. Alerting on the
+        // absolute count re-fires forever on a backlog nobody has cleared.
+        $newFailures = DB::table('failed_jobs')
+            ->when(
+                Cache::get(self::CHECKPOINT_KEY),
+                fn ($q, $since) => $q->where('failed_at', '>', $since)
+            )
+            ->count();
+
         // Oldest-job age is only derivable from the database driver's jobs table.
         $oldestJob = $driver === 'database'
             ? DB::table('jobs')->orderBy('available_at')->value('available_at')
@@ -49,12 +61,16 @@ class MonitorQueue extends Command
             $this->error($msg);
         }
 
-        if ($failedJobs > 0) {
-            $msg = "Failed jobs detected: {$failedJobs}";
+        if ($newFailures > 0) {
+            $msg = "New failed jobs: {$newFailures}";
             $alerts[] = $msg;
             $this->error($msg);
 
             $recentFailures = DB::table('failed_jobs')
+                ->when(
+                    Cache::get(self::CHECKPOINT_KEY),
+                    fn ($q, $since) => $q->where('failed_at', '>', $since)
+                )
                 ->orderByDesc('failed_at')
                 ->limit(5)
                 ->get(['id', 'queue', 'payload', 'failed_at']);
@@ -82,8 +98,11 @@ class MonitorQueue extends Command
         Log::channel('daily')->info('Queue monitor check', [
             'pending' => $pendingJobs,
             'failed' => $failedJobs,
+            'new_failed' => $newFailures,
             'alerts' => $alerts,
         ]);
+
+        Cache::forever(self::CHECKPOINT_KEY, now()->toDateTimeString());
 
         return empty($alerts) ? 0 : 1;
     }
