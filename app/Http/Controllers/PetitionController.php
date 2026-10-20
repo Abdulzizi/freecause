@@ -610,7 +610,7 @@ class PetitionController extends Controller
         $requestedLocale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $petition = Petition::with('category')->findOrFail($id);
+        $petition = Petition::query()->with('category')->where('id', $id)->visible()->firstOrFail();
 
         $tr = $petition->translationOrFallback($requestedLocale, $defaultLocale);
 

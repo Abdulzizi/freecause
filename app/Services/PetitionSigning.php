@@ -93,7 +93,25 @@ class PetitionSigning
         $existingUser = User::where('email', $email)->first();
 
         if ($existingUser) {
-            return back()->withErrors(['email' => __('sign.verify_first')]);
+            session()->forget("sign.{$petition->id}");
+            $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
+            if (Settings::get('smtp_enabled', false)) {
+                try {
+                    $existingUser->forceFill([
+                        'verification_token' => Str::random(64),
+                        'verification_token_sent_at' => now(),
+                    ])->save();
+                    Mail::to($existingUser->email)->queue(new VerifyAccountMail($existingUser, $locale));
+                } catch (\Throwable $e) {
+                    AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
+                }
+            }
+
+            return redirect()->route('petition.thanks', [
+                'locale' => $tr->locale,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
+            ])->with('petition_verified', ! $needsVerification);
         }
 
         $alreadySigned = Signature::where('petition_id', $petition->id)
@@ -109,8 +127,9 @@ class PetitionSigning
         try {
             $counted = false;
             $previousCount = null;
+            $mailUser = null;
 
-            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, &$counted, &$previousCount) {
+            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, &$counted, &$previousCount, &$mailUser) {
                 $userLevel = UserLevel::where('name', 'user')->first();
                 $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
 
@@ -123,18 +142,12 @@ class PetitionSigning
                     'ip' => request()->ip(),
                     'level_id' => $userLevel?->id,
                     'verified' => ! $needsVerification,
-                    'verification_token' => $needsVerification ? Str::random(64) : null,
-                    'verification_token_sent_at' => $needsVerification ? now() : null,
+                    'verification_token' => Str::random(64),
+                    'verification_token_sent_at' => now(),
                 ]);
 
-                if ($needsVerification && Settings::get('smtp_enabled', false)) {
-                    DB::afterCommit(function () use ($user, $locale) {
-                        try {
-                            Mail::to($user->email)->queue(new VerifyAccountMail($user, $locale));
-                        } catch (\Throwable $e) {
-                            AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
-                        }
-                    });
+                if (Settings::get('smtp_enabled', false)) {
+                    $mailUser = $user->fresh();
                 }
 
                 $sig = Signature::firstOrCreate(
@@ -161,13 +174,6 @@ class PetitionSigning
                 );
 
                 session()->forget("sign.{$petition->id}");
-                if ($user->verified) {
-                    session()->put('sign_claim', [
-                        'email' => $email,
-                        'is_new' => true,
-                        'name' => $data['name'],
-                    ]);
-                }
 
                 return redirect()->route('petition.thanks', [
                     'locale' => $tr->locale,
@@ -187,6 +193,14 @@ class PetitionSigning
 
         if ($counted) {
             PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
+        }
+
+        if ($mailUser) {
+            try {
+                Mail::to($mailUser->email)->queue(new VerifyAccountMail($mailUser, $locale));
+            } catch (\Throwable $e) {
+                AppLog::error('Verification email failed', $e->getMessage(), 'petition.sign');
+            }
         }
 
         return $response;

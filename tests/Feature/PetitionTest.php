@@ -630,7 +630,7 @@ class PetitionTest extends TestCase
             ->assertSee('href="'.e($mailUrl).'"', false);
     }
 
-    public function test_existing_email_sign_attributes_to_account(): void
+    public function test_existing_email_sign_mirrors_guest_success(): void
     {
         $user = User::factory()->create([
             'email' => 'existing@example.com',
@@ -654,7 +654,7 @@ class PetitionTest extends TestCase
             'agree1' => '1',
             'agree2' => '1',
             'agree3' => '1',
-        ])->assertSessionHasErrors(['email']);
+        ])->assertRedirect("/en/petition/existing-user-petition/{$petition->id}/thanks");
 
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
         $this->assertSame($usersBefore, User::count());
@@ -1417,29 +1417,17 @@ class PetitionTest extends TestCase
 
         $this->get("{$signUrl}/thanks")
             ->assertOk()
-            ->assertViewHas('canClaim', true);
+            ->assertDontSee(__('sign.claim_title'), false);
+
+        $user = User::where('email', $email)->firstOrFail();
+        $this->assertNotNull($user->verification_token);
 
         $this->get('/en')->assertOk();
 
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirectContains('/en/profile');
-
-        $user = User::where('email', $email)->firstOrFail();
-        $this->assertNotNull($user->password);
-        $this->assertTrue(Hash::check('secret123', $user->password));
-        $this->assertAuthenticatedAs($user);
-
-        $storedPassword = $user->password;
-
-        $user->forceFill(['country' => 'US', 'gender' => 'female'])->save();
-
-        $this->actingAs($user->fresh());
-
-        $this->post("{$signUrl}/claim", ['password' => 'another123'])
             ->assertRedirect('/en/login')
             ->assertSessionHas('toast.type', 'warning');
 
-        $this->assertSame($storedPassword, $user->fresh()->password);
         $this->assertSame($usersBeforeSign + 1, User::count());
         $this->assertSame(1, User::where('email', $email)->count());
     }
@@ -1481,10 +1469,11 @@ class PetitionTest extends TestCase
             $this->get($path)->assertOk();
         }
 
-        $this->get("{$signUrl}/thanks")->assertOk()->assertViewHas('canClaim', true);
+        $this->get("{$signUrl}/thanks")->assertOk()->assertDontSee(__('sign.claim_title'), false);
 
         $this->post("{$signUrl}/claim", ['password' => 'survives123'])
-            ->assertRedirectContains('/en/profile');
+            ->assertRedirect('/en/login')
+            ->assertSessionHas('toast.type', 'warning');
     }
 
     public function test_claim_rejected_when_account_already_has_password(): void
@@ -1508,8 +1497,8 @@ class PetitionTest extends TestCase
         $user->forceFill(['password' => Hash::make('password123')])->save();
 
         $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertStatus(302)
-            ->assertSessionHasErrors(['password' => 'This account already has a password — please log in.']);
+            ->assertRedirect('/en/login')
+            ->assertSessionHas('toast.type', 'warning');
 
         $this->assertTrue(Hash::check('password123', $user->fresh()->password));
     }
@@ -1530,7 +1519,7 @@ class PetitionTest extends TestCase
         $this->post($url, $payload)->assertRedirect();
 
         $second = $this->post($url, $payload);
-        $second->assertStatus(302)->assertSessionHasErrors('email');
+        $second->assertRedirect("/en/petition/double-submit-petition/{$petition->id}/thanks");
 
         $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
         $this->assertSame(1, User::where('email', 'double-submit@example.com')->count());
