@@ -52,7 +52,7 @@ if ((int) $data['x'] < time()) {
     exit;
 }
 
-$email       = $data['e'];
+$email       = strtolower(trim((string) $data['e']));
 $displayName = $data['n'] ?? '';
 
 // Find existing WP user by email, or create a subscriber account.
@@ -76,6 +76,11 @@ if (!$wpUser) {
     }
 
     $wpUser = get_user_by('ID', $userId);
+}
+
+if (!$wpUser || is_wp_error($wpUser)) {
+    wp_redirect($redirect);
+    exit;
 }
 
 // Set WordPress auth cookies (persistent = true so it survives browser restarts).
