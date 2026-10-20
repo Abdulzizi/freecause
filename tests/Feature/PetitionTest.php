@@ -269,6 +269,43 @@ class PetitionTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_latest_signature_name_links_to_the_user_profile(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Profile Link Petition',
+            'slug' => 'profile-link-petition',
+            'description' => 'Description',
+        ]);
+
+        $signer = User::factory()->create([
+            'name' => 'Ada Lovelace',
+            'verified' => true,
+        ]);
+
+        Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $signer->id,
+            'email' => $signer->email,
+            'name' => $signer->name,
+            'confirmed' => true,
+            'is_spam' => false,
+        ]);
+
+        $html = $this->get("/en/petition/profile-link-petition/{$petition->id}")->assertOk()->getContent();
+
+        $this->assertStringContainsString(
+            '/user/ada-lovelace/'.$signer->id,
+            $html
+        );
+    }
+
     public function test_shoutbox_only_contains_real_signing_comments(): void
     {
         $petition = Petition::factory()->create([

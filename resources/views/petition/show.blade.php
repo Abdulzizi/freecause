@@ -479,8 +479,12 @@
                                         </div>
                                         <div>
                                             <strong>{{ $goalCurrent - $i }}.</strong>
-                                            <a href="{{ lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                                                class="text-brand">{{ $sig->display_name ?? __('sig.anonymous') }}</a>
+                                            @if ($sig->user_id)
+                                                <a href="{{ lroute('user.profile', ['slug' => \Illuminate\Support\Str::slug($sig->user->name ?? 'user') ?: 'user', 'id' => $sig->user_id]) }}"
+                                                    class="text-brand">{{ $sig->display_name ?? __('sig.anonymous') }}</a>
+                                            @else
+                                                <span class="text-brand">{{ $sig->display_name ?? __('sig.anonymous') }}</span>
+                                            @endif
                                             <span class="text-muted">|</span>
                                             <span>{{ $sig->text ?? __('sig.default_comment') }}</span>
                                         </div>
