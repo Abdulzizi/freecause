@@ -16,7 +16,7 @@
     <x-ui.section>
         <div class="mx-auto max-w-3xl">
             @if ($state === 'unsubscribed')
-                <x-ui.alert variant="success">
+                <x-ui.alert variant="success" data-toast-keep>
                     {{ __('preferences.unsubscribed') }}
                 </x-ui.alert>
 

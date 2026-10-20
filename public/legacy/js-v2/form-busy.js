@@ -31,6 +31,11 @@
     }
 
     function showError(form, text) {
+        if (window.clientToast && typeof window.clientToast.error === 'function') {
+            var existing = form.querySelector('[data-sign-network-error]') || form.querySelector('[data-network-error]');
+            window.clientToast.error(text || messageFor(form, existing));
+            return;
+        }
         var node = errorNode(form, '[data-sign-network-error]');
         node.textContent = text || messageFor(form, node);
         node.hidden = false;

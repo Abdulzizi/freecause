@@ -81,12 +81,12 @@ class ContactController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Your message has been sent. We will get back to you soon.',
+                'message' => __('contacts.sent'),
             ]);
         }
 
-        toast('Your message has been sent. We will get back to you soon.', 'success');
+        toast(__('contacts.sent'), 'success');
 
-        return back();
+        return back()->with('contact_sent', true);
     }
 }

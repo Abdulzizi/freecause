@@ -133,6 +133,10 @@
 
     @stack('scripts')
 
+    @if (isset($errors) && $errors->any())
+        <div id="validation-errors" data-message="{{ $errors->first() }}" hidden></div>
+    @endif
+
     @if (session('toast'))
         <div id="toast-flash" data-type="{{ session('toast')['type'] }}" data-message="{{ session('toast')['message'] }}" hidden></div>
     @endif

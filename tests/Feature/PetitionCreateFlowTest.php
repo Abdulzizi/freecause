@@ -59,6 +59,17 @@ class PetitionCreateFlowTest extends TestCase
             ->assertSessionHasErrors('description');
     }
 
+    public function test_validation_failure_renders_plain_linked_error_summary(): void
+    {
+        $response = $this->actingAs($this->user)
+            ->followingRedirects()
+            ->from('/en/create-petition')
+            ->post('/en/create-petition', $this->payload(['description' => '<p>Too short</p>']));
+        $response->assertOk()
+            ->assertSee('href="#field-petition_description"', false)
+            ->assertDontSee('data-alert-variant="error"', false);
+    }
+
     public function test_invalid_country_fails_validation(): void
     {
         $this->actingAs($this->user)->post('/en/create-petition', $this->payload(['country' => 'ZZ']))

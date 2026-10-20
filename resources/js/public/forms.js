@@ -99,9 +99,8 @@ export function init() {
     document.querySelectorAll('form[data-validate]').forEach(function (form) {
         if (form.dataset.fcValidateBound === '1') return;
         form.dataset.fcValidateBound = '1';
-        const msgRequired = form.dataset.msgRequired || 'This field is required';
-        const msgEmail = form.dataset.msgEmail || 'Enter a valid email';
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const msgRequired = form.dataset.msgRequired || '';
+        const msgEmail = form.dataset.msgEmail || '';
 
         const fields = form.querySelectorAll('input[name], textarea[name], select[name]');
         fields.forEach(function (field) {
@@ -126,23 +125,89 @@ export function init() {
             };
 
             const validate = function () {
-                const value = (field.value || '').trim();
-                if (field.hasAttribute('required') && value === '') {
-                    setError(msgRequired);
-                    return;
-                }
-                const type = (field.getAttribute('type') || '').toLowerCase();
-                if (type === 'email' && value !== '' && !emailPattern.test(value)) {
-                    setError(msgEmail);
-                    return;
+                const validity = field.validity;
+                if (validity && !validity.valid) {
+                    let message = '';
+                    if (validity.valueMissing) message = msgRequired || field.validationMessage || '';
+                    else if (validity.typeMismatch) message = msgEmail || field.validationMessage || '';
+                    else message = field.validationMessage || '';
+                    setError(message);
+                    return message;
                 }
                 setError('');
+                return '';
             };
 
             field.addEventListener('blur', validate);
             field.addEventListener('input', validate);
         });
     });
+
+    function clearNativeInvalid(target) {
+        const form = target && target.form ? target.form : null;
+        if (form) delete form.dataset.fcInvalidShown;
+        if (!target || !target.validity || !target.validity.valid) return;
+        const clearOne = function (el) {
+            if (el.removeAttribute) el.removeAttribute('aria-invalid');
+            if (el.classList && el.classList.remove) el.classList.remove('fcui-field-invalid');
+            const n = el.getAttribute && el.getAttribute('name');
+            const err = n && form ? form.querySelector('[data-error-for="' + n + '"]') : null;
+            if (err) {
+                err.textContent = '';
+                err.hidden = true;
+            }
+        };
+        clearOne(target);
+        const type = target.getAttribute ? (target.getAttribute('type') || '').toLowerCase() : '';
+        const name = target.getAttribute ? target.getAttribute('name') : null;
+        if (type === 'radio' && name && form && form.querySelectorAll) {
+            form.querySelectorAll('input[type="radio"][name="' + name + '"]').forEach(clearOne);
+        }
+    }
+
+    if (!document.documentElement.dataset.fcInvalidBound) {
+        document.documentElement.dataset.fcInvalidBound = '1';
+        document.addEventListener('invalid', function (event) {
+            const target = event.target;
+            const form = target && target.form ? target.form : null;
+            if (!form || !target) return;
+            event.preventDefault();
+            const name = target.getAttribute && target.getAttribute('name');
+            const errorEl = name ? form.querySelector('[data-error-for="' + name + '"]') : null;
+            const message = target.validationMessage || '';
+            target.classList.add('fcui-field-invalid');
+            if (errorEl && message) {
+                errorEl.textContent = message;
+                errorEl.hidden = false;
+            }
+            target.setAttribute('aria-invalid', 'true');
+            if (!message) {
+                if (!form.dataset.fcInvalidShown && typeof target.focus === 'function' && document.activeElement !== target) {
+                    try { target.focus(); } catch (err) {}
+                }
+                if (!form.dataset.fcInvalidShown) {
+                    form.dataset.fcInvalidShown = '1';
+                    window.setTimeout(function () { delete form.dataset.fcInvalidShown; }, 0);
+                }
+                return;
+            }
+            if (form.dataset.fcInvalidShown === '1') return;
+            form.dataset.fcInvalidShown = '1';
+            window.setTimeout(function () { delete form.dataset.fcInvalidShown; }, 0);
+            if (window.clientToast && typeof window.clientToast.error === 'function') {
+                window.clientToast.error(message);
+            }
+            if (typeof target.focus === 'function' && document.activeElement !== target) {
+                try { target.focus(); } catch (err) {}
+            }
+        }, true);
+        document.addEventListener('input', function (event) {
+            clearNativeInvalid(event.target);
+        }, true);
+        document.addEventListener('change', function (event) {
+            clearNativeInvalid(event.target);
+        }, true);
+    }
 
     document.querySelectorAll('[data-faq-search-input]').forEach(function (input) {
         const root = document.querySelector('[data-faq-search-root]');
@@ -453,14 +518,13 @@ export function init() {
                 contactForm.reset();
 
                 const success = document.getElementById('contactSuccess');
+                window.clientToast.success(contactForm.dataset.sent);
                 if (success) {
                     contactForm.hidden = true;
                     success.hidden = false;
-                    success.focus?.();
+                    success.querySelector('[data-contact-reset]')?.focus();
                     return;
                 }
-
-                window.clientToast.success(contactForm.dataset.sent);
             })
             .catch(function (err) {
                 window.clientToast.error(err.message || contactForm.dataset.failed);

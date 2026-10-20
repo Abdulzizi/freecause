@@ -53,24 +53,47 @@ export function init(ctx) {
 
     ctx.announce = announce;
 
+    const seen = new Set();
+    function once(kind, message) {
+        const key = kind + '|' + (message || '').trim();
+        if (!message || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    }
+    function show(kind, message) {
+        if (!window.clientToast || !once(kind, message)) return;
+        window.clientToast[kind]?.(message);
+        announce(message);
+    }
+
     const flash = document.getElementById('toast-flash');
-    if (flash && window.clientToast) {
+    if (flash) {
         const showToast = window.clientToast?.[flash.dataset.type] ?? window.clientToast?.info;
-        showToast?.(flash.dataset.message);
-        announce(flash.dataset.message);
+        const message = flash.dataset.message;
+        if (message && once(flash.dataset.type, message)) {
+            showToast?.(message);
+            announce(message);
+        }
     }
 
     const flashSuccess = document.getElementById('flash-success');
-    if (flashSuccess && window.clientToast?.success) {
-        window.clientToast.success(flashSuccess.dataset.message);
-        announce(flashSuccess.dataset.message);
-    }
+    if (flashSuccess) show('success', flashSuccess.dataset.message);
 
     const flashError = document.getElementById('flash-error');
-    if (flashError && window.clientToast?.error) {
-        window.clientToast.error(flashError.dataset.message);
-        announce(flashError.dataset.message);
-    }
+    if (flashError) show('error', flashError.dataset.message);
+
+    const validationErrors = document.getElementById('validation-errors');
+    const hasVisibleErrorSummary = Array.from(document.querySelectorAll('[data-alert-variant="error"]')).some(function (el) {
+        return !el.hasAttribute('hidden') && !el.closest('[hidden]');
+    });
+    if (validationErrors && !hasVisibleErrorSummary) show('error', validationErrors.dataset.message);
+
+    document.querySelectorAll('[data-alert-variant="success"], [data-alert-variant="error"]').forEach(function (el) {
+        if (el.hasAttribute('hidden') || el.closest('[hidden]')) return;
+        if (el.hasAttribute('data-toast-keep')) return;
+        show(el.dataset.alertVariant, el.textContent.trim().replace(/\s+/g, ' '));
+        el.setAttribute('hidden', '');
+    });
 
     if (window.clientToast && !window.clientToast.__fcAnnounceWrapped) {
         ['success', 'error', 'warning', 'info'].forEach(function (kind) {

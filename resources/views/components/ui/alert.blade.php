@@ -12,6 +12,7 @@
 <div
     role="{{ $role }}"
     data-alert
+    data-alert-variant="{{ $variant }}"
     {{ $attributes->merge(['class' => "fcui-alert {$variantClass}"]) }}
 >
     <span class="fcui-alert__icon" aria-hidden="true">

@@ -3,9 +3,11 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function setup() {
+function setup(opts = {}) {
     const handlers = {};
     const error = { hidden: true, textContent: 'connection error' };
+    const toastCalls = [];
+    let appended = 0;
     const button = { disabled: false, style: { opacity: '' }, attrs: {}, children: [],
         setAttribute(k, v) { this.attrs[k] = v; },
         removeAttribute(k) { delete this.attrs[k]; },
@@ -18,15 +20,16 @@ function setup() {
         removeAttribute(k) { delete this.attrs[k]; },
         querySelector(selector) { return selector.includes('network-error') ? error : button; },
         querySelectorAll() { return [error]; },
-        appendChild() {} };
+        appendChild() { appended += 1; } };
     button.form = form;
     const navigator = { onLine: true };
+    const clientToast = opts.toast ? { error(msg) { toastCalls.push(msg); } } : undefined;
     vm.runInNewContext(fs.readFileSync('public/legacy/js-v2/form-busy.js', 'utf8'), {
         Map, navigator,
         document: { addEventListener(k, fn) { handlers[k] = fn; },
             createElement() { return { setAttribute() {}, remove() { button.children.pop(); } }; },
             querySelectorAll() { return []; } },
-        window: { addEventListener(k, fn) { handlers[k] = fn; } },
+        window: { addEventListener(k, fn) { handlers[k] = fn; }, clientToast },
     });
     function submit(defaultPrevented = false, submitter = button) {
         const event = { target: form, submitter, defaultPrevented,
@@ -34,7 +37,7 @@ function setup() {
         handlers.submit(event);
         return event;
     }
-    return { handlers, form, button, navigator, error, submit };
+    return { handlers, form, button, navigator, error, submit, toastCalls, appended: () => appended };
 }
 
 test('native POST proceeds once with spinner, dimming and busy semantics', () => {
@@ -87,6 +90,15 @@ test('localised error text is preserved and data-network-error-text still wins',
     s.form.attrs['data-network-error-text'] = 'Offline now.';
     s.submit();
     assert.equal(s.error.textContent, 'Offline now.');
+});
+test('offline POST with toast available fires one toast and keeps inline error hidden', () => {
+    const s = setup({ toast: true });
+    s.error.textContent = 'Baglanti hatasi. Yeniden deneyin.';
+    s.navigator.onLine = false;
+    assert.equal(s.submit().defaultPrevented, true);
+    assert.deepEqual(s.toastCalls, ['Baglanti hatasi. Yeniden deneyin.']);
+    assert.equal(s.error.hidden, true);
+    assert.equal(s.appended(), 0);
 });
 test('back navigation restores busy button and supports keyboard submit', () => {
     const s = setup(); s.submit(); s.handlers.pageshow();

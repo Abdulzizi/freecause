@@ -1,3 +1,7 @@
+@if (session('contact_sent'))
+    <p>{{ __('contacts.sent') }}</p>
+    <p><a class="fcui-link" href="{{ route('contacts', app()->getLocale()) }}">{{ __('contacts.send_another') }}</a></p>
+@else
 @if ($errors->any())
     <x-ui.alert variant="error" class="mb-4">
         {{ $errors->first() }}
@@ -73,7 +77,8 @@
 </form>
 
 
-<div id="contactSuccess" hidden tabindex="-1" role="status" aria-live="polite">
-    <x-ui.alert variant="success" class="mb-4">{{ __('contacts.sent') }}</x-ui.alert>
+<div id="contactSuccess" hidden tabindex="-1">
+    <p class="mb-4">{{ __('contacts.sent') }}</p>
     <button type="button" class="fcui-link" data-contact-reset>{{ __('contacts.send_another') }}</button>
 </div>
+@endif
