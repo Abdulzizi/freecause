@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Support\ImageVariants;
 
 class CleanOrphanImages extends Command
 {
@@ -48,6 +49,7 @@ class CleanOrphanImages extends Command
                 $this->line("[dry-run] would delete: {$file} (".$this->formatBytes($size).')');
             } else {
                 Storage::disk('public')->delete($file);
+                ImageVariants::purge($file);
                 $this->line("deleted: {$file} (".$this->formatBytes($size).')');
             }
         }

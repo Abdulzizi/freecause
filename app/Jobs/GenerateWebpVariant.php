@@ -19,9 +19,8 @@ class GenerateWebpVariant implements ShouldQueue
 
     public function handle(): void
     {
-        try {
-            ImageVariants::ensure(Storage::disk('public')->path($this->relativePath));
-        } catch (\Throwable $e) {
+        if (ImageVariants::ensure(Storage::disk('public')->path($this->relativePath)) === null) {
+            throw new \RuntimeException('WebP variant generation failed: '.$this->relativePath);
         }
     }
 }
