@@ -13,9 +13,7 @@ return new class extends Migration
         $this->repair('description');
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 
     private function repair(string $column): void
     {

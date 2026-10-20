@@ -6,12 +6,6 @@
         <div class="h-0.5 bg-brand w-full mt-1.5"></div>
     </div>
 
-    @if (old('auth_form') === 'login' && $errors->any())
-        <x-ui.alert variant="error" class="mb-4">
-            {{ $errors->first() }}
-        </x-ui.alert>
-    @endif
-
     <form method="POST" action="{{ lroute('login.post') }}">
         @csrf
         <input type="hidden" name="auth_form" value="login">
