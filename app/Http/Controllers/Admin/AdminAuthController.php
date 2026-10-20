@@ -58,6 +58,10 @@ class AdminAuthController extends Controller
             return back()->withErrors(['login' => 'You are not authorized to access the admin area.'])->withInput();
         }
 
+        if ($user->isBanned()) {
+            return back()->withErrors(['login' => 'You are not authorized to access the admin area.'])->withInput();
+        }
+
         Auth::guard('admin')->login($user);
         $request->session()->regenerate();
         $request->session()->regenerateToken();
@@ -68,7 +72,7 @@ class AdminAuthController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
-        $request->session()->regenerate();
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');

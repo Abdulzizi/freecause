@@ -15,7 +15,7 @@ class AdminAuth
             return redirect()->route('admin.login');
         }
 
-        if (! admin_user()?->canAccessAdmin()) {
+        if (! admin_user()?->canAccessAdmin() || admin_user()?->isBanned()) {
             Auth::guard('admin')->logout();
             $request->session()->invalidate();
 
