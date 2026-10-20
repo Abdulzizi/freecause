@@ -15,7 +15,18 @@
 
     <x-ui.section>
         <div class="mx-auto max-w-3xl">
-            @if ($state === 'unsubscribed')
+            @if ($state === 'confirm_unsubscribe')
+                <x-ui.alert variant="info">
+                    {{ __('preferences.confirm_unsubscribe') }}
+                </x-ui.alert>
+
+                <form method="POST" action="{{ route('preferences.unsubscribe', ['locale' => app()->getLocale(), 'token' => $token]) }}" class="mt-6">
+                    @csrf
+                    <x-ui.button type="submit" class="max-md:min-h-12">
+                        {{ __('preferences.unsubscribe_all') }}
+                    </x-ui.button>
+                </form>
+            @elseif ($state === 'unsubscribed')
                 <x-ui.alert variant="success" data-toast-keep>
                     {{ __('preferences.unsubscribed') }}
                 </x-ui.alert>

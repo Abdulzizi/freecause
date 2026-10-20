@@ -18,6 +18,7 @@ return [
     'unsubscribe_all' => 'Unsubscribe from all emails',
     'unsubscribed' => 'You have been unsubscribed from milestone and product emails.',
     'unsubscribed_help' => 'Verification, password reset and account emails are still delivered while your account is active.',
+    'confirm_unsubscribe' => 'Click the button below to confirm unsubscribing from milestone and product emails.',
     'invalid_token' => 'This unsubscribe link is invalid or has expired. If you keep receiving emails you want to stop, sign in to manage your preferences.',
     'manage_preferences' => 'Manage preferences',
     'sign_in' => 'Sign in',

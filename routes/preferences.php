@@ -11,5 +11,5 @@ Route::post('/preferences', [PreferencesController::class, 'update'])
     ->middleware(['throttle:10,1', 'profile.complete'])
     ->name('preferences.update');
 
-Route::get('/unsubscribe/{token}', [PreferencesController::class, 'unsubscribe'])
+Route::match(['get', 'post'], '/unsubscribe/{token}', [PreferencesController::class, 'unsubscribe'])
     ->name('preferences.unsubscribe');

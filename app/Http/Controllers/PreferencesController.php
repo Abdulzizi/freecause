@@ -85,6 +85,14 @@ class PreferencesController extends Controller
             ], 200);
         }
 
+        if ($request->isMethod('get')) {
+            return view('preferences', [
+                'state' => 'confirm_unsubscribe',
+                'user' => $request->user(),
+                'token' => $token,
+            ]);
+        }
+
         try {
             $user->notify_milestones = false;
             $user->notify_new_signatures = false;
