@@ -81,11 +81,11 @@ jobs:
           TAG: ${{ inputs.ref || github.ref_name }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "push" ] || [ -n "${{ inputs.ref }}" ]; then
-            dep -f deploy/deploy.php deploy production --tag="$TAG" --no-interaction
-          else
-            dep -f deploy/deploy.php deploy production --no-interaction
+          if ! [[ "$TAG" =~ ^v[0-9] ]]; then
+            echo "Refusing deploy: TAG must match ^v[0-9] (got '$TAG')"
+            exit 1
           fi
+          dep -f deploy/deploy.php deploy production --tag="$TAG" --no-interaction
 
       - name: Rollback
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'rollback' }}
