@@ -4,30 +4,44 @@ namespace App\Http\Middleware;
 
 use App\Models\UserLevel;
 use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class BlockBannedUser
 {
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->hasLevel('banned')) {
-            $user = auth()->user();
+        $user = $request->user();
 
+        if ($user) {
             if ($user->banned_until !== null && now()->gt($user->banned_until)) {
                 $userLevel = UserLevel::where('name', 'user')->value('id');
-                $user->update([
-                    'level_id' => $userLevel,
-                    'banned_reason' => null,
-                    'banned_until' => null,
-                ]);
+                if ($userLevel) {
+                    $user->forceFill([
+                        'level_id' => $userLevel,
+                        'banned_reason' => null,
+                        'banned_until' => null,
+                    ])->saveQuietly();
+                } else {
+                    $user->forceFill([
+                        'banned_reason' => null,
+                        'banned_until' => null,
+                    ])->saveQuietly();
+                }
 
                 return $next($request);
             }
 
-            $locale = app()->getLocale();
-            auth()->logout();
+            if ($user->isBanned()) {
+                auth()->guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return redirect("/{$locale}")
-                ->withErrors(['account' => 'Your account has been suspended.']);
+                $locale = app()->getLocale();
+                toast(__('auth.err_suspended'), 'error');
+
+                return redirect()->to("/{$locale}");
+            }
         }
 
         return $next($request);

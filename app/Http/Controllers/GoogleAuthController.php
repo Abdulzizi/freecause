@@ -272,6 +272,30 @@ class GoogleAuthController extends Controller
             );
         }
 
+        if (! $user) {
+            AppLog::warning(
+                'Google OAuth user resolution failed',
+                'Email: '.$email.' | Google ID: '.$google->getId(),
+                'auth.google'
+            );
+
+            return redirect("/{$destLocale}/login")->withErrors(['oauth' => 'Sign-in failed. Please try again.']);
+        }
+
+        if ($user->isBanned()) {
+            AppLog::warning(
+                'Banned user attempted Google login',
+                'User ID: '.$user->id.' | Email: '.$email,
+                'auth.google'
+            );
+
+            Auth::logout();
+
+            return redirect("/{$destLocale}/login")->withErrors([
+                'oauth' => __('auth.err_suspended'),
+            ]);
+        }
+
         $user->ip = $request->ip();
 
         if (! $user->first_name) {

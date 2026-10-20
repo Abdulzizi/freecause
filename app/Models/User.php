@@ -143,6 +143,19 @@ class User extends Authenticatable
         return (bool) $this->notify_product && $this->unsubscribed_at === null;
     }
 
+    public function isBanned(): bool
+    {
+        if ($this->banned_until !== null && now()->gt($this->banned_until)) {
+            return false;
+        }
+
+        if ($this->banned_until !== null && $this->banned_until->isFuture()) {
+            return true;
+        }
+
+        return $this->level?->name === 'banned';
+    }
+
     public function ensureUnsubscribeToken(): string
     {
         if (filled($this->unsubscribe_token)) {

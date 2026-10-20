@@ -199,7 +199,7 @@ class AuthController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
-            if ($user->hasLevel('banned')) {
+            if ($user->isBanned()) {
                 AppLog::warning(
                     'Banned user attempted login',
                     'User ID: '.$user->id.' | IP: '.$request->ip(),
