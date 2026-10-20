@@ -591,6 +591,7 @@ class AuthController extends Controller
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user, $password) {
                     $user->password = Hash::make($password);
+                    $user->setRememberToken(Str::random(60));
                     $user->password_changed_at = now();
                     $user->save();
 
@@ -609,6 +610,10 @@ class AuthController extends Controller
 
         if (! $user) {
             return redirect("/{$locale}/login")->with('success', __($status));
+        }
+
+        if (config('session.driver') === 'database') {
+            DB::table(config('session.table', 'sessions'))->where('user_id', $user->id)->delete();
         }
 
         auth()->login($user);
