@@ -42,6 +42,12 @@
                     {{ $h1Text }}
                 </h1>
 
+                @if ($reviewRequired ?? false)
+                    <div class="mb-4 rounded-md border border-warning/30 bg-warning-soft px-4 py-3 text-sm text-warning" role="status">
+                        {{ __('petition.review_required') }}
+                    </div>
+                @endif
+
                 <div class="mb-4">
                     <a class="text-brand" href="{{ $petitionUrl }}">
                         {{ $petitionTitle }}

@@ -34,7 +34,12 @@
 
     $signPageUrl = lroute('petition.sign.page', ['slug' => $tr->slug ?? '', 'id' => $petition->id]);
     $stateless = request()->attributes->get('stateless_render') === true;
+    $isPublished = ($petition->status ?? 'published') === 'published';
 @endphp
+
+@if (! $isPublished)
+    <p class="text-sm text-muted">{{ __('petition.review_required') }}</p>
+@else
 
 @if ($isAuthed)
     @if (!empty($hasSigned) && $hasSigned)
@@ -236,4 +241,5 @@
         @endif
     </form>
     @endif
+@endif
 @endif

@@ -17,6 +17,7 @@ use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\ImageVariants;
+use App\Support\ReviewKeywords;
 use App\Support\Slug;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -58,7 +59,7 @@ class PetitionController extends Controller
     private function requireEditable(Petition $petition): void
     {
         $this->requireOwner($petition);
-        abort_unless($petition->is_active && $petition->status === 'published', 403);
+        abort_unless($petition->is_active && in_array($petition->status, ['published', 'draft'], true), 403);
         abort_if(
             $petition->signatures()->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
             403,
@@ -490,7 +491,10 @@ class PetitionController extends Controller
     public function store(PetitionRequest $request, string $locale)
     {
         $data = $request->validated();
-        if (Spam::isSpam(($data['title'] ?? '').' '.strip_tags($data['description'] ?? ''))) {
+        $petitionText = ($data['title'] ?? '').' '.strip_tags($data['description'] ?? '');
+        $reviewMatches = ReviewKeywords::matches($petitionText);
+
+        if ($reviewMatches === [] && Spam::isSpam($petitionText)) {
             Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
@@ -524,13 +528,13 @@ class PetitionController extends Controller
         }
 
         try {
-            return DB::transaction(function () use ($request, $data, $locale, &$newCoverImage) {
+            return DB::transaction(function () use ($request, $data, $locale, &$newCoverImage, $reviewMatches) {
 
                 $tags = $this->normalizeTags($data['tags'] ?? null);
 
                 $petition = new Petition;
                 $petition->user_id = auth()->id();
-                $petition->status = 'published';
+                $petition->status = $reviewMatches === [] ? 'published' : 'draft';
                 $petition->is_active = 1;
                 $petition->goal_signatures = $data['goal_signatures'];
                 $petition->category_id = $data['category_id'];
@@ -587,7 +591,17 @@ class PetitionController extends Controller
                     PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
-                toast(__('create.toast_created'), 'success');
+                if ($reviewMatches !== []) {
+                    Spam::log('petition.review', json_encode([
+                        'petition_id' => $petition->id,
+                        'title' => $data['title'] ?? '',
+                        'keywords' => $reviewMatches,
+                    ]));
+
+                    toast(__('petition.review_required'), 'warning');
+                } else {
+                    toast(__('create.toast_created'), 'success');
+                }
 
                 return redirect()->route('petition.thanks', [
                     'locale' => $locale,
@@ -610,7 +624,11 @@ class PetitionController extends Controller
         $requestedLocale = normalize_locale($locale);
         $defaultLocale = default_locale();
 
-        $petition = Petition::query()->with('category')->where('id', $id)->visible()->firstOrFail();
+        $petition = Petition::query()->with('category')->where('id', $id)->firstOrFail();
+
+        $isOwner = auth()->check() && (int) $petition->user_id === (int) auth()->id();
+
+        abort_unless($petition->status === 'published' ? (bool) $petition->is_active : $isOwner, 404);
 
         $tr = $petition->translationOrFallback($requestedLocale, $defaultLocale);
 
@@ -676,6 +694,8 @@ class PetitionController extends Controller
         $nextMilestone ??= end($ladder);
         $shareUrl = lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]);
 
+        $reviewRequired = $petition->status !== 'published';
+
         return view('petition.thanks', compact(
             'petition',
             'suggestions',
@@ -687,7 +707,8 @@ class PetitionController extends Controller
             'claim',
             'canClaim',
             'nextMilestone',
-            'shareUrl'
+            'shareUrl',
+            'reviewRequired'
         ));
     }
 
@@ -933,7 +954,27 @@ class PetitionController extends Controller
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
-                toast(__('create.toast_updated'), 'success');
+                $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
+
+                if ($reviewMatches !== [] && $petition->status === 'published') {
+                    $petition->status = 'draft';
+                    $petition->save();
+
+                    Spam::log('petition.review', json_encode([
+                        'petition_id' => $petition->id,
+                        'title' => $data['title'],
+                        'keywords' => $reviewMatches,
+                    ]));
+
+                    toast(__('petition.review_required'), 'warning');
+                } elseif ($reviewMatches === [] && $petition->status === 'draft') {
+                    $petition->status = 'published';
+                    $petition->save();
+
+                    toast(__('create.toast_updated'), 'success');
+                } else {
+                    toast(__('create.toast_updated'), 'success');
+                }
 
                 return redirect()->route('petition.show', [
                     'locale' => $tr->locale,

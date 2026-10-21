@@ -112,6 +112,12 @@
 
             <x-ui.breadcrumb class="mb-4" :items="$crumbs" />
 
+            @if ($petition->status !== 'published')
+                <div class="rounded-md border border-warning/30 bg-warning-soft px-4 py-3 mb-4 text-sm text-warning" role="status">
+                    {{ __('petition.review_required') }}
+                </div>
+            @endif
+
             <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6">
                 <div data-confetti-on-load data-confetti-threshold="{{ in_array(true, [$pct>=100, $pct>=75, $pct>=50, $pct>=25], true) ? 1 : 0 }}" hidden></div>
                 @if ($pct >= 80 && $pct < 100 && !$hasSigned)
