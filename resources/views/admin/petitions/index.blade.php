@@ -306,9 +306,15 @@
                 @endif
             </div>
 
-            @if (!empty($selectedReviewKeywords))
+            @if ($selectedPetition->status === 'draft' && !empty($selectedReviewKeywords))
                 <x-blatui.alert tone="warning" class="mb-3">
-                    Held for review — banned keywords: {{ implode(', ', $selectedReviewKeywords) }}
+                    Held for review — banned keywords: {{ implode(', ', array_map(fn ($entry) => $entry['term'].' ('.$entry['locale'].')', array_values($selectedReviewKeywords))) }}
+                </x-blatui.alert>
+            @endif
+
+            @if ($selectedPetition->status === 'draft' && !empty($selectedReviewPayloadBroken))
+                <x-blatui.alert tone="warning" class="mb-3">
+                    Held for review — keyword details unavailable (review log truncated)
                 </x-blatui.alert>
             @endif
 

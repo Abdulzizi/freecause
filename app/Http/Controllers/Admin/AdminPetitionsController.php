@@ -17,6 +17,7 @@ use App\Support\ApproxRows;
 use App\Support\CacheVersion;
 use App\Support\ImageVariants;
 use App\Support\Locale;
+use App\Support\ReviewKeywords;
 use App\Support\Slug;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +165,7 @@ class AdminPetitionsController extends Controller
         $selectedTranslation = null;
         $selectedDefaultTranslation = null;
         $selectedReviewKeywords = [];
+        $selectedReviewPayloadBroken = false;
 
         if ($selectedId) {
             $selectedPetition = DB::table('petitions')
@@ -182,22 +184,55 @@ class AdminPetitionsController extends Controller
                     ->first();
             }
 
-            $reviewLogs = DB::table('spam_logs')
-                ->where('type', 'petition.review')
-                ->where('payload', 'like', '%"petition_id":'.(int) $selectedId.'%')
-                ->orderByDesc('id')
-                ->limit(10)
-                ->get(['payload']);
+            if ($selectedPetition?->status === 'draft') {
+                $reviewLogs = DB::table('spam_logs')
+                    ->where('type', 'petition.review')
+                    ->where('payload', 'like', '%"petition_id":'.(int) $selectedId.',%')
+                    ->orderByDesc('id')
+                    ->limit(10)
+                    ->get(['payload']);
 
-            foreach ($reviewLogs as $reviewLog) {
-                $payload = json_decode((string) $reviewLog->payload, true);
+                $termLocales = ReviewKeywords::localeMap();
+                $catalogue = ReviewKeywords::catalogue();
+                $petitionLocale = $selectedTranslation->locale ?? $selectedDefaultTranslation->locale ?? $locale;
+                $petitionTerms = [];
 
-                if (! is_array($payload) || (int) ($payload['petition_id'] ?? 0) !== (int) $selectedId) {
-                    continue;
+                foreach ($catalogue[$petitionLocale] ?? [] as $petitionTerm) {
+                    $petitionTerms[mb_strtolower($petitionTerm)] = true;
                 }
 
-                foreach ((array) ($payload['keywords'] ?? []) as $keyword) {
-                    $selectedReviewKeywords[$keyword] = $keyword;
+                foreach ($reviewLogs as $reviewLog) {
+                    $rawPayload = (string) $reviewLog->payload;
+                    $payload = json_decode($rawPayload, true);
+
+                    if (! is_array($payload)) {
+                        if (preg_match('/"petition_id":\s*'.preg_quote((string) (int) $selectedId, '/').',/', $rawPayload) === 1) {
+                            $selectedReviewPayloadBroken = true;
+                        }
+
+                        continue;
+                    }
+
+                    if ((int) ($payload['petition_id'] ?? 0) !== (int) $selectedId) {
+                        continue;
+                    }
+
+                    foreach ((array) ($payload['keywords'] ?? []) as $keyword) {
+                        $term = trim(is_array($keyword) ? (string) ($keyword['term'] ?? '') : (string) $keyword);
+
+                        if ($term === '') {
+                            continue;
+                        }
+
+                        $key = mb_strtolower($term);
+                        $termLocale = $termLocales[$key] ?? null;
+
+                        if (isset($petitionTerms[$key])) {
+                            $termLocale = $petitionLocale;
+                        }
+
+                        $selectedReviewKeywords[$key] ??= ['term' => $term, 'locale' => $termLocale ?? '—'];
+                    }
                 }
             }
         }
@@ -237,6 +272,7 @@ class AdminPetitionsController extends Controller
             'selectedTranslation',
             'selectedDefaultTranslation',
             'selectedReviewKeywords',
+            'selectedReviewPayloadBroken',
             'locale',
             'activeLanguages',
             'localeOptions',
