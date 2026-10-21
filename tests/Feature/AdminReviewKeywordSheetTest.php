@@ -34,6 +34,8 @@ class AdminReviewKeywordSheetTest extends TestCase
 
         Cache::flush();
 
+        ReviewKeywords::flushCache();
+
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
 
         $this->user = User::factory()->create(['verified' => true]);
@@ -167,6 +169,60 @@ class AdminReviewKeywordSheetTest extends TestCase
 
         $this->assertStringContainsString('cuvant de test (ro)', $html);
         $this->assertStringNotContainsString('cuvant de test (de)', $html);
+    }
+
+    public function test_detail_sheet_shows_the_displayed_locale_when_the_keyword_is_only_in_that_list(): void
+    {
+        ReviewKeywords::saveLocale('en', ['alpha term']);
+
+        $petition = $this->createPetition('ro', 'Stop alpha term advertising');
+
+        $this->assertSame('draft', $petition->fresh()->status);
+        $this->assertSame('ro', $petition->translations()->orderBy('id')->value('locale'));
+        $this->assertNotContains(
+            'alpha term',
+            ReviewKeywords::catalogue()['ro'],
+            'The keyword must live in the displayed locale only.'
+        );
+
+        $alert = $this->reviewAlert($this->sheetHtml($petition->id, 'en'));
+
+        $this->assertStringContainsString('alpha term (en)', $alert);
+        $this->assertStringNotContainsString('alpha term (ro)', $alert);
+    }
+
+    public function test_detail_sheet_shows_a_placeholder_when_the_keyword_left_every_locale(): void
+    {
+        ReviewKeywords::saveLocale('en', ['alpha term']);
+
+        $petition = $this->createPetition('en', 'Stop alpha term advertising');
+
+        $this->assertSame('draft', $petition->fresh()->status);
+
+        ReviewKeywords::saveLocale('en', []);
+
+        $this->assertNotContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertNotContains('alpha term', ReviewKeywords::all());
+
+        $alert = $this->reviewAlert($this->sheetHtml($petition->id, 'en'));
+
+        $this->assertStringContainsString('alpha term ('."\u{2014}".')', $alert);
+        $this->assertStringNotContainsString('alpha term (en)', $alert);
+    }
+
+    public function test_detail_sheet_keeps_the_romanian_wording_when_opened_with_another_locale(): void
+    {
+        ReviewKeywords::saveLocale('de', ['pariuri']);
+
+        $petition = $this->createPetition('ro', 'Pariuri online pe scara');
+
+        $this->assertSame('draft', $petition->status);
+        $this->assertSame('ro', $petition->translations()->orderBy('id')->value('locale'));
+
+        $html = $this->sheetHtml($petition->id, 'de');
+
+        $this->assertStringContainsString('pariuri (ro)', $html);
+        $this->assertStringNotContainsString('pariuri (de)', $html);
     }
 
     public function test_detail_sheet_still_banners_an_unparseable_review_payload(): void

@@ -192,14 +192,22 @@ class AdminPetitionsController extends Controller
                     ->limit(10)
                     ->get(['payload']);
 
-                $termLocales = ReviewKeywords::localeMap();
                 $catalogue = ReviewKeywords::catalogue();
-                $petitionLocale = $selectedTranslation->locale ?? $selectedDefaultTranslation->locale ?? $locale;
-                $petitionTerms = [];
+                $catalogueTerms = [];
 
-                foreach ($catalogue[$petitionLocale] ?? [] as $petitionTerm) {
-                    $petitionTerms[mb_strtolower($petitionTerm)] = true;
+                foreach ($catalogue as $catalogueLocale => $catalogueLocaleTerms) {
+                    foreach ($catalogueLocaleTerms as $catalogueTerm) {
+                        $catalogueTerms[$catalogueLocale][mb_strtolower($catalogueTerm)] = true;
+                    }
                 }
+
+                $petitionLocales = DB::table('petition_translations')
+                    ->where('petition_id', (int) $selectedId)
+                    ->orderBy('id')
+                    ->pluck('locale')
+                    ->all();
+
+                $displayedLocale = $selectedTranslation->locale ?? $selectedDefaultTranslation->locale ?? $locale;
 
                 foreach ($reviewLogs as $reviewLog) {
                     $rawPayload = (string) $reviewLog->payload;
@@ -225,10 +233,18 @@ class AdminPetitionsController extends Controller
                         }
 
                         $key = mb_strtolower($term);
-                        $termLocale = $termLocales[$key] ?? null;
+                        $termLocale = null;
 
-                        if (isset($petitionTerms[$key])) {
-                            $termLocale = $petitionLocale;
+                        foreach ($petitionLocales as $petitionLocale) {
+                            if (isset($catalogueTerms[$petitionLocale][$key])) {
+                                $termLocale = $petitionLocale;
+
+                                break;
+                            }
+                        }
+
+                        if ($termLocale === null && isset($catalogueTerms[$displayedLocale][$key])) {
+                            $termLocale = $displayedLocale;
                         }
 
                         $selectedReviewKeywords[$key] ??= ['term' => $term, 'locale' => $termLocale ?? '—'];
