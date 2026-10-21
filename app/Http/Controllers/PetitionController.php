@@ -494,7 +494,7 @@ class PetitionController extends Controller
         $petitionText = ($data['title'] ?? '').' '.strip_tags($data['description'] ?? '');
         $reviewMatches = ReviewKeywords::matches($petitionText);
 
-        if ($reviewMatches === [] && Spam::isSpam($petitionText)) {
+        if ($reviewMatches === [] && Spam::isSpam($petitionText, Spam::reviewOwned())) {
             Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();

@@ -27,6 +27,36 @@ class SpamTest extends TestCase
         $this->assertTrue(Spam::isSpam('cheap loan approved'));
     }
 
+    public function test_a_review_owned_word_is_ignored_as_a_whole_word(): void
+    {
+        $owned = Spam::reviewOwned();
+
+        $this->assertContains('porn', $owned);
+        $this->assertContains('escort', $owned);
+        $this->assertContains('casino', $owned);
+
+        $this->assertFalse(Spam::isSpam('porn', $owned));
+        $this->assertFalse(Spam::isSpam('escort', $owned));
+        $this->assertFalse(Spam::isSpam('casino', $owned));
+    }
+
+    public function test_a_derived_review_owned_wording_still_counts_as_spam(): void
+    {
+        $owned = Spam::reviewOwned();
+
+        $this->assertTrue(Spam::isSpam('pornographic', $owned));
+        $this->assertTrue(Spam::isSpam('escorted', $owned));
+        $this->assertTrue(Spam::isSpam('porns', ['porn']));
+        $this->assertTrue(Spam::isSpam('porn pornographic', $owned));
+    }
+
+    public function test_the_default_ignore_list_keeps_blocking_the_review_owned_words(): void
+    {
+        $this->assertTrue(Spam::isSpam('porn'));
+        $this->assertTrue(Spam::isSpam('escort'));
+        $this->assertTrue(Spam::isSpam('casino'));
+    }
+
     public function test_spam_allows_normal_content(): void
     {
         $this->assertFalse(Spam::isSpam('I support this petition to save the whales'));

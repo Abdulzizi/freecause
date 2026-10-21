@@ -53,11 +53,20 @@ class Spam
         'paypal',
     ];
 
-    public static function isSpam(string $text): bool
+    /**
+     * @param  array<int, string>  $ignore
+     */
+    public static function isSpam(string $text, array $ignore = []): bool
     {
         $text = strtr(strtolower($text), ['1' => 'i']);
 
+        $ignored = array_map(fn ($term) => mb_strtolower(trim((string) $term)), $ignore);
+
         foreach (self::$badKeywords as $word) {
+            if (in_array($word, $ignored, true) && ! self::hasDerivedOccurrence($word, $text)) {
+                continue;
+            }
+
             if (str_contains($text, $word)) {
                 return true;
             }
@@ -70,6 +79,31 @@ class Spam
         return false;
     }
 
+    protected static function hasDerivedOccurrence(string $word, string $text): bool
+    {
+        if (! str_contains($text, $word)) {
+            return false;
+        }
+
+        $pattern = '/\b'.preg_quote($word, '/').'\b/u';
+
+        if (preg_match($pattern, $text) !== 1) {
+            return true;
+        }
+
+        $stripped = preg_replace($pattern, ' ', $text);
+
+        return $stripped === null || str_contains($stripped, $word);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function reviewOwned(): array
+    {
+        return array_values(array_intersect(self::$badKeywords, ReviewKeywords::TERMS));
+    }
+
     public static function log(string $type, string $payload): void
     {
         $limit = $type === 'petition.review' ? 60000 : 8000;
@@ -77,7 +111,7 @@ class Spam
         DB::table('spam_logs')->insert([
             'type' => $type,
             'ip' => request()->ip(),
-            'payload' => mb_strcut($payload, 0, $limit, 'UTF-8'),
+            'payload' => mb_strcut(mb_scrub($payload, 'UTF-8'), 0, $limit, 'UTF-8'),
             'created_at' => now(),
         ]);
     }
