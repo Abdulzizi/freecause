@@ -72,10 +72,12 @@ class Spam
 
     public static function log(string $type, string $payload): void
     {
+        $limit = $type === 'petition.review' ? 60000 : 8000;
+
         DB::table('spam_logs')->insert([
             'type' => $type,
             'ip' => request()->ip(),
-            'payload' => substr($payload, 0, 2000),
+            'payload' => mb_strcut($payload, 0, $limit, 'UTF-8'),
             'created_at' => now(),
         ]);
     }
