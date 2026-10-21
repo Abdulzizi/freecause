@@ -22,7 +22,7 @@
 
                 <x-blatui.field data-invalid="{{ $errors->has('login') ? 'true' : 'false' }}">
                     <x-blatui.field-label for="login">Email or Username</x-blatui.field-label>
-                    <x-blatui.input id="login" name="login" :value="old('login')" autocomplete="username" autofocus required />
+                    <x-blatui.input id="login" name="login" :value="is_array(old('login')) ? '' : old('login')" autocomplete="username" autofocus required />
                     @error('login')
                         <x-blatui.field-error>{{ $message }}</x-blatui.field-error>
                     @enderror
