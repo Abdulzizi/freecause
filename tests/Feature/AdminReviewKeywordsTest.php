@@ -17,6 +17,7 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class AdminReviewKeywordsTest extends TestCase
@@ -28,6 +29,8 @@ class AdminReviewKeywordsTest extends TestCase
         parent::setUp();
 
         Cache::flush();
+
+        ReviewKeywords::flushCache();
 
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
     }
@@ -68,6 +71,11 @@ class AdminReviewKeywordsTest extends TestCase
         return array_keys(array_filter($counts, fn ($count) => $count > 1));
     }
 
+    private function entry(string $term, ?string $concept = null): array
+    {
+        return ['term' => $term, 'concept' => $concept ?? $term];
+    }
+
     private function createPetition(string $locale, string $title): Petition
     {
         $user = User::factory()->create(['verified' => true]);
@@ -91,13 +99,50 @@ class AdminReviewKeywordsTest extends TestCase
         return Petition::latest('id')->firstOrFail();
     }
 
+    private function warningText(string $html): string
+    {
+        preg_match_all(
+            '/<(div|p|section|aside|span)\b(?=[^>]*(?:data-slot="alert"|class="[^"]*\bwarning\b))[^>]*>(.*?)<\/\1>/is',
+            $html,
+            $matches
+        );
+
+        return trim(strip_tags(implode(' ', $matches[2])));
+    }
+
+    private function conceptsTableHtml(string $html): string
+    {
+        preg_match_all('/<table\b.*?<\/table>/s', $html, $matches);
+
+        foreach ($matches[0] as $table) {
+            if (str_contains($table, '>concept</th>')) {
+                return $table;
+            }
+        }
+
+        return '';
+    }
+
+    private function settingValue(string $key, string $group = 'moderation'): ?string
+    {
+        $value = DB::table('settings')
+            ->where('group', $group)
+            ->where('key', $key)
+            ->value('value');
+
+        return $value === null ? null : (string) $value;
+    }
+
     public function test_bundled_defaults_are_unchanged(): void
     {
         $this->assertNotEmpty(ReviewKeywords::matches('Stop casino betting promotions'));
-        $this->assertSame('en', ReviewKeywords::localeMap()['casino']);
+        $this->assertContains('casino', ReviewKeywords::catalogue()['en']);
+        $this->assertNotContains('casino', ReviewKeywords::catalogue()['ro']);
         $this->assertContains('pariuri', ReviewKeywords::translations()['ro']);
         $this->assertNotEmpty(ReviewKeywords::matches('pariuri'));
-        $this->assertSame('ro', ReviewKeywords::localeMap()['pariuri']);
+        $this->assertContains('pariuri', ReviewKeywords::catalogue()['ro']);
+        $this->assertContains('casino', ReviewKeywords::all());
+        $this->assertContains('pariuri', ReviewKeywords::all());
 
         $this->assertSame(57, count(ReviewKeywords::TERMS));
 
@@ -154,8 +199,10 @@ class AdminReviewKeywordsTest extends TestCase
         $this->assertNotEmpty(ReviewKeywords::matches('cuvant de test'));
         $this->assertEmpty(ReviewKeywords::matches('pariuri'));
         $this->assertNotEmpty(ReviewKeywords::matches('casino'));
-        $this->assertSame('ro', ReviewKeywords::localeMap()['cuvant de test']);
-        $this->assertArrayNotHasKey('pariuri', ReviewKeywords::localeMap());
+        $this->assertContains('cuvant de test', ReviewKeywords::catalogue()['ro']);
+        $this->assertNotContains('pariuri', ReviewKeywords::catalogue()['ro']);
+        $this->assertNotContains('pariuri', ReviewKeywords::all());
+        $this->assertContains('cuvant de test', ReviewKeywords::all());
     }
 
     public function test_resetting_a_locale_restores_the_bundled_terms(): void
@@ -167,7 +214,7 @@ class AdminReviewKeywordsTest extends TestCase
         ReviewKeywords::resetLocale('ro');
 
         $this->assertNotEmpty(ReviewKeywords::matches('pariuri'));
-        $this->assertSame('ro', ReviewKeywords::localeMap()['pariuri']);
+        $this->assertContains('pariuri', ReviewKeywords::catalogue()['ro']);
         $this->assertEmpty(ReviewKeywords::overrides());
     }
 
@@ -175,12 +222,14 @@ class AdminReviewKeywordsTest extends TestCase
     {
         ReviewKeywords::saveLocale('ro', ['a', 'b']);
 
+        $expected = [$this->entry('a'), $this->entry('b')];
+
         $this->assertDatabaseHas('settings', [
             'group' => 'moderation',
             'key' => 'review_keywords_ro',
         ]);
-        $this->assertSame(['a', 'b'], Settings::get('review_keywords_ro', [], 'moderation'));
-        $this->assertSame(['a', 'b'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame($expected, Settings::get('review_keywords_ro', [], 'moderation'));
+        $this->assertSame($expected, ReviewKeywords::overrides()['ro']);
 
         ReviewKeywords::resetLocale('ro');
 
@@ -205,6 +254,10 @@ class AdminReviewKeywordsTest extends TestCase
 
         Cache::flush();
 
+        Settings::forget();
+
+        ReviewKeywords::flushCache();
+
         $this->assertArrayNotHasKey('ro', ReviewKeywords::overrides());
         $this->assertNotEmpty(ReviewKeywords::matches('pariuri'));
     }
@@ -221,6 +274,10 @@ class AdminReviewKeywordsTest extends TestCase
         ]);
 
         Cache::flush();
+
+        Settings::forget();
+
+        ReviewKeywords::flushCache();
 
         $this->assertArrayNotHasKey('ro', ReviewKeywords::overrides());
         $this->assertNotEmpty(ReviewKeywords::matches('pariuri'));
@@ -239,10 +296,14 @@ class AdminReviewKeywordsTest extends TestCase
 
         Cache::flush();
 
+        Settings::forget();
+
+        ReviewKeywords::flushCache();
+
         $overrides = ReviewKeywords::overrides();
 
         $this->assertArrayHasKey('ro', $overrides);
-        $this->assertSame(['ok'], $overrides['ro']);
+        $this->assertSame([$this->entry('ok')], $overrides['ro']);
     }
 
     public function test_saving_an_empty_list_keeps_an_explicit_empty_override(): void
@@ -285,7 +346,7 @@ class AdminReviewKeywordsTest extends TestCase
         $this->assertNotEmpty(ReviewKeywords::matches('zhterm'));
         $this->assertArrayHasKey('zh', ReviewKeywords::catalogue());
         $this->assertSame(['zhterm'], ReviewKeywords::catalogue()['zh']);
-        $this->assertSame('zh', ReviewKeywords::localeMap()['zhterm']);
+        $this->assertContains('zhterm', ReviewKeywords::all());
 
         ReviewKeywords::resetLocale('zh');
 
@@ -313,13 +374,18 @@ class AdminReviewKeywordsTest extends TestCase
         $this->assertSame([], ReviewKeywords::overrides());
         $this->assertNotEmpty(ReviewKeywords::matches('pariuri'));
         $this->assertNotEmpty(ReviewKeywords::matches('casino'));
-        $this->assertSame('ro', ReviewKeywords::localeMap()['pariuri']);
-        $this->assertSame('en', ReviewKeywords::localeMap()['casino']);
+        $this->assertContains('pariuri', ReviewKeywords::catalogue()['ro']);
+        $this->assertContains('casino', ReviewKeywords::catalogue()['en']);
+        $this->assertContains('pariuri', ReviewKeywords::all());
+        $this->assertContains('casino', ReviewKeywords::all());
     }
 
     public function test_admin_keywords_page_renders_the_terms_textarea(): void
     {
-        $level = $this->levelWithPermissions('keywords_editor_viewer', ['spam' => ['view', 'edit']]);
+        $level = $this->levelWithPermissions('keywords_editor_viewer', [
+            'spam' => ['view', 'edit'],
+            'petitions' => ['view', 'edit'],
+        ]);
         $user = $this->userWithLevel($level);
 
         $response = $this->actingAs($user, 'admin')->get(route('admin.keywords', ['locale' => 'ro']));
@@ -345,6 +411,16 @@ class AdminReviewKeywordsTest extends TestCase
             'Only the ro option may be selected.'
         );
         $this->assertStringContainsString('pariuri', $html);
+        $this->assertStringContainsString(
+            route('admin.keywords.concept'),
+            $html,
+            'An editor must get the concept switch form.'
+        );
+        $this->assertStringContainsString(
+            route('admin.keywords.rescan'),
+            $html,
+            'An editor must get the rescan form.'
+        );
     }
 
     public function test_viewer_without_edit_permission_sees_no_edit_controls(): void
@@ -360,6 +436,8 @@ class AdminReviewKeywordsTest extends TestCase
 
         $this->assertStringNotContainsString(route('admin.keywords.save'), $html);
         $this->assertStringNotContainsString(route('admin.keywords.reset'), $html);
+        $this->assertStringNotContainsString(route('admin.keywords.concept'), $html);
+        $this->assertStringNotContainsString(route('admin.keywords.rescan'), $html);
         $this->assertDoesNotMatchRegularExpression('/<textarea[^>]*name="terms"/i', $html);
         $this->assertStringContainsString('you have read-only access to the keyword lists', $html);
         $this->assertStringContainsString('pariuri', $html);
@@ -423,8 +501,10 @@ class AdminReviewKeywordsTest extends TestCase
         $stored = Settings::get('review_keywords_ro', [], 'moderation');
 
         $this->assertIsArray($stored);
-        $this->assertContains('cuvant de test', $stored);
-        $this->assertContains('alt termen', $stored);
+        $this->assertSame([
+            $this->entry('cuvant de test'),
+            $this->entry('alt termen'),
+        ], $stored);
         $this->assertNotEmpty(ReviewKeywords::matches('cuvant de test'));
         $this->assertEmpty(ReviewKeywords::matches('pariuri'));
     }
@@ -478,7 +558,7 @@ class AdminReviewKeywordsTest extends TestCase
 
         $this->assertSame($before, ReviewKeywords::overrides());
         $this->assertArrayNotHasKey('zz', ReviewKeywords::overrides());
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
         $this->assertSame([], Settings::get('review_keywords_zz', [], 'moderation'));
         $this->assertDatabaseMissing('settings', [
             'group' => 'moderation',
@@ -532,7 +612,7 @@ class AdminReviewKeywordsTest extends TestCase
             'group' => 'moderation',
             'key' => 'review_keywords_ro',
         ]);
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
         $this->assertEmpty(ReviewKeywords::matches('pariuri'));
     }
 
@@ -579,7 +659,7 @@ class AdminReviewKeywordsTest extends TestCase
 
         $this->assertSame($before, ReviewKeywords::overrides());
         $this->assertArrayNotHasKey('zz', ReviewKeywords::overrides());
-        $this->assertContains('cuvant de test', ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
         $this->assertSame([], Settings::get('review_keywords_zz', [], 'moderation'));
         $this->assertDatabaseMissing('settings', [
             'group' => 'moderation',
@@ -609,8 +689,8 @@ class AdminReviewKeywordsTest extends TestCase
             $response->assertSessionHasErrors('terms');
         }
 
-        $this->assertSame(['cuvant de test'], Settings::get('review_keywords_ro', [], 'moderation'));
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], Settings::get('review_keywords_ro', [], 'moderation'));
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
 
         $this->actingAs($user, 'admin')
             ->followingRedirects()
@@ -644,8 +724,8 @@ class AdminReviewKeywordsTest extends TestCase
             'The admin must be told that the save failed.'
         );
 
-        $this->assertSame(['cuvant de test'], Settings::get('review_keywords_ro', [], 'moderation'));
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], Settings::get('review_keywords_ro', [], 'moderation'));
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
     }
 
     public function test_saving_an_oversized_term_list_is_rejected_and_keeps_the_stored_list(): void
@@ -670,8 +750,8 @@ class AdminReviewKeywordsTest extends TestCase
             $response->assertSessionHasErrors('terms');
         }
 
-        $this->assertSame(['cuvant de test'], Settings::get('review_keywords_ro', [], 'moderation'));
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], Settings::get('review_keywords_ro', [], 'moderation'));
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
     }
 
     public function test_saving_more_terms_than_the_ceiling_is_rejected_and_keeps_the_stored_list(): void
@@ -701,8 +781,8 @@ class AdminReviewKeywordsTest extends TestCase
             'The admin must be told that the term list exceeds the ceiling.'
         );
 
-        $this->assertSame(['cuvant de test'], Settings::get('review_keywords_ro', [], 'moderation'));
-        $this->assertSame(['cuvant de test'], ReviewKeywords::overrides()['ro']);
+        $this->assertSame([$this->entry('cuvant de test')], Settings::get('review_keywords_ro', [], 'moderation'));
+        $this->assertSame([$this->entry('cuvant de test')], ReviewKeywords::overrides()['ro']);
     }
 
     public function test_saving_more_terms_than_the_ceiling_stores_only_the_first_terms(): void
@@ -718,8 +798,38 @@ class AdminReviewKeywordsTest extends TestCase
 
         $this->assertIsArray($stored);
         $this->assertCount(ReviewKeywords::MAX_TERMS, $stored);
-        $this->assertSame('term1', $stored[0]);
-        $this->assertSame('term'.ReviewKeywords::MAX_TERMS, $stored[ReviewKeywords::MAX_TERMS - 1]);
+        $this->assertSame($this->entry('term1'), $stored[0]);
+        $this->assertSame($this->entry('term'.ReviewKeywords::MAX_TERMS), $stored[ReviewKeywords::MAX_TERMS - 1]);
+    }
+
+    public function test_saving_an_oversized_term_and_concept_stores_the_truncated_values(): void
+    {
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        $response = $this->actingAs($user, 'admin')->post(route('admin.keywords.save'), [
+            'locale' => 'ro',
+            'terms' => str_repeat('a', 300).' :: '.str_repeat('b', 300),
+        ]);
+
+        $response->assertRedirect();
+
+        $expected = [[
+            'term' => str_repeat('a', ReviewKeywords::MAX_TERM_LENGTH),
+            'concept' => str_repeat('b', ReviewKeywords::MAX_CONCEPT_LENGTH),
+        ]];
+
+        $this->assertSame(
+            $expected,
+            Settings::get('review_keywords_ro', [], 'moderation'),
+            'The settings row must hold the truncated term and concept.'
+        );
+
+        $this->assertSame(
+            $expected,
+            ReviewKeywords::entriesFor('ro'),
+            'The saved locale must hold the truncated term and concept.'
+        );
     }
 
     public function test_saving_without_the_terms_field_keeps_the_existing_list(): void
@@ -732,7 +842,7 @@ class AdminReviewKeywordsTest extends TestCase
             'terms' => "cuvant de test\nalt termen",
         ])->assertRedirect();
 
-        $this->assertContains('cuvant de test', ReviewKeywords::overrides()['ro']);
+        $this->assertContains($this->entry('cuvant de test'), ReviewKeywords::overrides()['ro']);
 
         $response = $this->actingAs($user, 'admin')->post(route('admin.keywords.save'), [
             'locale' => 'ro',
@@ -745,8 +855,8 @@ class AdminReviewKeywordsTest extends TestCase
         $overrides = ReviewKeywords::overrides();
 
         $this->assertArrayHasKey('ro', $overrides);
-        $this->assertContains('cuvant de test', $overrides['ro']);
-        $this->assertContains('alt termen', $overrides['ro']);
+        $this->assertContains($this->entry('cuvant de test'), $overrides['ro']);
+        $this->assertContains($this->entry('alt termen'), $overrides['ro']);
     }
 
     public function test_saving_an_empty_term_list_stores_an_explicit_empty_override(): void
@@ -802,8 +912,8 @@ class AdminReviewKeywordsTest extends TestCase
         $overrides = ReviewKeywords::overrides();
 
         $this->assertArrayHasKey('ro', $overrides);
-        $this->assertContains('cuvant nou de test', $overrides['ro']);
-        $this->assertNotContains('cuvant de test', $overrides['ro']);
+        $this->assertContains($this->entry('cuvant nou de test'), $overrides['ro']);
+        $this->assertNotContains($this->entry('cuvant de test'), $overrides['ro']);
 
         $response = $this->actingAs($user, 'admin')->post(route('admin.keywords.reset'), [
             'locale' => 'ro',
@@ -867,5 +977,282 @@ class AdminReviewKeywordsTest extends TestCase
         $this->actingAs($other)
             ->get("/ro/petition/{$slug}/{$petition->id}")
             ->assertNotFound();
+    }
+
+    public function test_a_review_owned_spam_word_is_held_for_review_instead_of_rejected(): void
+    {
+        $user = User::factory()->create(['verified' => true]);
+
+        $category = Category::factory()->create(['is_active' => true]);
+
+        CategoryTranslation::create([
+            'category_id' => $category->id,
+            'locale' => 'en',
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+        ]);
+
+        $response = $this->actingAs($user)->post('/en/create-petition', [
+            'title' => 'Stop casino advertising',
+            'description' => '<p>This is a test petition with enough content to pass validation and be accepted.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $category->id,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $petition = Petition::latest('id')->firstOrFail();
+
+        $this->assertSame('draft', $petition->status);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'status' => 'draft']);
+        $this->assertDatabaseHas('spam_logs', ['type' => 'petition.review']);
+        $this->assertDatabaseMissing('spam_logs', ['type' => 'petition.create']);
+    }
+
+    public function test_removing_a_review_owned_spam_word_from_the_catalogue_publishes_the_petition(): void
+    {
+        ReviewKeywords::saveLocale('en', array_values(array_diff(ReviewKeywords::TERMS, ['casino'])));
+
+        $petition = $this->createPetition('en', 'Stop casino advertising');
+
+        $this->assertSame('published', $petition->status);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'status' => 'published']);
+        $this->assertTrue(Petition::visible()->where('id', $petition->id)->exists());
+        $this->assertDatabaseMissing('spam_logs', ['type' => 'petition.review']);
+        $this->assertDatabaseMissing('spam_logs', ['type' => 'petition.create']);
+    }
+
+    public function test_the_keywords_page_warns_about_a_review_owned_word_that_left_the_catalogue(): void
+    {
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        $untouched = (string) $this->actingAs($user, 'admin')
+            ->get(route('admin.keywords', ['locale' => 'en']))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringNotContainsString(
+            'porn',
+            $this->warningText($untouched),
+            'The untouched catalogue must not warn about a word that is still held for review.'
+        );
+
+        ReviewKeywords::saveLocale('en', array_values(array_diff(ReviewKeywords::TERMS, ['porn'])));
+
+        $this->assertSame(['porn'], ReviewKeywords::unblockedLegacyTerms());
+
+        $changed = (string) $this->actingAs($user, 'admin')
+            ->get(route('admin.keywords', ['locale' => 'en']))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString(
+            'porn',
+            $this->warningText($changed),
+            'The warning must name the word that is no longer held for review.'
+        );
+    }
+
+    public function test_the_keywords_page_does_not_warn_while_the_catalogue_is_untouched(): void
+    {
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        $this->assertSame([], ReviewKeywords::unblockedLegacyTerms());
+
+        $html = (string) $this->actingAs($user, 'admin')
+            ->get(route('admin.keywords', ['locale' => 'en']))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertSame(
+            '',
+            $this->warningText($html),
+            'An untouched catalogue must not show a warning.'
+        );
+    }
+
+    public function test_admin_can_disable_and_reenable_a_concept(): void
+    {
+        if (! Route::has('admin.keywords.concept')) {
+            $this->markTestSkipped('The admin concept route is not registered.');
+        }
+
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        ReviewKeywords::saveLocale('en', [
+            ['term' => 'alpha term', 'concept' => 'shared concept'],
+        ]);
+
+        $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), ['concept' => 'shared concept', 'enabled' => '0'])
+            ->assertRedirect();
+
+        $this->assertContains('shared concept', ReviewKeywords::disabledConcepts());
+        $this->assertNotContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertEmpty(ReviewKeywords::matches('alpha term'));
+
+        $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), ['concept' => 'shared concept', 'enabled' => '1'])
+            ->assertRedirect();
+
+        $this->assertNotContains('shared concept', ReviewKeywords::disabledConcepts());
+        $this->assertContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertNotEmpty(ReviewKeywords::matches('alpha term'));
+    }
+
+    public function test_a_disabled_concept_without_any_wording_stays_listed_and_can_be_re_enabled(): void
+    {
+        if (! Route::has('admin.keywords.concept')) {
+            $this->markTestSkipped('The admin concept route is not registered.');
+        }
+
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        ReviewKeywords::saveLocale('en', [
+            ['term' => 'alpha term', 'concept' => 'shared concept'],
+        ]);
+
+        ReviewKeywords::setConceptEnabled('shared concept', false);
+
+        $this->assertContains('shared concept', ReviewKeywords::disabledConcepts());
+        $this->assertNotContains('alpha term', ReviewKeywords::catalogue()['en']);
+
+        ReviewKeywords::saveLocale('en', []);
+
+        $this->assertNotContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertNotContains('alpha term', ReviewKeywords::all());
+
+        $html = (string) $this->actingAs($user, 'admin')
+            ->get(route('admin.keywords', ['locale' => 'en']))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString(
+            'shared concept',
+            $this->conceptsTableHtml($html),
+            'A disabled concept must stay listed even when it has no wording left.'
+        );
+
+        $response = $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), ['concept' => 'shared concept', 'enabled' => '1']);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $response->assertSessionMissing('error');
+
+        $this->assertNotContains(
+            'shared concept',
+            ReviewKeywords::disabledConcepts(),
+            'The concept must be re-enabled.'
+        );
+    }
+
+    public function test_the_concept_endpoint_reports_a_refused_write(): void
+    {
+        if (! Route::has('admin.keywords.concept')) {
+            $this->markTestSkipped('The admin concept route is not registered.');
+        }
+
+        $level = $this->levelWithPermissions('keywords_editor', ['spam' => ['view', 'edit']]);
+        $user = $this->userWithLevel($level);
+
+        DB::table('settings')->insert([
+            'group' => 'moderation',
+            'key' => 'review_keywords_disabled',
+            'value' => 'not-a-list',
+            'type' => 'string',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Cache::flush();
+
+        Settings::forget();
+
+        ReviewKeywords::flushCache();
+
+        $response = $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), [
+                'concept' => 'betting',
+                'enabled' => '0',
+                'locale' => 'en',
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $response->assertSessionMissing('success');
+
+        $this->assertSame(
+            'not-a-list',
+            $this->settingValue('review_keywords_disabled'),
+            'A refused write must leave the malformed value untouched.'
+        );
+
+        $this->assertNotContains(
+            'betting',
+            ReviewKeywords::disabledConcepts(),
+            'A refused write must not disable the concept.'
+        );
+    }
+
+    public function test_a_viewer_without_the_edit_permission_cannot_disable_a_concept(): void
+    {
+        if (! Route::has('admin.keywords.concept')) {
+            $this->markTestSkipped('The admin concept route is not registered.');
+        }
+
+        ReviewKeywords::saveLocale('en', [
+            ['term' => 'alpha term', 'concept' => 'shared concept'],
+        ]);
+
+        $level = $this->levelWithPermissions('keywords_concept_viewer', ['spam' => ['view']]);
+        $user = $this->userWithLevel($level);
+
+        $response = $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), [
+                'concept' => 'shared concept',
+                'enabled' => '0',
+                'locale' => 'en',
+            ]);
+
+        $response->assertForbidden();
+
+        $this->assertNotContains('shared concept', ReviewKeywords::disabledConcepts());
+        $this->assertContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertNotEmpty(ReviewKeywords::matches('alpha term'));
+    }
+
+    public function test_a_viewer_without_the_edit_permission_cannot_reenable_a_disabled_concept(): void
+    {
+        if (! Route::has('admin.keywords.concept')) {
+            $this->markTestSkipped('The admin concept route is not registered.');
+        }
+
+        ReviewKeywords::saveLocale('en', [
+            ['term' => 'alpha term', 'concept' => 'shared concept'],
+        ]);
+
+        ReviewKeywords::setConceptEnabled('shared concept', false);
+
+        $level = $this->levelWithPermissions('keywords_concept_viewer', ['spam' => ['view']]);
+        $user = $this->userWithLevel($level);
+
+        $response = $this->actingAs($user, 'admin')
+            ->post(route('admin.keywords.concept'), [
+                'concept' => 'shared concept',
+                'enabled' => '1',
+                'locale' => 'en',
+            ]);
+
+        $response->assertForbidden();
+
+        $this->assertContains('shared concept', ReviewKeywords::disabledConcepts());
+        $this->assertNotContains('alpha term', ReviewKeywords::catalogue()['en']);
+        $this->assertEmpty(ReviewKeywords::matches('alpha term'));
     }
 }

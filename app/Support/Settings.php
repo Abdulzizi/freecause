@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class Settings
 {
@@ -62,7 +63,11 @@ class Settings
 
     public static function forget(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        try {
+            Cache::forget(self::CACHE_KEY);
+        } catch (\Throwable $e) {
+            rescue(fn () => Log::warning('Settings cache forget failed: '.$e->getMessage()), report: false);
+        }
     }
 
     /**

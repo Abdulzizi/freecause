@@ -211,6 +211,8 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::get('/keywords', [AdminReviewKeywordsController::class, 'index'])->middleware('permission:spam,view')->name('keywords');
         Route::post('/keywords/save', [AdminReviewKeywordsController::class, 'save'])->middleware('permission:spam,edit')->name('keywords.save');
         Route::post('/keywords/reset', [AdminReviewKeywordsController::class, 'reset'])->middleware('permission:spam,edit')->name('keywords.reset');
+        Route::post('/keywords/concept', [AdminReviewKeywordsController::class, 'toggleConcept'])->middleware('permission:spam,edit')->name('keywords.concept');
+        Route::post('/keywords/rescan', [AdminReviewKeywordsController::class, 'rescan'])->middleware(['permission:spam,edit', 'permission:petitions,edit'])->name('keywords.rescan');
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
         Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');
