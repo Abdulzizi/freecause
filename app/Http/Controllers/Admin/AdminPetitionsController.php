@@ -163,6 +163,7 @@ class AdminPetitionsController extends Controller
         $selectedPetition = null;
         $selectedTranslation = null;
         $selectedDefaultTranslation = null;
+        $selectedReviewKeywords = [];
 
         if ($selectedId) {
             $selectedPetition = DB::table('petitions')
@@ -179,6 +180,25 @@ class AdminPetitionsController extends Controller
                     ->where('petition_id', (int) $selectedId)
                     ->where('locale', $defaultLocale)
                     ->first();
+            }
+
+            $reviewLogs = DB::table('spam_logs')
+                ->where('type', 'petition.review')
+                ->where('payload', 'like', '%"petition_id":'.(int) $selectedId.'%')
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get(['payload']);
+
+            foreach ($reviewLogs as $reviewLog) {
+                $payload = json_decode((string) $reviewLog->payload, true);
+
+                if (! is_array($payload) || (int) ($payload['petition_id'] ?? 0) !== (int) $selectedId) {
+                    continue;
+                }
+
+                foreach ((array) ($payload['keywords'] ?? []) as $keyword) {
+                    $selectedReviewKeywords[$keyword] = $keyword;
+                }
             }
         }
 
@@ -216,6 +236,7 @@ class AdminPetitionsController extends Controller
             'selectedPetition',
             'selectedTranslation',
             'selectedDefaultTranslation',
+            'selectedReviewKeywords',
             'locale',
             'activeLanguages',
             'localeOptions',

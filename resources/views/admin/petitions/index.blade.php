@@ -306,6 +306,12 @@
                 @endif
             </div>
 
+            @if (!empty($selectedReviewKeywords))
+                <x-blatui.alert tone="warning" class="mb-3">
+                    Held for review — banned keywords: {{ implode(', ', $selectedReviewKeywords) }}
+                </x-blatui.alert>
+            @endif
+
             @if (admin_can('petitions', 'edit'))
                 <x-blatui.button variant="outline" type="button"
                     data-reconcile-one
