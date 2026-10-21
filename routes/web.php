@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminReportsController;
+use App\Http\Controllers\Admin\AdminReviewKeywordsController;
 use App\Http\Controllers\Admin\AdminSignaturesController;
 use App\Http\Controllers\Admin\AdminSpamController;
 use App\Http\Controllers\Admin\AdminStatsController;
@@ -206,6 +207,10 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::get('/pages', [AdminPagesController::class, 'index'])->middleware('permission:pages,view')->name('pages');
         Route::post('/pages/save', [AdminPagesController::class, 'save'])->middleware('permission:pages,edit')->name('pages.save');
         Route::post('/pages/bulk-action', [AdminPagesController::class, 'bulkAction'])->middleware('permission:pages,view')->name('pages.bulkAction');
+
+        Route::get('/keywords', [AdminReviewKeywordsController::class, 'index'])->middleware('permission:spam,view')->name('keywords');
+        Route::post('/keywords/save', [AdminReviewKeywordsController::class, 'save'])->middleware('permission:spam,edit')->name('keywords.save');
+        Route::post('/keywords/reset', [AdminReviewKeywordsController::class, 'reset'])->middleware('permission:spam,edit')->name('keywords.reset');
 
         Route::get('/spam', [AdminSpamController::class, 'index'])->middleware('permission:spam,view')->name('spam');
         Route::post('/spam/ban', [AdminSpamController::class, 'ban'])->middleware('permission:spam,edit')->name('spam.ban');

@@ -64,4 +64,19 @@ class Settings
     {
         Cache::forget(self::CACHE_KEY);
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function group(string $group): array
+    {
+        return self::all()[$group] ?? [];
+    }
+
+    public static function delete(string $key, string $group = 'global'): void
+    {
+        Setting::where('group', $group)->where('key', $key)->delete();
+
+        self::forget();
+    }
 }
