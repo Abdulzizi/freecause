@@ -45,6 +45,7 @@ return [
     'or' => 'SAU',
     'p_created' => 'Petiția dumneavoastră a fost creată cu succes. O puteți deschide acum folosind linkul de mai sus.',
     'p_signed' => 'Înregistrarea a fost realizată cu succes, însă trebuie să vă activați contul făcând clic pe linkul pe care îl veți primi în curând la adresa de email furnizată.',
+    'review_required' => 'Petiția dumneavoastră nu a fost încă publicată deoarece conține cuvinte-cheie care necesită verificare. Trebuie să verificăm modul în care sunt folosite aceste termeni înainte de a o publica.',
     'show.auth_hint_split' => 'Dacă aveți deja un cont <a class="red" href=":login_url">autentificați-vă</a>, altfel <strong>creați un cont</strong> gratuit și apoi semnați petiția completând câmpurile de mai jos.<br>Emailul și parola vor fi datele contului dumneavoastră, veți putea semna alte petiții după autentificare.',
     'show.auth_hint_stack' => 'Dacă aveți deja un cont <a class="red" href=":login_url"><em>autentificați-vă</em></a>',
     'show.box_embed' => 'Coduri de încorporare',

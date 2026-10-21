@@ -45,6 +45,7 @@ return [
     'or' => 'ELLER',
     'p_created' => 'Din namnlista har skapats framgångsrikt. Du kan öppna den nu med länken ovan.',
     'p_signed' => 'Registreringen lyckades, men du måste fortfarande aktivera ditt konto genom att klicka på länken som du snart kommer att få på den angivna e-postadressen.',
+    'review_required' => 'Din petition har ännu inte publicerats eftersom den innehåller nyckelord som kräver granskning. Vi behöver kontrollera hur dessa termer används innan vi publicerar den.',
     'show.auth_hint_split' => 'Om du redan har ett konto <a class="red" href=":login_url">logga in</a>, annars <strong>skapa ett konto</strong> gratis och skriv sedan under petitionen genom att fylla i fälten nedan.<br>E-post och lösenord kommer att vara dina kontouppgifter, du kommer att kunna skriva under andra petitioner efter inloggning.',
     'show.auth_hint_stack' => 'Om du redan har ett konto <a class="red" href=":login_url"><em>logga in</em></a>',
     'show.box_embed' => 'Inbäddningskoder',

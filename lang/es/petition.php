@@ -45,6 +45,7 @@ return [
     'or' => 'O',
     'p_created' => 'Tu petición se ha creado correctamente. Puedes abrirla ahora usando el enlace de arriba.',
     'p_signed' => 'El registro fue exitoso, sin embargo, todavía debes activar tu cuenta haciendo clic en el enlace que recibirás pronto en la dirección de email proporcionada.',
+    'review_required' => 'Su petición aún no se ha publicado porque contiene palabras clave que requieren revisión. Necesitamos comprobar cómo se están usando estos términos antes de publicarla.',
     'show.auth_hint_split' => 'Si ya tienes una cuenta <a class="red" href=":login_url">inicia sesión</a>, de lo contrario <strong>regístrate gratis</strong> y luego firma la petición rellenando los campos de abajo.<br>El correo electrónico y la contraseña serán los datos de tu cuenta, podrás firmar otras peticiones después de iniciar sesión.',
     'show.auth_hint_stack' => 'Si ya tienes una cuenta <a class="red" href=":login_url"><em>inicia sesión</em></a>',
     'show.box_embed' => 'Códigos de inserción',

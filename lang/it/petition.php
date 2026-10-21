@@ -45,6 +45,7 @@ return [
     'or' => 'OPPURE',
     'p_created' => 'La tua petizione è stata creata con successo. Puoi aprirla ora usando il link qui sopra.',
     'p_signed' => 'La registrazione ha avuto successo, tuttavia è ancora necessario attivare il tuo account cliccando un link che riceverai presto all\'indirizzo email fornito.',
+    'review_required' => 'La sua petizione non è ancora stata pubblicata perché contiene parole chiave che richiedono una revisione. Dobbiamo verificare come vengono utilizzati questi termini prima di pubblicarla.',
     'show.auth_hint_split' => 'Se hai già un account <a class="red" href=":login_url">accedi ad</a>, altrimenti <strong>registra gratuitamente un account</strong> e firma la petizione compilando i campi qui sotto.<br>Email e password saranno i dati del tuo account, sarai in grado di firmare altre petizioni dopo l\'accesso.',
     'show.auth_hint_stack' => 'Se hai già un account <a class="red" href=":login_url"><em>per favore accedi a</em></a>',
     'show.box_embed' => 'Codici di incorporamento',

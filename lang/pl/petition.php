@@ -45,6 +45,7 @@ return [
     'or' => 'LUB',
     'p_created' => 'Twoja petycja została pomyślnie utworzona. Możesz ją teraz otworzyć, używając powyższego linku.',
     'p_signed' => 'Rejestracja zakończyła się powodzeniem, jednak nadal musisz aktywować konto, klikając link, który wkrótce otrzymasz na podany adres email.',
+    'review_required' => 'Twoja petycja nie została jeszcze opublikowana, ponieważ zawiera słowa kluczowe, które wymagają sprawdzenia. Musimy sprawdzić, w jaki sposób używane są te terminy, zanim ją opublikujemy.',
     'show.auth_hint_split' => 'Jeśli masz już konto <a class="red" href=":login_url">zaloguj się</a>, w przeciwnym razie <strong>zarejestruj się za darmo</strong>, a następnie podpisz petycję, wypełniając poniższe pola.<br>Email i hasło będą danymi Twojego konta, będziesz mógł podpisywać inne petycje po zalogowaniu.',
     'show.auth_hint_stack' => 'Jeśli masz już konto <a class="red" href=":login_url"><em>zaloguj się</em></a>',
     'show.box_embed' => 'Kody osadzania',

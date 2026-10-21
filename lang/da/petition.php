@@ -45,6 +45,7 @@ return [
     'or' => 'ELLER',
     'p_created' => 'Din underskriftsindsamling er oprettet med succes. Du kan åbne den nu via linket ovenfor.',
     'p_signed' => 'Registreringen er gennemført, men du skal stadig aktivere din konto ved at klikke på linket, du snart modtager på den angivne e-mailadresse.',
+    'review_required' => 'Din petition er endnu ikke offentliggjort, fordi den indeholder nøgleord, der kræver gennemgang. Vi skal kontrollere, hvordan disse ord anvendes, før vi offentliggør den.',
     'show.auth_hint_split' => 'Hvis du allerede har en konto <a class="red" href=":login_url">log venligst ind</a>, ellers <strong>opret en konto</strong> gratis og underskriv derefter petitionen ved at udfylde felterne nedenfor.<br>E-mail og adgangskode vil være dine kontodata, du vil kunne underskrive andre petitioner efter at have logget ind.',
     'show.auth_hint_stack' => 'Hvis du allerede har en konto <a class="red" href=":login_url"><em>log venligst ind</em></a>',
     'show.box_embed' => 'Indlejringskoder',

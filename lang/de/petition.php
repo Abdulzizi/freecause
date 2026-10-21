@@ -45,6 +45,7 @@ return [
     'or' => 'ODER',
     'p_created' => 'Ihre Petition wurde erfolgreich erstellt. Sie können sie jetzt über den obigen Link öffnen.',
     'p_signed' => 'Die Registrierung war erfolgreich, jedoch müssen Sie Ihr Konto noch aktivieren, indem Sie auf den Link klicken, den Sie in Kürze an die angegebene E-Mail-Adresse erhalten.',
+    'review_required' => 'Ihre Petition wurde noch nicht veröffentlicht, da sie Begriffe enthält, die vor der Veröffentlichung geprüft werden müssen. Wir müssen erst prüfen, wie diese Begriffe verwendet werden.',
     'show.auth_hint_split' => 'Wenn Sie bereits ein Konto haben, <a class="red" href=":login_url">melden Sie sich bitte an</a>, andernfalls <strong>erstellen Sie kostenlos ein Konto</strong> und unterschreiben Sie dann die Petition, indem Sie die untenstehenden Felder ausfüllen.<br>E-Mail und Passwort werden Ihre Kontodaten sein, Sie können nach dem Anmelden weitere Petitionen unterschreiben.',
     'show.auth_hint_stack' => 'Wenn Sie bereits ein Konto haben <a class="red" href=":login_url"><em>melden Sie sich bitte an</em></a>',
     'show.box_embed' => 'Einbettungscodes',

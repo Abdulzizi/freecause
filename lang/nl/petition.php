@@ -45,6 +45,7 @@ return [
     'or' => 'of',
     'p_created' => 'Uw petitie is succesvol aangemaakt. U kunt hem nu openen via de link hierboven.',
     'p_signed' => 'De registratie is geslaagd, maar u moet uw account nog activeren door op de link te klikken die u binnenkort ontvangt op het opgegeven e-mailadres.',
+    'review_required' => 'Uw verzoekschrift is nog niet gepubliceerd, omdat het trefwoorden bevat die gecontroleerd moeten worden. We moeten eerst nagaan hoe deze termen worden gebruikt voordat we het publiceren.',
     'show.auth_hint_split' => 'Als u al een account heeft <a class="red" href=":login_url">log dan in</a>, anders <strong>maak gratis een account aan</strong> en onderteken vervolgens de petitie door de onderstaande velden in te vullen.<br>E-mail en wachtwoord zullen uw accountgegevens zijn, u kunt na het inloggen andere petities ondertekenen.',
     'show.auth_hint_stack' => 'Als u al een account heeft <a class="red" href=":login_url"><em>log dan in</em></a>',
     'show.box_embed' => 'Insluitcodes',

@@ -45,6 +45,7 @@ return [
     'or' => 'OU',
     'p_created' => 'A sua petição foi criada com sucesso. Pode abri-la agora usando o link acima.',
     'p_signed' => 'O registo foi bem-sucedido, no entanto ainda tem de ativar a sua conta clicando no link que receberá em breve no endereço de email fornecido.',
+    'review_required' => 'Sua petição ainda não foi publicada porque contém palavras-chave que exigem revisão. Precisamos verificar como esses termos estão sendo usados antes de publicá-la.',
     'show.auth_hint_split' => 'Se já tem uma conta <a class="red" href=":login_url">entre por favor</a>, caso contrário <strong>registe uma conta</strong> gratuitamente e depois assine a petição preenchendo os campos abaixo.<br>O email e a palavra-passe serão os dados da sua conta, poderá assinar outras petições depois de entrar.',
     'show.auth_hint_stack' => 'Se já tem uma conta <a class="red" href=":login_url"><em>entre por favor</em></a>',
     'show.box_embed' => 'Códigos de incorporação',

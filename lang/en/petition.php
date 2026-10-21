@@ -45,6 +45,7 @@ return [
     'or' => 'OR',
     'p_created' => 'Your petition has been created successfully. You can open it now using the link above.',
     'p_signed' => 'Registration has been successful, however you still have to activate your account by clicking a link you\'ll receive soon at the supplied email address.',
+    'review_required' => 'Your petition has not been published yet because it contains keywords that require review. We need to check how these terms are being used before publishing it.',
     'show.auth_hint_split' => 'If you already have an account <a class="red" href=":login_url">please sign in</a>, otherwise <strong>register an account</strong> for free then sign the petition filling the fields below.<br>Email and password will be your account data, you will be able to sign other petitions after logging in.',
     'show.auth_hint_stack' => 'If you already have an account <a class="red" href=":login_url"><em>please sign in</em></a>',
     'show.box_embed' => 'Embed Codes',

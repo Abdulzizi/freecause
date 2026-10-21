@@ -45,6 +45,7 @@ return [
     'or' => 'OU',
     'p_created' => 'Votre pétition a été créée avec succès. Vous pouvez l’ouvrir maintenant via le lien ci-dessus.',
     'p_signed' => 'Votre inscription a bien été prise en compte. Vous devez toutefois activer votre compte en cliquant sur le lien que vous recevrez bientôt à l’adresse e-mail indiquée.',
+    'review_required' => 'Votre pétition n\'a pas encore été publiée, car elle contient des mots-clés qui nécessitent un examen. Nous devons vérifier comment ces termes sont utilisés avant de la publier.',
     'show.auth_hint_split' => 'Si vous avez déjà un compte <a class="red" href=":login_url">connectez-vous</a>, sinon <strong>créez un compte</strong> gratuitement puis signez la pétition en remplissant les champs ci-dessous.<br>L\'email et le mot de passe seront vos données de compte, vous pourrez signer d\'autres pétitions après vous être connecté.',
     'show.auth_hint_stack' => 'Si vous avez déjà un compte <a class="red" href=":login_url"><em>connectez-vous</em></a>',
     'show.box_embed' => 'Codes d\'intégration',

@@ -45,6 +45,7 @@ return [
     'or' => 'VEYA',
     'p_created' => 'Dilekçeniz başarıyla oluşturuldu. Yukarıdaki bağlantıyı kullanarak şimdi açabilirsiniz.',
     'p_signed' => 'Kayıt başarılı oldu, ancak sağlanan e-posta adresinize yakında alacağınız bağlantıya tıklayarak hesabınızı hâlâ etkinleştirmeniz gerekmektedir.',
+    'review_required' => 'Petitionınız henüz yayınlanmadı çünkü incelemeye tabi tutulması gereken anahtar kelimeler içeriyor. Yayınlamadan önce bu terimlerin nasıl kullanıldığını kontrol etmemiz gerekiyor.',
     'show.auth_hint_split' => 'Zaten bir hesabınız varsa <a class="red" href=":login_url">lütfen giriş yapın</a>, aksi takdirde <strong>ücretsiz bir hesap oluşturun</strong> ve ardından aşağıdaki alanları doldurarak dilekçeyi imzalayın.<br>E-posta ve şifre hesap verileriniz olacak, giriş yaptıktan sonra diğer dilekçeleri de imzalayabileceksiniz.',
     'show.auth_hint_stack' => 'Zaten bir hesabınız varsa <a class="red" href=":login_url"><em>lütfen giriş yapın</em></a>',
     'show.box_embed' => 'Gömme kodları',
