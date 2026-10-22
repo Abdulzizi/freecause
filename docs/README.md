@@ -18,5 +18,5 @@
 | [`admin-perf.md`](admin-perf.md) | Admin list/search performance notes |
 
 Operational docs that are intentionally local-only (never committed, per
-`AGENTS.md`): `AGENTS.md`, `LEGACY_URL_MAPPING.md`, `HANDOFF.md`, and any
+`AGENTS.md`): `AGENTS.md`, `HANDOFF.md`, `SPEC.md`, and any
 handover/plan files.
