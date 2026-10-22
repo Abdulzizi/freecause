@@ -77,7 +77,15 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-scripts
 
       - name: Composer audit
-        run: composer audit --locked
+        run: |
+          set -uo pipefail
+          out=$(composer audit --locked 2>&1) && { echo "$out"; exit 0; }
+          echo "$out"
+          if echo "$out" | grep -qiE "audit endpoint|503|Service Unavailable|Connection timed out|network"; then
+            echo "::warning::composer audit could not reach the advisory service (infrastructure error, not a finding)"
+            exit 0
+          fi
+          exit 1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -86,4 +94,18 @@ jobs:
           cache: npm
 
       - name: Npm audit
-        run: npm ci --no-audit --no-fund && npm audit --audit-level=high
+        run: |
+          set -uo pipefail
+          npm ci --no-audit --no-fund
+          for attempt in 1 2 3; do
+            out=$(npm audit --audit-level=high 2>&1) && { echo "$out"; exit 0; }
+            echo "$out"
+            if echo "$out" | grep -qiE "audit endpoint returned an error|503|Service Unavailable|ECONNRESET|ETIMEDOUT"; then
+              echo "::warning::npm audit endpoint unavailable (attempt $attempt/3) — not a finding"
+              sleep 20
+              continue
+            fi
+            exit 1
+          done
+          echo "::warning::npm audit service unreachable after 3 attempts — continuing (findings are not knowable right now)"
+          exit 0

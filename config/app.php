@@ -56,6 +56,10 @@ return [
 
     'version_file' => env('APP_VERSION_FILE', base_path('version.json')),
 
+    'min_php_version' => env('MIN_PHP_VERSION', '8.3.36'),
+
+    'enforce_min_php' => env('ENFORCE_MIN_PHP', false),
+
     'canonical_url' => env('CANONICAL_URL', 'https://www.freecause.com'),
 
     /*

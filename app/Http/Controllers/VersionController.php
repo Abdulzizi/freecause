@@ -15,6 +15,7 @@ class VersionController extends Controller
             'commit' => $data['commit'] ?? null,
             'release' => $data['release'] ?? $data['version'] ?? null,
             'deployed_at' => $data['deployed_at'] ?? null,
+            'php' => PHP_VERSION,
         ]);
     }
 }

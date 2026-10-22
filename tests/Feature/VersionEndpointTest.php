@@ -57,6 +57,13 @@ class VersionEndpointTest extends TestCase
         }
     }
 
+    public function test_returns_the_running_php_version(): void
+    {
+        $this->get('/version')->assertOk()->assertJson([
+            'php' => PHP_VERSION,
+        ]);
+    }
+
     private function capture(): ?string
     {
         return is_file($this->path) ? (string) file_get_contents($this->path) : null;

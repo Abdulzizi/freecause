@@ -88,6 +88,25 @@ public/magazine/wp-content/{uploads,cache,upgrade,upgrade-temp-backup,updraft,up
 carries its own copy; `keep_releases = 5` costs roughly 2 GB. A later phase
 should deploy the WP tree separately or share it.
 
+## PHP runtime requirements
+
+Production runs **PHP 8.3** (`php8.3-fpm`). The minimum patched version for
+the php2shell advisories (CVE-2026-109618 / CVE-2026-109619, October 2026) is
+**8.3.36** — the deploy pipeline prints the host PHP version and warns when it
+is below that.
+
+Required PHP-FPM pool settings (`/etc/php/8.3/fpm/pool.d/www.conf`) while the
+host is unpatched — they are mitigations, not a replacement for the upgrade:
+
+```ini
+php_admin_value[session.upload_progress.enabled] = 0   ; kills the confirmed session-lifecycle path
+php_admin_value[memory_limit] = -1                    ; removes the predictable OOM trigger
+pm.max_requests = 500                                  ; recycle workers, bound the stale-state window
+```
+
+Set them at pool level (admin values), never in `.user.ini` or via `ini_set()` —
+those are applied too late. Restart FPM after changing them.
+
 ## Operations
 
 - **Deploy:** every push to `main` runs the **Deploy** workflow (CI gate →

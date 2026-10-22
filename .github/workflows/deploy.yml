@@ -110,6 +110,22 @@ jobs:
           chmod 600 ~/.ssh/id_deploy
           printf 'Host *\n  StrictHostKeyChecking accept-new\n  IdentityFile ~/.ssh/id_deploy\n  ServerAliveInterval 30\n  ServerAliveCountMax 20\n' > ~/.ssh/config
 
+      - name: Report the server PHP version
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          MIN_PHP: '8.3.36'
+        run: |
+          set -uo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          version=$(ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 root@"$DEPLOY_HOST" 'php8.3 -r "echo PHP_VERSION;"' 2>/dev/null || echo unknown)
+          echo "server PHP: $version (patched minimum: $MIN_PHP)"
+          if [ "$version" != "unknown" ] && [ "$(printf '%s\n%s\n' "$version" "$MIN_PHP" | sort -V | head -1)" != "$MIN_PHP" ]; then
+            echo "::warning::server PHP $version is below $MIN_PHP — vulnerable to php2shell (CVE-2026-109618 / CVE-2026-109619). Patch the host."
+          fi
+
       - name: Deploy
         if: ${{ github.event_name == 'push' || inputs.action != 'rollback' }}
         env:

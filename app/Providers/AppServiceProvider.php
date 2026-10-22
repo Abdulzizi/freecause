@@ -57,6 +57,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->bootMailQuotaGuard();
 
+        $this->bootPhpVersionGuard();
+
         try {
             if (! Schema::hasTable('settings')) {
                 $this->bootLocale();
@@ -75,6 +77,27 @@ class AppServiceProvider extends ServiceProvider
         $this->bootMail();
         $this->bootOAuth();
         $this->bootBrandedResetMail();
+    }
+
+    private function bootPhpVersionGuard(): void
+    {
+        $minimum = (string) config('app.min_php_version', '8.3.36');
+
+        if (version_compare(PHP_VERSION, $minimum, '>=')) {
+            return;
+        }
+
+        $message = 'PHP '.PHP_VERSION." is below the patched minimum {$minimum} (php2shell: CVE-2026-109618, CVE-2026-109619)";
+
+        if (! config('app.enforce_min_php')) {
+            Log::critical($message);
+
+            return;
+        }
+
+        Log::critical($message);
+
+        abort(503, $message);
     }
 
     private function bootRateLimiting(): void
