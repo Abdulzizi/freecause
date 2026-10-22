@@ -12,15 +12,22 @@ class BlockBannedIp
     {
         $ip = $request->ip();
 
-        $isBanned = cache()->remember("banned_ip:{$ip}", 300, fn () => BannedIp::where('ip', $ip)->exists());
+        try {
+            $isBanned = cache()->remember("banned_ip:{$ip}", 300, fn () => BannedIp::where('ip', $ip)->exists());
+        } catch (\Throwable) {
+            $isBanned = false;
+        }
 
         if ($isBanned) {
-            DB::table('spam_logs')->insert([
-                'type' => 'blocked',
-                'ip' => $ip,
-                'payload' => 'Attempted access while banned',
-                'created_at' => now(),
-            ]);
+            try {
+                DB::table('spam_logs')->insert([
+                    'type' => 'blocked',
+                    'ip' => $ip,
+                    'payload' => 'Attempted access while banned',
+                    'created_at' => now(),
+                ]);
+            } catch (\Throwable) {
+            }
 
             abort(403);
         }
