@@ -3,6 +3,8 @@
 All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows the deploy tags (`vYYYY.MM.DD-HHMMSS`).
 
 ## [Unreleased]
+### Security
+- Host patched for the php2shell advisories (CVE-2026-109618 / CVE-2026-109619): PHP 8.3.36 from the ondrej/sury repository, PHP-FPM pool hardened (`session.upload_progress.enabled=0`, `memory_limit=-1`, `pm.max_requests=500`), and the app now refuses to boot on an unpatched PHP (`ENFORCE_MIN_PHP`).
 ### Changed
 - CI/CD: every push to `main` now deploys production through one pipeline (CI gate → Deployer 8 with the exact tested commit → smoke test → auto-rollback). `v*` tags are versioning only and publish a GitHub Release from the changelog section.
 

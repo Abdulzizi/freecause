@@ -90,22 +90,38 @@ should deploy the WP tree separately or share it.
 
 ## PHP runtime requirements
 
-Production runs **PHP 8.3** (`php8.3-fpm`). The minimum patched version for
-the php2shell advisories (CVE-2026-109618 / CVE-2026-109619, October 2026) is
-**8.3.36** — the deploy pipeline prints the host PHP version and warns when it
-is below that.
+Production runs **PHP 8.3** (`php8.3-fpm`), installed from the
+**ondrej/sury** apt repository (`packages.sury.org/php/`, signed by
+`/usr/share/keyrings/sury-php.gpg`) so patched point releases are available on
+the day they ship.
 
-Required PHP-FPM pool settings (`/etc/php/8.3/fpm/pool.d/www.conf`) while the
-host is unpatched — they are mitigations, not a replacement for the upgrade:
+Current host: **8.3.36** — the first release patched for the php2shell
+advisories (CVE-2026-109618 / CVE-2026-109619, October 2026). The minimum
+patched version is 8.3.36; the deploy pipeline prints the host PHP version and
+warns when it is below that, and the app refuses to boot on an unpatched PHP
+(`ENFORCE_MIN_PHP=true` in the shared `.env`, minimum in `config/app.php`).
+
+Patches: `apt-get -y -o Dpkg::Options::="--force-confold" install
+php8.3-cli=<v> php8.3-fpm=<v> php8.3-common=<v> php8.3-bcmath=<v>
+php8.3-curl=<v> php8.3-gd=<v> php8.3-intl=<v> php8.3-mbstring=<v>
+php8.3-mysql=<v> php8.3-opcache=<v> php8.3-readline=<v> php8.3-xml=<v>
+php8.3-zip=<v>` — keep the conffiles (`--force-confold`) and the module list
+identical to the host, then `systemctl reload php8.3-fpm` (graceful, no
+downtime) and verify the version through the FPM socket with `cgi-fcgi`.
+
+PHP-FPM pool settings (`/etc/php/8.3/fpm/pool.d/www.conf`) — these stay in
+place after patching (they are the documented mitigations for the same CVEs):
 
 ```ini
 php_admin_value[session.upload_progress.enabled] = 0   ; kills the confirmed session-lifecycle path
 php_admin_value[memory_limit] = -1                    ; removes the predictable OOM trigger
+php_admin_value[post_max_size] = 16M                  ; nginx caps bodies at 10M
+php_admin_value[upload_max_filesize] = 8M             ; the app allows 4 MB images
 pm.max_requests = 500                                  ; recycle workers, bound the stale-state window
 ```
 
 Set them at pool level (admin values), never in `.user.ini` or via `ini_set()` —
-those are applied too late. Restart FPM after changing them.
+those are applied too late. Reload FPM after changing them.
 
 ## Operations
 
