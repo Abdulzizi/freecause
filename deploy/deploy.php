@@ -68,6 +68,16 @@ task('deploy:version', function () {
 });
 after('deploy:vendors', 'deploy:version');
 
+desc('Cache config and routes; never wipe the shared compiled views');
+task('artisan:optimize', function () {
+    // Laravel's optimize runs view:cache, which calls view:clear first. The
+    // compiled view directory lives in shared/storage, so clearing it deletes
+    // files the live release is still including mid-request -> "File does not
+    // exist at path .../views/*.blade.php" 500s during every deploy.
+    run('{{bin/php}} {{bin/artisan}} config:cache');
+    run('{{bin/php}} {{bin/artisan}} route:cache || true');
+});
+
 desc('Warm the application caches');
 task('cache:warm', function () {
     run('{{bin/php}} {{bin/artisan}} cache:warm');
