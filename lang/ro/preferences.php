@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Dezabonează-te de la toate e-mailurile',
     'unsubscribed' => 'Ai fost dezabonat de la e-mailurile de repere și de produs.',
     'unsubscribed_help' => 'Verificarea, resetarea parolei și e-mailurile de cont sunt încă trimise cât timp contul este activ.',
+    'confirm_unsubscribe' => 'Apasă butonul de mai jos pentru a confirma dezabonarea de la e-mailurile de repere și de produs.',
     'invalid_token' => 'Acest link de dezabonare este invalid sau a expirat. Dacă primești în continuare e-mailuri, autentifică-te pentru a gestiona preferințele.',
     'manage_preferences' => 'Gestionează preferințele',
     'sign_in' => 'Autentificare',

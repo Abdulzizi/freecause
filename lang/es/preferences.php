@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Darse de baja de todos los correos',
     'unsubscribed' => 'Te has dado de baja de los correos de hitos y del producto.',
     'unsubscribed_help' => 'La verificación, el restablecimiento de contraseña y los correos de cuenta siguen enviándose mientras tu cuenta esté activa.',
+    'confirm_unsubscribe' => 'Haz clic en el botón de abajo para confirmar la baja de los correos de hitos y de producto.',
     'invalid_token' => 'Este enlace de baja no es válido o ha caducado. Si sigues recibiendo correos, inicia sesión para gestionar tus preferencias.',
     'manage_preferences' => 'Gestionar preferencias',
     'sign_in' => 'Iniciar sesión',

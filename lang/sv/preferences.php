@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Avregistrera alla e-postmeddelanden',
     'unsubscribed' => 'Du har avregistrerats från milstolps- och produktmeddelanden.',
     'unsubscribed_help' => 'Verifiering, lösenordsåterställning och kontomeddelanden skickas fortfarande medan ditt konto är aktivt.',
+    'confirm_unsubscribe' => 'Klicka på knappen nedan för att bekräfta avslutande av e-post om milstolpar och produkter.',
     'invalid_token' => 'Denna avregistreringslänk är ogiltig eller har gått ut. Om du fortfarande får e-post, logga in för att hantera inställningarna.',
     'manage_preferences' => 'Hantera inställningar',
     'sign_in' => 'Logga in',

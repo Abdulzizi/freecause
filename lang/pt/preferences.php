@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Cancelar todos os emails',
     'unsubscribed' => 'Foi cancelado dos emails de marcos e de produto.',
     'unsubscribed_help' => 'A verificação, a reposição de palavra-passe e os emails de conta continuam a ser enviados enquanto a conta estiver ativa.',
+    'confirm_unsubscribe' => 'Clique no botão abaixo para confirmar a desinscrição dos e-mails de marcos e de produto.',
     'invalid_token' => 'Este link de cancelamento é inválido ou expirou. Se continua a receber emails, inicie sessão para gerir as preferências.',
     'manage_preferences' => 'Gerir preferências',
     'sign_in' => 'Iniciar sessão',

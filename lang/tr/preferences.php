@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Tüm e-postalardan çık',
     'unsubscribed' => 'Kilometre taşı ve ürün e-postalarından çıktınız.',
     'unsubscribed_help' => 'Doğrulama, parola sıfırlama ve hesap e-postaları hesabınız etkin olduğu sürece gönderilmeye devam eder.',
+    'confirm_unsubscribe' => 'Kilometre taşı ve ürün e-postalarından aboneliği iptal ettiğinizi onaylamak için aşağıdaki düğmeye tıklayın.',
     'invalid_token' => 'Bu çıkış bağlantısı geçersiz veya süresi dolmuş. Hâlâ e-posta alıyorsanız tercihlerinizi yönetmek için giriş yapın.',
     'manage_preferences' => 'Tercihleri yönet',
     'sign_in' => 'Giriş yap',

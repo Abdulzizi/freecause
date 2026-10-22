@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Alle e-mails afmelden',
     'unsubscribed' => 'Je bent afgemeld voor mijlpaal- en product-e-mails.',
     'unsubscribed_help' => 'Verificatie, wachtwoordherstel en account-e-mails worden nog steeds verzonden zolang je account actief is.',
+    'confirm_unsubscribe' => 'Klik op de knop hieronder om het uitschrijven van de milestone- en productmails te bevestigen.',
     'invalid_token' => 'Deze afmeldlink is ongeldig of verlopen. Ontvang je nog e-mails, log dan in om je voorkeuren te beheren.',
     'manage_preferences' => 'Voorkeuren beheren',
     'sign_in' => 'Inloggen',

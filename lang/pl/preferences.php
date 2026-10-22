@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Zrezygnuj ze wszystkich e-maili',
     'unsubscribed' => 'Zrezygnowałeś z e-maili o kamieniach milowych i produkcie.',
     'unsubscribed_help' => 'Weryfikacja, reset hasła i e-maile konta są nadal wysyłane, gdy konto jest aktywne.',
+    'confirm_unsubscribe' => 'Kliknij przycisk poniżej, aby potwierdzić rezygnację z e-maili o kamieniach milowych i produktowych.',
     'invalid_token' => 'Ten link rezygnacji jest nieprawidłowy lub wygasł. Jeśli nadal dostajesz e-maile, zaloguj się, aby zarządzać preferencjami.',
     'manage_preferences' => 'Zarządzaj preferencjami',
     'sign_in' => 'Zaloguj się',

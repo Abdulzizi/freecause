@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Afmeld alle e-mails',
     'unsubscribed' => 'Du er blevet afmeldt milepæle og produkt-e-mails.',
     'unsubscribed_help' => 'Bekræftelse, nulstilling af adgangskode og kontoe-mails sendes stadig, mens din konto er aktiv.',
+    'confirm_unsubscribe' => 'Klik på knappen nedenfor for at bekræfte afmelding af milepæls- og produktmail.',
     'invalid_token' => 'Dette afmeldingslink er ugyldigt eller udløbet. Hvis du fortsat får e-mails, kan du logge ind og administrere dine indstillinger.',
     'manage_preferences' => 'Administrer indstillinger',
     'sign_in' => 'Log ind',

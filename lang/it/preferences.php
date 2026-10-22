@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Disiscriviti da tutte le email',
     'unsubscribed' => 'Sei stato disiscritto dalle email di traguardi e prodotto.',
     'unsubscribed_help' => 'Verifica, reimpostazione password ed email dell’account vengono ancora inviate finché il tuo account è attivo.',
+    'confirm_unsubscribe' => 'Fai clic sul pulsante qui sotto per confermare la disiscrizione dalle e-mail di traguardo e di prodotto.',
     'invalid_token' => 'Questo link di disiscrizione non è valido o è scaduto. Se ricevi ancora email, accedi per gestire le preferenze.',
     'manage_preferences' => 'Gestisci preferenze',
     'sign_in' => 'Accedi',

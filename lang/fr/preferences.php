@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Se désabonner de tous les e-mails',
     'unsubscribed' => 'Vous avez été désabonné des e-mails de jalons et de produit.',
     'unsubscribed_help' => 'La vérification, la réinitialisation du mot de passe et les e-mails de compte sont toujours envoyés tant que votre compte est actif.',
+    'confirm_unsubscribe' => 'Cliquez sur le bouton ci-dessous pour confirmer la désinscription des e-mails de jalons et de produit.',
     'invalid_token' => 'Ce lien de désabonnement est invalide ou expiré. Si vous recevez encore des e-mails, connectez-vous pour gérer vos préférences.',
     'manage_preferences' => 'Gérer les préférences',
     'sign_in' => 'Se connecter',

@@ -16,6 +16,7 @@ return [
     'unsubscribe_all' => 'Alle E-Mails abbestellen',
     'unsubscribed' => 'Du wurdest von Meilenstein- und Produkt-E-Mails abgemeldet.',
     'unsubscribed_help' => 'Bestätigung, Passwort-Reset und Konto-E-Mails werden weiterhin gesendet, solange dein Konto aktiv ist.',
+    'confirm_unsubscribe' => 'Klicken Sie auf die Schaltfläche unten, um das Abmelden von Meilenstein- und Produkt-E-Mails zu bestätigen.',
     'invalid_token' => 'Dieser Abmeldelink ist ungültig oder abgelaufen. Wenn du weiterhin E-Mails erhältst, melde dich an, um deine Einstellungen zu verwalten.',
     'manage_preferences' => 'Einstellungen verwalten',
     'sign_in' => 'Anmelden',
