@@ -20,3 +20,7 @@
 Operational docs that are intentionally local-only (never committed, per
 `AGENTS.md`): `AGENTS.md`, `HANDOFF.md`, `SPEC.md`, and any
 handover/plan files.
+
+Root-level project docs (tracked): `README.md` (overview), `CONTRIBUTING.md`
+(branch model, checks, releases), `SECURITY.md` (reporting), `CHANGELOG.md`
+(release notes).

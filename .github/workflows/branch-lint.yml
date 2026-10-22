@@ -1,0 +1,31 @@
+name: Branch Lint
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  branch-name:
+    name: branch name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the branch name
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          case "$BRANCH" in
+            feat/*/*|fix/*/*)
+              echo "branch '$BRANCH' matches feat/{category}/{feature} or fix/{category}/{fix}"
+              ;;
+            *)
+              echo "::error::branch '$BRANCH' must be feat/{category}/{feature} or fix/{category}/{fix}"
+              exit 1
+              ;;
+          esac
