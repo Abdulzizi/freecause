@@ -40,20 +40,38 @@ fix/{category}/{fix}              → bug fix
 GitHub branch protection and rulesets need **Pro** for a private repository, so the convention is enforced in-repo:
 
 - `branch-lint` (`.github/workflows/branch-lint.yml`) fails any push or PR whose branch is not `feat/{category}/{feature}` or `fix/{category}/{fix}`.
-- `main` deploys only through a `v*` tag that passed the CI gate — a direct push to `main` cannot reach production on its own.
+- Production only accepts the commit that CI just tested: the deploy pipeline refuses any target that is not on `main`.
 - No force pushes, no branch deletion, no rewrite of published history.
 
-## Releases (production)
+## Deploys (production)
 
-`main` is deployed **by tag**, never by branch push:
+**Every push to `main` deploys to production.** One pipeline, one run per push:
+
+```
+push/PR → CI (test, assets, security-audit)
+push to main → Deploy (Deployer 8) → smoke test → auto-rollback on failure
+push v* tag → Release (GitHub Release + CHANGELOG section) — versioning only
+```
+
+- The deploy ships the **exact commit CI tested** (`--revision=<sha>`), not "whatever main is now".
+- A dev-dependency advisory (e.g. vite) fails `npm audit` and **blocks the deploy** — run `npm audit fix` and commit the lockfile; the next push to `main` ships it.
+- Deploys are serialised (`concurrency: deploy`) and keep the last 5 releases.
+- The deploy smoke-tests `/version` against the shipped commit and rolls back automatically when it does not match.
+
+## Versioning (tags)
+
+Tags are **versioning only** — they never deploy:
 
 ```bash
 git tag -a v$(date +%Y.%m.%d-%H%M%S) -m "…" && git push origin v…
 ```
 
-`v*` → `ci.yml` gate (`test`, `assets`, `security-audit`) → `deploy.yml` (Deployer 8) → `37.60.254.112`. Migrations, cache warm, queue and PHP-FPM reload are part of the recipe (`deploy/README.md`).
-A dev-dependency advisory (e.g. vite) fails `npm audit` and **blocks the deploy** — run `npm audit fix`, commit the lockfile, re-tag.
-Rollback: dispatch the **Deploy** workflow with `action=rollback` and the old tag as `ref`.
+The tag triggers the **Release** workflow: a GitHub Release whose notes are the matching `CHANGELOG.md` section. Add the section before tagging, or the release falls back to generated notes.
+
+## Rollback
+
+- Normal path: `git revert` the bad commit on `main` and push — the pipeline redeploys.
+- Emergency: dispatch **Deploy** with `action=rollback` (rolls back to the previous release) or `action=deploy` with `ref` = an older commit on `main`.
 
 ## Team model (once a second maintainer exists)
 

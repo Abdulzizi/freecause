@@ -58,9 +58,13 @@ after('deploy:update_code', 'deploy:assets');
 desc('Record the deployed version for /version');
 task('deploy:version', function () {
     // Stamp the ref actually deployed, not the mirror's HEAD (= default branch):
-    // a tag deploy while main has moved made the smoke check roll back good code.
+    // a deploy while main has moved made the smoke check roll back good code.
     $commit = run('cd {{deploy_path}}/.dep/repo && git rev-parse --short {{target}}^{commit}');
-    run('{{bin/php}} {{bin/artisan}} app:stamp-version "{{target}}" --commit="'.$commit.'"');
+    // Deploys target a commit (--revision), so label the release with its tag
+    // when the commit carries one, otherwise with the branch that shipped it.
+    $tag = trim((string) run('cd {{deploy_path}}/.dep/repo && git describe --tags --exact-match {{target}}^{commit} 2>/dev/null || true'));
+    $label = $tag !== '' ? $tag : 'main';
+    run('{{bin/php}} {{bin/artisan}} app:stamp-version "'.$label.'" --commit="'.$commit.'"');
 });
 after('deploy:vendors', 'deploy:version');
 

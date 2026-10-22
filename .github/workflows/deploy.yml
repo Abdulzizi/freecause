@@ -2,12 +2,12 @@ name: Deploy
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       ref:
-        description: 'Tag or branch to deploy (blank = current ref)'
+        description: 'Commit, branch or tag on main to deploy (blank = current ref)'
         required: false
         default: ''
       action:
@@ -36,7 +36,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Resolve the target commit
+        id: target
+        run: |
+          set -euo pipefail
+          ref='${{ inputs.ref }}'
+          if [ -z "$ref" ]; then
+            sha='${{ github.sha }}'
+          else
+            sha=$(git rev-parse --verify "origin/${ref}^{commit}" 2>/dev/null || git rev-parse --verify "${ref}^{commit}")
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "target commit: $sha"
+
+      - name: Guard the target
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          sha='${{ steps.target.outputs.sha }}'
+          if [ '${{ github.event_name }}' = 'push' ]; then
+            if [ '${{ github.ref }}' != 'refs/heads/main' ]; then
+              echo "::error::refusing to deploy '${{ github.ref }}' — only main reaches production"
+              exit 1
+            fi
+            echo "push to main: $sha"
+            exit 0
+          fi
+          status=$(gh api "repos/${{ github.repository }}/compare/main...${sha}" --jq '.status' 2>/dev/null || echo unknown)
+          case "$status" in
+            identical|behind)
+              echo "$sha is on main ($status)"
+              ;;
+            *)
+              echo "::error::refusing to deploy $sha — it is not on main (compare status: $status)"
+              exit 1
+              ;;
+          esac
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -78,14 +116,10 @@ jobs:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
           DEPLOY_PATH: /var/www/freecause
-          TAG: ${{ inputs.ref || github.ref_name }}
+          REVISION: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
-          if ! [[ "$TAG" =~ ^v[0-9] ]]; then
-            echo "Refusing deploy: TAG must match ^v[0-9] (got '$TAG')"
-            exit 1
-          fi
-          dep -f deploy/deploy.php deploy production --tag="$TAG" --no-interaction
+          dep -f deploy/deploy.php deploy production --revision="$REVISION" --no-interaction
 
       - name: Rollback
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'rollback' }}
@@ -100,13 +134,14 @@ jobs:
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          EXPECTED: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_deploy
           chmod 600 ~/.ssh/id_deploy
           SSH_ARGS="-i ~/.ssh/id_deploy -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20"
-          expected=$(git rev-parse --short HEAD)
+          expected=$(git rev-parse --short "$EXPECTED")
           for i in 1 2 3 4 5 6; do
             body=$(ssh $SSH_ARGS root@"$DEPLOY_HOST" "curl -sk --max-time 15 -H 'Host: www.freecause.com' https://127.0.0.1/version" || true)
             commit=$(printf '%s' "$body" | sed -n 's/.*"commit":"\([^"]*\)".*/\1/p')

@@ -90,11 +90,17 @@ should deploy the WP tree separately or share it.
 
 ## Operations
 
-- **Deploy:** push a `v*` tag (or run the **Deploy** workflow with `action=deploy`).
-- **Rollback:** run the **Deploy** workflow with `action=rollback`, or
+- **Deploy:** every push to `main` runs the **Deploy** workflow (CI gate →
+  Deployer 8 → smoke test → auto-rollback). The exact tested commit is
+  shipped with `--revision=<sha>`; the pipeline refuses any target that is
+  not on `main`.
+- **Versioning:** a `v*` tag only publishes a GitHub Release (notes from the
+  matching `CHANGELOG.md` section). Tags never deploy.
+- **Rollback:** `git revert` on `main` and push, or run the **Deploy**
+  workflow with `action=rollback`, or
   `dep -f deploy/deploy.php rollback production`.
-- **Manual redeploy:** dispatch with `ref` = a tag (blank deploys the current
-  branch).
+- **Manual redeploy:** dispatch **Deploy** with `action=deploy` and `ref` = an
+  older commit on `main` (blank = the dispatched ref).
 
 ## History
 

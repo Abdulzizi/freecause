@@ -3,6 +3,9 @@
 All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows the deploy tags (`vYYYY.MM.DD-HHMMSS`).
 
 ## [Unreleased]
+### Changed
+- CI/CD: every push to `main` now deploys production through one pipeline (CI gate → Deployer 8 with the exact tested commit → smoke test → auto-rollback). `v*` tags are versioning only and publish a GitHub Release from the changelog section.
+
 
 ## [v2026.10.22-075231]
 ### Fixed
