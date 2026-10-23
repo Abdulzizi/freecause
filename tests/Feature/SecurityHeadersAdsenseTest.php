@@ -36,6 +36,7 @@ class SecurityHeadersAdsenseTest extends TestCase
 
         $this->assertStringContainsString('frame-src', $csp);
         $this->assertStringContainsString('tpc.googlesyndication.com', $csp);
+        $this->assertStringContainsString('https://ads.freecause.com', $csp);
         $this->assertStringContainsString('connect-src', $csp);
         $this->assertStringContainsString('adtrafficquality.google', $csp);
     }
@@ -70,24 +71,5 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString('https://bicea.org', $csp);
         $this->assertStringContainsString("script-src 'self'", $csp);
         $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
-    }
-
-    public function test_ad_slot_config_endpoint_serves_atoptions_javascript(): void
-    {
-        config(['ads.enabled' => true]);
-
-        $response = $this->get('/ads/config/rectangle');
-
-        $response->assertOk();
-        $this->assertStringContainsString('application/javascript', (string) $response->headers->get('Content-Type'));
-
-        $body = (string) $response->getContent();
-        $this->assertStringContainsString('atOptions', $body);
-        $this->assertStringContainsString((string) config('ads.slots.rectangle.key'), $body);
-        $this->assertStringContainsString("'height': 250", $body);
-
-        $this->get('/ads/config/doesnotexist')->assertNotFound();
-        $this->get('/ads/config/native')->assertNotFound();
-        $this->get('/ads/config/banner468')->assertOk();
     }
 }

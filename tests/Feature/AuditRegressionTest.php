@@ -245,29 +245,28 @@ class AuditRegressionTest extends TestCase
         $this->assertSame($freshBody, $mirrorBody);
     }
 
-    public function test_09_ads_config_404_when_ads_disabled(): void
-    {
-        config(['ads.enabled' => true]);
-        Settings::set('ads_enabled', false, 'global');
-
-        $this->get('/ads/config/rectangle')->assertNotFound();
-    }
-
     public function test_10_ads_frame_csp_and_sandbox(): void
     {
         config(['ads.enabled' => true]);
 
-        $frame = $this->get('/ads/frame/rectangle')->assertOk();
-        $csp = (string) $frame->headers->get('Content-Security-Policy');
-
-        $this->assertStringNotContainsString('unsafe-eval', $csp);
-        $this->assertStringContainsString('frame-ancestors', $csp);
+        // NB: relative requests must precede the absolute ads-origin request --
+        // MakesHttpRequests::prepareUrlForRequest resolves them via url(), whose
+        // root sticks at the last request's host.
+        $this->get('/ads/frame/rectangle')->assertNotFound();
 
         $petition = $this->publishedPetition('audit-ads-sandbox');
         $html = $this->get("/en/petition/audit-ads-sandbox/{$petition->id}")->assertOk()->getContent();
 
         $this->assertStringContainsString('sandbox="', $html);
-        $this->assertStringNotContainsString('allow-same-origin', $html);
+        $this->assertStringContainsString('allow-same-origin', $html);
+        $this->assertStringContainsString('https://ads.freecause.com/ads/frame/', $html);
+        $this->assertStringNotContainsString('src="/ads/frame/', $html);
+
+        $frame = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
+        $csp = (string) $frame->headers->get('Content-Security-Policy');
+
+        $this->assertStringContainsString('unsafe-eval', $csp);
+        $this->assertStringContainsString('frame-ancestors', $csp);
     }
 
     public function test_11_digest_overlap_lock_blocks_sending(): void

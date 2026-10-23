@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Ads;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +11,11 @@ class CanonicalHost
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $frameHost = Ads::frameHost();
+        if ($frameHost !== '' && strtolower($request->getHost()) === $frameHost && ! $request->is('ads/frame/*')) {
+            abort(404);
+        }
+
         $canonicalUrl = (string) config('app.canonical_url', 'https://www.freecause.com');
         $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
 

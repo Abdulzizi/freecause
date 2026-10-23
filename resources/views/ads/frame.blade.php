@@ -9,15 +9,17 @@
 @php
     $key = $cfg['key'];
     $path = $cfg['path'] ?? '22';
+    $parentOrigin = \App\Support\Ads::parentOrigin();
 @endphp
 @if (($cfg['format'] ?? 'iframe') === 'native')
     {{-- container before the async loader so it is parsed when the loader runs --}}
     <div id="container-{{ $key }}"></div>
     <script async data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
 @else
-    <script src="{{ route('ads.config', ['slot' => $slot]) }}"></script>
+    <script data-cfasync="false">atOptions = {'key': {{ \Illuminate\Support\Js::from($key) }}, 'format': 'iframe', 'height': {{ (int) ($cfg['h'] ?? 0) }}, 'width': {{ (int) ($cfg['w'] ?? 0) }}, 'params': {}};</script>
     <script data-cfasync="false" src="{{ $host }}/{{ $path }}/{{ $key }}"></script>
 @endif
+@if ($parentOrigin !== '')
 <script>
 (function () {
     var last = 0;
@@ -25,12 +27,13 @@
         var h = Math.ceil(document.documentElement.scrollHeight);
         if (h !== last) {
             last = h;
-            parent.postMessage({ fcAdHeight: h }, '*');
+            parent.postMessage({ fcAdHeight: h, fcAdSlot: {{ \Illuminate\Support\Js::from($slot) }} }, {{ \Illuminate\Support\Js::from($parentOrigin) }});
         }
     }
     new ResizeObserver(post).observe(document.documentElement);
     post();
 })();
 </script>
+@endif
 </body>
 </html>

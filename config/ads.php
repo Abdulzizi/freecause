@@ -12,6 +12,10 @@ return [
     // network script host (Adsterra). Centralized so a domain change is one edit.
     'host' => env('ADS_HOST', 'https://bicea.org'),
 
+    // dedicated origin that serves the ad frame document; allow-same-origin is
+    // only granted when the frame runs from here (cross-origin to the site).
+    'frame_origin' => env('ADS_FRAME_ORIGIN', 'https://ads.freecause.com'),
+
     // per-slot config. key = Adsterra zone key, w/h = reserved box (min-height guards layout shift).
     // native = Adsterra "native" container format; iframe = fixed-size banner.
     'slots' => [

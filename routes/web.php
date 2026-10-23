@@ -19,7 +19,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
-use App\Http\Controllers\AdsConfigController;
 use App\Http\Controllers\AdsFrameController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
@@ -57,8 +56,16 @@ Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(requ
 
 Route::get('/up', HealthController::class)->withoutMiddleware(BlockBannedIp::class);
 Route::get('/version', VersionController::class);
-Route::get('/ads/config/{slot}', AdsConfigController::class)->name('ads.config');
-Route::get('/ads/frame/{slot}', AdsFrameController::class)->name('ads.frame');
+
+$withoutSession = [
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    ValidateCsrfToken::class,
+];
+
+Route::get('/ads/frame/{slot}', AdsFrameController::class)->withoutMiddleware($withoutSession)->name('ads.frame');
 
 Route::get('/speculationrules.json', function () {
     $urlExclusions = [
@@ -139,14 +146,6 @@ $legacyUnprefixedWords = [
 
 Route::get('/{path?}', fn (?string $path = null) => $toDefaultLocale((string) $path))
     ->where('path', '^(?:'.implode('|', array_map('preg_quote', $legacyUnprefixedWords)).')(?:/.*)?$');
-
-$withoutSession = [
-    EncryptCookies::class,
-    AddQueuedCookiesToResponse::class,
-    StartSession::class,
-    ShareErrorsFromSession::class,
-    ValidateCsrfToken::class,
-];
 
 Route::withoutMiddleware($withoutSession)->group(function () {
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');

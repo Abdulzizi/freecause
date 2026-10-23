@@ -102,7 +102,11 @@ class AdsAdminConfigTest extends TestCase
         [$petition, $slug] = $this->publishedPetition();
         $html = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk()->getContent();
 
-        $this->assertStringContainsString('ADMIN_RECT_KEY', $html);
+        $this->assertStringContainsString('data-ad-slot="rectangle"', $html);
+        $this->assertStringNotContainsString('ADMIN_RECT_KEY', $html);
+
+        $frame = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
+        $this->assertStringContainsString('ADMIN_RECT_KEY', (string) $frame->getContent());
     }
 
     public function test_non_system_admin_cannot_change_ad_keys(): void

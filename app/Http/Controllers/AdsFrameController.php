@@ -13,6 +13,8 @@ class AdsFrameController extends Controller
     {
         abort_unless(Ads::enabled(), 404);
 
+        abort_unless(Ads::frameHostMatchesRequest(), 404);
+
         $cfg = Ads::slot($slot);
 
         abort_if($cfg === null || empty($cfg['key']), 404);

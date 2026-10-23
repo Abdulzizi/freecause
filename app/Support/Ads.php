@@ -35,6 +35,76 @@ class Ads
         return rtrim($host, '/');
     }
 
+    // dedicated frame origin, trailing slash trimmed. Anything that is not an
+    // exact scheme://host origin (path, query, whitespace, userinfo) falls back
+    // to the config default; if that fails too the result is '' and consumers
+    // skip the ad instead of emitting a broken origin into the CSP or an iframe.
+    public static function frameOrigin(): string
+    {
+        $v = Settings::get('ads_frame_origin', null, self::GROUP);
+        $origin = $v !== null && trim((string) $v) !== ''
+            ? self::bareOrigin((string) $v)
+            : '';
+
+        if ($origin === '') {
+            $origin = self::bareOrigin((string) config('ads.frame_origin', ''));
+        }
+
+        return $origin;
+    }
+
+    // exact scheme://host origin, or '' for anything else.
+    private static function bareOrigin(string $url): string
+    {
+        $url = rtrim(trim($url), '/');
+
+        if ($url === '' || filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return '';
+        }
+
+        $parts = parse_url($url);
+
+        if (empty($parts['host']) || array_diff_key($parts, ['scheme' => true, 'host' => true]) !== []) {
+            return '';
+        }
+
+        return $url;
+    }
+
+    // canonical parent origin (scheme://host[:port]) for frame-ancestors and the
+    // frame's postMessage target; '' when the canonical URL has no host.
+    public static function parentOrigin(): string
+    {
+        $url = (array) parse_url((string) config('app.canonical_url', config('app.url')));
+
+        if (empty($url['host'])) {
+            return '';
+        }
+
+        return ($url['scheme'] ?? 'https').'://'.$url['host']
+            .(! empty($url['port']) ? ':'.$url['port'] : '');
+    }
+
+    public static function frameUrl(string $name): string
+    {
+        return self::frameOrigin().'/ads/frame/'.$name;
+    }
+
+    public static function frameHost(): string
+    {
+        return strtolower((string) parse_url(self::frameOrigin(), PHP_URL_HOST));
+    }
+
+    public static function frameHostMatchesRequest(): bool
+    {
+        return self::frameHost() !== '' && self::frameHost() === strtolower(request()->getHost());
+    }
+
+    public static function frameIsCrossOrigin(): bool
+    {
+        return self::frameHost() !== '' && self::frameHost() !== strtolower(request()->getHost());
+    }
+
     // resolved slot config, or null for an unknown slot. The zone key is
     // overridden by Settings (ads_slot_{name}_key); dims/format/path from config.
     public static function slot(string $name): ?array

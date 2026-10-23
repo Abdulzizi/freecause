@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Ads;
 use App\Support\Settings;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,7 +18,9 @@ class AddSecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        if (! $request->is('ads/frame/*') || ! Ads::frameHostMatchesRequest()) {
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        }
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
@@ -48,9 +51,10 @@ class AddSecurityHeaders
                 $appOrigin = ' '.($appUrl['scheme'] ?? 'https').'://'.$appUrl['host']
                     .(! empty($appUrl['port']) ? ':'.$appUrl['port'] : '');
             }
+            $parentOrigin = Ads::parentOrigin();
             $csp =
                 "default-src 'self' https: data: blob:; ".
-                "script-src 'self' 'unsafe-inline' https:".$appOrigin.'; '.
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:".$appOrigin.'; '.
                 "style-src 'self' 'unsafe-inline' https:; ".
                 "img-src 'self' data: blob: https:; ".
                 "font-src 'self' data: https:; ".
@@ -58,9 +62,11 @@ class AddSecurityHeaders
                 "connect-src 'self' https:; ".
                 "object-src 'none'; ".
                 "base-uri 'self'; ".
-                "frame-ancestors 'self';".
+                'frame-ancestors '.($parentOrigin !== '' ? $parentOrigin : "'self'").';'.
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         } else {
+            $frameOrigin = Ads::frameOrigin();
+
             $inlineHashes = '';
 
             foreach (['inject_head_html', 'inject_body_html'] as $key) {
@@ -99,7 +105,7 @@ class AddSecurityHeaders
                 "font-src 'self' https://cdnjs.cloudflare.com; ".
                 "frame-src 'self' https://accounts.google.com https://www.google.com ".
                     'https://challenges.cloudflare.com '.
-                    'https://bicea.org '.
+                    ($frameOrigin !== '' ? $frameOrigin.' ' : '').'https://bicea.org '.
                     'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com '.
                     'https://ep2.adtrafficquality.google '.
                     'https://www.googletagmanager.com; '.

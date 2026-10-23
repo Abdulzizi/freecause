@@ -70,11 +70,12 @@ class PetitionAdSlotsTest extends TestCase
 
         preg_match('/<iframe[^>]*\/ads\/frame\/rectangle[^>]*>/', $html, $rectangleFrame);
         $this->assertNotEmpty($rectangleFrame, 'missing rectangle frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
+        $this->assertStringContainsString('src="https://ads.freecause.com/ads/frame/rectangle"', $rectangleFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
 
         preg_match('/<iframe[^>]*\/ads\/frame\/native[^>]*>/', $html, $nativeFrame);
         $this->assertNotEmpty($nativeFrame, 'missing native frame');
-        $this->assertStringContainsString('sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
+        $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $nativeFrame[0]);
 
         // an empty key renders nothing: no box, no frame
         $this->assertStringNotContainsString('fc-ad--skyscraper', $html);
@@ -85,22 +86,23 @@ class PetitionAdSlotsTest extends TestCase
     {
         config(['ads.enabled' => true]);
 
-        $response = $this->get('/ads/frame/rectangle')->assertOk();
+        $response = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
 
-        // must stay frameable by our own pages, never by other origins
-        $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        // the ads origin serves only the frame; the site must be able to embed it,
+        // so X-Frame-Options is withheld (frame-ancestors in the CSP does the gating)
+        $response->assertHeaderMissing('X-Frame-Options');
 
         $body = $response->getContent();
-        $this->assertStringContainsString('/ads/config/rectangle', $body);
+        $this->assertStringContainsString('atOptions', $body);
         $this->assertStringContainsString(config('ads.slots.rectangle.key'), $body);
+        $this->assertStringContainsString('src="'.config('ads.host').'/22/', $body);
 
         // the frame needs inline because the network loader injects inline script;
         // the public page CSP (tested in SecurityHeadersAdsenseTest) keeps forbidding it
         $csp = (string) $response->headers->get('Content-Security-Policy');
-        $this->assertStringContainsString("script-src 'self' 'unsafe-inline'", $csp);
-        $this->assertStringNotContainsString('unsafe-eval', $csp);
+        $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval'", $csp);
         $this->assertDoesNotMatchRegularExpression('/[\s;]http:[\s;]/', $csp);
-        $this->assertStringContainsString("frame-ancestors 'self'", $csp);
+        $this->assertStringContainsString('frame-ancestors '.config('app.canonical_url'), $csp);
         $this->assertStringContainsString((string) config('app.url'), $csp);
     }
 
@@ -109,8 +111,33 @@ class PetitionAdSlotsTest extends TestCase
         config(['ads.enabled' => true]);
         config(['ads.slots.skyscraper.key' => '']);
 
-        $this->get('/ads/frame/doesnotexist')->assertNotFound();
-        $this->get('/ads/frame/skyscraper')->assertNotFound();
+        $this->get('https://ads.freecause.com/ads/frame/doesnotexist')->assertNotFound();
+        $this->get('https://ads.freecause.com/ads/frame/skyscraper')->assertNotFound();
+    }
+
+    public function test_frame_served_only_on_frame_origin_and_page_leaks_no_zone_key(): void
+    {
+        config(['ads.enabled' => true]);
+
+        // NB: relative requests must precede the absolute ads-origin request --
+        // MakesHttpRequests::prepareUrlForRequest resolves them via url(), whose
+        // root sticks at the last request's host.
+        $this->get('/ads/frame/rectangle')->assertNotFound();
+
+        [$petition, $slug] = $this->publishedPetition();
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk()->getContent();
+
+        $this->assertStringNotContainsString('data-ad-id', $html);
+
+        foreach (Ads::slotNames() as $name) {
+            $cfg = Ads::slot($name);
+            if ($cfg && ! empty($cfg['key'])) {
+                $this->assertStringNotContainsString($cfg['key'], $html, "zone key leaked for slot: {$name}");
+            }
+        }
+
+        $frame = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
+        $this->assertStringContainsString('src="'.config('ads.host').'/22/', (string) $frame->getContent());
     }
 
     public function test_master_flag_disables_every_slot(): void
