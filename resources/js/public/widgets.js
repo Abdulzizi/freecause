@@ -32,7 +32,7 @@ export function init(ctx) {
         if (typeof h !== 'number') return;
         document.querySelectorAll('.fc-ad iframe').forEach(function (frame) {
             if (frame.contentWindow !== e.source) return;
-            const capped = Math.min(Math.max(h, 0), 1000);
+            const capped = Math.min(Math.max(h, 0), frame.hasAttribute('data-ad-fluid') ? 320 : 1000);
             frame.style.height = capped + 'px';
             frame.style.maxHeight = capped + 'px';
         });

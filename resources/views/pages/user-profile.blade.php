@@ -97,12 +97,11 @@
 
             </div>
 
-            {{-- Ads: rectangle --}}
-            <div class="mb-4 text-center">
-                <x-ads.slot name="rectangle" />
-            </div>
+            <x-ads.rotate placement="inline" class="mb-4 text-center" />
 
         </x-ui.container>
+
+        <x-ads.rotate placement="page_mid" class="mt-6" />
     </section>
 
 @endsection

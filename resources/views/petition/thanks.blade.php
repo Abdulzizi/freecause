@@ -31,9 +31,6 @@
 @section('title', $pageTitle)
 
 @section('content')
-    <div class="mb-4 text-center hidden lg:block">
-        <x-ads.slot name="leaderboard" />
-    </div>
     <section class="py-14 md:py-24">
         <x-ui.container>
             <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6 max-w-[820px] mx-auto">

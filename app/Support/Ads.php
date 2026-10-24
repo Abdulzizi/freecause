@@ -64,7 +64,7 @@ class Ads
 
         $parts = parse_url($url);
 
-        if (empty($parts['host']) || array_diff_key($parts, ['scheme' => true, 'host' => true]) !== []) {
+        if (empty($parts['host']) || array_diff_key($parts, ['scheme' => true, 'host' => true, 'port' => true]) !== []) {
             return '';
         }
 

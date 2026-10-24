@@ -13,11 +13,6 @@
 @section('content')
     <x-ui.section>
 
-            {{-- ad: leaderboard, desktop only --}}
-            <div class="mb-4 text-center hidden lg:block">
-                <x-ads.slot name="leaderboard" />
-            </div>
-
             <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6 mb-6">
                 <div class="flex flex-wrap items-center -mx-3">
 
@@ -99,7 +94,7 @@
                 </div>
                 @forelse($signatures as $sig)
                     @if ($loop->index > 0 && $loop->index % 4 === 0)
-                        <x-ads.infeed name="rectangle" />
+                        <x-ads.infeed />
                     @endif
                     <div class="flex items-start gap-4 py-4 {{ !$loop->last ? 'border-b' : '' }}">
                         <div class="shrink-0 text-muted text-sm min-w-8 pt-0.5 fc-tabular">

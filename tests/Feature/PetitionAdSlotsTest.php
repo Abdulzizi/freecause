@@ -52,6 +52,21 @@ class PetitionAdSlotsTest extends TestCase
         }
     }
 
+    public function test_native_and_banner_slots_hide_on_mobile(): void
+    {
+        config(['ads.enabled' => true]);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertMatchesRegularExpression('/class="[^"]*fc-ad--native[^"]*max-md:hidden/', $html);
+        $this->assertMatchesRegularExpression('/class="[^"]*fc-ad--banner468[^"]*max-md:hidden/', $html);
+        $this->assertDoesNotMatchRegularExpression('/class="[^"]*fc-ad--rectangle[^"]*max-(?:md|sm):hidden/', $html);
+    }
+
     public function test_configured_slots_point_at_their_frame_but_empty_key_does_not(): void
     {
         config(['ads.enabled' => true]);

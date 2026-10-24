@@ -107,9 +107,6 @@
 @section('content')
     <x-ui.section>
 
-            {{-- ad: 728x90 leaderboard, desktop only, above breadcrumb --}}
-            <x-ads.slot name="leaderboard" class="hidden lg:block text-center mb-4" />
-
             <x-ui.breadcrumb class="mb-4" :items="$crumbs" />
 
             @if ($petition->status !== 'published')
@@ -506,11 +503,6 @@
                                 <x-ui.button variant="danger" size="sm" class="mt-2"
                                     :href="lroute('petition.signatures', ['slug' => $tr->slug, 'id' => $petition->id])">{{ $latestBrowseAll }}</x-ui.button>
                             </div>
-                        </div>
-
-                        {{-- ad: 160x300 skyscraper, sidebar after signatures before info box, sticky, desktop only --}}
-                        <div class="hidden lg:block mb-6 z-sticky" style="position: sticky; top: 80px;">
-                            <x-ads.slot name="skyscraper" class="text-center" />
                         </div>
 
                         <div class="bg-white rounded-md p-4 sm:p-6 shadow-elev-1 mb-6 hover:shadow-elev-2 transition-shadow duration-150">

@@ -51,6 +51,9 @@
                 <x-ui.sticky-action :href="url('/'.$locale)" :label="__('errors.back_home')" />
 
             </x-ui.container>
+
+            <x-ads.rotate placement="inline" class="mt-6 text-center" />
+            <x-ads.rotate placement="page_mid" class="mt-6" />
         </section>
     @endsection
 @endif

@@ -363,4 +363,6 @@
             </div>
         </div>
     </section>
+
+        <x-ads.rotate placement="page_mid" class="mt-6" />
 @endsection

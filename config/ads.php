@@ -68,6 +68,9 @@ return [
     'placements' => [
         'anchor' => ['mobile'],
         'infeed' => ['banner468', 'rectangle', 'native'],
+        // mobile-safe infeed pool: banner468 is max-md:hidden now, so it would
+        // render an empty box inside the mobile infeed wrapper.
+        'infeed_mobile' => ['rectangle', 'native'],
         'inline' => ['banner468', 'rectangle', 'native'],
         'page_top' => ['leaderboard'],
         'page_mid' => ['banner468', 'rectangle', 'native'],

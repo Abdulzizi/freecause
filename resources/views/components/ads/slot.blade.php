@@ -27,6 +27,10 @@
         // script grows the frame to the ad's real height (cross-origin postMessage
         // to the dedicated ads.frame_origin) so it never clips
         $fluid = ($cfg['format'] ?? 'iframe') === 'native';
+        // banner468 used to hide only below sm (640px), which let the 640-767
+        // tablet band stack it alongside the anchor + a rectangle. md (768) is the
+        // first width where 468px centred in the content column reads cleanly.
+        $hidden = ['native' => 'max-md:hidden', 'banner468' => 'max-md:hidden'][$name] ?? '';
     @endphp
 
     {{-- reserved box: min-height = banner height so no layout shift while the ad loads.
@@ -34,7 +38,7 @@
          ads.frame_origin (route ads.frame): the Adsterra loader document.writes an
          inline <script>, which the public site's strict CSP blocks, so each slot is
          sandboxed into a frame that carries a relaxed policy and no site content. --}}
-    <div {{ $attributes->merge(['class' => "fc-ad fc-ad--{$name}"]) }}
+    <div {{ $attributes->merge(['class' => trim("fc-ad fc-ad--{$name} {$hidden}")]) }}
          data-ad-slot="{{ $name }}"
          style="min-height: {{ $h }}px; max-width: min(100%, {{ $w }}px); margin-inline: auto;">
         @if ($hasKey)

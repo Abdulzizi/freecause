@@ -19,9 +19,6 @@
 @endpush
 
 @section('content')
-    <div class="mb-4 text-center hidden lg:block">
-        <x-ads.slot name="leaderboard" />
-    </div>
     <x-ui.section>
             <div class="bg-white shadow-elev-1 rounded-md p-6 md:p-12 text-center max-w-[900px] mx-auto">
 

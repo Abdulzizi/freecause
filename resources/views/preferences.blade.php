@@ -142,4 +142,7 @@
             @endif
         </div>
     </x-ui.section>
+
+    <x-ads.rotate placement="inline" class="mt-6 text-center" />
+    <x-ads.rotate placement="page_mid" class="mt-6" />
 @endsection
