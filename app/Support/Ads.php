@@ -72,17 +72,19 @@ class Ads
     }
 
     // canonical parent origin (scheme://host[:port]) for frame-ancestors and the
-    // frame's postMessage target; '' when the canonical URL has no host.
+    // frame's postMessage target; '' when neither configured URL has a host.
     public static function parentOrigin(): string
     {
-        $url = (array) parse_url((string) config('app.canonical_url', config('app.url')));
+        foreach ([config('app.canonical_url'), config('app.url')] as $candidate) {
+            $url = (array) parse_url((string) $candidate);
 
-        if (empty($url['host'])) {
-            return '';
+            if (! empty($url['host'])) {
+                return ($url['scheme'] ?? 'https').'://'.$url['host']
+                    .(! empty($url['port']) ? ':'.$url['port'] : '');
+            }
         }
 
-        return ($url['scheme'] ?? 'https').'://'.$url['host']
-            .(! empty($url['port']) ? ':'.$url['port'] : '');
+        return '';
     }
 
     public static function frameUrl(string $name): string

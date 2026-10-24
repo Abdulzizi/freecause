@@ -82,6 +82,32 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringNotContainsString('/ads/frame/skyscraper', $html);
     }
 
+    public function test_parent_origin_prefers_the_canonical_url(): void
+    {
+        config(['app.canonical_url' => 'https://www.freecause.com:8443', 'app.url' => 'http://fallback.test']);
+
+        $this->assertSame('https://www.freecause.com:8443', Ads::parentOrigin());
+    }
+
+    public function test_parent_origin_falls_back_to_app_url(): void
+    {
+        config(['app.url' => 'https://freecause.com']);
+        config(['app.canonical_url' => '']);
+
+        $this->assertSame('https://freecause.com', Ads::parentOrigin());
+
+        config(['app.canonical_url' => 'not-a-url']);
+
+        $this->assertSame('https://freecause.com', Ads::parentOrigin());
+    }
+
+    public function test_parent_origin_is_empty_when_both_urls_lack_a_host(): void
+    {
+        config(['app.canonical_url' => '', 'app.url' => 'not-a-url']);
+
+        $this->assertSame('', Ads::parentOrigin());
+    }
+
     public function test_ad_frame_serves_the_loader_with_a_relaxed_csp(): void
     {
         config(['ads.enabled' => true]);
