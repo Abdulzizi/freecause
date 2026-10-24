@@ -1,4 +1,4 @@
-@props(['name'])
+@props(['name' => null])
 @php
     // Callers used to pin each infeed to one zone (native / rectangle / banner468),
     // which repeated the same ad every 4th row. When no name is passed the infeed
