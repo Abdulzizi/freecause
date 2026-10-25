@@ -64,14 +64,14 @@ class AdminPerformanceFixesTest extends TestCase
 
         $first = $this->actingAs($viewer, 'admin')->get(route('admin.stats'));
         $first->assertOk();
-        $this->assertTrue(Cache::has('admin:stats:totals'));
+        $this->assertTrue(Cache::has('admin:stats:totals:v2'));
 
-        $cached = Cache::get('admin:stats:totals');
+        $cached = Cache::get('admin:stats:totals:v2');
         $this->assertSame('3', (string) $cached->petitions_total);
 
-        $snapshot = Cache::get('admin:stats:totals');
+        $snapshot = Cache::get('admin:stats:totals:v2');
         $this->actingAs($viewer, 'admin')->get(route('admin.stats', ['type' => 'top_petitioners']));
-        $this->assertSame(spl_object_hash($snapshot), spl_object_hash(Cache::get('admin:stats:totals')));
+        $this->assertSame(spl_object_hash($snapshot), spl_object_hash(Cache::get('admin:stats:totals:v2')));
 
         $typePage = $this->actingAs($viewer, 'admin')->get(route('admin.stats', ['type' => 'petitions_all']));
         $typePage->assertOk();

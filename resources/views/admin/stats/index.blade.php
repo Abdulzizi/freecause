@@ -40,10 +40,12 @@
 
             <div>
                 <h2>{{ number_format($summary['users_total']) }}</h2>
-                users<br>
+                real users<br>
                 <small>
                     +{{ number_format($summary['users_new']) }} new |
-                    {{ $summary['users_verified_percent'] }}% verified
+                    {{ $summary['users_verified_percent'] }}% verified |
+                    {{ number_format($summary['users_accounts']) }} accounts
+                    ({{ number_format($summary['users_synthetic']) }} legacy nick-only)
                 </small>
             </div>
 

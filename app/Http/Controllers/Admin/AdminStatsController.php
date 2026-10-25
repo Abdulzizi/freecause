@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
@@ -61,15 +62,16 @@ class AdminStatsController extends Controller
     private function summaryStats($locale, $from)
     {
 
-        $totals = Cache::remember('admin:stats:totals', 900, function () {
+        $totals = Cache::remember('admin:stats:totals:v2', 900, function () {
             return DB::table('users')
                 ->selectRaw('
-                    COUNT(*) as users_total,
-                    SUM(verified) as users_verified,
+                    COUNT(*) as users_accounts,
+                    SUM(CASE WHEN email_domain <> ? THEN 1 ELSE 0 END) as users_total,
+                    SUM(CASE WHEN verified = 1 AND email_domain <> ? THEN 1 ELSE 0 END) as users_verified,
                     (SELECT COUNT(*) FROM petitions) as petitions_total,
                     (SELECT COUNT(*) FROM petitions WHERE status = "published") as petitions_published,
                     (SELECT COUNT(*) FROM signatures) as signatures_total
-                ')
+                ', [User::SYNTHETIC_DOMAIN, User::SYNTHETIC_DOMAIN])
                 ->first();
         });
 
@@ -86,7 +88,9 @@ class AdminStatsController extends Controller
         });
 
         return [
-            'users_total' => $totals->users_total,
+            'users_total' => (int) $totals->users_total,
+            'users_accounts' => (int) $totals->users_accounts,
+            'users_synthetic' => (int) $totals->users_accounts - (int) $totals->users_total,
             'users_verified_percent' => $totals->users_total > 0
                 ? round(($totals->users_verified / $totals->users_total) * 100, 1)
                 : 0,

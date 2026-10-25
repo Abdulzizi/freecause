@@ -7,9 +7,10 @@
 
 <div class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 mb-6 max-sm:grid-cols-1 max-sm:gap-3">
     <x-blatui.card class="p-5 max-sm:p-4">
-        <h2 class="m-0 mb-2 text-sm text-muted uppercase">Total Users</h2>
-        <div class="text-2xl font-bold text-ink max-sm:text-xl">{{ number_format($stats['users_total']) }}</div>
-        <div class="text-xs text-muted mt-1">{{ number_format($stats['users_verified']) }} verified ({{ round(($stats['users_verified'] / max($stats['users_total'], 1)) * 100) }}%)</div>
+        <h2 class="m-0 mb-2 text-sm text-muted uppercase">Real Users</h2>
+        <div class="text-2xl font-bold text-ink max-sm:text-xl">{{ number_format($stats['users_real']) }}</div>
+        <div class="text-xs text-muted mt-1">{{ number_format($stats['users_verified']) }} verified ({{ round(($stats['users_verified'] / max($stats['users_real'], 1)) * 100) }}%)</div>
+        <div class="text-xs text-muted mt-1">of {{ number_format($stats['users_total']) }} accounts · {{ number_format($stats['users_synthetic']) }} legacy nick-only</div>
     </x-blatui.card>
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">Total Petitions</h2>
@@ -19,7 +20,7 @@
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">Total Signatures</h2>
         <div class="text-2xl font-bold text-ink max-sm:text-xl">{{ number_format($stats['signatures_total']) }}</div>
-        <div class="text-xs text-muted mt-1">{{ number_format($stats['signatures_today']) }} today</div>
+        <div class="text-xs text-muted mt-1">{{ number_format($stats['signatures_today']) }} today · {{ number_format($stats['signatures_real']) }} from real accounts</div>
     </x-blatui.card>
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">Active Languages</h2>

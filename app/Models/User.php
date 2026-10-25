@@ -29,6 +29,24 @@ class User extends Authenticatable
 
     public const GENDERS = ['male', 'female', 'prefer_not_to_say', 'none'];
 
+    /**
+     * Legacy nickname-only registrations were migrated with a generated
+     * <nick>@internetpetition.org address, inflating the users table ~4x.
+     * Every user-facing count goes through these two scopes so the mistake
+     * cannot reappear in a new query.
+     */
+    public const SYNTHETIC_DOMAIN = 'internetpetition.org';
+
+    public function scopeReal($query)
+    {
+        return $query->where('email_domain', '!=', self::SYNTHETIC_DOMAIN);
+    }
+
+    public function scopeSynthetic($query)
+    {
+        return $query->where('email_domain', self::SYNTHETIC_DOMAIN);
+    }
+
     protected $fillable = [
         'name',
         'first_name',

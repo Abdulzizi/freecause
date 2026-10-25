@@ -42,7 +42,7 @@ class DashboardController extends Controller
 
     private function getStats(): array
     {
-        return Cache::remember('admin:dashboard:stats:v3', 900, function () {
+        return Cache::remember('admin:dashboard:stats:v4', 900, function () {
             $todayStart = today()->startOfDay();
             $todayEnd = today()->endOfDay();
             $weekAgo = now()->subWeek();
@@ -75,10 +75,15 @@ class DashboardController extends Controller
                 )
                 ->first();
 
+            $realUsers = Cache::remember('admin:users:real_count:v2', 900, fn () => User::real()->count());
+            $syntheticUsers = Cache::remember('admin:users:synthetic_count:v2', 900, fn () => User::synthetic()->count());
+
             return [
                 'users_total' => $this->approxTableRows('users'),
+                'users_real' => $realUsers,
+                'users_synthetic' => $syntheticUsers,
 
-                'users_verified' => Cache::remember('admin:users:verified_count', 3600, fn () => User::where('verified', 1)->count()),
+                'users_verified' => Cache::remember('admin:users:verified_real_count:v2', 3600, fn () => User::real()->where('verified', 1)->count()),
                 'users_new_today' => (int) $newUsers->today,
                 'users_new_week' => (int) $newUsers->week,
 
@@ -89,6 +94,10 @@ class DashboardController extends Controller
                 'petitions_new_today' => (int) $petitions->new_today,
 
                 'signatures_total' => $this->approxTableRows('signatures'),
+                'signatures_real' => Cache::remember('admin:signatures:real_count:v2', 3600, fn () => Signature::query()
+                    ->join('users', 'users.id', '=', 'signatures.user_id')
+                    ->where('users.email_domain', '!=', User::SYNTHETIC_DOMAIN)
+                    ->count()),
                 'signatures_today' => (int) $newSignatures->today,
                 'signatures_week' => (int) $newSignatures->week,
 
