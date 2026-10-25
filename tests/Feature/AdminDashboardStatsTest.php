@@ -7,6 +7,7 @@ use App\Models\UserLevel;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class AdminDashboardStatsTest extends TestCase
@@ -17,7 +18,7 @@ class AdminDashboardStatsTest extends TestCase
     {
         parent::setUp();
 
-        \Illuminate\Support\Facades\Cache::flush();
+        Cache::flush();
         $this->seed(LanguageSeeder::class);
         $this->seed(UserLevelSeeder::class);
     }
