@@ -27,6 +27,7 @@ use App\Http\Controllers\GeoController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegacyShortLinkController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\SitemapController;
@@ -242,6 +243,12 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/system/permissions', [PermissionController::class, 'store'])->middleware('permission:system,manage')->name('system.permissions.store');
     });
 });
+
+// Legacy six-character short links (e.g. /GBFS45). Registered before the
+// {locale} group so a short link is not mistaken for a locale.
+Route::get('/{shortLink}', LegacyShortLinkController::class)
+    ->where('shortLink', '[0-9A-Z]{6}')
+    ->name('legacy.shortlink');
 
 Route::prefix('{locale}')
     ->middleware(['optional.session', 'setLocale', 'block.banned.ip', 'block.banned.user'])
