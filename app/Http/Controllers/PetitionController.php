@@ -16,6 +16,7 @@ use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
+use App\Support\DefaultComments;
 use App\Support\ImageVariants;
 use App\Support\ReviewKeywords;
 use App\Support\Slug;
@@ -348,14 +349,14 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
-        $defaultComments = Language::where('is_active', true)
-            ->pluck('code')
-            ->push($locale, $defaultLocale)
-            ->unique()
-            ->map(fn ($loc) => __('sign.default_comment', [], $loc))
-            ->filter()
-            ->values()
-            ->all();
+        $defaultComments = DefaultComments::forLocales(
+            Language::where('is_active', true)
+                ->pluck('code')
+                ->push($locale, $defaultLocale)
+                ->unique()
+                ->values()
+                ->all()
+        );
 
         $shoutboxPage = max(1, min((int) request('shoutbox', 1), 500));
 
