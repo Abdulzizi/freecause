@@ -2,6 +2,17 @@
 
 All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows the deploy tags (`vYYYY.MM.DD-HHMMSS`).
 
+## [v2026.10.25-070744]
+### Added
+- Legacy short links: `/{shortslug}` (6 chars) now 301s to the canonical petition URL. New `legacy_shortlinks` table, `legacy:import-shortlinks` command (idempotent) and a 165,529-pair dataset.
+- Admin dashboard headlines **real users** (4.53M) and shows the 18.45M account total with the legacy nick-only count as context; verified % is computed on real users only. `User::real()` / `User::synthetic()` give the definition one home.
+### Changed
+- Ad slots rotate across static, auth, profile, form and error pages through one `x-ads.rotate` component; `banner468` is hidden below `md` (fixes the 640-767 three-block stack); the mobile infeed rotates through a mobile-safe pool.
+- Comment rendering treats localized boilerplate as a default comment (Polish `Podpisuje się pod tą petycją`, Greek `αυτήν` form, punctuation variants), so it no longer counts as a real comment.
+### Fixed
+- Backups no longer report a false failure: `config/backup.php` maps every notification class to an empty channel list, so `BaseNotification::via()` no longer hits an undefined key (and no mail is attempted).
+- `<x-ads.infeed />` without a `name` prop no longer throws `Undefined variable $name` on signatures and my-petitions.
+
 ## [Unreleased]
 ### Security
 - Host patched for the php2shell advisories (CVE-2026-109618 / CVE-2026-109619): PHP 8.3.36 from the ondrej/sury repository, PHP-FPM pool hardened (`session.upload_progress.enabled=0`, `memory_limit=-1`, `pm.max_requests=500`), and the app now refuses to boot on an unpatched PHP (`ENFORCE_MIN_PHP`).
