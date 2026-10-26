@@ -35,10 +35,11 @@
             ($homeMetaDefault['head_additional_html'] ?? '')));
         $_canonicalParams = array_diff_key(request()->query(), array_flip(['status', 'view', 'page']));
         $canonicalPageUrl = canonical_url().($_canonicalParams !== [] ? '?'.http_build_query($_canonicalParams) : '');
+        $canonical = trim((string) $__env->getSection('canonical', $canonicalPageUrl));
 
         $ogTitle = trim((string) $__env->getSection('og_title', $__env->getSection('title', 'FreeCause')));
         $ogDescription = trim((string) $__env->getSection('og_description', strip_tags($metaDescription)));
-        $ogUrl = trim((string) $__env->getSection('og_url', $canonicalPageUrl));
+        $ogUrl = trim((string) $__env->getSection('og_url', $canonical));
         $ogType = trim((string) $__env->getSection('og_type', 'website'));
         $ogImage = trim((string) $__env->getSection('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png')));
         if ($ogImage !== '' && ! str_starts_with($ogImage, 'http://') && ! str_starts_with($ogImage, 'https://')) {
@@ -63,7 +64,7 @@
     <meta name="description" content="{{ strip_tags($metaDescription) }}">
     <meta name="keywords" content="{{ strip_tags($metaKeywords) }}">
 
-    <link rel="canonical" href="{{ $canonicalPageUrl }}">
+    <link rel="canonical" href="{{ $canonical }}">
 
     @if (request()->is('*/widgets/*', '*/widget-render/*', '*/oauth/*', '*/user/*') || request()->has('status') || request()->query('view') === 'pages')
         <meta name="robots" content="noindex, follow">

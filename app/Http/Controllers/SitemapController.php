@@ -26,7 +26,7 @@ class SitemapController extends Controller
 
     public function index()
     {
-        return $this->xml($this->cached(__FUNCTION__, function () {
+        return $this->xml($this->cached('index.v2', function () {
             return '<?xml version="1.0" encoding="UTF-8"?>'."\n".
                 '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n".
                 $this->indexEntry('sitemap-pages.xml').
@@ -42,22 +42,28 @@ class SitemapController extends Controller
         $total = $this->petitionRowCount();
 
         $out = '';
-        foreach (range(1, max(1, (int) ceil($total / self::PETITIONS_PER_FILE))) as $page) {
+        foreach (range(1, max(1, (int) ceil($total / $this->petitionsPerFile()))) as $page) {
             $out .= $this->indexEntry('sitemap-petitions-'.$page.'.xml');
         }
 
         return $out;
     }
 
+    private function petitionsPerFile(): int
+    {
+        return max(1, (int) config('sitemap.petitions_per_file', self::PETITIONS_PER_FILE));
+    }
+
     private function petitionRowCount(): int
     {
-        return $this->cachedInt('petitions.count', function () {
+        return $this->cachedInt('petitions.count.v2', function () {
             return DB::table('petitions as p')
                 ->join('petition_translations as pt', 'pt.petition_id', '=', 'p.id')
                 ->where('p.status', 'published')
                 ->where('p.is_active', 1)
                 ->whereIn('pt.locale', active_locales())
-                ->count();
+                ->distinct()
+                ->count('p.id');
         });
     }
 
@@ -133,35 +139,63 @@ class SitemapController extends Controller
 
     public function petitions(int $page = 1)
     {
-        return $this->xml($this->cached(__FUNCTION__.'.'.$page, function () use ($page) {
-            $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".
-                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'."\n";
+        if ($page < 1) {
+            return $this->xml($this->urlset([]));
+        }
 
-            $rows = DB::table('petitions as p')
+        return $this->xml($this->cached('petitions.v2.'.$page, function () use ($page) {
+            $limit = $this->petitionsPerFile();
+
+            $ids = DB::table('petitions as p')
                 ->join('petition_translations as pt', 'pt.petition_id', '=', 'p.id')
                 ->where('p.status', 'published')
                 ->where('p.is_active', 1)
                 ->whereIn('pt.locale', active_locales())
-                ->select('p.id', 'p.updated_at as p_updated_at', 'pt.locale', 'pt.slug', 'pt.updated_at')
+                ->distinct()
                 ->orderBy('p.id')
-                ->offset(($page - 1) * self::PETITIONS_PER_FILE)
-                ->limit(self::PETITIONS_PER_FILE)
-                ->cursor();
+                ->offset(max(0, $page - 1) * $limit)
+                ->limit($limit)
+                ->pluck('p.id');
 
-            $group = [];
-            $currentId = null;
+            $defaultLocale = default_locale();
+            $out = $this->urlsetHeader();
 
-            foreach ($rows as $row) {
-                if ($currentId !== null && $row->id !== $currentId) {
-                    $out .= $this->petitionGroupXml($currentId, $group);
-                    $group = [];
+            foreach ($ids->chunk(1000) as $chunk) {
+                $rows = DB::table('petitions as p')
+                    ->join('petition_translations as pt', 'pt.petition_id', '=', 'p.id')
+                    ->whereIn('p.id', $chunk)
+                    ->whereIn('pt.locale', active_locales())
+                    ->select('p.id', 'p.updated_at as p_updated_at', 'pt.locale', 'pt.slug', 'pt.updated_at')
+                    ->orderBy('p.id')
+                    ->orderBy('pt.locale')
+                    ->get();
+
+                foreach ($rows->groupBy('id') as $id => $variants) {
+                    $alternates = [];
+                    $dates = [];
+
+                    foreach ($variants as $v) {
+                        $alternates[] = [
+                            'hreflang' => $v->locale,
+                            'href' => canonical_url($v->locale.'/petition/'.$v->slug.'/'.$id),
+                        ];
+
+                        foreach ([$v->p_updated_at, $v->updated_at] as $date) {
+                            if ($date) {
+                                $dates[] = (string) $date;
+                            }
+                        }
+                    }
+
+                    $chosen = $variants->firstWhere('locale', $defaultLocale) ?? $variants->first();
+                    $loc = canonical_url($chosen->locale.'/petition/'.$chosen->slug.'/'.$id);
+
+                    if ($chosen->locale === $defaultLocale) {
+                        $alternates[] = ['hreflang' => 'x-default', 'href' => $loc];
+                    }
+
+                    $out .= $this->urlEntry($this->pageEntry($loc, $dates ? $this->dateOnly(max($dates)) : null, $alternates));
                 }
-                $currentId = $row->id;
-                $group[] = $row;
-            }
-
-            if ($currentId !== null) {
-                $out .= $this->petitionGroupXml($currentId, $group);
             }
 
             return $out.'</urlset>';
@@ -226,45 +260,6 @@ class SitemapController extends Controller
         return $entries;
     }
 
-    private function petitionGroupXml(int $id, array $variants): string
-    {
-        $alternates = [];
-        $lastmods = [];
-
-        foreach ($variants as $v) {
-            $alternates[] = [
-                'hreflang' => $v->locale,
-                'href' => canonical_url($v->locale.'/petition/'.$v->slug.'/'.$id),
-            ];
-
-            foreach ([$v->p_updated_at, $v->updated_at] as $date) {
-                if ($date) {
-                    $lastmods[] = (string) $date;
-                }
-            }
-        }
-
-        $lastmod = $lastmods ? $this->dateOnly(max($lastmods)) : null;
-
-        $out = '';
-        foreach ($variants as $v) {
-            $out .= "\t<url>\n";
-            $out .= "\t\t<loc>".$this->xmlEscape(canonical_url($v->locale.'/petition/'.$v->slug.'/'.$id))."</loc>\n";
-
-            if ($lastmod !== null) {
-                $out .= "\t\t<lastmod>".$this->xmlEscape($lastmod)."</lastmod>\n";
-            }
-
-            foreach ($alternates as $alt) {
-                $out .= "\t\t<xhtml:link rel=\"alternate\" hreflang=\"".$this->xmlEscape($alt['hreflang']).'" href="'.$this->xmlEscape($alt['href'])."\"/>\n";
-            }
-
-            $out .= "\t</url>\n";
-        }
-
-        return $out;
-    }
-
     private function pageEntry(string $loc, ?string $lastmod = null, array $alternates = []): array
     {
         $entry = ['loc' => $loc];
@@ -287,25 +282,35 @@ class SitemapController extends Controller
 
     private function urlset(array $entries): string
     {
-        $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'."\n";
+        $out = $this->urlsetHeader();
 
         foreach ($entries as $entry) {
-            $out .= "\t<url>\n";
-            $out .= "\t\t<loc>".$this->xmlEscape($entry['loc'])."</loc>\n";
-
-            if (isset($entry['lastmod'])) {
-                $out .= "\t\t<lastmod>".$this->xmlEscape($entry['lastmod'])."</lastmod>\n";
-            }
-
-            foreach ($entry['alternates'] ?? [] as $alt) {
-                $out .= "\t\t<xhtml:link rel=\"alternate\" hreflang=\"".$this->xmlEscape($alt['hreflang']).'" href="'.$this->xmlEscape($alt['href'])."\"/>\n";
-            }
-
-            $out .= "\t</url>\n";
+            $out .= $this->urlEntry($entry);
         }
 
         return $out.'</urlset>';
+    }
+
+    private function urlsetHeader(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8"?>'."\n".
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'."\n";
+    }
+
+    private function urlEntry(array $entry): string
+    {
+        $out = "\t<url>\n";
+        $out .= "\t\t<loc>".$this->xmlEscape($entry['loc'])."</loc>\n";
+
+        if (isset($entry['lastmod'])) {
+            $out .= "\t\t<lastmod>".$this->xmlEscape($entry['lastmod'])."</lastmod>\n";
+        }
+
+        foreach ($entry['alternates'] ?? [] as $alt) {
+            $out .= "\t\t<xhtml:link rel=\"alternate\" hreflang=\"".$this->xmlEscape($alt['hreflang']).'" href="'.$this->xmlEscape($alt['href'])."\"/>\n";
+        }
+
+        return $out."\t</url>\n";
     }
 
     private function cached(string $key, Closure $callback): string

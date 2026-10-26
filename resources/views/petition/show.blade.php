@@ -98,7 +98,6 @@
 @section('og_title', $petitionTitle)
 @section('og_description', \Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200))
 @section('og_image', $petitionImg ?: asset('legacy/images-v2/freecause_logo_icon_clear.png'))
-@section('og_url', request()->url())
 
 @push('head')
     @include('partials.hreflang')
@@ -679,26 +678,6 @@
         </div>
     </div>
 @endsection
-
-@push('head')
-<script type="application/ld+json">{!! json_encode([
-    '@context' => 'https://schema.org',
-    '@type' => 'CreativeWork',
-    'name' => $petitionTitle,
-    'description' => \Illuminate\Support\Str::limit(strip_tags($tr->description ?? ''), 200),
-    'url' => canonical_url(app()->getLocale().'/petition/'.($tr->slug ?? '').'/'.($petition->id ?? '')),
-    'image' => $petitionImg,
-    'author' => [
-        '@type' => 'Person',
-        'name' => $petition->user->name ?? 'Unknown',
-    ],
-    'interactionStatistic' => [
-        '@type' => 'InteractionCounter',
-        'interactionType' => 'https://schema.org/SignAction',
-        'userInteractionCount' => (int) $petition->signature_count,
-    ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
-@endpush
 
 @push('head')
     @if ($hasCover)

@@ -2,13 +2,25 @@
 
 namespace Tests\Feature;
 
+use App\Models\Petition;
+use App\Models\PetitionTranslation;
+use Database\Seeders\LanguageSeeder;
+use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SitemapTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed([LanguageSeeder::class, UserLevelSeeder::class]);
+    }
 
     public function test_sitemap_is_publicly_cacheable_without_session_cookie(): void
     {
@@ -28,5 +40,149 @@ class SitemapTest extends TestCase
         $this->assertContains('sitemap.xml', $except);
         $this->assertContains('sitemap-*.xml', $except);
         $this->assertContains('robots.txt', $except);
+    }
+
+    private function petitionFixture(): Petition
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Petition EN',
+            'slug' => 'p-en',
+            'description' => '<p>Body</p>',
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'es',
+            'title' => 'Petition ES',
+            'slug' => 'p-es',
+            'description' => '<p>Cuerpo</p>',
+        ]);
+
+        $draft = Petition::factory()->create(['status' => 'draft', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $draft->id,
+            'locale' => 'en',
+            'title' => 'Draft',
+            'slug' => 'p-draft',
+            'description' => '<p>Body</p>',
+        ]);
+
+        $inactive = Petition::factory()->create(['status' => 'published', 'is_active' => false]);
+        PetitionTranslation::create([
+            'petition_id' => $inactive->id,
+            'locale' => 'en',
+            'title' => 'Inactive',
+            'slug' => 'p-inactive',
+            'description' => '<p>Body</p>',
+        ]);
+
+        return $petition;
+    }
+
+    public function test_petition_sitemap_has_one_url_per_petition_with_locale_alternates(): void
+    {
+        $petition = $this->petitionFixture();
+
+        $content = $this->get('/sitemap-petitions-1.xml')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($content, '<url>'));
+        $this->assertSame(1, substr_count($content, '<loc>'));
+        $this->assertStringContainsString('<loc>'.canonical_url('en/petition/p-en/'.$petition->id).'</loc>', $content);
+        $this->assertStringContainsString('hreflang="en"', $content);
+        $this->assertStringContainsString('hreflang="es"', $content);
+        $this->assertStringContainsString('hreflang="x-default"', $content);
+        $this->assertStringNotContainsString('p-draft', $content);
+        $this->assertStringNotContainsString('p-inactive', $content);
+    }
+
+    public function test_petition_sitemap_falls_back_to_first_active_locale_without_default_translation(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'es',
+            'title' => 'Solo ES',
+            'slug' => 'p-es-only',
+            'description' => '<p>Cuerpo</p>',
+        ]);
+
+        $content = $this->get('/sitemap-petitions-1.xml')->assertOk()->getContent();
+
+        $this->assertStringContainsString('<loc>'.canonical_url('es/petition/p-es-only/'.$petition->id).'</loc>', $content);
+        $this->assertStringNotContainsString('hreflang="x-default"', $content);
+    }
+
+    public function test_sitemap_index_lists_one_shard_per_petition_page(): void
+    {
+        config(['sitemap.petitions_per_file' => 1]);
+
+        $this->petitionFixture();
+
+        $second = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $second->id,
+            'locale' => 'en',
+            'title' => 'Second',
+            'slug' => 'p-second',
+            'description' => '<p>Body</p>',
+        ]);
+
+        $content = $this->get('/sitemap.xml')->assertOk()->getContent();
+
+        $this->assertSame(2, substr_count($content, 'sitemap-petitions-'));
+    }
+
+    public function test_petition_sitemap_lastmod_uses_latest_petition_or_translation_date(): void
+    {
+        $petition = $this->petitionFixture();
+
+        DB::table('petitions')->where('id', $petition->id)->update(['updated_at' => '2026-01-01 00:00:00']);
+        DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'en')->update(['updated_at' => '2026-02-01 00:00:00']);
+        DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'es')->update(['updated_at' => '2026-03-05 00:00:00']);
+
+        $content = $this->get('/sitemap-petitions-1.xml')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($content, '<url>'));
+        preg_match('#<lastmod>([^<]+)</lastmod>#', $content, $matches);
+        $this->assertSame('2026-03-05', $matches[1] ?? null);
+    }
+
+    public function test_petition_sitemap_page_two_uses_the_next_offset(): void
+    {
+        config(['sitemap.petitions_per_file' => 1]);
+
+        $this->petitionFixture();
+
+        $second = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $second->id,
+            'locale' => 'en',
+            'title' => 'Second',
+            'slug' => 'p-second',
+            'description' => '<p>Body</p>',
+        ]);
+
+        $pageOne = $this->get('/sitemap-petitions-1.xml')->assertOk()->getContent();
+        $pageTwo = $this->get('/sitemap-petitions-2.xml')->assertOk()->getContent();
+
+        $this->assertStringContainsString('p-en', $pageOne);
+        $this->assertStringNotContainsString('p-second', $pageOne);
+        $this->assertStringContainsString('p-second', $pageTwo);
+        $this->assertStringNotContainsString('p-en', $pageTwo);
+    }
+
+    public function test_petition_sitemap_page_zero_returns_empty_sitemap(): void
+    {
+        $this->petitionFixture();
+
+        $content = $this->get('/sitemap-petitions-0.xml')->assertOk()->getContent();
+
+        $this->assertStringContainsString('<urlset', $content);
+        $this->assertStringNotContainsString('p-en', $content);
     }
 }

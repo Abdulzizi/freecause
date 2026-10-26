@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PageTranslation;
+use Illuminate\Http\RedirectResponse;
 
 class PageController extends Controller
 {
@@ -13,6 +14,14 @@ class PageController extends Controller
 
     public function showFixed(string $locale, string $slug)
     {
+        if (request()->has('status')) {
+            $query = request()->query();
+            unset($query['status']);
+            $target = '/'.ltrim(request()->path(), '/').($query !== [] ? '?'.http_build_query($query) : '');
+
+            return new RedirectResponse($target, 301);
+        }
+
         return $this->renderBySlug($locale, $slug);
     }
 

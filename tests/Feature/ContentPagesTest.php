@@ -45,12 +45,15 @@ class ContentPagesTest extends TestCase
 
     public function test_non_english_locale_falls_back_to_english_with_notice_and_canonical(): void
     {
+        config(['app.url' => 'https://test.invalid', 'app.canonical_url' => 'https://www.freecause.com']);
+
         $response = $this->get('/de/personal-data-processing');
 
         $response->assertOk()
             ->assertSee(__('pages.lang_fallback_notice'))
-            ->assertSee('rel="canonical"', false)
-            ->assertSee(url('en/personal-data-processing'), false);
+            ->assertSee('href="https://www.freecause.com/en/personal-data-processing"', false);
+
+        $this->assertSame(1, substr_count($response->getContent(), 'rel="canonical"'));
     }
 
     public function test_english_page_has_no_fallback_notice(): void
@@ -79,6 +82,37 @@ class ContentPagesTest extends TestCase
         $this->get('/fr/how-to-write-a-petition')
             ->assertOk()
             ->assertDontSee(__('pages.lang_fallback_notice'));
+    }
+
+    public function test_status_query_on_fixed_page_redirects_to_clean_url(): void
+    {
+        $this->get('/en/donations?status=200&utm_source=x')
+            ->assertStatus(301)
+            ->assertRedirect('/en/donations?utm_source=x');
+
+        $this->get('/en/donations')->assertOk();
+    }
+
+    public function test_status_redirect_is_not_host_header_poisoned(): void
+    {
+        $response = $this->withHeader('Host', 'evil.test')->get('/en/donations?status=200');
+
+        $response->assertStatus(301);
+
+        $location = (string) $response->headers->get('Location');
+
+        $this->assertStringStartsWith('/en/donations', $location);
+        $this->assertStringNotContainsString('evil.test', $location);
+    }
+
+    public function test_status_query_on_petitions_is_not_redirected_and_is_noindexed(): void
+    {
+        $response = $this->get('/en/petitions?status=200');
+
+        $this->assertNotSame(301, $response->getStatusCode());
+        $response->assertOk()
+            ->assertSee('name="robots"', false)
+            ->assertSee('noindex, follow');
     }
 
     public function test_untranslated_legal_page_still_shows_fallback_notice(): void

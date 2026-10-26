@@ -20,7 +20,9 @@ class WidgetController extends Controller
         $src = url("/widget-render/pbadge/{$petition}/{$type}");
         $javascript = "document.write('<iframe src=\"{$src}\" width=\"{$width}\" height=\"{$height}\" style=\"border:0\" frameborder=\"0\" class=\"petition-pbadge-{$type}\"></iframe>');";
 
-        return response($javascript)->header('Content-Type', 'text/javascript; charset=UTF-8');
+        return response($javascript)
+            ->header('Content-Type', 'text/javascript; charset=UTF-8')
+            ->header('X-Robots-Tag', 'noindex, follow');
     }
 
     public function render(int $petition, string $type)
@@ -39,6 +41,8 @@ class WidgetController extends Controller
             ->first()
             ?? PetitionTranslation::where('petition_id', $petition->id)->orderBy('id')->firstOrFail();
 
-        return view('petition.widget', compact('petition', 'translation', 'type'));
+        return response()
+            ->view('petition.widget', compact('petition', 'translation', 'type'))
+            ->header('X-Robots-Tag', 'noindex, follow');
     }
 }

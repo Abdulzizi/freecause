@@ -4,9 +4,7 @@
 @section('body_class', $tr->slug)
 
 @if ($fallback)
-    @push('head')
-        <link rel="canonical" href="{{ url($defaultLocale.'/'.$tr->slug) }}">
-    @endpush
+    @section('canonical', canonical_url($defaultLocale.'/'.$tr->slug))
 @endif
 
 @section('content')
