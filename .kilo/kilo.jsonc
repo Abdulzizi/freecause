@@ -1,0 +1,7 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "default_agent": "orchestrator",
+  "indexing": {
+    "enabled": true
+  }
+}
