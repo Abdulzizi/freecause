@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Console\Commands\WarmCache;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\Language;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Support\CacheKeys;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -83,5 +85,18 @@ class PetitionListingLanguageTest extends TestCase
         $this->get('/en/petitions')->assertOk()->assertViewHas('petitions', fn ($p) => $p->total() === 16);
         $this->get('/de/petitions?page=2')->assertOk()->assertViewHas('petitions', fn ($p) => $p->total() === 16 && $p->count() === 1);
         $this->get('/de/petitions')->assertOk()->assertViewHas('petitions', fn ($p) => $p->total() === 16 && $p->count() === 15);
+    }
+
+    public function test_cache_warmer_uses_the_same_language_filter_and_payload_as_the_listing(): void
+    {
+        $german = $this->petition('de', 'Deutscher Titel');
+        $this->petition('en', 'English title');
+        $command = app(WarmCache::class);
+        $method = new \ReflectionMethod($command, 'warmPetitionsCache');
+        $method->invoke($command, 'de', 'en');
+        $cached = cache()->get(CacheKeys::petitionsIndex('de', 1));
+        $this->assertIsArray($cached);
+        $this->assertSame(1, $cached['total']);
+        $this->get('/de/petitions')->assertOk()->assertViewHas('petitions', fn ($p) => $p->total() === 1 && $p->pluck('id')->all() === [$german->id]);
     }
 }
