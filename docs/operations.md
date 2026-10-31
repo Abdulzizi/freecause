@@ -2,12 +2,54 @@
 
 Single VPS (Ubuntu 24.04): nginx + PHP 8.3-FPM + MySQL 8. The app runs from
 `/var/www/freecause/current` (Deployer layout — see [`../deploy/README.md`](../deploy/README.md)).
-Supervisor group `freecause-release-queue:*` (2 workers, `www-data`). Daily
-`backup:run` at 02:00 to the S3 `backups` disk, retention cleanup at 02:30.
-`emails:petition-digest` runs weekly (Monday 08:00) — per-owner petition digest,
-gated on `verified` + `notify_product`; scheduled in `routes/console.php`.
+Supervisor group `freecause-release-queue:*` (2 workers, `www-data`) plus
+`freecause-release-scheduler` (`schedule:work`). Schedule lives in
+`routes/console.php` (`php artisan schedule:list` on the host).
 
 Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
+
+## Host (verified 2026-11-01)
+
+- Contabo VPS, one host for everything: 6 vCPU, 12 GB RAM, 4 GB swap, 193 GB
+  disk (45% used). Kernel `6.8.0-147`; reboots on 2026-10-18 and 2026-10-31
+  17:33 (clean shutdown, no OOM in the kernel log).
+- Disk: MySQL datadir ~45 GB, `shared/` ~23 GB, `releases/` ~2.2 GB,
+  `/var/log` ~1.2 GB.
+- PHP-FPM: `pm = dynamic`, `max_children` 60, `start_servers` 10, spare 3–20,
+  `max_requests` 500 (~57 MB per worker). `opcache.validate_timestamps=0` in
+  the FPM `php.ini`; `deploy.php` reloads FPM after `deploy:symlink`.
+  Check FPM settings through the FPM `php.ini`, not `php -i` (CLI differs).
+- MySQL 8 on `127.0.0.1`, database `freecause_release_20260919`, binlog on.
+  Redis on `127.0.0.1:6379` (cache, session, queue; `predis`).
+- nginx: gzip on, no brotli. `sites-enabled` holds `default` (symlink) and
+  `freecause-com` (regular file, not a symlink).
+- Firewall: `ufw` active.
+
+## Backups (verified 2026-11-01)
+
+- `backup:run` daily 02:00, `backup:clean` 02:30 (`keep_all_backups_for_days`
+  7), via `spatie/laravel-backup`. Output goes to `/dev/null`; only a failure is
+  logged in `storage/logs/laravel*.log`.
+- The `backups` disk uses the `local` driver (`BACKUP_DISK_DRIVER` unset, no
+  S3/R2 credentials, `AWS_BUCKET` empty). Archives (~2 GB each) sit on the same
+  disk as the database: `shared/storage/app/backups/FreeCause/<ts>.zip`.
+  **There is no off-host copy.**
+- 2026-10-28 02:00 `backup:run` was killed (exit code 143).
+- Deploy snapshots: `db:snapshot` writes `shared/db-snapshots/pre-migrate-<ts>.sql.gz`
+  (~2 GB each, last 7 kept). One manual dump from 2026-09-27 is in
+  `/root/prod-backups/`. The old checkout
+  `/var/www/freecause-release-v2026.09.19` still holds backups from Oct 14–15.
+
+## Security state (verified 2026-11-01)
+
+- `fail2ban` is installed but **disabled and stopped** (stopped 2026-10-31
+  17:28, not enabled at boot). The auth log shows continuous SSH password
+  attempts against `root`, `ubuntu` and `deploy`.
+- Effective `sshd` settings: `PermitRootLogin yes`
+  (`sshd_config.d/00-rootpw.conf` overrides `prohibit-password` in
+  `sshd_config`) and `PasswordAuthentication yes`
+  (`50-cloud-init.conf` is read before `60-cloudimg-settings.conf`, and sshd
+  takes the first value). Confirm with `sshd -T`.
 
 ## Monitoring
 
@@ -55,6 +97,13 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 
 ## Parked backlog
 
+- Off-host backups: set `BACKUP_DISK_DRIVER=s3` with R2/S3 credentials, then
+  test a restore.
+- Enable `fail2ban`; set `PermitRootLogin prohibit-password` and
+  `PasswordAuthentication no`; reload `ssh`.
+- Log `backup:run` output instead of `/dev/null`; find why the 2026-10-28 run
+  was killed.
+- Remove the old checkout's backups once the rollback window closes.
 - smtp2go SMTP activation (dashboard action).
 - Rotate the Google OAuth client secret and load it into the prod `.env`.
 - WordPress hardening: rotate WP salts / SSO secret, review `wp-file-manager`,
