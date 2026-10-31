@@ -95,9 +95,9 @@
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl ?? $petitionUrl) }}"
                                target="_blank" rel="noopener noreferrer"
                                class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-facebook text-white">Facebook</a>
-                            <a href="https://twitter.com/intent/tweet?url={{ urlencode($shareUrl ?? $petitionUrl) }}&text={{ urlencode($petitionTitle) }}"
+                            <a href="https://x.com/intent/tweet?url={{ urlencode($shareUrl ?? $petitionUrl) }}&text={{ urlencode($petitionTitle) }}"
                                target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-dark text-on-dark">X</a>
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-dark text-on-dark" aria-label="Share on X">X</a>
                             <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.($shareUrl ?? $petitionUrl)) }}"
                                target="_blank" rel="noopener noreferrer"
                                class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-white">WhatsApp</a>
