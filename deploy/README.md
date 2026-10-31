@@ -7,12 +7,14 @@ Production runs on the **Deployer 8** layout at `/var/www/freecause`
 
 ## Layers
 
-- `.github/workflows/ci.yml` — the gate: `composer validate`/install,
-  `php artisan test`, Pint `--test`, `npm ci && npm run build`. Runs on PRs,
+- `.github/workflows/ci.yml` — the gate, three jobs: `test` (`composer
+  validate`/install, `php artisan test`, Pint `--test`, design-system lint),
+  `assets` (JS unit tests, `npm ci && npm run build`) and `security-audit`
+  (`composer audit`, `npm audit`; an advisory fails the job). Runs on PRs,
   pushes to `main`, and is called by `deploy.yml` (`deploy` needs `ci`).
-- `.github/workflows/deploy.yml` — the single CD path. On a `v*` tag (or manual
-  dispatch) it runs CI → Deployer deploy → `/version` smoke → auto-rollback on
-  failure. Bound to the `production` GitHub Environment.
+- `.github/workflows/deploy.yml` — the single CD path. On a push to `main` (or
+  manual dispatch) it runs CI → Deployer deploy → `/version` smoke →
+  auto-rollback on failure. Bound to the `production` GitHub Environment.
 - `deploy/deploy.php` — Deployer recipe (release dirs, shared dirs, migrate,
   cache warm, queue restart, PHP-FPM reload).
 - `deploy/supervisor/freecause-release-queue.conf` — supervisor program template.
@@ -20,7 +22,7 @@ Production runs on the **Deployer 8** layout at `/var/www/freecause`
   running `php artisan schedule:work`. **Must be installed** (symlink/copy into
   the supervisor conf.d and `supervisorctl reread && supervisorctl update`)
   alongside the queue program — without it the scheduler in `routes/console.php`
-  (backups, `signatures:reconcile`, `cache:warm`, weekly digest, `queue:monitor`,
+  (backups, `signatures:reconcile`, `cache:warm`, petition digests, `queue:monitor`,
   log pruning) never runs. `schedule:work` targets the stable `current/` symlink,
   so it needs no per-release re-point.
 - `deploy/cutover.sh` — seeds `shared/` from an in-place install (dry-run by
