@@ -45,6 +45,7 @@ if (! function_exists('lroute')) {
     function lroute(string $name, array $params = [], bool $absolute = true): string
     {
         $locale = $params['locale']
+            ?? request()->route('locale')
             ?? session('locale')
             ?? request()->segment(1)
             ?? app()->getLocale();
