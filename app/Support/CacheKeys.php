@@ -31,16 +31,16 @@ class CacheKeys
 
     public static function petitionsIndex(string $locale, int $page): string
     {
-        return 'petitions:index:v2:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:index:v3:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
     }
 
     public static function petitionsTrending(string $locale, int $page): string
     {
-        return 'petitions:trending:v2:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:trending:v3:'.$locale.':page:'.$page.':'.CacheVersion::get('list');
     }
 
     public static function petitionsByCategory(string $locale, int $categoryId, int $page): string
     {
-        return 'petitions:byCategory:v2:'.$locale.':'.$categoryId.':page:'.$page.':'.CacheVersion::get('list');
+        return 'petitions:byCategory:v3:'.$locale.':'.$categoryId.':page:'.$page.':'.CacheVersion::get('list');
     }
 }
