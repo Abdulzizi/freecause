@@ -164,25 +164,24 @@ class PetitionController extends Controller
                 'petitions.category_id',
                 'petitions.cover_image',
             ])
-            ->translated($locale, 'pt_locale', 'pt_default', ['title' => 'tr_title', 'slug' => 'tr_slug'], $defaultLocale)
-            ->where(function ($q) {
-                $q->whereNotNull('pt_locale.title')
-                    ->orWhereNotNull('pt_default.title');
+            ->addSelect(['pt_locale.title as tr_title', 'pt_locale.slug as tr_slug'])
+            ->join('petition_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                    ->where('pt_locale.locale', '=', $locale);
             })
+            ->whereNotNull('pt_locale.title')
             ->visible();
 
         if ($search !== '') {
             $driver = DB::connection()->getDriverName();
             if (in_array($driver, ['mysql', 'mariadb'], true)) {
                 $query->where(function ($q) use ($search) {
-                    $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$search])
-                        ->orWhereRaw('MATCH(pt_default.title) AGAINST(? IN BOOLEAN MODE)', [$search]);
+                    $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$search]);
                 });
             } else {
                 $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
                 $query->where(function ($q) use ($like) {
-                    $q->where('pt_locale.title', 'LIKE', $like)
-                        ->orWhere('pt_default.title', 'LIKE', $like);
+                    $q->where('pt_locale.title', 'LIKE', $like);
                 });
             }
             $query->orderByDesc('petitions.signature_count');
