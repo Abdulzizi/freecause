@@ -215,6 +215,12 @@
 
         <x-slot:footer>
             <div class="flex gap-2 items-center flex-wrap max-md:gap-1.5 max-md:w-full max-md:justify-end">
+                @if (admin_can('petitions', 'delete'))
+                    <x-blatui.button variant="destructive" size="sm" type="button" id="bulk-delete" title="Permanently delete selected petitions">
+                        <x-lucide-trash-2 aria-hidden="true" />
+                        <span>Delete</span>
+                    </x-blatui.button>
+                @endif
                 @if (admin_can('petitions', 'edit'))
                     <x-blatui.button variant="destructive" size="sm" type="button" data-petition-bulk-ban
                         data-url="{{ route('admin.petitions.bulkAction') }}">
@@ -520,6 +526,7 @@
 
 @include('admin.partials.bulk-js', [
     'actionRoute' => route('admin.petitions.bulkAction'),
+    'deleteRoute' => route('admin.petitions.bulkDelete'),
     'noun' => 'petitions',
     'emptyMsg' => 'No petitions selected',
 ])

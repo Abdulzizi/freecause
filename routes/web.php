@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminLanguagesController;
 use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminPagesController;
+use App\Http\Controllers\Admin\AdminPetitionDeleteController;
 use App\Http\Controllers\Admin\AdminPetitionsController;
 use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminReviewKeywordsController;
@@ -192,6 +193,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/petitions/create', [AdminPetitionsController::class, 'create'])->middleware('permission:petitions,edit')->name('petitions.create');
         Route::post('/petitions/translate-missing', [AdminPetitionsController::class, 'translateMissing'])->middleware('permission:petitions,edit')->name('petitions.translateMissing');
         Route::post('/petitions/bulk-action', [AdminPetitionsController::class, 'bulkAction'])->middleware('permission:petitions,edit')->name('petitions.bulkAction');
+        Route::post('/petitions/bulk-delete', AdminPetitionDeleteController::class)->middleware('permission:petitions,delete')->name('petitions.bulkDelete');
         Route::post('/petitions/reconcile', [AdminPetitionsController::class, 'reconcile'])->middleware('permission:petitions,edit')->name('petitions.reconcile');
         Route::post('/petitions/reconcile-all', [AdminPetitionsController::class, 'reconcileAll'])->middleware('permission:petitions,edit')->name('petitions.reconcileAll');
 

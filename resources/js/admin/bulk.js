@@ -87,10 +87,14 @@ async function runBulkNamedAction(button, config, action) {
         return;
     }
     const noun = config.noun || 'items';
-    if (!(await confirmAction(`${action === 'delete' ? 'Delete' : 'Unban'} ${ids.length} selected ${noun}?`))) return;
+    const permanentPetitionDelete = action === 'delete' && noun === 'petitions';
+    const message = permanentPetitionDelete
+        ? `Permanently delete ${ids.length} selected petition(s), including ALL translations, signatures and view history? This cannot be undone.`
+        : `${action === 'delete' ? 'Delete' : 'Unban'} ${ids.length} selected ${noun}?`;
+    if (!(await confirmAction(message))) return;
     setLoading(button, true);
     try {
-        const result = await jsonPost(action === 'delete' ? config.deleteRoute : config.unbanRoute, { ids });
+        const result = await jsonPost(action === 'delete' ? config.deleteRoute : config.unbanRoute, { ids, ...(permanentPetitionDelete ? { confirmed: true } : {}) });
         if (action === 'delete' && [true, 1, '1'].includes(result.restorable)) {
             setLoading(button, false);
             try {
