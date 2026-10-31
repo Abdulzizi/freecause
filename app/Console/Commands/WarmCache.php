@@ -157,34 +157,19 @@ class WarmCache extends Command
     private function warmPetitionsCache(string $locale, string $defaultLocale): void
     {
         for ($page = 1; $page <= 10; $page++) {
-            Cache::remember(CacheKeys::petitionsIndex($locale, $page), 300, function () use ($locale, $defaultLocale, $page) {
-                return Petition::query()
-                    ->select([
-                        'petitions.id',
-                        'petitions.signature_count',
-                        'petitions.goal_signatures',
-                        'petitions.category_id',
-                        'petitions.cover_image',
-                    ])
-                    ->withTranslation([
-                        'base' => 'petitions',
-                        'base_key' => 'id',
-                        'translation_table' => 'petition_translations',
-                        'translation_key' => 'petition_id',
-                        'locale_alias' => 'pt_locale',
-                        'default_alias' => 'pt_default',
-                        'locale' => $locale,
-                        'default_locale' => $defaultLocale,
-                        'columns' => ['title' => 'tr_title', 'slug' => 'tr_slug'],
-                    ])
-                    ->where(function ($q) {
-                        $q->whereNotNull('pt_locale.title')
-                            ->orWhereNotNull('pt_default.title');
+            Cache::remember(CacheKeys::petitionsIndex($locale, $page), 300, function () use ($locale, $page) {
+                $petitions = Petition::query()
+                    ->select('petitions.id')
+                    ->join('petition_translations as pt_locale', function ($join) use ($locale) {
+                        $join->on('pt_locale.petition_id', '=', 'petitions.id')
+                            ->where('pt_locale.locale', '=', $locale);
                     })
-                    ->where('petitions.status', 'published')
-                    ->where('petitions.is_active', 1)
+                    ->whereNotNull('pt_locale.title')
+                    ->visible()
                     ->orderByDesc('petitions.id')
-                    ->paginate(15, ['*'], 'page', $page);
+                    ->paginate(15, ['petitions.id'], 'page', $page);
+
+                return ['ids' => $petitions->items(), 'total' => $petitions->total()];
             });
         }
     }
