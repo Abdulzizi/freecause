@@ -52,7 +52,7 @@
 
     $shareActions = [
         ['label' => 'Facebook', 'href' => 'https://www.facebook.com/sharer/sharer.php?u='.urlencode(request()->url()), 'external' => true, 'icon' => 'share-2'],
-        ['label' => 'Twitter', 'href' => 'https://twitter.com/intent/tweet?url='.urlencode(request()->url()).'&text='.urlencode($petitionTitle), 'external' => true, 'icon' => 'external-link'],
+        ['label' => 'X', 'href' => 'https://x.com/intent/tweet?url='.urlencode(request()->url()).'&text='.urlencode($petitionTitle), 'external' => true, 'icon' => 'external-link'],
         ['label' => 'WhatsApp', 'href' => 'https://wa.me/?text='.urlencode($petitionTitle.' '.request()->url()), 'external' => true, 'icon' => 'message-square'],
     ];
 
@@ -210,10 +210,10 @@
                        aria-label="Share on Facebook">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg> Facebook
                     </a>
-                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
+                    <a href="https://x.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-dark text-on-dark"
-                       aria-label="Share on Twitter">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.953 4.57a10 10 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723 9.86 9.86 0 0 1-3.127 1.184 4.92 4.92 0 0 0-8.384 4.482A13.94 13.94 0 0 1 1.64 3.162a4.822 4.822 0 0 0-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 0 1-2.228-.616v.06a4.923 4.923 0 0 0 3.946 4.827 4.996 4.996 0 0 1-2.212.085 4.936 4.936 0 0 0 4.604 3.417A9.867 9.867 0 0 1 2 20.126a13.995 13.995 0 0 0 7.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0 0 24 4.59z"/></svg> Twitter
+                       aria-label="Share on X">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.29 19.496h2.039L6.487 3.24H4.3l13.31 17.409z"/></svg> X
                     </a>
                     <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.request()->url()) }}"
                        target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-whatsapp text-white"
