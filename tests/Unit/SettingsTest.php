@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use App\Models\Setting;
 use App\Support\Settings;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -129,5 +131,31 @@ class SettingsTest extends TestCase
         Cache::shouldReceive('remember')->once()->andThrow(new \RuntimeException('cache down'));
 
         $this->assertSame('fallback', Settings::get('anything', 'fallback'));
+    }
+
+    public function test_repeated_gets_hit_cache_once_per_request(): void
+    {
+        Settings::set('a', '1');
+        Settings::set('b', '2');
+
+        Cache::spy();
+        Cache::shouldReceive('remember')->once()->andReturn(['global' => ['a' => '1', 'b' => '2']]);
+
+        $this->assertSame(1, Settings::get('a'));
+        $this->assertSame(2, Settings::get('b'));
+    }
+
+    public function test_job_processing_flushes_stale_memo(): void
+    {
+        Settings::set('site_name', 'old');
+        $this->assertSame('old', Settings::get('site_name'));
+
+        Setting::where('key', 'site_name')->update(['value' => 'new']);
+        Cache::forget(self::CACHE_KEY);
+        $this->assertSame('old', Settings::get('site_name'));
+
+        event(new JobProcessing('sync', $this->createMock(Job::class)));
+
+        $this->assertSame('new', Settings::get('site_name'));
     }
 }

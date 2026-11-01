@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -52,6 +53,8 @@ class AppServiceProvider extends ServiceProvider
         PetitionTranslation::observe(FlushesListingCaches::class);
         CategoryTranslation::observe(FlushesListingCaches::class);
         User::observe(UserProfileCacheFlusher::class);
+
+        Queue::before(fn () => Settings::flushMemo());
 
         $this->bootRateLimiting();
 
