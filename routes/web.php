@@ -53,6 +53,10 @@ Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'scrip
 Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
     ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
+if (app()->environment('local', 'e2e')) {
+    Route::view('/__components', 'dev.components');
+}
+
 Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(request()) ?? redirect('/'.default_locale()))
     ->name('root');
 

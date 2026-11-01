@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+PHP=php
+if [ -x /opt/homebrew/opt/php/bin/php ]; then PHP=/opt/homebrew/opt/php/bin/php; fi
+
+DB="$(mktemp -d)/e2e.sqlite"
+touch "$DB"
+
+export APP_ENV=e2e APP_DEBUG=false APP_URL=http://127.0.0.1:8099
+export APP_KEY="base64:$(head -c 32 /dev/urandom | base64)"
+export APP_CONFIG_CACHE="$(dirname "$DB")/config.php" APP_ROUTES_CACHE="$(dirname "$DB")/routes.php"
+export DB_CONNECTION=sqlite DB_DATABASE="$DB" DB_URL=
+export CACHE_STORE=array SESSION_DRIVER=file QUEUE_CONNECTION=sync MAIL_MAILER=array
+export SENTRY_LARAVEL_DSN= LOG_CHANNEL=stderr ENFORCE_MIN_PHP=false
+export PHP_CLI_SERVER_WORKERS=4
+
+[ "$DB_CONNECTION" = sqlite ]
+"$PHP" artisan migrate --force --seed --seeder='Database\Seeders\E2eSeeder' >/dev/null
+exec "$PHP" artisan serve --no-reload --host=127.0.0.1 --port=8099

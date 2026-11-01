@@ -44,3 +44,6 @@ bootstrap/cache/*.php
 /opencode.json
 .playwright-mcp/
 .claude/
+
+/test-results
+/playwright-report
