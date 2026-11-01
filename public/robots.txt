@@ -1,14 +1,18 @@
-User-agent: Applebot
-Disallow: /
-User-agent: Applebot-Extended
-Disallow: /
-
+# Search crawlers may discover public petitions, categories and the magazine.
+# Utility pages use noindex in HTML/headers so crawlers can read that directive.
 User-agent: *
 Disallow: /admin
-Disallow: /admin/
 Disallow: /api/
-Disallow: */download/pdf
-Disallow: */download/txt
-Crawl-delay: 2
+Disallow: /magazine/wp-admin/
+Allow: /magazine/wp-admin/admin-ajax.php
+
+# Opt out of training crawlers; search/discovery crawlers retain public access.
+User-agent: Applebot-Extended
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Bytespider
+Disallow: /
 
 Sitemap: https://www.freecause.com/sitemap.xml
+Sitemap: https://www.freecause.com/magazine/sitemap_index.xml

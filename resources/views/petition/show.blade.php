@@ -3,7 +3,7 @@
 @php
     $isAuthed = auth()->check();
 
-    $petitionTitle = e($tr->title ?? ($petition->title ?? 'Petition'));
+    $petitionTitle = \App\Support\Seo::text($tr->title ?? ($petition->title ?? 'Petition'));
     $pageTitle = __('show.page_title', ['title' => $petitionTitle]);
 
     $petitionImg = $petition->coverUrl();

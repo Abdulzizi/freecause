@@ -1,0 +1,6 @@
+{
+  "description": "Applied manually in Cloudflare. Permit verified Applebot search discovery while rejecting impostors and Applebot-Extended training. Keep the existing unrelated scraper blocks.",
+  "rule_id": "7f5a0f0fd2e441cc87ecad5f1defe188",
+  "action": "block",
+  "expression": "(http.user_agent contains \"Lightpanda\") or (http.user_agent contains \"ExaSearchBot\") or (http.user_agent contains \"SemrushBot\") or (http.user_agent contains \"Sogou\") or (http.user_agent contains \"Applebot-Extended\") or ((http.user_agent contains \"Applebot\") and not cf.client.bot)"
+}

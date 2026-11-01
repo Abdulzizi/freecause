@@ -1,0 +1,8 @@
+{
+  "description": "Applied manually in Cloudflare; reference configuration, not an automatic deployment. Keep before the existing AI and scanner block rules. The preceding /up health exception remains unchanged.",
+  "name": "Challenge public HTML and profile traffic",
+  "action": "managed_challenge",
+  "expression": "not cf.client.bot and (\n(http.request.uri.path contains \"/user/\" or\nhttp.request.uri.path contains \"/usuario/\" or\nhttp.request.uri.path contains \"/utente/\" or\nhttp.request.uri.path contains \"/anvandare/\" or\nhttp.request.uri.path contains \"/bruger/\" or\nhttp.request.uri.path contains \"/gebruiker/\" or\nhttp.request.uri.path contains \"/kullanici/\")\nor (\nhttp.host in {\"freecause.com\" \"www.freecause.com\"}\nand http.request.method in {\"GET\" \"HEAD\"}\nand not starts_with(http.request.uri.path, \"/cdn-cgi/\")\nand not starts_with(http.request.uri.path, \"/ads/\")\nand not starts_with(http.request.uri.path, \"/api/\")\nand not starts_with(http.request.uri.path, \"/.well-known/\")\nand not starts_with(http.request.uri.path, \"/admin\")\nand (\nany(http.request.headers[\"accept\"][*] contains \"text/html\")\nor http.request.uri.path contains \"/petition/\"\nor http.request.uri.path contains \"/petitions\"\nor http.request.uri.path in {\"/\" \"/da\" \"/de\" \"/el\" \"/en\" \"/es\" \"/fr\" \"/it\" \"/nl\" \"/pl\" \"/pt\" \"/ro\" \"/ru\" \"/sv\" \"/tr\"}\n)\n)\n)",
+  "verified_crawlers_exempt": true,
+  "ads_api_admin_paths_exempt": true
+}
