@@ -96,13 +96,20 @@ class WarmCache extends Command
                 'columns' => ['title' => 'petition_title', 'slug' => 'petition_slug'],
             ]);
 
+            // live display name per signer identify_mode; guest falls back to frozen s.name
+            $displayExpr = "COALESCE(CASE u.identify_mode
+                    WHEN 'name' THEN COALESCE(NULLIF(u.first_name, ''), u.name)
+                    WHEN 'nick' THEN COALESCE(NULLIF(u.nickname, ''), u.name)
+                    ELSE u.name END, s.name) AS display_name";
+
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
                 return DB::select("
-                    SELECT s.*, p.id as petition_id,
+                    SELECT s.*, p.id as petition_id, {$displayExpr},
                         {$tr['selects'][0]},
                         {$tr['selects'][1]}
                     FROM signatures s FORCE INDEX (signatures_created_at_index)
                     STRAIGHT_JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
+                    LEFT JOIN users u ON u.id = s.user_id
                     {$tr['locale_join']}
                     {$tr['default_join']}
                     WHERE s.confirmed = 1 AND s.is_spam = 0
@@ -113,11 +120,12 @@ class WarmCache extends Command
             }
 
             return DB::select("
-                SELECT s.*, p.id as petition_id,
+                SELECT s.*, p.id as petition_id, {$displayExpr},
                     {$tr['selects'][0]},
                     {$tr['selects'][1]}
                 FROM signatures s
                 JOIN petitions p ON p.id = s.petition_id AND p.status = 'published' AND p.is_active = 1
+                LEFT JOIN users u ON u.id = s.user_id
                 {$tr['locale_join']}
                 {$tr['default_join']}
                 WHERE s.confirmed = 1 AND s.is_spam = 0

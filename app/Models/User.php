@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\CacheVersion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,6 +17,9 @@ class User extends Authenticatable
     {
         static::created(fn (self $user) => Cache::forget('level:user_counts'));
         static::updated(function (self $user) {
+            if ($user->wasChanged(['identify_mode', 'nickname', 'first_name', 'last_name', 'name'])) {
+                CacheVersion::bumpListings();
+            }
             if ($user->wasChanged('level_id')) {
                 Cache::forget('level:user_counts');
             }
