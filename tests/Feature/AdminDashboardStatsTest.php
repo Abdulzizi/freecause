@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Models\User;
 use App\Models\UserLevel;
 use Database\Seeders\LanguageSeeder;
@@ -55,5 +56,17 @@ class AdminDashboardStatsTest extends TestCase
             ->assertSee('of 4 accounts')
             ->assertSee('1 legacy nick-only')
             ->assertSee("{$verifiedReal} verified ({$pct}%)");
+    }
+
+    public function test_real_users_is_total_minus_synthetic(): void
+    {
+        User::factory()->create(['email' => 'a@gmail.com']);
+        User::factory()->create(['email' => 'b@gmail.com']);
+        User::factory()->create(['email' => 'legacy@internetpetition.org']);
+
+        $stats = app(DashboardController::class)->getStats();
+
+        $this->assertSame(1, $stats['users_synthetic']);
+        $this->assertSame(2, $stats['users_real']);
     }
 }

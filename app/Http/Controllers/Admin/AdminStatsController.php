@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
@@ -62,18 +61,9 @@ class AdminStatsController extends Controller
     private function summaryStats($locale, $from)
     {
 
-        $totals = Cache::remember('admin:stats:totals:v2', 900, function () {
-            return DB::table('users')
-                ->selectRaw('
-                    COUNT(*) as users_accounts,
-                    SUM(CASE WHEN email_domain <> ? THEN 1 ELSE 0 END) as users_total,
-                    SUM(CASE WHEN verified = 1 AND email_domain <> ? THEN 1 ELSE 0 END) as users_verified,
-                    (SELECT COUNT(*) FROM petitions) as petitions_total,
-                    (SELECT COUNT(*) FROM petitions WHERE status = "published") as petitions_published,
-                    (SELECT COUNT(*) FROM signatures) as signatures_total
-                ', [User::SYNTHETIC_DOMAIN, User::SYNTHETIC_DOMAIN])
-                ->first();
-        });
+        $d = app(DashboardController::class)->getStats();
+        $usersTotal = $d['users_real'];
+        $petitionsTotal = max($d['petitions_total'], $d['petitions_published']);
 
         $rangeKey = $from->toDateString().':'.($locale ?: 'all');
         $recent = Cache::remember("admin:stats:recent:{$rangeKey}", 300, function () use ($from, $locale) {
@@ -88,19 +78,19 @@ class AdminStatsController extends Controller
         });
 
         return [
-            'users_total' => (int) $totals->users_total,
-            'users_accounts' => (int) $totals->users_accounts,
-            'users_synthetic' => (int) $totals->users_accounts - (int) $totals->users_total,
-            'users_verified_percent' => $totals->users_total > 0
-                ? round(($totals->users_verified / $totals->users_total) * 100, 1)
+            'users_total' => $usersTotal,
+            'users_accounts' => $usersTotal + $d['users_synthetic'],
+            'users_synthetic' => $d['users_synthetic'],
+            'users_verified_percent' => $usersTotal > 0
+                ? round(min($d['users_verified'], $usersTotal) / $usersTotal * 100, 1)
                 : 0,
 
-            'petitions_total' => $totals->petitions_total,
-            'petitions_publish_percent' => $totals->petitions_total > 0
-                ? round(($totals->petitions_published / $totals->petitions_total) * 100, 1)
+            'petitions_total' => $petitionsTotal,
+            'petitions_publish_percent' => $petitionsTotal > 0
+                ? round(($d['petitions_published'] / $petitionsTotal) * 100, 1)
                 : 0,
 
-            'signatures_total' => $totals->signatures_total,
+            'signatures_total' => $d['signatures_total'],
 
             'users_new' => $recent['users_new'],
             'petitions_new' => $recent['petitions_new'],
