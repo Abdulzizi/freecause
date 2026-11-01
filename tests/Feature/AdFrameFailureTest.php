@@ -55,4 +55,13 @@ class AdFrameFailureTest extends TestCase
         $response = $this->get(Ads::frameUrl('rectangle'))->assertOk();
         $response->assertSee('atOptions', false)->assertDontSee('googletagmanager.com', false);
     }
+
+    public function test_public_404_keeps_graphical_recovery_ads_and_real_error_status(): void
+    {
+        $response = $this->get('/en/petition/missing/999999999')->assertNotFound();
+        $response->assertSee('id="fc-404-recovery"', false)
+            ->assertSee('https://ads.freecause.com/ads/frame/rectangle?v=2', false)
+            ->assertSee('/en/petitions', false);
+        $this->assertStringContainsString('noindex', $response->getContent());
+    }
 }
