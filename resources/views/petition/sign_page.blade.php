@@ -42,6 +42,12 @@
                         </x-ui.alert>
                     @endif
 
+                    @foreach (['name', 'email'] as $field)
+                        @if (filled(data_get($signData, $field)))
+                            <input type="hidden" name="{{ $field }}" value="{{ $signData[$field] }}">
+                        @endif
+                    @endforeach
+
                     <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', 'agree') }}">
                     <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', 'agree') }}">
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', 'agree') }}">

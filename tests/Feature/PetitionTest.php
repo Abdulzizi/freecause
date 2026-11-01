@@ -465,6 +465,39 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
     }
 
+    public function test_guest_confirm_form_carries_everything_the_final_post_needs(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Hidden Petition',
+            'slug' => 'hidden-petition',
+            'description' => 'Description',
+        ]);
+
+        $html = $this->post("/en/petition/hidden-petition/{$petition->id}/sign/confirm", [
+            'name' => 'Guest',
+            'email' => 'hidden-guest@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertOk()->getContent();
+
+        preg_match_all('/<input type="hidden" name="([^"]+)" value="([^"]*)"/', $html, $m);
+        $fields = array_combine($m[1], array_map('html_entity_decode', $m[2]));
+        unset($fields['_token']);
+
+        $this->assertSame('Guest', $fields['name'] ?? null);
+        $this->assertSame('hidden-guest@example.com', $fields['email'] ?? null);
+
+        $this->post("/en/petition/hidden-petition/{$petition->id}/sign", $fields)
+            ->assertSessionHasNoErrors()
+            ->assertRedirect("/en/petition/hidden-petition/{$petition->id}/thanks");
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'hidden-guest@example.com']);
+    }
+
     public function test_guest_signing_blocked_when_turnstile_fails(): void
     {
         Settings::set('turnstile_enabled', true, 'global');
