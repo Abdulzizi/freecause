@@ -1,0 +1,84 @@
+--- /etc/nginx/sites-enabled/freecause-com.before
++++ /etc/nginx/sites-enabled/freecause-com
+@@ -1,7 +1,8 @@
+ # Production vhost — canonical host www.freecause.com — serves the release app
+ # Apex freecause.com permanently redirects to www (path + query preserved).
+ server {
+-    server_name www.freecause.com;
++    include /etc/nginx/snippets/freecause-origin-guard.conf;
++    server_name www.freecause.com ads.freecause.com;
+ 
+     root /var/www/freecause/current/public;
+     index index.php;
+@@ -73,6 +74,7 @@
+ 
+ # Apex HTTPS -> permanent redirect to www (path + query preserved)
+ server {
++    include /etc/nginx/snippets/freecause-origin-guard.conf;
+     listen [::]:443 ssl;
+     listen 443 ssl;
+     server_name freecause.com;
+@@ -91,6 +93,7 @@
+ 
+ # HTTP (both hosts) -> permanent redirect to https://www.freecause.com (path + query preserved)
+ server {
++    include /etc/nginx/snippets/freecause-origin-guard.conf;
+     listen 80;
+     listen [::]:80;
+     server_name freecause.com www.freecause.com;
+--- /etc/nginx/sites-available/default.before
++++ /etc/nginx/sites-available/default
+@@ -1,10 +1,13 @@
++# Bare IP and unknown hostnames never serve duplicate application content.
+ server {
+     listen 80 default_server;
+     listen [::]:80 default_server;
+-    root /var/www/html;
+-    index index.html index.htm index.nginx-debian.html;
++    listen 443 ssl default_server;
++    listen [::]:443 ssl default_server;
+     server_name _;
+-    location / {
+-        try_files $uri $uri/ =404;
+-    }
++    ssl_certificate /etc/letsencrypt/live/freecause.com/fullchain.pem;
++    ssl_certificate_key /etc/letsencrypt/live/freecause.com/privkey.pem;
++    include /etc/letsencrypt/options-ssl-nginx.conf;
++    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
++    return 301 https://www.freecause.com$request_uri;
+ }
+--- /dev/null
++++ /etc/nginx/conf.d/freecause-origin-trust.conf
+@@ -0,0 +1,27 @@
++geo $realip_remote_addr $freecause_trusted_origin {
++    default 0;
++    127.0.0.1/32 1;
++    ::1/128 1;
++    173.245.48.0/20 1;
++    103.21.244.0/22 1;
++    103.22.200.0/22 1;
++    103.31.4.0/22 1;
++    141.101.64.0/18 1;
++    108.162.192.0/18 1;
++    190.93.240.0/20 1;
++    188.114.96.0/20 1;
++    197.234.240.0/22 1;
++    198.41.128.0/17 1;
++    162.158.0.0/15 1;
++    104.16.0.0/13 1;
++    104.24.0.0/14 1;
++    172.64.0.0/13 1;
++    131.0.72.0/22 1;
++    2400:cb00::/32 1;
++    2606:4700::/32 1;
++    2803:f800::/32 1;
++    2405:b500::/32 1;
++    2405:8100::/32 1;
++    2a06:98c0::/29 1;
++    2c0f:f248::/32 1;
++}
+--- /dev/null
++++ /etc/nginx/snippets/freecause-origin-guard.conf
+@@ -0,0 +1,2 @@
++# Only Cloudflare and local smoke tests may serve application content.
++if ($freecause_trusted_origin = 0) { return 403; }
