@@ -16,6 +16,7 @@ use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
+use App\Support\CacheVersion;
 use App\Support\DefaultComments;
 use App\Support\ImageVariants;
 use App\Support\ReviewKeywords;
@@ -852,12 +853,18 @@ class PetitionController extends Controller
             ->tap($withTr)
             ->latest('petitions.created_at');
 
+        $cachedTotal = fn ($base, string $kind) => cache()->remember(
+            "my-petitions:total:{$kind}:{$u->id}:{$locale}:".CacheVersion::get('list'),
+            300,
+            fn () => (clone $base)->toBase()->getCountForPagination()
+        );
+
         if ($tab === 'signed') {
-            $signed = $signedBase->paginate(10)->withQueryString();
+            $signed = $signedBase->paginate(10, ['*'], 'page', null, $cachedTotal($signedBase, 'signed'))->withQueryString();
             $created = $createdBase->limit(5)->get();
         } elseif ($tab === 'created') {
             $signed = $signedBase->limit(5)->get();
-            $created = $createdBase->paginate(10)->withQueryString();
+            $created = $createdBase->paginate(10, ['*'], 'page', null, $cachedTotal($createdBase, 'created'))->withQueryString();
         } else {
             $signed = $signedBase->limit(5)->get();
             $created = $createdBase->limit(5)->get();

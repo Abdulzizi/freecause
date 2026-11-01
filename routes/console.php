@@ -21,7 +21,7 @@ Schedule::command('cache:warm')->hourly();
 Schedule::command('petition:send-digest')->dailyAt('09:00');
 Schedule::command('emails:petition-new-signatures')->hourly();
 
-Schedule::call(fn () => app(DashboardController::class)->warm())->everyFiveMinutes();
+Schedule::call(fn () => app(DashboardController::class)->warm())->name('dashboard:warm')->withoutOverlapping(30)->everyFiveMinutes();
 Schedule::command('queue:monitor', [
     '--alert-email' => Settings::get('email_to_staff', '') ?: config('mail.from.address'),
 ])->everyFiveMinutes();
