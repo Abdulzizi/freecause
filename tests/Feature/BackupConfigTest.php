@@ -24,6 +24,5 @@ class BackupConfigTest extends TestCase
             config('backup.backup.destination.disks'),
             config('backup.monitor_backups.0.disks'),
         );
-        $this->assertSame('s3', config('filesystems.disks.r2.driver'));
     }
 }

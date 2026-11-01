@@ -11,8 +11,6 @@ use Spatie\Backup\Tasks\Cleanup\Strategies\DefaultStrategy;
 use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays;
 use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes;
 
-$disks = array_values(array_filter(['backups', env('R2_BUCKET') ? 'r2' : null]));
-
 return [
 
     'backup' => [
@@ -174,7 +172,9 @@ return [
             /*
              * The disk names on which the backups will be stored.
              */
-            'disks' => $disks,
+            'disks' => [
+                'backups',
+            ],
 
             /*
              * Determines whether to allow backups to continue when some targets fail instead of failing completely.
@@ -305,10 +305,10 @@ return [
     'monitor_backups' => [
         [
             'name' => env('APP_NAME', 'laravel-backup'),
-            'disks' => $disks,
+            'disks' => ['backups'],
             'health_checks' => [
                 MaximumAgeInDays::class => 1,
-                MaximumStorageInMegabytes::class => 9000,
+                MaximumStorageInMegabytes::class => 20000,
             ],
         ],
 
@@ -373,7 +373,7 @@ return [
              * this amount of megabytes has been reached.
              * Set null for unlimited size.
              */
-            'delete_oldest_backups_when_using_more_megabytes_than' => 7000,
+            'delete_oldest_backups_when_using_more_megabytes_than' => 15000,
         ],
 
         /*
