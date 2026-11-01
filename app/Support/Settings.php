@@ -10,10 +10,16 @@ class Settings
 {
     private const CACHE_KEY = 'settings:all';
 
+    private static ?array $memo = null;
+
     private static function all(): array
     {
+        if (self::$memo !== null) {
+            return self::$memo;
+        }
+
         try {
-            return Cache::remember(self::CACHE_KEY, 300, function () {
+            return self::$memo = Cache::remember(self::CACHE_KEY, 300, function () {
                 $grouped = [];
 
                 foreach (Setting::query()->get(['group', 'key', 'value']) as $row) {
@@ -63,6 +69,8 @@ class Settings
 
     public static function forget(): void
     {
+        self::$memo = null;
+
         try {
             Cache::forget(self::CACHE_KEY);
         } catch (\Throwable $e) {

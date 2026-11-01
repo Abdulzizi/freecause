@@ -130,4 +130,16 @@ class SettingsTest extends TestCase
 
         $this->assertSame('fallback', Settings::get('anything', 'fallback'));
     }
+
+    public function test_repeated_gets_hit_cache_once_per_request(): void
+    {
+        Settings::set('a', '1');
+        Settings::set('b', '2');
+
+        Cache::spy();
+        Cache::shouldReceive('remember')->once()->andReturn(['global' => ['a' => '1', 'b' => '2']]);
+
+        $this->assertSame(1, Settings::get('a'));
+        $this->assertSame(2, Settings::get('b'));
+    }
 }
