@@ -16,6 +16,7 @@ use App\Http\Middleware\LegacyWordRedirect;
 use App\Http\Middleware\NoCacheHeaders;
 use App\Http\Middleware\OptionalSession;
 use App\Http\Middleware\SetLocale;
+use App\Support\Ads;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Sentry\Laravel\Integration;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->registered(function (Application $app) {
@@ -75,6 +77,18 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);
+
+        // Ad-frame failures must never render the full site: its ad slots would
+        // request more frames, recursively loading error pages and analytics.
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
+            if ($request->is('ads/frame/*') || Ads::frameHostMatchesRequest()) {
+                return response('', $e->getStatusCode(), [
+                    ...$e->getHeaders(),
+                    'Cache-Control' => 'no-store',
+                    'X-Robots-Tag' => 'noindex, nofollow',
+                ]);
+            }
+        });
 
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson()) {

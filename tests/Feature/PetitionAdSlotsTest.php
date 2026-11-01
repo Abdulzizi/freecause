@@ -85,7 +85,7 @@ class PetitionAdSlotsTest extends TestCase
 
         preg_match('/<iframe[^>]*\/ads\/frame\/rectangle[^>]*>/', $html, $rectangleFrame);
         $this->assertNotEmpty($rectangleFrame, 'missing rectangle frame');
-        $this->assertStringContainsString('src="https://ads.freecause.com/ads/frame/rectangle"', $rectangleFrame[0]);
+        $this->assertStringContainsString('src="https://ads.freecause.com/ads/frame/rectangle?v=2"', $rectangleFrame[0]);
         $this->assertStringContainsString('sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"', $rectangleFrame[0]);
 
         preg_match('/<iframe[^>]*\/ads\/frame\/native[^>]*>/', $html, $nativeFrame);

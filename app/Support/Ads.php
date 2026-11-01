@@ -89,7 +89,8 @@ class Ads
 
     public static function frameUrl(string $name): string
     {
-        return self::frameOrigin().'/ads/frame/'.$name;
+        // Avoid reusing a permanent redirect cached before the dedicated ad host was configured.
+        return self::frameOrigin().'/ads/frame/'.$name.'?v=2';
     }
 
     public static function frameHost(): string
