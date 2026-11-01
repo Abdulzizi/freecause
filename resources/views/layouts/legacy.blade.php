@@ -33,12 +33,13 @@
             ($homeMeta['head_additional_html'] ??
             ($globalMetaDefault['head_additional_html'] ??
             ($homeMetaDefault['head_additional_html'] ?? '')));
-        $_canonicalParams = array_diff_key(request()->query(), array_flip(['status', 'view', 'page']));
-        $canonicalPageUrl = canonical_url().($_canonicalParams !== [] ? '?'.http_build_query($_canonicalParams) : '');
+        $metaDescription = \App\Support\Seo::description(get_defined_vars(), $metaDescription);
+        $metaRobots = \App\Support\Seo::robots(get_defined_vars());
+        $canonicalPageUrl = \App\Support\Seo::canonical();
         $canonical = trim((string) $__env->getSection('canonical', $canonicalPageUrl));
 
-        $ogTitle = trim((string) $__env->getSection('og_title', $__env->getSection('title', 'FreeCause')));
-        $ogDescription = trim((string) $__env->getSection('og_description', strip_tags($metaDescription)));
+        $ogTitle = \App\Support\Seo::text($__env->getSection('og_title', $__env->getSection('title', 'FreeCause')));
+        $ogDescription = \App\Support\Seo::text($__env->getSection('og_description', $metaDescription));
         $ogUrl = trim((string) $__env->getSection('og_url', $canonical));
         $ogType = trim((string) $__env->getSection('og_type', 'website'));
         $ogImage = trim((string) $__env->getSection('og_image', asset('legacy/images-v2/freecause_logo_icon_clear.png')));
@@ -50,8 +51,12 @@
     <title>
         @hasSection('title')
             @php
-                $yieldedTitle = trim($__env->getSection('title'));
-                $finalSuffix = str_ends_with($yieldedTitle, $metaSuffix) ? '' : $metaSuffix;
+                $yieldedTitle = \App\Support\Seo::text($__env->getSection('title'));
+                $finalSuffix = str_contains(mb_strtolower($yieldedTitle), 'freecause') ? '' : $metaSuffix;
+                $pageNumber = request()->query('page');
+                if (\App\Support\Seo::isListing() && is_scalar($pageNumber) && ctype_digit((string) $pageNumber) && (int) $pageNumber > 1) {
+                    $yieldedTitle .= ' · '.min((int) $pageNumber, 500);
+                }
             @endphp
             {{ $yieldedTitle }}{{ $finalSuffix }}
         @else
@@ -66,15 +71,18 @@
 
     <link rel="canonical" href="{{ $canonical }}">
 
-    @if (request()->is('*/widgets/*', '*/widget-render/*', '*/oauth/*', '*/user/*') || request()->has('status') || request()->query('view') === 'pages')
-        <meta name="robots" content="noindex, follow">
-    @endif
+    <meta name="robots" content="{{ $metaRobots }}">
+    @unless (request()->routeIs('home', 'petition.show'))
+        @include('partials.hreflang')
+    @endunless
 
     <meta property="og:site_name" content="FreeCause">
+    <meta property="og:locale" content="{{ \App\Support\Locale::toFull($locale) }}">
     <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:title" content="{{ $ogTitle }}">
     <meta property="og:description" content="{{ $ogDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:alt" content="{{ $ogTitle }}">
     <meta property="og:url" content="{{ $ogUrl }}">
 
     <meta name="twitter:card" content="summary_large_image">
