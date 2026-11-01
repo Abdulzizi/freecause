@@ -10,8 +10,8 @@ Production runs on the **Deployer 8** layout at `/var/www/freecause`
 - `.github/workflows/ci.yml` — the gate, three jobs: `test` (`composer
   validate`/install, `php artisan test`, Pint `--test`, design-system lint),
   `assets` (JS unit tests, `npm ci && npm run build`) and `security-audit`
-  (`composer audit`, `npm audit`; an advisory fails the job). Runs on PRs,
-  pushes to `main`, and is called by `deploy.yml` (`deploy` needs `ci`).
+  (`composer audit`, `npm audit`; an advisory fails the job). Runs on PRs
+  and is called by `deploy.yml` (`deploy` needs `ci`).
 - `.github/workflows/deploy.yml` — the single CD path. On a push to `main` (or
   manual dispatch) it runs CI → Deployer deploy → `/version` smoke →
   auto-rollback on failure. Bound to the `production` GitHub Environment.
