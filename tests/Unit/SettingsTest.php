@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use App\Models\Setting;
 use App\Support\Settings;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -141,5 +143,19 @@ class SettingsTest extends TestCase
 
         $this->assertSame(1, Settings::get('a'));
         $this->assertSame(2, Settings::get('b'));
+    }
+
+    public function test_job_processing_flushes_stale_memo(): void
+    {
+        Settings::set('site_name', 'old');
+        $this->assertSame('old', Settings::get('site_name'));
+
+        Setting::where('key', 'site_name')->update(['value' => 'new']);
+        Cache::forget(self::CACHE_KEY);
+        $this->assertSame('old', Settings::get('site_name'));
+
+        event(new JobProcessing('sync', $this->createMock(Job::class)));
+
+        $this->assertSame('new', Settings::get('site_name'));
     }
 }

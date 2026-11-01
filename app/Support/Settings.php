@@ -67,6 +67,11 @@ class Settings
         self::forget();
     }
 
+    public static function flushMemo(): void
+    {
+        self::$memo = null;
+    }
+
     public static function forget(): void
     {
         self::$memo = null;
