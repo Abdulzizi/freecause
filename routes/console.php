@@ -14,8 +14,9 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('signatures:reconcile')->dailyAt('03:00');
-Schedule::command('backup:run')->dailyAt('02:00');
-Schedule::command('backup:clean')->dailyAt('02:30');
+Schedule::command('backup:run')->dailyAt('02:00')->appendOutputTo(storage_path('logs/backup.log'));
+Schedule::command('backup:clean')->dailyAt('04:00')->appendOutputTo(storage_path('logs/backup.log'));
+Schedule::command('backup:monitor')->dailyAt('06:00');
 Schedule::command('cache:warm')->hourly();
 Schedule::command('petition:send-digest')->dailyAt('09:00');
 Schedule::command('emails:petition-new-signatures')->hourly();

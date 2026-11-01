@@ -27,12 +27,14 @@ Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
 
 ## Backups (verified 2026-11-01)
 
-- `backup:run` daily 02:00, `backup:clean` 02:30 (`keep_all_backups_for_days`
-  7), via `spatie/laravel-backup`. Output goes to `/dev/null`; only a failure is
-  logged in `storage/logs/laravel*.log`.
-- The `backups` disk uses the `local` driver (`BACKUP_DISK_DRIVER` unset, no
-  S3/R2 credentials, `AWS_BUCKET` empty). Archives (~2 GB each) sit on the same
-  disk as the database: `shared/storage/app/backups/FreeCause/<ts>.zip`.
+- `backup:run` daily 02:00, `backup:clean` 04:00 (`keep_all_backups_for_days`
+  7), `backup:monitor` 06:00, via `spatie/laravel-backup`. Output goes to
+  `storage/logs/backup.log`.
+- On-host only: the `backups` disk uses the `local` driver. 7 daily archives
+  (~2 GB each, database only, uploads not included) in
+  `shared/storage/app/backups/FreeCause/<ts>.zip`.
+- Root-only copy in `/root/backup-vault/` (weekly zip, keep 4; daily uploads
+  rsync) from `/etc/cron.d/freecause-backup-vault`.
   **There is no off-host copy.**
 - 2026-10-28 02:00 `backup:run` was killed (exit code 143).
 - Deploy snapshots: `db:snapshot` writes `shared/db-snapshots/pre-migrate-<ts>.sql.gz`
@@ -97,12 +99,8 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 
 ## Parked backlog
 
-- Off-host backups: set `BACKUP_DISK_DRIVER=s3` with R2/S3 credentials, then
-  test a restore.
 - Enable `fail2ban`; set `PermitRootLogin prohibit-password` and
   `PasswordAuthentication no`; reload `ssh`.
-- Log `backup:run` output instead of `/dev/null`; find why the 2026-10-28 run
-  was killed.
 - Remove the old checkout's backups once the rollback window closes.
 - smtp2go SMTP activation (dashboard action).
 - Rotate the Google OAuth client secret and load it into the prod `.env`.
