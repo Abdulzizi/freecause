@@ -532,29 +532,35 @@
         justify-content: center;
         gap: 0.5rem;
         border: 1px solid transparent;
-        border-radius: var(--fc-r-md);
+        border-radius: var(--fc-r-xs);
         font-weight: 600;
         line-height: 1.2;
         text-decoration: none;
         cursor: pointer;
         user-select: none;
-        transition: background-color var(--fc-dur-fast) var(--fc-ease-standard), border-color var(--fc-dur-fast) var(--fc-ease-standard), color var(--fc-dur-fast) var(--fc-ease-standard), box-shadow var(--fc-dur-fast) var(--fc-ease-standard), opacity var(--fc-dur-fast) var(--fc-ease-standard), transform var(--fc-dur-fast) var(--fc-ease-standard);
+        transition: background-color var(--fc-dur-fast) var(--fc-ease-standard), border-color var(--fc-dur-fast) var(--fc-ease-standard), color var(--fc-dur-fast) var(--fc-ease-standard), transform var(--fc-dur-fast) var(--fc-ease-standard);
     }
 
     .fcui-btn:focus-visible {
-        outline: 2px solid transparent;
+        outline: 2px solid var(--fc-focus);
         outline-offset: 2px;
-        box-shadow: 0 0 0 2px var(--fc-surface), 0 0 0 4px var(--fc-brand);
     }
 
-    .fcui-btn:disabled,
     .fcui-btn[aria-busy='true'] {
-        opacity: 0.65;
+        cursor: progress;
+    }
+
+    .fcui-btn:disabled:not([aria-busy='true']) {
+        background-color: var(--fc-surface-2);
+        border-color: var(--fc-border);
+        border-style: dashed;
+        color: var(--fc-text-subtle);
         cursor: not-allowed;
     }
 
     .fcui-btn--sm {
-        padding: 0.375rem 0.75rem;
+        min-height: 2rem;
+        padding: 0.25rem 0.75rem;
         font-size: var(--text-sm);
     }
 
@@ -565,32 +571,20 @@
     }
 
     .fcui-btn--md {
-        padding: 0.625rem 1.125rem;
+        min-height: 2.5rem;
+        padding: 0.5rem 1.125rem;
         font-size: var(--text-base);
     }
 
     .fcui-btn--lg {
-        padding: 0.75rem 1.5rem;
-        font-size: var(--text-lg);
+        min-height: 3rem;
+        padding: 0.625rem 1.5rem;
+        font-size: var(--text-base);
     }
 
     .fcui-btn--primary,
     .fcui-btn--primary:link,
-    .fcui-btn--primary:visited {
-        background-color: var(--fc-brand);
-        border-color: var(--fc-brand);
-        color: var(--fc-surface);
-    }
-
-    @media (hover: hover) {
-        .fcui-btn--primary:hover {
-            background-color: var(--fc-brand-hover);
-            border-color: var(--fc-brand-hover);
-            color: var(--fc-surface);
-            box-shadow: 0 6px 16px rgba(204, 31, 31, 0.28);
-        }
-    }
-
+    .fcui-btn--primary:visited,
     .fcui-btn--danger,
     .fcui-btn--danger:link,
     .fcui-btn--danger:visited {
@@ -600,25 +594,32 @@
     }
 
     @media (hover: hover) {
-        .fcui-btn--danger:hover {
-            background-color: var(--fc-brand-active);
-            border-color: var(--fc-brand-active);
+        .fcui-btn--primary:hover:not(:disabled),
+        .fcui-btn--danger:hover:not(:disabled) {
+            background-color: var(--fc-brand-hover);
+            border-color: var(--fc-brand-hover);
             color: var(--fc-surface);
         }
+    }
+
+    .fcui-btn--primary:active:not(:disabled),
+    .fcui-btn--danger:active:not(:disabled) {
+        background-color: var(--fc-brand-active);
+        border-color: var(--fc-brand-active);
     }
 
     .fcui-btn--secondary,
     .fcui-btn--secondary:link,
     .fcui-btn--secondary:visited {
-        background-color: var(--fc-surface-2);
-        border-color: var(--fc-border-strong);
-        color: var(--fc-text);
+        background-color: transparent;
+        border-color: var(--fc-brand);
+        color: var(--fc-brand);
     }
 
     @media (hover: hover) {
-        .fcui-btn--secondary:hover {
-            background-color: var(--fc-border);
-            color: var(--fc-text);
+        .fcui-btn--secondary:hover:not(:disabled) {
+            background-color: var(--fc-brand-soft);
+            color: var(--fc-brand);
         }
     }
 
@@ -626,15 +627,15 @@
     .fcui-btn--ghost:link,
     .fcui-btn--ghost:visited {
         background-color: transparent;
-        border-color: var(--fc-brand);
+        border-color: transparent;
         color: var(--fc-brand);
     }
 
     @media (hover: hover) {
-        .fcui-btn--ghost:hover {
-            background-color: var(--fc-brand);
-            border-color: var(--fc-brand);
-            color: var(--fc-surface);
+        .fcui-btn--ghost:hover:not(:disabled) {
+            text-decoration: underline;
+            text-underline-offset: 0.25em;
+            color: var(--fc-brand);
         }
     }
 
@@ -715,13 +716,16 @@
     }
 
     .fcui-alert {
+        --fc-alert-rule: var(--fc-border-strong);
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
-        padding: 0.875rem 1rem;
-        border: 1px solid transparent;
-        border-inline-start-width: 4px;
-        border-radius: var(--fc-r-md);
+        padding: 0.625rem 0;
+        background-color: transparent;
+        border-top: 2px solid var(--fc-alert-rule);
+        border-bottom: 1px solid var(--fc-border-strong);
+        border-radius: 0;
+        color: var(--fc-text);
         font-size: var(--text-base);
         line-height: 1.45;
     }
@@ -751,7 +755,7 @@
         padding: 0;
         background: transparent;
         border: 0;
-        border-radius: 0.375rem;
+        border-radius: var(--fc-r-xs);
         color: inherit;
         opacity: 0.65;
         cursor: pointer;
@@ -770,48 +774,17 @@
         height: 1rem;
     }
 
-    .fcui-alert--success {
-        background-color: var(--fc-success-soft);
-        border-color: color-mix(in srgb, var(--fc-success) 25%, transparent);
-        border-inline-start-color: var(--fc-success);
-        color: var(--fc-success);
+    .fcui-alert--success { --fc-alert-rule: var(--fc-success); }
+    .fcui-alert--error { --fc-alert-rule: var(--fc-brand); }
+    .fcui-alert--warning { --fc-alert-rule: var(--fc-warning); }
+    .fcui-alert--info { --fc-alert-rule: var(--fc-info); }
+
+    .fcui-alert__icon {
+        color: var(--fc-alert-rule);
     }
 
-    .fcui-alert--success .fcui-alert__icon {
-        color: var(--fc-success);
-    }
-
-    .fcui-alert--error {
-        background-color: var(--fc-danger-soft);
-        border-color: color-mix(in srgb, var(--fc-danger) 25%, transparent);
-        border-inline-start-color: var(--fc-brand);
-        color: var(--fc-danger);
-    }
-
-    .fcui-alert--error .fcui-alert__icon {
-        color: var(--fc-brand);
-    }
-
-    .fcui-alert--warning {
-        background-color: var(--fc-warning-soft);
-        border-color: color-mix(in srgb, var(--fc-warning) 25%, transparent);
-        border-inline-start-color: var(--fc-warning);
-        color: var(--fc-warning);
-    }
-
-    .fcui-alert--warning .fcui-alert__icon {
-        color: var(--fc-warning);
-    }
-
-    .fcui-alert--info {
-        background-color: color-mix(in srgb, var(--fc-info) 8%, transparent);
-        border-color: color-mix(in srgb, var(--fc-info) 25%, transparent);
-        border-inline-start-color: var(--fc-info);
-        color: var(--fc-info);
-    }
-
-    .fcui-alert--info .fcui-alert__icon {
-        color: var(--fc-info);
+    p > a.red {
+        text-decoration: underline;
     }
 
     .fcui-alert a {
@@ -1488,49 +1461,34 @@ select.fc-filter-field {
     }
 
     .fcui-badge {
+        --fc-badge-mark: var(--fc-text-muted);
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        padding: 0.125rem 0.5rem;
-        border: 1px solid var(--fc-border);
-        border-radius: var(--fc-r-pill);
-        background: var(--fc-surface);
+        gap: 0.375rem;
         color: var(--fc-text-muted);
         font-size: var(--text-xs);
-        font-weight: 500;
+        font-weight: 600;
+        letter-spacing: 0.06em;
         line-height: 1.4;
+        text-transform: uppercase;
         white-space: nowrap;
     }
 
-    .fcui-badge--brand {
-        border-color: var(--fc-brand-border);
-        background: var(--fc-brand-soft);
-        color: var(--fc-brand);
+    .fcui-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        flex: none;
+        background-color: var(--fc-badge-mark);
     }
 
-    .fcui-badge--success {
-        border-color: color-mix(in srgb, var(--fc-success) 28%, transparent);
-        background: var(--fc-success-soft);
-        color: var(--fc-success);
-    }
+    .fcui-badge:has(svg)::before { display: none; }
 
-    .fcui-badge--warning {
-        border-color: color-mix(in srgb, var(--fc-warning) 28%, transparent);
-        background: var(--fc-warning-soft);
-        color: var(--fc-warning);
-    }
-
-    .fcui-badge--danger {
-        border-color: color-mix(in srgb, var(--fc-danger) 28%, transparent);
-        background: var(--fc-danger-soft);
-        color: var(--fc-danger);
-    }
-
-    .fcui-badge--info {
-        border-color: color-mix(in srgb, var(--fc-info) 28%, transparent);
-        background: color-mix(in srgb, var(--fc-info) 8%, transparent);
-        color: var(--fc-info);
-    }
+    .fcui-badge--brand { --fc-badge-mark: var(--fc-brand); color: var(--fc-text); }
+    .fcui-badge--success { --fc-badge-mark: var(--fc-success); color: var(--fc-text); }
+    .fcui-badge--warning { --fc-badge-mark: var(--fc-warning); color: var(--fc-text); }
+    .fcui-badge--danger { --fc-badge-mark: var(--fc-danger); color: var(--fc-text); }
+    .fcui-badge--info { --fc-badge-mark: var(--fc-info); color: var(--fc-text); }
 
     .fcui-breadcrumb {
         font-size: var(--text-sm);

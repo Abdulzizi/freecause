@@ -16,8 +16,8 @@
     --muted-foreground: var(--fc-text-muted);
     --accent: var(--fc-surface-2);
     --accent-foreground: var(--fc-text);
-    --destructive: var(--fc-danger);
-    --success: var(--fc-success);
+    --destructive: color-mix(in srgb, var(--fc-danger) 85%, black);
+    --success: color-mix(in srgb, var(--fc-success) 88%, black);
     --info: var(--fc-info);
     --foreground: var(--fc-text);
     --border: var(--fc-border);

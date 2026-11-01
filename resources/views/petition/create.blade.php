@@ -61,14 +61,14 @@
                         <div class="text-xl font-semibold text-brand whitespace-nowrap">{{ __('petition.step_create') }}</div>
                     </div>
 
-                    <div class="flex items-center gap-4 min-w-[240px] opacity-60">
-                        <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_50%]"></span>
-                        <div class="text-xl font-medium text-ink whitespace-nowrap">{{ __('petition.step_share') }}</div>
+                    <div class="flex items-center gap-4 min-w-[240px]">
+                        <span class="inline-block w-16 h-16 opacity-60 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_50%]"></span>
+                        <div class="text-xl font-medium text-muted whitespace-nowrap">{{ __('petition.step_share') }}</div>
                     </div>
 
-                    <div class="flex items-center gap-4 min-w-[240px] opacity-60">
-                        <span class="inline-block w-16 h-16 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_100%]"></span>
-                        <div class="text-xl font-medium text-ink whitespace-nowrap">{{ __('petition.step_change') }}</div>
+                    <div class="flex items-center gap-4 min-w-[240px]">
+                        <span class="inline-block w-16 h-16 opacity-60 bg-[url('/legacy/images/startpetition-icons.png')] bg-no-repeat bg-[length:200%_300%] bg-[position:0%_100%]"></span>
+                        <div class="text-xl font-medium text-muted whitespace-nowrap">{{ __('petition.step_change') }}</div>
                     </div>
                 </div>
 
