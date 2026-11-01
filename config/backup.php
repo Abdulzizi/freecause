@@ -25,7 +25,7 @@ return [
                 /*
                  * The list of directories and files that will be included in the backup.
                  * Note: Petition images in storage/app/public/petitions are excluded
-                 * (local disk, will be migrated to R2). Back up separately if needed.
+                 * (local disk). Backed up by the root-only vault, see docs/operations.md.
                  *
                  * For production with large DBs, consider backing up files separately
                  * or using a dedicated backup strategy for uploads.

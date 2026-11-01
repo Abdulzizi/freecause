@@ -11,18 +11,22 @@ Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
 ## Host (verified 2026-11-01)
 
 - Contabo VPS, one host for everything: 6 vCPU, 12 GB RAM, 4 GB swap, 193 GB
-  disk (45% used). Kernel `6.8.0-147`; reboots on 2026-10-18 and 2026-10-31
+  disk (31% used). Kernel `6.8.0-147`; reboots on 2026-10-18 and 2026-10-31
   17:33 (clean shutdown, no OOM in the kernel log).
-- Disk: MySQL datadir ~45 GB, `shared/` ~23 GB, `releases/` ~2.2 GB,
-  `/var/log` ~1.2 GB.
+- Disk: MySQL datadir ~28 GB, `shared/` ~16 GB, `releases/` ~2.2 GB,
+  `/var/log` ~865 MB. systemd journal capped at 200 MB
+  (`/etc/systemd/journald.conf.d/size.conf`).
 - PHP-FPM: `pm = dynamic`, `max_children` 60, `start_servers` 10, spare 3–20,
-  `max_requests` 500 (~57 MB per worker). `opcache.validate_timestamps=0` in
-  the FPM `php.ini`; `deploy.php` reloads FPM after `deploy:symlink`.
+  `max_requests` 500 (~57 MB per worker). Opcache 256 MB, 20000 files,
+  `opcache.validate_timestamps=0` in the FPM `php.ini`; `deploy.php` reloads FPM after `deploy:symlink`.
   Check FPM settings through the FPM `php.ini`, not `php -i` (CLI differs).
-- MySQL 8 on `127.0.0.1`, database `freecause_release_20260919`, binlog on.
-  Redis on `127.0.0.1:6379` (cache, session, queue; `predis`).
-- nginx: gzip on, no brotli. `sites-enabled` holds `default` (symlink) and
-  `freecause-com` (regular file, not a symlink).
+- MySQL 8 on `127.0.0.1`, database `freecause_release_20260919`. Binlogs
+  kept 7 days (`binlog_expire_logs_seconds` 604800), redo log 1 GB
+  (`innodb_redo_log_capacity`); both set with `SET PERSIST`, no restart needed.
+  Redis on `127.0.0.1:6379` (cache and session; `phpredis`). Queue driver is
+  `database`, not Redis.
+- nginx: gzip on, no brotli. `sites-enabled/freecause-com` is a symlink to
+  `sites-available/freecause-com`; edit the latter.
 - Firewall: `ufw` active.
 
 ## Backups (verified 2026-11-01)
@@ -38,9 +42,10 @@ Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
   **There is no off-host copy.**
 - 2026-10-28 02:00 `backup:run` was killed (exit code 143).
 - Deploy snapshots: `db:snapshot` writes `shared/db-snapshots/pre-migrate-<ts>.sql.gz`
-  (~2 GB each, last 7 kept). One manual dump from 2026-09-27 is in
-  `/root/prod-backups/`. The old checkout
-  `/var/www/freecause-release-v2026.09.19` still holds backups from Oct 14–15.
+  (~2 GB each, last 7 kept).
+- Restore tested 2026-11-01: the 02:00 archive loaded into a scratch database in
+  1h51m. `users`, `signatures`, `petitions` row counts and the table count (72)
+  matched live. Views, routines and triggers were not compared.
 
 ## Security state (verified 2026-11-01)
 
@@ -101,15 +106,12 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 
 - Enable `fail2ban`; set `PermitRootLogin prohibit-password` and
   `PasswordAuthentication no`; reload `ssh`.
-- Remove the old checkout's backups once the rollback window closes.
 - smtp2go SMTP activation (dashboard action).
 - Rotate the Google OAuth client secret and load it into the prod `.env`.
 - WordPress hardening: rotate WP salts / SSO secret, review `wp-file-manager`,
   consider denying direct PHP execution under `/magazine/`.
-- Reconcile nginx drift (`sites-enabled` vs `sites-available`) and reload.
 - Cloudflare WAF 403s on some legacy locale paths (`it_IT/utente`,
   `es_ES/usuario`): the 301 works origin-side but is challenged at the edge.
-- binlog expiry needs a MySQL restart — schedule it.
 - Email-verification gating: product decision for create/edit/delete petitions.
 - CKEditor 4.21 is EOL — decide on a self-hosted/updated bundle.
 - Contacts form on the DB-driven page: wire the live POST form or leave it text-only.
