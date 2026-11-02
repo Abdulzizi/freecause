@@ -110,6 +110,7 @@ class PetitionStats
             $counts[$id] = $count;
         }
 
+        DB::afterCommit(fn () => CacheVersion::bumpListings());
         self::invalidate(array_keys($counts));
 
         return $counts;
@@ -146,7 +147,13 @@ class PetitionStats
             return;
         }
 
-        CacheVersion::bumpListings();
+        // Bump listing caches at most once a minute instead of on every signature,
+        // after commit so a reader can't recache the old count.
+        DB::afterCommit(function () {
+            if (Cache::add('listings:bump', 1, 60)) {
+                CacheVersion::bumpListings();
+            }
+        });
 
         foreach ($petitionIds as $id) {
             Cache::forget("petition:latest_sigs:{$id}");

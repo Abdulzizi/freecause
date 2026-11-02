@@ -231,9 +231,14 @@ class AuditRegressionTest extends TestCase
         $mirrorBody = $strip((string) $this->followingRedirects()->get($mirror->headers->get('Location'))->getContent());
 
         $this->assertSame($freshBody, $mirrorBody);
+
+        $freshAgain = $sign('mirror-fresh@example.com', 'Fresh Guest')->assertSessionHasNoErrors();
+        $mirrorAgain = $sign('mirror-existing@example.com', 'Existing Holder')->assertSessionHasNoErrors();
+        $this->assertSame($freshAgain->headers->get('Location'), $mirrorAgain->headers->get('Location'));
+        $this->assertSame($fresh->headers->get('Location'), $freshAgain->headers->get('Location'));
     }
 
-    public function test_08b_guest_sign_with_existing_unverified_email_mails_at_most_hourly(): void
+    public function test_08b_guest_sign_with_existing_unverified_email_mails_at_most_every_48_hours(): void
     {
         Settings::set('smtp_enabled', true, 'global');
         Settings::set('require_email_verification', true, 'global');
@@ -259,6 +264,10 @@ class AuditRegressionTest extends TestCase
         Mail::assertNothingQueued();
 
         $user->forceFill(['verification_token_sent_at' => now()->subHours(2)])->save();
+        $sign();
+        Mail::assertNothingQueued();
+
+        $user->forceFill(['verification_token_sent_at' => now()->subHours(49)])->save();
         $sign();
         Mail::assertQueued(VerifyAccountMail::class, 1);
     }

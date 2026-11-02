@@ -915,6 +915,77 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
     }
 
+    public function test_guest_sign_with_existing_unverified_account_counts_after_verify(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        $user = User::factory()->create([
+            'email' => 'existing@example.com',
+            'verified' => false,
+            'verification_token' => Str::random(64),
+            'verification_token_sent_at' => now(),
+        ]);
+        $petition = $this->makePublishedPetition('existing-account-petition');
+        $payload = [
+            'name' => 'Existing',
+            'email' => 'existing@example.com',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ];
+
+        $this->post("/en/petition/existing-account-petition/{$petition->id}/sign", $payload)
+            ->assertRedirect("/en/petition/existing-account-petition/{$petition->id}/thanks");
+
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+        ]);
+
+        $this->post("/en/petition/existing-account-petition/{$petition->id}/sign", $payload)
+            ->assertRedirect("/en/petition/existing-account-petition/{$petition->id}/thanks");
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+
+        $this->get("/en/verify/{$user->verification_token}")->assertRedirect('/en/email-verified');
+
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => true,
+        ]);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+    }
+
+    public function test_guest_sign_with_email_of_account_that_already_signed_returns_thanks(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        $user = User::factory()->create(['email' => 'signed-before@example.com', 'verified' => false]);
+        $petition = $this->makePublishedPetition('already-signed-account-petition');
+        Signature::create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'email' => 'other-address@example.com',
+            'name' => 'Earlier',
+            'locale' => 'en',
+            'text' => 'I support this petition',
+            'confirmed' => false,
+        ]);
+
+        $this->post("/en/petition/already-signed-account-petition/{$petition->id}/sign", [
+            'name' => 'Again',
+            'email' => 'signed-before@example.com',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertRedirect("/en/petition/already-signed-account-petition/{$petition->id}/thanks")
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+    }
+
     public function test_guest_verify_link_resolves_on_non_default_locales(): void
     {
         Settings::set('require_email_verification', true);

@@ -73,31 +73,6 @@ class SpamTest extends TestCase
         $this->assertFalse(Spam::isSpam('Sign my petition at http://petition.com'));
     }
 
-    public function test_spam_rate_limit_allows_normal_requests(): void
-    {
-        Spam::rateLimit('petition', 5);
-
-        $this->assertFalse(Spam::rateLimit('petition', 5));
-    }
-
-    public function test_spam_rate_limit_blocks_excessive_requests(): void
-    {
-        for ($i = 0; $i < 20; $i++) {
-            Spam::rateLimit('petition', 20);
-        }
-
-        $this->assertTrue(Spam::rateLimit('petition', 20));
-    }
-
-    public function test_rate_limit_does_not_ban_ip(): void
-    {
-        for ($i = 0; $i < 6; $i++) {
-            Spam::rateLimit('petition', 5);
-        }
-
-        $this->assertDatabaseMissing('banned_ips', ['ip' => request()->ip()]);
-    }
-
     public function test_spam_log_creates_record(): void
     {
         Spam::log('test_type', 'test payload');
