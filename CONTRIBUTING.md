@@ -15,7 +15,7 @@ Local PHP binary on macOS: `/opt/homebrew/opt/php/bin/php`. Local DB: `freecause
 
 ```bash
 CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=:memory: /opt/homebrew/opt/php/bin/php artisan test
-/opt/homebrew/opt/php/bin/php ./vendor/bin/pint app database tests routes
+/opt/homebrew/opt/php/bin/php ./vendor/bin/pint app database tests routes config
 bash scripts/ds-lint.sh
 /opt/homebrew/opt/php/bin/php scripts/lang-audit.php
 ```
@@ -96,7 +96,7 @@ fix/{category}/{fix}
 ## Pull requests
 
 - PR from a `feat/…` or `fix/…` branch into `main`.
-- CI must pass: `test`, `assets`, `security-audit`. A red `i18n parity` (every key in `lang/en` must exist in every locale) is not blocking but must be fixed before release.
+- CI must pass: `test`, `assets`, `e2e`, `security-audit`. A red `i18n parity` / `lang-parity` (every key in `lang/en` must exist in every locale) is not blocking but must be fixed before release.
 - Describe **what changed and how it was verified** (command + result).
 - Merge by squash or rebase, then delete the branch.
 

@@ -2,6 +2,29 @@
 
 All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows the deploy tags (`vYYYY.MM.DD-HHMMSS`).
 
+## [Unreleased]
+### Added
+- Admin: Delete action for selected petitions.
+- Static 503 page when the database is unreachable, so an outage no longer renders a broken app page.
+- Graphical 404 for ad frames, with banners.
+- Backup monitor (`backup:monitor`, daily 06:00). Backups stay on-host, database only.
+- Playwright smoke, axe accessibility and screenshot gates for public and admin pages.
+### Changed
+- Restyled buttons, badges, alerts and toasts; admin controls are labelled and every admin page passes axe.
+- Petitions that match loan or crypto keywords are held for review instead of being refused.
+- Petition lists filter by the selected language.
+- Mail provider quota failures no longer flood the queue and Sentry.
+- Settings are memoized per request, `my-petitions` totals are cached, and the admin stats and dashboard no longer scan the whole `users` table.
+- Ad banner frames are supported on `www.freecause.com`, with the www ad-frame isolation enforced in response headers.
+- WordPress magazine updated; unsupported and inactive plugins removed.
+### Fixed
+- Guest name and email are sent from the sign confirm step.
+- Correct locale links and `hreflang`, refreshed X sharing, and fixed Search Console crawl and canonical signals.
+- Nickname preferences are respected in the cached homepage activity.
+- Audit findings across petitions, auth and admin.
+- `symfony/mime` bumped to 7.4.22 (CVE-2026-45070).
+- Recursive ad-frame errors; scraper blocks are prioritized in the Cloudflare rules.
+
 ## [v2026.10.25-070744]
 ### Added
 - Legacy short links: `/{shortslug}` (6 chars) now 301s to the canonical petition URL. New `legacy_shortlinks` table, `legacy:import-shortlinks` command (idempotent) and a 165,529-pair dataset.

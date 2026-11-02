@@ -13,7 +13,7 @@ A multi-language online petition platform built on Laravel 12. Users create, sig
 | Auth       | Email/password, Google OAuth (Socialite), TOTP 2FA |
 | PDF        | barryvdh/laravel-dompdf                       |
 | Images     | intervention/image-laravel                    |
-| CI/CD      | GitHub Actions: `ci.yml` gate → `deploy.yml` (Deployer 8, tag-triggered) |
+| CI/CD      | GitHub Actions: `ci.yml` gate → `deploy.yml` (Deployer 8, on push to `main`) |
 
 ## Project layout
 
@@ -34,7 +34,7 @@ resources/
   js/, css/                 Vite entry points and styles
 routes/web.php              All routes: public, auth, admin
 deploy/                     Deployer recipe, cutover script, supervisor template
-.github/workflows/          ci.yml (gate), deploy.yml (Deployer on tags), i18n.yml
+.github/workflows/          ci.yml (gate), deploy.yml (Deployer on push to main), release.yml (GitHub Release on tags), i18n.yml
 docs/                       Operational and performance docs
 ```
 
@@ -89,8 +89,9 @@ Tests run against sqlite in-memory: `CACHE_STORE=array DB_CONNECTION=sqlite DB_D
 APP_URL=https://www.freecause.com
 DB_CONNECTION=mysql
 CACHE_STORE=redis
-SESSION_DRIVER=database
+SESSION_DRIVER=redis
 QUEUE_CONNECTION=database
+REDIS_CLIENT=phpredis
 REDIS_CACHE_DB=1
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -134,10 +135,10 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 
 ## Production notes
 
-- **Deploys**: push a tag (`v*`). `ci.yml` runs the test/lint/build gate, then `deploy.yml` runs **Deployer 8** under the `production` GitHub Environment: it creates a new release under `/var/www/freecause/releases/`, runs migrations, warms caches, restarts queue workers, reloads PHP-FPM, flips the `current` symlink, and smoke-tests `/version`. Never edit app code on the server.
+- **Deploys**: every push to `main` deploys production, so a merge is a release. `ci.yml` runs the gate (`test`, `assets`, `e2e`, `security-audit`), then `deploy.yml` runs **Deployer 8** under the `production` GitHub Environment: it creates a new release under `/var/www/freecause/releases/`, runs migrations, warms caches, restarts queue workers, reloads PHP-FPM, flips the `current` symlink, and smoke-tests `/version`, rolling back on failure. Never edit app code on the server.
+- **Versioning**: a `v*` tag only publishes a GitHub Release, with notes from the matching `CHANGELOG.md` section. Tags never deploy.
   ```bash
-  git tag v2026.10.08-example
-  git push origin v2026.10.08-example   # mirror to backup too
+  git tag -a v$(date +%Y.%m.%d-%H%M%S) -m "..." && git push origin v...
   ```
   Remote commands run with Deployer's `default_timeout`, set to **900s** in
   `deploy/deploy.php` (default 300) — migrations on the 18M-row `users` table
@@ -145,8 +146,8 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
   stay committed (see `docs/operations.md`).
 - **Rollback**: run the **Deploy** workflow with `action=rollback`, or `dep -f deploy/deploy.php rollback production`. Full runbook in `deploy/README.md`.
 - **Queue workers**: Supervisor group `freecause-release-queue:*`, command pointing at `/var/www/freecause/current`. After changing mail/DB-driven settings, restart them rather than redeploying.
-- **Backups**: daily `backup:run` at 02:00 writes to the S3 `backups` disk with retention cleanup at 02:30. Do not run `backup:clean` manually against that disk.
-- **Scheduled mail**: `emails:petition-digest` runs weekly (Monday 08:00) for petition owners with `verified` + `notify_product` (scheduled in `routes/console.php`).
+- **Backups**: daily `backup:run` at 02:00 writes to the on-host `backups` disk (database only, 7 archives kept), `backup:clean` runs at 04:00 and `backup:monitor` at 06:00. There is no off-host copy; see `docs/operations.md`.
+- **Scheduled jobs** (`routes/console.php`, run by `schedule:work` under Supervisor): `signatures:reconcile` 03:00, `cache:warm` hourly, `emails:petition-new-signatures` hourly, `petition:send-digest` daily 09:00 (owners with `verified` + `notify_product`), plus `queue:monitor` and log pruning.
 - **Health/version**: `GET /up` must return 200; `GET /version` reports the deployed commit (`app:stamp-version`). The deploy smoke test compares it to the pushed commit.
 - **Caching**: settings, translations, and petition stats are cached with versioned keys; cache is invalidated on sign writes. An edge CDN may still hold stale files after config changes, so purge by URL when needed.
 
@@ -167,7 +168,7 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 | IP banning       | `BlockBannedIp` middleware, `banned_ips` |
 | User levels/permissions | `CheckPermission` middleware, `user_levels` table |
 | Admin audit log  | `AdminAuditLog` middleware               |
-| Email verification | Required before signing as a user      |
+| Email verification | Admin setting `require_email_verification`; signed-in users must be verified to sign |
 | 2FA              | Optional TOTP per admin account          |
 
 ## License

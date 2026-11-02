@@ -23,9 +23,9 @@ class MonitorQueue extends Command
     {
         $alerts = [];
 
-        // Read the backlog from the CONFIGURED queue backend. Prod runs
-        // QUEUE_CONNECTION=redis, so counting DB::table('jobs') always
-        // returned 0 and backlog/stale alerts could never fire.
+        // Read the backlog from the CONFIGURED queue backend (prod runs
+        // QUEUE_CONNECTION=database) instead of assuming a table, so the
+        // backlog/stale alerts follow whatever driver is configured.
         $connection = config('queue.default');
         $driver = config("queue.connections.{$connection}.driver");
 
