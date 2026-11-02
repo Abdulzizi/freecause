@@ -297,7 +297,7 @@ class Locator {
 	 *
 	 * @return array
 	 */
-	public function row_actions_all( $row_actions, $form ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function row_actions_all( $row_actions, $form ) {
 
 		$form_locations = get_post_meta( $form->ID, self::LOCATIONS_META, true );
 
@@ -644,7 +644,7 @@ class Locator {
 		// Escaped above.
 		return sprintf(
 			'<span class="wpforms-locations-list-item">%s</span>',
-			$location_edit_link . $location_link
+			$location_edit_link . wp_kses_post( urldecode( $location_link ) )
 		);
 	}
 
@@ -1043,14 +1043,14 @@ class Locator {
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		/**
 		 * Run Forms Locator scan action.
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**
@@ -1238,7 +1238,7 @@ class Locator {
 	 *
 	 * @return bool
 	 */
-	private function is_post_visible( $location ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function is_post_visible( $location ) {
 
 		$edit_cap = 'edit_post';
 		$read_cap = 'read_post';

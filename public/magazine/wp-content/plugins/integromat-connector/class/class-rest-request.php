@@ -83,8 +83,10 @@ class Rest_Request {
 					return;
 				}
 				
+				// Check if content sanitization is enabled
+				$sanitize_content = get_option( 'iwc_sanitize_post_content', '0' );
 				// Sanitize body data
-				$body = self::sanitize_recursive( $body );
+				$body = self::sanitize_recursive( $body, $sanitize_content );
 				$request->set_body_params( $body );
 			}
 
@@ -116,32 +118,22 @@ class Rest_Request {
 	 * @param mixed $data
 	 * @return mixed
 	 */
-	private static function sanitize_recursive( $data ) {
+	private static function sanitize_recursive( $data, $sanitize_content ) {
 		if ( is_array( $data ) ) {
 			$sanitized = array();
 			foreach ( $data as $key => $value ) {
 				$clean_key = sanitize_text_field( $key );
-				$sanitized[ $clean_key ] = self::sanitize_recursive( $value );
+				if ( $clean_key === 'content' && $sanitize_content === '1' && is_string( $value ) ) {
+					$sanitized[ $clean_key ] = wp_kses_post( $value );
+				} else {
+					$sanitized[ $clean_key ] = self::sanitize_recursive( $value, $sanitize_content );
+				}	
 			}
 			return $sanitized;
-		} elseif ( is_string( $data ) ) {
-			// Check if content sanitization is enabled
-			$sanitize_content = get_option( 'iwc_sanitize_post_content', '0' );
-			if ( $sanitize_content === '1' ) {
-				return wp_kses_post( wp_unslash( $data ) );
-			} else {
-				// Only apply basic unslashing without HTML stripping when disabled
-				return wp_unslash( $data );
-			}
-		} elseif ( is_numeric( $data ) ) {
-			return is_float( $data ) ? floatval( $data ) : intval( $data );
-		} elseif ( is_bool( $data ) ) {
-			return (bool) $data;
 		}
 		
 		return $data;
 	}
-
 
 	/**
 	 * @param /WP_REST_Response $response

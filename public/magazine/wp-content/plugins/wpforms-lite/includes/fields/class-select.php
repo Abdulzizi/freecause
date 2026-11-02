@@ -4,6 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection AutoloadingIssuesInspection */
+// phpcs:enable Generic.Commenting.DocComment.MissingShort
+
 /**
  * Dropdown field.
  *
@@ -12,11 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPForms_Field_Select extends WPForms_Field {
 
 	/**
-	 * Choices JS version.
+	 * The 'Choices JS' version.
 	 *
 	 * @since 1.6.3
 	 */
-	const CHOICES_VERSION = '10.2.0';
+	public const CHOICES_VERSION = '10.2.0';
 
 	/**
 	 * Classic (old) style.
@@ -25,7 +30,7 @@ class WPForms_Field_Select extends WPForms_Field {
 	 *
 	 * @var string
 	 */
-	const STYLE_CLASSIC = 'classic';
+	public const STYLE_CLASSIC = 'classic';
 
 	/**
 	 * Modern style.
@@ -34,14 +39,14 @@ class WPForms_Field_Select extends WPForms_Field {
 	 *
 	 * @var string
 	 */
-	const STYLE_MODERN = 'modern';
+	public const STYLE_MODERN = 'modern';
 
 	/**
 	 * Primary class constructor.
 	 *
 	 * @since 1.0.0
 	 */
-	public function init() {
+	public function init() { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
 		// Define field type information.
 		$this->name     = esc_html__( 'Dropdown', 'wpforms-lite' );
@@ -125,6 +130,7 @@ class WPForms_Field_Select extends WPForms_Field {
 
 			// Used for dynamic choices.
 			$depth = isset( $choice['depth'] ) ? absint( $choice['depth'] ) : 1;
+			$label = isset( $choice['label'] ) ? $choice['label'] : '';
 
 			$properties['inputs'][ $key ] = [
 				'container' => [
@@ -140,11 +146,11 @@ class WPForms_Field_Select extends WPForms_Field {
 					'class' => [ 'wpforms-field-label-inline' ],
 					'data'  => [],
 					'id'    => '',
-					'text'  => $choice['label'],
+					'text'  => $label,
 				],
 				'attr'      => [
 					'name'  => "wpforms[fields][{$field_id}]",
-					'value' => isset( $field['show_values'] ) ? $choice['value'] : $choice['label'],
+					'value' => isset( $field['show_values'] ) ? $choice['value'] : $label,
 				],
 				'class'     => [],
 				'data'      => [],
@@ -154,7 +160,7 @@ class WPForms_Field_Select extends WPForms_Field {
 			];
 		}
 
-		// Add class that changes the field size.
+		// Add a class that changes the field size.
 		if ( ! empty( $field['size'] ) ) {
 			$properties['input_container']['class'][] = 'wpforms-field-' . esc_attr( $field['size'] );
 		}
@@ -181,9 +187,9 @@ class WPForms_Field_Select extends WPForms_Field {
 	 * @since 1.0.0
 	 *
 	 * @param array $field Field settings.
-	 */
+	 *
+	 * @noinspection HtmlUnknownTarget*/
 	public function field_options( $field ) {
-
 		/*
 		 * Basic field options.
 		 */
@@ -249,12 +255,13 @@ class WPForms_Field_Select extends WPForms_Field {
 				$field,
 				[
 					'slug'    => 'show_values',
-					'value'   => isset( $field['show_values'] ) ? $field['show_values'] : '0',
+					'value'   => $field['show_values'] ?? '0',
 					'desc'    => esc_html__( 'Show Values', 'wpforms-lite' ),
 					'tooltip' => esc_html__( 'Check this option to manually set form field values.', 'wpforms-lite' ),
 				],
 				false
 			);
+
 			$this->field_element(
 				'row',
 				$field,
@@ -383,7 +390,7 @@ class WPForms_Field_Select extends WPForms_Field {
 
 		if (
 			! empty( $field['style'] ) &&
-			self::STYLE_MODERN === $field['style']
+			$field['style'] === self::STYLE_MODERN
 		) {
 			$args['modern'] = true;
 			$args['class']  = 'choicesjs-select';
@@ -401,13 +408,15 @@ class WPForms_Field_Select extends WPForms_Field {
 	 *
 	 * @since 1.0.0
 	 * @since 1.5.0 Converted to a new format, where all the data are taken not from $deprecated, but field properties.
-	 * @since 1.6.1 Added a multiple select support.
+	 * @since 1.6.1 Added multiple select support.
 	 *
 	 * @param array $field      Field data and settings.
 	 * @param array $deprecated Deprecated array of field attributes.
 	 * @param array $form_data  Form data and settings.
+	 *
+	 * @noinspection HtmlUnknownAttribute
 	 */
-	public function field_display( $field, $deprecated, $form_data ) {
+	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$container         = $field['properties']['input_container'];
 		$field_placeholder = ! empty( $field['placeholder'] ) ? $field['placeholder'] : '';
@@ -420,18 +429,18 @@ class WPForms_Field_Select extends WPForms_Field {
 			return;
 		}
 
-		// Display a warning message on Entry Edit page.
+		// Display a warning message on the Entry Edit page.
 		if ( ! $choices && is_admin() ) {
 			$this->display_empty_dynamic_choices_message( $field );
 
 			return;
 		}
 
-		if ( ! empty( $field['required'] ) ) {
+		if ( ! empty( $field['properties']['input_container']['class'] ) && in_array( 'wpforms-field-required', $field['properties']['input_container']['class'], true ) ) {
 			$container['attr']['required'] = 'required';
 		}
 
-		// If it's a multiple select.
+		// If it's multiple select.
 		if ( $is_multiple ) {
 			$container['attr']['multiple'] = 'multiple';
 
@@ -445,7 +454,7 @@ class WPForms_Field_Select extends WPForms_Field {
 		if ( $is_modern ) {
 			$container['class'][] = 'choicesjs-select';
 
-			// Add a size-class to data attribute - it is used when Choices.js is initialized.
+			// Add a size-class to the data attribute - it is used when Choices.js is initialized.
 			if ( ! empty( $field['size'] ) ) {
 				$container['data']['size-class'] = 'wpforms-field-row wpforms-field-' . sanitize_html_class( $field['size'] );
 			}
@@ -481,15 +490,36 @@ class WPForms_Field_Select extends WPForms_Field {
 
 		// Build the select options.
 		foreach ( $choices as $key => $choice ) {
-			$label = $this->get_choices_label( $choice['label']['text'] ?? '', $key, $field );
-			$value = isset( $choice['attr']['value'] ) && ! wpforms_is_empty_string( $choice['attr']['value'] ) ? $choice['attr']['value'] : $label;
+			$label     = $this->get_choices_label( $choice['label']['text'] ?? '', $key, $field );
+			$value     = isset( $choice['attr']['value'] ) && ! wpforms_is_empty_string( $choice['attr']['value'] ) ? $choice['attr']['value'] : $label;
+			$data      = $choice['container']['data'] ?? [];
+			$data_html = '';
 
+			if ( ! empty( $data ) ) {
+				$data_html = wpforms_html_attributes( '', '', $data );
+			}
+
+			$selected      = $choice['attr']['selected'] ?? false;
+			$selected_html = $selected ? ' selected="selected"' : '';
+
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 			printf(
-				'<option value="%s" %s>%s</option>',
+				'<option value="%1$s" %2$s class="%3$s" %4$s %5$s>%6$s</option>',
 				esc_attr( $value ),
 				selected( true, ! empty( $choice['default'] ), false ),
-				esc_html( $label )
+				esc_attr( wpforms_sanitize_classes( $choice['container']['class'], is_array( $choice['container']['class'] ) ) ),
+				$data_html,
+				$selected_html,
+				wp_kses(
+					$label,
+					[
+						'span' => [
+							'class' => [],
+						],
+					]
+				)
 			);
+			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		echo '</select>';
@@ -508,25 +538,27 @@ class WPForms_Field_Select extends WPForms_Field {
 
 		$field = $form_data['fields'][ $field_id ];
 
-		// Skip validation if field is dynamic and choices are empty.
+		// Skip validation if the field is dynamic and choices are empty.
 		if ( $this->is_dynamic_choices_empty( $field, $form_data ) ) {
 			return;
 		}
 
 		parent::validate( $field_id, $field_submit, $form_data );
+
+		$this->validate_choices_allowlist( $field_id, $field_submit, $form_data );
 	}
 
 	/**
 	 * Format and sanitize field.
 	 *
 	 * @since 1.0.2
-	 * @since 1.6.1 Added a support for multiple values.
+	 * @since 1.6.1 Added support for multiple values.
 	 *
 	 * @param int          $field_id     Field ID.
 	 * @param string|array $field_submit Submitted field value (selected option).
 	 * @param array        $form_data    Form data and settings.
 	 */
-	public function format( $field_id, $field_submit, $form_data ) {
+	public function format( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 		$field    = $form_data['fields'][ $field_id ];
 		$dynamic  = ! empty( $field['dynamic_choices'] ) ? $field['dynamic_choices'] : false;
@@ -534,12 +566,14 @@ class WPForms_Field_Select extends WPForms_Field {
 		$name     = sanitize_text_field( $field['label'] );
 		$value    = [];
 
-		// Convert submitted field value to array.
+		// Convert the submitted field value to array.
 		if ( ! is_array( $field_submit ) ) {
 			$field_submit = [ $field_submit ];
 		}
 
-		$value_raw = wpforms_sanitize_array_combine( $field_submit );
+		$field_submit = $this->sanitize_choices_submission( $field_submit, $field, $form_data );
+		$combined     = wpforms_sanitize_array_combine( $field_submit );
+		$value_raw    = is_string( $combined ) ? $combined : '';
 
 		$data = [
 			'name'      => $name,
@@ -549,7 +583,7 @@ class WPForms_Field_Select extends WPForms_Field {
 			'type'      => $this->type,
 		];
 
-		if ( 'post_type' === $dynamic && ! empty( $field['dynamic_post_type'] ) ) {
+		if ( $dynamic === 'post_type' && ! empty( $field['dynamic_post_type'] ) ) {
 
 			// Dynamic population is enabled using post type (like for a `Checkboxes` field).
 			$value_raw                 = implode( ',', array_map( 'absint', $field_submit ) );
@@ -562,14 +596,14 @@ class WPForms_Field_Select extends WPForms_Field {
 			foreach ( $field_submit as $id ) {
 				$post = get_post( $id );
 
-				if ( ! is_wp_error( $post ) && ! empty( $post ) && $data['dynamic_post_type'] === $post->post_type ) {
+				if ( ! empty( $post ) && ! is_wp_error( $post ) && $data['dynamic_post_type'] === $post->post_type ) {
 					$posts[] = esc_html( wpforms_get_post_title( $post ) );
 				}
 			}
 
 			$data['value'] = ! empty( $posts ) ? wpforms_sanitize_array_combine( $posts ) : '';
 
-		} elseif ( 'taxonomy' === $dynamic && ! empty( $field['dynamic_taxonomy'] ) ) {
+		} elseif ( $dynamic === 'taxonomy' && ! empty( $field['dynamic_taxonomy'] ) ) {
 
 			// Dynamic population is enabled using taxonomy (like for a `Checkboxes` field).
 			$value_raw                = implode( ',', array_map( 'absint', $field_submit ) );
@@ -582,7 +616,7 @@ class WPForms_Field_Select extends WPForms_Field {
 			foreach ( $field_submit as $id ) {
 				$term = get_term( $id, $field['dynamic_taxonomy'] );
 
-				if ( ! is_wp_error( $term ) && ! empty( $term ) ) {
+				if ( ! empty( $term ) && ! is_wp_error( $term ) ) {
 					$terms[] = esc_html( wpforms_get_term_name( $term ) );
 				}
 			}
@@ -598,9 +632,14 @@ class WPForms_Field_Select extends WPForms_Field {
 			if ( ! empty( $field['show_values'] ) && (int) $field['show_values'] === 1 ) {
 
 				foreach ( $field_submit as $item ) {
-					foreach ( $field['choices'] as $choice ) {
+					foreach ( $field['choices'] as $key => $choice ) {
 						if ( $item === $choice['value'] ) {
-							$value[] = $choice['label'];
+							$label = $this->get_choices_label( $choice['label'] ?? '', $key, $field );
+
+							// Skip an empty label, so the combined value never contains empty lines.
+							if ( ! wpforms_is_empty_string( $label ) ) {
+								$value[] = $label;
+							}
 
 							break;
 						}
@@ -712,12 +751,10 @@ class WPForms_Field_Select extends WPForms_Field {
 		$is_field_style = false;
 
 		if ( empty( $form['fields'] ) ) {
-
-			return $is_field_style;
+			return false;
 		}
 
 		foreach ( (array) $form['fields'] as $field ) {
-
 			if (
 				! empty( $field['type'] ) &&
 				$field['type'] === $this->type &&
@@ -725,6 +762,7 @@ class WPForms_Field_Select extends WPForms_Field {
 				sanitize_key( $style ) === $field['style']
 			) {
 				$is_field_style = true;
+
 				break;
 			}
 		}
@@ -733,13 +771,13 @@ class WPForms_Field_Select extends WPForms_Field {
 	}
 
 	/**
-	 * Get field name for an ajax error message.
+	 * Get a field name for an ajax error message.
 	 *
-	 * @since 1.6.3
+	 * @since        1.6.3
 	 *
-	 * @param string|mixed $name Field name for error triggered.
-	 * @param array $field Field settings.
-	 * @param array $props List of properties.
+	 * @param string|mixed    $name  Field name for error triggered.
+	 * @param array           $field Field settings.
+	 * @param array           $props List of properties.
 	 * @param string|string[] $error Error message.
 	 *
 	 * @return string
@@ -750,7 +788,7 @@ class WPForms_Field_Select extends WPForms_Field {
 
 		$name = (string) $name;
 
-		if ( ! isset( $field['type'] ) || 'select' !== $field['type'] ) {
+		if ( ! isset( $field['type'] ) || $field['type'] !== 'select' ) {
 			return $name;
 		}
 

@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use WPForms\Admin\Blocks\Links;
 use WPForms\Admin\Notice;
 
 /**
@@ -43,10 +44,28 @@ function wpforms_admin_styles() {
 	// FontAwesome.
 	wp_enqueue_style(
 		'wpforms-font-awesome',
-		WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/font-awesome.min.css',
+		WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/all.min.css',
+		null,
+		'7.0.1'
+	);
+
+	// FontAwesome v4 compatibility shims.
+	wp_enqueue_style(
+		'wpforms-font-awesome-v4-shim',
+		WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/v4-shims.min.css',
 		null,
 		'4.7.0'
 	);
+
+	// WordPress 7.0 UI compatibility overrides.
+	if ( version_compare( get_bloginfo( 'version' ), '7.0-alpha', '>=' ) ) {
+		wp_enqueue_style(
+			'wpforms-admin-wp7.0-compat',
+			WPFORMS_PLUGIN_URL . "assets/css/admin-wp7.0-compat{$min}.css",
+			[],
+			WPFORMS_VERSION
+		);
+	}
 
 	// Main admin styles.
 	wp_enqueue_style(
@@ -252,7 +271,7 @@ function wpforms_admin_scripts() {
 		'plugin_install_activate_confirm' => esc_html__( 'needs to be installed and activated to import its forms. Would you like us to install and activate it for you?', 'wpforms-lite' ),
 		'plugin_activate_btn'             => esc_html__( 'Activate', 'wpforms-lite' ),
 		'plugin_activate_confirm'         => esc_html__( 'needs to be activated to import its forms. Would you like us to activate it for you?', 'wpforms-lite' ),
-		'provider_delete_confirm'         => esc_html__( 'Are you sure you want to disconnect this account?', 'wpforms-lite' ),
+		'provider_delete_confirm'         => esc_html__( 'Are you sure you want to disconnect this account? Any form connections you have set up will be lost.', 'wpforms-lite' ),
 		'provider_delete_error'           => esc_html__( 'Could not disconnect this account.', 'wpforms-lite' ),
 		'provider_auth_error'             => esc_html__( 'Could not authenticate with the provider.', 'wpforms-lite' ),
 		'connecting'                      => esc_html__( 'Connecting...', 'wpforms-lite' ),
@@ -416,6 +435,9 @@ function wpforms_admin_header() {
 		return;
 	}
 
+	$current_screen      = get_current_screen();
+	$show_screen_options = $current_screen && $current_screen->show_screen_options();
+
 	/**
 	 * Fire before the admin header is outputted.
 	 *
@@ -424,8 +446,25 @@ function wpforms_admin_header() {
 	do_action( 'wpforms_admin_header_before' );
 	?>
 	<div id="wpforms-header-temp"></div>
-	<div id="wpforms-header" class="wpforms-header">
+	<div id="wpforms-header" class="wpforms-header <?php echo esc_attr( $show_screen_options ? 'wpforms-header-show-screen-options' : '' ); ?>">
 		<img class="wpforms-header-logo" src="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/images/logo.png' ); ?>" alt="WPForms Logo">
+		<?php
+			$current_page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current_page = str_replace( 'wpforms-', '', $current_page );
+
+			Links::render(
+				[
+					'docs'    => [
+						'medium'  => 'header_links',
+						'content' => $current_page . '_docs',
+					],
+					'support' => [
+						'medium'  => 'header_links',
+						'content' => $current_page . '_support',
+					],
+				]
+			);
+		?>
 	</div>
 	<?php
 	/**
@@ -443,7 +482,7 @@ add_action( 'in_admin_header', 'wpforms_admin_header', 100 );
  * @since 1.3.9
  * @since 1.6.9 Added callback for removing on `admin_footer` hook.
  */
-function wpforms_admin_hide_unrelated_notices() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+function wpforms_admin_hide_unrelated_notices() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 	if ( ! wpforms_is_admin_page() ) {
 		return;

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d
+class ComposerStaticInit9cdfc57d819eb6e1a062968df8386cef
 {
     public static $files = array (
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
@@ -13,58 +13,50 @@ class ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d
     );
 
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'W' =>
         array (
             'WPForms\\Tests\\Unit\\' => 19,
             'WPForms\\Tests\\Integration\\' => 26,
             'WPForms\\Scoper\\' => 15,
             'WPForms\\' => 8,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Iconv\\' => 23,
         ),
-        'P' => 
-        array (
-            'Psr\\Log\\' => 8,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WPForms\\Tests\\Unit\\' => 
+        'WPForms\\Tests\\Unit\\' =>
         array (
             0 => __DIR__ . '/../..' . '/tests/unit',
         ),
-        'WPForms\\Tests\\Integration\\' => 
+        'WPForms\\Tests\\Integration\\' =>
         array (
             0 => __DIR__ . '/../..' . '/tests/integration',
         ),
-        'WPForms\\Scoper\\' => 
+        'WPForms\\Scoper\\' =>
         array (
             0 => __DIR__ . '/../..' . '/../.php-scoper',
         ),
-        'WPForms\\' => 
+        'WPForms\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
             1 => __DIR__ . '/../..' . '/src',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Iconv\\' => 
+        'Symfony\\Polyfill\\Iconv\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-iconv',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
     );
 
@@ -388,6 +380,39 @@ class ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d
         'WPForms\\Vendor\\HTMLPurifier_VarParser_Flexible' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/VarParser/Flexible.php',
         'WPForms\\Vendor\\HTMLPurifier_VarParser_Native' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/VarParser/Native.php',
         'WPForms\\Vendor\\HTMLPurifier_Zipper' => __DIR__ . '/../..' . '/vendor_prefixed/ezyang/htmlpurifier/library/HTMLPurifier/Zipper.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\AbstractAuthStrategy' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/AbstractAuthStrategy.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\AuthManager' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/AuthManager.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\AuthMiddleware' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/AuthMiddleware.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\AuthOptions' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/AuthOptions.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\ChallengeSecret' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/ChallengeSecret.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\HMACAuthStrategy' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/HMACAuthStrategy.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\InstallationId' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/InstallationId.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\SiteOwnershipVerificationProvider' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/SiteOwnershipVerificationProvider.php',
+        'WPForms\\Vendor\\ProductApi\\Auth\\SiteRegistration' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Auth/SiteRegistration.php',
+        'WPForms\\Vendor\\ProductApi\\Container' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Container.php',
+        'WPForms\\Vendor\\ProductApi\\Context' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Context.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\ClientSideEventsProvider' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/ClientSideEventsProvider.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\Event' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/Event.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\EventTracker' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/EventTracker.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\EventsAuthStrategy' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/EventsAuthStrategy.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\EventsConfig' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/EventsConfig.php',
+        'WPForms\\Vendor\\ProductApi\\Events\\EventsManager' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Events/EventsManager.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Client' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Client.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Middleware\\LockMiddleware' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Middleware/LockMiddleware.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Middleware\\MiddlewareInterface' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Middleware/MiddlewareInterface.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Middleware\\RateLimitMiddleware' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Middleware/RateLimitMiddleware.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Request' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Request.php',
+        'WPForms\\Vendor\\ProductApi\\Http\\Response' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Http/Response.php',
+        'WPForms\\Vendor\\ProductApi\\Options' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/Options.php',
+        'WPForms\\Vendor\\ProductApi\\ProductApi' => __DIR__ . '/../..' . '/vendor_prefixed/awesomemotive/wpforms-product-api-client/src/ProductApi.php',
+        'WPForms\\Vendor\\Psr\\Log\\AbstractLogger' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/AbstractLogger.php',
+        'WPForms\\Vendor\\Psr\\Log\\InvalidArgumentException' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/InvalidArgumentException.php',
+        'WPForms\\Vendor\\Psr\\Log\\LogLevel' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LogLevel.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerAwareInterface' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerAwareInterface.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerAwareTrait' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerAwareTrait.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerInterface' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerInterface.php',
+        'WPForms\\Vendor\\Psr\\Log\\LoggerTrait' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/LoggerTrait.php',
+        'WPForms\\Vendor\\Psr\\Log\\NullLogger' => __DIR__ . '/../..' . '/vendor_prefixed/psr/log/Psr/Log/NullLogger.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer\\InvalidJsonException' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer/InvalidJsonException.php',
         'WPForms\\Vendor\\Rs\\Json\\Pointer\\InvalidPointerException' => __DIR__ . '/../..' . '/vendor_prefixed/php-jsonpointer/php-jsonpointer/src/Rs/Json/Pointer/InvalidPointerException.php',
@@ -2968,14 +2993,25 @@ class ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d
         'WPForms\\Vendor\\apimatic\\jsonmapper\\JsonMapperException' => __DIR__ . '/../..' . '/vendor_prefixed/apimatic/jsonmapper/src/JsonMapperException.php',
         'WPForms\\Vendor\\apimatic\\jsonmapper\\OneOfValidationException' => __DIR__ . '/../..' . '/vendor_prefixed/apimatic/jsonmapper/src/OneOfValidationException.php',
         'WPForms\\Vendor\\apimatic\\jsonmapper\\TypeCombination' => __DIR__ . '/../..' . '/vendor_prefixed/apimatic/jsonmapper/src/TypeCombination.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\ElementReference\\Resolver' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/ElementReference/Resolver.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\ElementReference\\Subject' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/ElementReference/Subject.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\ElementReference\\Usage' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/ElementReference/Usage.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\Exceptions\\NestingException' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/Exceptions/NestingException.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\Helper' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/Helper.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\Sanitizer' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/Sanitizer.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\data\\AllowedAttributes' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/data/AllowedAttributes.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\data\\AllowedTags' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/data/AllowedTags.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\data\\AttributeInterface' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/data/AttributeInterface.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\data\\TagInterface' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/data/TagInterface.php',
+        'WPForms\\Vendor\\enshrined\\svgSanitize\\data\\XPath' => __DIR__ . '/../..' . '/vendor_prefixed/enshrined/svg-sanitize/src/data/XPath.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit2e1ac9c02c9e6083a0a8960a47783c4d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9cdfc57d819eb6e1a062968df8386cef::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9cdfc57d819eb6e1a062968df8386cef::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9cdfc57d819eb6e1a062968df8386cef::$classMap;
 
         }, null, ClassLoader::class);
     }

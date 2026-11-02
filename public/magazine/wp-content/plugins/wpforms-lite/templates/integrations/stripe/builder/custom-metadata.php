@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<i class="fa fa-question-circle-o wpforms-help-tooltip" title="<?php esc_html_e( 'Map custom meta to form field values.', 'wpforms-lite' ); ?>"></i>
 	</p>
 
-	<table class="wpforms-panel-content-section-stripe-custom-metadata-table">
+	<table class="wpforms-panel-content-section-stripe-custom-metadata-table wpforms-undo-redo-container">
 		<thead>
 		<tr>
 			<th>
@@ -40,7 +40,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<tbody>
 		<?php
 		foreach ( $custom_metadata as $key => $value ) :
-			$is_hidden = ! $key ? 'hidden' : '';
+			$is_hidden            = ! $key ? 'hidden' : '';
+			$is_meta_key_valid    = ! empty( $value['meta_key'] ) || empty( $value['object_type'] ) || empty( $value['meta_value'] );
+			$meta_key_input_class = [
+				'wpforms-panel-field-stripe-custom-metadata-meta-key',
+				$is_meta_key_valid ? '' : 'wpforms-required-field-error',
+			];
 			?>
 			<tr data-key="<?php echo esc_attr( $key ); ?>">
 				<td>
@@ -77,7 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'parent'      => 'payments',
 							'subsection'  => $subsection,
 							'index'       => $key,
-							'input_class' => 'wpforms-panel-field-stripe-custom-metadata-meta-key',
+							'input_class' => implode( ' ', $meta_key_input_class ),
 						]
 					);
 					?>

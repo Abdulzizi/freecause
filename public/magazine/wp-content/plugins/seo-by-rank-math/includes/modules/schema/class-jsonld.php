@@ -146,7 +146,10 @@ class JsonLD {
 		 * @param array  $unsigned An array of data to output in JSON-LD.
 		 * @param JsonLD $unsigned JsonLD instance.
 		 */
-		$data = $this->do_filter( 'json_ld', [], $this );
+		$data = array_filter( $this->do_filter( 'json_ld', [], $this ) );
+		if ( empty( $data ) ) {
+			return;
+		}
 		$data = $this->do_filter( 'schema/validated_data', $this->validate_schema( $data ) );
 		if ( is_array( $data ) && ! empty( $data ) ) {
 
@@ -347,7 +350,7 @@ class JsonLD {
 			 */
 			$pre = $this->do_filter( $hook, false, $jsonld->parts, $data );
 			if ( false !== $pre ) {
-				$new_schemas[ $key ] = $this->do_filter( $hook . '_entity', $pre );
+				$new_schemas[ $key ] = $this->do_filter( $hook . '_custom_entity', [] );
 				$new_schemas[ $key ] = $this->do_filter( 'snippet/rich_snippet_entity', $new_schemas[ $key ] );
 				continue;
 			}
@@ -705,6 +708,10 @@ class JsonLD {
 
 		if ( $description = Helper::get_post_meta( 'description', $product->get_id() ) ) { //phpcs:ignore
 			return $description;
+		}
+
+		if ( post_password_required( $product->get_id() ) ) {
+			return '';
 		}
 
 		$product_object = get_post( $product->get_id() );

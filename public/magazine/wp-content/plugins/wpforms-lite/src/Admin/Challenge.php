@@ -115,7 +115,7 @@ class Challenge {
 	 *
 	 * @return bool
 	 */
-	public function is_form_embed_page() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function is_form_embed_page() {
 
 		if ( ! function_exists( 'get_current_screen' ) || ! is_admin() || ! is_user_logged_in() ) {
 			return false;
@@ -213,7 +213,7 @@ class Challenge {
 			wp_enqueue_script(
 				'wpforms-challenge-core',
 				WPFORMS_PLUGIN_URL . "assets/js/admin/challenge/challenge-core{$min}.js",
-				[ 'jquery', 'tooltipster', 'wpforms-challenge-admin' ],
+				[ 'jquery', 'tooltipster', 'wpforms-challenge-admin', 'wpforms-generic-utils' ],
 				WPFORMS_VERSION,
 				true
 			);
@@ -234,7 +234,15 @@ class Challenge {
 
 			wp_enqueue_style(
 				'wpforms-font-awesome',
-				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/font-awesome.min.css',
+				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/all.min.css',
+				null,
+				'7.0.1'
+			);
+
+			// FontAwesome v4 compatibility shims.
+			wp_enqueue_style(
+				'wpforms-font-awesome-v4-shim',
+				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/v4-shims.min.css',
 				null,
 				'4.7.0'
 			);
@@ -353,6 +361,16 @@ class Challenge {
 		$option = ! $option || ! is_array( $option ) ? $schema : $option;
 
 		update_option( 'wpforms_challenge', array_merge( $option, $replace ) );
+
+		/**
+		 * Fires after Challenge parameters were saved.
+		 *
+		 * @since 2.0.2.1
+		 *
+		 * @param array $replace Parameters written, sanitized, keyed by schema key.
+		 * @param array $option  Challenge option as it was before this write.
+		 */
+		do_action( 'wpforms_admin_challenge_set_challenge_option', $replace, $option );
 	}
 
 	/**
@@ -467,7 +485,7 @@ class Challenge {
 	 *
 	 * @return bool
 	 */
-	public function challenge_can_start() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function challenge_can_start() {
 
 		static $can_start = null;
 
@@ -489,6 +507,15 @@ class Challenge {
 
 		// The challenge should not start if this is the Forms' Overview page.
 		if ( wpforms_is_admin_page( 'overview' ) ) {
+			$can_start = false;
+
+			// No need to check something else in this case.
+			return false;
+		}
+
+		// The challenge should not start on the Dashboard page: it initiates when the
+		// user creates their first form instead.
+		if ( wpforms_is_admin_page( 'dashboard' ) ) {
 			$can_start = false;
 
 			// No need to check something else in this case.
@@ -641,7 +668,7 @@ class Challenge {
 	 *
 	 * @since 1.5.0
 	 */
-	public function save_challenge_option_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function save_challenge_option_ajax() {
 
 		check_admin_referer( 'wpforms_challenge_ajax_nonce' );
 

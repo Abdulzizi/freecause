@@ -66,27 +66,60 @@ class MonsterInsights_AMP_Compatibility_Early {
 	}
 
 	/**
-	 * Remove ALL MonsterInsights hooks
+	 * Remove MonsterInsights hooks only (not all hooks)
 	 */
 	private function remove_all_monsterinsights_hooks() {
 		// Remove the specific hook that's causing the problem
 		remove_action( 'cmplz_before_statistics_script', 'monsterinsights_tracking_script', 10 );
-		
-		// Remove all other potential MonsterInsights hooks
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'wp_footer' );
-		remove_all_actions( 'wp_body_open' );
-		remove_all_actions( 'wp_enqueue_scripts' );
-		
-		// Re-add essential WordPress hooks
-		add_action( 'wp_head', 'wp_head' );
-		add_action( 'wp_footer', 'wp_footer' );
-		add_action( 'wp_enqueue_scripts', 'wp_enqueue_scripts' );
-		
-		// Remove MonsterInsights specific hooks
+
+		// Remove MonsterInsights specific hooks only
+		// DO NOT use remove_all_actions - it breaks other plugins and themes
 		remove_action( 'wp_head', 'monsterinsights_tracking_script' );
 		remove_action( 'wp_footer', 'monsterinsights_tracking_script' );
 		remove_action( 'wp_enqueue_scripts', array( 'MonsterInsights_Gtag_Events', 'output_javascript' ), 9 );
+
+		// Remove additional MonsterInsights hooks that might be registered
+		global $wp_filter;
+
+		// List of hooks to check for MonsterInsights callbacks
+		$hooks_to_check = array( 'wp_head', 'wp_footer', 'wp_body_open', 'wp_enqueue_scripts', 'template_redirect' );
+
+		foreach ( $hooks_to_check as $hook ) {
+			if ( isset( $wp_filter[ $hook ] ) ) {
+				foreach ( $wp_filter[ $hook ]->callbacks as $priority => $callbacks ) {
+					foreach ( $callbacks as $callback_id => $callback ) {
+						// Check if this is a MonsterInsights callback
+						if ( $this->is_monsterinsights_callback( $callback['function'] ) ) {
+							remove_action( $hook, $callback['function'], $priority );
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Check if a callback is from MonsterInsights
+	 *
+	 * @param mixed $callback The callback to check
+	 * @return bool
+	 */
+	private function is_monsterinsights_callback( $callback ) {
+		// Check for function names containing 'monsterinsights'
+		if ( is_string( $callback ) && stripos( $callback, 'monsterinsights' ) !== false ) {
+			return true;
+		}
+
+		// Check for class methods
+		if ( is_array( $callback ) && isset( $callback[0] ) ) {
+			// Object or class name
+			$class = is_object( $callback[0] ) ? get_class( $callback[0] ) : $callback[0];
+			if ( is_string( $class ) && stripos( $class, 'MonsterInsights' ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

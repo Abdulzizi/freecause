@@ -2,9 +2,11 @@
 
 namespace WPForms\Integrations\Stripe\Admin;
 
+use WPForms\Admin\Payments\BuilderReturnNotice;
 use WPForms\Integrations\Stripe\Api\DomainManager;
 use WPForms\Integrations\Stripe\Api\WebhooksManager;
 use WPForms\Integrations\Stripe\Helpers;
+use WPForms\Integrations\Stripe\WebhooksHealthCheck;
 use WPForms\Vendor\Stripe\Account;
 
 /**
@@ -73,6 +75,18 @@ class Connect {
 	private function hooks() {
 
 		add_action( 'admin_init', [ $this, 'handle_oauth_handshake' ] );
+		add_action( 'admin_init', [ $this, 'maybe_queue_builder_return_notice' ], 20 );
+	}
+
+	/**
+	 * Queue the "Return to your form" success notice after the user completes
+	 * the Stripe Connect flow that they started from the form builder.
+	 *
+	 * @since 1.10.1.1
+	 */
+	public function maybe_queue_builder_return_notice(): void {
+
+		BuilderReturnNotice::maybe_queue_oauth( 'stripe', __( 'Stripe', 'wpforms-lite' ) );
 	}
 
 	/**
@@ -81,6 +95,13 @@ class Connect {
 	 * @since 1.8.2
 	 */
 	public function handle_oauth_handshake(): void {
+
+		// Handle disconnect requests.
+		if ( $this->is_valid_disconnect_request() ) {
+			$this->handle_disconnect();
+
+			return;
+		}
 
 		if ( ! $this->is_valid_handshake_request() ) {
 			return;
@@ -115,7 +136,18 @@ class Connect {
 		$this->webhooks_manager->connect();
 		$this->domain_manager->validate();
 
-		$settings_url = $this->get_payments_settings_url();
+		$settings_url   = $this->get_payments_settings_url( false );
+		$return_form_id = isset( $_GET['wpforms_return_form_id'] ) ? absint( $_GET['wpforms_return_form_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		if ( $return_form_id > 0 ) {
+			$settings_url = add_query_arg(
+				[
+					'wpforms_connected'      => 'stripe',
+					'wpforms_return_form_id' => $return_form_id,
+				],
+				$settings_url
+			);
+		}
 
 		wp_safe_redirect( $settings_url );
 		exit;
@@ -133,6 +165,26 @@ class Connect {
 		}
 
 		if ( ! isset( $_GET['stripe_connect'] ) || $_GET['stripe_connect'] !== 'complete' ) {
+			return false;
+		}
+
+		if ( ! wpforms_current_user_can() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates if the current disconnect request is valid.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return bool
+	 */
+	private function is_valid_disconnect_request(): bool {
+
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpforms_stripe_disconnect' ) ) {
 			return false;
 		}
 
@@ -207,7 +259,7 @@ class Connect {
 	 * @param string $account_id Account ID.
 	 * @param string $mode       Stripe mode (e.g. 'live' or 'test').
 	 */
-	public function update_account_meta( $account_id = '', $mode = '' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function update_account_meta( $account_id = '', $mode = '' ) {
 
 		if ( ! $mode ) {
 			$mode = Helpers::get_stripe_mode();
@@ -424,15 +476,25 @@ class Connect {
 	 * Get Stripe Connect button URL.
 	 *
 	 * @since 1.8.2
+	 * @since 1.10.1.1 Added `$return_form_id` parameter to round-trip the
+	 *                  source form ID through the OAuth callback.
 	 *
-	 * @param string $mode Stripe mode (e.g. 'live' or 'test').
+	 * @param string $mode           Stripe mode (e.g. 'live' or 'test').
+	 * @param int    $return_form_id Optional. Form ID the user came from in the
+	 *                               builder. Carried through the OAuth callback
+	 *                               so the Payments settings page can show a
+	 *                               "Return to your form" notice.
 	 *
 	 * @return string
 	 */
-	public function get_connect_with_stripe_url( $mode = '' ) {
+	public function get_connect_with_stripe_url( $mode = '', int $return_form_id = 0 ) {
 
 		$mode         = Helpers::validate_stripe_mode( $mode );
 		$settings_url = $this->get_payments_settings_url();
+
+		if ( $return_form_id > 0 ) {
+			$settings_url = add_query_arg( 'wpforms_return_form_id', $return_form_id, $settings_url );
+		}
 
 		return add_query_arg(
 			[
@@ -449,18 +511,103 @@ class Connect {
 	 * Get "Payments" settings page URL.
 	 *
 	 * @since 1.8.2
+	 * @since 1.9.8 Added `$include_nonce` and `$action` parameters to allow more flexible settings.
+	 *
+	 * @param bool   $include_nonce Whether to include nonce in the URL.
+	 * @param string $action        Action to be used for nonce verification.
 	 *
 	 * @return string
 	 */
-	private function get_payments_settings_url(): string {
+	private function get_payments_settings_url( bool $include_nonce = true, string $action = 'wpforms_stripe_connect' ): string {
+
+		$url = Helpers::get_settings_page_url();
+
+		if ( $include_nonce ) {
+			$url = add_query_arg( '_wpnonce', wp_create_nonce( $action ), $url );
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Get Stripe disconnect URL.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param string $mode Stripe mode (e.g. 'live' or 'test').
+	 *
+	 * @return string
+	 */
+	public function get_disconnect_stripe_url( string $mode ): string {
+
+		$mode   = Helpers::validate_stripe_mode( $mode );
+		$action = 'wpforms_stripe_disconnect';
 
 		return add_query_arg(
 			[
-				'page'     => 'wpforms-settings',
-				'view'     => 'payments',
-				'_wpnonce' => wp_create_nonce( 'wpforms_stripe_connect' ),
+				'action'    => $action,
+				'live_mode' => absint( $mode === 'live' ),
 			],
-			admin_url( 'admin.php' )
+			$this->get_payments_settings_url( true, $action )
 		);
+	}
+
+	/**
+	 * Disconnect from Stripe.
+	 *
+	 * @since 1.9.8
+	 */
+	private function handle_disconnect(): void {
+
+		$mode = Helpers::get_stripe_mode();
+
+		$response = wp_remote_post(
+			self::WPFORMS_URL,
+			[
+				'body'    => [
+					'action'         => 'deauthorize',
+					'secret_key'     => Helpers::get_stripe_key( 'secret', $mode ),
+					'stripe_user_id' => $this->get_connected_user_id( $mode ),
+					'live_mode'      => absint( $mode === 'live' ),
+				],
+				'timeout' => 15, // Handle case with slow connection.
+			]
+		);
+
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+			return;
+		}
+
+		// Cleanup saved options.
+		$this->disconnect_cleanup();
+
+		// Disconnect webhooks.
+		$this->webhooks_manager->disconnect();
+
+		wp_safe_redirect( $this->get_payments_settings_url( false ) );
+		exit;
+	}
+
+	/**
+	 * Cleanup after disconnecting from Stripe.
+	 *
+	 * @since 1.9.8
+	 */
+	private function disconnect_cleanup(): void {
+
+		$mode = Helpers::get_stripe_mode();
+
+		// Clean keys.
+		Helpers::set_stripe_key( '', 'publishable', $mode );
+		Helpers::set_stripe_key( '', 'secret', $mode );
+
+		// Clean user ID and other saved options.
+		delete_option( "wpforms_stripe_{$mode}_connect_user_id" );
+		delete_option( "wpforms_stripe_{$mode}_account_country" );
+		delete_option( DomainManager::STATUS_OPTION );
+		delete_option( WebhooksHealthCheck::ENDPOINT_OPTION );
+
+		// Clean cached account.
+		unset( $this->accounts[ $mode ] );
 	}
 }

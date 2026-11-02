@@ -50,7 +50,7 @@ function wpforms_is_url( $url ): bool {
  *
  * @return string|false Returns a valid email address on success, false on failure.
  */
-function wpforms_is_email( $email ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+function wpforms_is_email( $email ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 	static $punycode;
 
@@ -192,11 +192,11 @@ function wpforms_is_amp( $check_theme_support = true ): bool {
 function wpforms_is_admin_page( $slug = '', $view = '' ): bool {
 
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+	$page = ( (array) ( $_REQUEST['page'] ?? '' ) )[0];
 
 	// Check against basic requirements.
 	if (
-		empty( $_REQUEST['page'] ) ||
-		strpos( $_REQUEST['page'], 'wpforms' ) === false ||
+		strpos( $page, 'wpforms' ) === false ||
 		! is_admin()
 	) {
 		return false;
@@ -210,14 +210,13 @@ function wpforms_is_admin_page( $slug = '', $view = '' ): bool {
 		return false;
 	}
 
-	// Check against sub-level page view.
+	// Check against sublevel page view.
 	if (
 		! empty( $view ) &&
 		( empty( $_REQUEST['view'] ) || $_REQUEST['view'] !== $view )
 	) {
 		return false;
 	}
-
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 	return true;
@@ -252,7 +251,7 @@ function wpforms_is_empty_string( $value ): bool {
  * @return bool True if the request is a REST API call, false if not.
  * @author matzeeable
  */
-function wpforms_is_rest(): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_is_rest(): bool {
 
 	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 		return false;
@@ -296,7 +295,7 @@ function wpforms_is_rest(): bool { // phpcs:ignore Generic.Metrics.CyclomaticCom
  *
  * @return bool True if the request is a WPForms related rest API call, false if not.
  */
-function wpforms_is_wpforms_rest(): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_is_wpforms_rest(): bool {
 
 	if ( ! wpforms_is_rest() ) {
 		return false;
@@ -568,18 +567,12 @@ function wpforms_is_block_editor(): bool {
  */
 function wpforms_is_editor_page(): bool {
 
-	// phpcs:disable WordPress.Security.NonceVerification
 	$rest_request = defined( 'REST_REQUEST' ) && REST_REQUEST;
+	// phpcs:ignore WordPress.Security.NonceVerification
 	$context      = isset( $_REQUEST['context'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['context'] ) ) : '';
-	$post_action  = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
-	$get_action   = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-
 	$is_gutenberg = $rest_request && $context === 'edit';
-	$is_elementor = $post_action === 'elementor_ajax' || $get_action === 'elementor';
-	$is_divi      = wpforms_is_divi_editor();
-	// phpcs:enable WordPress.Security.NonceVerification
 
-	return $is_gutenberg || $is_elementor || $is_divi;
+	return $is_gutenberg || wpforms_is_elementor_editor() || wpforms_is_divi_editor();
 }
 
 /**
@@ -593,4 +586,31 @@ function wpforms_is_divi_editor(): bool {
 
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 	return ! empty( $_GET['et_fb'] ) || ( isset( $_POST['action'] ) && sanitize_key( $_POST['action'] ) === 'wpforms_divi_preview' );
+}
+
+/**
+ * Determines whether the current request is being made within the Elementor editor.
+ *
+ * @since 1.10.0
+ *
+ * @return bool
+ */
+function wpforms_is_elementor_editor(): bool {
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	return ( ! empty( $_POST['action'] ) && $_POST['action'] === 'elementor_ajax' ) || ( ! empty( $_GET['action'] ) && $_GET['action'] === 'elementor' );
+}
+
+/**
+ * Determine whether the current WordPress version is at least the given version.
+ *
+ * @since 1.10.2
+ *
+ * @param string $version Minimum WordPress version to compare against.
+ *
+ * @return bool
+ */
+function wpforms_is_wp_version_at_least( string $version ): bool {
+
+	return version_compare( $GLOBALS['wp_version'], $version, '>=' );
 }

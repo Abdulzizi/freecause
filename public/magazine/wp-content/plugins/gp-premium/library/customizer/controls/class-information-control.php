@@ -14,6 +14,10 @@ class GeneratePress_Information_Customize_Control extends WP_Customize_Control {
 	public $description = '';
 	public $notice = '';
 
+	public function enqueue() {
+		wp_enqueue_style( 'gp-info-control', trailingslashit( plugin_dir_url( __FILE__ ) )  . 'css/information-control.css', false, GP_PREMIUM_VERSION );
+	}
+
 	public function to_json() {
 		parent::to_json();
 		$this->json['description'] = $this->description;
@@ -23,7 +27,7 @@ class GeneratePress_Information_Customize_Control extends WP_Customize_Control {
 	public function content_template() {
 		?>
 		<# if ( data.notice ) { #>
-			<div class="notice notice-info">
+			<div class="gp-info-notice gp-info-notice-info">
 		<# } #>
 
 		<# if ( data.label ) { #>

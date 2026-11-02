@@ -14,12 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 echo "\n---\n\n";
-printf( /* translators: %s - link to the site. */
-	esc_html__( 'This email was auto-generated and sent from %s.', 'wpforms-lite' ),
-	esc_html( wp_specialchars_decode( get_bloginfo( 'name' ) ) )
-);
-echo "\n";
-printf( /* translators: %s - link to the documentation. */
-	esc_html__( 'Learn how to disable: %s.', 'wpforms-lite' ),
-	'https://wpforms.com/docs/how-to-use-email-summaries/#disable-email-summaries'
+printf( /* translators: %1$s - site name, %2$s - link to Settings → Misc to manage weekly emails. */
+	esc_html__( 'This email was auto-generated and sent from %1$s. Manage Email Summaries: %2$s', 'wpforms-lite' ),
+	esc_html( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
+	esc_url_raw( admin_url( 'admin.php?page=wpforms-settings&view=misc' ) )
 );

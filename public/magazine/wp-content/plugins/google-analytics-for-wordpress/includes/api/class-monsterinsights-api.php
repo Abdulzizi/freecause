@@ -2,55 +2,70 @@
 /**
  * Base API Client class for MonsterInsights.
  *
+ * This abstract class provides the foundational structure for making API requests
+ * to the MonsterInsights service. It handles authentication, request setup,
+ * and response processing.
  *
  * @package MonsterInsights
  */
-
 abstract class MonsterInsights_API_Client {
 	/**
-	 * Base API URL.
+	 * Base URL for the MonsterInsights API.
 	 *
 	 * @var string
 	 */
-	protected $base_url = '';
+	protected $base_url = 'https://app.monsterinsights.com/api/v3';
 
 	/**
-	 * API token.
+	 * The site-specific token for API authentication.
 	 *
 	 * @var string
 	 */
 	protected $token;
 
 	/**
-	 * API key.
+	 * The site-specific key for API authentication.
 	 *
 	 * @var string
 	 */
 	protected $key;
 
 	/**
-	 * License key.
+	 * The license key for premium features.
 	 *
 	 * @var string
 	 */
 	protected $license;
 
 	/**
-	 * Site URL.
+	 * The URL of the WordPress site.
 	 *
 	 * @var string
 	 */
 	protected $site_url;
 
 	/**
-	 * MonsterInsights version.
+	 * The current version of the MonsterInsights plugin.
 	 *
 	 * @var string
 	 */
 	protected $miversion;
 
 	/**
+	 * Request timeout in seconds.
+	 *
+	 * Child classes can override this for longer-running requests.
+	 *
+	 * @var int
+	 */
+	protected $timeout = 3;
+
+	/**
 	 * Constructor.
+	 *
+	 * Initializes the API client by setting up the necessary authentication
+	 * and site information.
+	 *
 	 */
 	public function __construct() {
 		$this->token     = $this->get_token();
@@ -61,27 +76,33 @@ abstract class MonsterInsights_API_Client {
 	}
 
 	/**
-	 * Get the API token.
+	 * Get the Site token for API authentication.
 	 *
-	 * @return string
+	 * Retrieves the token for the current site or network.
+	 *
+	 * @return string The site or network token.
 	 */
 	protected function get_token() {
 		return is_network_admin() ? MonsterInsights()->auth->get_network_token() : MonsterInsights()->auth->get_token();
 	}
 
 	/**
-	 * Get the API key.
+	 * Get the Site key for API authentication.
 	 *
-	 * @return string
+	 * Retrieves the key for the current site or network.
+	 *
+	 * @return string The site or network key.
 	 */
 	protected function get_key() {
 		return is_network_admin() ? MonsterInsights()->auth->get_network_key() : MonsterInsights()->auth->get_key();
 	}
 
 	/**
-	 * Get the license key.
+	 * Get the license key for the plugin.
 	 *
-	 * @return string
+	 * Retrieves the license key for Pro versions of the plugin.
+	 *
+	 * @return string The site or network license key, or an empty string for Lite version.
 	 */
 	protected function get_license() {
 		if ( ! monsterinsights_is_pro_version() ) {
@@ -94,60 +115,98 @@ abstract class MonsterInsights_API_Client {
 	/**
 	 * Get the site URL.
 	 *
-	 * @return string
+	 * Returns the appropriate admin URL based on whether it's a network or single site.
+	 *
+	 * @return string The site URL.
 	 */
 	protected function get_site_url() {
 		return is_network_admin() ? network_admin_url() : home_url();
 	}
 
 	/**
-	 * Get common request parameters.
+	 * Get the base URL for the API.
 	 *
-	 * @return array
+	 * This can be filtered to allow for different API endpoints.
+	 *
+	 * @return string The base URL for API requests.
 	 */
-	protected function get_common_params() {
-		$params = array(
-			'token'     => $this->token,
-			'key'       => $this->key,
-			'miversion' => $this->miversion,
-			'site_url'  => $this->site_url,
+	protected function get_base_url() {
+		return trailingslashit(
+			apply_filters( 'monsterinsights_api_url', $this->base_url )
 		);
+	}
 
-		if ( ! empty( $this->license ) ) {
-			$params['license'] = $this->license;
+	/**
+	 * Get the bearer token for relay API authentication.
+	 *
+	 * Uses MonsterInsights_API_Token::generate() so it works in contexts
+	 * without a logged-in user (e.g. WP Cron).
+	 *
+	 * @return string Bearer token string or empty on failure.
+	 */
+	protected function get_bearer_token() {
+		if ( ! class_exists( 'MonsterInsights_API_Token' ) ) {
+			return '';
 		}
 
-		return $params;
+		$token_data = MonsterInsights_API_Token::generate( is_network_admin() );
+
+		if ( is_wp_error( $token_data ) ) {
+			return '';
+		}
+
+		return isset( $token_data['token'] ) ? $token_data['token'] : '';
 	}
 
 	/**
 	 * Make an API request.
 	 *
-	 * @param string $endpoint The API endpoint.
-	 * @param array  $params   The request parameters.
-	 * @param string $method   The request method.
+	 * This method sends a request to the specified API endpoint and handles the response.
 	 *
-	 * @return array|WP_Error
+	 *
+	 * @param string $endpoint The API endpoint to call.
+	 * @param array  $params   The parameters to send with the request.
+	 * @param string $method   The HTTP method to use (e.g., 'POST', 'GET').
+	 *
+	 * @return array|MonsterInsights_API_Error|WP_Error The decoded JSON response as an array,
+	 *                                                  or a WP_Error/MonsterInsights_API_Error on failure.
 	 */
 	protected function request( $endpoint, $params = array(), $method = 'POST' ) {
-		$url = apply_filters( 'monsterinsights_api_url', trailingslashit( $this->base_url ) . $endpoint );
-		$params = array_merge( $this->get_common_params(), $params );
+		$url = $this->get_base_url() . $endpoint;
+
+		$headers = array(
+			'Content-Type'  => 'application/json',
+			'Accept'        => 'application/json',
+			'MIAPI-Sender'  => 'WordPress',
+			'MIAPI-Referer' => $this->site_url,
+			// X-Relay authentication
+			'X-Relay-Site-Key'  => $this->key,
+			'X-Relay-Token'     => $this->token,
+			'X-Relay-Site-Url'  => $this->site_url,
+			'X-Relay-License'   => $this->license,
+		);
+
+		// Bearer token authentication.
+		$bearer_token = $this->get_bearer_token();
+		if ( ! empty( $bearer_token ) ) {
+			$headers['Authorization'] = 'Bearer ' . $bearer_token;
+		}
 
 		$args = array(
 			'method'      => $method,
-			'timeout'     => 3,
+			'timeout'     => $this->timeout,
 			'redirection' => 5,
 			'httpversion' => '1.1',
 			'blocking'    => true,
-			'headers'     => array(
-				'Content-Type'  => 'application/json',
-				'Accept'        => 'application/json',
-				'MIAPI-Sender'  => 'WordPress',
-				'MIAPI-Referer' => $this->site_url,
-			),
-			'body'        => $params,
+			'headers'     => $headers,
 			'cookies'     => array(),
 		);
+
+		if ( $method === 'GET' ) {
+			$url = add_query_arg($params, $url);
+		} else {
+			$args['body'] = wp_json_encode($params);
+		}
 
 		$response = wp_remote_request( $url, $args );
 

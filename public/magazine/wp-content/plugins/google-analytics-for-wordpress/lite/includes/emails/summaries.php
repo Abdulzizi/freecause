@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Email Summaries main class.
  *
@@ -20,6 +24,15 @@ class MonsterInsights_Email_Summaries {
 	 * @var string
 	 */
 	const SOURCE_URL = 'https://plugin-cdn.monsterinsights.com';
+
+	/**
+	 * The URL for email template icons and images.
+	 *
+	 * @since 10.2.0
+	 * @access public
+	 * @var string
+	 */
+	const ICONS_URL = 'https://www.monsterinsights.com';
 
 	/**
 	 * The email template slug used for regular summary emails.
@@ -292,7 +305,7 @@ class MonsterInsights_Email_Summaries {
 			$img,
 			'9.4.0',
 			'monsterinsights_email_header_logo',
-			__( 'This filter is deprecated. Use monsterinsights_email_header_logo instead.' )
+			__( 'This filter is deprecated. Use monsterinsights_email_header_logo instead.', 'google-analytics-for-wordpress' )
 		);
 
 		return $old_value;
@@ -373,7 +386,7 @@ class MonsterInsights_Email_Summaries {
 	 */
 	public function get_email_subject() {
 		$site_url        = get_site_url();
-		$site_url_parsed = parse_url( $site_url );// Can't use wp_parse_url as that was added in WP 4.4 and we still support 3.8.
+		$site_url_parsed = wp_parse_url( $site_url );
 		$site_url        = isset( $site_url_parsed['host'] ) ? $site_url_parsed['host'] : $site_url;
 
 		// Translators: The domain of the site is appended to the subject.
@@ -567,7 +580,7 @@ class MonsterInsights_Email_Summaries {
 		$args['body']['top_pages']        = $this->get_top_pages_from_summary_data( $summaries_data );
 		$args['body']['more_pages_url']   = $this->get_more_pages_report_link( $summaries_data );
 		$args['body']['update_available'] = $this->plugin_has_update_notice();
-
+		
 		$args['footer']['settings_tab_url'] = esc_url( admin_url( 'admin.php?page=monsterinsights_settings#/advanced' ) );
 
 		$info_blocks   = new MonsterInsights_Summaries_InfoBlocks();
@@ -579,7 +592,9 @@ class MonsterInsights_Email_Summaries {
 		if ( ! empty( $default_block['blog_posts_source'] ) ) {
 			$args['body']['blog_posts_url']     = $default_block['blog_posts_source'];
 		}
-
+		$theme_name = defined( 'EXACTMETRICS_VERSION' ) ? 'exactmetricsv1' : 'monsterinsightsv7';
+		$icons_url = apply_filters( 'monsterinsights_get_licensing_url', self::ICONS_URL ) . '/wp-content/themes/' . $theme_name . '/assets/newsletter/';
+		$args['body']['icons_url']          = $icons_url;
 		$args['body']['blog_posts']         = $this->get_latest_blog_posts_from_feed( $default_block );
 		$args['body']['report_title']       = $next_block['title'];
 		$args['body']['report_description'] = $next_block['html'];
@@ -591,9 +606,10 @@ class MonsterInsights_Email_Summaries {
 		if ( $this->is_enabled_html_template() ) {
 			$args['header']['header_image']      = $this->get_header_logo();
 			$args['header']['header_background'] = self::SOURCE_URL . '/assets/img/header-background-monsterinsights.png';
-			$args['body']['report_image_src']    = $next_block['featured_image'];
+			$args['body']['report_image_src']    = ! empty( $next_block['featured_image'] ) ? $next_block['featured_image'] : $icons_url . 'lite-analytics-report-samples.png';
 			$args['footer']['left_image']        = self::SOURCE_URL . '/assets/img/logo-monsterinsights-long.png';
 			$args['footer']['logo_image']        = self::SOURCE_URL . '/assets/img/logo-monsterinsights-small.png';
+			$args['footer']['icons_url']         = $icons_url;
 		}
 
 		$args['footer']['facebook_url'] = 'https://www.facebook.com/monsterinsights';
@@ -693,6 +709,28 @@ class MonsterInsights_Email_Summaries {
 			$data = apply_filters( 'monsterinsights_vue_reports_data', $report->get_data( $args ), $report_name, $report );
 		}
 
+		// If summaries report returned no infobox/analytics_stats, fetch overview report (same API shape as Lite expects).
+		if ( ! empty( $data['success'] ) && ! empty( $data['data'] ) && is_array( $data['data'] ) ) {
+			$has_stats = isset( $data['data']['infobox'] ) || isset( $data['data']['analytics_stats'] );
+			if ( ! $has_stats ) {
+				$overview = MonsterInsights()->reporting->get_report( 'overview' );
+				if ( $overview && ! ( monsterinsights_is_pro_version() && ! MonsterInsights()->license->license_can( $overview->level ) ) ) {
+					$overview_data = apply_filters( 'monsterinsights_vue_reports_data', $overview->get_data( $args ), 'overview', $overview );
+					if ( ! empty( $overview_data['success'] ) && ! empty( $overview_data['data'] ) && is_array( $overview_data['data'] ) ) {
+						if ( ! empty( $overview_data['data']['infobox'] ) ) {
+							$data['data']['infobox'] = $overview_data['data']['infobox'];
+						}
+						if ( ! empty( $overview_data['data']['toppages'] ) && empty( $data['data']['toppages'] ) ) {
+							$data['data']['toppages'] = $overview_data['data']['toppages'];
+						}
+						if ( ! empty( $overview_data['data']['galinks'] ) && empty( $data['data']['galinks'] ) ) {
+							$data['data']['galinks'] = $overview_data['data']['galinks'];
+						}
+					}
+				}
+			}
+		}
+
 		return $data;
 	}
 
@@ -767,38 +805,44 @@ class MonsterInsights_Email_Summaries {
 	 * @return array Report stats array.
 	 */
 	private function get_report_stats( $data, $summaries_data ) {
+		$theme_name = defined( 'EXACTMETRICS_VERSION' ) ? 'exactmetricsv1' : 'monsterinsightsv7';
+		$icons_url = apply_filters( 'monsterinsights_get_licensing_url', self::ICONS_URL ) . '/wp-content/themes/' . $theme_name . '/assets/newsletter/';
 		// Icons are stored as unicode characters in the summaries assets. Check the plugin.monsterinsights.com documentation for more info.
 		$stats = array(
 			'sessions'     => array(
 				'label' => __( 'Number of Sessions', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-sessions.png',
 			),
 			'views'        => array(
 				'label' => __( 'Number of Page Views', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-pageviews.png',
 			),
 			'avg_duration' => array(
 				'label' => __( 'Avg Session Duration', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-avg-session-duration.png',
 			),
 			'bounce_rate'  => array(
 				'label' => __( 'Bounce Rate', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-bounce-rate.png',
 			),
 			'nr_of_posts'  => array(
 				'label' => __( 'Number of Blog Posts', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-blog-posts.png',
 			),
 			'nr_of_pages'  => array(
 				'label' => __( 'Number of Pages', 'google-analytics-for-wordpress' ),
-				'icon'  => '',
+				'icon'  => $icons_url . 'lite-pages.png',
 			)
 		);
 
-		$infobox = array();
+		$infobox         = array();
+		$analytics_stats = array();
 
 		if ( ! empty( $summaries_data ) && isset( $summaries_data['infobox'] ) ) {
 			$infobox = $summaries_data['infobox'];
+		}
+		if ( ! empty( $summaries_data ) && isset( $summaries_data['analytics_stats'] ) ) {
+			$analytics_stats = $summaries_data['analytics_stats'];
 		}
 
 		foreach ( $stats as $key => $stat ) {
@@ -812,17 +856,30 @@ class MonsterInsights_Email_Summaries {
 
 			switch ( $key ) {
 				case 'sessions':
-					if ( ! empty( $infobox ) && isset( $infobox['sessions'] ) ) {
-						$value     = $this->roundThousandsNumber( $infobox['sessions']['value'] );
-						$new_value = $this->calculate_trend_data( $stat, $value, $infobox['sessions']['prev'] );
+					if ( ! empty( $analytics_stats['sessions'] ) ) {
+						$item = $analytics_stats['sessions'];
+						$val  = isset( $item['value'] ) ? $item['value'] : 0;
+						$val  = is_numeric( $val ) ? $this->roundThousandsNumber( (int) $val ) : $val;
+						$pct  = isset( $item['percentage'] ) ? (float) $item['percentage'] : 0;
+						$new_value = $this->calculate_trend_data( $stat, $val, $pct );
+					} elseif ( ! empty( $infobox['sessions'] ) ) {
+						$val = $infobox['sessions']['value'];
+						$value     = is_numeric( $val ) ? $this->roundThousandsNumber( (int) $val ) : $val;
+						$new_value = $this->calculate_trend_data( $stat, $value, isset( $infobox['sessions']['prev'] ) ? (float) $infobox['sessions']['prev'] : 0 );
 					}
 					break;
 				case 'views':
-					if ( ! empty( $infobox ) && isset( $infobox['pageviews'] ) ) {
-						$value     = $this->roundThousandsNumber( $infobox['pageviews']['value'] );
-						$new_value = $this->calculate_trend_data( $stat, $value, $infobox['pageviews']['prev'] );
+					if ( ! empty( $analytics_stats['pageviews'] ) ) {
+						$item = $analytics_stats['pageviews'];
+						$val  = isset( $item['value'] ) ? $item['value'] : 0;
+						$val  = is_numeric( $val ) ? $this->roundThousandsNumber( (int) $val ) : $val;
+						$pct  = isset( $item['percentage'] ) ? (float) $item['percentage'] : 0;
+						$new_value = $this->calculate_trend_data( $stat, $val, $pct );
+					} elseif ( ! empty( $infobox['pageviews'] ) ) {
+						$val = $infobox['pageviews']['value'];
+						$value     = is_numeric( $val ) ? $this->roundThousandsNumber( (int) $val ) : $val;
+						$new_value = $this->calculate_trend_data( $stat, $value, isset( $infobox['pageviews']['prev'] ) ? (float) $infobox['pageviews']['prev'] : 0 );
 					}
-
 					break;
 				case 'nr_of_posts':
 					$current_count = $this->get_posts_count_by_date_range();
@@ -837,20 +894,36 @@ class MonsterInsights_Email_Summaries {
 					$new_value     = $this->calculate_trend_data( $stat, $current_count, $difference );
 					break;
 				case 'avg_duration':
-					if ( ! empty( $infobox ) && isset( $infobox['duration'] ) ) {
-						$value     = $infobox['duration']['value'];
-						$new_value = $this->calculate_trend_data( $stat, $value, $infobox['duration']['prev'] );
+					if ( ! empty( $analytics_stats['avg_session_length'] ) && isset( $analytics_stats['avg_session_length']['value'] ) ) {
+						$item = $analytics_stats['avg_session_length'];
+						$val  = $item['value'];
+						$val  = $this->format_duration( $val );
+						$new_value = $this->calculate_trend_data( $stat, $val, isset( $item['percentage'] ) ? (float) $item['percentage'] : 0 );
+					} elseif ( ! empty( $infobox ) ) {
+						$duration = isset( $infobox['duration'] ) ? $infobox['duration'] : ( isset( $infobox['avg_duration'] ) ? $infobox['avg_duration'] : null );
+						if ( $duration && isset( $duration['value'] ) ) {
+							$val = $this->format_duration( $duration['value'] );
+							$new_value = $this->calculate_trend_data( $stat, $val, isset( $duration['prev'] ) ? (float) $duration['prev'] : 0 );
+						}
 					}
 					break;
 				case 'bounce_rate':
-					if ( ! empty( $infobox ) && isset( $infobox['bounceRate'] ) ) {
-						$value     = number_format( (float)$infobox['bounceRate']['value'], 2 ) . '%';
-						$new_value = $this->calculate_trend_data( $stat, $value, $infobox['bounceRate']['prev'], true );
+					if ( ! empty( $analytics_stats['bounce_rate'] ) ) {
+						$item = $analytics_stats['bounce_rate'];
+						$val  = isset( $item['value'] ) ? $item['value'] : '0%';
+						$pct  = isset( $item['percentage'] ) ? (float) $item['percentage'] : 0;
+						$new_value = $this->calculate_trend_data( $stat, $val, $pct, true );
+					} elseif ( ! empty( $infobox ) ) {
+						$bounce = isset( $infobox['bounceRate'] ) ? $infobox['bounceRate'] : ( isset( $infobox['bounce'] ) ? $infobox['bounce'] : null );
+						if ( $bounce && isset( $bounce['value'] ) ) {
+							$val = is_numeric( $bounce['value'] ) ? number_format( (float) $bounce['value'], 2 ) . '%' : $bounce['value'];
+							$new_value = $this->calculate_trend_data( $stat, $val, isset( $bounce['prev'] ) ? (float) $bounce['prev'] : 0, true );
+						}
 					}
 					break;
 			}
 
-			$stats[$key] = array_merge($new_value, $stat);
+			$stats[ $key ] = array_merge( $new_value, $stat );
 		}
 
 		return $stats;
@@ -1053,7 +1126,7 @@ class MonsterInsights_Email_Summaries {
 			);
 			
 			if ( ! empty( $post_item['excerpt']['rendered'] ) ) {
-				$new['excerpt'] = esc_html( wp_trim_words( strip_tags( $post_item['excerpt']['rendered'] ), 15, '...' ) );
+				$new['excerpt'] = esc_html( wp_trim_words( wp_strip_all_tags( $post_item['excerpt']['rendered'] ), 15, '...' ) );
 			}
 
 			if ( ! empty( $featured_image_url ) ) {
@@ -1083,5 +1156,29 @@ class MonsterInsights_Email_Summaries {
 		}
 
 		return round($num, 1) . $units[$i];
+	}
+
+	/**
+	 * Format seconds into a human-readable duration string.
+	 *
+	 * @since 10.2.0
+	 *
+	 * @param mixed $value Duration in seconds.
+	 * @return string Formatted duration (e.g. "1h 2m 30s", "2m 15s", "30s").
+	 */
+	private function format_duration( $value ) {
+		if ( ! is_numeric( $value ) ) {
+			return $value;
+		}
+
+		$secs = (int) $value;
+
+		if ( $secs >= 3600 ) {
+			return floor( $secs / 3600 ) . 'h ' . floor( ( $secs % 3600 ) / 60 ) . 'm ' . ( $secs % 60 ) . 's';
+		} elseif ( $secs >= 60 ) {
+			return floor( $secs / 60 ) . 'm ' . ( $secs % 60 ) . 's';
+		}
+
+		return $secs . 's';
 	}
 }

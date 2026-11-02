@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Functionality of EEA Compliance feature.
  *
@@ -135,6 +140,11 @@ class MonsterInsights_EEA_Compliance {
 
 		// CookieBot
 		if ( monsterinsights_is_cookiebot_active() ) {
+			return true;
+		}
+
+		// WPConsent.
+		if ( function_exists( 'WPConsent' ) ) {
 			return true;
 		}
 

@@ -1,5 +1,8 @@
 <?php
 
+// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+/** @noinspection AutoloadingIssuesInspection */
+
 /**
  * Base form template.
  *
@@ -8,7 +11,7 @@
 abstract class WPForms_Template {
 
 	/**
-	 * Full name of the template, eg "Contact Form".
+	 * Full name of the template, e.g. "Contact Form".
 	 *
 	 * @since 1.0.0
 	 *
@@ -17,7 +20,7 @@ abstract class WPForms_Template {
 	public $name;
 
 	/**
-	 * Slug of the template, eg "contact-form" - no spaces.
+	 * Slug of the template, e.g. "contact-form" - no spaces.
 	 *
 	 * @since 1.0.0
 	 *
@@ -44,7 +47,7 @@ abstract class WPForms_Template {
 	public $categories;
 
 	/**
-	 * Short description the template.
+	 * Short description of the template.
 	 *
 	 * @since 1.0.0
 	 *
@@ -60,6 +63,15 @@ abstract class WPForms_Template {
 	 * @var string
 	 */
 	public $includes = '';
+
+	/**
+	 * Template keywords for search, e.g. "edit profile, update profile".
+	 *
+	 * @since 2.0.1
+	 *
+	 * @var string
+	 */
+	public $keywords = '';
 
 	/**
 	 * URL of the icon to display in the admin area.
@@ -80,7 +92,7 @@ abstract class WPForms_Template {
 	public $url = '';
 
 	/**
-	 * Form template thumbnail url.
+	 * Form template thumbnail URL.
 	 *
 	 * @since 1.8.2
 	 *
@@ -134,12 +146,8 @@ abstract class WPForms_Template {
 		// Bootstrap.
 		$this->init();
 
-		$type = $this->core ? '_core' : '';
-
-		add_filter( "wpforms_form_templates{$type}", [ $this, 'template_details' ], $this->priority );
-		add_filter( 'wpforms_create_form_args', [ $this, 'template_data' ], 10, 2 );
-		add_filter( 'wpforms_save_form_args', [ $this, 'template_replace' ], 10, 3 );
-		add_filter( 'wpforms_builder_template_active', [ $this, 'template_active' ], 10, 2 );
+		// Hooks.
+		$this->hooks();
 	}
 
 	/**
@@ -150,15 +158,32 @@ abstract class WPForms_Template {
 	public function init() {}
 
 	/**
+	 * Register hooks.
+	 *
+	 * @since 1.9.9
+	 */
+	private function hooks(): void {
+
+		$type = $this->core ? '_core' : '';
+
+		add_filter( "wpforms_form_templates{$type}", [ $this, 'template_details' ], $this->priority );
+		add_filter( 'wpforms_create_form_args', [ $this, 'template_data' ], 10, 2 );
+		add_filter( 'wpforms_save_form_args', [ $this, 'template_replace' ], 10, 3 );
+		add_filter( 'wpforms_builder_template_active', [ $this, 'template_active' ], 10, 2 );
+	}
+
+	/**
 	 * Add basic template details to the Add New Form admin screen.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $templates Templates array.
+	 * @param array|mixed $templates Templates array.
 	 *
 	 * @return array
 	 */
-	public function template_details( $templates ) {
+	public function template_details( $templates ): array {
+
+		$templates = (array) $templates;
 
 		$templates[] = [
 			'name'        => $this->name,
@@ -167,6 +192,7 @@ abstract class WPForms_Template {
 			'categories'  => $this->categories,
 			'description' => $this->description,
 			'includes'    => $this->includes,
+			'keywords'    => $this->keywords,
 			'icon'        => $this->icon,
 			'url'         => ! empty( $this->url ) ? $this->url : '',
 			'plugin_dir'  => $this->get_plugin_dir(),
@@ -177,7 +203,7 @@ abstract class WPForms_Template {
 	}
 
 	/**
-	 * Get the directory name of the plugin in which current template resides.
+	 * Get the directory name of the plugin in which the current template resides.
 	 *
 	 * @since 1.6.9
 	 *
@@ -197,7 +223,7 @@ abstract class WPForms_Template {
 	}
 
 	/**
-	 * Add template data when form is created.
+	 * Add template data when a form is created.
 	 *
 	 * @since 1.0.0
 	 *
@@ -230,7 +256,7 @@ abstract class WPForms_Template {
 	}
 
 	/**
-	 * Replace template on post update if triggered.
+	 * Replace the template on post update if triggered.
 	 *
 	 * @since 1.0.0
 	 *
@@ -239,8 +265,9 @@ abstract class WPForms_Template {
 	 * @param array $args Update form arguments.
 	 *
 	 * @return array
+	 * @noinspection PhpMissingParamTypeInspection
 	 */
-	public function template_replace( $form, $data, $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function template_replace( $form, $data, $args ): array {
 
 		// We should proceed only if the template slug passed via $args['template'] is equal to the current template slug.
 		// This will work only for offline templates: Blank Form, all the Addons Templates, and all the custom templates.
@@ -257,7 +284,7 @@ abstract class WPForms_Template {
 			return $form;
 		}
 
-		// Compile the new form data preserving needed data from the existing form.
+		// Compile the new form data while preserving the necessary data from the existing form.
 		$new             = $this->data;
 		$new['id']       = $form_data['id'] ?? 0;
 		$new['settings'] = $form_data['settings'] ?? [];
@@ -266,7 +293,7 @@ abstract class WPForms_Template {
 
 		$template_id = $this->data['meta']['template'] ?? '';
 
-		// Preserve template ID `wpforms-user-template-{$form_id}` when overwriting it with core template.
+		// Preserve template ID `wpforms-user-template-{$form_id}` when overwriting it with the core template.
 		if ( wpforms_is_form_template( $form['ID'] ) ) {
 			$template_id = $form_data['meta']['template'] ?? '';
 		}
@@ -295,24 +322,26 @@ abstract class WPForms_Template {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $details Details.
-	 * @param object $form    Form data.
+	 * @param array|mixed        $details Details.
+	 * @param WP_Post|null|false $form    Form data.
 	 *
-	 * @return array|void
+	 * @return array
 	 */
-	public function template_active( $details, $form ) {
+	public function template_active( $details, $form ): array {
 
-		if ( empty( $form ) ) {
-			return;
+		$details = (array) $details;
+
+		if ( ! $form ) {
+			return [];
 		}
 
 		$form_data = wpforms_decode( $form->post_content );
 
 		if ( empty( $this->modal ) || empty( $form_data['meta']['template'] ) || $this->slug !== $form_data['meta']['template'] ) {
 			return $details;
-		} else {
-			$display = $this->template_modal_conditional( $form_data );
 		}
+
+		$display = $this->template_modal_conditional( $form_data );
 
 		return [
 			'name'          => $this->name,
@@ -326,8 +355,8 @@ abstract class WPForms_Template {
 	}
 
 	/**
-	 * Conditional to determine if the template informational modal screens
-	 * should display.
+	 * Conditional logic to determine whether the template informational modal screens
+	 * should be displayed.
 	 *
 	 * @since 1.0.0
 	 *

@@ -109,8 +109,24 @@ class PaymentIntents extends Common implements ApiInterface {
 	 */
 	public function set_config() {
 
+		/**
+		 * Filter whether to enable the Stripe Radar Session for behavioral fraud signals.
+		 *
+		 * When true, the frontend calls `stripe.createRadarSession()` on the form load and
+		 * passes the session id to `createPaymentMethod()`/`confirmPayment()`. This
+		 * enriches Stripe Radar with mouse, keyboard, and dwell telemetry and compounds
+		 * with the server-side risk gate.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param bool $enabled Whether the Radar Session API is active.
+		 */
+		$radar_session_enabled = (bool) apply_filters( 'wpforms_stripe_radar_session_enabled', true ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
 		$localize_script = [
-			'element_locale' => $this->filter_config_element_locale(),
+			'element_locale'        => $this->filter_config_element_locale(),
+			'radar_session_enabled' => $radar_session_enabled,
+			'currency_minimum'      => Helpers::get_currency_minimum( wpforms_get_currency() ),
 		];
 
 		$this->config = [
@@ -184,7 +200,8 @@ class PaymentIntents extends Common implements ApiInterface {
 
 		$min = wpforms_get_min_suffix();
 
-		$this->config['local_js_url'] = WPFORMS_PLUGIN_URL . "assets/js/integrations/stripe/wpforms-stripe-elements{$min}.js";
+		$this->config['local_js_url']  = WPFORMS_PLUGIN_URL . "assets/js/integrations/stripe/wpforms-stripe-elements{$min}.js";
+		$this->config['local_css_url'] = WPFORMS_PLUGIN_URL . "assets/css/integrations/stripe/wpforms-stripe{$min}.css";
 	}
 
 	/**
@@ -543,7 +560,7 @@ class PaymentIntents extends Common implements ApiInterface {
 	 *
 	 * @param array $args Subscription payment arguments.
 	 */
-	protected function charge_subscription( $args ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function charge_subscription( $args ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $this->payment_method_id ) ) {
 			$this->error = esc_html__( 'Stripe subscription stopped, missing PaymentMethod id.', 'wpforms-lite' );
@@ -560,6 +577,7 @@ class PaymentIntents extends Common implements ApiInterface {
 			'metadata' => [
 				'form_name' => $args['form_title'],
 				'form_id'   => $args['form_id'],
+				'cycles'    => $args['cycles'] ?? null,
 			],
 			'expand'   => [ 'latest_invoice.payment_intent' ],
 		];
@@ -662,7 +680,7 @@ class PaymentIntents extends Common implements ApiInterface {
 	 *
 	 * @return array
 	 */
-	public function get_charge_details( $keys ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_charge_details( $keys ) {
 
 		$charge = isset( $this->intent->charges->data[0] ) ? $this->intent->charges->data[0] : null;
 
@@ -706,11 +724,7 @@ class PaymentIntents extends Common implements ApiInterface {
 	 */
 	protected function request_3dsecure_ajax( $intent ) {
 
-		if ( ! isset( $intent->status, $intent->next_action->type ) ) {
-			return;
-		}
-
-		if ( $intent->status !== 'requires_action' || $intent->next_action->type !== 'use_stripe_sdk' ) {
+		if ( ! isset( $intent->status ) || $intent->status !== 'requires_action' ) {
 			return;
 		}
 

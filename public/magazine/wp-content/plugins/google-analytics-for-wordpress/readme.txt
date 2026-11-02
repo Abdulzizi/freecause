@@ -3,8 +3,8 @@ Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, analytics, google analytics dashboard, Website Analytics
 Requires at least: 5.6.0
-Tested up to: 6.9.0
-Stable tag: 9.11.0
+Tested up to: 7.1
+Stable tag: 11.3.0
 Requires PHP: 7.2
 License: GPL v3
 
@@ -26,7 +26,7 @@ The best part is that MonsterInsights comes with an analytics dashboard for Word
 
 Simply put, MonsterInsights is the most complete Google Analytics plugin for WordPress that's both EASY and POWERFUL.
 
-That's why millions of small businesses and top companies like Microsoft, Bloomberg, FedEx, Yelp, Subway, etc. use MonsterInsights to setup Google Analytics on their WordPress sites.
+That's why millions of small businesses and top companies like Microsoft, Bloomberg, FedEx, Yelp, Subway, etc. use MonsterInsights to set up Google Analytics on their WordPress sites.
 
 > <strong>MonsterInsights Pro</strong><br />
 > This plugin is the lite version of MonsterInsights Pro plugin that comes with all the tracking features you will ever need including events tracking, ecommerce tracking, custom dimensions tracking, page speed reports, popular post tracking, custom dimensions, affiliate link tracking, video tracking and tons more. [Click here to purchase the best premium Google Analytics plugin for WordPress now!](https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion)
@@ -39,7 +39,7 @@ https://www.youtube.com/watch?v=4Y8TGGkdcGY
 
 Properly setting up Google Analytics is complicated. You have to either hire a developer or learn how to add advanced code snippets to your website in many different areas. This process can take days or weeks...and can even break your website!
 
-With MonsterInsights, we made it "effortless" to properly setup Google Analytics in WordPress. Yes, you can enable all advanced Google Analytics features with just a few clicks.
+With MonsterInsights, we made it "effortless" to properly set up Google Analytics in WordPress. Yes, you can enable all advanced Google Analytics features with just a few clicks.
 
 If you can point-and-click, then you can set up Google Analytics inside WordPress and start seeing insights in under 15 minutes (no code necessary).
 
@@ -121,6 +121,115 @@ MonsterInsights&reg; is a registered trademark of MonsterInsights LLC. When writ
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
+= 11.3.0: September 16, 2026 =
+- Enhancements: Page Insights now opens instantly in the editor sidebar, the admin bar panel, and the classic editor metabox
+- Enhancements: The Overview report loads faster and shows the Pages widget even without the Page Insights addon
+- Enhancements: Update checks for your addons are faster, with one request covering all of them instead of one for each
+- Enhancements: The form conversion upgrade prompt now names the form plugin you already use, and appears far less often
+- Enhancements: Sites already using Contact Form 7 or Jotform are no longer prompted to install WPForms
+- Fixes: Subsites on a network license can now connect to Google Analytics
+- Fixes: Saving Google settings no longer overwrites a working connection with another site's credentials or with blank ones
+- Fixes: A damaged Google Analytics connection now explains the problem and lets you reconnect
+- Fixes: Connecting a new property now clears the cached reports, so you no longer see the previous property's numbers
+- Fixes: Larger translation catalogues are no longer truncated, so languages such as German, Brazilian Portuguese and Korean now translate fully in reports and blocks
+- Fixes: Translations now also load in contexts that previously skipped them, including WP-CLI, REST requests and cron
+- Fixes: The eCommerce funnel report and Overview widget now say when there is no funnel data, instead of drawing a chart of zeros
+- Fixes: The Measurement Protocol API Secret field is hidden on sites connected through Google
+- Fixes: Screen readers no longer announce the verified badge twice
+- Fixes: The verified badge no longer shifts the page layout while it loads
+- Fixes: Corrected wording and spacing on several admin screens
+- Fixes: A single failing report section no longer blanks the rest of the Overview report
+- Fixes: License actions in the network admin now show confirmation and error messages instead of appearing to do nothing
+- Fixes: An expired network license no longer appears active on subsites
+- Fixes: The network admin no longer reports "No license key activated on this subsite" while a network license is active
+- Fixes: The admin bar insights panel now shows a clear message instead of "-1" when its session has expired
+- Fixes: The admin bar no longer shows zeros for pages that do have data
+- Fixes: The Page Insights metabox no longer gets stuck on "Loading Page Insights" when a request fails
+- Fixes: Various bug fixes and updates
+
+= 11.2.0: September 3, 2026 =
+- Fixes: Every report view honours the sample-data toggle, so sample rows no longer mix in with your real numbers
+- Fixes: Rows in sample reports no longer link out to live pages
+- Fixes: An expired Google connection now prompts you to reconnect instead of showing a report error
+- Fixes: Dashboard widget shows the upgrade prompt for reports your plan doesn't include, instead of an error
+- Fixes: Upgrade links on paid plans now open the pricing page instead of the account area
+- Fixes: Dashboard widget no longer links to reports that have been disabled
+- Fixes: No more false "multiple tracking codes" notice on eCommerce homepages
+- Fixes: Previous-period totals now match the rows the table actually shows
+- Fixes: The AMP addon notice no longer appears on report screens
+- Fixes: Various bug fixes and updates
+
+= 11.1.3: August 19, 2026 =
+- WP 7.1: Popular Posts blocks work in the iframed block editor
+- Fixes: Report tables show row numbers again and the expand arrow is back on the right side
+- Fixes: Report table empty and loading states are centered again
+- Fixes: Older report links no longer land on a blank screen
+- Fixes: Headline Analyzer no longer crashes synced patterns in the block editor
+- Fixes: Setup wizard no longer lands on another plugin's onboarding screen
+- Fixes: Security hardening for license actions and credential handling
+- Fixes: Various bug fixes and updates
+
+= 11.1.2: July 29, 2026 =
+- Enhancements: Security hardening across admin and reporting requests
+- Fixes: Charts no longer break when another plugin loads its own copy of ApexCharts
+- Fixes: Reduced admin notification requests that could trip firewall rate limits
+- Fixes: Various bug fixes and updates
+
+= 11.1.1: July 22, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 11.1.0: July 21, 2026 =
+- New: Introducing new AI-Powered Headline Analyser
+- Enhancements: Various Performance Improvements and Bug Fixes
+
+= 11.0.1: July 7, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 11.0.0: June 15, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.2.99: June 11, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.2.2: May 29, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.2.1: May 27, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.2.0: May 20, 2026 =
+- New: We've added an AI chat to all plans - easily chat with your analytics and get an answer fast
+
+= 10.1.3: April 22, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.1.2: March 31, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.1.1: March 24, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.1.0: March 23, 2026 =
+- New: We completely updated our overview screen to make it easy to filter and view your stats inside your dashboard without needing to navigate away.
+- New: We added support for CSV and XLSX reports
+
+= 10.0.3: March 3, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.0.2: February 9, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.0.1: February 5, 2026 =
+- Fixes: Various bug fixes and updates
+
+= 10.0.0: February 5, 2026 =
+- New: See your store's performance in more detail with our 5 new reports
+- Updated: Launch Google Ads campaigns from any version of MonsterInsights
+- Fixes: Various bug fixes and updates
+
+= 9.11.1: January 6, 2026 =
+- Enhancements: Various Performance Improvements and Bug Fixes
+
 = 9.11.0: December 18, 2025 =
 - New: Year In Review Report
 - Enhancements: Various Performance Improvements and Bug Fixes

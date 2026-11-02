@@ -57,7 +57,8 @@ final class MonsterInsights_Notice_Admin {
 	 */
 
 	public function is_dismissed( $notice ) {
-		if ( ! isset( $this->notices[ $notice ] ) ) {
+		$notice = sanitize_key( $notice );
+		if ( '' === $notice || ! isset( $this->notices[ $notice ] ) ) {
 			return false;
 		}
 
@@ -77,6 +78,13 @@ final class MonsterInsights_Notice_Admin {
 	 *
 	 */
 	public function dismiss( $notice ) {
+		// Normalize the slug and guard the autoloaded option against empty or
+		// oversized keys so a caller cannot bloat it with arbitrary values.
+		$notice = sanitize_key( $notice );
+		if ( '' === $notice || strlen( $notice ) > 191 ) {
+			return;
+		}
+
 		$this->notices[ $notice ] = true;
 		update_option( 'monsterinsights_notices', $this->notices );
 
@@ -95,6 +103,7 @@ final class MonsterInsights_Notice_Admin {
 	 *
 	 */
 	public function undismiss( $notice ) {
+		$notice = sanitize_key( $notice );
 		unset( $this->notices[ $notice ] );
 		update_option( 'monsterinsights_notices', $this->notices );
 

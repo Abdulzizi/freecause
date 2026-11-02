@@ -33,6 +33,8 @@ class Admin {
 		'mks_shortcodes_simple_line_icons', // Meks Flexible Shortcodes.
 		'onthego-admin-styles', // Toolset Types
 		'foogra-icons', // Foogra Theme
+		'elegant', // Elegant Icons-set
+		'admin-icons-font', // Yoga-fit Тheme
 	);
 
 	/**
@@ -131,6 +133,15 @@ class Admin {
 		wp_enqueue_script(
 			'sg-security-admin',
 			\SG_Security\URL . '/assets/js/main.min.js',
+			array( 'jquery' ), // Dependencies.
+			\SG_Security\VERSION,
+			true
+		);
+
+		// Enqueue admin nonce script.
+		wp_enqueue_script(
+			'sg-security-admin-nonce',
+			\SG_Security\URL . '/assets/js/admin_nonce.js',
 			array( 'jquery' ), // Dependencies.
 			\SG_Security\VERSION,
 			true
@@ -238,6 +249,10 @@ class Admin {
 
 		echo '<script>window.addEventListener("load", function(){ SGSecurity.init({page: SGSecurity.PAGE.' . esc_html( $id ) . ',config:' . wp_json_encode( $data ) . '})});</script>';
 		echo '<style>.toplevel_page_sg-security.menu-top .wp-menu-image img { width:20px; } </style>';
+
+		// Adds WP admin nonce.
+		$sgs_admin_nonce = wp_create_nonce( 'sgs_clear_logs' );
+		echo '<script>window.SGSecurityAdminNonce = ' . wp_json_encode( $sgs_admin_nonce ) . ';</script>';
 	}
 
 	/**
@@ -280,47 +295,9 @@ class Admin {
 	 * @return array The popup settings.
 	 */
 	public function get_popup_settings() {
-		$settings = array();
-
-		$data_consent       = intval( get_option( 'siteground_data_consent', 0 ) );
-		$email_consent      = intval( get_option( 'siteground_email_consent', 0 ) );
-		$settings_security  = intval( get_option( 'siteground_settings_security', 0 ) );
-
-
-		if ( ! empty( $settings_security ) ) {
-			return array(
-				'show_data_field'  => 0,
-				'show_email_field' => 0,
-			);
-		}
-
-		if ( Helper_Service::is_siteground() ) {
-			if ( 1 === $data_consent ) {
-				return array(
-					'show_data_field'  => 0,
-					'show_email_field' => 0,
-				);
-			}
-
-			return array(
-				'show_data_field'  => 1,
-				'show_email_field' => 0,
-			);
-		}
-
-		$settings = array();
-
-		$settings['show_data_field'] = 0 === $data_consent ? 1 : 0;
-		$settings['show_email_field'] = 0 === $email_consent ? 1 : 0;
-
-		return $settings;
+		return array(
+			'show_data_field'  => 0,
+			'show_email_field' => 0,
+		);
 	}
-
-	public function show_privacy_policy ( $text ) {
-		if ( false === $this->is_plugin_page() ) {
-			return $text;
-		}
-		return __( 'By installing and using this plugin you acknowledge that you have read and understood <a href="//siteground.com/viewtos/siteground_plugins_privacy_notice"> SiteGround Plugins Privacy Notice </a>.', 'sg-security' );
-	}
-
 }
