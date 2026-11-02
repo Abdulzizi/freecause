@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import { E2E_DB } from './tests/e2e/env.js';
 
 export default defineConfig({
     testDir: 'tests/e2e',
@@ -12,6 +13,7 @@ export default defineConfig({
     webServer: {
         command: 'bash scripts/e2e-serve.sh',
         url: 'http://127.0.0.1:8099/en',
+        env: { E2E_DB },
         reuseExistingServer: false,
         timeout: 180000,
         stderr: 'pipe',

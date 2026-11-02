@@ -5,7 +5,9 @@ cd "$(dirname "$0")/.."
 PHP=php
 if [ -x /opt/homebrew/opt/php/bin/php ]; then PHP=/opt/homebrew/opt/php/bin/php; fi
 
-DB="$(mktemp -d)/e2e.sqlite"
+DB="${E2E_DB:-$(mktemp -d)/e2e.sqlite}"
+mkdir -p "$(dirname "$DB")"
+rm -f "$DB"
 touch "$DB"
 
 export APP_ENV=e2e APP_DEBUG=false APP_URL=http://127.0.0.1:8099

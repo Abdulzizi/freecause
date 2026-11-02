@@ -92,6 +92,9 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Install sqlite3 CLI (e2e specs read tokens from the DB)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sqlite3
+
       - name: Run browser tests
         run: npx playwright test
 
