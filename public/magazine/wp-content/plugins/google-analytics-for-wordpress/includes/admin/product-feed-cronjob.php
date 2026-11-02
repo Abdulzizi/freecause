@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Product Feed Cronjob Handler
  * 
@@ -53,7 +57,7 @@ class MonsterInsights_Product_Feed_Cronjob extends MonsterInsights_Notification_
 	public function add_monthly_schedule( $schedules ) {
 		$schedules['monthly'] = array(
 			'interval' => 30 * DAY_IN_SECONDS, // 30 days
-			'display'  => __( 'Monthly', 'google-analytics-premium' )
+			'display'  => __( 'Monthly', 'google-analytics-for-wordpress' )
 		);
 		return $schedules;
 	}
@@ -140,12 +144,12 @@ class MonsterInsights_Product_Feed_Cronjob extends MonsterInsights_Notification_
 			'priority' => 1, // High priority
 			'start'    => gmdate( 'Y-m-d H:i:s' ),
 			'end'      => gmdate( 'Y-m-d H:i:s', strtotime( '+7 days' ) ), // Show for 7 days
-			'title'    => __( 'See How Your Feeds Perform' ),
-			'content'  => __( 'With MonsterInsights Pro, you can easily measure and track the performance of your product feeds, automatically, with no coding needed. Get started now for 50% off.', 'google-analytics-premium' ),
+			'title'    => __( 'See How Your Feeds Perform', 'google-analytics-for-wordpress' ),
+			'content'  => __( 'With MonsterInsights Pro, you can easily measure and track the performance of your product feeds, automatically, with no coding needed. Get started now for 50% off.', 'google-analytics-for-wordpress' ),
 			'btns'     => array(
 				'save_50_percent' => array(
 					'url'         => $this->get_upgrade_url(),
-					'text'        => __( 'Save 50%', 'google-analytics-premium' ),
+					'text'        => __( 'Save 50%', 'google-analytics-for-wordpress' ),
 					'is_external' => true,
 				),
 			),
@@ -163,14 +167,16 @@ class MonsterInsights_Product_Feed_Cronjob extends MonsterInsights_Notification_
 	 */
 	public function manual_check() {
 		// Security check
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
 		if ( ! current_user_can( 'monsterinsights_view_dashboard' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'google-analytics-premium' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'google-analytics-for-wordpress' ) ) );
 		}
 
 		// Run the check
 		$this->check_product_feed_data();
 
-		wp_send_json_success( array( 'message' => __( 'Product Feed check completed', 'google-analytics-premium' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Product Feed check completed', 'google-analytics-for-wordpress' ) ) );
 	}
 
 	/**

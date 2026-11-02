@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * MonsterInsights Connect is our service that makes it easy for non-techy users to
  * upgrade to MonsterInsights Pro without having to manually install the MonsterInsights Pro plugin.
@@ -134,16 +139,16 @@ class MonsterInsights_Connect {
 	 * Process MonsterInsights Connect.
 	 */
 	public function process() {
-		// Translators: Link tag starts with url and link tag ends.
 		$error = sprintf(
+			/* translators: %1$s: Opening link tag, %2$s: Closing link tag. */
 			esc_html__( 'Oops! We could not automatically install an upgrade. Please install manually by visiting %1$smonsterinsights.com%2$s.', 'google-analytics-for-wordpress' ),
 			'<a target="_blank" href="' . monsterinsights_get_url( 'notice', 'could-not-upgrade', 'https://www.monsterinsights.com/' ) . '">',
 			'</a>'
 		);
 
 		// verify params present (oth & download link).
-		$post_oth = ! empty( $_REQUEST['oth'] ) ? sanitize_text_field($_REQUEST['oth']) : '';
-		$post_url = ! empty( $_REQUEST['file'] ) ? sanitize_url($_REQUEST['file']) : '';
+		$post_oth = ! empty( $_REQUEST['oth'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['oth'] ) ) : '';
+		$post_url = ! empty( $_REQUEST['file'] ) ? sanitize_url( wp_unslash( $_REQUEST['file'] ) ) : '';
 		$license  = get_option( 'monsterinsights_connect', false );
 		$network  = ! empty( $license['network'] ) ? (bool) $license['network'] : false;
 		if ( empty( $post_oth ) || empty( $post_url ) ) {

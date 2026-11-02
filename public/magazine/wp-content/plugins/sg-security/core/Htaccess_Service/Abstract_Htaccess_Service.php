@@ -161,6 +161,11 @@ abstract class Abstract_Htaccess_Service {
 	 * @return bool            True on success, false otherwise.
 	 */
 	protected function lock_and_write( $content ) {
+		// Check if the file is writable, before writing to it.
+		if ( ! is_writable( $this->path ) ) {
+			return false;
+		}
+
 		$fp = fopen( $this->path, 'w+' );
 
 		if ( flock( $fp, LOCK_EX ) ) {

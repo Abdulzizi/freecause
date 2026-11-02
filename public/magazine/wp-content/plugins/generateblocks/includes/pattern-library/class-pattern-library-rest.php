@@ -39,7 +39,7 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'list_libraries' ),
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return apply_filters(
 						'generateblocks_can_view_pattern_library',
 						$this->edit_posts_permission()
@@ -64,7 +64,7 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'list_categories' ),
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return apply_filters(
 						'generateblocks_can_view_pattern_library',
 						$this->edit_posts_permission()
@@ -79,7 +79,7 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'list_patterns' ),
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return apply_filters(
 						'generateblocks_can_view_pattern_library',
 						$this->edit_posts_permission()
@@ -94,7 +94,7 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_cache_data' ),
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return apply_filters(
 						'generateblocks_can_view_pattern_library',
 						$this->edit_posts_permission()
@@ -163,21 +163,18 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 	 */
 	public function save_libraries( WP_REST_Request $request ): WP_REST_Response {
 		$data = $request->get_param( 'data' );
-		$libraries = array_map(
-			function( $library ) {
-				if ( ! $library['isLocal'] && ! $library['isDefault'] ) {
-					// Save all data if this is a remote library.
-					return $library;
-				}
 
-				// Only save the ID and status for local and default libraries.
-				// The rest of the data will be supplied via the PHP filter.
-				return [
-					'id' => $library['id'],
-					'isEnabled' => $library['isEnabled'],
-				];
-			},
-			$data
+		if ( ! is_array( $data ) ) {
+			return $this->error( 400, __( 'Invalid library data.', 'generateblocks' ) );
+		}
+
+		$libraries = array_values(
+			array_filter(
+				array_map(
+					[ $this, 'sanitize_library_data' ],
+					$data
+				)
+			)
 		);
 
 		update_option( 'generateblocks_pattern_libraries', $libraries );
@@ -192,7 +189,7 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 	 * @return WP_REST_Response
 	 */
 	public function list_categories( WP_REST_Request $request ): WP_REST_Response {
-		$library_id = $request->get_param( 'libraryId' );
+		$library_id = $this->sanitize_request_string( $request->get_param( 'libraryId' ) );
 
 		if ( ! $library_id ) {
 			return $this->error( 404, "Library of id \"$library_id\" was not found." );
@@ -216,9 +213,9 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 	 * @return WP_REST_Response
 	 */
 	public function list_patterns( WP_REST_Request $request ): WP_REST_Response {
-		$library_id = $request->get_param( 'libraryId' );
-		$search = $request->get_param( 'search' );
-		$category_id = $request->get_param( 'categoryId' );
+		$library_id = $this->sanitize_request_string( $request->get_param( 'libraryId' ) );
+		$search = $this->sanitize_request_string( $request->get_param( 'search' ) );
+		$category_id = $this->sanitize_request_string( $request->get_param( 'categoryId' ) );
 
 		if ( ! $library_id ) {
 			return $this->error( 404, "Library of id \"$library_id\" was not found." );
@@ -255,21 +252,43 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 		string $collection,
 		array $query_args = array()
 	): WP_REST_Response {
-		$endpoint = "$library->domain/wp-json/generateblocks-pro/v1/pattern-library/$collection";
+		if ( ! in_array( $collection, array( 'categories', 'patterns' ), true ) ) {
+			return $this->error( 400, __( 'Invalid library collection.', 'generateblocks' ) );
+		}
+
+		$domain = esc_url_raw( $library->domain );
+
+		if ( ! $domain ) {
+			return $this->error( 400, __( 'Invalid library domain.', 'generateblocks' ) );
+		}
+
+		$endpoint = trailingslashit( $domain ) . "wp-json/generateblocks-pro/v1/pattern-library/$collection";
 		$url = add_query_arg( $query_args, $endpoint );
 		$cache_key = $library->id . '-' . $collection;
 		$cache = GenerateBlocks_Libraries::get_cached_data( $cache_key, $query_args, $collection );
 
 		if ( false !== $cache ) {
-			return $this->success( $cache );
+			return $this->success( $this->prepare_preview_assets( $cache, $library, $collection ) );
+		}
+
+		$headers = array(
+			'X-GB-Public-Key' => $library->public_key,
+		);
+
+		// Tell the provider which plugin versions will use the response.
+		if ( defined( 'GENERATEBLOCKS_VERSION' ) ) {
+			$headers['X-GB-Version'] = GENERATEBLOCKS_VERSION;
+		}
+
+		if ( defined( 'GENERATEBLOCKS_PRO_VERSION' ) ) {
+			$headers['X-GB-Pro-Version'] = GENERATEBLOCKS_PRO_VERSION;
 		}
 
 		$request = wp_remote_get(
 			$url,
 			array(
-				'headers' => array(
-					'X-GB-Public-Key' => $library->public_key,
-				),
+				'headers' => $headers,
+				'timeout' => 15,
 			)
 		);
 
@@ -277,14 +296,86 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 			return $this->error( 500, "Unable to request from $endpoint" );
 		}
 
+		$response_code = (int) wp_remote_retrieve_response_code( $request );
+
+		if ( 200 !== $response_code ) {
+			return $this->error( $response_code ? $response_code : 500, "Unable to request from $endpoint" );
+		}
+
 		$body = wp_remote_retrieve_body( $request );
 		$body = json_decode( $body, true );
+
+		if ( ! is_array( $body ) ) {
+			return $this->error( 500, __( 'Invalid library response.', 'generateblocks' ) );
+		}
+
 		$data = $body['response']['data'] ?? [];
+
+		if ( ! is_array( $data ) ) {
+			return $this->error( 500, __( 'Invalid library response data.', 'generateblocks' ) );
+		}
 
 		// Cache our data.
 		GenerateBlocks_Libraries::set_cached_data( $data, $cache_key, $collection );
 
-		return $this->success( $data );
+		return $this->success( $this->prepare_preview_assets( $data, $library, $collection ) );
+	}
+
+	/**
+	 * Let this site replace the preview scripts and styles a library supplies.
+	 *
+	 * Runs on every response, so cached library data is never modified.
+	 *
+	 * @since 2.5.0
+	 *
+	 * @param array                      $patterns   The patterns.
+	 * @param GenerateBlocks_Library_DTO $library    The library the patterns belong to.
+	 * @param string                     $collection The collection type.
+	 *
+	 * @return array
+	 */
+	private function prepare_preview_assets( array $patterns, GenerateBlocks_Library_DTO $library, string $collection ): array {
+		if ( 'patterns' !== $collection ) {
+			return $patterns;
+		}
+
+		foreach ( $patterns as $key => $pattern ) {
+			if ( ! is_array( $pattern ) ) {
+				continue;
+			}
+
+			$assets = [
+				'scripts' => is_array( $pattern['scripts'] ?? null ) ? $pattern['scripts'] : [],
+				'styles'  => is_array( $pattern['styles'] ?? null ) ? $pattern['styles'] : [],
+			];
+
+			/**
+			 * Filter the scripts and styles a pattern preview loads.
+			 *
+			 * Libraries supply these URLs from their own site. Plugins that
+			 * provide the pattern's blocks on this site can return their own
+			 * asset URLs so previews don't load them from the library.
+			 *
+			 * @since 2.5.0
+			 *
+			 * @param array                      $assets  The `scripts` and `styles` URL arrays.
+			 * @param array                      $pattern The pattern data from the library.
+			 * @param GenerateBlocks_Library_DTO $library The library the pattern belongs to.
+			 */
+			$filtered_assets = apply_filters( 'generateblocks_pattern_library_preview_assets', $assets, $pattern, $library );
+
+			if ( ! is_array( $filtered_assets ) ) {
+				continue;
+			}
+
+			foreach ( [ 'scripts', 'styles' ] as $type ) {
+				if ( isset( $filtered_assets[ $type ] ) && is_array( $filtered_assets[ $type ] ) ) {
+					$patterns[ $key ][ $type ] = array_values( array_filter( $filtered_assets[ $type ], 'is_string' ) );
+				}
+			}
+		}
+
+		return $patterns;
 	}
 
 	/**
@@ -295,8 +386,23 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 	 * @return WP_REST_Response
 	 */
 	public function get_cache_data( WP_REST_Request $request ): WP_REST_Response {
-		$id = $request->get_param( 'id' );
-		$expiration_time = get_option( '_transient_timeout_' . $id . '-patterns_0' );
+		$id = $this->sanitize_request_string( $request->get_param( 'id' ) );
+
+		if ( ! $id ) {
+			return $this->error( 400, __( 'Invalid library id.', 'generateblocks' ) );
+		}
+
+		if ( is_null( GenerateBlocks_Libraries::get_instance()->get_one( $id ) ) ) {
+			return $this->error( 404, __( 'Library not found.', 'generateblocks' ) );
+		}
+
+		$expiration_time = GenerateBlocks_Libraries::get_cache_expiration( $id . '-patterns' );
+
+		if ( ! $expiration_time ) {
+			// Pre-manifest caches stored the expiry in per-chunk timeout
+			// options, which only exist for database-stored transients.
+			$expiration_time = (int) get_option( '_transient_timeout_' . $id . '-patterns_0' );
+		}
 
 		if ( ! $expiration_time ) {
 			return $this->failed( 'no_cache' );
@@ -323,25 +429,97 @@ class GenerateBlocks_Pattern_Library_Rest extends GenerateBlocks_Singleton {
 	 * @return WP_REST_Response
 	 */
 	public function clear_cache( WP_REST_Request $request ): WP_REST_Response {
-		$id = $request->get_param( 'id' );
+		$id = $this->sanitize_request_string( $request->get_param( 'id' ) );
 
-		global $wpdb;
-		$id = sanitize_text_field( $id );
-		$prefix = $wpdb->esc_like( '_transient_' . $id );
-
-		$transient_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s",
-				$prefix . '%'
-			)
-		);
-
-		foreach ( $transient_ids as $transient_id ) {
-			$transient = str_replace( '_transient_', '', $transient_id );
-			delete_transient( $transient );
+		if ( ! $id ) {
+			return $this->error( 400, __( 'Invalid library id.', 'generateblocks' ) );
 		}
 
+		if ( is_null( GenerateBlocks_Libraries::get_instance()->get_one( $id ) ) ) {
+			return $this->error( 404, __( 'Library not found.', 'generateblocks' ) );
+		}
+
+		GenerateBlocks_Libraries::delete_cached_data( $id . '-categories' );
+		GenerateBlocks_Libraries::delete_cached_data( $id . '-patterns', 'patterns' );
+		GenerateBlocks_Libraries::delete_cached_data( $id . '_global-style-data' );
+
 		return $this->success( [] );
+	}
+
+	/**
+	 * Sanitize scalar REST request values.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @return string
+	 */
+	private function sanitize_request_string( $value ): string {
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+
+		return sanitize_text_field( (string) $value );
+	}
+
+	/**
+	 * Sanitize scalar REST request URLs.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @return string
+	 */
+	private function sanitize_request_url( $value ): string {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		return esc_url_raw( $value, array( 'http', 'https' ) );
+	}
+
+	/**
+	 * Sanitize a saved library row.
+	 *
+	 * @param mixed $library The library data.
+	 * @return array
+	 */
+	private function sanitize_library_data( $library ): array {
+		if ( ! is_array( $library ) ) {
+			return [];
+		}
+
+		$id = $this->sanitize_request_string( $library['id'] ?? '' );
+
+		if ( ! $id ) {
+			return [];
+		}
+
+		$is_local = rest_sanitize_boolean( $library['isLocal'] ?? false );
+		$is_default = rest_sanitize_boolean( $library['isDefault'] ?? false );
+		$is_enabled = rest_sanitize_boolean( $library['isEnabled'] ?? false );
+
+		if ( ! $is_local && ! $is_default ) {
+			$domain = $this->sanitize_request_url( $library['domain'] ?? '' );
+
+			if ( ! $domain ) {
+				return [];
+			}
+
+			// Save all data if this is a remote library.
+			return [
+				'id' => $id,
+				'name' => $this->sanitize_request_string( $library['name'] ?? '' ),
+				'domain' => $domain,
+				'publicKey' => $this->sanitize_request_string( $library['publicKey'] ?? '' ),
+				'isEnabled' => $is_enabled,
+				'isDefault' => $is_default,
+				'isLocal' => $is_local,
+			];
+		}
+
+		// Only save the ID and status for local and default libraries.
+		// The rest of the data will be supplied via the PHP filter.
+		return [
+			'id' => $id,
+			'isEnabled' => $is_enabled,
+		];
 	}
 
 	/**

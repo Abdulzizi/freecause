@@ -21,11 +21,15 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="color-scheme" content="light only">
+	<meta name="supported-color-schemes" content="light only">
 	<title><?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 	<style type="text/css">
+		:root { color-scheme: light only; }
+
 		<?php if ( isset( $assets_url ) && $assets_url ) : ?>
 		@font-face {
 			font-family: 'eicons';
@@ -47,7 +51,7 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			margin: 0;
 			padding: 0;
 			width: 100%;
-			background-color: #f6f7f8;
+			background-color: #ffffff;
 			font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 			-webkit-text-size-adjust: 100%;
 			-ms-text-size-adjust: 100%;
@@ -111,14 +115,14 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 		.mset-date-range {
 			display: inline-block;
 			background-color: #8E64E5;
-			color: #ffffff;
+			color: #ffffff !important;
 			padding: 7px 15px;
 			border-radius: 4px;
 			text-decoration: none;
 			font-size: 15px;
 			font-weight: 700;
 			margin: 20px 0;
-		}
+		}	
 
 		/* Content wrapper */
 		.mset-content {
@@ -131,10 +135,6 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			background: #F3F5F6;
 			padding: 30px;
 			text-align: center;
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			align-items: center;
 		}
 
 		.mset-footer-logo-image {
@@ -150,10 +150,6 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			font-size: 12px;
 			line-height: 20px;
 			text-align: center;
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			align-items: center;
 		}
 
 		.mset-footer-content a {
@@ -184,12 +180,17 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			margin: 0 5px;
 		}
 
+		.mset-footer-text {
+			display: block;
+			margin-bottom: 16px;
+		}
+
 		/* Responsive styles */
 		@media only screen and (max-width: 480px) {
 			.mset-wrapper {
 				padding: 20px;
 			}
-			
+
 			.mset-header {
 				padding: 30px 20px;
 			}
@@ -346,7 +347,6 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			font-family: Inter, sans-serif;
 			font-size: 24px;
 			font-weight: 600;
-			display: flex;
 			justify-content: center;
 			align-items: center;
 		}
@@ -472,7 +472,7 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 		.mset-button-primary {
 			display: inline-block;
 			background-color: #338EEF;
-			color: #ffffff;
+			color: #ffffff !important;
 			padding: 12px 24px;
 			border-radius: 4px;
 			text-decoration: none;
@@ -485,7 +485,7 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 		.mset-button-secondary {
 			display: inline-block;
 			background-color: transparent;
-			color: #338EEF;
+			color: #338EEF !important;
 			padding: 12px 24px;
 			border-radius: 4px;
 			text-decoration: none;
@@ -503,6 +503,14 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 			color: #EB5757;
 		}
 
+		/* Analytics Stats: 2 cols mobile (default), 3 cols desktop */
+		.mset-stats-mobile { display: table !important; width: 100% !important; }
+		.mset-stats-desktop { display: none !important; }
+		@media only screen and (min-width: 600px) {
+			.mset-stats-mobile { display: none !important; }
+			.mset-stats-desktop { display: table !important; width: 100% !important; }
+		}
+
 		/* Responsive adjustments */
 		@media only screen and (max-width: 480px) {
 			.mset-section-header,
@@ -518,32 +526,34 @@ $mail_text_direction = is_rtl() ? 'rtl' : 'ltr';
 				width: 100%;
 				max-width: 100%;
 			}
-			.mset-stats-grid {
-				flex-direction: row;
+
+			/* Stats grid: handled by dual tables (mobile 2-col / desktop 3-col) */
+
+			/* Blog posts: stack vertically on mobile */
+			.mset-blog-post-image-cell,
+			.mset-blog-post-content-cell {
+				display: block !important;
+				width: 100% !important;
+				padding-right: 0 !important;
 			}
 
-			.mset-stat-item {
-				flex-basis: 45%;
+			.mset-blog-post-image-cell img {
+				width: 100% !important;
+				height: auto !important;
 			}
 
-			.mset-blog-post {
-				flex-direction: column;
-			}
-
-			.mset-blog-post-image {
-				width: 100%;
-				height: auto;
-				margin-bottom: 10px;
-			}
-
-			.mset-blog-post-image img {
-				width: 100%;
-				height: auto;
+			.mset-blog-post-excerpt,
+			.mset-blog-post-continue {
+				display: none !important;
 			}
 		}
 	</style>
 </head>
-<body>
+<body bgcolor="#ffffff" style="margin: 0; padding: 0; background-color: #ffffff;">
+	<!-- Outer table for email client background color support -->
+	<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff;">
+		<tr>
+			<td align="center" valign="top">
 	<div class="mset-wrapper">
 		<div class="mset-container">
 			<div class="mset-header">

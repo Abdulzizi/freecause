@@ -452,6 +452,26 @@ class WPForms_Field_Email extends WPForms_Field {
 		// Hide sublabels.
 		$this->field_option( 'sublabel_hide', $field );
 
+		// Disable email suggestions.
+		$this->field_element(
+			'row',
+			$field,
+			[
+				'slug'    => 'disable_suggestions',
+				'content' => $this->field_element(
+					'toggle',
+					$field,
+					[
+						'slug'    => 'disable_suggestions',
+						'value'   => isset( $field['disable_suggestions'] ) ? '1' : '0',
+						'desc'    => esc_html__( 'Disable Suggestions', 'wpforms-lite' ),
+						'tooltip' => esc_html__( 'Prevent email suggestions for common typos. Enable this if you find the suggestions distracting.', 'wpforms-lite' ),
+					],
+					false
+				),
+			]
+		);
+
 		// Options close markup.
 		$args = [
 			'markup' => 'close',
@@ -501,20 +521,31 @@ class WPForms_Field_Email extends WPForms_Field {
 	 * Field display on the form front-end.
 	 *
 	 * @since 1.0.0
-	 * @param array $field
-	 * @param array $deprecated
-	 * @param array $form_data
+	 *
+	 * @param array $field      Field data and settings.
+	 * @param array $deprecated Deprecated field attributes. Use field properties.
+	 * @param array $form_data  Form data and settings.
 	 */
 	public function field_display( $field, $deprecated, $form_data ) {
 
 		// Define data.
-		$form_id      = absint( $form_data['id'] );
-		$confirmation = ! empty( $field['confirmation'] );
-		$primary      = $field['properties']['inputs']['primary'];
-		$secondary    = ! empty( $field['properties']['inputs']['secondary'] ) ? $field['properties']['inputs']['secondary'] : '';
+		$primary   = $field['properties']['inputs']['primary'];
+		$secondary = ! empty( $field['properties']['inputs']['secondary'] ) ? $field['properties']['inputs']['secondary'] : [];
+
+		$is_confirmation_enabled = ! empty( $field['confirmation'] );
+		$is_suggestions_disabled = ! empty( $field['disable_suggestions'] );
+
+		// Set data attributes if suggestions are disabled.
+		if ( $is_suggestions_disabled ) {
+			$primary['data']['disable-suggestions'] = true;
+
+			if ( ! empty( $secondary ) ) {
+				$secondary['data']['disable-suggestions'] = true;
+			}
+		}
 
 		// Standard email field.
-		if ( ! $confirmation ) {
+		if ( ! $is_confirmation_enabled ) {
 
 			// Primary field.
 			printf(
@@ -556,7 +587,7 @@ class WPForms_Field_Email extends WPForms_Field {
 
 			echo '</div>';
 
-		} // End if().
+		}
 	}
 
 	/**
@@ -602,7 +633,7 @@ class WPForms_Field_Email extends WPForms_Field {
 	 * @param mixed $field_submit Submitted field value (raw data).
 	 * @param array $form_data    Form data and settings.
 	 */
-	public function validate( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function validate( $field_id, $field_submit, $form_data ) {
 
 		$form_id = (int) $form_data['id'];
 
@@ -724,7 +755,7 @@ class WPForms_Field_Email extends WPForms_Field {
 	 *
 	 * @return void
 	 */
-	private function ajax_sanitize( $type ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function ajax_sanitize( $type ) {
 
 		// Run a security check.
 		check_ajax_referer( 'wpforms-builder', 'nonce' );
@@ -757,6 +788,10 @@ class WPForms_Field_Email extends WPForms_Field {
 				break;
 
 			case self::EMAIL:
+				if ( $this->is_smart_tag_value( $content ) ) {
+					wp_send_json_success( $content );
+				}
+
 				list( $local, $domain ) = $this->parse_email_pattern( $content );
 
 				$local  = $this->sanitize_local_pattern( $local );
@@ -941,6 +976,20 @@ class WPForms_Field_Email extends WPForms_Field {
 	}
 
 	/**
+	 * Check if a value contains a smart tag token.
+	 *
+	 * @since 1.10.2
+	 *
+	 * @param mixed $value Value to check.
+	 *
+	 * @return bool
+	 */
+	private function is_smart_tag_value( $value ) {
+
+		return is_string( $value ) && ! empty( wpforms_get_all_smart_tags( $value ) );
+	}
+
+	/**
 	 * Sanitize restricted rules.
 	 *
 	 * @since 1.6.3
@@ -1014,6 +1063,22 @@ class WPForms_Field_Email extends WPForms_Field {
 	}
 
 	/**
+	 * Check if the email address is allowed by the field filter (denylist/allowlist).
+	 *
+	 * @since 1.10.1
+	 *
+	 * @param string $email Email address to check.
+	 * @param array  $field Field configuration data.
+	 *
+	 * @return bool True if the email is allowed, false if it is restricted.
+	 */
+	public function is_email_allowed( string $email, array $field ): bool {
+
+		// is_restricted_email() returns true when the email is allowed (not blocked).
+		return $this->is_restricted_email( $email, $field );
+	}
+
+	/**
 	 * Sanitize from email patter a REGEX pattern.
 	 *
 	 * @since 1.6.3
@@ -1053,9 +1118,32 @@ class WPForms_Field_Email extends WPForms_Field {
 					continue;
 				}
 
-				$form_data['fields'][ $key ]['allowlist']     = ! empty( $field['allowlist'] ) ? implode( PHP_EOL, $this->sanitize_restricted_rules( $field['allowlist'] ) ) : '';
-				$form_data['fields'][ $key ]['denylist']      = ! empty( $field['denylist'] ) ? implode( PHP_EOL, $this->sanitize_restricted_rules( $field['denylist'] ) ) : '';
-				$form_data['fields'][ $key ]['default_value'] = isset( $field['default_value'] ) ? wpforms_is_email( $field['default_value'] ) : '';
+				$form_data['fields'][ $key ]['allowlist'] = ! empty( $field['allowlist'] ) ? implode( PHP_EOL, $this->sanitize_restricted_rules( $field['allowlist'] ) ) : '';
+				$form_data['fields'][ $key ]['denylist']  = ! empty( $field['denylist'] ) ? implode( PHP_EOL, $this->sanitize_restricted_rules( $field['denylist'] ) ) : '';
+
+				$default = $field['default_value'] ?? '';
+
+				$form_data['fields'][ $key ]['default_value'] = $this->is_smart_tag_value( $default )
+					? $default
+					: (string) wpforms_is_email( $default );
+
+				/**
+				 * Filters the default value of an Email field when saving form arguments.
+				 *
+				 * @since 1.10.2
+				 *
+				 * @param string $default_value Processed default value.
+				 * @param string $default       Raw default value before processing.
+				 * @param array  $field         Field data.
+				 * @param array  $form_data     Full form data.
+				 */
+				$form_data['fields'][ $key ]['default_value'] = apply_filters(
+					'wpforms_field_email_save_form_args_default_value',
+					$form_data['fields'][ $key ]['default_value'],
+					$default,
+					$field,
+					$form_data
+				);
 			}
 		}
 

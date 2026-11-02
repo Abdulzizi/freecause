@@ -209,6 +209,8 @@ class Task {
 
 		// No processing if ActionScheduler is not usable.
 		if ( ! wpforms()->obj( 'tasks' )->is_usable() ) {
+			$this->log_register_failure( 'Action Scheduler is not usable.' );
+
 			return $action_id;
 		}
 
@@ -222,9 +224,13 @@ class Task {
 			);
 
 			if ( empty( $this->meta_id ) ) {
+				$this->log_register_failure( 'Failed to save the task data to the tasks meta table.' );
+
 				return $action_id;
 			}
 		}
+
+		$error = '';
 
 		// Prevent 500 errors when Action Scheduler tables don't exist.
 		try {
@@ -244,6 +250,11 @@ class Task {
 			}
 		} catch ( \RuntimeException $exception ) {
 			$action_id = null;
+			$error     = ' ' . $exception->getMessage();
+		}
+
+		if ( empty( $action_id ) ) {
+			$this->log_register_failure( "Action Scheduler could not create the action.{$error}" );
 		}
 
 		return $action_id;
@@ -330,6 +341,32 @@ class Task {
 	}
 
 	/**
+	 * Unschedule every action registered for a hook.
+	 *
+	 * Static on purpose. Cancelling through an instance runs the subclass constructor,
+	 * and several tasks schedule themselves from there, so `( new SomeTask() )->cancel()`
+	 * schedules the action on the line before it removes it.
+	 *
+	 * @since 2.0.2.1
+	 *
+	 * @param string $action Action hook name.
+	 *
+	 * @return bool Whether the unschedule was attempted.
+	 *
+	 * @noinspection PhpUndefinedFunctionInspection
+	 */
+	public static function unschedule_action( string $action ): bool {
+
+		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
+			return false;
+		}
+
+		as_unschedule_all_actions( $action );
+
+		return true;
+	}
+
+	/**
 	 * Cancel all occurrences of this task.
 	 *
 	 * @since 1.6.1
@@ -361,8 +398,6 @@ class Task {
 		return as_unschedule_action( $this->action, [ 'tasks_meta_id' => $this->meta_id ], Tasks::GROUP );
 	}
 
-
-
 	/**
 	 * Log message to WPForms logger and standard debug.log file.
 	 *
@@ -373,5 +408,38 @@ class Task {
 	protected function log( $message ) {
 
 		wpforms_log( $this->log_title, $message, [ 'type' => 'log' ] );
+	}
+
+	/**
+	 * Log a task registration failure.
+	 *
+	 * Throttled to one log entry per task action per hour, since on a broken
+	 * environment the same failure repeats on almost every request.
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param string $reason The reason why the task was not registered.
+	 */
+	private function log_register_failure( string $reason ) {
+
+		$transient = "wpforms_task_register_failure_{$this->action}";
+
+		if ( get_transient( $transient ) ) {
+			return;
+		}
+
+		/**
+		 * Filter the interval between logged registration failures of the same task.
+		 *
+		 * @since 2.0.3
+		 *
+		 * @param int    $interval Throttle interval in seconds. Default HOUR_IN_SECONDS.
+		 * @param string $action   Task action name.
+		 */
+		$interval = (int) apply_filters( 'wpforms_tasks_task_log_register_failure_interval', HOUR_IN_SECONDS, $this->action );
+
+		set_transient( $transient, 1, $interval );
+
+		wpforms_log( 'Task registration failure', "Task '{$this->action}' was not registered: {$reason}", [ 'type' => 'error' ] );
 	}
 }

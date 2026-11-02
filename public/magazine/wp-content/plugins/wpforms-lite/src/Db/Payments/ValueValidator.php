@@ -71,6 +71,8 @@ class ValueValidator {
 				'stripe'          => esc_html__( 'Stripe', 'wpforms-lite' ),
 				'square'          => esc_html__( 'Square', 'wpforms-lite' ),
 				'authorize_net'   => esc_html__( 'Authorize.net', 'wpforms-lite' ),
+				'mercado_pago'    => esc_html__( 'Mercado Pago', 'wpforms-lite' ),
+				'paystack'        => esc_html__( 'Paystack', 'wpforms-lite' ),
 			]
 		);
 	}
@@ -123,6 +125,8 @@ class ValueValidator {
 			'cancelled'  => __( 'Cancelled', 'wpforms-lite' ),
 			'not-synced' => __( 'Not Synced', 'wpforms-lite' ),
 			'failed'     => __( 'Failed', 'wpforms-lite' ),
+			'pending'    => __( 'Pending', 'wpforms-lite' ),
+			'completed'  => __( 'Completed', 'wpforms-lite' ),
 		];
 	}
 

@@ -62,6 +62,10 @@ class GenerateBlocks_Dynamic_Tag_Callbacks extends GenerateBlocks_Singleton {
 
 				break;
 			case 'author_email':
+				if ( defined( 'REST_REQUEST' ) && REST_REQUEST && ! current_user_can( 'list_users' ) ) {
+					break;
+				}
+
 				$user_id = get_post_field( 'post_author', $id );
 				$url     = 'mailto:' . get_the_author_meta( 'user_email', $user_id );
 				break;
@@ -601,11 +605,11 @@ class GenerateBlocks_Dynamic_Tag_Callbacks extends GenerateBlocks_Singleton {
 					continue;
 				}
 
-				$list_items[] = '<a href="' . esc_url( $link ) . '" rel="tag">' . $term->name . '</a>';
+				$list_items[] = '<a href="' . esc_url( $link ) . '" rel="tag">' . wp_kses_post( $term->name ) . '</a>';
 
 				$list_items = apply_filters( "term_links-{$taxonomy}", $list_items ); // phpcs:ignore
 			} else {
-				$list_items[] = "<span>{$term->name}</span>";
+				$list_items[] = '<span>' . wp_kses_post( $term->name ) . '</span>';
 			}
 		}
 
@@ -638,7 +642,7 @@ class GenerateBlocks_Dynamic_Tag_Callbacks extends GenerateBlocks_Singleton {
 		$read_more             = $options['readMore'] ?? '';
 		$pre_read_more         = $options['pre'] ?? '';
 		$use_theme_read_more   = isset( $options['useTheme'] ) ? true : false;
-		$filter_excerpt_length = function( $length ) use ( $options ) {
+		$filter_excerpt_length = function ( $length ) use ( $options ) {
 			return $options['length'] ?? $length;
 		};
 
@@ -649,7 +653,7 @@ class GenerateBlocks_Dynamic_Tag_Callbacks extends GenerateBlocks_Singleton {
 		);
 
 		if ( ! $use_theme_read_more ) {
-			$filter_more_text = function() use ( $read_more, $pre_read_more ) {
+			$filter_more_text = function () use ( $read_more, $pre_read_more ) {
 				if ( ! $read_more ) {
 					return $pre_read_more;
 				}

@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This is the helper class for the Popular Posts output functionality.
  * We will call this class or its methods when necessary.

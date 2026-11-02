@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<td align="<?php echo is_rtl() ? 'right' : 'left'; ?>" valign="top" class="footer">
 										<?php
 										printf(
-											wp_kses( /* translators: %1$s - site URL, %2$s - link to the documentation. */
-												__( 'This email was auto-generated and sent from %1$s. Learn <a href="%2$s">how to disable</a>', 'wpforms-lite' ),
+											wp_kses( /* translators: %1$s - site name linked to the site URL, %2$s - link to Settings → Misc to manage weekly emails. */
+												__( 'This email was auto-generated and sent from %1$s. <a href="%2$s">Manage Email Summaries</a>', 'wpforms-lite' ),
 												[
 													'a' => [
 														'href' => [],
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 												]
 											),
 											'<a href="' . esc_url( home_url() ) . '">' . esc_html( wp_specialchars_decode( get_bloginfo( 'name' ) ) ) . '</a>',
-											'https://wpforms.com/docs/how-to-use-email-summaries/#disable-email-summaries'
+											esc_url( admin_url( 'admin.php?page=wpforms-settings&view=misc' ) )
 										);
 										?>
 									</td>

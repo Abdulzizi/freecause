@@ -2,7 +2,7 @@
 
 /**
  * Add notification after 1 week of lite version installation
- * Recurrence: 40 Days
+ * Recurrence: 30 Days
  *
  * @since 7.12.3
  */
@@ -24,9 +24,8 @@ final class MonsterInsights_Notification_Install_WPForms extends MonsterInsights
 	 */
 	public function prepare_notification_data( $notification ) {
 
-		$form_plugin_active = class_exists( 'GFAPI' ) || function_exists( 'frm_forms_autoloader' ) || function_exists( 'wpforms' );
-
-		if ( ! $form_plugin_active ) {
+		// Do not suggest installing a form plugin on a site that already runs one.
+		if ( ! monsterinsights_site_has_form_plugin() ) {
 			$notification['title']   = __( 'Create a Contact Form in Only Minutes', 'google-analytics-for-wordpress' );
 			$notification['content'] = __( 'Install WPForms and create contact forms in a matter of minutes.', 'google-analytics-for-wordpress' );
 

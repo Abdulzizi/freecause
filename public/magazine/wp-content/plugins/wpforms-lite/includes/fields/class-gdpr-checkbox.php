@@ -19,11 +19,12 @@ class WPForms_Field_GDPR_Checkbox extends WPForms_Field {
 	public function init() {
 
 		// Define field type information.
-		$this->name     = esc_html__( 'GDPR Agreement', 'wpforms-lite' );
-		$this->type     = 'gdpr-checkbox';
-		$this->icon     = 'fa-check-square-o';
-		$this->order    = 500;
-		$this->defaults = [
+		$this->name            = esc_html__( 'GDPR Agreement', 'wpforms-lite' );
+		$this->type            = 'gdpr-checkbox';
+		$this->icon            = 'fa-check-square-o';
+		$this->order           = 500;
+		$this->allow_read_only = false;
+		$this->defaults        = [
 			1 => [
 				'label'   => esc_html__( 'I consent to having this website store my submitted information so they can respond to my inquiry.', 'wpforms-lite' ),
 				'value'   => '',
@@ -303,6 +304,27 @@ class WPForms_Field_GDPR_Checkbox extends WPForms_Field {
 			}
 
 		echo '</ul>';
+	}
+
+	/**
+	 * Validate field.
+	 *
+	 * Delegates the required/empty check to the base class, then rejects any
+	 * submission whose value is not the configured consent-choice label.
+	 *
+	 * @since 1.10.0.5
+	 *
+	 * @param int          $field_id     Field ID.
+	 * @param string|array $field_submit Submitted field value.
+	 * @param array        $form_data    Form data and settings.
+	 *
+	 * @return void
+	 */
+	public function validate( $field_id, $field_submit, $form_data ) {
+
+		parent::validate( $field_id, $field_submit, $form_data );
+
+		$this->validate_choices_allowlist( $field_id, $field_submit, $form_data );
 	}
 
 	/**

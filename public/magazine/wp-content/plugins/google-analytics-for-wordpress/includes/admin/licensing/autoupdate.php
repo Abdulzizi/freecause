@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Check to see if the plugin file path matches the main pro plugin or an add-on of ours
  *
@@ -120,7 +125,8 @@ function monsterinsights_automatic_updates( $update, $item ) {
 				 $is_main_pro ||
 				 ( $is_addon && $is_pro )
 			) {
-				return in_array( $automatic_updates, array( 'all', 'minor' ) );
+				// Respect the incoming $update value from WordPress or other filters (e.g. __return_true).
+				return in_array( $automatic_updates, array( 'all', 'minor' ) ) || $update;
 			} elseif ( $is_addon && ! $is_pro ) {
 				return false;
 			}

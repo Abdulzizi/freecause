@@ -11,6 +11,7 @@
 namespace RankMath\Analytics;
 
 use RankMath\Traits\Cache;
+use RankMath\Google\Console;
 use RankMath\Helpers\DB as DB_Helper;
 
 defined( 'ABSPATH' ) || exit;
@@ -82,6 +83,31 @@ class Summary {
 			return $cache;
 		}
 
+		if ( ! Console::is_console_connected() ) {
+			return (object) [
+				'clicks'      => [
+					'total'      => 'n/a',
+					'previous'   => 'n/a',
+					'difference' => 'n/a',
+				],
+				'impressions' => [
+					'total'      => 'n/a',
+					'previous'   => 'n/a',
+					'difference' => 'n/a',
+				],
+				'position'    => [
+					'total'      => 'n/a',
+					'previous'   => 'n/a',
+					'difference' => 'n/a',
+				],
+				'keywords'    => [
+					'total'      => 'n/a',
+					'previous'   => 'n/a',
+					'difference' => 'n/a',
+				],
+			];
+		}
+
 		$stats = DB::analytics()
 			->selectSum( 'impressions', 'impressions' )
 			->selectSum( 'clicks', 'clicks' )
@@ -121,9 +147,9 @@ class Summary {
 		];
 
 		$stats->position = [
-			'total'      => (float) \number_format( $stats->position, 2 ),
-			'previous'   => (float) \number_format( $old_stats->position, 2 ),
-			'difference' => (float) \number_format( $stats->position - $old_stats->position, 2 ),
+			'total'      => $stats->position ? (float) \number_format( $stats->position, 2 ) : 0,
+			'previous'   => $stats->position ? (float) \number_format( $old_stats->position, 2 ) : 0,
+			'difference' => $stats->position ? (float) \number_format( $stats->position - $old_stats->position, 2 ) : 0,
 		];
 
 		$stats->keywords = $this->get_keywords_summary();
@@ -226,48 +252,63 @@ class Summary {
 			return $cache;
 		}
 
-		$stats = DB::analytics()
-			->selectCount( 'DISTINCT(page)', 'posts' )
-			->selectSum( 'impressions', 'impressions' )
-			->selectSum( 'clicks', 'clicks' )
-			->selectAvg( 'position', 'position' )
-			->whereBetween( 'created', [ $this->start_date, $this->end_date ] )
-			->one();
-
-		$old_stats = DB::analytics()
-			->selectCount( 'DISTINCT(page)', 'posts' )
-			->selectSum( 'impressions', 'impressions' )
-			->selectSum( 'clicks', 'clicks' )
-			->selectAvg( 'position', 'position' )
-			->whereBetween( 'created', [ $this->compare_start_date, $this->compare_end_date ] )
-			->one();
-
-		$total_ctr    = is_null( $stats->impressions ) ? 'n/a' : round( ( $stats->clicks / $stats->impressions ) * 100, 2 );
-		$previous_ctr = is_null( $old_stats->impressions ) ? 'n/a' : ( 0 !== $old_stats->impressions && 'n/a' !== $old_stats->impressions ? round( ( $old_stats->clicks / $old_stats->impressions ) * 100, 2 ) : 0 );
-
-		$stats->ctr = [
-			'total'      => $total_ctr,
-			'previous'   => $previous_ctr,
-			'difference' => 'n/a' !== $total_ctr && 'n/a' !== $previous_ctr ? $total_ctr - $previous_ctr : 'n/a',
+		$na    = [
+			'total'      => 'n/a',
+			'previous'   => 'n/a',
+			'difference' => 'n/a',
+		];
+		$stats = (object) [
+			'clicks'      => $na,
+			'impressions' => $na,
+			'position'    => $na,
+			'keywords'    => $na,
+			'ctr'         => $na,
 		];
 
-		$stats->clicks = [
-			'total'      => is_null( $stats->clicks ) ? 'n/a' : (int) $stats->clicks,
-			'previous'   => is_null( $old_stats->clicks ) ? 'n/a' : (int) $old_stats->clicks,
-			'difference' => is_null( $stats->clicks ) || is_null( $old_stats->clicks ) ? 'n/a' : $stats->clicks - $old_stats->clicks,
-		];
+		if ( Console::is_console_connected() ) {
+			$stats = DB::analytics()
+				->selectCount( 'DISTINCT(page)', 'posts' )
+				->selectSum( 'impressions', 'impressions' )
+				->selectSum( 'clicks', 'clicks' )
+				->selectAvg( 'position', 'position' )
+				->whereBetween( 'created', [ $this->start_date, $this->end_date ] )
+				->one();
 
-		$stats->impressions = [
-			'total'      => is_null( $stats->impressions ) ? 'n/a' : (int) $stats->impressions,
-			'previous'   => is_null( $old_stats->impressions ) ? 'n/a' : (int) $old_stats->impressions,
-			'difference' => is_null( $stats->impressions ) || is_null( $old_stats->impressions ) ? 'n/a' : $stats->impressions - $old_stats->impressions,
-		];
+			$old_stats = DB::analytics()
+				->selectCount( 'DISTINCT(page)', 'posts' )
+				->selectSum( 'impressions', 'impressions' )
+				->selectSum( 'clicks', 'clicks' )
+				->selectAvg( 'position', 'position' )
+				->whereBetween( 'created', [ $this->compare_start_date, $this->compare_end_date ] )
+				->one();
 
-		$stats->position = [
-			'total'      => is_null( $stats->position ) ? 'n/a' : (float) \number_format( $stats->position, 2 ),
-			'previous'   => is_null( $old_stats->position ) ? 'n/a' : (float) \number_format( $old_stats->position, 2 ),
-			'difference' => is_null( $old_stats->position ) || is_null( $old_stats->position ) ? 'n/a' : (float) \number_format( $stats->position - $old_stats->position, 2 ),
-		];
+			$total_ctr    = is_null( $stats->impressions ) ? 'n/a' : round( ( $stats->clicks / $stats->impressions ) * 100, 2 );
+			$previous_ctr = is_null( $old_stats->impressions ) ? 'n/a' : ( 0 !== $old_stats->impressions && 'n/a' !== $old_stats->impressions ? round( ( $old_stats->clicks / $old_stats->impressions ) * 100, 2 ) : 0 );
+
+			$stats->ctr = [
+				'total'      => $total_ctr,
+				'previous'   => $previous_ctr,
+				'difference' => 'n/a' !== $total_ctr && 'n/a' !== $previous_ctr ? $total_ctr - $previous_ctr : 'n/a',
+			];
+
+			$stats->clicks = [
+				'total'      => is_null( $stats->clicks ) ? 'n/a' : (int) $stats->clicks,
+				'previous'   => is_null( $old_stats->clicks ) ? 'n/a' : (int) $old_stats->clicks,
+				'difference' => is_null( $stats->clicks ) || is_null( $old_stats->clicks ) ? 'n/a' : $stats->clicks - $old_stats->clicks,
+			];
+
+			$stats->impressions = [
+				'total'      => is_null( $stats->impressions ) ? 'n/a' : (int) $stats->impressions,
+				'previous'   => is_null( $old_stats->impressions ) ? 'n/a' : (int) $old_stats->impressions,
+				'difference' => is_null( $stats->impressions ) || is_null( $old_stats->impressions ) ? 'n/a' : $stats->impressions - $old_stats->impressions,
+			];
+
+			$stats->position = [
+				'total'      => is_null( $stats->position ) ? 'n/a' : (float) \number_format( $stats->position, 2 ),
+				'previous'   => is_null( $old_stats->position ) ? 'n/a' : (float) \number_format( $old_stats->position, 2 ),
+				'difference' => is_null( $stats->position ) || is_null( $old_stats->position ) ? 'n/a' : (float) \number_format( $stats->position - $old_stats->position, 2 ),
+			];
+		}
 		$stats->keywords = $this->get_keywords_summary();
 		$stats->graph    = $this->get_analytics_summary_graph();
 
@@ -288,6 +329,16 @@ class Summary {
 	 * @return object
 	 */
 	public function get_posts_summary( $post_type = '' ) {
+		if ( ! Console::is_console_connected() ) {
+			return (object) [
+				'ctr'         => 'n/a',
+				'posts'       => 'n/a',
+				'clicks'      => 'n/a',
+				'pageviews'   => 'n/a',
+				'impressions' => 'n/a',
+			];
+		}
+
 		$cache_key = $this->get_cache_key( 'posts_summary', $this->days . 'days' );
 		$cache     = ! $post_type ? get_transient( $cache_key ) : false;
 

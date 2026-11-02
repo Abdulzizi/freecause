@@ -7,6 +7,8 @@
 
 namespace WPForms\Integrations\AI\Admin\Builder;
 
+use WPForms\Integrations\AI\Helpers;
+
 /**
  * Enqueue assets on the Form Builder screen.
  *
@@ -19,7 +21,7 @@ class Enqueues {
 	 *
 	 * @since 1.9.1
 	 */
-	public function init() {
+	public function init(): void {
 
 		$this->hooks();
 	}
@@ -29,7 +31,7 @@ class Enqueues {
 	 *
 	 * @since 1.9.1
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
 		add_action( 'wpforms_builder_enqueues', [ $this, 'enqueues' ] );
 	}
@@ -44,7 +46,7 @@ class Enqueues {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function enqueues( $view ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+	public function enqueues( $view ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		$this->enqueue_styles();
 		$this->enqueue_scripts();
@@ -55,7 +57,7 @@ class Enqueues {
 	 *
 	 * @since 1.9.1
 	 */
-	private function enqueue_styles() {
+	private function enqueue_styles(): void {
 
 		$min = wpforms_get_min_suffix();
 
@@ -79,7 +81,7 @@ class Enqueues {
 	 *
 	 * @since 1.9.1
 	 */
-	private function enqueue_scripts() {
+	private function enqueue_scripts(): void {
 
 		$min = wpforms_get_min_suffix();
 
@@ -121,41 +123,12 @@ class Enqueues {
 	 *
 	 * @return array
 	 */
-	private function get_localize_chat_data(): array {
+	public function get_localize_chat_data(): array {
 
 		$min = wpforms_get_min_suffix();
 
-		$strings = [
-			'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-			'nonce'     => wp_create_nonce( 'wpforms-ai-nonce' ),
-			'min'       => wpforms_get_min_suffix(),
-			'dislike'   => esc_html__( 'Bad response', 'wpforms-lite' ),
-			'refresh'   => esc_html__( 'Clear chat history', 'wpforms-lite' ),
-			'btnYes'    => esc_html__( 'Yes, Continue', 'wpforms-lite' ),
-			'btnCancel' => esc_html__( 'Cancel', 'wpforms-lite' ),
-			'confirm'   => [
-				'refreshTitle'   => esc_html__( 'Clear Chat History', 'wpforms-lite' ),
-				'refreshMessage' => esc_html__( 'Are you sure you want to clear the AI chat history and start over?', 'wpforms-lite' ),
-			],
-			'errors'    => [
-				'default' => esc_html__( 'An error occurred.', 'wpforms-lite' ),
-				'network' => esc_html__( 'There appears to be a network error.', 'wpforms-lite' ),
-				'empty'   => esc_html__( 'I\'m not sure what to do with that.', 'wpforms-lite' ),
-			],
-			'warnings'  => [
-				'prohibited_code' => esc_html__( 'Prohibited code has been removed.', 'wpforms-lite' ),
-			],
-			'reasons'   => [
-				'default'         => esc_html__( 'Please try again.', 'wpforms-lite' ),
-				'empty'           => esc_html__( 'Please try a different prompt. You might need to be more descriptive.', 'wpforms-lite' ),
-				'prohibited_code' => esc_html__( 'Only basic styling tags are permitted. All other code deemed unsafe has been removed.', 'wpforms-lite' ),
-			],
-			'choices'   => $this->get_choices_chat_data(),
-			'actions'   => [], // Additional actions for js/integrations/ai/modules/api.js.
-			'pinChat'   => is_rtl() ? esc_html__( 'Dock to the Left', 'wpforms-lite' ) : esc_html__( 'Dock to the Right', 'wpforms-lite' ),
-			'unpinChat' => esc_html__( 'Open in Popup', 'wpforms-lite' ),
-			'close'     => esc_html__( 'Close', 'wpforms-lite' ),
-		];
+		$strings            = Helpers::get_chat_element_strings( 'wpforms-ai-nonce' );
+		$strings['choices'] = $this->get_choices_chat_data();
 
 		/**
 		 * Allows loading additional modules from other addons.
@@ -179,6 +152,10 @@ class Enqueues {
 				'name' => 'forms',
 				'path' => "./modules/helpers-forms{$min}.js",
 			],
+			[
+				'name' => 'form-editor',
+				'path' => "./modules/helpers-form-editor{$min}.js",
+			],
 		];
 
 		/**
@@ -188,7 +165,7 @@ class Enqueues {
 		 *
 		 * @param array $strings Localize strings.
 		 */
-		return apply_filters( 'wpforms_integrations_ai_admin_builder_enqueues_localize_chat_strings', $strings );
+		return (array) apply_filters( 'wpforms_integrations_ai_admin_builder_enqueues_localize_chat_strings', $strings );
 	}
 
 	/**
@@ -220,12 +197,12 @@ class Enqueues {
 			'learnMoreUrl'  => wpforms_utm_link( 'https://wpforms.com/features/wpforms-ai/', 'Builder - Settings', 'Learn more - AI Choices modal' ),
 			'errors'        => [
 				'default'    => esc_html__( 'An error occurred while generating choices.', 'wpforms-lite' ),
-				'rate_limit' => esc_html__( 'Sorry, you\'ve reached your daily limit for generating choices.', 'wpforms-lite' ),
+				'rate_limit' => esc_html__( 'You\'ve hit your daily AI request limit.', 'wpforms-lite' ),
 			],
 			'reasons'       => [
 				'rate_limit' => sprintf(
 					wp_kses( /* translators: %s - WPForms contact support link. */
-						__( 'You may only generate choices 50 times per day. If you believe this is an error, <a href="%s" target="_blank" rel="noopener noreferrer">please contact WPForms support</a>.', 'wpforms-lite' ),
+						__( 'You can make up to 50 AI requests per day. If you believe this is an error, <a href="%s" target="_blank" rel="noopener noreferrer">please contact WPForms support</a>.', 'wpforms-lite' ),
 						[
 							'a' => [
 								'href'   => [],
@@ -242,27 +219,27 @@ class Enqueues {
 			],
 			'samplePrompts' => [
 				[
-					'icon'  => 'wpforms-ai-chat-flag',
-					'title' => esc_html__( 'american public holidays with dates in brackets', 'wpforms-lite' ),
+					'icon'  => 'fa-solid fa-flag-usa',
+					'title' => esc_html__( 'American public holidays with dates in brackets', 'wpforms-lite' ),
 				],
 				[
-					'icon'  => 'wpforms-ai-chat-clover',
-					'title' => esc_html__( 'provinces of canada ordered by population', 'wpforms-lite' ),
+					'icon'  => 'fa-brands fa-canadian-maple-leaf',
+					'title' => esc_html__( 'Provinces of Canada ordered by population', 'wpforms-lite' ),
 				],
 				[
-					'icon'  => 'wpforms-ai-chat-thumbs-up',
-					'title' => esc_html__( 'top 5 social networks in europe', 'wpforms-lite' ),
+					'icon'  => 'fa-solid fa-thumbs-up',
+					'title' => esc_html__( 'Top 5 social networks in Europe', 'wpforms-lite' ),
 				],
 				[
-					'icon'  => 'wpforms-ai-chat-globe',
-					'title' => esc_html__( 'top 10 most spoken languages in the world', 'wpforms-lite' ),
+					'icon'  => 'fa-solid fa-earth-americas',
+					'title' => esc_html__( 'Top 10 most spoken languages in the world', 'wpforms-lite' ),
 				],
 				[
-					'icon'  => 'wpforms-ai-chat-palm',
-					'title' => esc_html__( 'top 20 most popular tropical travel destinations', 'wpforms-lite' ),
+					'icon'  => 'fa-solid fa-umbrella-beach',
+					'title' => esc_html__( 'Top 20 most popular tropical travel destinations', 'wpforms-lite' ),
 				],
 				[
-					'icon'  => 'wpforms-ai-chat-shop',
+					'icon'  => 'fa-solid fa-store',
 					'title' => esc_html__( '30 household item categories for a marketplace', 'wpforms-lite' ),
 				],
 			],

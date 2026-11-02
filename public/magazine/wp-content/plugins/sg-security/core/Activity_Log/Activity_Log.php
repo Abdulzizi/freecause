@@ -171,15 +171,30 @@ class Activity_Log {
 	 * @since  1.0.0
 	 */
 	public function delete_logs_on_admin_page() {
-		// Delete if we are on plugin page and CRON is disabled.
+		// Check nonce.
 		if (
-			isset( $_GET['page'] ) &&
-			'sg-security' === $_GET['page'] &&
-			1 === Helper_Service::is_cron_disabled()
+			! isset( $_POST['nonce'] ) ||
+			! wp_verify_nonce( $_POST['nonce'], 'sgs_clear_logs' )
 		) {
+			wp_send_json_error( array( 'message' => 'Invalid nonce.' ), 403 );
+		}
+
+		// Delete if we are on plugin page and CRON is disabled.
+		if ( 1 === Helper_Service::is_cron_disabled() ) {
+			// Check if the user is admin.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error(
+					array(
+						'message' => esc_html__( 'You don’t have access to this page. Please contact the administrator of this website for further assistance.', 'sg-security' ),
+					),
+					403
+				);
+			}
+
 			$this->delete_old_activity_logs();
 		}
 	}
+
 
 	/**
 	 * Delete the old log records from the database.

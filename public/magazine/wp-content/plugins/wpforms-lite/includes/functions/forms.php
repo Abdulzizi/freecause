@@ -66,11 +66,13 @@ function wpforms_get_form_preview_url( $form_id, $new_window = false ) {
  * Using wpforms_decode() on wpforms_encode() result directly
  * (without using wp_insert_post() or wp_update_post() first) always returns null or false.
  *
+ * The json_decode failure returns an empty array.
+ *
  * @since 1.0.0
  *
  * @param string $data Data to decode.
  *
- * @return array|false|null
+ * @return array|false|null Empty array if json_decode fails, false if $data is empty, or decoded data.
  */
 function wpforms_decode( $data ) {
 
@@ -78,7 +80,14 @@ function wpforms_decode( $data ) {
 		return false;
 	}
 
-	return wp_unslash( json_decode( $data, true ) );
+	$decoded_data = json_decode( $data, true );
+
+	// If json_decode fails, return an empty array to prevent possible fatal errors due to type mismatch.
+	if ( json_last_error() !== JSON_ERROR_NONE ) {
+		return [];
+	}
+
+	return wp_unslash( $decoded_data );
 }
 
 /**
@@ -212,7 +221,7 @@ function wpforms_update_settings( $settings ) {
  *
  * @return bool
  */
-function wpforms_has_field_type( $type, $form, $multiple = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_has_field_type( $type, $form, $multiple = false ) {
 
 	$form_data = '';
 	$field     = false;
@@ -262,7 +271,7 @@ function wpforms_has_field_type( $type, $form, $multiple = false ) { // phpcs:ig
  *
  * @return bool
  */
-function wpforms_has_field_setting( $setting, $form, $multiple = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_has_field_setting( $setting, $form, $multiple = false ) {
 
 	$form_data = '';
 	$field     = false;
@@ -314,7 +323,7 @@ function wpforms_has_field_setting( $setting, $form, $multiple = false ) { // ph
  *
  * @return mixed boolean false or array
  */
-function wpforms_get_form_fields( $form = false, $allowlist = [] ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+function wpforms_get_form_fields( $form = false, $allowlist = [] ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 	// Accept form (post) object or form ID.
 	if ( is_object( $form ) ) {
@@ -348,6 +357,7 @@ function wpforms_get_form_fields( $form = false, $allowlist = [] ) { // phpcs:ig
 		'payment-total',
 		'phone',
 		'radio',
+		'ranking',
 		'rating',
 		'richtext',
 		'select',
@@ -493,17 +503,19 @@ function wpforms_get_captcha_settings() {
  * Process smart tags.
  *
  * @since 1.7.1
- * @since 1.8.7 Added `$context` parameter.
+ * @since 1.8.7   Added `$context` parameter.
+ * @since 1.9.9.2 Added `$context_data` parameter.
  *
- * @param string $content   Content.
- * @param array  $form_data Form data.
- * @param array  $fields    List of fields.
- * @param string $entry_id  Entry ID.
- * @param string $context   Context.
+ * @param string $content      Content.
+ * @param array  $form_data    Form data.
+ * @param array  $fields       List of fields.
+ * @param string $entry_id     Entry ID.
+ * @param string $context      Context.
+ * @param array  $context_data Context data.
  *
- * @return string
+ * @return string|mixed
  */
-function wpforms_process_smart_tags( $content, $form_data, $fields = [], $entry_id = '', $context = '' ) {
+function wpforms_process_smart_tags( $content, $form_data, $fields = [], $entry_id = '', $context = '', array $context_data = [] ) {
 
 	// Skip it if variables have invalid format.
 	if ( ! is_string( $content ) || ! is_array( $form_data ) || ! is_array( $fields ) ) {
@@ -516,15 +528,45 @@ function wpforms_process_smart_tags( $content, $form_data, $fields = [], $entry_
 	 * @since 1.4.0
 	 * @since 1.8.7 Added $context parameter.
 	 *
-	 * @param string $content   Content.
-	 * @param array  $form_data Form data.
-	 * @param array  $fields    List of fields.
-	 * @param string $entry_id  Entry ID.
-	 * @param string $context   Context.
+	 * @param string $content      Content.
+	 * @param array  $form_data    Form data.
+	 * @param array  $fields       List of fields.
+	 * @param string $entry_id     Entry ID.
+	 * @param string $context      Context.
+	 * @param array  $context_data Context data.
 	 *
 	 * @return string
 	 */
-	return apply_filters( 'wpforms_process_smart_tags', $content, $form_data, $fields, $entry_id, $context );
+	return (string) apply_filters( 'wpforms_process_smart_tags', $content, $form_data, $fields, $entry_id, $context, $context_data );
+}
+
+/**
+ * Get all smart tags in the content.
+ * This function has been moved from the existing \WPForms\SmartTags\SmartTags::class.
+ *
+ * @since 1.10.0
+ *
+ * @param string $content Content.
+ *
+ * @return array
+ */
+function wpforms_get_all_smart_tags( $content ) {
+
+	/**
+	 * A smart tag should start and end with a curly brace.
+	 * ([a-z0-9_]+) a smart tag name and also the first capturing group.
+	 * Lowercase letters, digits, and an underscore.
+	 * (|[ =][^\n}]*) - second capturing group:
+	 * | no characters at all or the following:
+	 * [ =][^\n}]* space or equal sign and any number of any characters except new line and closing curly brace.
+	 */
+	preg_match_all( '~{([a-z0-9_]+)(|[ =][^\n}]*)}~', $content, $smart_tags );
+
+	if ( empty( $smart_tags[0] ) ) {
+		return [];
+	}
+
+	return array_combine( $smart_tags[0], $smart_tags[1] );
 }
 
 /**
