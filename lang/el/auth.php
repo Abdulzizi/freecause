@@ -9,6 +9,7 @@ return [
     'create_account' => 'Δημιουργήστε τον λογαριασμό σας',
     'email' => 'E-mail',
     'email_placeholder' => 'Εισάγετε το email σας',
+    'email_try_later' => 'Το email δεν είναι προσωρινά διαθέσιμο. Δοκιμάστε ξανά αργότερα.',
     'forgot_password' => 'Ksihate kodiko?',
     'forgot_title' => 'Ξεχάσατε τον κωδικό;',
     'go_to_login' => 'pae stin eisodo',

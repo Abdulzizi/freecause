@@ -9,6 +9,7 @@ return [
     'create_account' => 'Uw account aanmaken',
     'email' => 'E-mail',
     'email_placeholder' => 'Voer uw e-mail in',
+    'email_try_later' => 'E-mail is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
     'forgot_password' => 'Wachtwoord vergeten?',
     'forgot_title' => 'Wachtwoord vergeten',
     'go_to_login' => 'ga naar inloggen',

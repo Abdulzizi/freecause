@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 class VerifyAccountMail extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use GatedByMailQuota, Queueable, SerializesModels;
 
     public string $firstName;
 

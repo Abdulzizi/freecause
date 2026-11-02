@@ -17,6 +17,7 @@ use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\Countries;
 use App\Support\Locale;
+use App\Support\MailQuota;
 use App\Support\Settings;
 use App\Support\Spam;
 use App\Support\WpSso;
@@ -568,9 +569,24 @@ class AuthController extends Controller
 
     public function sendResetLink(EmailRequest $request, string $locale)
     {
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        if (MailQuota::tripped()) {
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
+        }
+
+        try {
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            if (! MailQuota::causedBy($e)) {
+                throw $e;
+            }
+
+            MailQuota::trip();
+            AppLog::error('Password reset mail refused', $e->getMessage(), 'auth.password');
+
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
+        }
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
@@ -641,6 +657,11 @@ class AuthController extends Controller
             return back()->withErrors([
                 'email' => __('auth.resend_disabled'),
             ]);
+        }
+
+        // Verification mail is dropped while the quota is out, so don't claim it was sent.
+        if (MailQuota::tripped()) {
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
         }
 
         $user = User::where('email', strtolower(trim($request->email)))->first();

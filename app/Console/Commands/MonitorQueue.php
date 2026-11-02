@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\MailQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -104,11 +105,20 @@ class MonitorQueue extends Command
 
         Cache::forever(self::CHECKPOINT_KEY, now()->toDateTimeString());
 
-        return empty($alerts) ? 0 : 1;
+        // Alerts are findings of a healthy check, not a command failure: a non-zero
+        // exit makes the scheduler raise ScheduledTaskFailed (a Sentry event per run).
+        return 0;
     }
 
     private function sendAlert(string $email, array $alerts): void
     {
+        if (MailQuota::tripped()) {
+            Log::channel('daily')->warning('Queue alert not emailed, mail quota exhausted', ['alerts' => $alerts]);
+            $this->warn('Mail quota exhausted - alert logged, not emailed.');
+
+            return;
+        }
+
         try {
             Mail::raw(
                 "Queue Health Alert\n\n".implode("\n", $alerts)."\n\nTime: ".now()->toDateTimeString(),

@@ -9,6 +9,7 @@ return [
     'create_account' => 'Konto erstellen',
     'email' => 'E-Mail',
     'email_placeholder' => 'E-Mail eingeben',
+    'email_try_later' => 'E-Mail ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.',
     'forgot_password' => 'Passwort vergessen?',
     'forgot_title' => 'Passwort vergessen',
     'go_to_login' => 'zum Login gehen',

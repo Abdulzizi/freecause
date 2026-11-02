@@ -9,6 +9,7 @@ return [
     'create_account' => 'Creează-ți contul',
     'email' => 'E-mail',
     'email_placeholder' => 'Introduceți emailul',
+    'email_try_later' => 'E-mailul este temporar indisponibil. Încercați din nou mai târziu.',
     'forgot_password' => 'Ai uitat parola?',
     'forgot_title' => 'Parolă uitată',
     'go_to_login' => 'mergi la autentificare',

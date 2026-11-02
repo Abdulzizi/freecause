@@ -9,6 +9,7 @@ return [
     'create_account' => 'Crea il tuo account',
     'email' => 'Email',
     'email_placeholder' => 'Inserisci la tua email',
+    'email_try_later' => 'L\'email è temporaneamente non disponibile. Riprova più tardi.',
     'forgot_password' => 'Password dimenticata?',
     'forgot_title' => 'Password dimenticata',
     'go_to_login' => 'vai al login',
