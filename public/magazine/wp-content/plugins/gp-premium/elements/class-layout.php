@@ -254,6 +254,7 @@ class GeneratePress_Site_Layout {
 
 			add_action( 'wp', array( $this, 'after_setup' ), 100 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'build_css' ), 50 );
+			add_filter( 'block_editor_settings_all', array( $this, 'add_editor_width_css' ), 20 );
 
 			if ( is_admin() ) {
 				add_action( 'current_screen', array( $this, 'after_setup' ), 100 );
@@ -381,6 +382,31 @@ class GeneratePress_Site_Layout {
 				wp_add_inline_style( 'wp-edit-blocks', $admin_css );
 			}
 		}
+	}
+
+	/**
+	 * Add our editor width CSS.
+	 *
+	 * @param array $editor_settings The editor settings.
+	 */
+	public function add_editor_width_css( $editor_settings ) {
+		$content_width = '';
+
+		if ( 'full-width' === $this->content_area ) {
+			$content_width = '100%';
+		}
+
+		if ( $this->content_width ) {
+			$content_width = absint( $this->content_width ) . 'px';
+		}
+
+		if ( $content_width ) {
+			$editor_settings['styles'][] = array(
+				'css' => '.editor-styles-wrapper {--content-width: ' . $content_width . ';}',
+			);
+		}
+
+		return $editor_settings;
 	}
 
 	/**

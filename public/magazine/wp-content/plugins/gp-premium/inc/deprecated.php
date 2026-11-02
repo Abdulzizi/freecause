@@ -716,3 +716,13 @@ if ( ! function_exists( 'generate_hidden_secondary_navigation' ) && function_exi
 		}
 	}
 }
+
+if ( ! function_exists( 'generate_package_setup' ) ) {
+	add_action( 'plugins_loaded', 'generate_package_setup' );
+	/**
+	 * Set up our translations
+	 **/
+	function generate_package_setup() {
+		// No longer needed.
+	}
+}
