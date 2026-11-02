@@ -103,6 +103,15 @@ class Ads
         return self::frameHost() !== '' && self::frameHost() === strtolower(request()->getHost());
     }
 
+    // A frame origin that is also the public site must not make normal site
+    // pages frame-only. Keep the dedicated-host restriction for legacy setups.
+    public static function dedicatedFrameHostMatchesRequest(): bool
+    {
+        $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
+
+        return self::frameHostMatchesRequest() && self::frameHost() !== $parentHost;
+    }
+
     public static function frameIsCrossOrigin(): bool
     {
         return self::frameHost() !== '' && self::frameHost() !== strtolower(request()->getHost());

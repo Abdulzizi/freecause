@@ -11,8 +11,7 @@ class CanonicalHost
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $frameHost = Ads::frameHost();
-        if ($frameHost !== '' && strtolower($request->getHost()) === $frameHost && ! $request->is('ads/frame/*')) {
+        if (Ads::dedicatedFrameHostMatchesRequest() && ! $request->is('ads/frame/*')) {
             abort(404);
         }
 
@@ -20,7 +19,8 @@ class CanonicalHost
         $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
 
         $host = strtolower($request->getHost());
-        $isPublicDomain = in_array($host, ['freecause.com', 'www.freecause.com', 'client.freecause.com', 'www.client.freecause.com'], true);
+        $retiredAdHost = $host === 'ads.freecause.com' && $host !== Ads::frameHost();
+        $isPublicDomain = $retiredAdHost || in_array($host, ['freecause.com', 'www.freecause.com', 'client.freecause.com', 'www.client.freecause.com'], true);
 
         if ($isPublicDomain && $host !== $canonicalHost) {
             $target = rtrim($canonicalUrl, '/').'/'.ltrim($request->path(), '/');
