@@ -17,5 +17,10 @@ export SENTRY_LARAVEL_DSN= LOG_CHANNEL=stderr ENFORCE_MIN_PHP=false
 export PHP_CLI_SERVER_WORKERS=4
 
 [ "$DB_CONNECTION" = sqlite ]
+: > .env.e2e
+trap 'rm -f .env.e2e' EXIT
+trap 'kill "${PID:-0}" 2>/dev/null; exit 143' INT TERM
 "$PHP" artisan migrate --force --seed --seeder='Database\Seeders\E2eSeeder' >/dev/null
-exec "$PHP" artisan serve --no-reload --host=127.0.0.1 --port=8099
+"$PHP" artisan serve --no-reload --host=127.0.0.1 --port=8099 &
+PID=$!
+wait "$PID"

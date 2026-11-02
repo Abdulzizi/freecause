@@ -19,6 +19,7 @@
 .env.backup
 .env.production
 .env.testing
+.env.e2e
 .env.bak*
 .env.sync*
 .phpactor.json
