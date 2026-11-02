@@ -47,7 +47,7 @@
             <x-blatui.sidebar-group>
                 <x-blatui.collapsible
                     :open="true"
-                    x-init="try { if (localStorage.getItem('fc-group-{{ $group['label'] }}') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-{{ $group['label'] }}', v ? '0' : '1') } catch (e) {} })"
+                    x-init="(() => { try { if (localStorage.getItem('fc-group-{{ $group['label'] }}') === '1') open = false } catch (e) {} })(); $watch('open', v => { try { localStorage.setItem('fc-group-{{ $group['label'] }}', v ? '0' : '1') } catch (e) {} })"
                 >
                     <x-blatui.collapsible-trigger class="group/trigger w-full">
                         <x-blatui.sidebar-group-label class="w-full cursor-pointer justify-between text-ink font-semibold">
@@ -76,7 +76,7 @@
             <x-blatui.sidebar-group>
                 <x-blatui.collapsible
                     :open="true"
-                    x-init="try { if (localStorage.getItem('fc-group-system') === '1') open = false } catch (e) {} $watch('open', v => { try { localStorage.setItem('fc-group-system', v ? '0' : '1') } catch (e) {} })"
+                    x-init="(() => { try { if (localStorage.getItem('fc-group-system') === '1') open = false } catch (e) {} })(); $watch('open', v => { try { localStorage.setItem('fc-group-system', v ? '0' : '1') } catch (e) {} })"
                 >
                     <x-blatui.collapsible-trigger class="group/trigger w-full">
                         <x-blatui.sidebar-group-label class="w-full cursor-pointer justify-between text-ink font-semibold">

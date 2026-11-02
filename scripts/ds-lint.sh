@@ -48,6 +48,11 @@ if [ -n "$a11y_hits" ]; then
     report "accessibility (alt / labels / aria-hidden)" "$a11y_hits" "$(printf '%s\n' "$a11y_hits" | grep -c . || true)"
 fi
 
+missing_ui=$(grep '^| `x-ui\.' docs/design-system.md | cut -d'|' -f2 | grep -oE 'x-ui\.[a-z-]+' | sed 's/^x-ui\.//' | while read -r n; do [ -f "resources/views/components/ui/$n.blade.php" ] || echo "x-ui.$n"; done)
+if [ -n "$missing_ui" ]; then
+    report "documented x-ui component without a file" "$missing_ui" "$(printf '%s\n' "$missing_ui" | wc -l | tr -d ' ')"
+fi
+
 hex_hits=$(grep -rnE 'style="[^"]*#[0-9a-fA-F]{3,8}' "${VIEWS[@]}" --include='*.blade.php' --exclude-dir=blatui --exclude-dir=emails 2>/dev/null || true)
 if [ -n "$hex_hits" ] && [ -f "$ALLOW_FILE" ]; then
     hex_hits=$(printf '%s\n' "$hex_hits" | grep -vEf <(grep -vE '^[[:space:]]*(#|$)' "$ALLOW_FILE") || true)

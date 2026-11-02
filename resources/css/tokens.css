@@ -80,14 +80,14 @@
     --fc-brand-border: #f1cfcc;
     --fc-success: #1e7a34;
     --fc-success-soft: #e9f6ec;
-    --fc-warning: #b7791f;
+    --fc-warning: #9a5f12;
     --fc-warning-soft: #fdf6e7;
-    --fc-danger: #d92d20;
+    --fc-danger: #c9281c;
     --fc-danger-soft: #fef3f2;
     --fc-info: #1a5fb4;
     --fc-focus: #cc1f1f;
     --fc-social-whatsapp: #25d366;
-    --fc-social-facebook: #1877f2;
+    --fc-social-facebook: #166fe5;
 
     --fc-hairline: rgba(31, 30, 28, 0.08);
     --fc-band: var(--fc-surface-2);
@@ -95,6 +95,7 @@
     --fc-on-dark: #f4f2ef;
     --fc-on-dark-muted: #b9b4ac;
 
+    --fc-r-xs: 3px;
     --fc-r-sm: 6px;
     --fc-r-md: 8px;
     --fc-r-lg: 12px;

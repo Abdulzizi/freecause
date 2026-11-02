@@ -100,7 +100,7 @@
                                class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-dark text-on-dark" aria-label="Share on X">X</a>
                             <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.($shareUrl ?? $petitionUrl)) }}"
                                target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-white">WhatsApp</a>
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-ink">WhatsApp</a>
                         </div>
                     </div>
                 @endif
