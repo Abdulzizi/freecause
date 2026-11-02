@@ -89,6 +89,12 @@ class MonsterInsights_Measurement_Protocol_V4 {
 		$sanitized_params = array();
 
 		foreach ( $params as $key => $value ) {
+			// Skip empty string values to prevent sending invalid data to Google
+			// Google may reject events with empty string parameters
+			if ( $value === '' && $key !== 'transaction_id' ) {
+				continue;
+			}
+
 			if ( ! array_key_exists( $key, $schema ) ||
 				 ( ! is_array( $value ) && gettype( $value ) === $schema[ $key ] )
 			) {

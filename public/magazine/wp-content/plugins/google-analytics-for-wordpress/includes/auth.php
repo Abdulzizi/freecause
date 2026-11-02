@@ -80,7 +80,87 @@ final class MonsterInsights_Auth {
 		}
 	}
 
+	/**
+	 * Carry the stored credentials over when an incoming profile would keep the
+	 * property but drop `key`/`token`.
+	 *
+	 * That combination is never legitimate: authenticating always writes both, and
+	 * disconnecting drops `v4` too. When it shows up, the write is a partial
+	 * overwrite built from an incomplete copy of the profile — and persisting it
+	 * leaves a connection that looks healthy while every Reporting API call fails
+	 * with `403: The key is missing from the request` (GH-3343). Only credentials
+	 * belonging to the same property are carried over, so switching properties
+	 * still requires real credentials.
+	 *
+	 * @param array $data   Profile about to be saved.
+	 * @param array $stored Profile currently in the database.
+	 *
+	 * @return array
+	 * @since 9.8.0
+	 */
+	private function keep_existing_credentials( $data, $stored ) {
+		if ( ! is_array( $data ) || empty( $data['v4'] ) || ! empty( $data['key'] ) ) {
+			return $data;
+		}
+
+		if ( ! is_array( $stored ) || empty( $stored['key'] ) || empty( $stored['v4'] ) ) {
+			return $data;
+		}
+
+		if ( $stored['v4'] !== $data['v4'] ) {
+			return $data;
+		}
+
+		$data['key']   = $stored['key'];
+		$data['token'] = isset( $stored['token'] ) ? $stored['token'] : '';
+
+		return $data;
+	}
+
+	/**
+	 * Merge fields into the stored site profile, read in the current context.
+	 *
+	 * Partial updates used to rebuild the profile from `$this->profile`, which is
+	 * hydrated once per request: after a `switch_to_blog()` it belongs to another
+	 * site, and in a cron/REST context it can be empty or stale. Saving that copy
+	 * back replaced the target profile wholesale — writing another site's
+	 * credentials into it, or dropping `key`/`token` altogether (GH-3343). Always
+	 * re-read the option for the site being written to.
+	 *
+	 * @param array $fields Fields to set.
+	 *
+	 * @return void
+	 * @since 9.8.0
+	 */
+	private function merge_analytics_profile( $fields ) {
+		$stored = get_option( 'monsterinsights_site_profile', array() );
+		if ( ! is_array( $stored ) ) {
+			$stored = array();
+		}
+
+		$this->set_analytics_profile( array_merge( $stored, $fields ) );
+	}
+
+	/**
+	 * Network counterpart of merge_analytics_profile().
+	 *
+	 * @param array $fields Fields to set.
+	 *
+	 * @return void
+	 * @since 9.8.0
+	 */
+	private function merge_network_analytics_profile( $fields ) {
+		$stored = get_site_option( 'monsterinsights_network_profile', array() );
+		if ( ! is_array( $stored ) ) {
+			$stored = array();
+		}
+
+		$this->set_network_analytics_profile( array_merge( $stored, $fields ) );
+	}
+
 	public function set_analytics_profile( $data = array() ) {
+		$data = $this->keep_existing_credentials( $data, get_option( 'monsterinsights_site_profile', array() ) );
+
 		if ( ! empty( $data ) ) {
 			$data['connection_time'] = time();
 		}
@@ -107,6 +187,8 @@ final class MonsterInsights_Auth {
 	}
 
 	public function set_network_analytics_profile( $data = array() ) {
+		$data = $this->keep_existing_credentials( $data, get_site_option( 'monsterinsights_network_profile', array() ) );
+
 		update_site_option( 'monsterinsights_network_profile', $data );
 		$this->network = $data;
 	}
@@ -116,7 +198,10 @@ final class MonsterInsights_Auth {
 			$newdata = array();
 			if ( isset( $this->profile['v4'] ) ) {
 				$newdata['manual_v4'] = $this->profile['v4'];
-				$newdata['measurement_protocol_secret'] = $this->profile['measurement_protocol_secret'];
+				// The secret is optional, so a profile can have a `v4` without it. Reading it
+				// unguarded warns and stores a null secret; a forced disconnect now routes
+				// corrupt profiles through here, where that is much easier to hit.
+				$newdata['measurement_protocol_secret'] = isset( $this->profile['measurement_protocol_secret'] ) ? $this->profile['measurement_protocol_secret'] : '';
 			}
 			$this->profile = $newdata;
 			$this->set_analytics_profile( $newdata );
@@ -131,7 +216,8 @@ final class MonsterInsights_Auth {
 			$newdata = array();
 			if ( isset( $this->network['v4'] ) ) {
 				$newdata['manual_v4'] = $this->network['v4'];
-				$newdata['measurement_protocol_secret'] = $this->profile['measurement_protocol_secret'];
+				// Optional, exactly as in delete_analytics_profile() above.
+				$newdata['measurement_protocol_secret'] = isset( $this->network['measurement_protocol_secret'] ) ? $this->network['measurement_protocol_secret'] : '';
 			}
 			$this->network = $newdata;
 			$this->set_network_analytics_profile( $newdata );
@@ -150,18 +236,9 @@ final class MonsterInsights_Auth {
 			MonsterInsights()->api_auth->delete_auth();
 		}
 
-		$data = array();
-		if ( empty( $this->profile ) ) {
-			$data['manual_v4'] = $v4;
-		} else {
-			$data              = $this->profile;
-			$data['manual_v4'] = $v4;
-		}
-
 		do_action( 'monsterinsights_reports_delete_aggregate_data' );
 
-		$this->profile = $data;
-		$this->set_analytics_profile( $data );
+		$this->merge_analytics_profile( array( 'manual_v4' => $v4 ) );
 	}
 
 	public function set_network_manual_v4_id( $v4 = '' ) {
@@ -173,19 +250,16 @@ final class MonsterInsights_Auth {
 			MonsterInsights()->api_auth->delete_auth();
 		}
 
-		$data = array();
-		if ( empty( $this->network ) ) {
-			$data['manual_v4'] = $v4;
-		} else {
-			$data                      = $this->network;
-			$data['manual_v4']         = $v4;
-			$data['network_manual_v4'] = $v4;
-		}
-
 		do_action( 'monsterinsights_reports_delete_network_aggregate_data' );
 
-		$this->network = $data;
-		$this->set_network_analytics_profile( $data );
+		// Both keys are written now. They used to diverge -- `network_manual_v4` was only
+		// added when a network profile already existed -- which left a fresh network manual
+		// ID readable by get_network_manual_v4_id() but not by anything reading the
+		// `network_manual_v4` key.
+		$this->merge_network_analytics_profile( array(
+			'manual_v4'         => $v4,
+			'network_manual_v4' => $v4,
+		) );
 	}
 
 	public function get_measurement_protocol_secret() {
@@ -197,42 +271,26 @@ final class MonsterInsights_Auth {
 	}
 
 	public function set_measurement_protocol_secret( $value ) {
-		$data = array();
-		if ( empty( $this->profile ) ) {
-			$data['measurement_protocol_secret'] = $value;
-		} else {
-			$data                                = $this->profile;
-			$data['measurement_protocol_secret'] = $value;
-		}
-
-		$this->profile = $data;
-		$this->set_analytics_profile( $data );
+		$this->merge_analytics_profile( array( 'measurement_protocol_secret' => $value ) );
 	}
 
 	public function set_network_measurement_protocol_secret( $value ) {
-		$data = array();
-		if ( empty( $this->network ) ) {
-			$data['measurement_protocol_secret'] = $value;
-		} else {
-			$data                                = $this->network;
-			$data['measurement_protocol_secret'] = $value;
-		}
-
-		$this->network = $data;
-		$this->set_network_analytics_profile( $data );
+		$this->merge_network_analytics_profile( array( 'measurement_protocol_secret' => $value ) );
 	}
 
 	public function delete_manual_v4_id() {
-		if ( ! empty( $this->profile ) && ! empty( $this->profile['manual_v4'] ) ) {
-			unset( $this->profile['manual_v4'] );
-			$this->set_analytics_profile( $this->profile );
+		$profile = get_option( 'monsterinsights_site_profile', array() );
+		if ( is_array( $profile ) && ! empty( $profile['manual_v4'] ) ) {
+			unset( $profile['manual_v4'] );
+			$this->set_analytics_profile( $profile );
 		}
 	}
 
 	public function delete_network_manual_v4_id() {
-		if ( ! empty( $this->network ) && ! empty( $this->network['manual_v4'] ) ) {
-			unset( $this->network['manual_v4'] );
-			$this->set_network_analytics_profile( $this->network );
+		$network = get_site_option( 'monsterinsights_network_profile', array() );
+		if ( is_array( $network ) && ! empty( $network['manual_v4'] ) ) {
+			unset( $network['manual_v4'] );
+			$this->set_network_analytics_profile( $network );
 		}
 	}
 

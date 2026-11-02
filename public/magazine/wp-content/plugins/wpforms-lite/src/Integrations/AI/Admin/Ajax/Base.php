@@ -38,7 +38,7 @@ abstract class Base {
 	 *
 	 * @since 1.9.1
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
 		add_action( 'wp_ajax_wpforms_rate_ai_response', [ $this, 'rate_response' ] );
 	}
@@ -48,7 +48,7 @@ abstract class Base {
 	 *
 	 * @since 1.9.1
 	 */
-	public function rate_response() {
+	public function rate_response(): void {
 
 		if ( ! $this->validate_nonce() ) {
 			wp_send_json_error();
@@ -75,7 +75,7 @@ abstract class Base {
 	}
 
 	/**
-	 * Get post data by key.
+	 * Get the post's data by key.
 	 *
 	 * @since 1.9.1
 	 *
@@ -101,6 +101,13 @@ abstract class Base {
 
 			case 'json':
 				$value = json_decode( filter_input( INPUT_POST, $key ), true );
+				break;
+
+			// Specific for the form_data.
+			case 'form_data':
+				$value = json_decode( filter_input( INPUT_POST, $key ), false );
+				$value = wpforms_prepare_form_data( $value );
+				$value = wpforms_sanitize_form_data( $value );
 				break;
 
 			default:

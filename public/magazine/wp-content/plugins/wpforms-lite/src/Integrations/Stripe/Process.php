@@ -2,8 +2,11 @@
 
 namespace WPForms\Integrations\Stripe;
 
-use Stripe\Exception\ApiErrorException;
+use WPForms\Vendor\Stripe\Exception\ApiErrorException;
 use WPForms\Helpers\Transient;
+use WPForms\Integrations\Stripe\Protections\LowAmountSurgeDetector;
+use WPForms\Integrations\Stripe\Protections\RateLimit;
+use WPForms\Vendor\Stripe\SubscriptionSchedule;
 
 /**
  * Stripe payment processing.
@@ -65,6 +68,24 @@ class Process {
 	 * @var RateLimit
 	 */
 	private $rate_limit;
+
+	/**
+	 * Global Rate Limit object (site-wide).
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var RateLimit
+	 */
+	private $global_rate_limit;
+
+	/**
+	 * Low-amount surge detector object.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @var LowAmountSurgeDetector
+	 */
+	private $surge_detector;
 
 	/**
 	 * Api interface.
@@ -147,16 +168,19 @@ class Process {
 			return;
 		}
 
-		$this->form_id    = (int) $form_data['id'];
-		$this->fields     = $fields;
-		$this->form_data  = $form_data;
-		$this->settings   = $form_data['payments']['stripe'];
-		$this->amount     = wpforms_get_total_payment( $this->fields );
-		$this->rate_limit = new RateLimit();
+		$this->form_id           = (int) $form_data['id'];
+		$this->fields            = $fields;
+		$this->form_data         = $form_data;
+		$this->settings          = $form_data['payments']['stripe'];
+		$this->amount            = wpforms_get_total_payment( $this->fields );
+		$this->rate_limit        = new RateLimit( 'ip' );
+		$this->global_rate_limit = new RateLimit( 'global' );
+		$this->surge_detector    = ( new LowAmountSurgeDetector() )->init();
 
 		$this->rate_limit->init();
+		$this->global_rate_limit->init();
 
-		if ( $this->is_process_entry_error() ) {
+		if ( $this->is_process_entry_error( $entry ) ) {
 			return;
 		}
 
@@ -174,6 +198,15 @@ class Process {
 			$this->display_error( $error );
 
 			return;
+		}
+
+		// Track this low-amount attempt before charging Stripe. Skip the confirmation re-submission.
+		if ( empty( $entry['payment_intent_id'] ) ) {
+			$this->surge_detector->track_attempt(
+				(float) $this->amount,
+				$this->form_id,
+				$this->form_data['settings']['form_title'] ?? ''
+			);
 		}
 
 		$this->process_payment();
@@ -205,17 +238,26 @@ class Process {
 	 *
 	 * @since 1.8.2
 	 *
+	 * @param array $entry Entry data.
+	 *
 	 * @return bool
 	 */
-	protected function is_process_entry_error() {
+	protected function is_process_entry_error( array $entry = [] ) {
 
 		// Check for processing errors.
 		if ( ! empty( wpforms()->obj( 'process' )->errors[ $this->form_id ] ) || ! $this->is_card_field_visibility_ok() ) {
 			return true;
 		}
 
-		// Check rate limit.
-		if ( ! $this->is_rate_limit_ok() ) {
+		// Check low-amount surge block. Skip it for a confirmation re-submission.
+		if ( empty( $entry['payment_intent_id'] ) && $this->surge_detector->is_blocked( (float) $this->amount ) ) {
+			wpforms()->obj( 'process' )->errors[ $this->form_id ]['footer'] = esc_html__( 'Payment processing is temporarily unavailable. Please try again later or contact the site owner.', 'wpforms-lite' );
+
+			return true;
+		}
+
+		// Check per-IP and global rate limits.
+		if ( ! $this->is_rate_limit_ok() || ! $this->global_rate_limit->is_ok() ) {
 			wpforms()->obj( 'process' )->errors[ $this->form_id ]['footer'] = esc_html__( 'Unable to process payment, please try again later.', 'wpforms-lite' );
 
 			return true;
@@ -232,8 +274,11 @@ class Process {
 	 * @param array $payment_meta Payment meta.
 	 * @param array $fields       Final/sanitized submitted field data.
 	 * @param array $form_data    Form data and settings.
+	 *
+	 * @noinspection PhpMissingParamTypeInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function prepare_payment_meta( $payment_meta, $fields, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function prepare_payment_meta( $payment_meta, $fields, $form_data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		$payment = $this->api->get_payment();
 
@@ -371,6 +416,11 @@ class Process {
 			$subscription->metadata['payment_id']  = $payment_id;
 			$subscription->metadata['payment_url'] = esc_url_raw( $payment_url );
 
+			$this->maybe_set_subscription_schedule( $subscription );
+
+			// Clean up cycles value.
+			$subscription->metadata['cycles'] = null;
+
 			$subscription->update( $subscription->id, $subscription->serializeParameters(), Helpers::get_auth_opts() );
 		}
 
@@ -406,7 +456,7 @@ class Process {
 	 *
 	 * @return array
 	 */
-	private function get_mapped_custom_metadata( string $type ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function get_mapped_custom_metadata( string $type ): array {
 
 		$settings_key = ! is_null( $this->plan_id ) ? 'recurring_custom_metadata_' . $this->plan_id : 'custom_metadata';
 
@@ -418,7 +468,13 @@ class Process {
 
 		foreach ( $this->form_data['payments']['stripe'][ $settings_key ] as $data ) {
 
-			if ( $data['object_type'] !== $type ) {
+			// Skip if the field type not set or the meta-key is empty.
+			if ( $data['object_type'] !== $type || empty( $data['meta_key'] ) ) {
+				continue;
+			}
+
+			// Skip if either the key or value is empty.
+			if ( ! $data['meta_key'] || ! $data['meta_value'] ) {
 				continue;
 			}
 
@@ -437,6 +493,11 @@ class Process {
 
 			// Key length limited to 40 characters long by Stripe API.
 			$key = wp_html_excerpt( sanitize_text_field( $data['meta_key'] ), 40 );
+
+			// Check whether the meta-key is empty once again after sanitization.
+			if ( empty( $key ) ) {
+				continue;
+			}
 
 			// Value length limited to 500 characters long by Stripe API.
 			$metadata[ $key ] = wp_html_excerpt( wpforms_decode_string( $field_value ), 500 );
@@ -656,7 +717,7 @@ class Process {
 			return esc_html__( 'Stripe payment stopped, invalid/empty amount.', 'wpforms-lite' );
 		}
 
-		if ( 50 > ( $this->amount * 100 ) ) {
+		if ( (float) $this->amount < Helpers::get_currency_minimum( wpforms_get_currency() ) ) {
 			return esc_html__( 'Stripe payment stopped, amount less than minimum charge required.', 'wpforms-lite' );
 		}
 
@@ -724,7 +785,7 @@ class Process {
 	 *
 	 * @since 1.8.2
 	 */
-	public function process_payment_single() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function process_payment_single() {
 
 		$amount_decimals = wpforms_get_currency_multiplier();
 
@@ -861,6 +922,11 @@ class Process {
 			// Customer custom metadata.
 			$args['customer_metadata'] = $this->get_mapped_custom_metadata( 'customer' );
 
+			// Validate the number of cycle to process.
+			if ( ! empty( $recurring['cycles'] ) && ( $recurring['cycles'] === 'undefined' || ( is_numeric( $recurring['cycles'] ) && $recurring['cycles'] > 0 ) ) ) {
+				$args['cycles'] = sanitize_text_field( $recurring['cycles'] );
+			}
+
 			$this->process_subscription( $args );
 
 			return;
@@ -873,7 +939,7 @@ class Process {
 		}
 
 		$this->log_error(
-			esc_html__( 'Stripe Subscription payment stopped validation error.', 'wpforms-lite' ),
+			esc_html__( 'Stripe Subscription payment stopped, validation error.', 'wpforms-lite' ),
 			$this->fields,
 			'conditional_logic'
 		);
@@ -974,8 +1040,12 @@ class Process {
 	protected function log_error( $title, $message = '', $level = 'error' ) {
 
 		if ( $message instanceof ApiErrorException ) {
-			$body    = $message->getJsonBody();
+			$body    = (array) $message->getJsonBody();
 			$message = isset( $body['error']['message'] ) ? $body['error'] : $message->getMessage();
+
+			if ( $this->is_radar_blocked( $body ) ) {
+				$title = esc_html__( 'Stripe payment blocked as high-risk (Radar)', 'wpforms-lite' );
+			}
 		}
 
 		wpforms_log(
@@ -986,6 +1056,22 @@ class Process {
 				'form_id' => $this->form_id,
 			]
 		);
+	}
+
+	/**
+	 * Whether Stripe Radar blocked the charge.
+	 *
+	 * @since 2.0.1
+	 *
+	 * @param array $body Stripe exception JSON body.
+	 *
+	 * @return bool
+	 */
+	private function is_radar_blocked( array $body ): bool {
+
+		$outcome = (array) ( $body['error']['payment_intent']['charges']['data'][0]['outcome'] ?? [] );
+
+		return ( $outcome['type'] ?? '' ) === 'blocked';
 	}
 
 	/**
@@ -1062,7 +1148,7 @@ class Process {
 	 */
 	public function process_card_error( $e ) {
 
-		if ( Helpers::get_stripe_mode() === 'test' ) {
+		if ( ! Helpers::should_apply_protections() ) {
 			return;
 		}
 
@@ -1082,6 +1168,7 @@ class Process {
 		}
 
 		$this->rate_limit->increment_attempts();
+		$this->global_rate_limit->increment_attempts();
 	}
 
 	/**
@@ -1266,12 +1353,23 @@ class Process {
 			]
 		);
 
+		if ( empty( $intent ) ) {
+			return false;
+		}
+
+		// The identifier arrives with the submission, so it can name any object on the connected Stripe account.
+		if ( ! $this->is_own_payment_intent( $intent ) ) {
+			wpforms()->obj( 'process' )->errors[ $this->form_id ]['footer'] = esc_html__( 'Secondary form submission was declined.', 'wpforms-lite' );
+
+			return true;
+		}
+
 		// Round to the nearest whole number because $this->amount can contain a number close to,
 		// but slightly under it, due to how it is stored in the memory.
 		$submitted_amount = round( $this->amount * wpforms_get_currency_multiplier() );
 
 		// Prevent form submission if a mismatch of the payment amount is detected.
-		if ( ! empty( $intent ) && (int) $submitted_amount !== (int) $intent->amount ) {
+		if ( (int) $submitted_amount !== (int) $intent->amount ) {
 			wpforms()->obj( 'process' )->errors[ $this->form_id ]['footer'] = esc_html__( 'Irregular activity detected. Your submission has been declined and payment refunded.', 'wpforms-lite' );
 
 			$args = [
@@ -1299,5 +1397,74 @@ class Process {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine whether the PaymentIntent was created by this form.
+	 *
+	 * @since 2.0.2
+	 *
+	 * @param object $intent PaymentIntent retrieved from Stripe.
+	 *
+	 * @return bool
+	 */
+	private function is_own_payment_intent( object $intent ): bool {
+
+		$form_id = $intent->metadata['form_id'] ?? $intent->invoice->subscription->metadata['form_id'] ?? 0;
+
+		return (int) $form_id === (int) $this->form_id;
+	}
+
+	/**
+	 * Maybe create a subscription schedule if the cycles was set.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param object $subscription Stripe subscription object.
+	 */
+	private function maybe_set_subscription_schedule( object $subscription ): void {
+
+		if ( empty( $subscription->metadata['cycles'] ) || $subscription->metadata['cycles'] === 'unlimited' || (int) $subscription->metadata['cycles'] < 1 || empty( $subscription->items->data ) ) {
+			return;
+		}
+
+		try {
+			$schedule = SubscriptionSchedule::create(
+				[
+					'from_subscription' => $subscription->id,
+				],
+				Helpers::get_auth_opts()
+			);
+
+			$subscription_item = $subscription->items->data[0];
+
+			$schedule::update(
+				$schedule->id,
+				[
+					'end_behavior' => 'cancel',
+					'phases'       => [
+						[
+							'start_date' => $subscription_item->current_period_start,
+							'items'      => [
+								[
+									'plan' => $subscription_item->plan->id,
+								],
+							],
+							'iterations' => $subscription->metadata['cycles'],
+						],
+					],
+				],
+				Helpers::get_auth_opts()
+			);
+		} catch ( \Exception $e ) {
+
+			wpforms_log(
+				'Stripe: Unable to create Subscription Schedule.',
+				$e->getMessage(),
+				[
+					'type' => [ 'payment', 'error' ],
+				]
+			);
+		}
 	}
 }

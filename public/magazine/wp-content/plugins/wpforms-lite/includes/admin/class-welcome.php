@@ -1,5 +1,12 @@
 <?php
 
+// phpcs:disable Generic.Commenting.DocComment.MissingShort
+/** @noinspection AutoloadingIssuesInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
+// phpcs:enable Generic.Commenting.DocComment.MissingShort
+
+use WPForms\Migrations\Base as MigrationsBase;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -18,14 +25,14 @@ class WPForms_Welcome {
 	 *
 	 * @since 1.5.6
 	 */
-	const SLUG = 'wpforms-getting-started';
+	private const SLUG = 'wpforms-getting-started';
 
 	/**
 	 * Primary class constructor.
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {
+	public function __construct() { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
 		add_action( 'plugins_loaded', [ $this, 'hooks' ] );
 	}
@@ -35,14 +42,14 @@ class WPForms_Welcome {
 	 *
 	 * @since 1.5.6
 	 */
-	public function hooks() {
+	public function hooks(): void {
 
-		// If user is in admin ajax or doing cron, return.
+		// If the user is in admin ajax or doing cron, return.
 		if ( wp_doing_ajax() || wp_doing_cron() ) {
 			return;
 		}
 
-		// If user cannot manage_options, return.
+		// If the user cannot manage_options, return.
 		if ( ! wpforms_current_user_can() ) {
 			return;
 		}
@@ -55,17 +62,24 @@ class WPForms_Welcome {
 	/**
 	 * Register the pages to be used for the Welcome screen (and tabs).
 	 *
-	 * These pages will be removed from the Dashboard menu, so they will
-	 * not actually show. Sneaky, sneaky.
+	 * These pages will be removed from the Dashboard menu, so they will be not shown.
+	 * Sneaky, sneaky.
 	 *
 	 * @since 1.0.0
 	 */
-	public function register() {
+	public function register(): void {
 
 		// Getting started - shows after installation.
 		add_dashboard_page(
 			esc_html__( 'Welcome to WPForms', 'wpforms-lite' ),
 			esc_html__( 'Welcome to WPForms', 'wpforms-lite' ),
+			/**
+			 * Filter the capability to add the Welcome page.
+			 *
+			 * @since 1.5.6
+			 *
+			 * @param string $capability The capability to manage everything for WPForms.
+			 */
 			apply_filters( 'wpforms_welcome_cap', wpforms_get_capability_manage_options() ),
 			self::SLUG,
 			[ $this, 'output' ]
@@ -75,11 +89,11 @@ class WPForms_Welcome {
 	/**
 	 * Removed the dashboard pages from the admin menu.
 	 *
-	 * This means the pages are still available to us, but hidden.
+	 * This means the pages are still available to us but hidden.
 	 *
 	 * @since 1.0.0
 	 */
-	public function hide_menu() {
+	public function hide_menu(): void {
 
 		remove_submenu_page( 'index.php', self::SLUG );
 	}
@@ -87,12 +101,12 @@ class WPForms_Welcome {
 	/**
 	 * Welcome screen redirect.
 	 *
-	 * This function checks if a new install or update has just occurred. If so,
-	 * then we redirect the user to the appropriate page.
+	 * This function checks if a new installation or update has just occurred.
+	 * If so, then we redirect the user to the appropriate page.
 	 *
 	 * @since 1.0.0
 	 */
-	public function redirect() {
+	public function redirect(): void {
 
 		// Check if we should consider redirection.
 		if ( ! get_transient( 'wpforms_activation_redirect' ) ) {
@@ -102,33 +116,165 @@ class WPForms_Welcome {
 		// If we are redirecting, clear the transient so it only happens once.
 		delete_transient( 'wpforms_activation_redirect' );
 
-		// Check option to disable welcome redirect.
+		// Check an option to disable welcome redirect.
 		if ( get_option( 'wpforms_activation_redirect', false ) ) {
 			return;
 		}
 
-		// Only do this for single site installs.
+		// Only do this for a single site installs.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['activate-multi'] ) || is_network_admin() ) {
 			return;
 		}
 
+		global $pagenow;
+
+		/**
+		 * When installing the plugin using the WPForms Gutenberg block, we should not redirect to the Getting Started page.
+		 * It causes the WPForms block rendering error.
+		 */
+		if ( in_array( $pagenow, [ 'edit.php', 'post.php', 'post-new.php', 'site-editor.php' ], true ) ) {
+			return;
+		}
+
+		/**
+		 * We should not redirect from the Form Builder.
+		 */
+		if ( wpforms_is_admin_page( 'builder' ) ) {
+			return;
+		}
+
+		// The wizard kill switch disables the whole first-run experience: when
+		// the Setup Wizard is disabled via its option, constant, or filter,
+		// this fallback redirect must not fire either.
+		if ( $this->is_setup_wizard_disabled() ) {
+			return;
+		}
+
+		// The Setup Wizard owns the first-run experience. Defer to it when it
+		// auto-launches on this request and stands down entirely once it has finished.
+		// This page is only the fallback when the wizard cannot run.
+		if ( $this->setup_wizard_handles_first_run() ) {
+			return;
+		}
+
 		// Check if this is an update or first install.
-		$upgrade = get_option( 'wpforms_version_upgraded_from' );
+		$upgrade = get_option( MigrationsBase::PREVIOUS_CORE_VERSION_OPTION_NAME );
 
 		if ( ! $upgrade ) {
 			// Initial install.
 			wp_safe_redirect( admin_url( 'index.php?page=' . self::SLUG ) );
+
 			exit;
 		}
 	}
 
 	/**
-	 * Getting Started screen. Shows after first install.
+	 * Whether the Setup Wizard, not this page, owns the first-run experience.
+	 *
+	 * True when the wizard will auto-launch on this request or has already
+	 * finished. Guarded so the page degrades to its legacy behaviour if the
+	 * wizard class is unavailable (e.g. filtered out).
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 * @noinspection ClassConstantCanBeUsedInspection
+	 */
+	private function setup_wizard_handles_first_run(): bool {
+
+		$wizard = '\WPForms\SetupWizard\SetupWizard';
+
+		if ( ! class_exists( $wizard ) || ! method_exists( $wizard, 'will_auto_launch' ) ) {
+			return false;
+		}
+
+		// Already finished: never bounce the user to the getting-started screen.
+		if ( get_option( $wizard::OPTION_COMPLETED ) ) {
+			return true;
+		}
+
+		return $wizard::will_auto_launch();
+	}
+
+	/**
+	 * Whether the Setup Wizard kill switch suppresses this redirect too.
+	 *
+	 * The `wpforms_setup_wizard_disabled` option, the
+	 * `WPFORMS_SETUP_WIZARD_DISABLED` constant, and the
+	 * `wpforms_setup_wizard_setup_wizard_is_disabled` filter disable the whole
+	 * first-run experience, not only the wizard, so provisioning flows get zero
+	 * unintended screens from a single switch. Guarded so the page degrades to
+	 * its legacy behaviour if the wizard class is unavailable.
+	 *
+	 * @since 2.0.1
+	 *
+	 * @return bool
+	 * @noinspection ClassConstantCanBeUsedInspection
+	 */
+	private function is_setup_wizard_disabled(): bool {
+
+		$wizard = '\WPForms\SetupWizard\SetupWizard';
+
+		if ( ! class_exists( $wizard ) || ! method_exists( $wizard, 'is_disabled' ) ) {
+			return false;
+		}
+
+		return $wizard::is_disabled();
+	}
+
+	/**
+	 * Output a notice offering to launch the Setup Wizard manually.
+	 *
+	 * Shown on the Welcome page so users who landed here as the wizard fallback
+	 * can still start the guided setup on demand. Hidden when the wizard class is
+	 * unavailable (e.g. filtered out).
+	 *
+	 * @since 2.0.0
+	 */
+	private function output_setup_wizard_notice(): void {
+
+		$wizard = '\WPForms\SetupWizard\SetupWizard';
+
+		if ( ! class_exists( $wizard ) || ! method_exists( $wizard, 'get_manual_launch_url' ) ) {
+			return;
+		}
+
+		$url = $wizard::get_manual_launch_url();
+		?>
+		<div class="wpforms-welcome-setup-wizard-notice">
+			<p>
+				<?php
+				$wizard_link = sprintf(
+					'<a href="%1$s">%2$s</a>',
+					esc_url( $url ),
+					esc_html__( 'WPForms Setup Wizard', 'wpforms-lite' )
+				);
+
+				printf(
+					wp_kses(
+						/* translators: %s - WPForms Setup Wizard link. */
+						__( 'Prefer a guided setup? Launch the %s to configure your site step-by-step.', 'wpforms-lite' ),
+						[
+							'a' => [
+								'href' => [],
+							],
+						]
+					),
+					$wizard_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+				?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Getting Started screen. Shows after the first installation.
 	 *
 	 * @since 1.0.0
 	 */
-	public function output() {
+	public function output(): void {
 
 		$class = wpforms()->is_pro() ? 'pro' : 'lite';
 		?>
@@ -136,6 +282,8 @@ class WPForms_Welcome {
 		<div id="wpforms-welcome" class="<?php echo sanitize_html_class( $class ); ?>">
 
 			<div class="container">
+
+				<?php $this->output_setup_wizard_notice(); ?>
 
 				<div class="intro">
 
@@ -173,9 +321,16 @@ class WPForms_Welcome {
 					</div>
 
 				</div><!-- /.intro -->
+				<?php
 
-				<?php do_action( 'wpforms_welcome_intro_after' ); ?>
+				/**
+				 * Fires after Welcome Intro.
+				 *
+				 * @since 1.5.6
+				 */
+				do_action( 'wpforms_welcome_intro_after' );
 
+				?>
 				<div class="features">
 
 					<div class="block">

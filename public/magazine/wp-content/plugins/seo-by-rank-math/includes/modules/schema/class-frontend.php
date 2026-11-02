@@ -100,7 +100,7 @@ class Frontend {
 
 		$schema_types = [];
 		foreach ( $schemas as $id => $schema ) {
-			if ( ! Str::starts_with( 'schema-', $id ) && 'richSnippet' !== $id ) {
+			if ( ( ! Str::starts_with( 'schema-', $id ) && 'richSnippet' !== $id ) || ! $schema ) {
 				continue;
 			}
 
@@ -177,6 +177,10 @@ class Frontend {
 		$jsonld->parts['canonical'] = ! empty( $jsonld->parts['canonical'] ) ? $jsonld->parts['canonical'] : \RankMath\Paper\Paper::get()->get_canonical();
 		$schema['@id']              = $jsonld->parts['canonical'] . '#' . $id;
 
+		if ( empty( $schema['@type'] ) ) {
+			return;
+		}
+
 		$types = array_map( 'strtolower', (array) $schema['@type'] );
 		foreach ( $types as $type ) {
 			$is_event = Str::contains( 'event', $type );
@@ -204,7 +208,7 @@ class Frontend {
 				],
 			];
 
-			if ( isset( $schema['image'] ) && 'product' === $type && is_array( $schema['image'] ) ) {
+			if ( isset( $schema['image'] ) && in_array( $type, [ 'product', 'productgroup' ], true ) && is_array( $schema['image'] ) ) {
 				$props['thumbnail']['value'] = false;
 			}
 

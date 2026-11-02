@@ -1,10 +1,10 @@
 === Security Optimizer - The All-In-One Protection Plugin ===
-Contributors: Hristo Sg, siteground, sstoqnov, stoyangeorgiev, elenachavdarova, ignatggeorgiev
+Contributors: Hristo Sg, siteground, sstoqnov, stoyangeorgiev, elenachavdarova, ignatggeorgiev, asparuhtenev
 Tags: security, firewall, malware scanner, web application firewall, login
 Requires at least: 4.7
-Tested up to: 6.7
+Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 1.5.7
+Stable tag: 1.6.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -33,7 +33,7 @@ Developed by the website security experts at [SiteGround](https://www.siteground
 [Monster Awards 2022](https://www.templatemonster.com/awards/winners-2022/): Best WordPress Security Plugin 🥇
 [Monster Awards 2021](https://www.templatemonster.com/awards/winners-2021/): Best WordPress Security Plugin 🥇
 
-= Plugin Video = 
+= Plugin Video =
 [youtube https://www.youtube.com/watch?v=FOheCz7sm9A]
 
 = Plugin Tutorial =
@@ -143,7 +143,80 @@ By enforcing a password reset, you can ensure that all users are prompted to cha
 1. Go to Plugins -> Installed Plugins and click the 'Activate' link under the WordPress Security Optimizer by SiteGround listing
 
 == Changelog ==
-= Version 1.5.7 = 
+= Version 1.6.9 =
+Release Date Oct 14th, 2026
+
+* Security improvements
+* Custom Login URL improvements
+* 2FA improvements
+
+= Version 1.6.8 =
+Release Date Aug 28th, 2026
+
+* Fix issues with vendor library
+
+= Version 1.6.7 =
+Release Date Aug 28th, 2026
+
+* Security Improvements
+
+= Version 1.6.6 =
+Release Date Aug 26th, 2026
+
+* Legacy code removed
+
+= Version 1.6.5 =
+Release Date Jul 9th, 2026
+
+* Security improvements
+* Dashboard visuals improvements
+
+= Version 1.6.4 =
+Release Date Jul 1st, 2026
+
+* Security improvements
+
+= Version 1.6.3 =
+Release Date Jun 22th, 2026
+
+* Version bump
+
+= Version 1.6.2 =
+Release Date May 7th, 2026
+
+* 2FA improvements
+* Activity Log improvements
+* Weekly Email Reports improvements
+
+= Version 1.6.1 =
+Release Date May 5th, 2026
+
+* Email Service improvements
+
+
+= Version 1.6.0 =
+Release Date Mar 30th, 2026
+
+* Security improvements
+* Activity Log improvements
+* Third-party plugin compatibility improvements
+
+= Version 1.5.9 =
+Release Date Jan 15th, 2026
+
+* Third-party plugin compatibility improvements
+* Custom URL improvements
+* Weekly Report improvements
+* Security Improvements
+
+= Version 1.5.8 =
+Release Date Dec 4th, 2025
+
+* Custom Login improvements
+* Login Security improvements
+* Security improvements
+
+= Version 1.5.7 =
 Release Date Nov 21st, 2024
 
 * Translation loading improvements

@@ -221,7 +221,7 @@ class DB {
 			Helper::add_notification(
 				sprintf(
 					// translators: %1$s is the error message, %2$s is the table name.
-					__( 'Rank Math SEO: Getting error "%1$s" while creating table <code>%2$s</code>. Please contact your server administrator to fix this issue.', 'rank-math' ),
+					__( 'Rank Math SEO: Getting error "%1$s" while creating table <code>%2$s</code>. Please contact your server administrator to fix this issue.', 'seo-by-rank-math' ),
 					$wpdb->last_error,
 					$table
 				),
@@ -233,6 +233,29 @@ class DB {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Create index on a column.
+	 *
+	 * @param string $index_name Index name.
+	 * @param string $table_name Table name.
+	 * @param array  $columns    Columns to create index on.
+	 *
+	 * @return void
+	 */
+	public static function create_index( $index_name, $table_name, $columns ) {
+		if ( ! $index_name || ! $table_name || ! $columns ) {
+			return;
+		}
+		global $wpdb;
+
+		// Bail early if index already exists.
+		if ( self::get_var( "SHOW INDEX FROM {$wpdb->prefix}{$table_name} WHERE Key_name = '{$index_name}'" ) ) {
+			return;
+		}
+
+		self::query( "CREATE INDEX {$index_name} ON {$wpdb->prefix}{$table_name} (" . implode( ',', $columns ) . ')' );
 	}
 
 	/**

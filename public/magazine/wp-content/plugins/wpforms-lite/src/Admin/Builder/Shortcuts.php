@@ -14,9 +14,9 @@ class Shortcuts {
 	 *
 	 * @since 1.6.9
 	 */
-	public function init() {
+	public function init(): void {
 
-		// Terminate initialization if not in builder.
+		// Terminate initialization if not in the builder.
 		if ( ! wpforms_is_admin_page( 'builder' ) ) {
 			return;
 		}
@@ -29,34 +29,40 @@ class Shortcuts {
 	 *
 	 * @since 1.6.9
 	 */
-	private function hooks() {
+	private function hooks(): void {
 
-		add_filter( 'wpforms_builder_strings', [ $this, 'builder_strings' ], 10, 2 );
+		add_filter( 'wpforms_builder_strings', [ $this, 'builder_strings' ] );
 		add_action( 'wpforms_admin_page', [ $this, 'output' ], 30 );
 	}
 
 	/**
-	 * Get shortcuts list.
+	 * Get a shortcut list. Each pair is a row in the modal.
 	 *
 	 * @since 1.6.9
+	 * @since 2.0.2 Added Move Field Up/Down shortcuts.
+	 * @since 2.0.2.1 Flattened into a single row-major list.
 	 *
 	 * @return array
 	 */
-	private function get_list() {
+	private function get_list(): array {
 
 		return [
-			'left'  => [
-				'ctrl s' => __( 'Save Form', 'wpforms-lite' ),
-				'ctrl p' => __( 'Preview Form', 'wpforms-lite' ),
-				'ctrl b' => __( 'Embed Form', 'wpforms-lite' ),
-				'ctrl f' => __( 'Search Fields', 'wpforms-lite' ),
-			],
-			'right' => [
-				'ctrl h' => __( 'Open Help', 'wpforms-lite' ),
-				'ctrl t' => __( 'Toggle Sidebar', 'wpforms-lite' ), // It is 'alt s' on Windows/Linux, dynamically changed in the modal in admin-builder.js openKeyboardShortcutsModal().
-				'ctrl e' => __( 'View Entries', 'wpforms-lite' ),
-				'ctrl q' => __( 'Close Builder', 'wpforms-lite' ),
-			],
+			'ctrl s'           => __( 'Save Form', 'wpforms-lite' ),
+			'ctrl h'           => __( 'Open Help', 'wpforms-lite' ),
+			'ctrl b'           => __( 'Embed Form', 'wpforms-lite' ),
+			'ctrl t'           => __( 'Toggle Sidebar', 'wpforms-lite' ), // It is 'alt s' on Windows/Linux; keys are adjusted per platform in keyboard-shortcuts.js openKeyboardShortcutsModal().
+			'ctrl p'           => __( 'Preview Form', 'wpforms-lite' ),
+			'ctrl q'           => __( 'Close Builder', 'wpforms-lite' ),
+			'ctrl f'           => __( 'Search Fields', 'wpforms-lite' ),
+			'ctrl e'           => __( 'View Entries', 'wpforms-lite' ),
+			'ctrl c'           => __( 'Copy Field', 'wpforms-lite' ),
+			'ctrl v'           => __( 'Paste Field', 'wpforms-lite' ),
+			'd'                => __( 'Duplicate Field', 'wpforms-lite' ),
+			'delete'           => __( 'Delete Field', 'wpforms-lite' ),
+			'ctrl shift alt t' => __( 'Move Field Up', 'wpforms-lite' ),
+			'ctrl shift alt y' => __( 'Move Field Down', 'wpforms-lite' ),
+			'ctrl z'           => __( 'Undo', 'wpforms-lite' ),
+			'ctrl shift z'     => __( 'Redo', 'wpforms-lite' ),
 		];
 	}
 
@@ -65,12 +71,13 @@ class Shortcuts {
 	 *
 	 * @since 1.6.9
 	 *
-	 * @param array         $strings Form Builder strings.
-	 * @param \WP_Post|bool $form    Form object.
+	 * @param array|mixed $strings Form Builder strings.
 	 *
 	 * @return array
 	 */
-	public function builder_strings( $strings, $form ) {
+	public function builder_strings( $strings ): array {
+
+		$strings = (array) $strings;
 
 		$strings['shortcuts_modal_title'] = esc_html__( 'Keyboard Shortcuts', 'wpforms-lite' );
 		$strings['shortcuts_modal_msg']   = esc_html__( 'Handy shortcuts for common actions in the builder.', 'wpforms-lite' );
@@ -82,39 +89,32 @@ class Shortcuts {
 	 * Generate and output shortcuts modal content as the wp.template.
 	 *
 	 * @since 1.6.9
+	 * @since 2.0.2 Render any number of key parts per shortcut.
+	 * @since 2.0.2.1 Render a single row-major grid instead of two columns.
 	 */
-	public function output() {
+	public function output(): void {
 
 		echo '
 		<script type="text/html" id="tmpl-wpforms-builder-keyboard-shortcuts">
-			<div class="wpforms-columns wpforms-columns-2">';
+			<ul class="wpforms-shortcuts">';
 
-			foreach ( $this->get_list() as $list ) {
+			foreach ( $this->get_list() as $key => $label ) {
 
-				echo "<ul class='wpforms-column'>";
+				printf(
+					'<li>%1$s<span class="shortcut-key shortcut-key-%2$s">',
+					esc_html( $label ),
+					esc_attr( str_replace( ' ', '-', $key ) )
+				);
 
-				foreach ( $list as $key => $label ) {
-
-					$key = explode( ' ', $key );
-
-					printf(
-						'<li>
-							%1$s
-							<span class="shortcut-key shortcut-key-%2$s-%3$s">
-								<i>%2$s</i><i>%3$s</i>
-							</span>
-						</li>',
-						esc_html( $label ),
-						esc_html( $key[0] ),
-						esc_html( $key[1] )
-					);
+				foreach ( explode( ' ', $key ) as $key_part ) {
+					echo '<i>' . esc_html( $key_part ) . '</i>';
 				}
 
-				echo '</ul>';
+				echo '</span></li>';
 			}
 
 		echo '
-			</div>
+			</ul>
 		</script>';
 	}
 }

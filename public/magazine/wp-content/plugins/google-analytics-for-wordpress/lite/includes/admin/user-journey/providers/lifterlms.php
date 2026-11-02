@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This file contains the code to display metabox for LifterLMS Admin Orders Page.
  *
@@ -36,7 +40,7 @@ class MonsterInsights_Lite_User_Journey_LifterLMS_Metabox extends MonsterInsight
 	public function add_user_journey_metabox() {
 		add_meta_box(
 			'lifterlms-monsterinsights-lite-user-journey-metabox',
-			esc_html__( 'User Journey by MonsterInsights', 'monsterinsights' ),
+			esc_html__( 'User Journey by MonsterInsights', 'google-analytics-for-wordpress' ),
 			array( $this, 'display_meta_box' ),
 			'llms_order',
 			'normal',

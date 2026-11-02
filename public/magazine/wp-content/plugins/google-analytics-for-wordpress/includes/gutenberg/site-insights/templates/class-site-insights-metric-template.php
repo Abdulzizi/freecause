@@ -68,7 +68,7 @@ abstract class MonsterInsights_SiteInsights_Metric_Template {
 			return false;
 		}
 
-		return json_encode($data);
+		return wp_json_encode($data);
 	}
 
 	/**

@@ -24,7 +24,9 @@ class Activity_Log_Unknown extends Activity_Log_Helper {
 		'ia_archiver',
 		'petalbot',
 		'jetmon',
-		'semrushbot'
+		'semrushbot',
+		'pinterestbot',
+		'Sogou',
 	);
 
 	/**
@@ -34,6 +36,7 @@ class Activity_Log_Unknown extends Activity_Log_Helper {
 	 */
 	public $ping_services = array(
 		'UptimeRobot' => array(
+			'88.99.80.227',
 			'216.144.250.150',
 			'69.162.124.226',
 			'69.162.124.227',
@@ -203,7 +206,7 @@ class Activity_Log_Unknown extends Activity_Log_Helper {
 			return $maybe_crawler;
 		}
 
-		return __( 'Human', 'sg-security' );
+		return 'Human';
 	}
 
 	/**

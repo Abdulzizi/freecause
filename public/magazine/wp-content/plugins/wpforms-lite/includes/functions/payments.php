@@ -39,6 +39,14 @@ function wpforms_get_currencies() {
 			'decimal_separator'   => ',',
 			'decimals'            => 2,
 		],
+		'ARS' => [
+			'name'                => esc_html__( 'Argentine Peso', 'wpforms-lite' ),
+			'symbol'              => '&#36;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => '.',
+			'decimal_separator'   => ',',
+			'decimals'            => 2,
+		],
 		'AUD' => [
 			'name'                => esc_html__( 'Australian Dollar', 'wpforms-lite' ),
 			'symbol'              => '&#36;',
@@ -87,6 +95,22 @@ function wpforms_get_currencies() {
 			'decimal_separator'   => '',
 			'decimals'            => 0,
 		],
+		'CLP' => [
+			'name'                => esc_html__( 'Chilean Peso', 'wpforms-lite' ),
+			'symbol'              => '&#36;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => '.',
+			'decimal_separator'   => '',
+			'decimals'            => 0,
+		],
+		'COP' => [
+			'name'                => esc_html__( 'Colombian Peso', 'wpforms-lite' ),
+			'symbol'              => '&#36;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => '.',
+			'decimal_separator'   => '',
+			'decimals'            => 0,
+		],
 		'CZK' => [
 			'name'                => esc_html__( 'Czech Koruna', 'wpforms-lite' ),
 			'symbol'              => '&#75;&#269;',
@@ -101,6 +125,14 @@ function wpforms_get_currencies() {
 			'symbol_pos'          => 'right',
 			'thousands_separator' => '.',
 			'decimal_separator'   => ',',
+			'decimals'            => 2,
+		],
+		'GHS' => [
+			'name'                => esc_html__( 'Ghanaian Cedi', 'wpforms-lite' ),
+			'symbol'              => 'GH&#8373;&nbsp;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => ',',
+			'decimal_separator'   => '.',
 			'decimals'            => 2,
 		],
 		'HKD' => [
@@ -143,6 +175,14 @@ function wpforms_get_currencies() {
 			'decimal_separator'   => '',
 			'decimals'            => 0,
 		],
+		'KES' => [
+			'name'                => esc_html__( 'Kenyan Shilling', 'wpforms-lite' ),
+			'symbol'              => 'Ksh&nbsp;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => ',',
+			'decimal_separator'   => '.',
+			'decimals'            => 2,
+		],
 		'MYR' => [
 			'name'                => esc_html__( 'Malaysian Ringgit', 'wpforms-lite' ),
 			'symbol'              => '&#82;&#77;',
@@ -159,6 +199,14 @@ function wpforms_get_currencies() {
 			'decimal_separator'   => '.',
 			'decimals'            => 2,
 		],
+		'NGN' => [
+			'name'                => esc_html__( 'Nigerian Naira', 'wpforms-lite' ),
+			'symbol'              => '&#8358;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => ',',
+			'decimal_separator'   => '.',
+			'decimals'            => 2,
+		],
 		'NOK' => [
 			'name'                => esc_html__( 'Norwegian Krone', 'wpforms-lite' ),
 			'symbol'              => 'Kr',
@@ -170,6 +218,14 @@ function wpforms_get_currencies() {
 		'NZD' => [
 			'name'                => esc_html__( 'New Zealand Dollar', 'wpforms-lite' ),
 			'symbol'              => '&#36;',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => ',',
+			'decimal_separator'   => '.',
+			'decimals'            => 2,
+		],
+		'PEN' => [
+			'name'                => esc_html__( 'Peruvian Sol', 'wpforms-lite' ),
+			'symbol'              => 'S/',
 			'symbol_pos'          => 'left',
 			'thousands_separator' => ',',
 			'decimal_separator'   => '.',
@@ -303,6 +359,14 @@ function wpforms_get_currencies() {
 			'decimal_separator'   => '.',
 			'decimals'            => 2,
 		],
+		'UYU' => [
+			'name'                => esc_html__( 'Uruguayan Peso', 'wpforms-lite' ),
+			'symbol'              => '$U',
+			'symbol_pos'          => 'left',
+			'thousands_separator' => '.',
+			'decimal_separator'   => ',',
+			'decimals'            => 2,
+		],
 	];
 
 	/**
@@ -327,7 +391,7 @@ function wpforms_get_currencies() {
  *
  * @return string $amount
  */
-function wpforms_sanitize_amount( $amount, $currency = '' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_sanitize_amount( $amount, $currency = '' ) {
 
 	if ( empty( $currency ) ) {
 		$currency = wpforms_get_currency();
@@ -423,7 +487,7 @@ function wpforms_sanitize_amount( $amount, $currency = '' ) { // phpcs:ignore Ge
  *
  * @return string $amount Newly formatted amount or Price Not Available
  */
-function wpforms_format_amount( $amount, $symbol = false, $currency = '' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_format_amount( $amount, $symbol = false, $currency = '' ) {
 
 	if ( empty( $currency ) ) {
 		$currency = wpforms_get_currency();
@@ -546,6 +610,47 @@ function wpforms_get_currency() {
 		isset( $currencies[ $currency ] ) ? $currency : 'USD',
 		$currencies
 	);
+}
+
+/**
+ * Get the currency the form's payment amounts were saved in.
+ *
+ * @since 2.0.3
+ *
+ * @param array $form_data Form data and settings.
+ *
+ * @return string Currency ISO code.
+ */
+function wpforms_get_form_currency( array $form_data ): string {
+
+	$currencies = wpforms_get_currencies();
+	$currency   = isset( $form_data['settings']['form_currency'] ) ? strtoupper( (string) $form_data['settings']['form_currency'] ) : '';
+
+	if ( $currency !== '' && isset( $currencies[ $currency ] ) ) {
+		return $currency;
+	}
+
+	$legacy_currency = strtoupper( (string) get_option( 'wpforms_legacy_form_currency', '' ) );
+
+	return isset( $currencies[ $legacy_currency ] ) ? $legacy_currency : wpforms_get_currency();
+}
+
+/**
+ * Sanitize an amount stored in the form data, e.g. a payment field price or choice value.
+ *
+ * Unlike a submitted amount, a stored one is not in the current currency's format but in the
+ * format of the currency the form was saved in, so it is parsed with that currency.
+ *
+ * @since 2.0.3
+ *
+ * @param mixed $amount    Stored amount, cast to a string.
+ * @param array $form_data Form data and settings.
+ *
+ * @return string Sanitized amount with a dot as the decimal separator.
+ */
+function wpforms_sanitize_form_amount( $amount, array $form_data ): string {
+
+	return (string) wpforms_sanitize_amount( (string) $amount, wpforms_get_form_currency( $form_data ) );
 }
 
 /**

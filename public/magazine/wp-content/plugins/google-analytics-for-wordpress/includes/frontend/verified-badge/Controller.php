@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class MonsterInsights_VerifiedBadge_Controller
 {
 
@@ -85,10 +89,10 @@ class MonsterInsights_VerifiedBadge_Controller
 		$img_src =  esc_url(plugins_url('assets/images/monsterinsights-badge-' . (in_array($atts['appearance'], array('light', 'dark'), true) ? $atts['appearance'] : 'light') . '.svg', MONSTERINSIGHTS_PLUGIN_FILE));
 
 		return sprintf(
-			'<div style="text-align: %1$s;"><a href="%2$s" target="_blank" rel="nofollow"><img style="display: inline-block" alt="%3$s" title="%3$s" src="%4$s"/></a></div>',
+			'<div style="text-align: %1$s;"><a href="%2$s" target="_blank" rel="nofollow noopener"><img style="display: inline-block" width="160" height="40" alt="%3$s" src="%4$s"/></a></div>',
 			(in_array($atts['position'], array('left', 'center', 'right'), true) ? $atts['position'] : 'center'),
-			$this->get_link(),
-			__('Verified by MonsterInsights', 'google-analytics-for-wordpress'),
+			esc_url($this->get_link()),
+			esc_attr(__('Verified by MonsterInsights', 'google-analytics-for-wordpress')),
 			$img_src
 		);
 	}

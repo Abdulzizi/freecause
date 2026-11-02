@@ -2,7 +2,11 @@
 
 namespace WPForms\Admin\Builder;
 
+use WPForms\Admin\Education\Helpers as EducationHelpers;
+use WPForms\Education\ActiveLayer\Helper as ActiveLayer;
 use WPForms\Forms\Akismet;
+use WPForms\Forms\AntiSpam as FormsAntiSpam;
+use WPForms\Migrations\Tasks\AntiSpamUpgradeTask;
 use WPForms_Builder_Panel_Settings;
 
 /**
@@ -62,13 +66,15 @@ class AntiSpam {
 			'settings',
 			'antispam_v3',
 			$this->form_data,
-			__( 'Enable modern anti-spam protection', 'wpforms-lite' ),
+			__( 'Enable anti-spam protection', 'wpforms-lite' ),
 			[
 				'value'   => (int) ! empty( $this->form_data['settings']['antispam_v3'] ),
-				'tooltip' => __( 'Turn on invisible modern spam protection.', 'wpforms-lite' ),
+				'tooltip' => __( 'Turn on invisible spam protection.', 'wpforms-lite' ),
 			],
 			false
 		);
+
+		$this->legacy_upgrade_note();
 
 		wpforms_panel_fields_group(
 			$antispam,
@@ -78,20 +84,20 @@ class AntiSpam {
 			]
 		);
 
-		if ( ! empty( $this->form_data['settings']['antispam'] ) && empty( $this->form_data['settings']['antispam_v3'] ) ) {
+		if ( isset( $this->form_data['settings']['antispam'] ) ) {
 			wpforms_panel_field(
 				'toggle',
 				'settings',
 				'antispam',
 				$this->form_data,
-				__( 'Enable anti-spam protection', 'wpforms-lite' ),
+				__( 'Enable legacy anti-spam protection', 'wpforms-lite' ),
 				[
-					'tooltip' => __( 'Turn on invisible spam protection.', 'wpforms-lite' ),
+					'tooltip' => __( 'Turn on invisible legacy spam protection.', 'wpforms-lite' ),
 				]
 			);
 		}
 
-		if ( ! empty( $this->form_data['settings']['honeypot'] ) && empty( $this->form_data['settings']['antispam_v3'] ) ) {
+		if ( isset( $this->form_data['settings']['honeypot'] ) ) {
 			wpforms_panel_field(
 				'toggle',
 				'settings',
@@ -136,6 +142,7 @@ class AntiSpam {
 				'default'    => 'opened',
 				'group'      => 'also_available',
 				'title'      => __( 'Also Available', 'wpforms-lite' ),
+				'title_attr' => __( 'Toggle Also Available Section', 'wpforms-lite' ),
 				'borders'    => [ 'top' ],
 			]
 		);
@@ -349,7 +356,6 @@ class AntiSpam {
 		$get_started_button_text = __( 'Get Started &rarr;', 'wpforms-lite' );
 		$upgrade_to_pro_text     = __( 'Upgrade to Pro', 'wpforms-lite' );
 		$captcha_settings        = wpforms_get_captcha_settings();
-		$upgrade_url             = 'https://wpforms.com/lite-upgrade/';
 		$utm_medium              = 'Builder Settings';
 
 		$blocks = [
@@ -357,7 +363,7 @@ class AntiSpam {
 				'logo'        => WPFORMS_PLUGIN_URL . 'assets/images/anti-spam/country-filter.svg',
 				'title'       => __( 'Country Filter', 'wpforms-lite' ),
 				'description' => __( 'Stop spam at its source. Allow or deny entries from specific countries.', 'wpforms-lite' ),
-				'link'        => wpforms_utm_link( $upgrade_url, $utm_medium, 'Country Filter Feature' ),
+				'link'        => wpforms_admin_upgrade_link( $utm_medium, 'Country Filter Feature' ),
 				'link_text'   => $upgrade_to_pro_text,
 				'class'       => 'wpforms-panel-content-also-available-item-upgrade-to-pro',
 				'show'        => ! wpforms()->is_pro(),
@@ -366,7 +372,7 @@ class AntiSpam {
 				'logo'        => WPFORMS_PLUGIN_URL . 'assets/images/anti-spam/keyword-filter.svg',
 				'title'       => __( 'Keyword Filter', 'wpforms-lite' ),
 				'description' => __( 'Block form entries that contain specific words or phrases that you define.', 'wpforms-lite' ),
-				'link'        => wpforms_utm_link( $upgrade_url, $utm_medium, 'Keyword Filter Feature' ),
+				'link'        => wpforms_admin_upgrade_link( $utm_medium, 'Keyword Filter Feature' ),
 				'link_text'   => $upgrade_to_pro_text,
 				'class'       => 'wpforms-panel-content-also-available-item-upgrade-to-pro',
 				'show'        => ! wpforms()->is_pro(),
@@ -375,11 +381,12 @@ class AntiSpam {
 				'logo'        => WPFORMS_PLUGIN_URL . 'assets/images/anti-spam/custom-captcha.svg',
 				'title'       => __( 'Custom Captcha', 'wpforms-lite' ),
 				'description' => __( 'Ask custom questions or require your visitor to answer a random math puzzle.', 'wpforms-lite' ),
-				'link'        => wpforms()->is_pro() ? '#' : wpforms_utm_link( $upgrade_url, $utm_medium, 'Custom Captcha Addon' ),
+				'link'        => wpforms()->is_pro() ? '#' : wpforms_admin_upgrade_link( $utm_medium, 'Custom Captcha Addon' ),
 				'link_text'   => wpforms()->is_pro() ? __( 'Add to Form', 'wpforms-lite' ) : $upgrade_to_pro_text,
 				'class'       => wpforms()->is_pro() ? 'wpforms-panel-content-also-available-item-add-captcha' : 'wpforms-panel-content-also-available-item-upgrade-to-pro',
 				'show'        => true,
 			],
+			'activelayer'    => $this->get_activelayer_block(),
 			'reCAPTCHA'      => [
 				'logo'        => WPFORMS_PLUGIN_URL . 'assets/images/anti-spam/recaptcha.svg',
 				'title'       => 'reCAPTCHA',
@@ -419,5 +426,121 @@ class AntiSpam {
 			[ 'blocks' => $blocks ],
 			true
 		);
+	}
+
+	/**
+	 * Build the ActiveLayer entry for the Also Available block. Wraps
+	 * `Helper::get_modal_data()` and overrides the CTA text with copy
+	 * specific to the form builder surface.
+	 *
+	 * @since 1.10.0.5
+	 *
+	 * @return array
+	 */
+	private function get_activelayer_block(): array {
+
+		$modal  = ActiveLayer::get_modal_data();
+		$action = $modal['attrs']['data-action'] ?? '';
+
+		if ( $action === 'install' ) {
+			$modal['link_text'] = __( 'Install & Activate', 'wpforms-lite' );
+		} elseif ( $action === 'activate' ) {
+			$modal['link_text'] = __( 'Activate', 'wpforms-lite' );
+		}
+
+		return array_merge(
+			[
+				'logo'        => WPFORMS_PLUGIN_URL . 'assets/images/anti-spam/activelayer.svg',
+				'title'       => 'ActiveLayer',
+				'description' => __( 'AI-powered spam protection. No friction for real visitors, higher form conversions.', 'wpforms-lite' ),
+				'badge'       => __( 'Recommended', 'wpforms-lite' ),
+				'show'        => true,
+			],
+			$modal
+		);
+	}
+
+	/**
+	 * Output a note about the state of this form's legacy anti-spam protection.
+	 *
+	 * @since 2.0.3
+	 */
+	private function legacy_upgrade_note(): void {
+
+		// A legacy key survives the save that turns modern protection on, since the
+		// panel keeps rendering its toggle until the next reload. The note is a call
+		// to enable modern protection, so it must not fire once that is done.
+		$is_modern  = ! empty( $this->form_data['settings']['antispam_v3'] );
+		$has_legacy = ! $is_modern && FormsAntiSpam::has_legacy_protection( $this->form_data );
+		$form_id    = (int) ( $this->form_data['id'] ?? 0 );
+		$upgraded   = $form_id ? (int) get_post_meta( $form_id, AntiSpamUpgradeTask::UPGRADED_META, true ) : 0;
+
+		// An upgraded form is only worth a note while the upgrade still stands. Once
+		// the user has switched modern protection off, by restoring the pre-upgrade
+		// revision or by hand, that is their own choice and the note has nothing to add.
+		if ( $upgraded && ! $is_modern ) {
+			return;
+		}
+
+		$message = $this->get_legacy_upgrade_message( (bool) $upgraded, $has_legacy );
+
+		if ( ! $message ) {
+			return;
+		}
+
+		// Scoped to the form, so dismissing the note on one form does not hide a state
+		// the user has not seen yet on another.
+		$section = sprintf( 'antispam-%1$s-note-%2$d', $upgraded ? 'upgraded' : 'legacy', $form_id );
+
+		if ( EducationHelpers::is_dismissed( $section ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="wpforms-alert wpforms-alert-info wpforms-alert-dismissible wpforms-dismiss-container wpforms-antispam-upgrade-note">
+				<div class="wpforms-alert-message"><p>%1$s</p></div>
+				<div class="wpforms-alert-buttons">
+					<button type="button" class="wpforms-dismiss-button" data-section="%2$s" title="%3$s"></button>
+				</div>
+			</div>',
+			esc_html( $message ),
+			esc_attr( $section ),
+			esc_attr__( 'Dismiss this message', 'wpforms-lite' )
+		);
+	}
+
+	/**
+	 * Get the note text for the current form state.
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param bool $upgraded   Whether this form was upgraded by the migration.
+	 * @param bool $has_legacy Whether this form still carries legacy anti-spam.
+	 *
+	 * @return string
+	 */
+	private function get_legacy_upgrade_message( bool $upgraded, bool $has_legacy ): string {
+
+		$settings = $this->form_data['settings'] ?? [];
+
+		if ( $upgraded ) {
+			// Both legacy values are '0' after the upgrade, so key presence — the same
+			// condition that renders the legacy toggles — is what names the setting.
+			$honeypot_only = isset( $settings['honeypot'] ) && ! isset( $settings['antispam'] );
+
+			return $honeypot_only
+				? __( "This form was automatically upgraded to modern anti-spam protection. If you'd like to continue using the anti-spam honeypot, simply re-enable it.", 'wpforms-lite' )
+				: __( "This form was automatically upgraded to modern anti-spam protection. If you'd like to continue using legacy anti-spam protection, simply re-enable it.", 'wpforms-lite' );
+		}
+
+		if ( $has_legacy ) {
+			$honeypot_only = ( $settings['honeypot'] ?? '' ) === '1' && ( $settings['antispam'] ?? '' ) !== '1';
+
+			return $honeypot_only
+				? __( 'This form is using the anti-spam honeypot. Enable anti-spam protection for stronger spam filtering.', 'wpforms-lite' )
+				: __( 'This form is using legacy anti-spam protection. Enable anti-spam protection for stronger spam filtering.', 'wpforms-lite' );
+		}
+
+		return '';
 	}
 }

@@ -2,7 +2,7 @@
 
 /**
  * @package Integromat_Connector
- * @version 1.6.5
+ * @version 1.6.6
  */
 
 /**
@@ -10,7 +10,7 @@ Plugin Name: Make Connector
 Description: Safely connect your site to make.com, work with custom meta fields through the REST API.
 Author: Celonis s.r.o.
 Author URI: https://www.make.com/en?utm_source=wordpress&utm_medium=partner&utm_campaign=wordpress-partner-make
-Version: 1.6.5
+Version: 1.6.6
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -18,7 +18,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 define('IWC_FIELD_PREFIX', 'integromat_api_field_');
 define('IWC_PLUGIN_NAME_SAFE', 'integromat-wordpress-connector');
 define('IWC_MENUITEM_IDENTIFIER', 'integromat_custom_fields');
-define('IWC_PLUGIN_VERSION', '1.6.5');
+define('IWC_PLUGIN_VERSION', '1.6.6');
 
 require __DIR__ . '/class/class-user.php';
 require __DIR__ . '/class/class-rest-request.php';

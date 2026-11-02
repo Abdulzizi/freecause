@@ -1,5 +1,6 @@
 <?php
 
+use WPForms\Emails\AllFieldsTag;
 use WPForms\Helpers\Templates;
 use WPForms\Tasks\Actions\EntryEmailsTask;
 
@@ -136,6 +137,15 @@ class WPForms_WP_Emails {
 	 * @var int
 	 */
 	public $notification_id = '';
+
+	/**
+	 * Context data to be passed to the tag.
+	 *
+	 * @since 1.9.9.2
+	 *
+	 * @var array|array[]
+	 */
+	private $context_data = [];
 
 	/**
 	 * Get things going.
@@ -296,22 +306,75 @@ class WPForms_WP_Emails {
 	public function get_headers() {
 
 		if ( ! $this->headers ) {
-			$this->headers = "From: {$this->get_from_name()} <{$this->get_from_address()}>\r\n";
+			$from_name    = $this->sanitize_email_header_name( (string) $this->get_from_name() );
+			$from_address = $this->sanitize_email_header( (string) $this->get_from_address() );
+			$reply_to     = $this->sanitize_email_header( (string) $this->get_reply_to() );
+			$cc           = $this->sanitize_email_header( (string) $this->get_cc() );
 
-			if ( $this->get_reply_to() ) {
-				$this->headers .= $this->reply_to_name ?
-					"Reply-To: {$this->reply_to_name} <{$this->get_reply_to()}>\r\n" :
-					"Reply-To: {$this->get_reply_to()}\r\n";
+			$this->headers = "From: {$from_name} <{$from_address}>\r\n";
+
+			if ( $reply_to ) {
+				$reply_to_name = $this->sanitize_email_header_name( (string) $this->reply_to_name );
+
+				$this->headers .= $reply_to_name ?
+					"Reply-To: {$reply_to_name} <{$reply_to}>\r\n" :
+					"Reply-To: {$reply_to}\r\n";
 			}
 
-			if ( $this->get_cc() ) {
-				$this->headers .= "Cc: {$this->get_cc()}\r\n";
+			if ( $cc ) {
+				$this->headers .= "Cc: {$cc}\r\n";
 			}
 
 			$this->headers .= "Content-Type: {$this->get_content_type()}; charset=utf-8\r\n";
 		}
 
-		return apply_filters( 'wpforms_email_headers', $this->headers, $this );
+		/**
+		 * Filter the email headers.
+		 *
+		 * @since 1.1.3
+		 *
+		 * @param string            $headers Email headers.
+		 * @param WPForms_WP_Emails $this    Emails instance.
+		 */
+		return (string) apply_filters( 'wpforms_email_headers', $this->headers, $this ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+	}
+
+	/**
+	 * Sanitize a value for safe use as an email header.
+	 *
+	 * Replaces line breaks with a space to prevent email header (CRLF) injection,
+	 * using the same strategy as the email subject. Address and CC slots use this
+	 * method so their commas (recipient separators) are preserved.
+	 *
+	 * @since 1.10.2.1
+	 *
+	 * @param string $value Header value to sanitize.
+	 *
+	 * @return string Header value with line breaks replaced by spaces.
+	 */
+	private function sanitize_email_header( string $value ): string {
+
+		return trim( str_replace( [ "\r\n", "\r", "\n" ], ' ', $value ) );
+	}
+
+	/**
+	 * Sanitize a value for safe use as an email header display name.
+	 *
+	 * On top of neutralizing line breaks, this strips the characters wp_mail()
+	 * treats as address-list delimiters when it re-parses the assembled header:
+	 * commas (it splits Reply-To/Cc/Bcc on them) and angle brackets (address
+	 * delimiters). RFC quoting is not enough because wp_mail() ignores it, so a
+	 * comma left in a display name would inject an extra recipient.
+	 *
+	 * @since 1.10.2.1
+	 *
+	 * @param string $name Display name to sanitize.
+	 *
+	 * @return string Display name safe to embed in a From/Reply-To header.
+	 */
+	private function sanitize_email_header_name( string $name ): string {
+
+		return trim( str_replace( [ ',', '<', '>' ], '', $this->sanitize_email_header( $name ) ) );
 	}
 
 	/**
@@ -328,7 +391,7 @@ class WPForms_WP_Emails {
 		// Plain text email shortcut.
 		if ( false === $this->html ) {
 			$message = $this->process_tag( $message );
-			$message = str_replace( '{all_fields}', $this->wpforms_html_field_value( false ), $message );
+			$message = $this->replace_all_fields_tag( $message, false );
 
 			return apply_filters( 'wpforms_email_message', wpforms_decode_string( $message ), $this );
 		}
@@ -360,10 +423,30 @@ class WPForms_WP_Emails {
 		$body = ob_get_clean();
 
 		$message = str_replace( '{email}', $message, $body );
-		$message = str_replace( '{all_fields}', $this->wpforms_html_field_value( true ), $message );
+		$message = $this->replace_all_fields_tag( $message, true );
 		$message = make_clickable( $message );
 
 		return apply_filters( 'wpforms_email_message', $message, $this );
+	}
+
+	/**
+	 * Replace every {all_fields} tag, honoring its exclusion parameters.
+	 *
+	 * @since 2.0.2
+	 *
+	 * @param string $message       Message.
+	 * @param bool   $is_html_email Toggle to use HTML or plaintext.
+	 *
+	 * @return string
+	 */
+	private function replace_all_fields_tag( string $message, bool $is_html_email ): string {
+
+		return AllFieldsTag::replace(
+			$message,
+			function ( array $options ) use ( $is_html_email ) {
+				return $this->wpforms_html_field_value( $is_html_email, $options );
+			}
+		);
 	}
 
 	/**
@@ -396,6 +479,8 @@ class WPForms_WP_Emails {
 			return false;
 		}
 
+		$this->context_data = [ 'to_email' => (array) $to ];
+
 		// Hooks before email is sent.
 		do_action( 'wpforms_email_send_before', $this );
 
@@ -423,6 +508,9 @@ class WPForms_WP_Emails {
 			],
 			$this
 		);
+
+		// Update context data, as 'to' email address could be changed by the filter above.
+		$this->context_data = [ 'to_email' => (array) $data['to'] ];
 
 		$entry_obj = wpforms()->obj( 'entry' );
 
@@ -521,34 +609,38 @@ class WPForms_WP_Emails {
 	 * Process a smart tag.
 	 * Decodes entities and sanitized (keeping line breaks) by default.
 	 *
-	 * @uses wpforms_decode_string()
+	 * @uses  wpforms_decode_string()
 	 *
 	 * @since 1.1.3
 	 * @since 1.6.0 Deprecated 2 params: $sanitize, $linebreaks.
 	 *
-	 * @param string $string String that may contain tags.
+	 * @param string $content String that may contain tags.
 	 *
-	 * @return string
+	 * @return string|mixed
 	 */
-	public function process_tag( $string = '' ) {
+	public function process_tag( $content = '' ) {
 
-		return wpforms_process_smart_tags( $string, $this->form_data, $this->fields, $this->entry_id, 'email' );
+		return wpforms_process_smart_tags( $content, $this->form_data, $this->fields, $this->entry_id, 'email', $this->context_data );
 	}
 
 	/**
 	 * Process the all fields smart tag if present.
 	 *
 	 * @since 1.1.3
+	 * @since 2.0.2 The `$exclude` parameter was added.
 	 *
-	 * @param bool $is_html_email Toggle to use HTML or plaintext.
+	 * @param bool  $is_html_email Toggle to use HTML or plaintext.
+	 * @param array $exclude       Exclusion options as returned by AllFieldsTag::parse().
 	 *
 	 * @return string
 	 */
-	public function wpforms_html_field_value( $is_html_email = true ) { // phpcs:ignore
+	public function wpforms_html_field_value( $is_html_email = true, array $exclude = [] ) { // phpcs:ignore
 
 		if ( empty( $this->fields ) ) {
 			return '';
 		}
+
+		$exclude = AllFieldsTag::expand( (array) $exclude, (array) $this->form_data );
 
 		if ( empty( $this->form_data['fields'] ) ) {
 			$is_html_email = false;
@@ -575,6 +667,10 @@ class WPForms_WP_Emails {
 			$x = 1;
 
 			foreach ( $this->form_data['fields'] as $field_id => $field ) {
+
+				if ( AllFieldsTag::is_excluded( $field, $exclude ) ) {
+					continue;
+				}
 
 				$field_name = '';
 				$field_val  = '';
@@ -676,14 +772,18 @@ class WPForms_WP_Emails {
 				);
 
 				$field_item = str_replace( '{field_name}', $field_name, $field_item );
+
+				// The filtered value may contain markup built from stored submission data, so sanitize it before it enters the email body.
 				$field_item = str_replace(
 					'{field_value}',
-					apply_filters(
-						'wpforms_html_field_value',
-						$field_val,
-						isset( $this->fields[ $field_id ] ) ? $this->fields[ $field_id ] : $field,
-						$this->form_data,
-						'email-html'
+					wp_kses_post(
+						apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WPForms.Comments.PHPDocHooks.RequiredHookDocumentation
+							'wpforms_html_field_value',
+							$field_val,
+							isset( $this->fields[ $field_id ] ) ? $this->fields[ $field_id ] : $field,
+							$this->form_data,
+							'email-html'
+						)
 					),
 					$field_item
 				);
@@ -699,13 +799,17 @@ class WPForms_WP_Emails {
 				 */
 				$message .= apply_filters( 'wpforms_wp_emails_html_field_value_message_html', wpautop( $field_item ), $field, $this->form_data );
 
-				$x ++;
+				++$x;
 			}
 		} else {
 			/*
 			 * Plain Text emails.
 			 */
 			foreach ( $this->fields as $field ) {
+
+				if ( AllFieldsTag::is_excluded( $field, $exclude ) ) {
+					continue;
+				}
 
 				if (
 					! apply_filters( 'wpforms_email_display_empty_fields', false ) &&

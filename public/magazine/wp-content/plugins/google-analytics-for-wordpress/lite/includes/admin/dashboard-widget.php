@@ -112,6 +112,8 @@ class MonsterInsights_Dashboard_Widget {
 	 * Load the widget content.
 	 */
 	public function dashboard_widget_content() {
+		MonsterInsights_Last_Seen::touch();
+
 		$is_authed = ( MonsterInsights()->auth->is_authed() || MonsterInsights()->auth->is_network_authed() );
 
 		if ( ! $is_authed ) {
@@ -128,16 +130,11 @@ class MonsterInsights_Dashboard_Widget {
 	 */
 	public function widget_content_no_auth() {
 
-		$url      = is_network_admin() ? network_admin_url( 'admin.php?page=monsterinsights-onboarding' ) : admin_url( 'admin.php?page=monsterinsights-onboarding' );
-		$migrated = monsterinsights_get_option( 'gadwp_migrated', 0 );
-		if ( $migrated > 0 ) {
-			$url = admin_url( 'admin.php?page=monsterinsights-getting-started&monsterinsights-migration=1' );
-		}
 		?>
 		<div class="mi-dw-not-authed">
 			<?php
-			// Translators: Wizrd Link tag starts with url and Wizard link tag ends.
 			$message = sprintf(
+				/* translators: %1$s: Opening wizard link tag, %2$s: Closing wizard link tag. */
 				esc_html__( 'Your website analytics dashboard is not currently configured. Please use our %1$ssetup wizard%2$s to get started.', 'google-analytics-for-wordpress' ),
 				'<a class="monsterinsights-setup-wizard-link">',
 				'</a>'
@@ -146,8 +143,8 @@ class MonsterInsights_Dashboard_Widget {
 			<h2><?php echo $message; // phpcs:ignore ?></h2>
 			<?php if ( current_user_can( 'monsterinsights_save_settings' ) ) { ?>
 				<p><?php esc_html_e( 'To see your website stats, please connect MonsterInsights to Google Analytics.', 'google-analytics-for-wordpress' ); ?></p>
-				<a class="mi-dw-btn-large monsterinsights-setup-wizard-link"><?php esc_html_e( 'Setup Website Analytics', 'google-analytics-for-wordpress' ); ?></a>
-				<p><?php esc_html_e( 'Note: You will be transfered to MonsterInsights.com to complete the setup wizard.', 'google-analytics-for-wordpress' ); ?></p>
+				<a class="mi-dw-btn-large monsterinsights-setup-wizard-link"><?php esc_html_e( 'Set Up Website Analytics', 'google-analytics-for-wordpress' ); ?></a>
+				<p><?php esc_html_e( 'Note: You will be transferred to MonsterInsights.com to complete the setup wizard.', 'google-analytics-for-wordpress' ); ?></p>
 			<?php } else { ?>
 				<p><?php esc_html_e( 'To see your website stats, please ask your site administrator to connect MonsterInsights to Google Analytics.', 'google-analytics-for-wordpress' ); ?></p>
 			<?php } ?>
@@ -164,18 +161,33 @@ class MonsterInsights_Dashboard_Widget {
 		$screen       = get_current_screen();
 
 		if ( isset( $screen->id ) && 'dashboard' === $screen->id ) {
-			if ( ! defined( 'MONSTERINSIGHTS_LOCAL_JS_URL' ) ) {
-				MonsterInsights_Admin_Assets::enqueue_script_specific_css( 'src/modules/widget/widget.js' );
+			$handle    = 'monsterinsights-vue3-widget';
+			$entry_key = 'src/modules/widget/main.js';
+
+			if ( ! defined( 'MONSTERINSIGHTS_V3_DEV_URL' ) || ! MONSTERINSIGHTS_V3_DEV_URL ) {
+				MonsterInsights_Admin_Assets::enqueue_vue3_asset_css( $entry_key, 'monsterinsights-vue3-widget-style' );
 			}
-			$widget_js_url = MonsterInsights_Admin_Assets::get_js_url( 'src/modules/widget/widget.js' );
-			wp_register_script( 'monsterinsights-vue-widget', $widget_js_url, array( 'wp-i18n' ), monsterinsights_get_asset_version(), true );
-			wp_enqueue_script( 'monsterinsights-vue-widget' );
+
+			if ( defined( 'MONSTERINSIGHTS_V3_DEV_URL' ) && MONSTERINSIGHTS_V3_DEV_URL ) {
+				$widget_js_url = trailingslashit( MONSTERINSIGHTS_V3_DEV_URL ) . $entry_key;
+			} else {
+				$widget_js_url = MonsterInsights_Admin_Assets::get_vue3_asset_url( $entry_key );
+			}
+
+			if ( empty( $widget_js_url ) ) {
+				return;
+			}
+
+			wp_register_script( $handle, $widget_js_url, array( 'wp-i18n', 'wp-util' ), monsterinsights_get_asset_version(), true );
+			wp_enqueue_script( $handle );
 
 			$plugins                = get_plugins();
 			$wp_forms_url           = false;
 			$wpforms_installed      = false;
 			$userfeedback_url       = false;
 			$userfeedback_installed = false;
+			$formidableforms_installed = false;
+
 			if ( monsterinsights_can_install_plugins() ) {
 				$wpforms_key = 'wpforms-lite/wpforms.php';
 				if ( array_key_exists( $wpforms_key, $plugins ) ) {
@@ -188,53 +200,117 @@ class MonsterInsights_Dashboard_Widget {
 				$userfeedback_keys     = array ( 'userfeedback-lite/userfeedback.php' => 1, 'userfeedback/userfeedback.php' => 2 );
 				$userfeedback_versions = array_intersect_key($userfeedback_keys, $plugins);
 
+				// Route both the Install and Activate CTAs to the in-plugin
+				// UserFeedback screen, which walks the user through installing,
+				// activating, and setup in one guided flow.
+				$userfeedback_url = self_admin_url( 'admin.php?page=monsterinsights_settings#/userfeedback' );
+
 				if ( ! empty( $userfeedback_versions ) ) {
-					$uf_plugin_key          = array_keys( $userfeedback_versions )[0];
-					$userfeedback_url       = wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $uf_plugin_key ), 'activate-plugin_' . $uf_plugin_key );
 					$userfeedback_installed = true;
-				} else {
-					$userfeedback_url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=userfeedback-lite' ), 'install-plugin_userfeedback-lite' );
+				}
+
+				if ( array_key_exists( 'formidable/formidable.php', $plugins ) ) {
+					$formidableforms_installed = true;
 				}
 			}
 
-			// We do not have a current auth.
 			$auth      = MonsterInsights()->auth;
 			$is_authed = ( $auth->is_authed() || $auth->is_network_authed() );
+
+			$auth_data = array(
+				'v4'                => $auth->get_v4_id(),
+				'network_v4'        => is_multisite() ? $auth->get_network_v4_id() : '',
+				'manual_v4'         => $auth->get_manual_v4_id(),
+				'network_manual_v4' => is_multisite() ? $auth->get_network_manual_v4_id() : '',
+				'viewname'          => $auth->get_viewname(),
+				'network_viewname'  => is_multisite() ? $auth->get_network_viewname() : '',
+			);
+
+			$license_info = array(
+				'key'         => '',
+				'type'        => 'lite',
+				'is_expired'  => false,
+				'is_disabled' => false,
+				'is_invalid'  => true,
+				'is_agency'   => false,
+			);
+
+			// Reporting API endpoint, authenticated with the short-lived bearer token
+			// issued below. The relay key and token are deliberately absent: the
+			// reporting routes accept only a bearer, so shipping the pair would
+			// disclose a long-lived credential without making anything work.
+			$reporting_api = array(
+				'url'      => apply_filters( 'monsterinsights_api_url_custom_dashboard', 'https://app.monsterinsights.com/' ),
+				'license'  => '',
+				'site_url' => is_network_admin() ? network_admin_url() : home_url(),
+			);
+
+			$bearer_token   = '';
+			$bearer_expires = 0;
+			if ( class_exists( 'MonsterInsights_API_Token' ) ) {
+				$bearer_token_data = MonsterInsights_API_Token::get_token( is_network_admin() );
+				if ( ! is_wp_error( $bearer_token_data ) ) {
+					$bearer_token   = $bearer_token_data['token'];
+					$bearer_expires = $bearer_token_data['expires_at'];
+				}
+			}
+
+			// Empty in "Dashboard Widget Only" mode, which hides every widget CTA
+			// that links to a report — there is no reports screen to open.
+			$report_urls = monsterinsights_get_widget_report_urls();
+
 			wp_localize_script(
-				'monsterinsights-vue-widget',
+				$handle,
 				'monsterinsights',
-				array(
-					'ajax'                   => admin_url( 'admin-ajax.php' ),
-					'nonce'                  => wp_create_nonce( 'mi-admin-nonce' ),
-					'network'                => is_network_admin(),
-					'assets'                 => plugins_url( $version_path . '/assets/vue', MONSTERINSIGHTS_PLUGIN_FILE ),
-					'shareasale_id'          => monsterinsights_get_shareasale_id(),
-					'shareasale_url'         => monsterinsights_get_shareasale_url( monsterinsights_get_shareasale_id(), '' ),
-					'addons_url'             => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/addons' ) : admin_url( 'admin.php?page=monsterinsights_settings#/addons' ),
-					'widget_state'           => $this->get_options(),
-					'wpforms_enabled'        => function_exists( 'wpforms' ),
-					'wpforms_installed'      => $wpforms_installed,
-					'wpforms_url'            => $wp_forms_url,
-					'userfeedback_enabled'   => class_exists( 'UserFeedback_Base' ),
-					'userfeedback_installed' => $userfeedback_installed,
-					'userfeedback_url'       => $userfeedback_url,
-					'authed'                 => $is_authed,
-					// Used to add notices for future deprecations.
-					'versions'               => monsterinsights_get_php_wp_version_warning_data(),
-					'plugin_version'         => MONSTERINSIGHTS_VERSION,
-					'is_admin'               => true,
-					'reports_url'            => add_query_arg( 'page', 'monsterinsights_reports', admin_url( 'admin.php' ) ),
-					'getting_started_url'    => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/about/getting-started' ) : admin_url( 'admin.php?page=monsterinsights_settings#/about/getting-started' ),
-					'wizard_url'             => admin_url( 'index.php?page=monsterinsights-onboarding' ),
-				)
+				apply_filters( 'monsterinsights_localize_script_data', array(
+					'ajax'                      => admin_url( 'admin-ajax.php' ),
+					'nonce'                     => wp_create_nonce( 'mi-admin-nonce' ),
+					'network'                   => is_network_admin(),
+					'assets_url'                => apply_filters( 'monsterinsights_vue3_assets_url', plugins_url( $version_path . '/assets/vue3', MONSTERINSIGHTS_PLUGIN_FILE ) ),
+					'plugin_assets_url'         => plugins_url( 'assets/', MONSTERINSIGHTS_PLUGIN_FILE ),
+					'shareasale_id'             => monsterinsights_get_shareasale_id(),
+					'shareasale_url'            => monsterinsights_get_shareasale_url( monsterinsights_get_shareasale_id(), '' ),
+					'addons_url'                => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/addons' ) : admin_url( 'admin.php?page=monsterinsights_settings#/addons' ),
+					'widget_state'              => $this->get_options(),
+					'wpforms_enabled'           => function_exists( 'wpforms' ),
+					'wpforms_installed'         => $wpforms_installed,
+					'wpforms_url'               => $wp_forms_url,
+					'userfeedback_enabled'      => class_exists( 'UserFeedback_Base' ),
+					'userfeedback_installed'    => $userfeedback_installed,
+					'userfeedback_url'          => $userfeedback_url,
+					'authed'                    => $is_authed,
+					'can_view_reports'          => current_user_can( 'monsterinsights_view_dashboard' ),
+					'versions'                  => monsterinsights_get_php_wp_version_warning_data(),
+					'plugin_version'            => MONSTERINSIGHTS_VERSION,
+					'is_admin'                  => true,
+					'reports_url'               => $report_urls['reports_url'],
+					'overview_reports_url'      => $report_urls['overview_reports_url'],
+					'settings_url'              => add_query_arg( 'page', 'monsterinsights_settings', admin_url( 'admin.php' ) ),
+					'getting_started_url'       => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/about/getting-started' ) : admin_url( 'admin.php?page=monsterinsights_settings#/about/getting-started' ),
+					'wizard_url'                => monsterinsights_can_install_plugins() ? monsterinsights_get_onboarding_url() : '',
+					'formidableforms_installed' => $formidableforms_installed,
+					// Vue 3 reporting plumbing — same shape Custom Dashboard/Overview Reports use.
+					'license'                   => $license_info,
+					'auth'                      => $auth_data,
+					'reporting_api'             => $reporting_api,
+					'relay_api_url'             => apply_filters( 'monsterinsights_api_url_custom_dashboard', 'https://app.monsterinsights.com/' ),
+					'bearer_token'              => $bearer_token,
+					'bearer_expires'            => $bearer_expires,
+					'sample_data_enabled'       => apply_filters( 'monsterinsights_sample_data_enabled', false ),
+					// eCommerce store currency for widget value formatting; without this
+					// the formatter falls back to USD (getMiGlobal('currency', 'USD')).
+					'currency'                  => monsterinsights_get_ecommerce_currency(),
+				) )
 			);
 
 			$this->remove_conflicting_asset_files();
 
-			$text_domain = monsterinsights_is_pro_version() ? 'google-analytics-premium' : 'google-analytics-for-wordpress';
+			wp_set_script_translations( $handle, 'google-analytics-for-wordpress' );
+
+			$text_domain = monsterinsights_get_plugin_textdomain();
 
 			wp_scripts()->add_inline_script(
-				'monsterinsights-vue-widget',
+				$handle,
 				monsterinsights_get_printable_translations( $text_domain ),
 				'translation'
 			);

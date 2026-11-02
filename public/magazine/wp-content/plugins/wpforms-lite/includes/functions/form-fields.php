@@ -36,7 +36,7 @@ function wpforms_show_fields_options_setting(): bool {
  *
  * @return false|array
  */
-function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = [] ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = [] ) {
 
 	if ( empty( $field['dynamic_choices'] ) ) {
 		return false;
@@ -51,6 +51,15 @@ function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = [] ) 
 		}
 
 		$posts = wpforms_get_hierarchical_object(
+		/**
+		 * Filter the arguments used to retrieve posts for dynamic choices.
+		 *
+		 * @since 1.4.5
+		 *
+		 * @param array $args    Array of arguments for retrieving posts.
+		 * @param array $field   Field settings.
+		 * @param int   $form_id Form ID.
+		 */
 			apply_filters(
 				'wpforms_dynamic_choice_post_type_args',
 				[
@@ -79,6 +88,15 @@ function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = [] ) 
 		}
 
 		$terms = wpforms_get_hierarchical_object(
+		/**
+		 * Filter the arguments used to retrieve terms for dynamic choices.
+		 *
+		 * @since 1.4.5
+		 *
+		 * @param array $args      Array of arguments for retrieving terms.
+		 * @param array $field     Field settings.
+		 * @param array $form_data Form data.
+		 */
 			apply_filters(
 				'wpforms_dynamic_choice_taxonomy_args',
 				[
@@ -107,14 +125,14 @@ function wpforms_get_field_dynamic_choices( $field, $form_id, $form_data = [] ) 
  * Build and return either a taxonomy or post type object nested to accommodate any hierarchy.
  *
  * @since 1.3.9
- * @since 1.5.0 Return array only. Empty array of no data.
+ * @since 1.5.0 Return an array only. Empty array of no data.
  *
  * @param array $args Object arguments to pass to data retrieval function.
  * @param bool  $flat Preserve hierarchy or not. False by default - preserve it.
  *
  * @return array
  */
-function wpforms_get_hierarchical_object( $args = [], $flat = false ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.NestingLevel.MaxExceeded
+function wpforms_get_hierarchical_object( $args = [], $flat = false ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.NestingLevel.MaxExceeded
 
 	if ( empty( $args['taxonomy'] ) && empty( $args['post_type'] ) ) {
 		return [];
@@ -350,7 +368,7 @@ function wpforms_get_post_title( $post ): string {
 }
 
 /**
- * Get sanitized term name or "no name" placeholder.
+ * Get a sanitized term name or "no name" placeholder.
  *
  * The placeholder is prepended with the term ID.
  *
@@ -379,7 +397,7 @@ function wpforms_get_term_name( WP_Term $term ): string {
  *
  * @return false|array Page Break details or false.
  */
-function wpforms_get_pagebreak_details( $form = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+function wpforms_get_pagebreak_details( $form = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 	if ( ! wpforms()->is_pro() ) {
 		return false;
@@ -511,6 +529,7 @@ function wpforms_get_payments_fields(): array {
 		'payment-coupon',
 		'credit-card', // Legacy Credit Card field.
 		'authorize_net',
+		'mercado_pago',
 		'paypal-commerce',
 		'square',
 		'stripe-credit-card',
@@ -518,7 +537,7 @@ function wpforms_get_payments_fields(): array {
 }
 
 /**
- * Validate field ID for repeater field.
+ * Validate field ID for the repeater field.
  *
  * @since 1.8.9
  *
@@ -586,17 +605,33 @@ function wpforms_get_choices_value( array $field, array $form_data ): string {
 
 	$show_values = ! empty( $form_data['fields'][ $field['id'] ]['show_values'] );
 	$is_dynamic  = ! empty( $field['dynamic'] );
-	$value       = $field['value'];
+	$value       = $field['value'] ?? '';
 
 	if ( $show_values && ! $is_dynamic && ! wpforms_is_empty_string( $field['value_raw'] ?? '' ) ) {
 		$value = $field['value_raw'];
 	}
 
 	if ( $is_dynamic ) {
-		$value = $field['value_raw'] ?? ( $field['value'] ?? '' );
+		$value = $field['value_raw'] ?? $value;
 	}
 
-	return $value;
+	return (string) $value;
+}
+
+/**
+ * Check whether the field type is in the list of types that support the Show Values option.
+ *
+ * @since 1.10.0
+ *
+ * @param array $field Field data.
+ *
+ * @return bool True if the field type supports Show Values, false otherwise.
+ */
+function wpforms_is_support_show_values( array $field ): bool {
+
+	static $supported_types = [ 'select', 'radio', 'checkbox' ];
+
+	return in_array( $field['type'] ?? '', $supported_types, true );
 }
 
 /**
@@ -625,7 +660,7 @@ function wpforms_is_repeated_field( int $field_id, array $fields ): bool {
 /**
  * Get field types where user can select more than one item.
  *
- * Note: this list does not include File Upload field, even thought it is a multi-field.
+ * Note: this list does not include the File Upload field, even though it is a multi-field.
  *
  * @since 1.9.0
  *
@@ -637,6 +672,7 @@ function wpforms_get_multi_fields(): array {
 		'checkbox',
 		'select',
 		'payment-checkbox',
+		'ranking',
 	];
 }
 
@@ -685,4 +721,129 @@ function wpforms_parse_field_id( $field_id ): array {
 		'id'  => $field_id,
 		'key' => $field_key,
 	];
+}
+
+/**
+ * Get icon SVG by its name, style and size.
+ *
+ * @since 1.10.0
+ *
+ * @param string $icon  Icon name.
+ * @param string $style Icon style.
+ * @param int    $size  Icon font size in pixels.
+ */
+function wpforms_get_icon_svg( string $icon, string $style, int $size ): string {
+
+	// Sanitize inputs.
+	$icon  = sanitize_key( $icon );
+	$style = sanitize_key( $style );
+	$size  = absint( $size );
+
+	if ( $size <= 0 ) {
+		$size = 32;
+	}
+
+	$upload_dir = wpforms_upload_dir();
+
+	$cache_base_path = $upload_dir['path'] . '/icon-choices';
+	$filename        = wp_normalize_path( (string) realpath( "$cache_base_path/svgs/$style/$icon.svg" ) );
+	$allowed_dir     = wp_normalize_path( (string) realpath( $cache_base_path . '/svgs' ) );
+
+	// Verify the file is within the allowed directory.
+	if ( strpos( $filename, $allowed_dir ) !== 0 ) {
+		return '';
+	}
+
+	if ( ! is_file( $filename ) || ! is_readable( $filename ) ) {
+		return '';
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	$svg = (string) file_get_contents( $filename );
+
+	if ( strpos( $svg, '<svg' ) === false ) {
+		return '';
+	}
+
+	$height = $size;
+	$width  = $height * 1.25; // Icon width is equal or 25% larger/smaller than height. We force the largest value for all icons.
+
+	return str_replace( 'viewBox=', 'width="' . $width . '" height="' . $height . '" viewBox=', $svg );
+}
+
+/**
+ * Get the list of scalar values stored in a field value.
+ *
+ * Malformed entries can store a list of files where a string is expected.
+ *
+ * @since 2.0.1
+ *
+ * @param mixed $value Field value.
+ *
+ * @return array
+ */
+function wpforms_get_field_value_list( $value ): array {
+
+	if ( ! is_array( $value ) ) {
+		return [ is_scalar( $value ) || $value === null ? (string) $value : '' ];
+	}
+
+	// A single file array holds its URL in the `value` key.
+	if ( isset( $value['value'] ) && is_scalar( $value['value'] ) ) {
+		return [ (string) $value['value'] ];
+	}
+
+	$values = array_column( $value, 'value' );
+	$values = $values ? $values : $value;
+
+	return array_values( array_filter( $values, 'is_scalar' ) );
+}
+
+/**
+ * Flatten a field value to a string.
+ *
+ * Multi-value entry field values are stored as newline-separated strings.
+ *
+ * @since 2.0.1
+ *
+ * @param mixed $value Field value.
+ *
+ * @return string
+ */
+function wpforms_flatten_field_value( $value ): string {
+
+	return implode( "\n", wpforms_get_field_value_list( $value ) );
+}
+
+/**
+ * Check if a field type supports the "Other" choice option.
+ *
+ * This function determines whether a given field type can have an "Other" choice
+ * that allows users to enter custom text. By default, Radio and Checkbox fields
+ * support this feature.
+ *
+ * @since 2.0.3
+ *
+ * @param array $field Field data.
+ *
+ * @return bool True if a field type supports the Other option, false otherwise.
+ */
+function wpforms_field_supports_other_choice( array $field ): bool {
+
+	$supported_types = [ 'radio', 'checkbox' ];
+
+	/**
+	 * Filter the list of field types that support the "Other" choice option.
+	 *
+	 * This allows addons or custom field types to add or remove support for
+	 * the Other choice feature.
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param array $supported_types Array of field type slugs that support Other choice.
+	 * @param array $field           Field settings.
+	 */
+	$supported_types = (array) apply_filters( 'wpforms_field_supports_other_choice', $supported_types, $field );
+
+	return in_array( $field['type'], $supported_types, true );
 }
