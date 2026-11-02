@@ -7,6 +7,7 @@ use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class E2eSeeder extends Seeder
@@ -22,6 +23,19 @@ class E2eSeeder extends Seeder
             'email' => 'admin@e2e.test',
             'password' => Hash::make('e2e-password'),
             'level_id' => UserLevel::where('name', 'admin')->value('id'),
+            'verified' => true,
+            'locale' => 'en_US',
+        ]);
+
+        $moderator = UserLevel::create(['name' => 'moderator', 'visible_name' => 'Moderator', 'is_system' => false]);
+        DB::table('permissions')->insert([
+            'level_id' => $moderator->id, 'module' => 'petitions', 'action' => 'view', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        User::factory()->create([
+            'name' => 'e2e-moderator',
+            'email' => 'mod@e2e.test',
+            'password' => Hash::make('e2e-password'),
+            'level_id' => $moderator->id,
             'verified' => true,
             'locale' => 'en_US',
         ]);

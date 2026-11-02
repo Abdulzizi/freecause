@@ -92,6 +92,33 @@ class ProfilePasswordTest extends TestCase
         $this->assertTrue(Hash::check('correct-current', $user->fresh()->password));
     }
 
+    public function test_user_with_a_password_can_save_the_profile_with_blank_password_fields(): void
+    {
+        $user = User::factory()->create([
+            'google_id' => null,
+            'password' => Hash::make('correct-current'),
+            'password_changed_at' => now(),
+            'verified' => true,
+            'country' => null,
+            'gender' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->post('/en/profile', [
+                'first_name' => 'Ada',
+                'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'female',
+                'locale' => 'en',
+                'current_password' => null,
+                'new_password' => null,
+                'new_password_confirmation' => null,
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('US', $user->fresh()->country);
+    }
+
     public function test_user_with_a_password_can_change_it_with_the_correct_current_password(): void
     {
         $user = User::factory()->create([

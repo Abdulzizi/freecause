@@ -2,7 +2,7 @@
 <div
     x-data="{ message: '', title: 'Please confirm', resolver: null }"
     x-init="window.__fcConfirmReady = true"
-    @fc-confirm.window="message = $event.detail.message; title = $event.detail.title; resolver = $event.detail.resolve; $dispatch('open-alert-dialog-fc-confirm')"
+    @fc-confirm.window="message = $event.detail.message; title = $event.detail.title; resolver = $event.detail.resolve; $dispatch('open-alert-dialog-fc-confirm'); setTimeout(() => document.querySelectorAll('[role=alertdialog]').forEach((d) => { if (d.getClientRects().length) d.closest('[aria-hidden=true]')?.removeAttribute('aria-hidden') }), 250)"
     @keydown.escape.window="if (resolver) { resolver(false); resolver = null }"
     class="contents"
 >
