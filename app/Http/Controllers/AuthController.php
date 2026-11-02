@@ -89,19 +89,6 @@ class AuthController extends Controller
             return back()->withInput();
         }
 
-        if (Spam::rateLimit('register')) {
-
-            AppLog::warning(
-                'Registration rate limit exceeded',
-                'IP: '.$request->ip(),
-                'auth.register'
-            );
-
-            toast(__('auth.err_throttled'), 'error');
-
-            return back()->withInput();
-        }
-
         $smtpEnabled = Settings::get('smtp_enabled', false);
         $requireVerif = Settings::get('require_email_verification', false, 'global');
 
@@ -482,6 +469,7 @@ class AuthController extends Controller
             DB::table('signatures')
                 ->where('user_id', $user->id)
                 ->where('confirmed', false)
+                ->where('is_spam', false)
                 ->update(['confirmed' => true, 'updated_at' => now()]);
 
             $increments = [];

@@ -78,14 +78,6 @@ class PetitionSigning
             return back()->withInput();
         }
 
-        if (Spam::rateLimit('petition')) {
-            Spam::log('petition', 'Rate limit exceeded');
-
-            toast('Too many petition attempts.', 'error');
-
-            return back()->withInput();
-        }
-
         $email = strtolower(trim($data['email']));
 
         $existingUser = User::where('email', $email)->first();
@@ -93,9 +85,38 @@ class PetitionSigning
         if ($existingUser) {
             session()->forget("sign.{$petition->id}");
             $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
+
+            // Only an unverified account with verification on gets a row: it stays
+            // unconfirmed until the inbox owner verifies. Verified accounts get nothing, since a guest form
+            // can't prove email ownership. Every outcome returns the same thanks
+            // redirect so the response never reveals account or signature state.
+            $alreadySigned = Signature::where('petition_id', $petition->id)
+                ->where(fn ($q) => $q->where('email', $email)->orWhere('user_id', $existingUser->id))
+                ->exists();
+
+            if (! $existingUser->verified && $needsVerification && ! $alreadySigned) {
+                try {
+                    Signature::create([
+                        'petition_id' => $petition->id,
+                        'email' => $email,
+                        'user_id' => $existingUser->id,
+                        'name' => $data['name'],
+                        'locale' => $locale,
+                        'text' => $data['comment'] ?? 'I support this petition',
+                        'confirmed' => false,
+                        'ip_address' => request()->ip(),
+                    ]);
+                } catch (QueryException $e) {
+                    if (($e->errorInfo[0] ?? null) !== '23000') {
+                        throw $e;
+                    }
+                }
+            }
+
             $sentAt = $existingUser->verification_token_sent_at;
+            // Re-send at most once per token lifetime (48h, see AuthController::verify).
             if (! $existingUser->verified && $needsVerification && Settings::get('smtp_enabled', false)
-                && (! $sentAt || $sentAt->lt(now()->subHour()))) {
+                && (! $sentAt || $sentAt->lt(now()->subHours(48)))) {
                 try {
                     $existingUser->forceFill([
                         'verification_token' => Str::random(64),
