@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
@@ -169,9 +170,26 @@ class User extends Authenticatable
         return (bool) $this->notify_new_signatures && $this->unsubscribed_at === null;
     }
 
-    public function wantsProductEmails(): bool
+    /**
+     * Rehash on a correct password stored in the legacy md5(md5(pass).salt):salt format.
+     */
+    public function upgradeLegacyPassword(string $plain): bool
     {
-        return (bool) $this->notify_product && $this->unsubscribed_at === null;
+        if (! filled($this->password) || ! str_contains($this->password, ':')) {
+            return false;
+        }
+
+        [$hash, $salt] = explode(':', $this->password, 2);
+
+        if (! hash_equals($hash, md5(md5($plain).$salt))) {
+            return false;
+        }
+
+        $this->password = Hash::make($plain);
+        $this->password_changed_at = now();
+        $this->save();
+
+        return true;
     }
 
     public function isBanned(): bool

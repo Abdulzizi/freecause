@@ -18,7 +18,7 @@ class AddSecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        if (! $request->is('ads/frame/*') || ! Ads::frameHostMatchesRequest()) {
+        if (! $request->is('widget-render/*') && (! $request->is('ads/frame/*') || ! Ads::frameHostMatchesRequest())) {
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         }
 
@@ -69,17 +69,9 @@ class AddSecurityHeaders
 
             $inlineHashes = '';
 
-            foreach (['inject_head_html', 'inject_body_html'] as $key) {
-                $html = (string) Settings::get($key, '');
-
-                if ($html === '') {
-                    continue;
-                }
-
-                if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', $html, $matches)) {
-                    foreach ($matches[1] as $body) {
-                        $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
-                    }
+            if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', (string) Settings::get('inject_body_html', ''), $matches)) {
+                foreach ($matches[1] as $body) {
+                    $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
                 }
             }
 
@@ -117,6 +109,7 @@ class AddSecurityHeaders
                     'https://bicea.org; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".
+                ($request->is('widget-render/*') ? ' frame-ancestors *;' : '').
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         }
         $response->headers->set('Content-Security-Policy', $csp);

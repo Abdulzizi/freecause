@@ -22,6 +22,17 @@ class AdminAuth
             abort(403, 'Your account no longer has admin access.');
         }
 
+        $hash = $request->session()->get('admin_password_hash');
+
+        if ($hash === null) {
+            $request->session()->put('admin_password_hash', admin_user()->password);
+        } elseif (! hash_equals((string) $hash, (string) admin_user()->password)) {
+            Auth::guard('admin')->logout();
+            $request->session()->invalidate();
+
+            return redirect()->route('admin.login');
+        }
+
         return $next($request);
     }
 }

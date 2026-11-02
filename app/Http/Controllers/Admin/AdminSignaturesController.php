@@ -10,7 +10,6 @@ use App\Services\PetitionStats;
 use App\Support\ApproxRows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class AdminSignaturesController extends Controller
 {
@@ -31,17 +30,6 @@ class AdminSignaturesController extends Controller
             'date_from' => trim((string) $request->query('date_from', '')),
             'date_to' => trim((string) $request->query('date_to', '')),
         ];
-
-        $hasText = cache()->remember(
-            'schema:signatures:has_text',
-            3600,
-            fn () => Schema::hasColumn('signatures', 'text')
-        );
-        $hasConfirmed = cache()->remember(
-            'schema:signatures:has_confirmed',
-            3600,
-            fn () => Schema::hasColumn('signatures', 'confirmed')
-        );
 
         $catLocale = $filters['locale'] !== '' ? $filters['locale'] : 'en';
 
@@ -79,15 +67,15 @@ class AdminSignaturesController extends Controller
                 $j->on('pt.petition_id', '=', 'p.id')
                     ->on('pt.locale', '=', 's.locale');
             })
-            ->select(array_filter([
+            ->select([
                 's.id',
                 's.petition_id',
                 's.user_id',
                 's.name',
                 's.email',
                 's.locale',
-                $hasText ? 's.text' : null,
-                $hasConfirmed ? 's.confirmed' : null,
+                's.text',
+                's.confirmed',
                 's.created_at',
                 'p.category_id',
                 DB::raw("COALESCE(pt.title, '') as petition_title"),
@@ -95,7 +83,7 @@ class AdminSignaturesController extends Controller
                 'u.name as user_name',
                 'u.email as user_email',
                 'u.verified as user_verified',
-            ]));
+            ]);
 
         if ($filters['petition_id'] !== '') {
             $q->where('s.petition_id', (int) $filters['petition_id']);
@@ -113,7 +101,7 @@ class AdminSignaturesController extends Controller
             $q->where('s.ip_address', 'like', $filters['ip'].'%');
         }
 
-        if ($hasText && $filters['text'] !== '') {
+        if ($filters['text'] !== '') {
             $q->where('s.text', 'like', $filters['text'].'%');
         }
 
@@ -125,7 +113,7 @@ class AdminSignaturesController extends Controller
             $q->where('s.locale', $filters['locale']);
         }
 
-        if ($hasConfirmed && $filters['confirmed'] !== '') {
+        if ($filters['confirmed'] !== '') {
             $q->where('s.confirmed', (int) $filters['confirmed']);
         }
 
@@ -161,8 +149,6 @@ class AdminSignaturesController extends Controller
             'filters',
             'categories',
             'approxTotal',
-            'hasText',
-            'hasConfirmed',
             'locales'
         ));
     }

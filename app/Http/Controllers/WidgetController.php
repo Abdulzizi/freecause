@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petition;
-use App\Models\PetitionTranslation;
 
 class WidgetController extends Controller
 {
@@ -35,11 +34,9 @@ class WidgetController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $translation = PetitionTranslation::query()
-            ->where('petition_id', $petition->id)
-            ->where('locale', default_locale())
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)->orderBy('id')->firstOrFail();
+        $translation = $petition->translationOrFallback(default_locale());
+
+        abort_if(! $translation, 404);
 
         return response()
             ->view('petition.widget', compact('petition', 'translation', 'type'))

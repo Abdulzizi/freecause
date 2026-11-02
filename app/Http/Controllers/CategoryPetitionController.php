@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Petition;
 use App\Support\CacheKeys;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class CategoryPetitionController extends Controller
 {
     public function index(string $locale, string $categorySlug, string $category)
     {
         $locale = normalize_locale($locale);
-        $defaultLocale = default_locale();
         $search = trim((string) request('q', ''));
         $page = max(1, min((int) request('page', 1), 500));
 
@@ -22,15 +20,7 @@ class CategoryPetitionController extends Controller
 
         abort_if(! $category, 404);
 
-        $tr = $category->translations()
-            ->where('locale', $locale)
-            ->first()
-            ?? $category->translations()
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? $category->translations()
-                ->orderBy('id')
-                ->first();
+        $tr = $category->translationOrFallback($locale, default_locale());
 
         abort_if(! $tr, 404);
 
@@ -69,26 +59,16 @@ class CategoryPetitionController extends Controller
             });
             $petitions = $query->orderByDesc('petitions.id')->paginate(15, ['*'], 'page', $page)->withQueryString();
         } else {
-            $cacheKey = CacheKeys::petitionsByCategory($locale, $category->id, $page);
-            $cached = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                $p = (clone $query)->orderByDesc('petitions.id')->paginate(15, ['petitions.id'], 'page', $page);
-
-                return ['ids' => $p->items(), 'total' => $p->total()];
-            });
-            $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
-            $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
-            $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
-
-            $petitions = $petitions->withQueryString();
+            $petitions = $this->cachedListingPage(
+                $query,
+                CacheKeys::petitionsByCategory($locale, $category->id, $page),
+                now()->addSeconds(300),
+                $page,
+                fn ($q) => $q->orderByDesc('petitions.id')
+            );
         }
 
-        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
-            return Category::select(['categories.id', 'categories.sort_order'])
-                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
-                ->where('categories.is_active', true)
-                ->orderBy('categories.sort_order')
-                ->get();
-        });
+        $categories = Category::cachedActive($locale);
 
         return view('pages.petitions-list', [
             'pageTitle' => $tr->name,

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Console\Commands\WarmCache;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
@@ -27,14 +26,13 @@ class RecentActivityPrivacyTest extends TestCase
             $user = User::factory()->create(['name' => 'Private Fullname', 'first_name' => 'Given', 'nickname' => 'publicnick', 'identify_mode' => $mode]);
             Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => $user->id, 'name' => 'Old snapshot', 'confirmed' => true, 'is_spam' => false]);
             cache()->forget(CacheKeys::homeRecent('en'));
-            $method = new \ReflectionMethod(WarmCache::class, 'warmHomeRecent');
-            $method->invoke(app(WarmCache::class), 'en', 'en');
+            $this->artisan('cache:warm', ['--locale' => 'en'])->assertSuccessful();
             $row = collect(cache()->get(CacheKeys::homeRecent('en')))->firstWhere('user_id', $user->id);
             $this->assertSame($expected, $row->display_name);
         }
         Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => null, 'name' => 'Guest public name', 'confirmed' => true, 'is_spam' => false]);
         cache()->forget(CacheKeys::homeRecent('en'));
-        $method->invoke(app(WarmCache::class), 'en', 'en');
+        $this->artisan('cache:warm', ['--locale' => 'en'])->assertSuccessful();
         $guest = collect(cache()->get(CacheKeys::homeRecent('en')))->firstWhere('user_id', null);
         $this->assertSame('Guest public name', $guest->display_name);
         $this->get('/en')->assertOk()->assertSee('publicnick');

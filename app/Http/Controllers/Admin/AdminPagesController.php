@@ -11,6 +11,7 @@ use App\Models\PageTranslation;
 use App\Support\EdgeCachePurge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AdminPagesController extends Controller
@@ -103,6 +104,8 @@ class AdminPagesController extends Controller
                 ->withInput();
         }
 
+        $urlsBefore = empty($data['page_id']) ? [] : $this->pageUrlsSafely([$data['page_id']]);
+
         $pageId = DB::transaction(function () use ($data, $slug, $published) {
             $page = empty($data['page_id'])
                 ? Page::create()
@@ -125,6 +128,7 @@ class AdminPagesController extends Controller
         });
 
         EdgeCachePurge::listings();
+        $this->purgeSafely([...$urlsBefore, ...$this->pageUrlsSafely([$pageId])]);
 
         $translation = PageTranslation::query()
             ->where('page_id', $pageId)
@@ -153,6 +157,7 @@ class AdminPagesController extends Controller
             return response()->json(['ok' => false, 'error' => "You do not have permission to {$permission} pages."], 403);
         }
 
+        $urls = $this->pageUrlsSafely($ids);
         $q = PageTranslation::whereIn('page_id', $ids);
 
         $affected = match ($action) {
@@ -162,7 +167,28 @@ class AdminPagesController extends Controller
         };
 
         EdgeCachePurge::listings();
+        $this->purgeSafely($urls);
 
         return response()->json(['ok' => true, 'action' => $action, 'affected' => $affected]);
+    }
+
+    private function pageUrlsSafely(array $ids): array
+    {
+        try {
+            return EdgeCachePurge::pageUrls($ids);
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache URL lookup failed for pages: '.$e->getMessage());
+
+            return [];
+        }
+    }
+
+    private function purgeSafely(array $urls): void
+    {
+        try {
+            EdgeCachePurge::urls($urls);
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache purge failed for pages: '.$e->getMessage());
+        }
     }
 }

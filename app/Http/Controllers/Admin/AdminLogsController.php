@@ -104,11 +104,11 @@ class AdminLogsController extends Controller
                     foreach ($rows as $row) {
                         fputcsv($handle, [
                             $row->id,
-                            $row->level,
-                            $row->context,
-                            $row->title,
-                            $row->content,
-                            $row->ip,
+                            csv_safe($row->level),
+                            csv_safe($row->context),
+                            csv_safe($row->title),
+                            csv_safe($row->content),
+                            csv_safe($row->ip),
                             $row->created_at,
                         ]);
                     }

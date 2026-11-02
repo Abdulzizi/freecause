@@ -27,9 +27,7 @@
 
         <input class="fc-filter-field" name="ip" placeholder="IP" value="{{ $filters['ip'] ?? '' }}">
 
-        @if ($hasText)
-            <input class="fc-filter-field" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
-        @endif
+        <input class="fc-filter-field" name="text" placeholder="Text" value="{{ $filters['text'] ?? '' }}">
 
         <select data-admin-autosubmit class="fc-filter-field" name="locale">
             @foreach ($locales as $k => $label)
@@ -48,13 +46,11 @@
             @endforeach
         </select>
 
-        @if ($hasConfirmed)
-            <select data-admin-autosubmit class="fc-filter-field" name="confirmed">
-                <option value="">all signatures</option>
-                <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
-                <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
-            </select>
-        @endif
+        <select data-admin-autosubmit class="fc-filter-field" name="confirmed">
+            <option value="">all signatures</option>
+            <option value="1" {{ ($filters['confirmed'] ?? '') === '1' ? 'selected' : '' }}>confirmed</option>
+            <option value="0" {{ ($filters['confirmed'] ?? '') === '0' ? 'selected' : '' }}>unconfirmed</option>
+        </select>
 
         <select data-admin-autosubmit class="fc-filter-field" name="spam">
             <option value="">spam...</option>
@@ -76,21 +72,17 @@
                 <th width="26" data-hide-mobile title="User email verified" aria-label="User email verified">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b6470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </th>
-                @if ($hasConfirmed)
-                    <th width="26" title="Signature confirmed" data-hide-mobile>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b6470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    </th>
-                @endif
+                <th width="26" title="Signature confirmed" data-hide-mobile>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b6470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </th>
                 <th>User</th>
                 <th width="26" data-hide-mobile title="Open petition on site">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b6470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1 1"/><path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7l1-1"/></svg>
                 </th>
                 <th>Title</th>
-                @if ($hasText)
-                    <th data-hide-mobile>Text</th>
-                @endif
+                <th data-hide-mobile>Text</th>
                 <th width="160">Date</th>
-                @if ($hasConfirmed && admin_can('signatures', 'edit'))
+                @if (admin_can('signatures', 'edit'))
                     <th data-hide-mobile>Actions</th>
                 @endif
             </tr>
@@ -116,15 +108,13 @@
                         @endif
                     </td>
 
-                    @if ($hasConfirmed)
-                        <td data-hide-mobile class="text-center" data-signature-status>
-                            @if ($s->confirmed)
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            @else
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round" title="Unconfirmed"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                            @endif
-                        </td>
-                    @endif
+                    <td data-hide-mobile class="text-center" data-signature-status>
+                        @if ($s->confirmed)
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        @else
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round" title="Unconfirmed"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        @endif
+                    </td>
 
                     <td>
                         @if ($s->user_id)
@@ -159,15 +149,13 @@
                         </a>
                     </td>
 
-                    @if ($hasText)
-                        <td data-hide-mobile class="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
-                            {{ $s->text }}
-                        </td>
-                    @endif
+                    <td data-hide-mobile class="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {{ $s->text }}
+                    </td>
 
                     <td>{{ $s->created_at }}</td>
 
-                    @if ($hasConfirmed && admin_can('signatures', 'edit'))
+                    @if (admin_can('signatures', 'edit'))
                         <td data-hide-mobile class="fc-row-actions-cell">
                             <div class="inline-flex" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
                                 <x-admin.row-actions>
@@ -194,7 +182,7 @@
 
         <x-slot:footer>
             <div class="flex gap-2 items-center flex-wrap">
-                @if ($hasConfirmed && admin_can('signatures', 'edit'))
+                @if (admin_can('signatures', 'edit'))
                     <x-blatui.button-group>
                         <x-blatui.button variant="outline" size="sm" type="button" class="bulk-action" data-action="approve" title="Approve">
                             <x-lucide-check aria-hidden="true" />

@@ -60,9 +60,8 @@ class DashboardController extends Controller
                 ->selectRaw(
                     'SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as published, '.
                     'SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft, '.
-                    'SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending, '.
                     'SUM(CASE WHEN created_at BETWEEN ? AND ? THEN 1 ELSE 0 END) as new_today',
-                    ['published', 'draft', 'pending', $todayStart, $todayEnd]
+                    ['published', 'draft', $todayStart, $todayEnd]
                 )
                 ->first());
 
@@ -90,7 +89,6 @@ class DashboardController extends Controller
                 'petitions_total' => $this->approxTableRows('petitions'),
                 'petitions_published' => (int) $petitions->published,
                 'petitions_draft' => (int) $petitions->draft,
-                'petitions_pending' => (int) $petitions->pending,
                 'petitions_new_today' => (int) $petitions->new_today,
 
                 'signatures_total' => $this->approxTableRows('signatures'),

@@ -57,7 +57,6 @@ class SendPetitionDigest extends Command
         $skipped = 0;
         $failed = 0;
         $processed = 0;
-        $seen = [];
         $petitionsByLocale = [];
 
         User::query()
@@ -73,7 +72,6 @@ class SendPetitionDigest extends Command
                 &$skipped,
                 &$failed,
                 &$processed,
-                &$seen,
                 &$petitionsByLocale
             ) {
                 if (MailQuota::tripped()) {
@@ -89,12 +87,6 @@ class SendPetitionDigest extends Command
                     }
 
                     $processed++;
-
-                    if (isset($seen[$user->id])) {
-                        continue;
-                    }
-
-                    $seen[$user->id] = true;
 
                     try {
                         $locale = Locale::toShort($user->locale ?: $defaultLocale);

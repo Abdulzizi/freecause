@@ -11,6 +11,7 @@ use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\ApproxRows;
 use App\Support\Locale;
@@ -96,9 +97,9 @@ class AdminUsersController extends Controller
                     foreach ($rows as $row) {
                         fputcsv($handle, [
                             $row->id,
-                            $row->email,
-                            $row->name,
-                            $row->locale,
+                            csv_safe($row->email),
+                            csv_safe($row->name),
+                            csv_safe($row->locale),
                             $levelNames[$row->level_id] ?? '',
                             $row->verified ? 1 : 0,
                             $row->created_at,
@@ -202,6 +203,10 @@ class AdminUsersController extends Controller
         }
 
         $isSelf = admin_user()?->id === $user->id;
+
+        if ($user->level?->is_system && ! (admin_user()?->loadMissing('level')?->level?->is_system ?? false)) {
+            return back()->withErrors(['id' => 'You cannot edit a system-level user.'])->withInput();
+        }
 
         if ($isSelf && $request->filled('level') && $data['level'] !== ($user->level->name ?? null)) {
             return back()->withErrors(['level' => 'You cannot change your own role.'])->withInput();
@@ -404,7 +409,6 @@ class AdminUsersController extends Controller
 
         $userLevel = UserLevel::where('name', 'user')->first();
         $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
-        $adminLevelId = UserLevel::where('name', 'admin')->value('id');
 
         if (! $userLevel || ! $bannedLevelId) {
             return response()->json(['ok' => false, 'error' => 'role missing']);
@@ -414,9 +418,6 @@ class AdminUsersController extends Controller
             ->where('id', '!=', admin_user()?->id)
             ->where('level_id', $bannedLevelId)
             ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true))
-            ->where(function ($q) use ($adminLevelId) {
-                $q->whereNull('level_id')->orWhere('level_id', '!=', $adminLevelId);
-            })
             ->update([
                 'level_id' => $userLevel->id,
                 'banned_reason' => null,
@@ -456,9 +457,9 @@ class AdminUsersController extends Controller
             })
             ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true));
 
-        $eligible = (clone $query)->count();
+        $users = $query->get();
 
-        if ($eligible === 0) {
+        if ($users->isEmpty()) {
             return response()->json([
                 'ok' => false,
                 'error' => 'No eligible accounts: banned, admin and system-level users cannot be deleted here.',
@@ -466,7 +467,21 @@ class AdminUsersController extends Controller
             ]);
         }
 
-        $deleted = $query->delete();
+        $deleted = 0;
+        $failed = 0;
+
+        foreach ($users as $user) {
+            try {
+                app(WordPressUserDeletionService::class)->delete($user);
+            } catch (\Throwable $e) {
+                $failed++;
+                AppLog::error('Bulk delete skipped: WordPress cleanup failed', 'User ID: '.$user->id.' | '.$e->getMessage(), 'admin.users');
+
+                continue;
+            }
+
+            $deleted += $user->delete() ? 1 : 0;
+        }
 
         if ($deleted > 0) {
             Cache::forget('level:user_counts');
@@ -476,7 +491,7 @@ class AdminUsersController extends Controller
             'ok' => true,
             'deleted' => $deleted,
             'skipped' => count($ids) - $deleted,
-            'msg' => "Deleted {$deleted} user(s)".(count($ids) > $deleted ? '; protected accounts (banned/admin/system) were skipped' : ''),
+            'msg' => "Deleted {$deleted} user(s)".(count($ids) > $users->count() ? '; protected accounts (banned/admin/system) were skipped' : '').($failed ? "; {$failed} failed WordPress cleanup and were kept" : ''),
         ]);
     }
 

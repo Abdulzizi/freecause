@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class PetitionTranslation extends Model
 {
@@ -17,6 +18,11 @@ class PetitionTranslation extends Model
         'description',
         'is_featured',
     ];
+
+    public static function booleanTerms(string $text): string
+    {
+        return Str::squish(preg_replace('/[+\-><()~*"@]/', ' ', $text));
+    }
 
     public function petition()
     {

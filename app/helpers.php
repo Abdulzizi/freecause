@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
+if (! function_exists('csv_safe')) {
+    function csv_safe(mixed $value): mixed
+    {
+        return is_string($value) && $value !== '' && strpbrk($value[0], "=+-@\t\r") !== false ? "'".$value : $value;
+    }
+}
+
 if (! function_exists('active_locales')) {
     function active_locales(): array
     {

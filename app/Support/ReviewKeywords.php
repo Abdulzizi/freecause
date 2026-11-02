@@ -82,13 +82,13 @@ class ReviewKeywords
         'sign up and earn',
         'guaranteed earnings',
         'easy money',
-        'adulzi',
-        'keyword',
         'fortune tellers',
         'paid telephone consultation',
         'gambling bonus',
         'casino games',
         'betting odds',
+        'loan',
+        'crypto',
     ];
 
     private static array $parsed = [];

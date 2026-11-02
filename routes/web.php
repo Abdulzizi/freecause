@@ -351,7 +351,6 @@ Route::prefix('{locale}')
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware(['throttle:10,1', 'profile.complete']);
-        Route::post('/petition/{slug}/{id}/claim', [PetitionController::class, 'claimAccount'])->name('petition.claim')->middleware(['throttle:10,1']);
         Route::post('/petition/{slug}/{id}/shoutbox', [PetitionController::class, 'shoutboxStore'])->name('petition.shoutbox')->middleware(['auth', 'throttle:10,1']);
         Route::get('/petition/{slug}/{id}/thanks', [PetitionController::class, 'thanks'])->name('petition.thanks');
         Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', function (string $locale, string $slug, int $id, $status = null) {
