@@ -9,6 +9,7 @@ return [
     'create_account' => 'Opret din konto',
     'email' => 'E-mail',
     'email_placeholder' => 'Indtast din e-mail',
+    'email_try_later' => 'E-mail er midlertidigt utilgængelig. Prøv igen senere.',
     'forgot_password' => 'Glemt adgangskode?',
     'forgot_title' => 'Glemt adgangskode',
     'go_to_login' => 'gå til login',

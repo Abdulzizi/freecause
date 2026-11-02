@@ -8,7 +8,9 @@ use Illuminate\Queue\SerializesModels;
 
 class ContactMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use GatedByMailQuota, Queueable, SerializesModels;
+
+    public bool $transactional = true;
 
     public string $senderName;
 

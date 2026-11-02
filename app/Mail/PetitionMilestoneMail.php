@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class PetitionMilestoneMail extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use GatedByMailQuota, Queueable, SerializesModels;
 
     public function __construct(
         public Petition $petition,

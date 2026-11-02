@@ -35,11 +35,12 @@ class MonitorQueueTest extends TestCase
 
     public function test_new_failure_alerts(): void
     {
+        // exit 0: see MonitorQueue::handle
         Cache::flush();
         Cache::forever('queue:monitor:last-checked-at', '2026-01-01 00:00:00');
         $this->recordFailure(now()->toDateTimeString());
 
-        $this->artisan('queue:monitor')->assertExitCode(1);
+        $this->artisan('queue:monitor')->assertExitCode(0);
     }
 
     public function test_first_run_reports_existing_failures(): void
@@ -47,6 +48,6 @@ class MonitorQueueTest extends TestCase
         Cache::flush();
         $this->recordFailure(now()->toDateTimeString());
 
-        $this->artisan('queue:monitor')->assertExitCode(1);
+        $this->artisan('queue:monitor')->assertExitCode(0);
     }
 }

@@ -9,6 +9,7 @@ return [
     'create_account' => 'Crea tu cuenta',
     'email' => 'Correo electrónico',
     'email_placeholder' => 'Introduce tu correo electrónico',
+    'email_try_later' => 'El correo electrónico no está disponible temporalmente. Inténtalo de nuevo más tarde.',
     'forgot_password' => '¿Olvidaste tu contraseña?',
     'forgot_title' => 'Contraseña olvidada',
     'go_to_login' => 'ir al inicio de sesión',

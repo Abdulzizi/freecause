@@ -9,6 +9,7 @@ return [
     'create_account' => 'Skapa ditt konto',
     'email' => 'E-post',
     'email_placeholder' => 'Ange din e-post',
+    'email_try_later' => 'E-post är tillfälligt otillgänglig. Försök igen senare.',
     'forgot_password' => 'Glomt losenord?',
     'forgot_title' => 'Glömt lösenord',
     'go_to_login' => 'gå till inloggning',

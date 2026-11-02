@@ -9,6 +9,7 @@ return [
     'create_account' => 'Utwórz swoje konto',
     'email' => 'E-mail',
     'email_placeholder' => 'Wprowadź swój e-mail',
+    'email_try_later' => 'Poczta e-mail jest tymczasowo niedostępna. Spróbuj ponownie później.',
     'forgot_password' => 'Zapomniales hasla?',
     'forgot_title' => 'Zapomniałem hasła',
     'go_to_login' => 'przejdź do logowania',
