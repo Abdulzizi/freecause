@@ -9,13 +9,20 @@
 @php
     $control = (string) $slot;
     if (! $for && filled($label)) {
+        $done = false;
         $control = preg_replace_callback(
             '/<(input|select|textarea)\b([^>]*)>/i',
-            fn ($m) => preg_match('/(?<![\w-])aria-label\b|\btype\s*=\s*(?:"(?:checkbox|radio|hidden)"|\'(?:checkbox|radio|hidden)\'|(?:checkbox|radio|hidden)\b)/i', $m[2])
-                ? $m[0]
-                : '<' . $m[1] . ' aria-label="' . e($label) . '"' . $m[2] . '>',
-            $control,
-            1
+            function ($m) use (&$done, $label) {
+                if ($done || preg_match('/(?<![\w:-])type\s*=\s*(?:"(?:checkbox|radio|hidden)"|\'(?:checkbox|radio|hidden)\'|(?:checkbox|radio|hidden)\b)/i', $m[2])) {
+                    return $m[0];
+                }
+                $done = true;
+
+                return preg_match('/(?<![\w-])aria-label\b/i', $m[2])
+                    ? $m[0]
+                    : '<' . $m[1] . ' aria-label="' . e($label) . '"' . $m[2] . '>';
+            },
+            $control
         ) ?? (string) $slot;
     }
 @endphp

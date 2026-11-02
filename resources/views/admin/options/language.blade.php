@@ -8,7 +8,7 @@
 
     <x-admin.section-panel title="choose language">
         <form method="get" action="{{ route('admin.options.language') }}">
-            <select class="fc-filter-field" name="locale" data-admin-autosubmit>
+            <select class="fc-filter-field" name="locale" aria-label="language" data-admin-autosubmit>
                 <option value="">select language</option>
                 @foreach($locales as $code => $name)
                     <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>

@@ -22,7 +22,7 @@
         @csrf
         <div>
             <label class="block text-xs text-ink mb-1">locale</label>
-            <select class="fc-filter-field" name="locale">
+            <select class="fc-filter-field" name="locale" aria-label="locale">
                 @foreach ($locales as $k => $label)
                     <option value="{{ $k }}" {{ $locale === $k ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach

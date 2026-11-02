@@ -64,7 +64,7 @@
         <x-slot:footer>
             <div class="flex gap-3 items-center">
 
-                <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete">
+                <x-blatui.button variant="destructive" size="sm" type="button" class="bulk-action" data-action="delete" aria-label="delete">
                     <x-lucide-x aria-hidden="true" />
                     <div class="max-md:hidden">
                         delete
