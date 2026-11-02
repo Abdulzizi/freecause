@@ -109,20 +109,17 @@ scope eventually, but only after static UI strings are wired up.
   | `category_translations` | name, slug | `Admin/AdminCategoriesController` |
   | `page_contents` | page, locale, key, value | `Admin/LanguageOptionsController` |
   `page_contents` already falls back to `__()` lang keys in Blade.
-- **Existing i18n tooling:** `php artisan translations:audit`,
-  `translations:consolidate`, `TranslationParityHarness`, and
-  `scripts/lang-audit.php` run by `.github/workflows/i18n.yml`. The audit now
-  checks files + keys + `:placeholders`.
-- Dead/legacy: `resources/lang/{locale}/{messages,form,petition,auth}.php`
-  (partial duplicates of `lang/`); `app/Support/Locale::trans()` reads a
-  `messages.*` namespace that does not exist under `lang/`.
+- **Existing i18n tooling:** `scripts/lang-audit.php`, run by
+  `.github/workflows/i18n.yml`, checks files + keys + `:placeholders`. The DB
+  content commands are `translations:export-db` and `translations:import-db`.
+- The legacy `resources/lang/` tree and `Locale::trans()` have been removed.
 - **Not translated:** `resources/views/emails/*` (hardcoded English).
 
 ### Crowdin
 
 - Project **Freecause** (`freecause`, id `936363`), **file-based**, source `en`,
   **13 targets**: `ro fr es-ES da de el it nl pl pt-PT ru sv-SE tr`.
-- Project is **empty** (no files uploaded yet).
+- Sources and existing translations are uploaded (see *Implementation status*).
 - MT allowed; default **TM 752125** and **glossary 734963** assigned;
   `languageMapping` is **empty**; pre-translation (AI/MT/TM) off.
 
@@ -145,7 +142,7 @@ Pilot results and API caveats are in *Implementation status* above. Remaining
 Phase 0 action: add the **custom placeholder** regex in the Crowdin UI
 (`:[a-zA-Z_][a-zA-Z0-9_]*`).
 
-### Phase 1 — Static UI strings ⏳ in progress
+### Phase 1 — Static UI strings ✅ done
 
 Done:
 
@@ -155,14 +152,8 @@ Done:
   on push to `main`, manual translation download → PR.
 - Placeholder parity enforcement in `scripts/lang-audit.php`.
 
-Remaining (needs a Crowdin token — see runbook §9):
-
-1. Seed existing translations **before** the first download so the partial
-   French/German work in git reaches Crowdin:
-   `crowdin upload sources` then `crowdin upload translations`.
-2. Verify the round-trip: `crowdin download` and diff.
-3. Add repo secret `CROWDIN_PERSONAL_TOKEN` + repo variable
-   `CROWDIN_ENABLED=true`.
+- Existing translations seeded before the first download, round-trip verified,
+  `CROWDIN_PERSONAL_TOKEN` secret and `CROWDIN_ENABLED=true` variable set.
 
 ### Phase 2 — DB content
 
@@ -183,8 +174,6 @@ tackling petitions/pages/categories.
 - Optional Crowdin QA checks for placeholders, HTML tags, and **em dashes**
   (the repo deliberately removed em dashes — do not let autofill reintroduce
   them).
-- Decide the fate of the legacy `resources/lang/` tree and `Locale::trans()`
-  `messages.*` (either delete or migrate).
 - Decide whether to translate emails later.
 
 ## 5. `crowdin.yml` (added)
@@ -237,7 +226,6 @@ Notes:
 | Existing translations lost on first download | Seed with `crowdin upload translations` **before** first download (done) |
 | Crowdin MT/auto-translate overrides human work in exports | Review download PRs; delete stray `provider: crowdin` translations; approve human work |
 | `es/pt/sv` vs `es-ES/pt-PT/sv-SE` mismatch | `%two_letters_code%` in paths (verified in pilot project data) |
-| Legacy `resources/lang` duplicates confuse tooling | `crowdin.yml` scoped to `lang/` only; decide removal separately |
 | Token leakage | `CROWDIN_PERSONAL_TOKEN` secret only; never write to repo config |
 | CI red before secret is set | `crowdin-upload` gated by `CROWDIN_ENABLED` repo variable |
 
@@ -245,12 +233,11 @@ Notes:
 
 1. Include DB content in the same Crowdin project (separate folder) or a second
    project?
-2. Delete the legacy `resources/lang/` tree, or migrate it?
-3. Translate emails now or later?
-4. Who reviews/approves translations in Crowdin (workflow + roles)?
-5. Manual/scheduled downloads vs webhook-driven PRs?
+2. Translate emails now or later?
+3. Who reviews/approves translations in Crowdin (workflow + roles)?
+4. Manual/scheduled downloads vs webhook-driven PRs?
 
-## 9. Runbook (remaining Phase 1 steps)
+## 9. Runbook (Phase 1 setup, done; kept for reference)
 
 1. **Create a Personal Access Token** in Crowdin (Account Settings → API →
    Tokens), scope: Projects. Store it locally, never commit it.

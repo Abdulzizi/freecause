@@ -8,7 +8,7 @@ Do **not** open a public issue. Report privately through the repository's **Secu
 - how to reproduce (steps, payload),
 - the impact you observed.
 
-You will get an acknowledgement within a few days. Fixes ship through the normal tag-triggered deploy; critical issues are fast-tracked.
+You will get an acknowledgement within a few days. Fixes ship through the normal deploy on merge to `main`; critical issues are fast-tracked.
 
 ## What counts as a vulnerability here
 

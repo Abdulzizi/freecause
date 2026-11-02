@@ -11,7 +11,7 @@ Scale (approximate): users ~18M, signatures ~18M, petitions ~165k.
 ## Host (verified 2026-11-01)
 
 - Contabo VPS, one host for everything: 6 vCPU, 12 GB RAM, 4 GB swap, 193 GB
-  disk (31% used). Kernel `6.8.0-147`; reboots on 2026-10-18 and 2026-10-31
+  disk (33% used). Kernel `6.8.0-147`; reboots on 2026-10-18 and 2026-10-31
   17:33 (clean shutdown, no OOM in the kernel log).
 - Disk: MySQL datadir ~28 GB, `shared/` ~16 GB, `releases/` ~2.2 GB,
   `/var/log` ~865 MB. systemd journal capped at 200 MB
@@ -106,7 +106,6 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 
 - Enable `fail2ban`; set `PermitRootLogin prohibit-password` and
   `PasswordAuthentication no`; reload `ssh`.
-- smtp2go SMTP activation (dashboard action).
 - Rotate the Google OAuth client secret and load it into the prod `.env`.
 - WordPress hardening: rotate WP salts / SSO secret, review `wp-file-manager`,
   consider denying direct PHP execution under `/magazine/`.
@@ -114,5 +113,4 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
   `es_ES/usuario`): the 301 works origin-side but is challenged at the edge.
 - Email-verification gating: product decision for create/edit/delete petitions.
 - CKEditor 4.21 is EOL — decide on a self-hosted/updated bundle.
-- Contacts form on the DB-driven page: wire the live POST form or leave it text-only.
 - Signature counts: denormalized `signature_count` vs computed.

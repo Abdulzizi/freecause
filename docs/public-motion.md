@@ -67,8 +67,8 @@ readable with no hidden content.
 - No inline scripts (strict CSP). The only inline `<style>` blocks are the View Transition opt-outs
   on `/create-petition` and the sign page; `style-src` allows `unsafe-inline`, `script-src` does not.
 - Stateless listings stay cookie-free: no motion code reads cookies, storage or the network.
-- JS motion budget: **0 bytes added**. The public bundle hash is identical to the deployed baseline
-  (`app-C4LRbTdY.js`); no motion library was introduced.
+- JS motion budget: **0 bytes added**. The public bundle was identical to the deployed baseline when this was
+  audited; no motion library was introduced.
 
 ## Reduced-motion coverage
 
@@ -91,7 +91,7 @@ readable with no hidden content.
 
 ## P5 audit results
 
-- **JS**: public bundle byte-identical to production (`app-C4LRbTdY.js`); CSS + markup only.
+- **JS**: public bundle byte-identical to production at audit time; CSS + markup only.
 - **Tests**: 443 passing (1811 assertions), Pint clean.
 - **Edge cache**: `GET /en/petitions` → `x-freecause-edge-cache: eligible` + `cf-cache-status: HIT`.
   HEAD requests report `bypass` by design (`EdgeCacheHeaders` requires `GET`).
