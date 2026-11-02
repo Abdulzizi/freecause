@@ -24,6 +24,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Support\Facades\File;
 use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -77,6 +78,24 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);
+
+        // DB unreachable (2002 refused, 1040 too many connections), possibly wrapped
+        // in a ViewException: serve a static 503 that touches no DB/cache/layout.
+        // Rendering does not stop reporting, so Sentry still receives the original.
+        $exceptions->render(function (Throwable $e, Request $request) {
+            for ($c = $e; $c; $c = $c->getPrevious()) {
+                if ($c instanceof PDOException && preg_match('/\[(2002|1040)\]/', $c->getMessage())) {
+                    $headers = ['Retry-After' => '30', 'Cache-Control' => 'no-store'];
+                    if ($request->expectsJson()) {
+                        return response()->json(['message' => 'Service temporarily unavailable.'], 503, $headers);
+                    }
+                    $seg = $request->segment(1);
+                    $locale = preg_match('/^[a-z]{2}$/', (string) $seg) && File::isDirectory(lang_path($seg)) ? $seg : 'en';
+
+                    return response(view('errors.db-unavailable', compact('locale'))->render(), 503, $headers);
+                }
+            }
+        });
 
         // Ad-frame failures must never render the full site: its ad slots would
         // request more frames, recursively loading error pages and analytics.
