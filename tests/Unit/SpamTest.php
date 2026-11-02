@@ -24,7 +24,6 @@ class SpamTest extends TestCase
         $this->assertTrue(Spam::isSpam('Buy v1agra online now'));
         $this->assertTrue(Spam::isSpam('cas1no online gambling'));
         $this->assertTrue(Spam::isSpam('Free money at paypal'));
-        $this->assertTrue(Spam::isSpam('cheap loan approved'));
     }
 
     public function test_a_review_owned_word_is_ignored_as_a_whole_word(): void

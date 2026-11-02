@@ -87,6 +87,8 @@ class ReviewKeywords
         'gambling bonus',
         'casino games',
         'betting odds',
+        'loan',
+        'crypto',
     ];
 
     private static array $parsed = [];

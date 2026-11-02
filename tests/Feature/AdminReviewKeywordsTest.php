@@ -144,7 +144,7 @@ class AdminReviewKeywordsTest extends TestCase
         $this->assertContains('casino', ReviewKeywords::all());
         $this->assertContains('pariuri', ReviewKeywords::all());
 
-        $this->assertSame(55, count(ReviewKeywords::TERMS));
+        $this->assertSame(57, count(ReviewKeywords::TERMS));
 
         $expected = [
             'da' => 46,

@@ -42,9 +42,7 @@ class Spam
     protected static array $badKeywords = [
         'viagra',
         'casino',
-        'loan',
         'bitcoin',
-        'crypto',
         'porn',
         'escort',
         'seo service',
