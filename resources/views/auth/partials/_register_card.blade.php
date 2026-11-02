@@ -117,7 +117,7 @@
         </div>
 
         <div class="hidden md:block">
-            <x-ui.button type="submit" variant="danger" class="px-6 rounded-sm max-md:min-h-12">{{ __('auth.submit') }}</x-ui.button>
+            <x-ui.button type="submit" variant="danger" class="px-6 max-md:min-h-12">{{ __('auth.submit') }}</x-ui.button>
         </div>
 
         <x-ui.sticky-action :label="__('auth.submit')" />

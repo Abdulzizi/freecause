@@ -116,7 +116,7 @@
                         @endphp
 
                         <div class="mb-2.5">
-                            <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
+                            <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand rounded-xs bg-transparent text-brand font-semibold no-underline transition duration-150 hover:bg-brand hover:text-white"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('thanks.petition_fallback') }}
                             </a>
