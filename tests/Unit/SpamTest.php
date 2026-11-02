@@ -90,13 +90,13 @@ class SpamTest extends TestCase
         $this->assertTrue(Spam::rateLimit('petition', 20));
     }
 
-    public function test_spam_ban_current_ip(): void
+    public function test_rate_limit_does_not_ban_ip(): void
     {
-        Spam::banCurrentIp('Test ban');
+        for ($i = 0; $i < 6; $i++) {
+            Spam::rateLimit('petition', 5);
+        }
 
-        $this->assertDatabaseHas('banned_ips', [
-            'ip' => request()->ip(),
-        ]);
+        $this->assertDatabaseMissing('banned_ips', ['ip' => request()->ip()]);
     }
 
     public function test_spam_log_creates_record(): void

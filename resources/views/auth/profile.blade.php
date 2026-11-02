@@ -88,9 +88,9 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="{{ $btnBrand }} mt-3" data-scroll-to-password>
+                            <a href="{{ lroute('password.request') }}" class="{{ $btnBrand }} mt-3">
                                 {{ __('profile.set_password_cta') }}
-                            </button>
+                            </a>
 
                             <form method="POST" action="{{ lroute('account.unlink.google') }}" data-google-disconnect data-google-disconnect-needs-password
                                 data-need-title="{{ __('profile.need_password_title') }}"
@@ -341,8 +341,7 @@
                                         <span class="hidden md:block"></span>
                                         <div class="space-y-3">
                                             <p class="text-xs leading-relaxed text-muted">{{ __('profile.set_password_help') }}</p>
-                                            <input type="password" class="{{ $input }}" name="new_password" placeholder="{{ __('profile.new_password') }}" data-strength data-strength-labels='["Very weak","Weak","Fair","Good","Strong"]'>
-                                            <input type="password" class="{{ $input }}" name="new_password_confirmation" placeholder="{{ __('profile.confirm_new_password') }}">
+                                            <a href="{{ lroute('password.request') }}" class="text-sm font-semibold text-brand">{{ __('profile.set_password_cta') }}</a>
                                         </div>
                                     </div>
                                 @endif

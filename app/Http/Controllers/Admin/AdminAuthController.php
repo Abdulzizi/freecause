@@ -39,16 +39,7 @@ class AdminAuthController extends Controller
             $passwordValid = false;
         }
 
-        if (! $passwordValid && filled($user->password) && str_contains($user->password, ':')) {
-            [$hash, $salt] = explode(':', $user->password, 2);
-            if (hash_equals($hash, md5(md5($password).$salt))) {
-                $user->password = Hash::make($password);
-                $user->save();
-                $passwordValid = true;
-            }
-        }
-
-        if (! $passwordValid) {
+        if (! $passwordValid && ! $user->upgradeLegacyPassword($password)) {
             return back()->withErrors(['login' => 'Invalid credentials.'])->withInput();
         }
 
@@ -63,6 +54,7 @@ class AdminAuthController extends Controller
         }
 
         Auth::guard('admin')->login($user);
+        $request->session()->put('admin_password_hash', $user->password);
         $request->session()->regenerate();
         $request->session()->regenerateToken();
 

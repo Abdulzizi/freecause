@@ -93,7 +93,7 @@ class PetitionListingLanguageTest extends TestCase
         $this->petition('en', 'English title');
         $command = app(WarmCache::class);
         $method = new \ReflectionMethod($command, 'warmPetitionsCache');
-        $method->invoke($command, 'de', 'en');
+        $method->invoke($command, 'de');
         $cached = cache()->get(CacheKeys::petitionsIndex('de', 1));
         $this->assertIsArray($cached);
         $this->assertSame(1, $cached['total']);

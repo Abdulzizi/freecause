@@ -126,12 +126,6 @@ class Ads
         return $cfg;
     }
 
-    // slot names in a fixed order (for the admin form + iteration).
-    public static function slotNames(): array
-    {
-        return array_keys((array) config('ads.slots', []));
-    }
-
     // True the first time a slot name is rendered for the current request, false
     // after. The layout emits a default ad stack on every page; this keeps pages
     // that already place a slot inline from emitting the same zone twice, which

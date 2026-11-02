@@ -38,7 +38,6 @@
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">New Petitions (Today)</h2>
         <div class="text-2xl font-bold text-ink max-sm:text-xl">{{ number_format($stats['petitions_new_today']) }}</div>
-        <div class="text-xs text-muted mt-1">{{ number_format($stats['petitions_pending']) }} pending review</div>
     </x-blatui.card>
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">Signatures (This Week)</h2>

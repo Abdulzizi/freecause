@@ -2,8 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use Closure;
+use DateTimeInterface;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 abstract class Controller
 {
+    /**
+     * One page of a petition listing: ids and total come from cache, rows are
+     * reloaded fresh and put back in the cached order.
+     */
+    protected function cachedListingPage(Builder $query, string $cacheKey, DateTimeInterface $ttl, int $page, Closure $order): LengthAwarePaginator
+    {
+        $cached = cache()->remember($cacheKey, $ttl, function () use ($query, $page, $order) {
+            $p = $order(clone $query)->paginate(15, ['petitions.id'], 'page', $page);
+
+            return ['ids' => $p->items(), 'total' => $p->total()];
+        });
+
+        $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
+        $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
+            ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
+
+        return (new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]))->withQueryString();
+    }
+
     public static function sanitizeRedirectPath(?string $dest, string $fallback): string
     {
         if ($dest !== null && $dest !== ''

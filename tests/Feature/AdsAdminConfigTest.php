@@ -126,7 +126,7 @@ class AdsAdminConfigTest extends TestCase
     public function test_only_six_slots_registered_and_placements_reference_them(): void
     {
         $expected = ['native', 'leaderboard', 'banner468', 'rectangle', 'mobile', 'skyscraper'];
-        $this->assertSame($expected, Ads::slotNames());
+        $this->assertSame($expected, array_keys(config('ads.slots')));
 
         foreach (config('ads.placements', []) as $placement => $pool) {
             foreach ((array) $pool as $slot) {

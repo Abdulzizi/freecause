@@ -170,7 +170,7 @@ class PetitionAdSlotsTest extends TestCase
 
         $this->assertStringNotContainsString('data-ad-id', $html);
 
-        foreach (Ads::slotNames() as $name) {
+        foreach (array_keys(config('ads.slots')) as $name) {
             $cfg = Ads::slot($name);
             if ($cfg && ! empty($cfg['key'])) {
                 $this->assertStringNotContainsString($cfg['key'], $html, "zone key leaked for slot: {$name}");

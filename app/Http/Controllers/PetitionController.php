@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\ConditionalLogging;
-use App\Http\Requests\ClaimAccountRequest;
 use App\Http\Requests\PetitionRequest;
 use App\Models\Category;
 use App\Models\Language;
@@ -11,7 +10,6 @@ use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
-use App\Models\User;
 use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
@@ -27,10 +25,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -144,18 +140,11 @@ class PetitionController extends Controller
     public function index(string $locale)
     {
         $locale = normalize_locale($locale);
-        $defaultLocale = default_locale();
 
         $search = trim((string) request('q', ''));
         $page = max(1, min((int) request('page', 1), 500));
 
-        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
-            return Category::select(['categories.id', 'categories.sort_order'])
-                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
-                ->where('categories.is_active', true)
-                ->orderBy('categories.sort_order')
-                ->get();
-        });
+        $categories = Category::cachedActive($locale);
 
         $query = Petition::query()
             ->select([
@@ -176,8 +165,13 @@ class PetitionController extends Controller
         if ($search !== '') {
             $driver = DB::connection()->getDriverName();
             if (in_array($driver, ['mysql', 'mariadb'], true)) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$search]);
+                $terms = PetitionTranslation::booleanTerms($search);
+                $query->where(function ($q) use ($terms) {
+                    if ($terms === '') {
+                        $q->whereRaw('1 = 0');
+                    } else {
+                        $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$terms]);
+                    }
                 });
             } else {
                 $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
@@ -199,41 +193,29 @@ class PetitionController extends Controller
             } elseif ($sort === 'trending') {
                 $recent = Signature::query()
                     ->where('confirmed', true)
+                    ->where('is_spam', false)
                     ->where('created_at', '>=', now()->subDays(7))
                     ->selectRaw('petition_id, count(*) as recent_count')
                     ->groupBy('petition_id');
 
-                $cacheKey = CacheKeys::petitionsTrending($locale, $page);
-
-                $cached = cache()->remember($cacheKey, now()->addMinutes(10), function () use ($query, $recent, $page) {
-                    $p = (clone $query)
-                        ->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
+                $petitions = $this->cachedListingPage(
+                    $query,
+                    CacheKeys::petitionsTrending($locale, $page),
+                    now()->addMinutes(10),
+                    $page,
+                    fn ($q) => $q->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
                         ->orderByDesc('trend.recent_count')
                         ->orderByDesc('petitions.signature_count')
                         ->orderByDesc('petitions.id')
-                        ->paginate(15, ['petitions.id'], 'page', $page);
-
-                    return ['ids' => $p->items(), 'total' => $p->total()];
-                });
-                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
-                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
-
-                $petitions = $petitions->withQueryString();
+                );
             } else {
-                $cacheKey = CacheKeys::petitionsIndex($locale, $page);
-                $cached = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                    $p = (clone $query)->orderByDesc('petitions.id')->paginate(15, ['petitions.id'], 'page', $page);
-
-                    return ['ids' => $p->items(), 'total' => $p->total()];
-                });
-                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
-                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
-
-                $petitions = $petitions->withQueryString();
+                $petitions = $this->cachedListingPage(
+                    $query,
+                    CacheKeys::petitionsIndex($locale, $page),
+                    now()->addSeconds(300),
+                    $page,
+                    fn ($q) => $q->orderByDesc('petitions.id')
+                );
             }
         }
 
@@ -467,6 +449,12 @@ class PetitionController extends Controller
         $u = $request->user();
         $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->where('confirmed', true)->where('is_spam', false)->first();
         abort_unless($sig && $u->verified, 403);
+        if (Spam::isSpam($data['comment'])) {
+            Spam::log('comment', json_encode(['petition_id' => $petition->id, 'comment' => $data['comment']]));
+            toast('Suspicious activity detected.', 'error');
+
+            return back()->withInput();
+        }
         $sig->forceFill(['text' => $data['comment']])->save();
         toast('Comment posted!', 'success');
         $tr = $petition->translationOrFallback($locale);
@@ -588,7 +576,7 @@ class PetitionController extends Controller
                 );
 
                 if ($sig->wasRecentlyCreated) {
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                     PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
@@ -675,14 +663,6 @@ class PetitionController extends Controller
             ->where('locale', $tr->locale)
             ->pluck('value', 'key');
 
-        $claim = $request->session()->get('sign_claim');
-        $canClaim = false;
-
-        if ($claim) {
-            $claimUser = User::where('email', $claim['email'])->first();
-            $canClaim = $claimUser && ! filled($claimUser->password);
-        }
-
         $count = (int) ($petition->signature_count ?? 0);
         $ladder = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
         $nextMilestone = null;
@@ -705,61 +685,10 @@ class PetitionController extends Controller
             'verified',
             'tr',
             'content',
-            'claim',
-            'canClaim',
             'nextMilestone',
             'shareUrl',
             'reviewRequired'
         ));
-    }
-
-    public function claimAccount(ClaimAccountRequest $request, string $locale, string $slug, int $id)
-    {
-        $data = $request->validated();
-
-        $claim = $request->session()->get('sign_claim');
-
-        if (! $claim) {
-            $request->session()->forget('sign_claim');
-            toast(__('sign.claim_expired'), 'warning');
-
-            return redirect()->route('login', ['locale' => $locale]);
-        }
-
-        $claimed = false;
-
-        $user = DB::transaction(function () use ($claim, $data, &$claimed) {
-            $locked = User::lockForUpdate()->where('email', $claim['email'])->first();
-            abort_unless($locked && $locked->verified && is_null($locked->verification_token), 403);
-            if (filled($locked->password)) {
-                return $locked;
-            }
-            $locked->forceFill(['password' => Hash::make($data['password'])])->save();
-            $claimed = true;
-
-            return $locked;
-        });
-
-        if (! $claimed) {
-            return back()->withErrors([
-                'password' => 'This account already has a password — please log in.',
-            ]);
-        }
-
-        $request->session()->forget('sign_claim');
-
-        auth()->login($user);
-        $request->session()->regenerate();
-
-        toast(__('sign.claim_success'), 'success');
-
-        $dest = lroute('petition.show', ['slug' => $slug, 'id' => $id]);
-
-        if (! $user->hasCompleteProfile()) {
-            $dest = self::profileCompletionTarget($locale, $dest);
-        }
-
-        return redirect()->to($dest);
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
@@ -771,12 +700,7 @@ class PetitionController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        $tr = $petition->translationOrFallback($locale, default_locale());
 
         abort_if(! $tr, 404);
 
@@ -910,6 +834,13 @@ class PetitionController extends Controller
         $tr = $trOrRedirect;
 
         $data = $request->validated();
+        $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
+
+        if ($reviewMatches === [] && Spam::isSpam($data['title'].' '.strip_tags($data['description']), Spam::reviewOwned())) {
+            Spam::log('petition.update', json_encode(['petition_id' => $petition->id, 'title' => $data['title']]));
+
+            return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
+        }
 
         if ($this->imageConflict($request, $data)) {
             return back()
@@ -924,7 +855,7 @@ class PetitionController extends Controller
         $newCoverImage = null;
 
         try {
-            $response = DB::transaction(function () use ($request, $data, $petition, $tr, &$newCoverImage) {
+            $response = DB::transaction(function () use ($request, $data, $petition, $tr, $reviewMatches, &$newCoverImage) {
                 $locked = Petition::query()->lockForUpdate()->findOrFail($petition->id);
                 $this->requireEditable($locked);
                 $petition->setRawAttributes($locked->getAttributes());
@@ -961,8 +892,6 @@ class PetitionController extends Controller
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
-                $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
-
                 if ($reviewMatches !== [] && $petition->status === 'published') {
                     $petition->status = 'draft';
                     $petition->save();
@@ -974,7 +903,7 @@ class PetitionController extends Controller
                     ]));
 
                     toast(__('petition.review_required'), 'warning');
-                } elseif ($reviewMatches === [] && $petition->status === 'draft') {
+                } elseif ($reviewMatches === [] && $petition->status === 'draft' && ! $petition->held_by_admin) {
                     $petition->status = 'published';
                     $petition->save();
 
@@ -1039,7 +968,6 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')->orderBy('id')
                 ->chunkById(1000, function ($rows) use ($out, &$num) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1125,7 +1053,6 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')->orderBy('id')
                 ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1137,7 +1064,7 @@ class PetitionController extends Controller
                         $row[] = $sig->locale ?? '';
                         $row[] = $sig->confirmed ? '1' : '0';
                         $row[] = optional($sig->created_at)->format('Y-m-d H:i:s');
-                        fputcsv($out, $row);
+                        fputcsv($out, array_map('csv_safe', $row));
                     }
                 });
 
@@ -1187,15 +1114,7 @@ class PetitionController extends Controller
             ->visible()
             ->firstOrFail();
 
-        $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
+        $tr = $petition->translationOrFallback($locale, $defaultLocale);
 
         abort_if(! $tr, 404);
 

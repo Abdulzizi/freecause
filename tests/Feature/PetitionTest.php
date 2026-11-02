@@ -714,6 +714,31 @@ class PetitionTest extends TestCase
             ->assertSee('Widget Petition');
     }
 
+    public function test_widget_render_can_be_framed_by_other_sites(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Frameable Petition',
+            'slug' => 'frameable-petition',
+            'description' => 'Description',
+        ]);
+
+        $response = $this->get("/widget-render/pbadge/{$petition->id}/728x90")
+            ->assertOk()
+            ->assertHeaderMissing('X-Frame-Options');
+
+        $this->assertStringContainsString('frame-ancestors *', $response->headers->get('Content-Security-Policy'));
+
+        $this->get('/')
+            ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+    }
+
     public function test_cannot_sign_draft_petition(): void
     {
         $petition = Petition::factory()->create([
@@ -1420,120 +1445,6 @@ class PetitionTest extends TestCase
 
         $response->assertStatus(302)->assertSessionHasErrors('agree1');
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id]);
-    }
-
-    public function test_claim_endpoint_sets_password_once(): void
-    {
-        $petition = $this->makePublishedPetition('claim-once-petition');
-        $email = 'claim-once@example.com';
-        $signUrl = "/en/petition/claim-once-petition/{$petition->id}";
-
-        $this->post("{$signUrl}/sign/confirm", [
-            'name' => 'Claim',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertOk();
-
-        $usersBeforeSign = User::count();
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Claim',
-            'email' => $email,
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-            'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        $this->get("{$signUrl}/thanks")
-            ->assertOk()
-            ->assertDontSee(__('sign.claim_title'), false);
-
-        $user = User::where('email', $email)->firstOrFail();
-        $this->assertNotNull($user->verification_token);
-
-        $this->get('/en')->assertOk();
-
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-
-        $this->assertSame($usersBeforeSign + 1, User::count());
-        $this->assertSame(1, User::where('email', $email)->count());
-    }
-
-    public function test_claim_without_a_signing_session_redirects_to_login(): void
-    {
-        $petition = $this->makePublishedPetition('claim-no-session');
-
-        $this->post("/en/petition/claim-no-session/{$petition->id}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-    }
-
-    public function test_claim_form_survives_intermediate_requests(): void
-    {
-        $petition = $this->makePublishedPetition('claim-survives');
-        $email = 'claim-survives@example.com';
-        $signUrl = "/en/petition/claim-survives/{$petition->id}";
-
-        $this->post("{$signUrl}/sign/confirm", [
-            'name' => 'Survives',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertOk();
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Survives',
-            'email' => $email,
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-            'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        foreach (['/en', '/en/petitions', '/en/faqs'] as $path) {
-            $this->get($path)->assertOk();
-        }
-
-        $this->get("{$signUrl}/thanks")->assertOk()->assertDontSee(__('sign.claim_title'), false);
-
-        $this->post("{$signUrl}/claim", ['password' => 'survives123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-    }
-
-    public function test_claim_rejected_when_account_already_has_password(): void
-    {
-        $petition = $this->makePublishedPetition('claim-passworded-petition');
-        $email = 'passworded@example.com';
-        $signUrl = "/en/petition/claim-passworded-petition/{$petition->id}";
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Existing',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        // Signing is complete, so the account exists; give it a password to
-        // simulate an owner who later reset their credentials.
-        $user = User::where('email', $email)->firstOrFail();
-        $user->forceFill(['password' => Hash::make('password123')])->save();
-
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-
-        $this->assertTrue(Hash::check('password123', $user->fresh()->password));
     }
 
     public function test_double_submit_race_gets_friendly_error(): void

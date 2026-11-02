@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\Petition;
-use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
@@ -81,7 +80,6 @@ class PetitionSigning
 
         if (Spam::rateLimit('petition')) {
             Spam::log('petition', 'Rate limit exceeded');
-            Spam::banCurrentIp('Too many petition attempts');
 
             toast('Too many petition attempts.', 'error');
 
@@ -95,7 +93,9 @@ class PetitionSigning
         if ($existingUser) {
             session()->forget("sign.{$petition->id}");
             $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
-            if (Settings::get('smtp_enabled', false)) {
+            $sentAt = $existingUser->verification_token_sent_at;
+            if (! $existingUser->verified && $needsVerification && Settings::get('smtp_enabled', false)
+                && (! $sentAt || $sentAt->lt(now()->subHour()))) {
                 try {
                     $existingUser->forceFill([
                         'verification_token' => Str::random(64),
@@ -146,7 +146,7 @@ class PetitionSigning
                     'verification_token_sent_at' => now(),
                 ]);
 
-                if (Settings::get('smtp_enabled', false)) {
+                if ($needsVerification && Settings::get('smtp_enabled', false)) {
                     $mailUser = $user->fresh();
                 }
 
@@ -164,7 +164,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
                     $counted = true;
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                 }
 
                 AppLog::info(
@@ -192,7 +192,7 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
         }
 
         if ($mailUser) {
@@ -209,6 +209,14 @@ class PetitionSigning
     public static function signAsAuthed(Request $request, string $locale, Petition $petition): RedirectResponse
     {
         $data = $request->validate(self::authedRules());
+
+        if (Spam::isSpam($data['comment'] ?? '')) {
+            Spam::log('signature', json_encode($data));
+
+            toast('Suspicious activity detected.', 'error');
+
+            return back()->withInput();
+        }
 
         $u = auth()->user();
 
@@ -242,7 +250,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated) {
                     $counted = true;
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                 }
 
                 session()->forget("sign.{$petition->id}");
@@ -285,11 +293,7 @@ class PetitionSigning
                 throw $e;
             }
 
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->where('locale', $locale)
-                ->first()
-                ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+            $tr = $petition->translationOrFallback($locale, default_locale());
 
             abort_if(! $tr, 404);
 
@@ -301,7 +305,7 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
         }
 
         return $response;

@@ -221,15 +221,9 @@ class AuthController extends Controller
             $loggedIn = false;
         }
 
-        if (! $loggedIn && $legacyHash) {
-            [$hash, $salt] = explode(':', $user->password, 2);
-            if (hash_equals($hash, md5(md5($credentials['password']).$salt))) {
-                $user->password = Hash::make($credentials['password']);
-                $user->password_changed_at = now();
-                $user->save();
-                Auth::guard('web')->login($user, $remember);
-                $loggedIn = true;
-            }
+        if (! $loggedIn && $legacyHash && $user->upgradeLegacyPassword($credentials['password'])) {
+            Auth::guard('web')->login($user, $remember);
+            $loggedIn = true;
         }
 
         if ($loggedIn) {
@@ -332,10 +326,10 @@ class AuthController extends Controller
 
         if (! empty($data['new_password'])) {
             if (! $u->hasLocalPassword()) {
-                if (! $request->session()->get('password.confirmed_at') || now()->timestamp - (int) $request->session()->get('password.confirmed_at') > 10800) {
-                    return back()->withInput()->withErrors(['current_password' => __('auth.confirm_password')]);
-                }
-            } elseif (! Hash::check($data['current_password'] ?? '', $u->password)) {
+                return back()->withInput()->withErrors(['profile' => __('profile.google_only_note')]);
+            }
+
+            if (! Hash::check($data['current_password'] ?? '', $u->password)) {
                 return back()
                     ->withInput()
                     ->withErrors(['current_password' => __('profile.current_password_incorrect')]);
@@ -475,6 +469,7 @@ class AuthController extends Controller
             $pending = DB::table('signatures')
                 ->where('user_id', $user->id)
                 ->where('confirmed', false)
+                ->where('is_spam', false)
                 ->lockForUpdate()
                 ->selectRaw('petition_id, COUNT(*) as total')
                 ->groupBy('petition_id')
@@ -626,10 +621,6 @@ class AuthController extends Controller
 
         if (! $user) {
             return redirect("/{$locale}/login")->with('success', __($status));
-        }
-
-        if (config('session.driver') === 'database') {
-            DB::table(config('session.table', 'sessions'))->where('user_id', $user->id)->delete();
         }
 
         auth()->login($user);

@@ -72,19 +72,4 @@ export function init() {
             });
         }
     }
-
-    const scrollToPassword = document.querySelector('[data-scroll-to-password]');
-    const passwordSection = document.getElementById('password-section');
-    if (scrollToPassword && passwordSection) {
-        scrollToPassword.addEventListener('click', function (event) {
-            event.preventDefault();
-            passwordSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            const firstField = passwordSection.querySelector('input[name="new_password"]');
-            if (firstField) {
-                window.setTimeout(function () {
-                    firstField.focus();
-                }, 400);
-            }
-        });
-    }
 }

@@ -46,13 +46,9 @@
         @if ($is_system_admin)
         <x-admin.section-panel title="inject html (system admin only)">
             <p class="text-xs text-muted mb-2">
-                These fields are rendered verbatim on every page, for analytics scripts, tracking pixels, etc.
+                This field is rendered verbatim on every page, for analytics scripts, tracking pixels, etc.
                 Only super-admin accounts can save changes here.
             </p>
-            <x-admin.form-field label="in <head> ... </head>">
-                <textarea class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 bg-white min-h-[140px] resize-y font-mono text-sm" name="inject_head_html">{{ $inject_head_html }}</textarea>
-            </x-admin.form-field>
-
             <x-admin.form-field label="in <body> ... </body>">
                 <textarea class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 bg-white min-h-[140px] resize-y font-mono text-sm" name="inject_body_html">{{ $inject_body_html }}</textarea>
             </x-admin.form-field>
@@ -194,17 +190,6 @@
                 <x-ui.input name="max_featured_petitions_per_country" type="number" :value="$max_featured_petitions_per_country" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
             </x-admin.form-field>
         </x-admin.section-panel>
-
-        @if ($is_system_admin)
-        <x-admin.section-panel title="maintenance">
-            <p class="text-xs text-muted mb-2">
-                your ip: <strong class="text-ink">{{ request()->ip() }}</strong>
-            </p>
-            <x-admin.form-field label="special debug ip">
-                <x-ui.input name="special_debug_ip" :value="$special_debug_ip" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
-            </x-admin.form-field>
-        </x-admin.section-panel>
-        @endif
 
         @if ($is_system_admin)
         <x-admin.section-panel title="logging">

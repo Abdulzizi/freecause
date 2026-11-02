@@ -62,19 +62,6 @@ class AppServiceProvider extends ServiceProvider
 
         $this->bootPhpVersionGuard();
 
-        try {
-            if (! Schema::hasTable('settings')) {
-                $this->bootLocale();
-                $this->bootViewComposers();
-
-                return;
-            }
-        } catch (\Throwable $e) {
-            Log::error('AppServiceProvider boot failed: '.$e->getMessage());
-
-            return;
-        }
-
         $this->bootLocale();
         $this->bootViewComposers();
         $this->bootMail();
@@ -106,18 +93,6 @@ class AppServiceProvider extends ServiceProvider
     private function bootRateLimiting(): void
     {
         try {
-            RateLimiter::for('petitions', function (Request $request) {
-                return Limit::perMinute(10)->by($request->ip());
-            });
-
-            RateLimiter::for('signatures', function (Request $request) {
-                return Limit::perMinute(20)->by($request->ip());
-            });
-
-            RateLimiter::for('api', function (Request $request) {
-                return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-            });
-
             RateLimiter::for('admin-login', function (Request $request) {
                 return Limit::perMinute(10)->by($request->ip());
             });

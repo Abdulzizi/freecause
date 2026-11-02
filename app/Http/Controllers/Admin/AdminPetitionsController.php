@@ -15,6 +15,7 @@ use App\Models\PetitionTranslation;
 use App\Services\PetitionStats;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
+use App\Support\EdgeCachePurge;
 use App\Support\ImageVariants;
 use App\Support\Locale;
 use App\Support\ReviewKeywords;
@@ -71,7 +72,10 @@ class AdminPetitionsController extends Controller
                     ->select('petition_id')
                     ->whereIn('locale', $searchLocales);
                 if ($isMysql) {
-                    $sub->whereRaw('MATCH (title) AGAINST (? IN BOOLEAN MODE)', [$searchTerm]);
+                    $terms = PetitionTranslation::booleanTerms($searchTerm);
+                    $terms === ''
+                        ? $sub->whereRaw('1 = 0')
+                        : $sub->whereRaw('MATCH (title) AGAINST (? IN BOOLEAN MODE)', [$terms]);
                 } else {
                     $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $searchTerm).'%';
                     $sub->where('title', 'like', $like);
@@ -314,6 +318,7 @@ class AdminPetitionsController extends Controller
         $petitionUpdate = [
             'goal_signatures' => $data['goal_signatures'] ?? 100,
             'status' => $data['status'],
+            'held_by_admin' => $data['status'] === 'draft',
             'is_active' => $request->boolean('is_active'),
             'is_featured' => $request->boolean('is_featured'),
         ];
@@ -335,6 +340,13 @@ class AdminPetitionsController extends Controller
 
         $newImagePath = null;
         $oldImageToDelete = null;
+
+        try {
+            $urlsBefore = EdgeCachePurge::petitionUrls([$data['id']]);
+        } catch (\Throwable $e) {
+            $urlsBefore = [];
+            Log::warning('Edge cache URL lookup failed before petition save: '.$e->getMessage());
+        }
 
         try {
             if ($request->hasFile('cover_image')) {
@@ -401,6 +413,12 @@ class AdminPetitionsController extends Controller
             CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition save: '.$e->getMessage());
+        }
+
+        try {
+            EdgeCachePurge::urls([...$urlsBefore, ...EdgeCachePurge::petitionUrls([$data['id']])]);
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache purge failed after petition save: '.$e->getMessage());
         }
 
         $viewUrl = null;
@@ -504,12 +522,13 @@ class AdminPetitionsController extends Controller
         }
 
         $created = DB::transaction(function () use ($source, $targets, $id) {
+            $petition = new Petition;
             foreach ($targets as $code) {
                 PetitionTranslation::updateOrCreate(
                     ['petition_id' => $id, 'locale' => $code],
                     [
                         'title' => $source->title,
-                        'slug' => $source->slug,
+                        'slug' => $petition->uniqueTranslationSlug($source->slug, $code, null, 255),
                         'description' => $source->description,
                         'is_featured' => false,
                     ]
@@ -543,12 +562,14 @@ class AdminPetitionsController extends Controller
             case 'publish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'published',
+                    'held_by_admin' => 0,
                 ]);
                 break;
 
             case 'unpublish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
+                    'held_by_admin' => 1,
                 ]);
                 break;
 
@@ -581,6 +602,7 @@ class AdminPetitionsController extends Controller
             case 'ban':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
+                    'held_by_admin' => 1,
                     'is_active' => 0,
                     'is_featured' => 0,
                 ]);
@@ -594,6 +616,14 @@ class AdminPetitionsController extends Controller
             CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition bulk action: '.$e->getMessage());
+        }
+
+        if (in_array($data['action'], ['publish', 'unpublish', 'activate', 'deactivate', 'ban'], true)) {
+            try {
+                EdgeCachePurge::urls(EdgeCachePurge::petitionUrls($ids));
+            } catch (\Throwable $e) {
+                Log::warning('Edge cache purge failed after petition bulk action: '.$e->getMessage());
+            }
         }
 
         return response()->json(['ok' => true]);
@@ -619,26 +649,7 @@ class AdminPetitionsController extends Controller
     {
         $total = Petition::count();
 
-        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
-            DB::statement(<<<'SQL'
-                UPDATE petitions AS p
-                LEFT JOIN (
-                    SELECT petition_id, COUNT(*) AS actual_count
-                    FROM signatures
-                    WHERE confirmed = 1
-                    GROUP BY petition_id
-                ) AS s ON s.petition_id = p.id
-                SET p.signature_count = COALESCE(s.actual_count, 0)
-            SQL);
-        } else {
-            DB::table('petitions')->update([
-                'signature_count' => DB::raw(
-                    '(SELECT COUNT(*) FROM signatures WHERE signatures.petition_id = petitions.id AND signatures.confirmed = 1)'
-                ),
-            ]);
-        }
-
-        CacheVersion::bumpListings();
+        PetitionStats::reconcileAll();
 
         Log::info("All signature counts reconciled: {$total} petitions");
 

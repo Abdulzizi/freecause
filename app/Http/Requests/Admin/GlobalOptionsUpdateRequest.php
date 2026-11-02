@@ -20,7 +20,6 @@ class GlobalOptionsUpdateRequest extends FormRequest
             'email_from' => ['nullable', 'email', 'max:190'],
             'smtp_encryption' => ['nullable', 'in:tls,ssl,'],
             'max_featured_petitions_per_country' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'special_debug_ip' => ['nullable', 'ip'],
 
             'ads_host' => ['nullable', 'url', 'max:255'],
             'ads_slot_leaderboard_key' => ['nullable', 'string', 'max:190'],

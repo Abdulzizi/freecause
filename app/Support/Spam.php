@@ -67,7 +67,7 @@ class Spam
                 continue;
             }
 
-            if (str_contains($text, $word)) {
+            if (preg_match('/\b'.preg_quote($word, '/').'/u', $text) === 1) {
                 return true;
             }
         }
@@ -132,24 +132,6 @@ class Spam
 
         self::log($attemptType, 'Rate limit attempt');
 
-        if ($count >= $limit) {
-            self::banCurrentIp('Auto ban: too many '.$type.' attempts');
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public static function banCurrentIp(?string $reason = null): void
-    {
-        DB::table('banned_ips')->updateOrInsert(
-            ['ip' => request()->ip()],
-            [
-                'reason' => $reason,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        return $count >= $limit;
     }
 }

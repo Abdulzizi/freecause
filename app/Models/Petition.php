@@ -98,19 +98,4 @@ class Petition extends Model
         return $q->where('status', 'published')
             ->where('is_active', 1);
     }
-
-    public function slugFor(?string $locale = null): ?string
-    {
-        return $this->translationOrFallback($locale)?->slug;
-    }
-
-    public function titleFor(?string $locale = null): ?string
-    {
-        return $this->translationOrFallback($locale)?->title;
-    }
-
-    public function descriptionFor(?string $locale = null): ?string
-    {
-        return $this->translationOrFallback($locale)?->description;
-    }
 }

@@ -57,33 +57,6 @@
                     </p>
                 @endif
 
-                @if (!empty($claim))
-                    <div class="mt-6">
-                        @if ($canClaim)
-                            <div class="p-4 rounded-sm border border-border bg-surface-2">
-                                <h2 class="mb-4 text-lg">{{ __('sign.claim_title') }}</h2>
-                                <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
-                                    @csrf
-                                    <div class="mb-4">
-                                        <input class="block w-full max-md:min-h-12 px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
-                                        @error('password')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <x-ui.button type="submit" variant="danger" class="max-md:min-h-12">{{ __('sign.claim_btn') }}</x-ui.button>
-                                </form>
-                                <p class="mt-4 mb-0 text-muted text-sm">
-                                    {{ __('sign.claim_verify_note') }}
-                                </p>
-                            </div>
-                        @else
-                            <p class="mb-0 text-muted text-sm">
-                                {{ __('sign.claim_existing') }}
-                            </p>
-                        @endif
-                    </div>
-                @endif
-
                 <h2 class="mt-10 mb-4 text-xl">
                     {{ $suggestionsTitle }}
                 </h2>

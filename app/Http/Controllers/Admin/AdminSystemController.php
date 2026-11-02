@@ -31,6 +31,7 @@ class AdminSystemController extends Controller
             }
 
             $admin->password = Hash::make($data['new_password']);
+            $admin->password_changed_at = now();
         }
 
         $admin->email = strtolower(trim($data['email']));
