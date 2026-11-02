@@ -157,7 +157,6 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 - `docs/design-system.md` — tokens, layers, components, and the `ds-lint` gate rules.
 - `docs/ux-states.md` — public loading/empty/error/success state matrix and a11y gate rules.
 - `docs/performance-edge-cache.md` — edge-cache design and why listings bypass.
-- `docs/performance-qa.md` — manual performance QA checklist.
 
 ## Security
 
