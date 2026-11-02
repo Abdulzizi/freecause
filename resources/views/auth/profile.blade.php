@@ -191,10 +191,9 @@
                                         <span>{{ __('profile.confirm_delete_lbl') }}</span>
                                     </label>
 
-                                    <button type="submit" data-account-delete-submit
-                                        class="inline-flex max-md:min-h-12 items-center justify-center gap-2 rounded-md bg-danger px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-hover focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
+                                    <x-ui.button type="submit" variant="danger" data-account-delete-submit class="max-md:min-h-12 disabled:cursor-not-allowed disabled:opacity-50">
                                         {{ __('profile.delete') }} <span aria-hidden="true">&raquo;</span>
-                                    </button>
+                                    </x-ui.button>
                                 </form>
                             @endif
                         </div>

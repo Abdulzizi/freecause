@@ -50,6 +50,7 @@
     --text-4xl--line-height: 1.05;
     --text-4xl--letter-spacing: -0.02em;
 
+    --radius-xs: var(--fc-r-xs);
     --radius-sm: var(--fc-r-sm);
     --radius-md: var(--fc-r-md);
     --radius-lg: var(--fc-r-lg);

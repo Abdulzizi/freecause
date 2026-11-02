@@ -24,11 +24,11 @@
                                placeholder="{{ __('list.search_placeholder') }}"
                                aria-label="{{ __('list.search') }}"
                                class="block w-full px-2 py-1 text-sm leading-normal text-ink bg-white border border-border rounded-md appearance-none max-md:min-h-12 max-md:text-base focus:border-brand-light focus:outline-none focus:ring-4 focus:ring-brand/25">
-                        <button type="submit" class="inline-flex items-center justify-center px-2 py-1 bg-brand text-white border border-brand rounded-md cursor-pointer max-md:min-h-12 max-md:min-w-12 hover:bg-brand-hover" aria-label="{{ __('list.search') }}">
+                        <button type="submit" class="inline-flex items-center justify-center px-2 py-1 bg-brand text-white border border-brand rounded-xs cursor-pointer max-md:min-h-12 max-md:min-w-12 hover:bg-brand-hover" aria-label="{{ __('list.search') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         </button>
                         @if(request('q'))
-                            <a href="{{ request()->url() }}" class="inline-flex items-center justify-center px-2 py-1 text-muted bg-white border border-muted rounded-md no-underline max-md:min-h-12 max-md:min-w-12 hover:bg-muted hover:text-white"
+                            <a href="{{ request()->url() }}" class="inline-flex items-center justify-center px-2 py-1 text-muted bg-white border border-muted rounded-xs no-underline max-md:min-h-12 max-md:min-w-12 hover:bg-muted hover:text-white"
                                aria-label="{{ __('list.clear') }}" title="{{ __('list.clear') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </a>
@@ -52,13 +52,13 @@
                     <div class="flex items-center flex-wrap gap-2 mb-4 max-md:hidden">
                         <span class="text-sm text-muted me-1">{{ __('list.sort_by') }}:</span>
                         <a href="{{ $sortNewestUrl }}"
-                           class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'newest' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
+                           class="inline-flex items-center px-3 py-1 rounded-xs text-sm no-underline border transition-colors duration-150 {{ $sort === 'newest' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'newest') aria-current="true" @endif>{{ __('list.sort_newest') }}</a>
                         <a href="{{ $sortTrendingUrl }}"
-                           class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'trending' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
+                           class="inline-flex items-center px-3 py-1 rounded-xs text-sm no-underline border transition-colors duration-150 {{ $sort === 'trending' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'trending') aria-current="true" @endif>{{ __('list.sort_trending') }}</a>
                         <a href="{{ $sortSignedUrl }}"
-                           class="inline-flex items-center px-3 py-1 rounded-full text-sm no-underline border transition-colors duration-150 {{ $sort === 'signed' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
+                           class="inline-flex items-center px-3 py-1 rounded-xs text-sm no-underline border transition-colors duration-150 {{ $sort === 'signed' ? 'bg-brand text-white border-brand' : 'bg-white text-brand border-border hover:border-brand' }}"
                            @if ($sort === 'signed') aria-current="true" @endif>{{ __('list.sort_signed') }}</a>
                     </div>
 

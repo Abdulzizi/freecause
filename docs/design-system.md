@@ -46,7 +46,7 @@ surfaced to Tailwind v4 through `@theme` (so utilities like `bg-surface`,
 | Brand exceptions | `bg-whatsapp` (`#25d366`), `bg-facebook` (`#166fe5`, AA contrast) |
 | Focus | `--fc-focus` (2px ring, 2px offset) |
 | Type | `text-xs` 12 · `text-sm` 14 · `text-base` 16 · `text-lg` 18 · `text-xl` 22 · `text-2xl` 28 · `text-3xl` 36 · `text-4xl` clamp(44–56) — each with its own line-height and tracking |
-| Radius | `rounded-sm` 6 · `rounded-md` 8 · `rounded-lg` 12 · `rounded-full` |
+| Radius | `rounded-xs` 3 (buttons, toasts, controls) · `rounded-sm` 6 · `rounded-md` 8 · `rounded-lg` 12 · `rounded-full` |
 | Elevation | `shadow-elev-1` (rest) · `shadow-elev-2` (raised) · `shadow-elev-3` (overlay) |
 | Spacing | Tailwind's 4px scale, restricted to `1,2,3,4,6,8,12,16,24,32` (4–128px) |
 | Motion | `--fc-dur-instant/fast/base/slow/hero` 100/150/200/300/500ms · `--fc-ease-standard/decel/accel` |

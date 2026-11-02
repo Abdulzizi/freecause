@@ -336,7 +336,7 @@ textarea.form-control-lg{min-height:calc(1.5em + 1rem + 2px)}
   .navbar-expand-md .navbar-collapse{display:flex!important;flex-basis:auto}
   .navbar-expand-md .navbar-toggler{display:none}
 }
-@media (min-width:992px){  .navbar-expand-lg{flex-wrap:nowrap;justify-content:flex-start}
+@media (min-width:1024px){  .navbar-expand-lg{flex-wrap:nowrap;justify-content:flex-start}
   .navbar-expand-lg .navbar-nav{flex-direction:row}
   .navbar-expand-lg .navbar-nav .dropdown-menu{position:absolute}
   .navbar-expand-lg .navbar-nav .nav-link{padding-right:var(--bs-navbar-nav-link-padding-x);padding-left:var(--bs-navbar-nav-link-padding-x)}

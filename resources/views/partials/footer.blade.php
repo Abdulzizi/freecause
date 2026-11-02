@@ -35,7 +35,7 @@
 
                 <div class="p-10 max-md:p-6 max-sm:p-4 max-md:text-center">
 
-                    <div class="[&_img]:max-w-[306px] [&_img]:w-full [&_img]:h-auto [&_img]:mb-5 max-md:[&_img]:mx-auto max-md:[&_img]:max-w-[220px] [&_p]:text-sm [&_p]:mb-0 [&_p]:text-on-dark [&_a]:text-on-dark [&_a]:underline [&_a]:break-words">
+                    <div class="[&_.footer-logo_img]:brightness-0 [&_.footer-logo_img]:invert [&_img]:max-w-[306px] [&_img]:w-full [&_img]:h-auto [&_img]:mb-5 max-md:[&_img]:mx-auto max-md:[&_img]:max-w-[220px] [&_p]:text-sm [&_p]:mb-0 [&_p]:text-on-dark [&_a]:text-on-dark [&_a]:underline [&_a]:break-words">
                         {!! \App\Services\ContentRenderer::render($about) !!}
                     </div>
 
