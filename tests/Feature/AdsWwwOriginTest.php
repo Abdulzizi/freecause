@@ -26,6 +26,7 @@ class AdsWwwOriginTest extends TestCase
         $response = $this->get('https://www.freecause.com/en')->assertOk();
         preg_match('/<iframe[^>]*src="https:\/\/www\.freecause\.com\/ads\/frame\/leaderboard\?v=2"[^>]*>/', $response->getContent(), $frame);
         $this->assertNotEmpty($frame);
+        $this->assertStringNotContainsString('sandbox', (string) $response->headers->get('Content-Security-Policy'));
         $this->assertStringContainsString('allow-scripts', $frame[0]);
         $this->assertStringNotContainsString('allow-same-origin', $frame[0]);
     }
@@ -60,5 +61,20 @@ class AdsWwwOriginTest extends TestCase
     {
         $this->get('https://ads.freecause.com/en')->assertStatus(301)
             ->assertRedirect('https://www.freecause.com/en');
+    }
+
+    public function test_www_frame_response_enforces_sandbox_even_when_opened_directly(): void
+    {
+        $response = $this->get(Ads::frameUrl('rectangle'))->assertOk();
+        $policy = (string) $response->headers->get('Content-Security-Policy');
+        $this->assertStringContainsString('sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms;', $policy);
+        $this->assertStringNotContainsString('allow-same-origin', $policy);
+    }
+
+    public function test_legacy_dedicated_origin_does_not_inherit_www_sandbox(): void
+    {
+        Settings::set('ads_frame_origin', 'https://ads.freecause.com', 'global');
+        $response = $this->get(Ads::frameUrl('rectangle'))->assertOk();
+        $this->assertStringNotContainsString('sandbox', (string) $response->headers->get('Content-Security-Policy'));
     }
 }
