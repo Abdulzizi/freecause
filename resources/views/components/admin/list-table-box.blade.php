@@ -25,7 +25,7 @@
             @endif
         </div>
     @else
-        <div class="fc-table-wrap">
+        <div class="fc-table-wrap" tabindex="0" role="region" aria-label="results table">
             <table class="w-full border-collapse">
                 <thead>
                     {{ $thead }}

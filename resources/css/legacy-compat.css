@@ -1231,8 +1231,7 @@ body{
   .fc-box{
         padding: 8px;
     }
-  .fc-box table,
-    .table-responsive{
+  .table-responsive{
         display: block;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
