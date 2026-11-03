@@ -102,6 +102,18 @@ class ImageVariantsTest extends TestCase
         $this->assertStringContainsString('storage/petitions/fixture_400w.webp', $urls['400']);
     }
 
+    public function test_a_cover_smaller_than_800px_still_gets_both_variants(): void
+    {
+        Storage::fake('public');
+
+        $abs = $this->fixtureJpeg('petitions/small.jpg', 600, 400);
+
+        $this->assertNotNull(ImageVariants::ensure($abs));
+        $this->assertSame(600, getimagesize(Storage::disk('public')->path('petitions/small_800w.webp'))[0]);
+        $this->assertSame(400, getimagesize(Storage::disk('public')->path('petitions/small_400w.webp'))[0]);
+        $this->assertSame([400, 800], array_keys(ImageVariants::urls('petitions/small.jpg')));
+    }
+
     public function test_urls_returns_null_for_remote_urls(): void
     {
         $this->assertNull(ImageVariants::urls('https://images.example.com/petitions/abc.jpg'));

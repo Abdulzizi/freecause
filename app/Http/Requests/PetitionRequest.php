@@ -7,6 +7,7 @@ use App\Rules\MinCharacters;
 use App\Rules\MinWords;
 use App\Rules\SafeExternalImageUrl;
 use App\Rules\TagList;
+use App\Rules\YoutubeVideo;
 use App\Support\Countries;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,9 +27,16 @@ class PetitionRequest extends FormRequest
             ? ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp']
             : ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'];
 
-        $currentUrl = $creating
+        $current = $creating
             ? null
-            : Petition::query()->whereKey($this->route('id'))->value('image_url');
+            : Petition::query()->whereKey($this->route('id'))->first(['image_url', 'youtube_url']);
+        $currentUrl = $current?->image_url;
+
+        // An unchanged stored value passes, so legacy values saved under the old rules do not block unrelated edits.
+        $youtube = ['nullable', 'string', 'max:200'];
+        if ($this->input('youtube') !== $current?->youtube_url) {
+            $youtube[] = new YoutubeVideo;
+        }
 
         $imageUrl = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
         if (! $this->hasFile('image')
@@ -44,7 +52,7 @@ class PetitionRequest extends FormRequest
             'tags' => ['nullable', 'string', 'max:255', new TagList(10, 30)],
             'image' => $image,
             'image_url' => $imageUrl,
-            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
+            'youtube' => $youtube,
             'target' => ['nullable', 'string', 'max:255'],
             'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],

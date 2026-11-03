@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Petition;
+use App\Rules\YoutubeVideo;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,6 +16,12 @@ class AdminPetitionSaveRequest extends FormRequest
 
     public function rules(): array
     {
+        // An unchanged stored value passes, so legacy values saved under the old rules do not block unrelated edits.
+        $youtube = ['nullable', 'string', 'max:200'];
+        if ($this->input('youtube_url') !== Petition::query()->whereKey($this->input('id'))->value('youtube_url')) {
+            $youtube[] = new YoutubeVideo;
+        }
+
         return [
             'id' => ['required', 'integer', 'exists:petitions,id'],
             'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
@@ -27,7 +35,7 @@ class AdminPetitionSaveRequest extends FormRequest
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'tags' => ['nullable', 'string', 'max:255'],
-            'youtube_url' => ['nullable', 'string', 'max:200'],
+            'youtube_url' => $youtube,
             'target' => ['nullable', 'string', 'max:255'],
             'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500'],

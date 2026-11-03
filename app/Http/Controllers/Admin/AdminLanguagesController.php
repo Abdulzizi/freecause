@@ -24,7 +24,8 @@ class AdminLanguagesController extends Controller
     {
         $code = strtolower($request->code);
 
-        if (! is_dir(base_path('lang/'.$code))) {
+        // lang/vendor holds package translations, not a locale.
+        if ($code === 'vendor' || ! is_dir(base_path('lang/'.$code))) {
             return back()
                 ->withInput()
                 ->withErrors(['code' => "Missing translation directory lang/{$code}."]);

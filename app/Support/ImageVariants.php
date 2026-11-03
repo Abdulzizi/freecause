@@ -27,19 +27,18 @@ class ImageVariants
 
         $disk = Storage::disk('public');
 
-        if (! $disk->exists($variants['w400'])) {
+        // Older uploads up to 800px wide have only the 400w variant; every srcset needs both, so fall back to the original then.
+        if (! $disk->exists($variants['w400']) || ! $disk->exists($variants['w800'])) {
             return null;
         }
 
-        $out = ['400' => asset('storage/'.$variants['w400'])];
-        if ($disk->exists($variants['w800'])) {
-            $out['800'] = asset('storage/'.$variants['w800']);
-        }
-
-        return $out;
+        return [
+            '400' => asset('storage/'.$variants['w400']),
+            '800' => asset('storage/'.$variants['w800']),
+        ];
     }
 
-    public static function ensure(string $absPath, ?int $origWidth = null): ?array
+    public static function ensure(string $absPath): ?array
     {
         try {
             if (! is_file($absPath)) {
@@ -52,9 +51,6 @@ class ImageVariants
 
             $variants = self::absoluteVariantPaths($absPath);
             $widths = self::VARIANTS;
-            if ($origWidth !== null && $origWidth <= 800) {
-                unset($widths['w800']);
-            }
 
             foreach ($widths as $label => $width) {
                 $dest = $variants[$label];

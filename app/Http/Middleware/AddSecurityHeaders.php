@@ -106,7 +106,7 @@ class AddSecurityHeaders
                     ($frameOrigin !== '' ? $frameOrigin.' ' : '').'https://bicea.org '.
                     'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com '.
                     'https://ep2.adtrafficquality.google '.
-                    'https://www.googletagmanager.com; '.
+                    'https://www.googletagmanager.com https://www.youtube-nocookie.com; '.
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net ".
                     'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.

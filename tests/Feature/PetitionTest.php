@@ -1196,6 +1196,107 @@ class PetitionTest extends TestCase
         ]);
     }
 
+    public function test_youtube_id_parser_accepts_youtube_links_and_rejects_everything_else(): void
+    {
+        foreach ([
+            'dQw4w9WgXcQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'http://youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10',
+            'https://www.youtube.com/watch?feature=share&v=dQw4w9WgXcQ',
+            'https://m.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/shorts/dQw4w9WgXcQ',
+            'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            'https://www.youtube.com/live/dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ?si=abc',
+            'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
+            'https://youtube-nocookie.com/embed/dQw4w9WgXcQ?start=5',
+        ] as $value) {
+            $this->assertSame('dQw4w9WgXcQ', Petition::youtubeId($value), $value);
+        }
+
+        foreach ([
+            null,
+            '',
+            'dQw4w9WgXc',
+            'dQw4w9WgXcQQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXc',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQQ',
+            'https://www.youtube.com/watch?xv=dQw4w9WgXcQ',
+            'https://evil.example.com/watch?v=dQw4w9WgXcQ',
+            'https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ',
+            'https://notyoutu.be/dQw4w9WgXcQ',
+            'javascript:alert(1)//youtu.be/dQw4w9WgXcQ',
+            'ftp://youtu.be/dQw4w9WgXcQ',
+            'https://www.youtube.com/channel/dQw4w9WgXcQ',
+            "dQw4w9WgXcQ\n",
+            "https://youtu.be/dQw4w9WgXcQ\n",
+            'https://youtube-nocookie.com.evil.example/embed/dQw4w9WgXcQ',
+            'https://www.youtube-nocookie.com/watch?v=dQw4w9WgXcQ',
+        ] as $value) {
+            $this->assertNull(Petition::youtubeId($value), (string) $value);
+        }
+    }
+
+    public function test_creation_accepts_common_youtube_links_and_stores_the_id(): void
+    {
+        foreach ([
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10',
+            'https://youtu.be/dQw4w9WgXcQ?si=abc',
+            'https://m.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/shorts/dQw4w9WgXcQ',
+        ] as $i => $link) {
+            $this->actingAs($this->user)->post('/en/create-petition', [
+                'title' => "Test Petition Title Here {$i}",
+                'description' => '<p>This description contains enough meaningful content for validation.</p>',
+                'goal_signatures' => 100,
+                'category_id' => $this->category->id,
+                'youtube' => $link,
+            ])->assertSessionHasNoErrors()->assertRedirect();
+        }
+
+        $this->assertSame(4, Petition::where('youtube_url', 'dQw4w9WgXcQ')->count());
+    }
+
+    public function test_creation_rejects_a_non_youtube_video_link(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'youtube' => 'https://vimeo.com/dQw4w9WgXcQ',
+        ])->assertSessionHasErrors('youtube');
+    }
+
+    public function test_show_page_embeds_the_youtube_video_only_when_the_stored_value_parses(): void
+    {
+        foreach ([
+            'dQw4w9WgXcQ' => true,
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ' => true,
+            'not a video <script>' => false,
+            '' => false,
+        ] as $stored => $embeds) {
+            $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'youtube_url' => $stored ?: null]);
+            $slug = 'video-petition-'.$petition->id;
+            PetitionTranslation::create([
+                'petition_id' => $petition->id,
+                'locale' => 'en',
+                'title' => 'Video Petition',
+                'slug' => $slug,
+                'description' => 'Description',
+            ]);
+
+            $response = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk();
+            if ($embeds) {
+                $response->assertSee('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Video: Video Petition"', false);
+            } else {
+                $response->assertDontSee('youtube-nocookie.com/embed', false);
+            }
+        }
+    }
+
     public function test_uploaded_image_keeps_format_and_aspect_ratio(): void
     {
         Storage::fake('public');
@@ -1344,6 +1445,44 @@ class PetitionTest extends TestCase
             'petition_id' => $petition->id,
             'slug' => 'updated-petition-title',
         ]);
+    }
+
+    public function test_edit_keeps_an_unchanged_legacy_youtube_value_and_validates_a_changed_one(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+            'youtube_url' => 'abc',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        $payload = [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ];
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'abc', 'target' => 'The mayor'] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'abc', 'target' => 'The mayor']);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'junk'] + $payload)
+            ->assertSessionHasErrors('youtube');
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'abc']);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'https://youtu.be/dQw4w9WgXcQ?si=abc'] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'dQw4w9WgXcQ']);
     }
 
     public function test_edit_can_remove_current_image_without_orphaning_file(): void

@@ -21,7 +21,7 @@
                                     id="reset_email"
                                     name="email"
                                     :label="__('auth.email')"
-                                    :value="old('email')"
+                                    :value="old('email', is_string(request()->query('email')) ? request()->query('email') : null)"
                                     :required="true"
                                     :error="$errors->first('email')"
                                     class="max-md:min-h-12"

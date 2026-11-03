@@ -9,6 +9,7 @@ use App\Models\Permission;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\WordPressUserDeletionService;
 use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -374,6 +375,7 @@ class AdminBackendFixesTest extends TestCase
         $this->postJson('/admin/users/bulk-unban', ['ids' => [$target2->id]])->assertOk();
         $this->assertFalse(Cache::has('level:user_counts'));
 
+        $this->mock(WordPressUserDeletionService::class, fn ($m) => $m->shouldReceive('delete')->once());
         Cache::put('level:user_counts', ['stale' => 1], 3600);
         $this->postJson('/admin/users/bulk-delete', ['ids' => [$target2->id]])->assertOk();
         $this->assertFalse(Cache::has('level:user_counts'));

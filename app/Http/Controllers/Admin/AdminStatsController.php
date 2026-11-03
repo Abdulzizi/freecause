@@ -100,6 +100,11 @@ class AdminStatsController extends Controller
 
     private function cachedStat(string $type, string $locale, string $range, int $page): array
     {
+        // Unknown types have no query; return before caching so arbitrary strings create no entries.
+        if ($this->resolveStat($type, $locale, $this->resolveRange($range))[1] === null) {
+            return [[], null];
+        }
+
         $key = 'admin:stat:type:'.$type.':'.($locale ?: 'all').':'.$range.':page:'.$page;
 
         $cached = Cache::remember($key, 600, function () use ($type, $locale, $range, $page) {

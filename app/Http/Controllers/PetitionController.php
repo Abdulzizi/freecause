@@ -96,7 +96,6 @@ class PetitionController extends Controller
     private function storeCoverImage(UploadedFile $file): string
     {
         $size = @getimagesize($file->getPathname());
-        $origWidth = $size !== false ? (int) $size[0] : 801;
         if ($size !== false && max($size[0], $size[1]) > 2000) {
             throw ValidationException::withMessages([
                 'image' => 'The image must not exceed 2000 pixels on its longest side.',
@@ -109,7 +108,7 @@ class PetitionController extends Controller
         try {
             $img = Image::read($absolute)->orient();
             $img->scaleDown(width: 800, height: 800)->save($absolute);
-            ImageVariants::ensure($absolute, $origWidth);
+            ImageVariants::ensure($absolute);
 
             if (! Storage::disk('public')->exists($path)) {
                 throw ValidationException::withMessages([
@@ -533,7 +532,7 @@ class PetitionController extends Controller
                 $petition->country = $data['country'] ?? null;
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
-                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
+                $petition->youtube_url = Petition::youtubeId($data['youtube'] ?? null);
                 $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
@@ -870,7 +869,9 @@ class PetitionController extends Controller
                 $petition->country = $data['country'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
 
-                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
+                if (($data['youtube'] ?? null) !== $petition->youtube_url) {
+                    $petition->youtube_url = Petition::youtubeId($data['youtube'] ?? null);
+                }
 
                 $petition->image_url = $data['image_url'] ?? null;
 
@@ -1085,23 +1086,6 @@ class PetitionController extends Controller
             'petition',
             255
         );
-    }
-
-    private function youtubeId(?string $value): ?string
-    {
-        if (! $value) {
-            return null;
-        }
-
-        if (preg_match('/(?:v=|youtu\.be\/)([\w_-]+)/i', $value, $matches)) {
-            return $matches[1];
-        }
-
-        if (preg_match('/^[\w-]{11}$/', $value)) {
-            return $value;
-        }
-
-        return null;
     }
 
     public function signatures(Request $request, string $locale, string $slug, int $id)
