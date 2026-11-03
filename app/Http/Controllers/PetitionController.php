@@ -864,6 +864,13 @@ class PetitionController extends Controller
                     $petition->cover_image = null;
                 }
 
+                $heldForReview = $reviewMatches !== [] && $petition->status === 'published';
+                if ($heldForReview) {
+                    $petition->status = 'draft';
+                } elseif ($reviewMatches === [] && $petition->status === 'draft' && ! $petition->held_by_admin) {
+                    $petition->status = 'published';
+                }
+
                 $petition->save();
 
                 $tr->title = $data['title'];
@@ -871,10 +878,7 @@ class PetitionController extends Controller
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
-                if ($reviewMatches !== [] && $petition->status === 'published') {
-                    $petition->status = 'draft';
-                    $petition->save();
-
+                if ($heldForReview) {
                     Spam::log('petition.review', json_encode([
                         'petition_id' => $petition->id,
                         'title' => $data['title'],
@@ -882,11 +886,6 @@ class PetitionController extends Controller
                     ]));
 
                     toast(__('petition.review_required'), 'warning');
-                } elseif ($reviewMatches === [] && $petition->status === 'draft' && ! $petition->held_by_admin) {
-                    $petition->status = 'published';
-                    $petition->save();
-
-                    toast(__('create.toast_updated'), 'success');
                 } else {
                     toast(__('create.toast_updated'), 'success');
                 }
