@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PetitionController;
 use App\Models\Category;
 use App\Models\Language;
-use App\Models\Petition;
 use App\Services\PageContentService;
 use App\Support\CacheKeys;
 use Illuminate\Console\Command;
@@ -60,14 +60,7 @@ class WarmCache extends Command
     {
         for ($page = 1; $page <= 10; $page++) {
             Cache::remember(CacheKeys::petitionsIndex($locale, $page), 300, function () use ($locale, $page) {
-                $petitions = Petition::query()
-                    ->select('petitions.id')
-                    ->join('petition_translations as pt_locale', function ($join) use ($locale) {
-                        $join->on('pt_locale.petition_id', '=', 'petitions.id')
-                            ->where('pt_locale.locale', '=', $locale);
-                    })
-                    ->whereNotNull('pt_locale.title')
-                    ->visible()
+                $petitions = PetitionController::listingQuery($locale)
                     ->orderByDesc('petitions.id')
                     ->paginate(15, ['petitions.id'], 'page', $page);
 

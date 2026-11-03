@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Page;
+use App\Models\PageTranslation;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use Database\Seeders\LanguageSeeder;
@@ -184,5 +186,18 @@ class SitemapTest extends TestCase
 
         $this->assertStringContainsString('<urlset', $content);
         $this->assertStringNotContainsString('p-en', $content);
+    }
+
+    public function test_pages_sitemap_lists_static_pages_once_even_with_cms_rows(): void
+    {
+        // Migrations already seed published faqs/contacts CMS rows.
+        $this->assertTrue(PageTranslation::where('locale', 'en')->where('slug', 'faqs')->where('published', true)->exists());
+        $about = Page::create();
+        PageTranslation::create(['page_id' => $about->id, 'locale' => 'en', 'slug' => 'about-us', 'title' => 'About', 'content' => '<p>x</p>', 'published' => true]);
+
+        $content = $this->get('/sitemap-pages.xml')->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/faqs').'</loc>'));
+        $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/about-us').'</loc>'));
     }
 }

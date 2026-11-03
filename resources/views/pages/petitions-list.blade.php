@@ -129,7 +129,9 @@
                                 @php
                                     $titleHtml = e($petition->tr_title);
                                     if (is_string($search) && $search !== '') {
-                                        $titleHtml = preg_replace('/('.preg_quote($search, '/').')/iu', '<mark>$1</mark>', $titleHtml) ?? $titleHtml;
+                                        // Split the raw title, then escape each piece, so a match can never land inside an entity.
+                                        $parts = preg_split('/('.preg_quote($search, '/').')/iu', (string) $petition->tr_title, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [];
+                                        $titleHtml = $parts ? collect($parts)->map(fn ($part, $i) => $i % 2 ? '<mark>'.e($part).'</mark>' : e($part))->implode('') : $titleHtml;
                                     }
                                 @endphp
                                 {!! $titleHtml !!}

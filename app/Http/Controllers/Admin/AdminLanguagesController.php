@@ -91,6 +91,5 @@ class AdminLanguagesController extends Controller
         Cache::forget('active_languages');
         Cache::forget('default_language');
         Cache::forget('active_languages_full');
-        Cache::forget('languages:codes');
     }
 }

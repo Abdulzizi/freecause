@@ -1725,4 +1725,24 @@ class PetitionTest extends TestCase
 
         return $petition;
     }
+
+    public function test_search_highlight_does_not_break_entities_or_inject_html(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Fish & Chips <b>amp</b>',
+            'slug' => 'fish-and-chips',
+            'description' => 'Description',
+        ]);
+
+        $this->get('/en/petitions?q=amp')
+            ->assertOk()
+            ->assertSee('Fish &amp; Chips &lt;b&gt;<mark>amp</mark>&lt;/b&gt;', false);
+
+        $this->get('/en/petitions?q='.urlencode('&'))
+            ->assertOk()
+            ->assertSee('Fish <mark>&amp;</mark> Chips', false);
+    }
 }

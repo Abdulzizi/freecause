@@ -50,11 +50,25 @@ class SendPetitionNewSignatures extends Command
         $skipped = 0;
         $counted = 0;
 
-        Petition::with('user')->whereNotNull('user_id')->orderBy('id')->chunkById(200, function ($petitions) use ($dryRun, $cutoff, $fallback, &$sent, &$skipped, &$counted) {
-            $ids = $petitions->pluck('id')->all();
-            $totals = DB::table('signatures')
+        // Candidate petitions: any signature in the lookback window, read via
+        // signatures_confirmed_created_index. 25h covers the 1h fallback plus a
+        // day of missed hourly runs. Older unnotified signatures are picked up
+        // (and counted exactly below) once the petition gets a new signature.
+        $candidateIds = DB::table('signatures')
+            ->where('confirmed', 1)
+            ->where('is_spam', 0)
+            ->where('created_at', '>', (clone $cutoff)->subHours(25))
+            ->where('created_at', '<=', $cutoff)
+            ->distinct()
+            ->pluck('petition_id');
+
+        // Exact count since each petition's last notification, per chunk of candidates.
+        $totals = collect();
+        foreach ($candidateIds->chunk(1000) as $chunk) {
+            $totals = $totals->union(DB::table('signatures')
                 ->join('petitions', 'petitions.id', '=', 'signatures.petition_id')
-                ->whereIn('signatures.petition_id', $ids)
+                ->whereIn('petitions.id', $chunk->values()->all())
+                ->whereNotNull('petitions.user_id')
                 ->where('signatures.confirmed', 1)
                 ->where('signatures.is_spam', 0)
                 ->whereRaw('signatures.created_at > COALESCE(petitions.last_notified_at, ?)', [$fallback])
@@ -62,9 +76,11 @@ class SendPetitionNewSignatures extends Command
                 ->select('signatures.petition_id as petition_id')
                 ->selectRaw('COUNT(*) as total')
                 ->groupBy('signatures.petition_id')
-                ->pluck('total', 'petition_id');
+                ->pluck('total', 'petition_id'));
+        }
 
-            foreach ($petitions as $petition) {
+        foreach ($totals->keys()->sort()->chunk(1000) as $chunk) {
+            foreach (Petition::with('user')->whereIn('id', $chunk->values()->all())->orderBy('id')->get() as $petition) {
                 $petitionId = $petition->id;
                 $total = (int) ($totals[$petitionId] ?? 0);
 
@@ -114,7 +130,7 @@ class SendPetitionNewSignatures extends Command
                 }
                 $sent++;
             }
-        });
+        }
 
         $summary = sprintf('petitions=%d sent=%d skipped=%d dry_run=%s', $counted, $sent, $skipped, $dryRun ? 'yes' : 'no');
         AppLog::info('New-signatures digest run', $summary);

@@ -56,7 +56,7 @@ class AdminHoldExportSearchFixesTest extends TestCase
         return Http::recorded(fn ($r) => in_array($url, $r['files'] ?? [], true))->isNotEmpty();
     }
 
-    public function test_csv_export_includes_every_row_when_created_at_order_differs_from_id_order(): void
+    public function test_exports_include_every_row_when_created_at_order_differs_from_id_order_and_skip_spam(): void
     {
         $owner = User::factory()->create(['verified' => true]);
         $p = $this->petitionFor($owner);
@@ -64,15 +64,21 @@ class AdminHoldExportSearchFixesTest extends TestCase
         for ($i = 1; $i <= 1100; $i++) {
             $rows[] = ['petition_id' => $p->id, 'name' => 'n'.$i, 'email' => "e{$i}@x.test", 'locale' => 'en', 'text' => 'c', 'confirmed' => 1, 'is_spam' => 0, 'created_at' => now()->subMinutes($i), 'updated_at' => now()];
         }
+        $rows[] = ['petition_id' => $p->id, 'name' => 'unconfirmed', 'email' => 'u@x.test', 'locale' => 'en', 'text' => 'c', 'confirmed' => 0, 'is_spam' => 0, 'created_at' => now(), 'updated_at' => now()];
+        $rows[] = ['petition_id' => $p->id, 'name' => 'spammer', 'email' => 's@x.test', 'locale' => 'en', 'text' => 'c', 'confirmed' => 1, 'is_spam' => 1, 'created_at' => now(), 'updated_at' => now()];
         foreach (array_chunk($rows, 200) as $c) {
             DB::table('signatures')->insert($c);
         }
 
         $csv = $this->actingAs($owner)->get("/en/petition/my-petition/{$p->id}/download/csv")->streamedContent();
         $this->assertSame(1100, preg_match_all('/^\d+,n\d+,/m', $csv));
+        $this->assertStringContainsString(',unconfirmed,', $csv);
+        $this->assertStringNotContainsString('spammer', $csv);
 
         $txt = $this->actingAs($owner)->get("/en/petition/my-petition/{$p->id}/download/txt")->streamedContent();
         $this->assertSame(1100, preg_match_all('/^\d+\. n\d+ /m', $txt));
+        $this->assertStringNotContainsString('unconfirmed', $txt);
+        $this->assertStringNotContainsString('spammer', $txt);
     }
 
     public function test_boolean_terms_strip_operators(): void

@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
@@ -32,7 +33,7 @@ class AdminPetitionsController extends Controller
 
     public function index(Request $request)
     {
-        $locale = $request->query('locale', 'en');
+        $locale = (string) $request->query('locale', Locale::default());
 
         $filters = [
             'id' => trim((string) $request->query('id', '')),
@@ -45,11 +46,7 @@ class AdminPetitionsController extends Controller
             'missing_locale' => trim((string) $request->query('missing_locale', '')),
         ];
 
-        $defaultLocale = cache()->remember(
-            'default_language',
-            60,
-            fn () => Language::where('is_default', 1)->value('code') ?? 'en'
-        );
+        $defaultLocale = Locale::default();
 
         $driver = DB::connection()->getDriverName();
         $isMysql = $driver === 'mysql' || $driver === 'mariadb';
@@ -100,7 +97,10 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['featured'] !== '') {
-            $idQuery->where('petitions.is_featured', 1);
+            $idQuery->whereExists(fn ($sub) => $sub->select(DB::raw(1))
+                ->from('petition_translations as pt_f')
+                ->whereColumn('pt_f.petition_id', 'petitions.id')
+                ->where('pt_f.is_featured', 1));
         }
 
         if ($filters['missing_locale'] !== '') {
@@ -134,8 +134,8 @@ class AdminPetitionsController extends Controller
                     'petitions.goal_signatures',
                     'petitions.status',
                     'petitions.is_active',
-                    'petitions.is_featured',
                     'petitions.created_at',
+                    DB::raw('EXISTS (SELECT 1 FROM petition_translations pt_f WHERE pt_f.petition_id = petitions.id AND pt_f.is_featured = 1) as is_featured'),
                     DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                     DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
                 ])
@@ -269,7 +269,6 @@ class AdminPetitionsController extends Controller
             $missingTranslationCount = count(array_diff($activeLanguages, $existingLocales));
         }
 
-        $defaultLocale = default_locale();
         $categories = Category::query()
             ->select(['categories.id'])
             ->addSelect([
@@ -304,6 +303,19 @@ class AdminPetitionsController extends Controller
     public function save(AdminPetitionSaveRequest $request)
     {
         $data = $request->validated();
+        $storedSlug = DB::table('petition_translations')
+            ->where('petition_id', $data['id'])
+            ->where('locale', $data['locale'])
+            ->value('slug');
+
+        // Keep legacy slugs (uppercase/underscores) when unchanged; only slugify edits and new rows.
+        if ($data['slug'] !== $storedSlug) {
+            $data['slug'] = Str::slug($data['slug']);
+        }
+
+        if ($data['slug'] === '') {
+            return back()->withErrors(['slug' => 'Slug is invalid'])->withInput();
+        }
 
         $slugTaken = DB::table('petition_translations')
             ->where('slug', $data['slug'])
@@ -320,7 +332,6 @@ class AdminPetitionsController extends Controller
             'status' => $data['status'],
             'held_by_admin' => $data['status'] === 'draft',
             'is_active' => $request->boolean('is_active'),
-            'is_featured' => $request->boolean('is_featured'),
         ];
 
         foreach (['category_id', 'tags', 'youtube_url', 'target', 'community', 'community_url', 'city'] as $field) {
@@ -393,12 +404,6 @@ class AdminPetitionsController extends Controller
                             'is_featured' => $isFeatured,
                         ]
                     );
-
-                if (! $isFeatured) {
-                    DB::table('petition_translations')
-                        ->where('petition_id', $data['id'])
-                        ->update(['is_featured' => 0]);
-                }
             });
         } catch (\Throwable $e) {
             if ($newImagePath) {
@@ -591,16 +596,21 @@ class AdminPetitionsController extends Controller
                 break;
 
             case 'feature':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
-                $defaultLocale = Language::where('is_default', true)->value('code') ?? 'en';
                 DB::table('petition_translations')
                     ->whereIn('petition_id', $ids)
-                    ->where('locale', $defaultLocale)
+                    ->where('locale', Locale::default())
                     ->update(['is_featured' => 1]);
+                // Petitions with no default-locale row: feature their first translation instead.
+                $firstIds = DB::table('petition_translations')
+                    ->whereIn('petition_id', $ids)
+                    ->whereNotIn('petition_id', DB::table('petition_translations')->where('locale', Locale::default())->select('petition_id'))
+                    ->groupBy('petition_id')
+                    ->selectRaw('MIN(id) as id')
+                    ->pluck('id');
+                DB::table('petition_translations')->whereIn('id', $firstIds)->update(['is_featured' => 1]);
                 break;
 
             case 'unfeature':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 0]);
                 DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
@@ -609,8 +619,8 @@ class AdminPetitionsController extends Controller
                     'status' => 'draft',
                     'held_by_admin' => 1,
                     'is_active' => 0,
-                    'is_featured' => 0,
                 ]);
+                DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
             default:

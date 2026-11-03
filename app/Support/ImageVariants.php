@@ -124,7 +124,7 @@ class ImageVariants
         ];
     }
 
-    private static function relativeVariantPaths(string $relativePath): array
+    public static function relativeVariantPaths(string $relativePath): array
     {
         $relativePath = ltrim($relativePath, '/');
         $dir = dirname($relativePath);

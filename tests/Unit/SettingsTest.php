@@ -158,4 +158,21 @@ class SettingsTest extends TestCase
 
         $this->assertSame('new', Settings::get('site_name'));
     }
+
+    public function test_get_falls_back_to_db_when_cache_throws(): void
+    {
+        Setting::create(['group' => 'global', 'key' => 'a', 'value' => 'db', 'type' => 'string']);
+        Settings::flushMemo();
+        Cache::shouldReceive('remember')->andThrow(new \RuntimeException('cache down'));
+
+        DB::enableQueryLog();
+
+        try {
+            $this->assertSame('db', Settings::get('a'));
+            $this->assertSame('db', Settings::get('a'));
+            $this->assertCount(1, DB::getQueryLog());
+        } finally {
+            DB::disableQueryLog();
+        }
+    }
 }

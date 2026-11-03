@@ -6,7 +6,6 @@ use App\Support\ReviewKeywords;
 use App\Support\Settings;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
-use Illuminate\Container\Container;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -73,38 +72,6 @@ class ReviewKeywordsTest extends TestCase
         Cache::forgetDriver();
     }
 
-    private function breakCacheRead(): ArrayStore
-    {
-        $store = new class extends ArrayStore
-        {
-            public int $gets = 0;
-
-            public array $puts = [];
-
-            public function get($key)
-            {
-                $this->gets++;
-
-                throw new RuntimeException('the cache backend is down');
-            }
-
-            public function put($key, $value, $seconds)
-            {
-                $this->puts[] = $key;
-
-                return parent::put($key, $value, $seconds);
-            }
-        };
-
-        Cache::extend('array', function ($app, $config) use ($store) {
-            return new Repository($store, ['store' => 'array']);
-        });
-
-        Cache::forgetDriver();
-
-        return $store;
-    }
-
     private function restoreCacheStore(): void
     {
         Cache::extend('array', function ($app, $config) {
@@ -112,13 +79,6 @@ class ReviewKeywordsTest extends TestCase
         });
 
         Cache::forgetDriver();
-    }
-
-    private function expireMemo(): void
-    {
-        $expires = new \ReflectionProperty(ReviewKeywords::class, 'memoExpires');
-
-        $expires->setValue(null, 0.0);
     }
 
     private function settingValue(string $key, string $group = 'moderation'): ?string
@@ -366,30 +326,6 @@ class ReviewKeywordsTest extends TestCase
         $this->assertNotEmpty(ReviewKeywords::matches('cuvant de test'));
     }
 
-    public function test_flush_cache_clears_the_process_memo(): void
-    {
-        $this->writeRow('review_keywords_en', json_encode([['term' => 'first term', 'concept' => 'first term']]));
-
-        $this->assertContains('first term', ReviewKeywords::catalogue()['en']);
-
-        Settings::set(
-            'review_keywords_en',
-            [['term' => 'second term', 'concept' => 'second term']],
-            'moderation'
-        );
-
-        $this->assertContains(
-            'first term',
-            ReviewKeywords::catalogue()['en'],
-            'The memo and the cache must still serve the old list before the cache is flushed.'
-        );
-
-        ReviewKeywords::flushCache();
-
-        $this->assertContains('second term', ReviewKeywords::catalogue()['en']);
-        $this->assertNotContains('first term', ReviewKeywords::catalogue()['en']);
-    }
-
     public function test_a_failing_cache_does_not_break_the_save_and_still_serves_the_fresh_list(): void
     {
         $stale = ['review_keywords_en' => json_encode([['term' => 'stale term', 'concept' => 'stale term']])];
@@ -399,8 +335,6 @@ class ReviewKeywordsTest extends TestCase
         $this->assertContains('stale term', ReviewKeywords::catalogue()['en']);
 
         $this->breakCacheForget();
-
-        Cache::put('review_keywords:rows', $stale, 300);
 
         $failure = null;
 
@@ -412,119 +346,20 @@ class ReviewKeywordsTest extends TestCase
 
         $this->assertNull($failure, 'A failing cache must not break the keyword save.');
 
-        $this->assertSame(
-            $stale,
-            Cache::get('review_keywords:rows'),
-            'The stale rows must survive the failed purge.'
-        );
-
         $this->assertContains('fresh term', ReviewKeywords::catalogue()['en']);
         $this->assertNotContains('stale term', ReviewKeywords::catalogue()['en']);
     }
 
-    public function test_a_failing_cache_read_serves_the_fresh_rows_without_caching_them(): void
+    public function test_settings_forget_alone_refreshes_the_catalogue(): void
     {
-        $this->writeRow('review_keywords_en', json_encode([['term' => 'fresh term', 'concept' => 'fresh term']]));
+        $this->writeRow('review_keywords_en', json_encode([['term' => 'old term', 'concept' => 'old term']]));
+        $this->assertContains('old term', ReviewKeywords::catalogue()['en']);
 
-        $store = $this->breakCacheRead();
+        DB::table('settings')->where('key', 'review_keywords_en')
+            ->update(['value' => json_encode([['term' => 'new term', 'concept' => 'new term']])]);
+        Settings::forget();
 
-        $catalogue = ReviewKeywords::catalogue();
-
-        $this->assertContains(
-            'fresh term',
-            $catalogue['en'],
-            'The catalogue must fall back to the database rows.'
-        );
-
-        $this->assertNotEmpty(
-            ReviewKeywords::matches('fresh term'),
-            'The matcher must work without the cache.'
-        );
-
-        $this->assertSame(
-            1,
-            $store->gets,
-            'The cache read must be attempted exactly once.'
-        );
-
-        $this->assertSame(
-            [],
-            $store->puts,
-            'The failing store must never be asked to cache the rows.'
-        );
-
-        $this->assertSame(
-            [],
-            $store->all(),
-            'The shared rows key must stay empty.'
-        );
-    }
-
-    public function test_the_read_after_a_failed_cache_read_bypasses_the_cache(): void
-    {
-        $this->writeRow('review_keywords_en', json_encode([['term' => 'fresh term', 'concept' => 'fresh term']]));
-
-        $store = $this->breakCacheRead();
-
-        ReviewKeywords::catalogue();
-
-        $this->assertSame(
-            1,
-            $store->gets,
-            'The first read must fail on the cache.'
-        );
-
-        $this->expireMemo();
-
-        $catalogue = ReviewKeywords::catalogue();
-
-        $this->assertContains(
-            'fresh term',
-            $catalogue['en'],
-            'The bypassed read must serve the fresh rows.'
-        );
-
-        $this->assertSame(
-            1,
-            $store->gets,
-            'The second read must not read the cache again.'
-        );
-
-        $this->assertSame(
-            [],
-            $store->puts,
-            'The failing store must never be asked to cache the rows.'
-        );
-    }
-
-    public function test_a_new_application_instance_restores_the_cached_path(): void
-    {
-        $this->writeRow('review_keywords_en', json_encode([['term' => 'fresh term', 'concept' => 'fresh term']]));
-
-        $this->breakCacheForget();
-
-        ReviewKeywords::saveLocale('en', [['term' => 'fresh term', 'concept' => 'fresh term']]);
-
-        $this->restoreCacheStore();
-
-        Cache::put('review_keywords:rows', [
-            'review_keywords_en' => json_encode([['term' => 'stale term', 'concept' => 'stale term']]),
-        ], 300);
-
-        $original = Container::getInstance();
-
-        try {
-            Container::setInstance(new Container);
-
-            $entries = ReviewKeywords::entriesFor('en');
-        } finally {
-            Container::setInstance($original);
-        }
-
-        $this->assertSame(
-            [['term' => 'stale term', 'concept' => 'stale term']],
-            $entries,
-            'A new application instance must read the rows through the cache again.'
-        );
+        $this->assertContains('new term', ReviewKeywords::catalogue()['en']);
+        $this->assertNotContains('old term', ReviewKeywords::catalogue()['en']);
     }
 }

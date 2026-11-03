@@ -17,6 +17,7 @@ All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachange
 - Settings are memoized per request, `my-petitions` totals are cached, and the admin stats and dashboard no longer scan the whole `users` table.
 - Ad banner frames are supported on `www.freecause.com`, with the www ad-frame isolation enforced in response headers.
 - WordPress magazine updated; unsupported and inactive plugins removed.
+- Admin logs export uses the same filters as the list: search matches the title prefix only, no longer the message content.
 ### Fixed
 - Guest name and email are sent from the sign confirm step.
 - Correct locale links and `hreflang`, refreshed X sharing, and fixed Search Console crawl and canonical signals.
@@ -24,6 +25,7 @@ All notable changes to FreeCause. Format: [Keep a Changelog](https://keepachange
 - Audit findings across petitions, auth and admin.
 - `symfony/mime` bumped to 7.4.22 (CVE-2026-45070).
 - Recursive ad-frame errors; scraper blocks are prioritized in the Cloudflare rules.
+- Admin bulk delete skips anyone with admin access, matching ban.
 
 ## [v2026.10.25-070744]
 ### Added

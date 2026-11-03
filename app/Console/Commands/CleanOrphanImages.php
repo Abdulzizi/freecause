@@ -28,10 +28,16 @@ class CleanOrphanImages extends Command
         $referenced = DB::table('petitions')
             ->whereNotNull('cover_image')
             ->where('cover_image', 'not like', 'http%')
-            ->pluck('cover_image')
-            ->toArray();
+            ->pluck('cover_image');
 
-        $orphans = array_filter($files, fn ($f) => ! in_array($f, $referenced, true));
+        $keep = array_flip($referenced
+            ->flatMap(fn ($path) => [$path, ...array_values(ImageVariants::relativeVariantPaths($path))])
+            ->all());
+
+        // Skip fresh files: an upload may be on disk before its petition row is saved.
+        $cutoff = now()->subHour()->getTimestamp();
+        $orphans = array_filter($files, fn ($f) => ! isset($keep[$f])
+            && Storage::disk('public')->lastModified($f) < $cutoff);
 
         if (empty($orphans)) {
             $this->info('No orphan images found.');
@@ -49,7 +55,6 @@ class CleanOrphanImages extends Command
                 $this->line("[dry-run] would delete: {$file} (".$this->formatBytes($size).')');
             } else {
                 Storage::disk('public')->delete($file);
-                ImageVariants::purge($file);
                 $this->line("deleted: {$file} (".$this->formatBytes($size).')');
             }
         }

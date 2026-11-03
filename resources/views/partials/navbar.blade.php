@@ -55,7 +55,6 @@
                     <li class="nav-item lg:ms-2 lg:me-3">
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
-                            <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
                             <button type="submit" class="nav-link">
                                 {{ $c['nav_logout'] ?? __('nav.logout') }}
                             </button>
@@ -116,7 +115,6 @@
             </a>
             <form method="POST" action="{{ lroute('logout') }}" class="contents">
                 @csrf
-                <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
                 <button type="submit" class="fcui-sheet-list__item w-full">
                     <x-lucide-log-out aria-hidden="true" />
                     <span>{{ $c['nav_logout'] ?? __('nav.logout') }}</span>

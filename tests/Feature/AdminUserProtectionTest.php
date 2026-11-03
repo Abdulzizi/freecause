@@ -1,0 +1,125 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Permission;
+use App\Models\User;
+use App\Models\UserLevel;
+use App\Services\WordPressUserDeletionService;
+use Database\Seeders\LanguageSeeder;
+use Database\Seeders\UserLevelSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
+
+class AdminUserProtectionTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
+    }
+
+    private function sysAdmin(array $o = []): User
+    {
+        return User::factory()->create($o + [
+            'level_id' => UserLevel::where('name', 'admin')->value('id'),
+            'verified' => true,
+        ]);
+    }
+
+    private function editor(string $name, array $o = []): User
+    {
+        $level = UserLevel::firstOrCreate(['name' => $name], ['visible_name' => 'Editor', 'is_system' => false]);
+        Permission::firstOrCreate(['level_id' => $level->id, 'module' => 'users', 'action' => 'edit']);
+        Permission::firstOrCreate(['level_id' => $level->id, 'module' => 'users', 'action' => 'view']);
+
+        return User::factory()->create($o + ['level_id' => $level->id, 'verified' => true]);
+    }
+
+    public function test_non_system_editor_cannot_change_email_or_password_of_another_admin(): void
+    {
+        $actor = $this->editor('ed_users');
+        $target = $this->editor('ed_other', ['email' => 'mod@example.com', 'password' => Hash::make('keep-me-123')]);
+
+        $this->actingAs($actor, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'password' => 'hijacked-123'])
+            ->assertSessionHasErrors('id');
+        $this->actingAs($actor, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'email' => 'evil@example.com'])
+            ->assertSessionHasErrors('id');
+
+        $target->refresh();
+        $this->assertSame('mod@example.com', $target->email);
+        $this->assertTrue(Hash::check('keep-me-123', $target->password));
+
+        $this->actingAs($actor, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'first_name' => 'Renamed'])
+            ->assertSessionHasNoErrors();
+        $this->assertSame('Renamed', $target->fresh()->first_name);
+    }
+
+    public function test_system_admin_can_change_password_of_an_editor(): void
+    {
+        $target = $this->editor('ed_other');
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'password' => 'changed-pass-123'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue(Hash::check('changed-pass-123', $target->fresh()->password));
+    }
+
+    public function test_bulk_and_single_ban_skip_anyone_who_can_access_admin(): void
+    {
+        $editor = $this->editor('ed_other');
+        $member = User::factory()->create(['level_id' => UserLevel::where('name', 'user')->value('id')]);
+        $bannedId = UserLevel::where('name', 'banned')->value('id');
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->postJson('/admin/users/bulk-banned', ['ids' => [$editor->id, $member->id], 'days' => 3])
+            ->assertOk()
+            ->assertJson(['banned' => 1, 'skipped' => 1]);
+
+        $this->assertSame($bannedId, $member->fresh()->level_id);
+        $this->assertNotSame($bannedId, $editor->fresh()->level_id);
+
+        $this->postJson(route('admin.users.ban', $editor), ['days' => 0])
+            ->assertForbidden()
+            ->assertJsonPath('ok', false);
+        $this->assertNotSame($bannedId, $editor->fresh()->level_id);
+    }
+
+    public function test_bulk_delete_skips_anyone_who_can_access_admin(): void
+    {
+        $this->mock(WordPressUserDeletionService::class)->shouldReceive('delete');
+        $editor = $this->editor('ed_other');
+        $member = User::factory()->create(['level_id' => UserLevel::where('name', 'user')->value('id')]);
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->postJson('/admin/users/bulk-delete', ['ids' => [$editor->id, $member->id]])
+            ->assertOk()
+            ->assertJson(['ok' => true, 'deleted' => 1]);
+
+        $this->assertNotNull($editor->fresh());
+        $this->assertNull($member->fresh());
+    }
+
+    public function test_my_account_email_taken_by_another_user_is_a_validation_error(): void
+    {
+        User::factory()->create(['email' => 'taken@example.com']);
+        $admin = $this->sysAdmin(['email' => 'me@example.com']);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/system/user-info', ['email' => 'taken@example.com'])
+            ->assertSessionHasErrors('email');
+        $this->assertSame('me@example.com', $admin->fresh()->email);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/system/user-info', ['email' => 'me@example.com'])
+            ->assertSessionHasNoErrors();
+    }
+}

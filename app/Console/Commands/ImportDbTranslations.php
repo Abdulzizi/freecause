@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\CategoryTranslation;
 use App\Models\PageContent;
+use App\Services\PageContentService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -40,6 +41,8 @@ class ImportDbTranslations extends Command
                 );
                 $pages++;
             }
+
+            app(PageContentService::class)->clear((string) $page, $locale);
         }
 
         foreach ($data['categories'] ?? [] as $token => $name) {

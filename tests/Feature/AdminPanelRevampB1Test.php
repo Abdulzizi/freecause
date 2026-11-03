@@ -186,7 +186,7 @@ class AdminPanelRevampB1Test extends TestCase
         $featuredCheckbox = $xpath->query('//input[@name="is_featured"]')->item(0);
 
         $this->assertNotNull($featuredCheckbox);
-        $this->assertTrue($featuredCheckbox->hasAttribute('checked'));
+        $this->assertFalse($featuredCheckbox->hasAttribute('checked'), 'featured is per-locale; fr has no row yet');
     }
 
     public function test_petition_editor_rejects_goal_outside_supported_ladder(): void
@@ -237,7 +237,6 @@ class AdminPanelRevampB1Test extends TestCase
             ->assertOk()
             ->assertJsonPath('ok', true);
 
-        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'is_featured' => 1]);
         $this->assertDatabaseHas('petition_translations', ['petition_id' => $petition->id, 'locale' => 'en', 'is_featured' => 1]);
 
         $this->postJson(route('admin.petitions.bulkAction'), ['action' => 'activate', 'ids' => [$petition->id]])
@@ -245,6 +244,18 @@ class AdminPanelRevampB1Test extends TestCase
             ->assertJsonPath('ok', true);
 
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'is_active' => 1]);
+    }
+
+    public function test_bulk_feature_falls_back_to_first_translation_without_default_locale(): void
+    {
+        $petition = Petition::factory()->create();
+        $it = PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'it', 'title' => 'T', 'slug' => 't-it', 'description' => '', 'is_featured' => false]);
+        $fr = PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'fr', 'title' => 'T', 'slug' => 't-fr', 'description' => '', 'is_featured' => false]);
+
+        $this->postJson(route('admin.petitions.bulkAction'), ['action' => 'feature', 'ids' => [$petition->id]])->assertOk();
+
+        $this->assertDatabaseHas('petition_translations', ['id' => $it->id, 'is_featured' => 1]);
+        $this->assertDatabaseHas('petition_translations', ['id' => $fr->id, 'is_featured' => 0]);
     }
 
     public function test_petition_bulk_ban_and_single_reconcile_are_available(): void
@@ -265,7 +276,6 @@ class AdminPanelRevampB1Test extends TestCase
             'id' => $petition->id,
             'status' => 'draft',
             'is_active' => 0,
-            'is_featured' => 0,
         ]);
 
         Signature::factory()->create(['petition_id' => $petition->id, 'confirmed' => true]);

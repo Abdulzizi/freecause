@@ -6,10 +6,10 @@ use App\Http\Middleware\ConditionalLogging;
 use App\Http\Requests\PetitionRequest;
 use App\Models\Category;
 use App\Models\Language;
-use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
+use App\Services\PageContentService;
 use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
@@ -21,6 +21,7 @@ use App\Support\ReviewKeywords;
 use App\Support\Slug;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class PetitionController extends Controller
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
     {
-        $tr = $petition->translationOrFallback($locale);
+        $tr = $petition->translationOrFallback($locale, default_locale());
 
         abort_if(! $tr, 404);
 
@@ -80,6 +81,15 @@ class PetitionController extends Controller
         }
 
         return $tr;
+    }
+
+    private function hasSigned(Petition $petition): bool
+    {
+        $u = auth()->user();
+
+        return Signature::where('petition_id', $petition->id)
+            ->where(fn ($q) => $q->where('email', $u->email)->orWhere('user_id', $u->id))
+            ->exists();
     }
 
     private function normalizeTags(?string $tags): ?string
@@ -136,16 +146,10 @@ class PetitionController extends Controller
         return $request->hasFile('image') && filled($data['image_url'] ?? null);
     }
 
-    public function index(string $locale)
+    /** Base query for the public petition listing; cache:warm uses it too. */
+    public static function listingQuery(string $locale): Builder
     {
-        $locale = normalize_locale($locale);
-
-        $search = trim((string) request('q', ''));
-        $page = max(1, min((int) request('page', 1), 500));
-
-        $categories = Category::cachedActive($locale);
-
-        $query = Petition::query()
+        return Petition::query()
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
@@ -160,6 +164,18 @@ class PetitionController extends Controller
             })
             ->whereNotNull('pt_locale.title')
             ->visible();
+    }
+
+    public function index(string $locale)
+    {
+        $locale = normalize_locale($locale);
+
+        $search = trim((string) request('q', ''));
+        $page = max(1, min((int) request('page', 1), 500));
+
+        $categories = Category::cachedActive($locale);
+
+        $query = self::listingQuery($locale);
 
         if ($search !== '') {
             $driver = DB::connection()->getDriverName();
@@ -256,17 +272,11 @@ class PetitionController extends Controller
             $this->recordView($request, $petition);
         }
 
-        $tr = $petition->translationOrFallback($locale, $defaultLocale);
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.show', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
         $related = cache()->remember(
             "petition:related:{$petition->id}:{$locale}",
@@ -295,11 +305,7 @@ class PetitionController extends Controller
             return response()->view('petition.offline', compact('petition', 'tr', 'locale', 'related'));
         }
 
-        $hasSigned = auth()->check()
-            ? Signature::where('petition_id', $petition->id)
-                ->where('email', auth()->user()->email)
-                ->exists()
-            : false;
+        $hasSigned = auth()->check() && $this->hasSigned($petition);
 
         $goalTotal = (int) ($petition->goal_signatures ?? 100);
         $goalCurrent = (int) ($petition->signature_count ?? 0);
@@ -322,13 +328,9 @@ class PetitionController extends Controller
             'id' => $petition->id,
         ]);
 
-        $content = PageContent::where('page', 'petition_show')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
-
-        $formContent = PageContent::where('page', 'petition_sign_form')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
+        $pages = app(PageContentService::class);
+        $content = collect($pages->getPage('petition_show', $tr->locale));
+        $formContent = collect($pages->getPage('petition_sign_form', $tr->locale));
 
         $defaultComments = DefaultComments::forLocales(
             Language::where('is_active', true)
@@ -610,7 +612,6 @@ class PetitionController extends Controller
     public function thanks(Request $request, string $locale, string $slug, int $id)
     {
         $requestedLocale = normalize_locale($locale);
-        $defaultLocale = default_locale();
 
         $petition = Petition::query()->with('category')->where('id', $id)->firstOrFail();
 
@@ -618,20 +619,14 @@ class PetitionController extends Controller
 
         abort_unless($petition->status === 'published' ? (bool) $petition->is_active : $isOwner, 404);
 
-        $tr = $petition->translationOrFallback($requestedLocale, $defaultLocale);
-
-        abort_if(! $tr, 404);
-
         $mode = $request->session()->get('petition_mode', 'signed');
         $verified = $request->session()->get('petition_verified', true);
 
-        if ($tr->slug !== $slug || $tr->locale !== $requestedLocale) {
-            return redirect()->route('petition.thanks', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ])->with('petition_mode', $mode)->with('petition_verified', $verified);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.thanks', $requestedLocale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect->with('petition_mode', $mode)->with('petition_verified', $verified);
         }
+        $tr = $trOrRedirect;
 
         $locale = $tr->locale;
         App::setLocale($locale);
@@ -658,9 +653,7 @@ class PetitionController extends Controller
             ->limit(5)
             ->get();
 
-        $content = PageContent::where('page', 'petition_thanks')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
+        $content = collect(app(PageContentService::class)->getPage('petition_thanks', $tr->locale));
 
         $count = (int) ($petition->signature_count ?? 0);
         $ladder = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
@@ -699,21 +692,13 @@ class PetitionController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $tr = $petition->translationOrFallback($locale, default_locale());
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.sign.page', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.sign.page', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
-        $alreadySigned = auth()->check() && Signature::where('petition_id', $petition->id)
-            ->where('email', auth()->user()->email)
-            ->exists();
+        $alreadySigned = auth()->check() && $this->hasSigned($petition);
 
         if ($alreadySigned) {
             return redirect()->route('petition.show', [
@@ -723,11 +708,9 @@ class PetitionController extends Controller
             ]);
         }
 
-        if ($request->isMethod('get')) {
-            $content = PageContent::where('page', 'petition_sign')
-                ->where('locale', $locale)
-                ->pluck('value', 'key');
+        $content = collect(app(PageContentService::class)->getPage('petition_sign', $locale));
 
+        if ($request->isMethod('get')) {
             return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
         }
 
@@ -736,10 +719,6 @@ class PetitionController extends Controller
             : PetitionSigning::guestRules();
 
         session(["sign.{$petition->id}" => $request->validate($rules)]);
-
-        $content = PageContent::where('page', 'petition_sign')
-            ->where('locale', $locale)
-            ->pluck('value', 'key');
 
         return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
     }
@@ -969,6 +948,8 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
+                ->where('confirmed', true)
+                ->where('is_spam', false)
                 ->chunkById(1000, function ($rows) use ($out, &$num) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1006,6 +987,8 @@ class PetitionController extends Controller
         // uncapped export is available as TXT/CSV (streamed).
         $signatures = Signature::query()
             ->where('petition_id', $petition->id)
+            ->where('confirmed', true)
+            ->where('is_spam', false)
             ->orderBy('created_at')
             ->limit(1000)
             ->get();
@@ -1054,6 +1037,7 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
+                ->where('is_spam', false)
                 ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1091,24 +1075,17 @@ class PetitionController extends Controller
     public function signatures(Request $request, string $locale, string $slug, int $id)
     {
         $locale = normalize_locale($locale);
-        $defaultLocale = default_locale();
 
         $petition = Petition::with('category', 'user', 'translations')
             ->where('id', $id)
             ->visible()
             ->firstOrFail();
 
-        $tr = $petition->translationOrFallback($locale, $defaultLocale);
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.signatures', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.signatures', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
         $page = max(1, min((int) request('page', 1), 500));
 

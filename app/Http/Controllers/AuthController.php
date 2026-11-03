@@ -251,14 +251,12 @@ class AuthController extends Controller
         return back()->withErrors(['email' => __('auth.err_invalid_credentials')])->onlyInput('email', 'auth_form');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request, string $locale)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        $locale = $request->input('locale', 'en');
 
         return redirect()->to(WpSso::logoutUrl("/{$locale}"));
     }
@@ -287,16 +285,6 @@ class AuthController extends Controller
         $emailChanged = false;
 
         if ($newEmail !== '' && $newEmail !== strtolower((string) $u->email)) {
-            $exists = User::where('email', $newEmail)
-                ->where('id', '!=', $u->id)
-                ->exists();
-
-            if ($exists) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['new_email' => __('profile.email_taken')]);
-            }
-
             if (! Settings::get('smtp_enabled', false)) {
 
                 return back()
@@ -314,12 +302,6 @@ class AuthController extends Controller
         if (! empty($data['new_password'])) {
             if (! $u->hasLocalPassword()) {
                 return back()->withInput()->withErrors(['profile' => __('profile.google_only_note')]);
-            }
-
-            if (! Hash::check($data['current_password'] ?? '', $u->password)) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['current_password' => __('profile.current_password_incorrect')]);
             }
 
             $u->password = Hash::make($data['new_password']);
