@@ -14,9 +14,23 @@ use Illuminate\Validation\Rule;
 
 class PetitionRequest extends FormRequest
 {
+    private ?Petition $petition = null;
+
     public function authorize(): bool
     {
-        return true;
+        if ($this->routeIs('petition.store')) {
+            return true;
+        }
+
+        // Missing petition answers 404 before any validation or remote image fetch.
+        $petition = $this->currentPetition() ?? abort(404);
+
+        return auth()->check() && (int) $petition->user_id === (int) auth()->id();
+    }
+
+    private function currentPetition(): ?Petition
+    {
+        return $this->petition ??= Petition::query()->whereKey($this->route('id'))->first(['user_id', 'image_url', 'youtube_url']);
     }
 
     public function rules(): array
@@ -29,7 +43,7 @@ class PetitionRequest extends FormRequest
 
         $current = $creating
             ? null
-            : Petition::query()->whereKey($this->route('id'))->first(['image_url', 'youtube_url']);
+            : $this->currentPetition();
         $currentUrl = $current?->image_url;
 
         // An unchanged stored value passes, so legacy values saved under the old rules do not block unrelated edits.
