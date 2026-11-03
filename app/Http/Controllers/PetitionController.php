@@ -836,7 +836,7 @@ class PetitionController extends Controller
             $response = DB::transaction(function () use ($request, $data, $petition, $tr, $reviewMatches, &$newCoverImage) {
                 $locked = Petition::query()->lockForUpdate()->findOrFail($petition->id);
                 $this->requireEditable($locked);
-                $petition->setRawAttributes($locked->getAttributes());
+                $petition->setRawAttributes($locked->getAttributes(), true);
 
                 $tags = $this->normalizeTags($data['tags'] ?? null);
 
@@ -861,7 +861,7 @@ class PetitionController extends Controller
                     $petition->image_url = null;
                 } elseif ($request->boolean('remove_image')) {
                     $petition->cover_image = null;
-                } elseif (filled($data['image_url'] ?? null) && ($data['image_url'] ?? null) !== $petition->image_url) {
+                } elseif (filled($data['image_url'] ?? null) && $petition->isDirty('image_url')) {
                     $petition->cover_image = null;
                 }
 
