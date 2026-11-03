@@ -127,7 +127,6 @@ class AdminPagesController extends Controller
             return $page->id;
         });
 
-        EdgeCachePurge::listings();
         $this->purgeSafely([...$urlsBefore, ...$this->pageUrlsSafely([$pageId])]);
 
         $translation = PageTranslation::query()
@@ -166,7 +165,6 @@ class AdminPagesController extends Controller
             'delete' => Page::whereIn('id', $ids)->delete(),
         };
 
-        EdgeCachePurge::listings();
         $this->purgeSafely($urls);
 
         return response()->json(['ok' => true, 'action' => $action, 'affected' => $affected]);

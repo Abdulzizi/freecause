@@ -27,14 +27,14 @@ class RecentActivityPrivacyTest extends TestCase
             Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => $user->id, 'name' => 'Old snapshot', 'confirmed' => true, 'is_spam' => false]);
             cache()->forget(CacheKeys::homeRecent('en'));
             $this->artisan('cache:warm', ['--locale' => 'en'])->assertSuccessful();
-            $row = collect(cache()->get(CacheKeys::homeRecent('en')))->firstWhere('user_id', $user->id);
-            $this->assertSame($expected, $row->display_name);
+            $rows = collect(cache()->get(CacheKeys::homeRecent('en')));
+            $this->assertContains($expected, $rows->pluck('display_name'));
+            $this->assertObjectNotHasProperty('user_id', $rows->first());
         }
         Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => null, 'name' => 'Guest public name', 'confirmed' => true, 'is_spam' => false]);
         cache()->forget(CacheKeys::homeRecent('en'));
         $this->artisan('cache:warm', ['--locale' => 'en'])->assertSuccessful();
-        $guest = collect(cache()->get(CacheKeys::homeRecent('en')))->firstWhere('user_id', null);
-        $this->assertSame('Guest public name', $guest->display_name);
+        $this->assertContains('Guest public name', collect(cache()->get(CacheKeys::homeRecent('en')))->pluck('display_name'));
         $this->get('/en')->assertOk()->assertSee('publicnick');
     }
 

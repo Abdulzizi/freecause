@@ -41,6 +41,8 @@ class UpdateProfileRequest extends FormRequest
     {
         return [
             'nickname.required_if' => __('profile.nick_required'),
+            'new_email.unique' => __('profile.email_taken'),
+            'current_password.current_password' => __('profile.current_password_incorrect'),
         ];
     }
 }

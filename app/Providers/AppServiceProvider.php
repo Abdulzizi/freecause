@@ -4,13 +4,13 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Models\CategoryTranslation;
-use App\Models\Language;
-use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\User;
 use App\Observers\FlushesListingCaches;
 use App\Observers\UserProfileCacheFlusher;
+use App\Services\PageContentService;
+use App\Support\Locale;
 use App\Support\MailQuota;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
@@ -28,7 +28,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -106,21 +105,8 @@ class AppServiceProvider extends ServiceProvider
         try {
             $segmentLocale = request()->segment(1);
 
-            $availableLocales = Cache::remember(
-                'languages:codes',
-                60,
-                fn () => Schema::hasTable('languages')
-                    ? Language::where('is_active', 1)->pluck('code')->toArray()
-                    : []
-            );
-
-            $defaultLocale = Cache::remember(
-                'default_language',
-                60,
-                fn () => Schema::hasTable('languages')
-                    ? Language::where('is_default', 1)->value('code') ?? 'en'
-                    : 'en'
-            );
+            $availableLocales = Locale::supported();
+            $defaultLocale = Locale::default();
 
             if (in_array($segmentLocale, $availableLocales)) {
                 App::setLocale($segmentLocale);
@@ -162,17 +148,9 @@ class AppServiceProvider extends ServiceProvider
             try {
                 $locale = app()->getLocale();
 
-                $defaultLocale = Cache::remember(
-                    'default_language',
-                    60,
-                    fn () => Language::where('is_default', 1)->value('code') ?? 'en'
-                );
+                $defaultLocale = Locale::default();
 
-                $pageContent = Cache::remember(
-                    "page_contents:$locale",
-                    now()->addHours(6),
-                    fn () => PageContent::where('locale', $locale)->pluck('value', 'key')
-                );
+                $pageContent = app(PageContentService::class)->getPage('navbar', $locale);
 
                 $categories = Cache::remember(
                     "categories:list:$locale",

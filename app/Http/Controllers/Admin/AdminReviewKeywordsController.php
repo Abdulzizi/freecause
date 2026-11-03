@@ -8,7 +8,6 @@ use App\Models\Language;
 use App\Support\Locale;
 use App\Support\ReviewKeywords;
 use Illuminate\Bus\UniqueLock;
-use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -185,13 +184,9 @@ class AdminReviewKeywordsController extends Controller
                 ->with('error', 'Rescan not confirmed.');
         }
 
-        if (! admin_can('petitions', 'edit')) {
-            abort(403);
-        }
-
         $lease = RescanReviewKeywords::leaseState();
 
-        if ($lease['running'] && $this->rescanLeaseIsFresh($lease['startedAt'])) {
+        if ($lease['running'] && RescanReviewKeywords::leaseIsFresh($lease['startedAt'])) {
             return redirect()
                 ->route('admin.keywords', ['locale' => $locale])
                 ->with('error', 'A rescan is already running.');
@@ -205,7 +200,7 @@ class AdminReviewKeywordsController extends Controller
 
         $guard = Cache::lock(self::RESCAN_GUARD_KEY, self::RESCAN_GUARD_SECONDS);
 
-        if (! $this->rescanGuardAcquired($guard)) {
+        if (! rescue(fn (): bool => $guard->get(), false, report: false)) {
             return redirect()
                 ->route('admin.keywords', ['locale' => $locale])
                 ->with('error', 'The rescan could not be queued.');
@@ -223,7 +218,7 @@ class AdminReviewKeywordsController extends Controller
      */
     protected function queueRescan(string $locale)
     {
-        if ($this->rescanIsQueued()) {
+        if ($this->rescanUniqueLockIsHeld()) {
             return redirect()
                 ->route('admin.keywords', ['locale' => $locale])
                 ->with('error', 'A rescan is already queued.');
@@ -243,7 +238,9 @@ class AdminReviewKeywordsController extends Controller
                 ->with('error', 'The rescan could not be queued.');
         }
 
-        if (! $this->rescanOwnsClaim($leaseStart) || ! $this->rescanUniqueLockIsHeld()) {
+        $lease = RescanReviewKeywords::leaseState();
+
+        if (! $lease['running'] || $lease['startedAt'] !== $leaseStart || ! $this->rescanUniqueLockIsHeld()) {
             RescanReviewKeywords::releaseLease($leaseStart);
 
             Log::warning('Review keyword rescan could not be queued: the lease or the unique lock was taken over.');
@@ -256,28 +253,6 @@ class AdminReviewKeywordsController extends Controller
         return redirect()
             ->route('admin.keywords', ['locale' => $locale])
             ->with('success', 'Rescan queued. It will hold published petitions that match the current keyword list.');
-    }
-
-    protected function rescanGuardAcquired(Lock $guard): bool
-    {
-        return rescue(fn (): bool => $guard->get(), false, report: false);
-    }
-
-    protected function rescanOwnsClaim(int $leaseStart): bool
-    {
-        $lease = RescanReviewKeywords::leaseState();
-
-        return $lease['running'] && $lease['startedAt'] === $leaseStart;
-    }
-
-    protected function rescanLeaseIsFresh(int $startedAt): bool
-    {
-        return RescanReviewKeywords::leaseIsFresh($startedAt);
-    }
-
-    protected function rescanIsQueued(): bool
-    {
-        return $this->rescanUniqueLockIsHeld();
     }
 
     protected function rescanUniqueLockIsHeld(): bool

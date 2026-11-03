@@ -221,7 +221,7 @@ class GoogleAuthController extends Controller
             return redirect("/{$destLocale}/register")->withErrors(['email' => 'google did not provide email.']);
         }
 
-        $user = User::where('email', $email)->first();
+        $user = User::where('google_id', $google->getId())->first() ?? User::where('email', $email)->first();
         $userLevel = UserLevel::where('name', 'user')->first();
 
         $newUser = false;

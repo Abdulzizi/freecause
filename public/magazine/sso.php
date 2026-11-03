@@ -55,12 +55,23 @@ if ((int) $data['x'] < time()) {
 $email       = strtolower(trim((string) $data['e']));
 $displayName = $data['n'] ?? '';
 
+$localPart = strtolower(strstr($email, '@', true));
+$username  = sanitize_user($localPart . '_' . substr(md5($email), 0, 6), true);
+
 // Find existing WP user by email, or create a subscriber account.
 $wpUser = get_user_by('email', $email);
 
+// Only log into accounts this endpoint provisioned: subscriber-only, flagged
+// fc_sso_account (or the generated login, for accounts created before the flag).
+// Never sign in as an editorial account that happens to share the email.
+if ($wpUser && (array_values($wpUser->roles) !== ['subscriber']
+    || (!get_user_meta($wpUser->ID, 'fc_sso_account', true) && $wpUser->user_login !== $username))) {
+    error_log('FreeCause SSO: refused login into non-SSO WP user ID ' . (int) $wpUser->ID);
+    wp_redirect($redirect);
+    exit;
+}
+
 if (!$wpUser) {
-    $localPart = strtolower(strstr($email, '@', true));
-    $username  = sanitize_user($localPart . '_' . substr(md5($email), 0, 6), true);
 
     $userId = wp_insert_user([
         'user_login'   => $username,

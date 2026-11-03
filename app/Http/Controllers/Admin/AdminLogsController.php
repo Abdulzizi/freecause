@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminLogBulkRequest;
 use App\Models\Log;
 use App\Support\ApproxRows;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -15,7 +16,61 @@ class AdminLogsController extends Controller
 
     public function index(Request $request)
     {
-        $filters = [
+        $filters = $this->filters($request);
+
+        $q = $this->filteredQuery(Log::query(), $filters);
+
+        $logs = $q->withTrashed()->orderByDesc('id')->simplePaginate(25)->withQueryString();
+        $logTotal = $this->approxTableRows('logs');
+
+        $selected = null;
+
+        if ($request->query('select')) {
+            $selected = Log::withTrashed()->find($request->query('select'));
+        }
+
+        return view('admin.logs.index', compact(
+            'filters',
+            'logs',
+            'logTotal',
+            'selected'
+        ));
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $q = $this->filteredQuery(Log::withTrashed(), $this->filters($request))
+            ->orderByDesc('id')
+            ->limit(10000);
+
+        $ids = $q->pluck('id')->all();
+
+        return response()->streamDownload(function () use ($ids) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['id', 'level', 'context', 'title', 'content', 'ip', 'created_at']);
+            Log::withTrashed()
+                ->whereIn('id', $ids)
+                ->orderByDesc('id')
+                ->chunk(500, function ($rows) use ($handle) {
+                    foreach ($rows as $row) {
+                        fputcsv($handle, [
+                            $row->id,
+                            csv_safe($row->level),
+                            csv_safe($row->context),
+                            csv_safe($row->title),
+                            csv_safe($row->content),
+                            csv_safe($row->ip),
+                            $row->created_at,
+                        ]);
+                    }
+                });
+            fclose($handle);
+        }, 'logs-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    private function filters(Request $request): array
+    {
+        return [
             'q' => trim($request->query('q', '')),
             'level' => $request->query('level'),
             'context' => trim($request->query('context', '')),
@@ -23,9 +78,10 @@ class AdminLogsController extends Controller
             'date_from' => trim($request->query('date_from', '')),
             'date_to' => trim($request->query('date_to', '')),
         ];
+    }
 
-        $q = Log::query()->orderByDesc('id');
-
+    private function filteredQuery(Builder $q, array $filters): Builder
+    {
         if ($filters['q']) {
 
             $like = str_replace(['%', '_'], ['\%', '\_'], $filters['q']).'%';
@@ -52,69 +108,7 @@ class AdminLogsController extends Controller
             $q->whereDate('created_at', '<=', $filters['date_to']);
         }
 
-        $logs = $q->withTrashed()->orderByDesc('id')->simplePaginate(25)->withQueryString();
-        $logTotal = $this->approxTableRows('logs');
-
-        $selected = null;
-
-        if ($request->query('select')) {
-            $selected = Log::withTrashed()->find($request->query('select'));
-        }
-
-        return view('admin.logs.index', compact(
-            'filters',
-            'logs',
-            'logTotal',
-            'selected'
-        ));
-    }
-
-    public function export(Request $request): StreamedResponse
-    {
-        $filters = [
-            'q' => trim($request->query('q', '')),
-            'level' => $request->query('level'),
-            'context' => trim($request->query('context', '')),
-        ];
-
-        $q = Log::withTrashed()->orderByDesc('id')->limit(10000);
-
-        if ($filters['q']) {
-            $q->where(function ($sub) use ($filters) {
-                $sub->where('title', 'like', "%{$filters['q']}%")
-                    ->orWhere('content', 'like', "%{$filters['q']}%");
-            });
-        }
-        if ($filters['level']) {
-            $q->where('level', $filters['level']);
-        }
-        if ($filters['context']) {
-            $q->where('context', $filters['context']);
-        }
-
-        $ids = $q->pluck('id')->all();
-
-        return response()->streamDownload(function () use ($ids) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['id', 'level', 'context', 'title', 'content', 'ip', 'created_at']);
-            Log::withTrashed()
-                ->whereIn('id', $ids)
-                ->orderByDesc('id')
-                ->chunk(500, function ($rows) use ($handle) {
-                    foreach ($rows as $row) {
-                        fputcsv($handle, [
-                            $row->id,
-                            csv_safe($row->level),
-                            csv_safe($row->context),
-                            csv_safe($row->title),
-                            csv_safe($row->content),
-                            csv_safe($row->ip),
-                            $row->created_at,
-                        ]);
-                    }
-                });
-            fclose($handle);
-        }, 'logs-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
+        return $q;
     }
 
     public function prune(Request $request)

@@ -373,7 +373,7 @@
                     <label for="petition-featured">featured <span class="text-muted">(this locale)</span></label>
                     <span class="fc-switch">
                         <input id="petition-featured" type="checkbox" name="is_featured" value="1"
-                            {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
+                            {{ ($selectedTranslation?->is_featured ?? false) ? 'checked' : '' }}>
                         <span class="fc-switch__track" aria-hidden="true"></span>
                     </span>
                 </div>

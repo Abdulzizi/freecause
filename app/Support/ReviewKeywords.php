@@ -2,11 +2,8 @@
 
 namespace App\Support;
 
-use App\Models\Setting;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ReviewKeywords
@@ -18,12 +15,6 @@ class ReviewKeywords
     private const DISABLED_KEY = self::SETTINGS_PREFIX.'disabled';
 
     private const RESCAN_PREFIX = self::SETTINGS_PREFIX.'rescan';
-
-    private const CACHE_KEY = 'review_keywords:rows';
-
-    private const CACHE_TTL = 300;
-
-    private const MEMO_TTL = 5;
 
     public const MAX_TERMS = 500;
 
@@ -93,13 +84,7 @@ class ReviewKeywords
 
     private static array $parsed = [];
 
-    private static array $memoRows = [];
-
-    private static float $memoExpires = 0.0;
-
-    private static mixed $memoApp = null;
-
-    private static bool $cacheUnreliable = false;
+    private static ?array $parsedRows = null;
 
     public static function translations(): array
     {
@@ -397,23 +382,9 @@ class ReviewKeywords
     public static function flushCache(): void
     {
         self::$parsed = [];
-        self::$memoRows = [];
-        self::$memoExpires = 0.0;
+        self::$parsedRows = null;
 
-        self::$cacheUnreliable = ! self::purgeCache();
-    }
-
-    protected static function purgeCache(): bool
-    {
-        try {
-            Cache::forget(self::CACHE_KEY);
-
-            return true;
-        } catch (\Throwable $e) {
-            rescue(fn () => Log::warning('Review keyword cache flush failed: '.$e->getMessage()), report: false);
-
-            return false;
-        }
+        Settings::forget();
     }
 
     /**
@@ -504,7 +475,8 @@ class ReviewKeywords
     {
         $rows = self::rows();
 
-        if (self::$parsed === []) {
+        if ($rows !== self::$parsedRows) {
+            self::$parsedRows = $rows;
             self::$parsed = [
                 'overrides' => self::parseOverrides($rows),
                 'disabled' => self::parseDisabled($rows),
@@ -519,83 +491,11 @@ class ReviewKeywords
      */
     private static function rows(): array
     {
-        $app = app();
-
-        if (self::$memoApp !== $app) {
-            self::$memoApp = $app;
-            self::$memoRows = [];
-            self::$memoExpires = 0.0;
-            self::$parsed = [];
-            self::$cacheUnreliable = false;
-        }
-
-        $now = microtime(true);
-
-        if (self::$memoExpires > $now) {
-            return self::$memoRows;
-        }
-
-        $rows = self::readRows();
-
-        self::$memoRows = $rows;
-        self::$memoExpires = $now + self::MEMO_TTL;
-        self::$parsed = [];
-
-        return $rows;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function readRows(): array
-    {
-        if (self::$cacheUnreliable) {
-            $rows = self::directRows();
-
-            if (self::purgeCache()) {
-                self::$cacheUnreliable = false;
-            }
-
-            return $rows;
-        }
-
-        try {
-            return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
-                return Setting::where('group', self::SETTINGS_GROUP)
-                    ->where('key', 'like', self::SETTINGS_PREFIX.'%')
-                    ->where('key', 'not like', self::RESCAN_PREFIX.'%')
-                    ->pluck('value', 'key')
-                    ->all();
-            });
-        } catch (\Throwable $e) {
-            rescue(fn () => Log::warning('Review keyword overrides unreadable: '.$e->getMessage()), report: false);
-
-            self::$cacheUnreliable = true;
-
-            return self::directRows();
-        }
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function directRows(): array
-    {
-        try {
-            return Setting::where('group', self::SETTINGS_GROUP)
-                ->where('key', 'like', self::SETTINGS_PREFIX.'%')
-                ->where('key', 'not like', self::RESCAN_PREFIX.'%')
-                ->pluck('value', 'key')
-                ->all();
-        } catch (\Throwable $e) {
-            rescue(fn () => Log::warning('Review keyword overrides unreadable: '.$e->getMessage()), report: false);
-
-            return array_filter(
-                Settings::group(self::SETTINGS_GROUP),
-                fn ($key): bool => ! str_starts_with((string) $key, self::RESCAN_PREFIX),
-                ARRAY_FILTER_USE_KEY
-            );
-        }
+        return array_filter(
+            Settings::group(self::SETTINGS_GROUP),
+            fn ($key): bool => str_starts_with((string) $key, self::SETTINGS_PREFIX) && ! str_starts_with((string) $key, self::RESCAN_PREFIX),
+            ARRAY_FILTER_USE_KEY
+        );
     }
 
     /**

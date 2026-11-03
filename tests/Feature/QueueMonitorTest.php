@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Support\MailQuota;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -68,5 +69,59 @@ class QueueMonitorTest extends TestCase
         Mail::shouldReceive('raw')->once();
 
         $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->assertExitCode(0);
+    }
+
+    public function test_backlog_alert_is_mailed_at_most_once_per_hour(): void
+    {
+        config(['queue.default' => 'database']);
+        DB::table('jobs')->insert([
+            'queue' => 'default', 'payload' => '{}', 'attempts' => 0,
+            'available_at' => now()->subHours(2)->getTimestamp(),
+            'created_at' => now()->subHours(2)->getTimestamp(),
+        ]);
+        Mail::shouldReceive('raw')->once();
+
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->assertExitCode(0);
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->assertExitCode(0);
+    }
+
+    public function test_new_failures_still_mail_while_backlog_alert_is_deduped(): void
+    {
+        config(['queue.default' => 'database']);
+        Cache::put('queue:monitor:alerted', 1, 3600);
+        DB::table('failed_jobs')->insert([
+            'uuid' => (string) str()->uuid(), 'connection' => 'database', 'queue' => 'default',
+            'payload' => '{}', 'exception' => 'boom', 'failed_at' => now()->toDateTimeString(),
+        ]);
+        Mail::shouldReceive('raw')->once();
+
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->assertExitCode(0);
+    }
+
+    public function test_alert_slot_not_claimed_without_email_or_while_quota_tripped(): void
+    {
+        config(['queue.default' => 'database']);
+        DB::table('jobs')->insert([
+            'queue' => 'default', 'payload' => '{}', 'attempts' => 0,
+            'available_at' => now()->subHours(2)->getTimestamp(),
+            'created_at' => now()->subHours(2)->getTimestamp(),
+        ]);
+
+        $this->artisan('queue:monitor')->assertExitCode(0);
+        $this->assertFalse(Cache::has('queue:monitor:alerted'));
+
+        MailQuota::trip();
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->assertExitCode(0);
+        $this->assertFalse(Cache::has('queue:monitor:alerted'));
+    }
+
+    public function test_alert_slot_released_when_condition_clears(): void
+    {
+        config(['queue.default' => 'database']);
+        Cache::put('queue:monitor:alerted', 1, 3600);
+
+        $this->artisan('queue:monitor')->assertExitCode(0);
+
+        $this->assertFalse(Cache::has('queue:monitor:alerted'));
     }
 }

@@ -105,7 +105,7 @@ class AuthenticationTest extends TestCase
         $googleUser = Mockery::mock();
         $googleUser->shouldReceive('getEmail')->once()->andReturn('google@example.com');
         $googleUser->shouldReceive('getName')->once()->andReturn('Google User');
-        $googleUser->shouldReceive('getId')->once()->andReturn('google-user-id');
+        $googleUser->shouldReceive('getId')->atLeast()->once()->andReturn('google-user-id');
 
         $driver = Mockery::mock();
         $driver->shouldReceive('user')->once()->andReturn($googleUser);
