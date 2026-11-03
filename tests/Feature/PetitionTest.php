@@ -1516,6 +1516,70 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => null]);
     }
 
+    public function test_edit_with_new_image_link_replaces_uploaded_cover(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/original.png', 'image');
+
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'cover_image' => 'petitions/original.png',
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'image_url' => 'https://example.com/new.jpg',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => null, 'image_url' => 'https://example.com/new.jpg']);
+        $this->assertSame('https://example.com/new.jpg', $petition->fresh()->coverUrl());
+        Storage::disk('public')->assertMissing('petitions/original.png');
+    }
+
+    public function test_edit_with_unchanged_image_link_keeps_uploaded_cover(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/original.png', 'image');
+
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'cover_image' => 'petitions/original.png',
+            'image_url' => 'https://example.com/old.jpg',
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'image_url' => 'https://example.com/old.jpg',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => 'petitions/original.png', 'image_url' => 'https://example.com/old.jpg']);
+        Storage::disk('public')->assertExists('petitions/original.png');
+    }
+
     public function test_petition_title_requires_minimum_words(): void
     {
         $response = $this->actingAs($this->user)->post('/en/create-petition', [
