@@ -2,6 +2,7 @@
 
 return [
     'page_title' => ':title - Darmowa przyczyna',
+    'video_title' => 'Film: :title',
     'btn_sign_now' => 'Podpisz teraz',
     'google_continue' => 'Kontynuuj z Google',
     'or' => 'LUB',

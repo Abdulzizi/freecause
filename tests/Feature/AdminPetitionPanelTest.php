@@ -159,6 +159,55 @@ class AdminPetitionPanelTest extends TestCase
             ->where('petition_id', $petitionId)->where('locale', 'en')->value('title'));
     }
 
+    public function test_save_normalises_youtube_links_to_the_id_and_rejects_other_values(): void
+    {
+        $admin = $this->petitionsEditor();
+        $petitionId = $this->createPetitionViaDb('Video Title', 'en', 'video-title');
+        $payload = [
+            'id' => $petitionId,
+            'locale' => 'en',
+            'status' => 'published',
+            'title' => 'Video Title',
+            'slug' => 'video-title',
+            'youtube_url' => 'https://youtu.be/dQw4w9WgXcQ?si=abc',
+        ];
+
+        $this->actingAs($admin, 'admin')->post('/admin/petitions/save', $payload)->assertSessionHasNoErrors();
+        $this->assertSame('dQw4w9WgXcQ', DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', ['youtube_url' => 'https://example.com/video'] + $payload)
+            ->assertSessionHasErrors('youtube_url');
+        $this->assertSame('dQw4w9WgXcQ', DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
+
+        $this->actingAs($admin, 'admin')->post('/admin/petitions/save', ['youtube_url' => ''] + $payload)->assertSessionHasNoErrors();
+        $this->assertNull(DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
+    }
+
+    public function test_save_keeps_an_unchanged_legacy_youtube_value_and_validates_a_changed_one(): void
+    {
+        $admin = $this->petitionsEditor();
+        $petitionId = $this->createPetitionViaDb('Legacy Title', 'en', 'legacy-title');
+        DB::table('petitions')->where('id', $petitionId)->update(['youtube_url' => 'abc']);
+        $payload = [
+            'id' => $petitionId,
+            'locale' => 'en',
+            'status' => 'published',
+            'slug' => 'legacy-title',
+        ];
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', ['title' => 'Renamed Title', 'youtube_url' => 'abc'] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertSame('abc', DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
+        $this->assertSame('Renamed Title', DB::table('petition_translations')->where('petition_id', $petitionId)->value('title'));
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', ['title' => 'Renamed Title', 'youtube_url' => 'junk'] + $payload)
+            ->assertSessionHasErrors('youtube_url');
+        $this->assertSame('abc', DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
+    }
+
     private function createPetitionViaDb(string $title, string $locale, string $slug): int
     {
         $id = DB::table('petitions')->insertGetId([

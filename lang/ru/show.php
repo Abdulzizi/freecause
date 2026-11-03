@@ -2,6 +2,7 @@
 
 return [
     'page_title' => ':title - FreeCause',
+    'video_title' => 'Видео: :title',
     'btn_sign_now' => 'Подписать сейчас',
     'google_continue' => 'Продолжить с Google',
     'or' => 'ИЛИ',

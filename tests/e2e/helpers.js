@@ -73,6 +73,13 @@ export async function login(page, email, password = PASSWORD) {
     await page.locator('#login_password').press('Enter');
 }
 
+// Error alerts are turned into toasts and hidden, so wait for the server-rendered alert to be attached.
+export async function expectLoginRefused(page, email, password = PASSWORD) {
+    await login(page, email, password);
+    await expect(page.locator('[data-alert-variant=error]').first()).toBeAttached();
+    await expect(page).toHaveURL(/\/login/);
+}
+
 export async function newUser(page, prefix = 'u') {
     const email = `${uniq(prefix)}@e2e.test`;
     await register(page, { email });

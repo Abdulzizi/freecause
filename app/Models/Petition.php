@@ -59,6 +59,22 @@ class Petition extends Model
         return PetitionTranslation::class;
     }
 
+    /** The 11-char YouTube video ID from a bare ID or a youtube.com / youtube-nocookie.com / youtu.be link, else null. */
+    public static function youtubeId(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        if (preg_match('/^([\w-]{11})\z/', $value, $matches)) {
+            return $matches[1];
+        }
+
+        $pattern = '~^https?://(?:(?:www\.|m\.)?youtube\.com/(?:watch\?(?:[^#]*&)?v=|shorts/|embed/|live/)|(?:www\.)?youtube-nocookie\.com/embed/|youtu\.be/)([\w-]{11})(?:[?&#]|\z)~i';
+
+        return preg_match($pattern, $value, $matches) ? $matches[1] : null;
+    }
+
     public function coverUrl(): string
     {
         if ($this->cover_image) {

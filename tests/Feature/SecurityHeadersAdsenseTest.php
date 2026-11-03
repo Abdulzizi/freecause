@@ -41,6 +41,12 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString('adtrafficquality.google', $csp);
     }
 
+    public function test_public_csp_allows_youtube_nocookie_frames_only_on_the_public_site(): void
+    {
+        $this->assertMatchesRegularExpression('#frame-src [^;]*https://www\.youtube-nocookie\.com[ ;]#', $this->cspFor('/en'));
+        $this->assertStringNotContainsString('youtube-nocookie.com', $this->cspFor('/admin/login'));
+    }
+
     public function test_object_src_none_still_enforced(): void
     {
         $csp = $this->cspFor('/en');

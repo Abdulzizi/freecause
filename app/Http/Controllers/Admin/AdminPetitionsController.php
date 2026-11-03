@@ -341,6 +341,11 @@ class AdminPetitionsController extends Controller
             }
         }
 
+        if (array_key_exists('youtube_url', $petitionUpdate)
+            && $petitionUpdate['youtube_url'] !== Petition::query()->whereKey($data['id'])->value('youtube_url')) {
+            $petitionUpdate['youtube_url'] = Petition::youtubeId($petitionUpdate['youtube_url']);
+        }
+
         if ($request->has('created_at') && ! empty($data['created_at'])) {
             $petitionUpdate['created_at'] = $data['created_at'];
         }

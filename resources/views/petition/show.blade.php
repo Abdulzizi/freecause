@@ -8,6 +8,7 @@
 
     $petitionImg = $petition->coverUrl();
     $coverVariants = \App\Support\ImageVariants::urls($petition->cover_image);
+    $youtubeId = \App\Models\Petition::youtubeId($petition->youtube_url);
     $hasCover = false;
     foreach ([$petition->cover_image, $petition->image_url] as $index => $coverPath) {
         if (!$coverPath) {
@@ -307,6 +308,9 @@
                             <div class="text-base leading-[1.75] text-ink [&_p]:mb-3 [&_p]:text-sm [&_p]:leading-[1.75] [&_ul]:my-2.5 [&_ul]:mt-0 [&_ul]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2.5 [&_ol]:mt-0 [&_ol]:mb-3.5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1.5 [&_li]:text-sm [&_li]:leading-[1.75] [&_li>ul]:mt-2 [&_li>ol]:mt-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-bold [&_h4]:mt-3.5 [&_h4]:text-sm [&_h4]:font-bold">
                                 {!! $tr->description !!}
                             </div>
+                            @if ($youtubeId)
+                                <iframe src="https://www.youtube-nocookie.com/embed/{{ $youtubeId }}" title="{{ __('show.video_title', ['title' => $petitionTitle]) }}" class="mt-4 block w-full aspect-video rounded-md border-0" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            @endif
                         </div>
 
                         {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}

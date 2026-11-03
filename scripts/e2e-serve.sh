@@ -23,6 +23,11 @@ export PHP_CLI_SERVER_WORKERS=4
 trap 'rm -f .env.e2e' EXIT
 trap 'kill "${PID:-0}" 2>/dev/null; exit 143' INT TERM
 "$PHP" artisan migrate --force --seed --seeder='Database\Seeders\E2eSeeder' >/dev/null
+# Uploaded covers are served from /storage; a fresh checkout (CI) has no link yet.
+# The visual job runs in Docker on the host checkout, so it must not rewrite the host's link.
+if [ -z "${E2E_VISUAL:-}" ]; then
+    [ -e public/storage ] || { rm -f public/storage; "$PHP" artisan storage:link >/dev/null; }
+fi
 "$PHP" artisan serve --no-reload --host=127.0.0.1 --port=8099 &
 PID=$!
 wait "$PID"
