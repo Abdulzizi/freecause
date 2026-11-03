@@ -34,7 +34,7 @@ test('admin toggles active and featured from the row', async ({ page }) => {
     await page.locator(`[data-petition-toggle][data-id="${id}"][data-kind=active]`).click();
     await expect.poll(() => db(`select is_active from petitions where id=${id}`)).toBe('0');
     await page.locator(`[data-petition-toggle][data-id="${id}"][data-kind=featured]`).click();
-    await expect.poll(() => db(`select is_featured from petitions where id=${id}`)).toBe('1');
+    await expect.poll(() => db(`select count(*) from petition_translations where petition_id=${id} and is_featured=1`)).toBe('1');
 });
 
 test('admin bulk-deletes the petition after confirming', async ({ page }) => {

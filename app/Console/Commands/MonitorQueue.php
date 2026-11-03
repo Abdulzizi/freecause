@@ -19,9 +19,12 @@ class MonitorQueue extends Command
 
     private const CHECKPOINT_KEY = 'queue:monitor:last-checked-at';
 
+    private const ALERTED_KEY = 'queue:monitor:alerted';
+
     public function handle(): int
     {
         $alerts = [];
+        $conditionAlert = false;
 
         // Read the backlog from the CONFIGURED queue backend (prod runs
         // QUEUE_CONNECTION=database) instead of assuming a table, so the
@@ -59,6 +62,7 @@ class MonitorQueue extends Command
         if ($pendingJobs > 1000) {
             $msg = "High queue backlog: {$pendingJobs} pending jobs";
             $alerts[] = $msg;
+            $conditionAlert = true;
             $this->error($msg);
         }
 
@@ -88,12 +92,26 @@ class MonitorQueue extends Command
             if ($age > 30) {
                 $msg = "Stale job detected: oldest job is {$age} minutes old";
                 $alerts[] = $msg;
+                $conditionAlert = true;
                 $this->warn($msg);
             }
         }
 
-        if (! empty($alerts) && $this->option('alert-email')) {
-            $this->sendAlert($this->option('alert-email'), $alerts);
+        // Backlog/stale persist across runs, so email them at most hourly; new
+        // failures are already deduped by the checkpoint and always email.
+        // The hourly slot is only claimed when a mail will really be attempted,
+        // and is released once the condition clears so a recurrence alerts at once.
+        if (! $conditionAlert) {
+            Cache::forget(self::ALERTED_KEY);
+        }
+
+        $email = $this->option('alert-email');
+        if ($email && ($newFailures > 0 || $conditionAlert)) {
+            // While the quota is tripped sendAlert only logs, so leave the slot free.
+            $conditionDue = $conditionAlert && (MailQuota::tripped() || Cache::add(self::ALERTED_KEY, 1, 3600));
+            if ($newFailures > 0 || $conditionDue) {
+                $this->sendAlert($email, $alerts);
+            }
         }
 
         Log::channel('daily')->info('Queue monitor check', [

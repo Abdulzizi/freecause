@@ -208,6 +208,14 @@ class AdminUsersController extends Controller
             return back()->withErrors(['id' => 'You cannot edit a system-level user.'])->withInput();
         }
 
+        $emailChanged = array_key_exists('email', $data)
+            && strtolower(trim((string) $data['email'])) !== strtolower(trim((string) $user->email));
+
+        if (! $isSelf && ($emailChanged || ! empty($data['password'])) && $user->canAccessAdmin()
+            && ! (admin_user()?->loadMissing('level')?->level?->is_system ?? false)) {
+            return back()->withErrors(['id' => 'Only a system-level admin can change the email or password of another admin.'])->withInput();
+        }
+
         if ($isSelf && $request->filled('level') && $data['level'] !== ($user->level->name ?? null)) {
             return back()->withErrors(['level' => 'You cannot change your own role.'])->withInput();
         }
@@ -232,8 +240,6 @@ class AdminUsersController extends Controller
 
         $wasVerified = (bool) $user->verified;
         $nowVerified = $request->has('verified') ? $request->boolean('verified') : $wasVerified;
-        $emailChanged = array_key_exists('email', $data)
-            && strtolower(trim((string) $data['email'])) !== strtolower(trim((string) $user->email));
 
         $needsReverification = ($wasVerified && ! $nowVerified) || ($emailChanged && $nowVerified);
 
@@ -353,31 +359,9 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false]);
         }
 
-        $bannedLevel = UserLevel::where('name', 'banned')->first();
-        if (! $bannedLevel) {
+        $banned = $this->banIds($ids, $data);
+        if ($banned === null) {
             return response()->json(['ok' => false, 'error' => 'banned role missing']);
-        }
-
-        $days = (int) ($data['days'] ?? 0);
-        $reason = trim((string) ($data['reason'] ?? '')) ?: null;
-        $until = $days > 0 ? now()->addDays($days) : null;
-
-        $banned = User::whereIn('id', $ids)
-            ->where('id', '!=', admin_user()?->id)
-            ->where(function ($q) use ($bannedLevel) {
-                $q->whereNull('level_id')->orWhere('level_id', '!=', $bannedLevel->id);
-            })
-            ->whereDoesntHave('level', function ($q) {
-                $q->where('is_system', true);
-            })
-            ->update([
-                'level_id' => $bannedLevel->id,
-                'banned_reason' => $reason,
-                'banned_until' => $until,
-            ]);
-
-        if ($banned > 0) {
-            Cache::forget('level:user_counts');
         }
 
         $skipped = count($ids) - $banned;
@@ -385,7 +369,7 @@ class AdminUsersController extends Controller
         if ($banned === 0) {
             return response()->json([
                 'ok' => false,
-                'error' => 'No eligible accounts: already banned, your own, admin and system-level accounts cannot be banned.',
+                'error' => 'No eligible accounts: already banned, your own and admin accounts cannot be banned.',
                 'skipped' => $skipped,
             ]);
         }
@@ -395,7 +379,7 @@ class AdminUsersController extends Controller
             'banned' => $banned,
             'skipped' => $skipped,
             'msg' => $skipped > 0
-                ? "Banned {$banned} user(s); {$skipped} skipped (admin/system accounts)."
+                ? "Banned {$banned} user(s); {$skipped} skipped (already banned, your own or admin accounts)."
                 : "Banned {$banned} user(s).",
         ]);
     }
@@ -407,11 +391,55 @@ class AdminUsersController extends Controller
             return response()->json(['ok' => false]);
         }
 
+        if ($this->unbanIds($ids) === null) {
+            return response()->json(['ok' => false, 'error' => 'role missing']);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** Returns the number of users banned, or null when the banned role is missing. */
+    private function banIds(array $ids, array $data): ?int
+    {
+        $bannedLevel = UserLevel::where('name', 'banned')->first();
+        if (! $bannedLevel) {
+            return null;
+        }
+
+        $days = (int) ($data['days'] ?? 0);
+        $reason = trim((string) ($data['reason'] ?? '')) ?: null;
+        $until = $days > 0 ? now()->addDays($days) : null;
+
+        // Skip anyone who can reach the admin panel (same rule as User::canAccessAdmin()).
+        $banned = User::whereIn('id', $ids)
+            ->where('id', '!=', admin_user()?->id)
+            ->where(function ($q) use ($bannedLevel) {
+                $q->whereNull('level_id')->orWhere('level_id', '!=', $bannedLevel->id);
+            })
+            ->whereDoesntHave('level', function ($q) {
+                $q->where('is_system', true)->orWhereHas('permissions');
+            })
+            ->update([
+                'level_id' => $bannedLevel->id,
+                'banned_reason' => $reason,
+                'banned_until' => $until,
+            ]);
+
+        if ($banned > 0) {
+            Cache::forget('level:user_counts');
+        }
+
+        return $banned;
+    }
+
+    /** Returns the number of users unbanned, or null when a role is missing. */
+    private function unbanIds(array $ids): ?int
+    {
         $userLevel = UserLevel::where('name', 'user')->first();
         $bannedLevelId = UserLevel::where('name', 'banned')->value('id');
 
         if (! $userLevel || ! $bannedLevelId) {
-            return response()->json(['ok' => false, 'error' => 'role missing']);
+            return null;
         }
 
         $unbanned = User::whereIn('id', $ids)
@@ -428,7 +456,7 @@ class AdminUsersController extends Controller
             Cache::forget('level:user_counts');
         }
 
-        return response()->json(['ok' => true]);
+        return $unbanned;
     }
 
     public function bulkDelete(Request $request)
@@ -455,14 +483,15 @@ class AdminUsersController extends Controller
                 $q->whereNull('level_id')
                     ->orWhereNotIn('level_id', array_filter([$adminLevelId, $bannedLevelId]));
             })
-            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true));
+            // Same rule as banIds(): skip anyone who can reach the admin panel.
+            ->whereDoesntHave('level', fn ($q) => $q->where('is_system', true)->orWhereHas('permissions'));
 
         $users = $query->get();
 
         if ($users->isEmpty()) {
             return response()->json([
                 'ok' => false,
-                'error' => 'No eligible accounts: banned, admin and system-level users cannot be deleted here.',
+                'error' => 'No eligible accounts: banned users and anyone with admin access cannot be deleted here.',
                 'requested' => count($ids),
             ]);
         }
@@ -491,7 +520,7 @@ class AdminUsersController extends Controller
             'ok' => true,
             'deleted' => $deleted,
             'skipped' => count($ids) - $deleted,
-            'msg' => "Deleted {$deleted} user(s)".(count($ids) > $users->count() ? '; protected accounts (banned/admin/system) were skipped' : '').($failed ? "; {$failed} failed WordPress cleanup and were kept" : ''),
+            'msg' => "Deleted {$deleted} user(s)".(count($ids) > $users->count() ? '; protected accounts (banned or admin access) were skipped' : '').($failed ? "; {$failed} failed WordPress cleanup and were kept" : ''),
         ]);
     }
 
@@ -509,30 +538,16 @@ class AdminUsersController extends Controller
 
     public function ban(AdminUserBanRequest $request, User $user)
     {
-        $data = $request->validated();
+        $banned = $this->banIds([$user->id], $request->validated());
 
-        if ($this->isProtectedUser($user)) {
-            return response()->json(['ok' => false, 'error' => 'You cannot ban yourself or a system-level user.'], 403);
-        }
-
-        $bannedLevel = UserLevel::where('name', 'banned')->first();
-        if (! $bannedLevel) {
+        if ($banned === null) {
             return response()->json(['ok' => false, 'error' => 'banned role missing'], 422);
         }
 
-        if ((int) $user->level_id === (int) $bannedLevel->id) {
-            return response()->json(['ok' => false, 'error' => 'User is already banned.'], 409);
-        }
-
-        $user->level_id = $bannedLevel->id;
-        $reason = trim((string) ($data['reason'] ?? '')) ?: null;
-        $days = (int) ($data['days'] ?? 0);
-        $user->banned_reason = $reason;
-        $user->banned_until = $days > 0 ? now()->addDays($days) : null;
-        $user->save();
-
-        if ($user->wasChanged('level_id')) {
-            Cache::forget('level:user_counts');
+        if ($banned === 0) {
+            return $user->level?->name === 'banned'
+                ? response()->json(['ok' => false, 'error' => 'User is already banned.'], 409)
+                : response()->json(['ok' => false, 'error' => 'You cannot ban yourself or an admin account.'], 403);
         }
 
         return response()->json(['ok' => true]);
@@ -540,35 +555,16 @@ class AdminUsersController extends Controller
 
     public function unban(Request $request, User $user)
     {
-        if ($this->isProtectedUser($user)) {
-            return response()->json(['ok' => false, 'error' => 'You cannot unban yourself or a system-level user.'], 403);
-        }
+        $unbanned = $this->unbanIds([$user->id]);
 
-        $userLevel = UserLevel::where('name', 'user')->first();
-        $bannedLevel = UserLevel::where('name', 'banned')->first();
-
-        if (! $userLevel || ! $bannedLevel) {
+        if ($unbanned === null) {
             return response()->json(['ok' => false, 'error' => 'role missing'], 422);
         }
 
-        if ($user->level_id === $bannedLevel->id) {
-            $user->level_id = $userLevel->id;
-            $user->banned_reason = null;
-            $user->banned_until = null;
-            $user->save();
-
-            if ($user->wasChanged('level_id')) {
-                Cache::forget('level:user_counts');
-            }
+        if ($unbanned === 0 && $user->level?->name === 'banned') {
+            return response()->json(['ok' => false, 'error' => 'You cannot unban yourself or a system-level user.'], 403);
         }
 
         return response()->json(['ok' => true]);
-    }
-
-    private function isProtectedUser(User $user): bool
-    {
-        $user->loadMissing('level');
-
-        return $user->id === admin_user()?->id || (bool) ($user->level?->is_system ?? false);
     }
 }

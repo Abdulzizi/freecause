@@ -14,7 +14,9 @@ class UserProfileController extends Controller
         $defaultLocale = default_locale();
 
         $data = cache()->remember("user:profile:data:{$id}:{$locale}", now()->addSeconds(120), function () use ($id, $locale, $defaultLocale) {
-            $user = User::findOrFail($id);
+            $model = User::findOrFail($id);
+            // cache only what the view renders, never the full User row
+            $user = (object) ['display_name' => $model->display_name, 'created_at' => $model->created_at];
 
             $petitionCount = 0;
             $signatureCount = 0;

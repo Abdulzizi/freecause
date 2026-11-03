@@ -39,9 +39,9 @@ class HomeController extends Controller
             $maxFeatured = 5;
         }
 
-        $pool = cache()->remember(CacheKeys::homePool($locale, $excludedIds, $maxFeatured), 300, function () use ($locale, $defaultLocale, $excludedIds, $maxFeatured) {
+        $loadPool = fn (string $poolLocale) => cache()->remember(CacheKeys::homePool($poolLocale, $excludedIds, $maxFeatured), 300, function () use ($poolLocale, $defaultLocale, $excludedIds, $maxFeatured) {
             return Petition::select(['petitions.id'])
-                ->translated($locale, 'pt_locale', 'pt_default', [], $defaultLocale)
+                ->translated($poolLocale, 'pt_locale', 'pt_default', [], $defaultLocale)
                 ->whereNotNull('pt_locale.title')
                 ->where('pt_locale.is_featured', 1)
                 ->visible()
@@ -52,24 +52,9 @@ class HomeController extends Controller
                 ->toArray();
         });
 
-        $usingFallbackPool = false;
+        $pool = $loadPool($locale);
         if (empty($pool) && $locale !== $defaultLocale) {
-            $usingFallbackPool = true;
-            $pool = cache()->remember(CacheKeys::homePool($defaultLocale, $excludedIds, $maxFeatured), 300, function () use ($defaultLocale, $excludedIds, $maxFeatured) {
-                return Petition::select(['petitions.id'])
-                    ->leftJoin('petition_translations as pt_default', function ($join) use ($defaultLocale) {
-                        $join->on('pt_default.petition_id', '=', 'petitions.id')
-                            ->where('pt_default.locale', '=', $defaultLocale);
-                    })
-                    ->whereNotNull('pt_default.title')
-                    ->where('pt_default.is_featured', 1)
-                    ->visible()
-                    ->whereNotIn('petitions.id', $excludedIds)
-                    ->orderByDesc('petitions.signature_count')
-                    ->limit($maxFeatured)
-                    ->pluck('petitions.id')
-                    ->toArray();
-            });
+            $pool = $loadPool($defaultLocale);
         }
 
         $featuredPetition = null;
@@ -121,7 +106,7 @@ class HomeController extends Controller
 
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
                 return DB::select("
-                    SELECT s.*, p.id as petition_id, {$displayExpr},
+                    SELECT s.created_at, p.id as petition_id, {$displayExpr},
                         {$tr['selects'][0]},
                         {$tr['selects'][1]}
                     FROM signatures s FORCE INDEX (signatures_created_at_index)
@@ -137,7 +122,7 @@ class HomeController extends Controller
             }
 
             return DB::select("
-                SELECT s.*, p.id as petition_id, {$displayExpr},
+                SELECT s.created_at, p.id as petition_id, {$displayExpr},
                     {$tr['selects'][0]},
                     {$tr['selects'][1]}
                 FROM signatures s

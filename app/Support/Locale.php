@@ -10,15 +10,14 @@ class Locale
     {
         $locale = strtolower(trim($locale));
 
-        $language = Language::where('code', $locale)->where('is_active', true)->first();
+        $flags = config('language_flags');
+        $default = self::default();
 
-        if ($language) {
-            return config('language_flags')[$locale] ?? config('language_flags')[config('locales.default')] ?? 'en_US';
+        if (in_array($locale, self::supported(), true)) {
+            return $flags[$locale] ?? $flags[$default] ?? 'en_US';
         }
 
-        $default = config('locales.default', 'en');
-
-        return config('language_flags')[$default] ?? 'en_US';
+        return $flags[$default] ?? 'en_US';
     }
 
     public static function toShort(?string $fullLocale): string

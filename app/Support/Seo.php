@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\CategoryTranslation;
-use App\Models\Language;
 use App\Models\PageTranslation;
 use App\Models\PetitionTranslation;
 use Illuminate\Support\Str;
@@ -91,7 +90,7 @@ class Seo
         if (str_starts_with(self::robots($data), 'noindex') || (self::isListing() && (int) request()->query('page', 1) > 1)) {
             return [];
         }
-        $active = cache()->remember('seo_active_language_codes', 60, fn () => Language::where('is_active', true)->orderByDesc('is_default')->pluck('code')->all());
+        $active = Locale::supported();
         $links = [];
         if (request()->routeIs('petition.show') && isset($data['petition'])) {
             $translations = $data['petition']->translations;
@@ -113,7 +112,7 @@ class Seo
             }
         }
         if ($links) {
-            $links['x-default'] = $links['en'] ?? reset($links);
+            $links['x-default'] = $links[Locale::default()] ?? reset($links);
         }
 
         return $links;

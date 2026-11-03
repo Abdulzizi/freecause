@@ -122,8 +122,8 @@ class AdminPerformanceFixesTest extends TestCase
             ->assertSessionHas('success');
 
         $this->assertFalse(Cache::has('settings:all'));
-        $this->assertFalse(Cache::has('ver:home'));
-        $this->assertFalse(Cache::has('ver:list'));
+        $this->assertSame(6, Cache::get('ver:home'));
+        $this->assertSame(6, Cache::get('ver:list'));
         $this->assertSame('keepme', Cache::get('unrelated:key'), 'targeted rebuild must not wipe unrelated keys');
     }
 
@@ -135,7 +135,7 @@ class AdminPerformanceFixesTest extends TestCase
         PetitionTranslation::create([
             'petition_id' => $a->id, 'locale' => 'en',
             'title' => 'Save the whales specifically', 'slug' => 'save-the-whales-specifically',
-            'description' => 'd', 'text' => '<p>t</p>',
+            'description' => 'd', 'text' => '<p>t</p>', 'is_featured' => true,
         ]);
 
         $b = Petition::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'is_featured' => 0]);

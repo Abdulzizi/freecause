@@ -98,4 +98,19 @@ class PetitionNewSignaturesTest extends TestCase
 
         Mail::assertNothingQueued();
     }
+
+    public function test_old_signatures_outside_lookback_wait_for_a_new_signature(): void
+    {
+        $owner = User::factory()->create(['locale' => 'en', 'notify_new_signatures' => true]);
+        $petition = Petition::factory()->create(['user_id' => $owner->id, 'status' => 'published', 'is_active' => true, 'last_notified_at' => now()->subDays(3)]);
+        Signature::factory()->create(['petition_id' => $petition->id, 'confirmed' => true, 'is_spam' => false, 'created_at' => now()->subDays(2)]);
+
+        Mail::fake();
+        Artisan::call('emails:petition-new-signatures');
+        Mail::assertNothingQueued();
+
+        Signature::factory()->create(['petition_id' => $petition->id, 'confirmed' => true, 'is_spam' => false, 'created_at' => now()->subMinutes(5)]);
+        Artisan::call('emails:petition-new-signatures');
+        Mail::assertQueued(PetitionNewSignaturesMail::class, 1);
+    }
 }

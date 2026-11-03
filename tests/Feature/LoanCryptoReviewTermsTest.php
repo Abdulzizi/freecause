@@ -124,7 +124,6 @@ class LoanCryptoReviewTermsTest extends TestCase
         ]);
 
         Cache::put('settings:all', 'stale');
-        Cache::put('review_keywords:rows', 'stale');
 
         $migration = require database_path('migrations/2026_11_02_000002_add_loan_crypto_to_review_keyword_override.php');
         $migration->up();
@@ -138,7 +137,6 @@ class LoanCryptoReviewTermsTest extends TestCase
             json_decode(DB::table('settings')->where('key', 'review_keywords_en')->value('value'), true)
         );
         $this->assertNull(Cache::get('settings:all'));
-        $this->assertNull(Cache::get('review_keywords:rows'));
 
         $migration->up();
 

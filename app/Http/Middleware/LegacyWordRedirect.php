@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Category;
-use App\Models\Language;
+use App\Support\Locale;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -128,7 +128,7 @@ class LegacyWordRedirect
             return $next($request);
         }
 
-        $allowedLocales = cache()->remember('active_languages', 300, fn () => Language::where('is_active', 1)->pluck('code')->toArray());
+        $allowedLocales = Locale::supported();
 
         $short = SetLocale::legacyLocaleMap()[strtolower(str_replace('-', '_', $first))] ?? null;
         if ($short !== null && in_array($short, $allowedLocales, true)) {
