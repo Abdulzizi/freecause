@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Models\User;
 use App\Support\EdgeCachePurge;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -79,5 +81,35 @@ class EdgeCachePurgeTest extends TestCase
         $petition->target = 'Updated target';
         DB::transaction(fn () => $petition->save());
         Http::assertSent(fn ($request) => in_array('https://www.freecause.com/en/petitions', $request['files'], true));
+    }
+
+    public function test_owner_withdraw_purges_petition_url(): void
+    {
+        $user = User::factory()->create(['verified' => true]);
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'user_id' => $user->id]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Withdraw me', 'slug' => 'withdraw-me', 'description' => 'Description']);
+        Http::fake(['api.cloudflare.com/*' => Http::response(['success' => true])]);
+
+        $this->actingAs($user)->post('/en/petition/withdraw-me/'.$petition->id.'/withdraw')->assertRedirect();
+
+        Http::assertSent(fn ($request) => in_array('https://www.freecause.com/en/petition/withdraw-me/'.$petition->id, $request['files'], true));
+    }
+
+    public function test_owner_edit_purges_old_and_new_slug_urls(): void
+    {
+        $user = User::factory()->create(['verified' => true]);
+        $category = Category::factory()->create(['is_active' => true]);
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'user_id' => $user->id, 'category_id' => $category->id]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Old title', 'slug' => 'old-title', 'description' => 'Description']);
+        Http::fake(['api.cloudflare.com/*' => Http::response(['success' => true])]);
+
+        $this->actingAs($user)->post('/en/petition/old-title/'.$petition->id.'/edit', [
+            'title' => 'New title here',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $category->id,
+        ])->assertRedirect('/en/petition/new-title-here/'.$petition->id);
+
+        Http::assertSent(fn ($request) => in_array('https://www.freecause.com/en/petition/old-title/'.$petition->id, $request['files'], true)
+            && in_array('https://www.freecause.com/en/petition/new-title-here/'.$petition->id, $request['files'], true));
     }
 }
