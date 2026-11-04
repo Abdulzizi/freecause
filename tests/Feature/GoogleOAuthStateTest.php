@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Petition;
+use App\Models\Signature;
 use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -272,6 +274,81 @@ class GoogleOAuthStateTest extends TestCase
             ->assertSessionHasErrors('google_link');
 
         $this->assertNull($user->fresh()->google_id);
+    }
+
+    public function test_google_sign_in_confirms_a_pending_guest_signature(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => null,
+            'password' => null,
+            'password_changed_at' => null,
+            'verified' => false,
+            'verification_token' => 'synthetic-token',
+        ]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $signature = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'confirmed' => false,
+        ]);
+
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=login');
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])->assertRedirect();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertTrue((bool) $signature->fresh()->confirmed);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+        $this->assertTrue((bool) $user->fresh()->verified);
+        $this->assertNull($user->fresh()->verification_token);
+    }
+
+    public function test_google_login_of_a_verified_user_does_not_recount_signatures(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => 'synthetic-google-user',
+            'verified' => true,
+        ]);
+        $petition = Petition::factory()->create(['signature_count' => 1]);
+        Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => true,
+        ]);
+
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=login');
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])->assertRedirect();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+    }
+
+    public function test_google_login_does_not_reconfirm_an_admin_rejected_signature(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'google-state@example.test',
+            'google_id' => 'synthetic-google-user',
+            'verified' => true,
+        ]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $rejected = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => false,
+        ]);
+
+        $state = $this->startGoogleLogin('/en/oauth/google?flow=login');
+        $this->queueGoogleUser();
+        $this->googleCallback(['state' => $state, 'code' => 'synthetic-code'])->assertRedirect();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertFalse((bool) $rejected->fresh()->confirmed);
+        $this->assertSame(0, (int) $petition->fresh()->signature_count);
     }
 
     private function startGoogleLogin(string $path): string

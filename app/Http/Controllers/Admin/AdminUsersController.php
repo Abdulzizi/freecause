@@ -11,6 +11,7 @@ use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\PetitionSigning;
 use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\ApproxRows;
@@ -256,7 +257,7 @@ class AdminUsersController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified) {
+            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified, $wasVerified) {
                 if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
@@ -277,12 +278,14 @@ class AdminUsersController extends Controller
                 $user->identify_mode = $data['identify_mode'] ?? $user->identify_mode;
                 $user->email = $data['email'] ?? $user->email;
                 $user->locale = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;
-                $user->verified = $nowVerified;
+                // A false -> true flip is left to markVerified() after commit, so verified
+                // and the pending-signature confirm land in one transaction.
+                $user->verified = $nowVerified && $wasVerified;
 
                 if ($needsReverification) {
                     $user->verification_token = Str::random(64);
                     $user->verification_token_sent_at = now();
-                } elseif ($user->verified) {
+                } elseif ($nowVerified) {
                     $user->verification_token = null;
                     $user->verification_token_sent_at = null;
                 }
@@ -291,6 +294,14 @@ class AdminUsersController extends Controller
             });
         } catch (\Throwable $e) {
             return back()->withInput()->withErrors(['id' => 'Could not save user.']);
+        }
+
+        if (! $wasVerified && $nowVerified) {
+            try {
+                PetitionSigning::markVerified($user);
+            } catch (\Throwable $e) {
+                return back()->withInput()->withErrors(['id' => 'Could not save user.']);
+            }
         }
 
         if ($needsReverification && Settings::get('smtp_enabled', false)) {

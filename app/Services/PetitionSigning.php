@@ -331,4 +331,55 @@ class PetitionSigning
 
         return $response;
     }
+
+    /**
+     * Mark the account verified and confirm its pending signatures. Shared by
+     * the email link, Google sign-in and the admin drawer, and the only writer
+     * of verified=true on that transition. A no-op once the user is verified,
+     * so later confirmed=false rows (admin rejections) are never re-confirmed.
+     */
+    public static function markVerified(User $user): void
+    {
+        $previousCounts = DB::transaction(function () use ($user) {
+
+            $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
+
+            if (! $locked) {
+                return [];
+            }
+
+            $pending = DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->where('is_spam', false)
+                ->lockForUpdate()
+                ->selectRaw('petition_id, COUNT(*) as total')
+                ->groupBy('petition_id')
+                ->get();
+
+            $locked->verified = true;
+            $locked->verification_token = null;
+            $locked->save();
+
+            DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->where('is_spam', false)
+                ->update(['confirmed' => true, 'updated_at' => now()]);
+
+            $increments = [];
+            foreach ($pending as $row) {
+                $increments[(int) $row->petition_id] = (int) $row->total;
+            }
+
+            return PetitionStats::incrementMany($increments);
+        });
+
+        // After commit: notify owners of any milestone crossed by this
+        // bulk confirmation (e.g. 98 -> 103 crosses 100). Previously no
+        // milestone email fired on bulk confirms at all.
+        foreach ($previousCounts as $petitionId => $previousCount) {
+            PetitionStats::notifyMilestoneIfCrossed($petitionId, $previousCount);
+        }
+    }
 }
