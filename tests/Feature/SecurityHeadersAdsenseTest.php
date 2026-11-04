@@ -78,4 +78,16 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString("script-src 'self'", $csp);
         $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
     }
+
+    public function test_public_csp_limits_script_cdns_to_quill(): void
+    {
+        preg_match('/script-src[^;]*/', $this->cspFor('/en'), $m);
+        $scriptSrc = $m[0].' ';
+
+        $this->assertStringNotContainsString('ajax.googleapis.com', $scriptSrc);
+        $this->assertStringNotContainsString('cdnjs.cloudflare.com', $scriptSrc);
+        $this->assertStringNotContainsString('https://cdn.jsdelivr.net ', $scriptSrc);
+        $this->assertStringContainsString('https://cdn.jsdelivr.net/npm/quill@1.3.7/', $scriptSrc);
+        $this->assertStringContainsString('https://cdnjs.cloudflare.com', $this->cspFor('/admin/login'));
+    }
 }

@@ -84,8 +84,7 @@ class AddSecurityHeaders
             $csp =
                 "default-src 'self'; ".
                 "script-src 'self' ".
-                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                    'https://ajax.googleapis.com https://accounts.google.com '.
+                    'https://cdn.jsdelivr.net/npm/quill@1.3.7/ https://accounts.google.com '.
                     'https://challenges.cloudflare.com '.
                     'https://bicea.org '.
                     'https://pagead2.googlesyndication.com https://partner.googleadservices.com '.
@@ -97,8 +96,7 @@ class AddSecurityHeaders
                     'https://ep2.adtrafficquality.google '.
                     $inlineHashes.'; '.
                 "style-src 'self' 'unsafe-inline' ".
-                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                    'https://ajax.googleapis.com; '.
+                    'https://cdn.jsdelivr.net/npm/quill@1.3.7/; '.
                 "img-src 'self' data: blob: https:; ".
                 "font-src 'self' https://cdnjs.cloudflare.com; ".
                 "frame-src 'self' https://accounts.google.com https://www.google.com ".
