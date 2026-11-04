@@ -630,6 +630,54 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'human@example.com']);
     }
 
+    public function test_guest_turnstile_token_from_confirm_page_reaches_sign(): void
+    {
+        Settings::set('turnstile_enabled', true, 'global');
+        Settings::set('turnstile_site_key', 'site-key', 'global');
+        Settings::set('turnstile_secret', 'secret-key', 'global');
+
+        Http::fake([
+            'challenges.cloudflare.com/*' => Http::response(['success' => true], 200),
+        ]);
+
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Turnstile Confirm',
+            'slug' => 'turnstile-confirm',
+            'description' => 'Description',
+        ]);
+
+        $confirmUrl = "/en/petition/turnstile-confirm/{$petition->id}/sign/confirm";
+
+        // The old bug put the widget on this first guest form, whose token sign/confirm drops.
+        $this->get($confirmUrl)->assertOk()->assertDontSee('cf-turnstile');
+
+        $fields = [
+            'name' => 'Human',
+            'email' => 'human@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ];
+
+        $this->post($confirmUrl, $fields)->assertOk()->assertSeeInOrder([
+            "/en/petition/turnstile-confirm/{$petition->id}/sign\" method=\"POST\"",
+            'cf-turnstile',
+            'data-sitekey="site-key"',
+            '</form>',
+        ], false);
+
+        $response = $this->post("/en/petition/turnstile-confirm/{$petition->id}/sign", session("sign.{$petition->id}") + [
+            'cf-turnstile-response' => 'good-token',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'human@example.com']);
+    }
+
     public function test_thanks_page_uses_the_signed_petition_locale(): void
     {
         $petition = Petition::factory()->create([

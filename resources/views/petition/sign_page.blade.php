@@ -53,6 +53,12 @@
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', 'agree') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
+
+                    @if (! auth()->check() && \App\Support\Spam::turnstileEnabled())
+                        <div class="mb-3 cf-turnstile" data-sitekey="{{ \App\Support\Settings::get('turnstile_site_key', '', 'global') }}"></div>
+                        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                    @endif
+
                     <x-ui.button type="submit" size="lg" class="max-md:hidden">
                         {{ $btnText }} <span>»</span>
                     </x-ui.button>
