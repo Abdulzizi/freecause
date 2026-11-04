@@ -257,7 +257,7 @@ Route::get('/{shortLink}', LegacyShortLinkController::class)
     ->name('legacy.shortlink');
 
 Route::prefix('{locale}')
-    ->middleware(['optional.session', 'setLocale', 'block.banned.ip', 'block.banned.user'])
+    ->middleware(['optional.session', 'setLocale', 'block.banned.user'])
     ->group(function () use ($withoutSession) {
         Route::get('/geo/cities', [GeoController::class, 'cities'])->withoutMiddleware($withoutSession)->middleware('throttle:30,1')->name('geo.cities');
         Route::get('/petitions', [PetitionController::class, 'index'])
@@ -274,7 +274,7 @@ Route::prefix('{locale}')
     });
 
 Route::prefix('{locale}')
-    ->middleware(['setLocale', 'block.banned.ip', 'block.banned.user'])
+    ->middleware(['setLocale', 'block.banned.user'])
     ->group(function () use ($withoutSession) {
         Route::get('/oauth/google', [GoogleAuthController::class, 'redirect'])->name('oauth.google');
         Route::get('/oauth/google/callback', [GoogleAuthController::class, 'callback'])->name('oauth.google.callback');
