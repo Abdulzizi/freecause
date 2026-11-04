@@ -40,10 +40,10 @@ test('admin user info refuses a taken email and a wrong current password, and sa
         await expect(page).toHaveURL(/\/admin\/system\/user-info/);
 
         const changed = `${uniq('admin')}@e2e.test`;
-        await save({ email: changed });
+        await save({ email: changed, current_password: 'e2e-password' });
         await expect.poll(email).toBe(changed);
         await page.goto('/admin/system/user-info');
-        await save({ email: 'admin@e2e.test' });
+        await save({ email: 'admin@e2e.test', current_password: 'e2e-password' });
         await expect.poll(email).toBe('admin@e2e.test');
     } finally {
         db("update users set email='admin@e2e.test' where name='e2e-admin'");
