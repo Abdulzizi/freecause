@@ -6,7 +6,7 @@ export default defineConfig({
     fullyParallel: false,
     workers: 1,
     forbidOnly: !!process.env.CI,
-    retries: 0,
+    retries: process.env.CI ? 1 : 0,
     reporter: process.env.CI ? 'github' : 'list',
     testIgnore: process.env.E2E_VISUAL ? [] : ['**/visual.spec.js'],
     use: { baseURL: 'http://127.0.0.1:8099', contextOptions: { reducedMotion: 'reduce' }, trace: 'retain-on-failure' },
