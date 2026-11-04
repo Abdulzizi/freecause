@@ -133,10 +133,8 @@ class AuditRegressionTest extends TestCase
         $this->get('/admin/dashboard')->assertRedirect(route('admin.login'));
     }
 
-    public function test_06_password_reset_clears_other_sessions_and_rotates_token(): void
+    public function test_06_password_reset_rotates_token_and_web_sessions_use_authenticate_session(): void
     {
-        config(['session.driver' => 'database']);
-
         $user = User::factory()->create([
             'email' => 'reset-sessions@example.com',
             'password' => Hash::make('old-password-123'),
@@ -146,16 +144,6 @@ class AuditRegressionTest extends TestCase
             'verified' => true,
         ]);
         $before = $user->remember_token;
-
-        $table = config('session.table', 'sessions');
-        DB::table($table)->insert([
-            'id' => 'other-session-id',
-            'user_id' => $user->id,
-            'ip_address' => '127.0.0.1',
-            'user_agent' => 'audit',
-            'payload' => 'other',
-            'last_activity' => time(),
-        ]);
 
         $token = Password::createToken($user);
 
@@ -167,7 +155,6 @@ class AuditRegressionTest extends TestCase
             'redirect' => '/en/petitions',
         ])->assertRedirect('/en/petitions');
 
-        $this->assertDatabaseMissing($table, ['id' => 'other-session-id']);
         $this->assertNotSame($before, $user->fresh()->remember_token);
         $this->assertContains(
             AuthenticateSession::class,
@@ -202,6 +189,7 @@ class AuditRegressionTest extends TestCase
     public function test_08_guest_sign_with_existing_email_mirrors_new_email_without_signature(): void
     {
         Settings::set('smtp_enabled', true, 'global');
+        Settings::set('require_email_verification', true, 'global');
         Mail::fake();
 
         $petition = $this->publishedPetition('audit-sign-mirror');
@@ -216,7 +204,14 @@ class AuditRegressionTest extends TestCase
             'agree3' => '1',
         ]);
 
+        $strip = fn (string $html) => preg_replace(
+            ['/_token" value="[^"]*"/', '/\b\d+\b/'],
+            ['_token" value="TOKEN"', 'N'],
+            $html
+        );
+
         $fresh = $sign('mirror-fresh@example.com', 'Fresh Guest');
+        $freshBody = $strip((string) $this->followingRedirects()->get($fresh->headers->get('Location'))->getContent());
         $mirror = $sign('mirror-existing@example.com', 'Existing Holder');
 
         $this->assertSame($fresh->headers->get('Location'), $mirror->headers->get('Location'));
@@ -229,20 +224,52 @@ class AuditRegressionTest extends TestCase
             'email' => 'mirror-fresh@example.com',
         ]);
 
-        Mail::assertQueued(VerifyAccountMail::class, 2);
+        Mail::assertQueued(VerifyAccountMail::class, 1);
         Mail::assertQueued(VerifyAccountMail::class, fn ($mail) => $mail->hasTo('mirror-fresh@example.com'));
-        Mail::assertQueued(VerifyAccountMail::class, fn ($mail) => $mail->hasTo('mirror-existing@example.com'));
+        Mail::assertNotQueued(VerifyAccountMail::class, fn ($mail) => $mail->hasTo('mirror-existing@example.com'));
 
-        $strip = fn (string $html) => preg_replace(
-            ['/_token" value="[^"]*"/', '/\b\d+\b/'],
-            ['_token" value="TOKEN"', 'N'],
-            $html
-        );
-
-        $freshBody = $strip((string) $this->followingRedirects()->get($fresh->headers->get('Location'))->getContent());
         $mirrorBody = $strip((string) $this->followingRedirects()->get($mirror->headers->get('Location'))->getContent());
 
         $this->assertSame($freshBody, $mirrorBody);
+
+        $freshAgain = $sign('mirror-fresh@example.com', 'Fresh Guest')->assertSessionHasNoErrors();
+        $mirrorAgain = $sign('mirror-existing@example.com', 'Existing Holder')->assertSessionHasNoErrors();
+        $this->assertSame($freshAgain->headers->get('Location'), $mirrorAgain->headers->get('Location'));
+        $this->assertSame($fresh->headers->get('Location'), $freshAgain->headers->get('Location'));
+    }
+
+    public function test_08b_guest_sign_with_existing_unverified_email_mails_at_most_every_48_hours(): void
+    {
+        Settings::set('smtp_enabled', true, 'global');
+        Settings::set('require_email_verification', true, 'global');
+        Mail::fake();
+
+        $petition = $this->publishedPetition('audit-sign-throttle');
+        $user = User::factory()->create([
+            'email' => 'throttle@example.com',
+            'verified' => false,
+            'verification_token_sent_at' => now()->subMinutes(5),
+        ]);
+
+        $sign = fn () => $this->post("/en/petition/audit-sign-throttle/{$petition->id}/sign", [
+            'name' => 'Holder',
+            'email' => 'throttle@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ]);
+
+        $sign();
+        Mail::assertNothingQueued();
+
+        $user->forceFill(['verification_token_sent_at' => now()->subHours(2)])->save();
+        $sign();
+        Mail::assertNothingQueued();
+
+        $user->forceFill(['verification_token_sent_at' => now()->subHours(49)])->save();
+        $sign();
+        Mail::assertQueued(VerifyAccountMail::class, 1);
     }
 
     public function test_10_ads_frame_csp_and_sandbox(): void

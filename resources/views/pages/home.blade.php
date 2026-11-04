@@ -129,7 +129,7 @@
                                                         <div class="mb-4">
                                                             <div class="progress mb-2">
                                                                 <div class="progress-bar fcui-progress-fill" style="--pct: {{ $progress > 0 ? max($progress, 1.5) : 0 }}%"
-                                                                    role="progressbar" aria-valuenow="{{ (int) $progress }}"
+                                                                    role="progressbar" aria-label="{{ __('home.signatures_label') }}" aria-valuenow="{{ (int) $progress }}"
                                                                     aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
                                                             <div class="flex justify-between text-muted">

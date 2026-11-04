@@ -19,6 +19,7 @@
 .env.backup
 .env.production
 .env.testing
+.env.e2e
 .env.bak*
 .env.sync*
 .phpactor.json
@@ -44,3 +45,6 @@ bootstrap/cache/*.php
 /opencode.json
 .playwright-mcp/
 .claude/
+
+/test-results
+/playwright-report

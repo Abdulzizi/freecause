@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 class VerifyAccountMail extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use GatedByMailQuota, Queueable, SerializesModels;
 
     public string $firstName;
 
@@ -27,12 +27,6 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
 
     public function build()
     {
-        if (empty($this->verificationToken)) {
-            $this->delete();
-
-            return $this;
-        }
-
         $subject = Settings::get('email_verify_subject', '', 'global') ?: 'Verify your account';
         $greeting = Settings::get('email_verify_greeting', '', 'global') ?: 'Welcome to FreeCause';
         $buttonText = Settings::get('email_verify_button_text', '', 'global') ?: 'Verify My Account';

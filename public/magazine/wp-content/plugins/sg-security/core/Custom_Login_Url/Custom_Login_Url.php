@@ -26,6 +26,20 @@ class Custom_Login_Url {
 	private $options = array();
 
 	/**
+	 * Flag for the ultimate-member plugin forms.
+	 *
+	 * @var boolean
+	 */
+	private $um_form_detected_error = false;
+
+	/**
+	 * Whether WordPress is currently rendering the auth check modal.
+	 *
+	 * @var bool
+	 */
+	private $is_auth_check_modal_rendering = false;
+
+	/**
 	 * The Constructor
 	 *
 	 * @since 1.1.0
@@ -40,7 +54,7 @@ class Custom_Login_Url {
 	}
 
 	/**
-	 * Change the site url to include the custom login url token,
+	 * Change the site URL to include the custom login URL token,
 	 *
 	 * @param string $url  The URL to be filtered.
 	 * @param string $path The URL path.
@@ -53,33 +67,33 @@ class Custom_Login_Url {
 		// Get the url path.
 		$path = Helper::get_url_path( $path ); //phpcs:ignore
 
-		preg_match( '~^(.*)\/(wp-login.php)(?:.*)?[\?|&]action=(.*?)(?:\?|&|$)~', $path, $matches );
-
-		if ( empty( $matches[2] ) ) {
+		if ( strpos( $path, 'wp-login.php' ) === false ) {
 			return $url;
 		}
 
-		if ( empty( $matches[3] ) ) {
-			return $url;
+		if ( preg_match( '~[\?&]action=([^&]*)~', $path, $matches ) ) {
+			switch ( $matches[1] ) {
+				case 'postpass':
+					return $url;
+				case 'register':
+					$token = 'register';
+					break;
+				case 'rp':
+					return $url;
+			}
+		} else if (
+			isset( $_GET[ $this->token ] ) &&
+			$_GET[ $this->token ] === $this->options['new_slug']
+		) {
+			$token = $this->options['new_slug'];
 		}
 
-		switch ( $matches[3] ) {
-			case 'postpass':
-				return $url;
-			case 'register':
-				$token = 'register';
-				break;
-			case 'rp':
-				$token = 'login';
-				return $url;
-		}
-
-		// Add the token to the url if not empty.
+		// Add the token to the URL if not empty.
 		if ( empty( $token ) ) {
 			return $url;
 		}
 
-		// Return the url.
+		// Return the URL.
 		return add_query_arg( $this->token, urlencode( $token ), $url );
 	}
 
@@ -102,11 +116,32 @@ class Custom_Login_Url {
 	 * @since  1.1.0
 	 */
 	public function handle_request() {
+
 		// Get the path.
-		$path = Helper::get_url_path( $_SERVER['REQUEST_URI'] ); //phpcs:ignore
+		$path = rawurldecode(  Helper::get_url_path( $_SERVER['REQUEST_URI'] ) ); //phpcs:ignore
 
 		if ( $path === $this->options['new_slug'] ) {
 			$this->redirect_with_token( 'login', 'wp-login.php' );
+		}
+
+		// Check if we are redirected to the login page, by the LogIn button on the registration page.
+		if (
+			$this->is_valid( 'login' ) &&
+			isset( $_SERVER['HTTP_REFERER'] ) &&
+			false !== strpos( $_SERVER['HTTP_REFERER'], 'register' ) &&
+			false !== strpos( $path, 'wp-login.php' )
+		) {
+			$this->redirect_with_token( 'login', 'wp-login.php' );
+		}
+
+		// Check if we are redirected to the registration page, by the Register button on the login page.
+		if (
+			$this->is_valid( 'login' ) &&
+			isset( $_SERVER['HTTP_REFERER'] ) &&
+			false !== strpos( $_SERVER['HTTP_REFERER'], $this->options['new_slug'] ) &&
+			isset( $_GET['action'] ) && 'register' === $_GET['action']
+		) {
+			$this->handle_registration();
 		}
 
 		if ( false !== strpos( $path, 'wp-login' ) || false !== strpos( $path, 'wp-login.php' ) ) {
@@ -116,7 +151,6 @@ class Custom_Login_Url {
 		if ( $path === $this->options['register'] ) {
 			$this->handle_registration();
 		}
-
 	}
 
 	/**
@@ -127,9 +161,9 @@ class Custom_Login_Url {
 	 * @param  int $user_id The user ID.
 	 */
 	public function wp_logout( $user_id ) {
-		// Bail if the user has valid permission cookie.
+		// Unset the permission cookie on logout.
 		if ( $this->is_valid( 'login' ) ) {
-			return;
+			$this->unset_permissions_cookie( 'login' );
 		}
 
 		// Redirect to the homepage on logout instead redirecting to 404.
@@ -138,7 +172,7 @@ class Custom_Login_Url {
 	}
 
 	/**
-	 * Adds a token and redirect to the url.
+	 * Adds a token and redirect to the URL.
 	 *
 	 * @since  1.1.0
 	 *
@@ -154,6 +188,14 @@ class Custom_Login_Url {
 		$query_vars[ $this->token ] = $this->options['new_slug'];
 
 		$url = add_query_arg( $query_vars, site_url( $path ) );
+
+		// Get the current URL.
+		$current_url = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+		// Prevent redirect loop by checking if the current URL matches the redirect URL.
+		if ( true === $this->compare_urls( $url, $current_url ) ) {
+			return;
+		}
 
 		wp_redirect( $url );
 		exit;
@@ -195,7 +237,7 @@ class Custom_Login_Url {
 		}
 
 		if ( 'jetpack-sso' === $action && has_filter( 'login_form_jetpack-sso' ) ) {
-			// Jetpack's SSO redirects from wordpress.com to wp-login.php on the site. Only allow this process to
+			// Jetpack's SSO redirects from WordPress.com to wp-login.php on the site. Only allow this process to
 			// continue if they successfully log in, which should happen by login_init in Jetpack which happens just
 			// before this action fires.
 			add_action( 'login_form_jetpack-sso', array( $this, 'block' ) );
@@ -292,7 +334,7 @@ class Custom_Login_Url {
 	}
 
 	/**
-	 * Handle regostration request.
+	 * Handle registration request.
 	 *
 	 * @since  1.1.0
 	 */
@@ -343,7 +385,7 @@ class Custom_Login_Url {
 	 * @since  1.1.0
 	 */
 	public function show_notices() {
-		// Bail if we shold not show the notice.
+		// Bail if we should not show the notice.
 		if ( empty( get_option( 'sg_security_show_signup_notice', false ) ) ) {
 			return;
 		}
@@ -390,7 +432,7 @@ class Custom_Login_Url {
 	}
 
 	/**
-	 * Adds the login token to the confirmation url.
+	 * Adds the login token to the confirmation URL.
 	 *
 	 * @since  1.1.1
 	 *
@@ -408,7 +450,7 @@ class Custom_Login_Url {
 			return $content;
 		}
 
-		// Add the login token to the GDPR confirmation url.
+		// Add the login token to the GDPR confirmation URL.
 		$confirm_url = add_query_arg(
 			$this->token,
 			$this->options['new_slug'],
@@ -450,12 +492,22 @@ class Custom_Login_Url {
 	 *
 	 * @since 1.3.3
 	 *
-	 * @param  \WP_User $user      \WP_User object of the user that is trying to login.
+	 * @param  \WP_User |\WP_Error $user      \WP_User object of the user that is trying to login or \WP_Error object if a previous callback failed * authentication.
 	 * @return \WP_Error|\WP_User  If successful, the original \WP_User object, otherwise a \WP_Error object.
 	 */
 	public function maybe_block_custom_login( $user ) {
-		// Check if the referer slug is set.
+		// Check if the referrer slug is set.
 		if ( ! isset( $_SERVER['HTTP_REFERER'] ) ) {
+			return $user;
+		}
+
+		// Check if $user is a WP_Error object.
+		if ( is_wp_error( $user ) ) {
+			return $user;
+		}
+
+		// Check if the ultimate member plugin form has errors.
+		if ( true === $this->um_form_detected_error ) {
 			return $user;
 		}
 
@@ -469,7 +521,7 @@ class Custom_Login_Url {
 			return $user;
 		}
 
-		// Get referer parts by parsing its url.
+		// Get referrer parts by parsing its URL.
 		$referer = str_replace(
 			array( home_url(), '/' ),
 			array( '', '' ),
@@ -498,5 +550,214 @@ class Custom_Login_Url {
 		}
 
 		return $error;
+	}
+
+	/**
+	 * Adds our 'maybe_block_custom_login' error message, in the Ultimate Member plugin's errors filter.
+	 *
+	 * @param $err_codes Custom error codes array on the ultimate members plugin forms.
+	 *
+	 * @return $err_codes The updated error codes array.
+	 */
+	public function add_um_form_error_code( $err_codes ) {
+		// Adds our error message code.
+		$err_codes[] = 'authentication_failed';
+
+		return $err_codes;
+	}
+
+	/**
+	 * Sets the flag, if the ultimate member plugin find error on their forms.
+	 *
+	 * @param  $error The error message.
+	 *
+	 * @param  $key The error code.
+	 *
+	 * @return $error The error message.
+	 */
+	public function set_um_form_flag( $error, $key ) {
+		// Check if the UM form has detected and error.
+		if ( $key ) {
+			$this->um_form_detected_error = true;
+		}
+
+		return $error;
+	}
+
+	/**
+	 * Adds the 'sgs-token' query string after language change.
+	 */
+	public function add_sgs_token_to_language_switcher() {
+		// Check if the language of the login/register pages is getting changed.
+		if (
+			$this->is_valid( 'login' ) &&
+			isset( $_SERVER['HTTP_REFERER'] ) &&
+			(
+				false !== strpos( $_SERVER['HTTP_REFERER'], $this->options['new_slug'] ) ||
+				false !== strpos( $_SERVER['HTTP_REFERER'], $this->options['register'] )
+			) &&
+			isset( $_GET['wp_lang'] )
+		) {
+
+			// Get the current URL.
+			$current_url = ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+			$parsed_url = wp_parse_url( $current_url );
+
+			// Extract query parameters from the URL.
+			$query_params = array();
+			if ( isset( $parsed_url['query'] ) ) {
+				parse_str( $parsed_url['query'], $query_params );
+			}
+
+			// Determine which SGS token to add. Preset it to 'register'.
+			$query_params['sgs-token'] = $this->options['register'];
+
+			if ( false !== strpos( $_SERVER['HTTP_REFERER'], $this->options['new_slug'] ) ) {
+				$query_params['sgs-token'] = $this->options['new_slug'];
+			}
+
+			// Sanitize all query parameters.
+			foreach ( $query_params as $key => $value ) {
+				$query_params[ $key ] = sanitize_text_field( $value );
+			}
+
+			// Build the URL with all the parameters.
+			$redirect_url = add_query_arg( $query_params, site_url( 'wp-login.php' ) );
+
+			// Prevent redirect loop by checking if the current URL matches the redirect URL.
+			if ( true === $this->compare_urls( $current_url, $redirect_url ) ) {
+				return;
+			}
+
+			wp_safe_redirect( $redirect_url );
+			exit;
+		}
+	}
+
+	/**
+	 * Compare two URLs if they are basically the same.
+	 *
+	 * @param $current_url First URL to compare.
+	 *
+	 * @param $redirect_url Second URL to compare.
+	 *
+	 * @return boolean True if the URLs are the same. False if they are different.
+	 */
+	public function compare_urls( $current_url, $redirect_url ) {
+		// Parse the URLs
+		$current_url = parse_url( $current_url );
+		$redirect_url = parse_url( $redirect_url );
+
+		// Check if both URLs have the same domain.
+		if ( $current_url['host'] !== $redirect_url['host'] ) {
+			return false;
+		}
+
+		// Ensure both URLs include "wp-login.php" in the path.
+		if ( false === strpos( $current_url['path'], 'wp-login.php' ) || false === strpos( $redirect_url['path'], 'wp-login.php' ) ) {
+			return false;
+		}
+
+		// Parse query strings into arrays for comparison.
+		parse_str( $current_url['query'], $current_url_params );
+		parse_str( $redirect_url['query'], $redirect_url_params );
+
+		// Compare the total number of query parameters.
+		if ( count( $current_url_params ) !== count( $redirect_url_params ) ) {
+			return false;
+		}
+
+		// If a key is missing or a value is different, URLs are not equal.
+		foreach ( $current_url_params as $query_key => $query_value ) {
+			if (
+					! array_key_exists( $query_key, $redirect_url_params ) ||
+					$redirect_url_params[ $query_key ] !== $query_value
+				) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Unset the permission cookie, by recreating it with expiration time in the past.
+	 *
+	 * @param string $type The permissions type.
+	 *
+	 * @param string $cookie_name The name of the cookie to unset.
+	 */
+	private function unset_permissions_cookie( $type ) {
+		$url_parts = wp_parse_url( Helper_Service::get_site_url() );
+		$home_path = trailingslashit( $url_parts['path'] );
+
+		$cookie_name = $this->token . '-' . $type . '-' . COOKIEHASH;
+
+		// Set the cookie with an expired time, so the browser can delete the cookie.
+		setcookie(
+			$cookie_name,
+			$this->options['new_slug'],
+			time() - 3600,
+			$home_path,
+			COOKIE_DOMAIN,
+			is_ssl(),
+			true
+		);
+
+		// Unset the cookie from the $_COOKIE superglobal.
+		unset( $_COOKIE[ $cookie_name ] );
+	}
+
+	/**
+	* Change the login URL, so WordPress core uses the custom login URL.
+	*
+	* @param string $login_url    The login URL.
+	* @param string $redirect     The path to redirect to after login.
+	* @param bool   $force_reauth Whether to force reauthorization.
+	*
+	* @return string
+	*/
+	public function custom_interim_login_url( $login_url, $redirect, $force_reauth ) {
+		// Check, if the interim-login modal is about to be rendered.
+		if ( ! $this->is_auth_check_modal_rendering ) {
+			return $login_url;
+		}
+
+		$custom_login_slug = get_option( 'sg_security_login_url' );
+
+		if ( empty( $custom_login_slug ) ) {
+			return $login_url;
+		}
+
+		$login_url = home_url( '/' . ltrim( $custom_login_slug, '/' ) );
+
+		// Preserve the redirect URL if present.
+		if ( ! empty( $redirect ) ) {
+			$login_url = add_query_arg( 'redirect_to', $redirect, $login_url );
+		}
+
+		// Force the login authorization.
+		if ( $force_reauth ) {
+			$login_url = add_query_arg( 'reauth', '1', $login_url );
+		}
+
+		return $login_url;
+	}
+
+	/**
+	 * Sets the auth check modal rendering flag to true.
+	 */
+	public function add_flag_auth_check_modal_rendering() {
+		if ( false !== has_action( 'admin_print_footer_scripts', 'wp_auth_check_html' ) ) {
+			$this->is_auth_check_modal_rendering = true;
+		}
+	}
+
+	/**
+	 * Sets the auth check modal rendering flag to false.
+	 */
+	public function remove_flag_auth_check_modal_rendering() {
+			$this->is_auth_check_modal_rendering = false;
 	}
 }

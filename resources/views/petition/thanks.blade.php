@@ -57,33 +57,6 @@
                     </p>
                 @endif
 
-                @if (!empty($claim))
-                    <div class="mt-6">
-                        @if ($canClaim)
-                            <div class="p-4 rounded-sm border border-border bg-surface-2">
-                                <h2 class="mb-4 text-lg">{{ __('sign.claim_title') }}</h2>
-                                <form method="POST" action="{{ lroute('petition.claim', ['slug' => $tr->slug ?? '', 'id' => $petition->id]) }}">
-                                    @csrf
-                                    <div class="mb-4">
-                                        <input class="block w-full max-md:min-h-12 px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 @error('password') is-invalid @enderror" type="password" name="password" minlength="8" placeholder="{{ __('sign.claim_password') }}">
-                                        @error('password')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <x-ui.button type="submit" variant="danger" class="max-md:min-h-12">{{ __('sign.claim_btn') }}</x-ui.button>
-                                </form>
-                                <p class="mt-4 mb-0 text-muted text-sm">
-                                    {{ __('sign.claim_verify_note') }}
-                                </p>
-                            </div>
-                        @else
-                            <p class="mb-0 text-muted text-sm">
-                                {{ __('sign.claim_existing') }}
-                            </p>
-                        @endif
-                    </div>
-                @endif
-
                 <h2 class="mt-10 mb-4 text-xl">
                     {{ $suggestionsTitle }}
                 </h2>
@@ -100,7 +73,7 @@
                                class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-dark text-on-dark" aria-label="Share on X">X</a>
                             <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.($shareUrl ?? $petitionUrl)) }}"
                                target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-white">WhatsApp</a>
+                               class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline bg-whatsapp text-ink">WhatsApp</a>
                         </div>
                     </div>
                 @endif
@@ -116,7 +89,7 @@
                         @endphp
 
                         <div class="mb-2.5">
-                            <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand-border rounded-md bg-brand-soft text-brand no-underline transition duration-150 hover:bg-brand hover:text-white hover:border-brand"
+                            <a class="flex max-md:min-h-12 items-center px-3.5 py-2.5 border border-brand rounded-xs bg-transparent text-brand font-semibold no-underline transition duration-150 hover:bg-brand hover:text-white"
                                 href="{{ $sUrl }}">
                                 {{ $p->tr_title ?? __('thanks.petition_fallback') }}
                             </a>

@@ -3,12 +3,12 @@
     $locale = app()->getLocale() ?: 'en';
 @endphp
 
-@if ($isAdmin)
-    @extends('admin.layouts.app')
+@extends($isAdmin ? 'admin.layouts.app' : 'layouts.legacy')
 
-    @section('title', 'Forbidden')
+@section('title', $isAdmin ? 'Forbidden' : '403 - Forbidden')
 
-    @section('content')
+@section('content')
+    @if ($isAdmin)
         <div class="fc-box p-10 text-center max-w-xl my-16 mx-auto">
             <h1 class="text-2xl mb-4">403 - {{ __('errors.403_admin_title') }}</h1>
             <p class="mb-5 text-muted">
@@ -18,13 +18,7 @@
                 {{ __('errors.403_admin_btn') }}
             </a>
         </div>
-    @endsection
-@else
-    @extends('layouts.legacy')
-
-    @section('title', '403 - Forbidden')
-
-    @section('content')
+    @else
         <section class="fc-section">
             <x-ui.container>
 
@@ -55,5 +49,5 @@
             <x-ads.rotate placement="inline" class="mt-6 text-center" />
             <x-ads.rotate placement="page_mid" class="mt-6" />
         </section>
-    @endsection
-@endif
+    @endif
+@endsection

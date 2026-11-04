@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -389,6 +390,70 @@ class PetitionTest extends TestCase
             ->assertSee('This petition is currently offline.');
     }
 
+    public function test_owner_can_withdraw_petition_and_it_goes_offline(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'user_id' => $this->user->id]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Withdrawable Petition',
+            'slug' => 'withdrawable-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get('/en/petitions')->assertSee('Withdrawable Petition');
+        $this->actingAs($this->user)->get("/en/petition/withdrawable-petition/{$petition->id}")
+            ->assertSee('data-petition-withdraw', false);
+        $this->actingAs($this->user)->get('/en/my-petitions')
+            ->assertSee("/withdrawable-petition/{$petition->id}/withdraw", false);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/withdrawable-petition/{$petition->id}/withdraw")
+            ->assertRedirect(lroute('account.petitions'))
+            ->assertSessionHas('success');
+
+        $this->assertSame(0, (int) $petition->fresh()->is_active);
+        $this->get("/en/petition/withdrawable-petition/{$petition->id}")
+            ->assertOk()
+            ->assertSee('This petition is currently offline.');
+        $this->get('/en/petitions')->assertDontSee('Withdrawable Petition');
+        $this->actingAs($this->user)->get('/en/my-petitions')
+            ->assertSee('Withdrawable Petition')
+            ->assertDontSee("/withdrawable-petition/{$petition->id}/withdraw", false);
+    }
+
+    public function test_non_owner_cannot_withdraw_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertForbidden();
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
+    public function test_owner_cannot_withdraw_draft_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'draft', 'is_active' => true, 'user_id' => $this->user->id]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertForbidden();
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
+    public function test_guest_cannot_withdraw_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertRedirectContains('login');
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
     public function test_authed_signature_shows_nickname_when_identify_mode_is_nick(): void
     {
         $user = User::factory()->create([
@@ -463,6 +528,39 @@ class PetitionTest extends TestCase
         $this->followRedirects($response)->assertSee('Thank you for having signed:');
         $this->assertDatabaseHas('users', ['email' => 'guest-confirm@example.com']);
         $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'guest-confirm@example.com']);
+    }
+
+    public function test_guest_confirm_form_carries_everything_the_final_post_needs(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Hidden Petition',
+            'slug' => 'hidden-petition',
+            'description' => 'Description',
+        ]);
+
+        $html = $this->post("/en/petition/hidden-petition/{$petition->id}/sign/confirm", [
+            'name' => 'Guest',
+            'email' => 'hidden-guest@example.com',
+            'comment' => 'I support this petition',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertOk()->getContent();
+
+        preg_match_all('/<input type="hidden" name="([^"]+)" value="([^"]*)"/', $html, $m);
+        $fields = array_combine($m[1], array_map('html_entity_decode', $m[2]));
+        unset($fields['_token']);
+
+        $this->assertSame('Guest', $fields['name'] ?? null);
+        $this->assertSame('hidden-guest@example.com', $fields['email'] ?? null);
+
+        $this->post("/en/petition/hidden-petition/{$petition->id}/sign", $fields)
+            ->assertSessionHasNoErrors()
+            ->assertRedirect("/en/petition/hidden-petition/{$petition->id}/thanks");
+        $this->assertDatabaseHas('signatures', ['petition_id' => $petition->id, 'email' => 'hidden-guest@example.com']);
     }
 
     public function test_guest_signing_blocked_when_turnstile_fails(): void
@@ -630,6 +728,26 @@ class PetitionTest extends TestCase
             ->assertSee('href="'.e($mailUrl).'"', false);
     }
 
+    public function test_thanks_page_next_milestone_reaches_the_largest_allowed_goal(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        $petition->forceFill(['signature_count' => 1500000])->save();
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Big Goal',
+            'slug' => 'big-goal',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/big-goal/{$petition->id}/thanks")
+            ->assertOk()
+            ->assertSee('reach '.number_format(max(Petition::GOALS)));
+    }
+
     public function test_existing_email_sign_mirrors_guest_success(): void
     {
         $user = User::factory()->create([
@@ -679,6 +797,31 @@ class PetitionTest extends TestCase
         $this->get("/widget-render/pbadge/{$petition->id}/728x90")
             ->assertOk()
             ->assertSee('Widget Petition');
+    }
+
+    public function test_widget_render_can_be_framed_by_other_sites(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Frameable Petition',
+            'slug' => 'frameable-petition',
+            'description' => 'Description',
+        ]);
+
+        $response = $this->get("/widget-render/pbadge/{$petition->id}/728x90")
+            ->assertOk()
+            ->assertHeaderMissing('X-Frame-Options');
+
+        $this->assertStringContainsString('frame-ancestors *', $response->headers->get('Content-Security-Policy'));
+
+        $this->get('/')
+            ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
     }
 
     public function test_cannot_sign_draft_petition(): void
@@ -855,6 +998,77 @@ class PetitionTest extends TestCase
             'confirmed' => true,
         ]);
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
+    }
+
+    public function test_guest_sign_with_existing_unverified_account_counts_after_verify(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        $user = User::factory()->create([
+            'email' => 'existing@example.com',
+            'verified' => false,
+            'verification_token' => Str::random(64),
+            'verification_token_sent_at' => now(),
+        ]);
+        $petition = $this->makePublishedPetition('existing-account-petition');
+        $payload = [
+            'name' => 'Existing',
+            'email' => 'existing@example.com',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ];
+
+        $this->post("/en/petition/existing-account-petition/{$petition->id}/sign", $payload)
+            ->assertRedirect("/en/petition/existing-account-petition/{$petition->id}/thanks");
+
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+        ]);
+
+        $this->post("/en/petition/existing-account-petition/{$petition->id}/sign", $payload)
+            ->assertRedirect("/en/petition/existing-account-petition/{$petition->id}/thanks");
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
+
+        $this->get("/en/verify/{$user->verification_token}")->assertRedirect('/en/email-verified');
+
+        $this->assertDatabaseHas('signatures', [
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => true,
+        ]);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+    }
+
+    public function test_guest_sign_with_email_of_account_that_already_signed_returns_thanks(): void
+    {
+        Settings::set('require_email_verification', true);
+
+        $user = User::factory()->create(['email' => 'signed-before@example.com', 'verified' => false]);
+        $petition = $this->makePublishedPetition('already-signed-account-petition');
+        Signature::create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'email' => 'other-address@example.com',
+            'name' => 'Earlier',
+            'locale' => 'en',
+            'text' => 'I support this petition',
+            'confirmed' => false,
+        ]);
+
+        $this->post("/en/petition/already-signed-account-petition/{$petition->id}/sign", [
+            'name' => 'Again',
+            'email' => 'signed-before@example.com',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ])->assertRedirect("/en/petition/already-signed-account-petition/{$petition->id}/thanks")
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(1, Signature::where('petition_id', $petition->id)->count());
     }
 
     public function test_guest_verify_link_resolves_on_non_default_locales(): void
@@ -1067,6 +1281,107 @@ class PetitionTest extends TestCase
         ]);
     }
 
+    public function test_youtube_id_parser_accepts_youtube_links_and_rejects_everything_else(): void
+    {
+        foreach ([
+            'dQw4w9WgXcQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'http://youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10',
+            'https://www.youtube.com/watch?feature=share&v=dQw4w9WgXcQ',
+            'https://m.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/shorts/dQw4w9WgXcQ',
+            'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            'https://www.youtube.com/live/dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ?si=abc',
+            'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
+            'https://youtube-nocookie.com/embed/dQw4w9WgXcQ?start=5',
+        ] as $value) {
+            $this->assertSame('dQw4w9WgXcQ', Petition::youtubeId($value), $value);
+        }
+
+        foreach ([
+            null,
+            '',
+            'dQw4w9WgXc',
+            'dQw4w9WgXcQQ',
+            'https://www.youtube.com/watch?v=dQw4w9WgXc',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQQ',
+            'https://www.youtube.com/watch?xv=dQw4w9WgXcQ',
+            'https://evil.example.com/watch?v=dQw4w9WgXcQ',
+            'https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ',
+            'https://notyoutu.be/dQw4w9WgXcQ',
+            'javascript:alert(1)//youtu.be/dQw4w9WgXcQ',
+            'ftp://youtu.be/dQw4w9WgXcQ',
+            'https://www.youtube.com/channel/dQw4w9WgXcQ',
+            "dQw4w9WgXcQ\n",
+            "https://youtu.be/dQw4w9WgXcQ\n",
+            'https://youtube-nocookie.com.evil.example/embed/dQw4w9WgXcQ',
+            'https://www.youtube-nocookie.com/watch?v=dQw4w9WgXcQ',
+        ] as $value) {
+            $this->assertNull(Petition::youtubeId($value), (string) $value);
+        }
+    }
+
+    public function test_creation_accepts_common_youtube_links_and_stores_the_id(): void
+    {
+        foreach ([
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10',
+            'https://youtu.be/dQw4w9WgXcQ?si=abc',
+            'https://m.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://www.youtube.com/shorts/dQw4w9WgXcQ',
+        ] as $i => $link) {
+            $this->actingAs($this->user)->post('/en/create-petition', [
+                'title' => "Test Petition Title Here {$i}",
+                'description' => '<p>This description contains enough meaningful content for validation.</p>',
+                'goal_signatures' => 100,
+                'category_id' => $this->category->id,
+                'youtube' => $link,
+            ])->assertSessionHasNoErrors()->assertRedirect();
+        }
+
+        $this->assertSame(4, Petition::where('youtube_url', 'dQw4w9WgXcQ')->count());
+    }
+
+    public function test_creation_rejects_a_non_youtube_video_link(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => '<p>This description contains enough meaningful content for validation.</p>',
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+            'youtube' => 'https://vimeo.com/dQw4w9WgXcQ',
+        ])->assertSessionHasErrors('youtube');
+    }
+
+    public function test_show_page_embeds_the_youtube_video_only_when_the_stored_value_parses(): void
+    {
+        foreach ([
+            'dQw4w9WgXcQ' => true,
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ' => true,
+            'not a video <script>' => false,
+            '' => false,
+        ] as $stored => $embeds) {
+            $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'youtube_url' => $stored ?: null]);
+            $slug = 'video-petition-'.$petition->id;
+            PetitionTranslation::create([
+                'petition_id' => $petition->id,
+                'locale' => 'en',
+                'title' => 'Video Petition',
+                'slug' => $slug,
+                'description' => 'Description',
+            ]);
+
+            $response = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk();
+            if ($embeds) {
+                $response->assertSee('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Video: Video Petition"', false);
+            } else {
+                $response->assertDontSee('youtube-nocookie.com/embed', false);
+            }
+        }
+    }
+
     public function test_uploaded_image_keeps_format_and_aspect_ratio(): void
     {
         Storage::fake('public');
@@ -1186,6 +1501,43 @@ class PetitionTest extends TestCase
             ->assertForbidden();
     }
 
+    #[DataProvider('nonCountingSignatures')]
+    public function test_owner_can_still_edit_when_only_spam_or_unconfirmed_signatures_exist(array $state): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => User::factory()->create()->id] + $state);
+
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}/edit")
+            ->assertOk();
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Updated Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ])->assertRedirect("/en/petition/updated-petition-title/{$petition->id}");
+    }
+
+    public static function nonCountingSignatures(): array
+    {
+        return [
+            'spam' => [['confirmed' => true, 'is_spam' => true]],
+            'unconfirmed' => [['confirmed' => false, 'is_spam' => false]],
+        ];
+    }
+
     public function test_edit_updates_slug_but_preserves_goal(): void
     {
         $petition = Petition::factory()->create([
@@ -1217,6 +1569,44 @@ class PetitionTest extends TestCase
         ]);
     }
 
+    public function test_edit_keeps_an_unchanged_legacy_youtube_value_and_validates_a_changed_one(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+            'youtube_url' => 'abc',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        $payload = [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ];
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'abc', 'target' => 'The mayor'] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'abc', 'target' => 'The mayor']);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'junk'] + $payload)
+            ->assertSessionHasErrors('youtube');
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'abc']);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['youtube' => 'https://youtu.be/dQw4w9WgXcQ?si=abc'] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'dQw4w9WgXcQ']);
+    }
+
     public function test_edit_can_remove_current_image_without_orphaning_file(): void
     {
         Storage::fake('public');
@@ -1246,6 +1636,70 @@ class PetitionTest extends TestCase
 
         Storage::disk('public')->assertMissing('petitions/original.png');
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => null]);
+    }
+
+    public function test_edit_with_new_image_link_replaces_uploaded_cover(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/original.png', 'image');
+
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'cover_image' => 'petitions/original.png',
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'image_url' => 'https://example.com/new.jpg',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => null, 'image_url' => 'https://example.com/new.jpg']);
+        $this->assertSame('https://example.com/new.jpg', $petition->fresh()->coverUrl());
+        Storage::disk('public')->assertMissing('petitions/original.png');
+    }
+
+    public function test_edit_with_unchanged_image_link_keeps_uploaded_cover(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/original.png', 'image');
+
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'cover_image' => 'petitions/original.png',
+            'image_url' => 'https://example.com/old.jpg',
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+            'image_url' => 'https://example.com/old.jpg',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'cover_image' => 'petitions/original.png', 'image_url' => 'https://example.com/old.jpg']);
+        Storage::disk('public')->assertExists('petitions/original.png');
     }
 
     public function test_petition_title_requires_minimum_words(): void
@@ -1310,6 +1764,68 @@ class PetitionTest extends TestCase
 
         $response->assertSessionHas('toast.type', 'error');
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'spam@example.com']);
+    }
+
+    #[DataProvider('commentSpamCases')]
+    public function test_signing_comment_uses_review_owned_ignore_list(bool $authed, string $comment, bool $accepted): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Comment Petition',
+            'slug' => 'comment-petition',
+            'description' => 'Description',
+        ]);
+
+        // authed rules want 'agree', guest rules accept '1'
+        $agree = $authed ? 'agree' : '1';
+        $fields = ['comment' => $comment, 'agree1' => $agree, 'agree2' => $agree, 'agree3' => $agree];
+        if ($authed) {
+            $this->actingAs($this->user);
+        } else {
+            $fields += ['name' => 'Guest', 'email' => 'comment-guest@example.com'];
+        }
+
+        $this->post("/en/petition/comment-petition/{$petition->id}/sign", $fields)->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertSame($accepted ? 1 : 0, Signature::query()->where('petition_id', $petition->id)->count());
+    }
+
+    public static function commentSpamCases(): array
+    {
+        return [
+            'guest casino' => [false, 'Stop the new casino in our town', true],
+            'authed casino' => [true, 'Stop the new casino in our town', true],
+            'guest viagra' => [false, 'Buy viagra here', false],
+            'authed viagra' => [true, 'Buy viagra here', false],
+            'guest casino and viagra' => [false, 'Stop the casino, buy viagra', false],
+            'authed casino and viagra' => [true, 'Stop the casino, buy viagra', false],
+        ];
+    }
+
+    public function test_shoutbox_accepts_review_owned_keyword(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Shout Petition',
+            'slug' => 'shout-petition',
+            'description' => 'Description',
+        ]);
+        $sig = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+            'confirmed' => true,
+            'is_spam' => false,
+        ]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/shout-petition/{$petition->id}/shoutbox", ['comment' => 'Stop the new casino in our town'])
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertSame('Stop the new casino in our town', $sig->fresh()->text);
     }
 
     public function test_signature_rate_limited(): void
@@ -1389,120 +1905,6 @@ class PetitionTest extends TestCase
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id]);
     }
 
-    public function test_claim_endpoint_sets_password_once(): void
-    {
-        $petition = $this->makePublishedPetition('claim-once-petition');
-        $email = 'claim-once@example.com';
-        $signUrl = "/en/petition/claim-once-petition/{$petition->id}";
-
-        $this->post("{$signUrl}/sign/confirm", [
-            'name' => 'Claim',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertOk();
-
-        $usersBeforeSign = User::count();
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Claim',
-            'email' => $email,
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-            'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        $this->get("{$signUrl}/thanks")
-            ->assertOk()
-            ->assertDontSee(__('sign.claim_title'), false);
-
-        $user = User::where('email', $email)->firstOrFail();
-        $this->assertNotNull($user->verification_token);
-
-        $this->get('/en')->assertOk();
-
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-
-        $this->assertSame($usersBeforeSign + 1, User::count());
-        $this->assertSame(1, User::where('email', $email)->count());
-    }
-
-    public function test_claim_without_a_signing_session_redirects_to_login(): void
-    {
-        $petition = $this->makePublishedPetition('claim-no-session');
-
-        $this->post("/en/petition/claim-no-session/{$petition->id}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-    }
-
-    public function test_claim_form_survives_intermediate_requests(): void
-    {
-        $petition = $this->makePublishedPetition('claim-survives');
-        $email = 'claim-survives@example.com';
-        $signUrl = "/en/petition/claim-survives/{$petition->id}";
-
-        $this->post("{$signUrl}/sign/confirm", [
-            'name' => 'Survives',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertOk();
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Survives',
-            'email' => $email,
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-            'comment' => 'I support this petition',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        foreach (['/en', '/en/petitions', '/en/faqs'] as $path) {
-            $this->get($path)->assertOk();
-        }
-
-        $this->get("{$signUrl}/thanks")->assertOk()->assertDontSee(__('sign.claim_title'), false);
-
-        $this->post("{$signUrl}/claim", ['password' => 'survives123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-    }
-
-    public function test_claim_rejected_when_account_already_has_password(): void
-    {
-        $petition = $this->makePublishedPetition('claim-passworded-petition');
-        $email = 'passworded@example.com';
-        $signUrl = "/en/petition/claim-passworded-petition/{$petition->id}";
-
-        $this->post("{$signUrl}/sign", [
-            'name' => 'Existing',
-            'email' => $email,
-            'comment' => 'I support this petition',
-            'agree1' => '1',
-            'agree2' => '1',
-            'agree3' => '1',
-        ])->assertRedirect("{$signUrl}/thanks");
-
-        // Signing is complete, so the account exists; give it a password to
-        // simulate an owner who later reset their credentials.
-        $user = User::where('email', $email)->firstOrFail();
-        $user->forceFill(['password' => Hash::make('password123')])->save();
-
-        $this->post("{$signUrl}/claim", ['password' => 'secret123'])
-            ->assertRedirect('/en/login')
-            ->assertSessionHas('toast.type', 'warning');
-
-        $this->assertTrue(Hash::check('password123', $user->fresh()->password));
-    }
-
     public function test_double_submit_race_gets_friendly_error(): void
     {
         $petition = $this->makePublishedPetition('double-submit-petition');
@@ -1570,5 +1972,25 @@ class PetitionTest extends TestCase
         ]);
 
         return $petition;
+    }
+
+    public function test_search_highlight_does_not_break_entities_or_inject_html(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Fish & Chips <b>amp</b>',
+            'slug' => 'fish-and-chips',
+            'description' => 'Description',
+        ]);
+
+        $this->get('/en/petitions?q=amp')
+            ->assertOk()
+            ->assertSee('Fish &amp; Chips &lt;b&gt;<mark>amp</mark>&lt;/b&gt;', false);
+
+        $this->get('/en/petitions?q='.urlencode('&'))
+            ->assertOk()
+            ->assertSee('Fish <mark>&amp;</mark> Chips', false);
     }
 }

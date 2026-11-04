@@ -58,7 +58,7 @@ if ( $update_available ) : ?>
 	</div>
 <?php endif; ?>
 
-<div class="mset-section mset-analytics-report">
+<div class="mset-section mset-analytics-report" style="background-color: #ffffff;">
 	<div class="mset-section-header">
 		<h2><?php echo esc_html( $report_title ); ?></h2>
 	</div>
@@ -103,30 +103,80 @@ if ( $update_available ) : ?>
 	</div>
 </div>
 
-<div class="mset-section mset-analytics-stats">
+<div class="mset-section mset-analytics-stats" style="background-color: #ffffff;">
 	<div class="mset-section-header">
 		<h2>📈 <?php esc_html_e('Analytics Stats', 'google-analytics-for-wordpress'); ?></h2>
 	</div>
 
 	<div class="mset-section-content">
-		<div class="mset-stats-grid">
-			<?php foreach ($report_stats as $stat) : ?>
-				<div class="mset-stat-item">
-					<div class="mset-stat-item-icon"><?php echo esc_html($stat['icon']); ?></div>
-					<div class="mset-stat-label"><?php echo esc_html($stat['label']); ?></div>
-					<div class="mset-stat-value">
-						<?php
-						echo esc_html($stat['value']);
-						if (isset($stat['difference'])) : ?>
-							<span class="mset-stat-trend <?php echo esc_attr($stat['trend_class']); ?>">
-								<span class="mset-stat-trend-icon"><?php echo esc_html($stat['trend_icon']); ?></span>
-								<?php echo esc_html($stat['difference']); ?>%
-							</span>
-						<?php endif; ?>
+		<?php
+		$stats_arr = array_values( $report_stats );
+		$total_stats = count( $stats_arr );
+		?>
+		<?php
+		$mobile_cols = 2;
+		$mobile_rows = ceil( $total_stats / $mobile_cols );
+		$desktop_cols = 3;
+		$desktop_rows = ceil( $total_stats / $desktop_cols );
+		?>
+		<!-- Mobile: 2 columns -->
+		<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="mset-stats-mobile" style="margin-bottom: 20px; width: 100%; table-layout: fixed;">
+			<?php for ( $r = 0; $r < $mobile_rows; $r++ ) : ?>
+			<tr>
+				<?php for ( $c = 0; $c < $mobile_cols; $c++ ) :
+					$i = $r * $mobile_cols + $c;
+					if ( $i >= $total_stats ) break;
+					$stat = $stats_arr[ $i ];
+				?>
+				<td width="50%" valign="top" style="padding: 5px; width: 50%; vertical-align: top;">
+					<div style="background: #FBFDFF; border: 1px solid #E3F0FD; border-radius: 2px; text-align: center; padding: 15px 5px;">
+						<div class="mset-stat-item-icon"><?php echo esc_html( $stat['icon'] ); ?></div>
+						<div class="mset-stat-label"><?php echo esc_html( $stat['label'] ); ?></div>
+						<div class="mset-stat-value">
+							<?php
+							echo esc_html( $stat['value'] );
+							if ( isset( $stat['difference'] ) ) : ?>
+								<span class="mset-stat-trend <?php echo esc_attr( $stat['trend_class'] ); ?>">
+									<span class="mset-stat-trend-icon"><?php echo esc_html( $stat['trend_icon'] ); ?></span>
+									<?php echo esc_html( $stat['difference'] ); ?>%
+								</span>
+							<?php endif; ?>
+						</div>
 					</div>
-				</div>
-			<?php endforeach; ?>
-		</div>
+				</td>
+				<?php endfor; ?>
+			</tr>
+			<?php endfor; ?>
+		</table>
+		<!-- Desktop: 3 columns -->
+		<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="mset-stats-desktop" style="display: none; margin-bottom: 20px; width: 100%; table-layout: fixed;">
+			<?php for ( $r = 0; $r < $desktop_rows; $r++ ) : ?>
+			<tr>
+				<?php for ( $c = 0; $c < $desktop_cols; $c++ ) :
+					$i = $r * $desktop_cols + $c;
+					if ( $i >= $total_stats ) break;
+					$stat = $stats_arr[ $i ];
+				?>
+				<td width="33%" valign="top" style="padding: 5px; width: 33.333%; vertical-align: top;">
+					<div style="background: #FBFDFF; border: 1px solid #E3F0FD; border-radius: 2px; text-align: center; padding: 15px 5px;">
+						<div class="mset-stat-item-icon"><?php echo esc_html( $stat['icon'] ); ?></div>
+						<div class="mset-stat-label"><?php echo esc_html( $stat['label'] ); ?></div>
+						<div class="mset-stat-value">
+							<?php
+							echo esc_html( $stat['value'] );
+							if ( isset( $stat['difference'] ) ) : ?>
+								<span class="mset-stat-trend <?php echo esc_attr( $stat['trend_class'] ); ?>">
+									<span class="mset-stat-trend-icon"><?php echo esc_html( $stat['trend_icon'] ); ?></span>
+									<?php echo esc_html( $stat['difference'] ); ?>%
+								</span>
+							<?php endif; ?>
+						</div>
+					</div>
+				</td>
+				<?php endfor; ?>
+			</tr>
+			<?php endfor; ?>
+		</table>
 
 		<div class="mset-report-center-button">
 			<a href="<?php echo esc_url(admin_url('admin.php?page=monsterinsights_reports')); ?>" class="mset-button-primary">
@@ -137,7 +187,7 @@ if ( $update_available ) : ?>
 </div>
 
 <?php if (!empty($top_pages)) : ?>
-<div class="mset-section mset-top-pages">
+<div class="mset-section mset-top-pages" style="background-color: #ffffff;">
 	<div class="mset-section-header">
 		<h2>🌐 <?php esc_html_e('Your Top 5 Viewed Pages', 'google-analytics-for-wordpress'); ?></h2>
 	</div>
@@ -172,34 +222,48 @@ if ( $update_available ) : ?>
 <?php endif; ?>
 
 <?php if ( ! empty( $blog_posts ) ) : ?>
-<div class="mset-section">
+<div class="mset-section" style="background-color: #ffffff;">
 	<div class="mset-section-header">
 		<h2>⭐ <?php esc_html_e('What\'s New at MonsterInsights', 'google-analytics-for-wordpress'); ?></h2>
 	</div>
 	<div class="mset-section-content">
-		<ul class="mset-blog-posts">
-			<?php foreach ( $blog_posts as $post ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- false positive ?>
-				<li class="mset-blog-post">
-					<?php if ( ! empty( $post['featured_image'] ) ) : ?>
-						<div class="mset-blog-post-image">
-							<img src="<?php echo esc_url( $post['featured_image'] ); ?>" alt="<?php echo esc_attr( $post['title'] ); ?>" />
-						</div>
-					<?php endif; ?>
-					<div class="mset-blog-post-content">
-						<h4 class="mset-blog-post-title"><?php echo esc_html( $post['title'] ); ?></h4>
-						<p class="mset-blog-post-excerpt"><?php echo esc_html( $post['excerpt'] ); ?></p>
-						<a href="<?php echo esc_url( $post['link'] ); ?>" target="_blank" rel="noopener noreferrer">
-							<?php esc_html_e('Continue Reading', 'google-analytics-for-wordpress'); ?>
+		<?php foreach ( $blog_posts as $post ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- false positive ?>
+		<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin-bottom: 20px; border-bottom: 1px solid #E3F0FD;">
+			<tr>
+				<?php if ( ! empty( $post['featured_image'] ) ) : ?>
+				<td class="mset-blog-post-image-cell" width="180" valign="top" style="width: 180px; padding: 0 20px 20px 0;">
+					<a href="<?php echo esc_url( $post['link'] ); ?>" target="_blank" rel="noopener noreferrer">
+						<img src="<?php echo esc_url( $post['featured_image'] ); ?>" alt="<?php echo esc_attr( $post['title'] ); ?>" width="180" style="display: block; width: 180px; height: auto; border: 0; border-radius: 4px;" />
+					</a>
+				</td>
+				<?php endif; ?>
+				<td class="mset-blog-post-content-cell" valign="top" style="padding-bottom: 20px;">
+					<h4 style="margin: 0 0 8px 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; line-height: 24px; color: #23262E;">
+						<a href="<?php echo esc_url( $post['link'] ); ?>" target="_blank" rel="noopener noreferrer" style="color: #23262E; text-decoration: none;">
+							<?php echo esc_html( $post['title'] ); ?>
 						</a>
-					</div>
-				</li>
-			<?php endforeach; ?>
-		</ul>
-		<div class="mset-report-center-button">
-			<a href="<?php echo esc_url( $blog_posts_url ); ?>" class="mset-button-primary">
-				<?php esc_html_e('See All Resources', 'google-analytics-for-wordpress'); ?>
-			</a>
-		</div>
+					</h4>
+					<?php if ( ! empty( $post['excerpt'] ) ) : ?>
+					<p class="mset-blog-post-excerpt" style="margin: 0 0 8px 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 20px; color: #393F4C;">
+						<?php echo esc_html( $post['excerpt'] ); ?>
+					</p>
+					<?php endif; ?>
+					<a class="mset-blog-post-continue" href="<?php echo esc_url( $post['link'] ); ?>" target="_blank" rel="noopener noreferrer" style="font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 20px; color: #338EEF; text-decoration: underline;">
+						<?php esc_html_e('Continue Reading', 'google-analytics-for-wordpress'); ?>
+					</a>
+				</td>
+			</tr>
+		</table>
+		<?php endforeach; ?>
+		<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+			<tr>
+				<td align="center" style="padding: 0;">
+					<a href="<?php echo esc_url( $blog_posts_url ); ?>" class="mset-button-primary" style="display: inline-block; background-color: #338EEF; color: #ffffff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-family: Inter, Arial, Helvetica, sans-serif; font-weight: 500; text-align: center;">
+						<?php esc_html_e('See All Resources', 'google-analytics-for-wordpress'); ?>
+					</a>
+				</td>
+			</tr>
+		</table>
 	</div>
 </div>
 <?php endif; ?>

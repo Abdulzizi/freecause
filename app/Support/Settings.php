@@ -10,21 +10,38 @@ class Settings
 {
     private const CACHE_KEY = 'settings:all';
 
+    private static ?array $memo = null;
+
+    // DB fallback while cache is down; kept apart from $memo so it is never treated as a cache hit.
+    private static ?array $fallbackMemo = null;
+
     private static function all(): array
     {
-        try {
-            return Cache::remember(self::CACHE_KEY, 300, function () {
-                $grouped = [];
-
-                foreach (Setting::query()->get(['group', 'key', 'value']) as $row) {
-                    $grouped[$row->group][$row->key] = $row->value;
-                }
-
-                return $grouped;
-            });
-        } catch (\Throwable $e) {
-            return [];
+        if (self::$memo !== null) {
+            return self::$memo;
         }
+
+        try {
+            return self::$memo = Cache::remember(self::CACHE_KEY, 300, fn () => self::load());
+        } catch (\Throwable $e) {
+            // Cache down: read DB once per request; the memo flush lets the next request/job retry the cache.
+            try {
+                return self::$fallbackMemo ??= self::load();
+            } catch (\Throwable $e) {
+                return [];
+            }
+        }
+    }
+
+    private static function load(): array
+    {
+        $grouped = [];
+
+        foreach (Setting::query()->get(['group', 'key', 'value']) as $row) {
+            $grouped[$row->group][$row->key] = $row->value;
+        }
+
+        return $grouped;
     }
 
     public static function get(string $key, mixed $default = null, string $group = 'global'): mixed
@@ -61,8 +78,17 @@ class Settings
         self::forget();
     }
 
+    public static function flushMemo(): void
+    {
+        self::$memo = null;
+        self::$fallbackMemo = null;
+    }
+
     public static function forget(): void
     {
+        self::$memo = null;
+        self::$fallbackMemo = null;
+
         try {
             Cache::forget(self::CACHE_KEY);
         } catch (\Throwable $e) {

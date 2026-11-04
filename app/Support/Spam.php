@@ -42,9 +42,7 @@ class Spam
     protected static array $badKeywords = [
         'viagra',
         'casino',
-        'loan',
         'bitcoin',
-        'crypto',
         'porn',
         'escort',
         'seo service',
@@ -67,7 +65,7 @@ class Spam
                 continue;
             }
 
-            if (str_contains($text, $word)) {
+            if (preg_match('/\b'.preg_quote($word, '/').'/u', $text) === 1) {
                 return true;
             }
         }
@@ -114,42 +112,5 @@ class Spam
             'payload' => mb_strcut(mb_scrub($payload, 'UTF-8'), 0, $limit, 'UTF-8'),
             'created_at' => now(),
         ]);
-    }
-
-    public static function rateLimit(string $type, int $limit = 20): bool
-    {
-        // Track attempts under a dedicated type suffix so this counter is not
-        // polluted by genuine spam-event rows that callers log under $type
-        // (e.g. Spam::log('petition', ...)). Count the attempts recorded so
-        // far in the window, then record this one.
-        $attemptType = $type.':rl';
-
-        $count = DB::table('spam_logs')
-            ->where('ip', request()->ip())
-            ->where('type', $attemptType)
-            ->where('created_at', '>=', now()->subMinutes(5))
-            ->count();
-
-        self::log($attemptType, 'Rate limit attempt');
-
-        if ($count >= $limit) {
-            self::banCurrentIp('Auto ban: too many '.$type.' attempts');
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public static function banCurrentIp(?string $reason = null): void
-    {
-        DB::table('banned_ips')->updateOrInsert(
-            ['ip' => request()->ip()],
-            [
-                'reason' => $reason,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
     }
 }

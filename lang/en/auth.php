@@ -9,6 +9,7 @@ return [
     'create_account' => 'Create Your Account',
     'email' => 'Email',
     'email_placeholder' => 'Enter your email',
+    'email_try_later' => 'Email is temporarily unavailable. Please try again later.',
     'forgot_password' => 'Forgot password?',
     'forgot_title' => 'Forgot Password',
     'go_to_login' => 'go to login',

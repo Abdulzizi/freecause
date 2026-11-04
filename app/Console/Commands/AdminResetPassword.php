@@ -34,6 +34,7 @@ class AdminResetPassword extends Command
         }
 
         $user->password = Hash::make($password);
+        $user->password_changed_at = now();
         $user->save();
 
         $this->info("Password updated for admin: {$email}");

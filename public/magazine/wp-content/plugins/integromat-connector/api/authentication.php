@@ -31,7 +31,7 @@ add_filter(
 
 		if ( isset( $_SERVER['HTTP_IWC_API_KEY'] ) && ! empty( $_SERVER['HTTP_IWC_API_KEY'] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Token is hashed before comparison in is_valid()
-			$token =  $_SERVER['HTTP_IWC_API_KEY'];
+			$token = $_SERVER['HTTP_IWC_API_KEY'];
 
 			if ( strlen( $token ) !== \Integromat\Api_Token::API_TOKEN_LENGTH || ! \Integromat\Api_Token::is_valid( $token ) ) {
 				$log && \Integromat\Logger::write( 6 );

@@ -80,3 +80,7 @@ button.close-choose-element-type svg {
     font-size: 11px;
     border-radius: 2px;
 }
+
+.wrap #generate_premium_elements.closed .inside {
+	display: block;
+}

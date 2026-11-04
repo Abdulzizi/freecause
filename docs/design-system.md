@@ -43,10 +43,10 @@ surfaced to Tailwind v4 through `@theme` (so utilities like `bg-surface`,
 | Text | `text-ink`, `text-muted`, `text-subtle`, `text-on-dark`, `text-on-dark-muted` |
 | Lines | `border-border`, `border-border-strong`, `border-brand-border` |
 | Brand + semantic | `text/bg/border-brand`, `-brand-hover`, `-brand-active`, `success`, `warning`, `danger`, `info` |
-| Brand exceptions | `bg-whatsapp` (`#25d366`), `bg-facebook` (`#1877f2`) |
+| Brand exceptions | `bg-whatsapp` (`#25d366`), `bg-facebook` (`#166fe5`, AA contrast) |
 | Focus | `--fc-focus` (2px ring, 2px offset) |
 | Type | `text-xs` 12 · `text-sm` 14 · `text-base` 16 · `text-lg` 18 · `text-xl` 22 · `text-2xl` 28 · `text-3xl` 36 · `text-4xl` clamp(44–56) — each with its own line-height and tracking |
-| Radius | `rounded-sm` 6 · `rounded-md` 8 · `rounded-lg` 12 · `rounded-full` |
+| Radius | `rounded-xs` 3 (buttons, toasts, controls) · `rounded-sm` 6 · `rounded-md` 8 · `rounded-lg` 12 · `rounded-full` |
 | Elevation | `shadow-elev-1` (rest) · `shadow-elev-2` (raised) · `shadow-elev-3` (overlay) |
 | Spacing | Tailwind's 4px scale, restricted to `1,2,3,4,6,8,12,16,24,32` (4–128px) |
 | Motion | `--fc-dur-instant/fast/base/slow/hero` 100/150/200/300/500ms · `--fc-ease-standard/decel/accel` |
@@ -68,7 +68,6 @@ Rules:
 |---|---|
 | `x-ui.section` | page sections — `tone="band"` for alternating bands, `:tight` for compact heads, `:container="false"` for full-bleed |
 | `x-ui.page-head` | page title + lead + breadcrumb + `#actions` slot |
-| `x-ui.card` | bordered surface (`fcui-card`) |
 | `x-ui.badge` | status chips — `neutral`, `brand`, `success`, `warning`, `danger`, `info` |
 | `x-ui.breadcrumb` | `<nav aria-label="breadcrumb">` with items array |
 | `x-ui.empty` | empty states with `#icon` / `#action` slots |
@@ -77,6 +76,11 @@ Rules:
 | `x-ui.button` | `primary`, `danger`, `secondary`, `ghost`, `sm/md/lg`, busy state |
 | `x-ui.alert` | `success`, `error`, `warning`, `info` with ARIA roles |
 | `x-ui.input`, `x-ui.container`, `x-ui.spinner` | form control, layout width, loading |
+| `x-ui.action-sheet` | `<dialog>` sheet listing `actions` (links, POST forms) with title and close button |
+| `x-ui.bottom-sheet` | `<dialog>` sheet with `#footer` slot; `variant="center"` for a centred modal |
+| `x-ui.bottom-nav` | fixed mobile tab bar from an `items` array (`href`, `label`, `icon`, `active`) |
+| `x-ui.chip-row` | horizontal row wrapper for chips |
+| `x-ui.sticky-action` | sticky bottom CTA with optional `context` line; `href` renders a link, otherwise a submit button |
 
 Behavioural classes stay: `fc-hero`, `fc-hero-item`, `fc-reveal`, `fc-stagger`,
 `fc-lift`, `fc-prose`, `fc-head-band`, `fcui-*` (JS hooks), and the Bootstrap
@@ -155,5 +159,11 @@ CI: blocking step in `.github/workflows/ci.yml` (`Design system lint`).
 | Raw hex in views (styling) | 220 | 7 (standalone widget/pdf `<style>`) |
 | `border` tokens in views | 951 | 703 (−26%) |
 | Built public CSS | 192.8 kB / 1,035 `!important` | 181.5 kB / 168 `!important` (prod build) |
-| New `x-ui` component call sites | 0 | 35 (`section` 20, `badge` 6, `page-head` 3, `empty` 3, `breadcrumb` 2, `pagination` 1) |
+| New `x-ui` component call sites | 0 | 254 (`input` 90, `button` 48, `alert` 33, `container` 24, `sticky-action` 14, `section` 11, other 34; `grep -rE '<x-ui\.' resources/views --exclude-dir=components`) |
 
+## Browser gates
+
+`npx playwright test` runs smoke and a11y (axe WCAG A/AA serious+critical, horizontal overflow at 375 and 1280) against a fresh SQLite DB; screenshots do not run there.
+Screenshots run only via `bash scripts/e2e-visual.sh` in the official Playwright Linux container (needs Docker/OrbStack), on their own fresh DB; baselines are `*-linux.png`; update with `bash scripts/e2e-visual.sh --update-snapshots`.
+Both are blocking in the CI `e2e` job, which runs on pull requests only; the push-to-main deploy does not run it.
+The component preview at `/__components` is only available in the `local` and `e2e` environments.

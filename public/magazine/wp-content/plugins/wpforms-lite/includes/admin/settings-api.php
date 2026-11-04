@@ -16,7 +16,7 @@ use WPForms\Admin\Education\Helpers as EducationHelpers;
  *
  * @return string
  */
-function wpforms_settings_output_field( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_settings_output_field( array $args ): string {
 
 	// Define default callback for this field type.
 	$callback = ! empty( $args['type'] ) && function_exists( 'wpforms_settings_' . $args['type'] . '_callback' ) ? 'wpforms_settings_' . $args['type'] . '_callback' : 'wpforms_settings_missing_callback';
@@ -175,6 +175,7 @@ function wpforms_settings_license_callback( array $args ): string { // phpcs:ign
  * Settings text input field callback.
  *
  * @since 1.3.9
+ * @since 1.10.0 Adds the ability to make text input readonly.
  *
  * @param array $args Settings arguments.
  *
@@ -186,11 +187,12 @@ function wpforms_settings_text_callback( array $args ): string {
 		$args['type'] = 'text';
 	}
 
-	$default = isset( $args['default'] ) ? esc_html( $args['default'] ) : '';
-	$value   = wpforms_setting( $args['id'], $default );
-	$id      = wpforms_sanitize_key( $args['id'] );
+	$default  = isset( $args['default'] ) ? esc_html( $args['default'] ) : '';
+	$value    = wpforms_setting( $args['id'], $default );
+	$id       = wpforms_sanitize_key( $args['id'] );
+	$readonly = ! empty( $args['readonly'] ) ? ' readonly' : '';
 
-	$output = '<input type="' . esc_attr( $args['type'] ) . '" id="wpforms-setting-' . $id . '" name="' . $id . '" value="' . esc_attr( $value ) . '">';
+	$output = '<input type="' . esc_attr( $args['type'] ) . '" id="wpforms-setting-' . $id . '" name="' . $id . '" value="' . esc_attr( $value ) . '" ' . $readonly . ' />';
 
 	if ( ! empty( $args['desc'] ) ) {
 		$output .= '<p class="desc">' . wp_kses_post( $args['desc'] ) . '</p>';
@@ -211,6 +213,50 @@ function wpforms_settings_text_callback( array $args ): string {
 function wpforms_settings_password_callback( array $args ): string {
 
 	return wpforms_settings_text_callback( $args );
+}
+
+/**
+ * Settings masked text input field callback.
+ *
+ * Renders a masked display (dots + last 4 chars) for saved values.
+ * The real value is never sent to the browser.
+ *
+ * @since 1.10.1
+ *
+ * @param array $args Setting field arguments.
+ *
+ * @return string
+ */
+function wpforms_settings_masked_text_callback( array $args ): string {
+
+	$default = isset( $args['default'] ) ? esc_html( $args['default'] ) : '';
+	$value   = wpforms_setting( $args['id'], $default );
+	$id      = wpforms_sanitize_key( $args['id'] );
+
+	if ( ! empty( $value ) ) {
+		// Generate masked display: 14 dots + last 4 characters.
+		$visible_chars = mb_strlen( $value ) > 4 ? mb_substr( $value, -4 ) : '';
+		$masked_value  = str_repeat( '•', 14 ) . $visible_chars;
+		$placeholder   = ! empty( $args['masked_placeholder'] )
+			? $args['masked_placeholder']
+			: __( 'Paste new API key to replace', 'wpforms-lite' );
+
+		// No `name` attribute — JS adds it on focus so the field can submit a new value.
+		// `data-masked-value` stores the masked string so JS can restore it on blur.
+		$output  = '<div class="wpforms-masked-input-wrap">';
+		$output .= '<input type="text" id="wpforms-setting-' . $id . '" value="' . esc_attr( $masked_value ) . '" data-masked="1" data-masked-value="' . esc_attr( $masked_value ) . '" data-masked-placeholder="' . esc_attr( $placeholder ) . '" data-name="' . esc_attr( $id ) . '" readonly />';
+		$output .= '<button type="button" class="wpforms-masked-input-clear" title="' . esc_attr__( 'Remove Key', 'wpforms-lite' ) . '" aria-label="' . esc_attr__( 'Remove Key', 'wpforms-lite' ) . '"><i class="fa fa-times-circle" aria-hidden="true"></i></button>';
+		$output .= '<input type="hidden" name="' . $id . '-clear" value="0" class="wpforms-masked-input-clear-flag" />';
+		$output .= '</div>';
+	} else {
+		$output = '<input type="text" id="wpforms-setting-' . $id . '" name="' . $id . '" value="" />';
+	}
+
+	if ( ! empty( $args['desc'] ) ) {
+		$output .= '<p class="desc">' . wp_kses_post( $args['desc'] ) . '</p>';
+	}
+
+	return $output;
 }
 
 /**
@@ -258,7 +304,7 @@ function wpforms_settings_number_callback( array $args ): string {
  *
  * @return string
  */
-function wpforms_settings_select_callback( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+function wpforms_settings_select_callback( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 	$default     = isset( $args['default'] ) ? esc_html( $args['default'] ) : '';
 	$value       = wpforms_setting( $args['id'], $default );
@@ -457,7 +503,7 @@ function wpforms_settings_email_template_callback( array $args ): string {
  *
  * @return string
  */
-function wpforms_settings_toggle_callback( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+function wpforms_settings_toggle_callback( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 	$value      = ! empty( $args['value'] ) ? $args['value'] : wpforms_setting( $args['id'] );
 	$id         = wpforms_sanitize_key( $args['id'] );
@@ -669,11 +715,12 @@ function wpforms_settings_webhook_endpoint_callback( array $args ): string {
 
 	$provider    = $args['provider'] ?? 'stripe';
 	$input_id    = "wpforms-{$provider}-webhook-endpoint-url";
-	$copy_btn    = '<a class="button button-secondary wpforms-copy-to-clipboard" data-clipboard-target="#' . esc_attr( $input_id ) . '" href="#" aria-label="' . esc_attr__( 'Copy webhook URL', 'wpforms-lite' ) . '"><span class="dashicons dashicons-admin-page"></span></a>';
+	$copy_btn    = '<a class="button button-secondary wpforms-copy-to-clipboard" data-clipboard-target="#' . esc_attr( $input_id ) . '" href="#" aria-label="' . esc_attr__( 'Copy webhook URL', 'wpforms-lite' ) . '"><span class="fa-regular fa-copy" aria-hidden="true"></span></a>';
 	$input_field = '<input type="text" disabled id="' . esc_attr( $input_id ) . '" value="' . esc_url( $args['url'] ) . '" />';
 
+	// No whitespace between the input and the button: inline elements would render it as an extra gap.
 	$output = sprintf(
-		'<div class="%1$s">%2$s %3$s</div>',
+		'<div class="%1$s">%2$s%3$s</div>',
 		esc_attr( "wpforms-{$provider}-webhook-endpoint-url" ),
 		$input_field,
 		$copy_btn
@@ -695,7 +742,7 @@ function wpforms_settings_webhook_endpoint_callback( array $args ): string {
  *
  * @return string
  */
-function wpforms_settings_columns_callback( array $args ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+function wpforms_settings_columns_callback( array $args ): string {
 
 	if ( empty( $args['columns'] ) || ! is_array( $args['columns'] ) ) {
 		return '';

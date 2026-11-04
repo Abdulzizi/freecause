@@ -6,4 +6,10 @@ return [
     'full_list' => '» tam liste',
     'created_heading' => 'Oluşturduğum Son Dilekçeler',
     'created_empty' => 'Henüz oluşturulmuş dilekçe yok.',
+    'withdraw' => 'Geri çek',
+    'withdraw_title' => 'Bu dilekçe geri çekilsin mi?',
+    'withdraw_text' => 'Çevrimdışı olacak ve artık listelerde görünmeyecek.',
+    'withdraw_ok' => 'Evet, geri çek',
+    'withdraw_cancel' => 'İptal',
+    'withdrawn' => 'Dilekçeniz geri çekildi.',
 ];

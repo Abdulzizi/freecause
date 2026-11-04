@@ -45,6 +45,10 @@ class Loader {
 			'Stripe\Stripe',
 			'UncannyAutomator\UncannyAutomator',
 			'UsageTracking\UsageTracking',
+			'ProductApi\ProductEvents',
+			'ProductApi\Events\FormEvents',
+			'ProductApi\Events\SubmissionEvents',
+			'ProductApi\Events\AdminEvents',
 			'DefaultThemes\DefaultThemes',
 			'Translations\Translations',
 			'DefaultContent\DefaultContent',
@@ -53,6 +57,10 @@ class Loader {
 			'AI\AI',
 			'ConstantContact\V3\ConstantContact',
 			'Square\Square',
+			'MotoPress\MotoPress',
+			'Abilities\Abilities',
+			'AiMcp\AiMcp',
+			'PayPalCommerce\PayPalCommerce',
 		];
 
 		/**

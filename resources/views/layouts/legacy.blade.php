@@ -7,7 +7,7 @@
 
     @php
         $locale = app()->getLocale();
-        $fallbackLocale = config('app.fallback_locale', 'en');
+        $fallbackLocale = \App\Support\Locale::default();
 
         $pageContentService = app(App\Services\PageContentService::class);
         $globalMeta = $pageContentService->getPage('global', $locale);

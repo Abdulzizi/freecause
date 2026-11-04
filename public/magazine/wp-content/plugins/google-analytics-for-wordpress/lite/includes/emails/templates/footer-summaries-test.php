@@ -24,13 +24,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					if ( isset( $settings_tab_url ) && $settings_tab_url ) :
 						$footer = sprintf(
-							/* translators: Placeholders adds wrapping span tags and links to settings page. */
-							esc_html__('%1$sThis email was auto-genetrated and sent from MonsterInsights.%2$s Learn how to %3$s disable it%4$s.', 'google-analytics-for-wordpress' ),
-						'<span>',
-						'</span><span>',
+							/* translators: %1$s,%2$s are wrapping span tags; %3$s,%4$s wrap the "disable it" link. */
+							esc_html__('%1$sThis email was auto-generated and sent from MonsterInsights.%2$s Learn how to %3$s disable it%4$s', 'google-analytics-for-wordpress' ),
+						'<span class="mset-footer-text">',
+						'</span><span class="mset-footer-text">',
 						'<a href="' . $settings_tab_url . '" target="_blank" class="mset-footer-link">',
-						'</a></span>'
-						);
+						'</a>'
+						) . '.</span>';
 
 						echo apply_filters( 'mi_email_summaries_footer_text', $footer ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in the sprintf.
 					endif; ?>
@@ -44,18 +44,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					if ( isset( $facebook_url ) && $facebook_url ) : ?>
 						<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" class="mset-footer-link">
-							<span class="mset-icon mset-icon-facebook"></span>
+							<span class="mset-icon mset-icon-facebook"><img src="<?php echo esc_url( $icons_url . 'facebook.png' ); ?>" alt="Facebook" width="16" height="16" style="display: block; width: 100%; height: auto; border: 0;" /></span>
 						</a>
 					<?php endif;
 
 					if ( isset( $linkedin_url ) && $linkedin_url ) : ?>
 						<a href="<?php echo esc_url( $linkedin_url ); ?>" target="_blank" class="mset-footer-link">
-							<span class="mset-icon mset-icon-linkedin"></span>
+							<span class="mset-icon mset-icon-linkedin"><img src="<?php echo esc_url( $icons_url . 'linkedin.png' ); ?>" alt="LinkedIn" width="16" height="16" style="display: block; width: 100%; height: auto; border: 0;" /></span>
 						</a>
 					<?php endif; ?>
 				</div>
 			</div>
 		</div><!-- .mset-container -->
 	</div><!-- .mset-wrapper -->
+			</td>
+		</tr>
+	</table>
 </body>
 </html>

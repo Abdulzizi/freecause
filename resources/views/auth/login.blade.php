@@ -90,7 +90,7 @@
                                     <label class="form-check-label" for="remember">{{ __('auth.remember_me') }}</label>
                                 </div>
 
-                                <x-ui.button type="submit" variant="danger" class="w-full max-md:min-h-12 py-2 rounded-lg">
+                                <x-ui.button type="submit" variant="danger" class="w-full max-md:min-h-12 py-2">
                                     {{ __('auth.login') }}
                                 </x-ui.button>
 

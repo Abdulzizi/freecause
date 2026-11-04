@@ -3,33 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\ConditionalLogging;
-use App\Http\Requests\ClaimAccountRequest;
 use App\Http\Requests\PetitionRequest;
 use App\Models\Category;
 use App\Models\Language;
-use App\Models\PageContent;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
-use App\Models\User;
+use App\Services\PageContentService;
 use App\Services\PetitionSigning;
 use App\Services\PetitionStats;
 use App\Support\AppLog;
 use App\Support\CacheKeys;
+use App\Support\CacheVersion;
 use App\Support\DefaultComments;
 use App\Support\ImageVariants;
 use App\Support\ReviewKeywords;
 use App\Support\Slug;
 use App\Support\Spam;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -52,7 +50,7 @@ class PetitionController extends Controller
     private function requireOwnerOrAdmin(Petition $petition): void
     {
         $isOwner = auth()->check() && (int) $petition->user_id === (int) auth()->id();
-        $isAdmin = admin_user()?->canAccessAdmin() ?? false;
+        $isAdmin = admin_can('signatures', 'view');
 
         abort_unless($isOwner || $isAdmin, 403);
     }
@@ -62,7 +60,7 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
         abort_unless($petition->is_active && in_array($petition->status, ['published', 'draft'], true), 403);
         abort_if(
-            $petition->signatures()->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
+            $petition->signatures()->where('confirmed', true)->where('is_spam', false)->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
             403,
             'Petition can no longer be edited after another person has signed.'
         );
@@ -70,7 +68,7 @@ class PetitionController extends Controller
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
     {
-        $tr = $petition->translationOrFallback($locale);
+        $tr = $petition->translationOrFallback($locale, default_locale());
 
         abort_if(! $tr, 404);
 
@@ -83,6 +81,15 @@ class PetitionController extends Controller
         }
 
         return $tr;
+    }
+
+    private function hasSigned(Petition $petition): bool
+    {
+        $u = auth()->user();
+
+        return Signature::where('petition_id', $petition->id)
+            ->where(fn ($q) => $q->where('email', $u->email)->orWhere('user_id', $u->id))
+            ->exists();
     }
 
     private function normalizeTags(?string $tags): ?string
@@ -99,7 +106,6 @@ class PetitionController extends Controller
     private function storeCoverImage(UploadedFile $file): string
     {
         $size = @getimagesize($file->getPathname());
-        $origWidth = $size !== false ? (int) $size[0] : 801;
         if ($size !== false && max($size[0], $size[1]) > 2000) {
             throw ValidationException::withMessages([
                 'image' => 'The image must not exceed 2000 pixels on its longest side.',
@@ -112,7 +118,7 @@ class PetitionController extends Controller
         try {
             $img = Image::read($absolute)->orient();
             $img->scaleDown(width: 800, height: 800)->save($absolute);
-            ImageVariants::ensure($absolute, $origWidth);
+            ImageVariants::ensure($absolute);
 
             if (! Storage::disk('public')->exists($path)) {
                 throw ValidationException::withMessages([
@@ -140,23 +146,10 @@ class PetitionController extends Controller
         return $request->hasFile('image') && filled($data['image_url'] ?? null);
     }
 
-    public function index(string $locale)
+    /** Base query for the public petition listing; cache:warm uses it too. */
+    public static function listingQuery(string $locale): Builder
     {
-        $locale = normalize_locale($locale);
-        $defaultLocale = default_locale();
-
-        $search = trim((string) request('q', ''));
-        $page = max(1, min((int) request('page', 1), 500));
-
-        $categories = cache()->remember(CacheKeys::homeCategories($locale), 43200, function () use ($locale, $defaultLocale) {
-            return Category::select(['categories.id', 'categories.sort_order'])
-                ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'tr_name', 'slug' => 'tr_slug'], $defaultLocale)
-                ->where('categories.is_active', true)
-                ->orderBy('categories.sort_order')
-                ->get();
-        });
-
-        $query = Petition::query()
+        return Petition::query()
             ->select([
                 'petitions.id',
                 'petitions.signature_count',
@@ -171,12 +164,29 @@ class PetitionController extends Controller
             })
             ->whereNotNull('pt_locale.title')
             ->visible();
+    }
+
+    public function index(string $locale)
+    {
+        $locale = normalize_locale($locale);
+
+        $search = trim((string) request('q', ''));
+        $page = max(1, min((int) request('page', 1), 500));
+
+        $categories = Category::cachedActive($locale);
+
+        $query = self::listingQuery($locale);
 
         if ($search !== '') {
             $driver = DB::connection()->getDriverName();
             if (in_array($driver, ['mysql', 'mariadb'], true)) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$search]);
+                $terms = PetitionTranslation::booleanTerms($search);
+                $query->where(function ($q) use ($terms) {
+                    if ($terms === '') {
+                        $q->whereRaw('1 = 0');
+                    } else {
+                        $q->whereRaw('MATCH(pt_locale.title) AGAINST(? IN BOOLEAN MODE)', [$terms]);
+                    }
                 });
             } else {
                 $like = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $search).'%';
@@ -198,41 +208,29 @@ class PetitionController extends Controller
             } elseif ($sort === 'trending') {
                 $recent = Signature::query()
                     ->where('confirmed', true)
+                    ->where('is_spam', false)
                     ->where('created_at', '>=', now()->subDays(7))
                     ->selectRaw('petition_id, count(*) as recent_count')
                     ->groupBy('petition_id');
 
-                $cacheKey = CacheKeys::petitionsTrending($locale, $page);
-
-                $cached = cache()->remember($cacheKey, now()->addMinutes(10), function () use ($query, $recent, $page) {
-                    $p = (clone $query)
-                        ->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
+                $petitions = $this->cachedListingPage(
+                    $query,
+                    CacheKeys::petitionsTrending($locale, $page),
+                    now()->addMinutes(10),
+                    $page,
+                    fn ($q) => $q->leftJoinSub($recent, 'trend', 'trend.petition_id', '=', 'petitions.id')
                         ->orderByDesc('trend.recent_count')
                         ->orderByDesc('petitions.signature_count')
                         ->orderByDesc('petitions.id')
-                        ->paginate(15, ['petitions.id'], 'page', $page);
-
-                    return ['ids' => $p->items(), 'total' => $p->total()];
-                });
-                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
-                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
-
-                $petitions = $petitions->withQueryString();
+                );
             } else {
-                $cacheKey = CacheKeys::petitionsIndex($locale, $page);
-                $cached = cache()->remember($cacheKey, now()->addSeconds(300), function () use ($query, $page) {
-                    $p = (clone $query)->orderByDesc('petitions.id')->paginate(15, ['petitions.id'], 'page', $page);
-
-                    return ['ids' => $p->items(), 'total' => $p->total()];
-                });
-                $ids = collect($cached['ids'] ?? [])->pluck('id')->all();
-                $rows = empty($ids) ? collect() : (clone $query)->whereIn('petitions.id', $ids)
-                    ->with('translations')->get()->sortBy(fn ($r) => array_search($r->id, $ids))->values();
-                $petitions = new LengthAwarePaginator($rows, $cached['total'] ?? 0, 15, $page, ['path' => request()->url()]);
-
-                $petitions = $petitions->withQueryString();
+                $petitions = $this->cachedListingPage(
+                    $query,
+                    CacheKeys::petitionsIndex($locale, $page),
+                    now()->addSeconds(300),
+                    $page,
+                    fn ($q) => $q->orderByDesc('petitions.id')
+                );
             }
         }
 
@@ -274,20 +272,14 @@ class PetitionController extends Controller
             $this->recordView($request, $petition);
         }
 
-        $tr = $petition->translationOrFallback($locale, $defaultLocale);
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.show', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
         $related = cache()->remember(
-            "petition:related:{$petition->id}:{$locale}",
+            "petition:related:{$petition->id}:{$locale}:".CacheVersion::get('list'),
             now()->addMinutes(10),
             function () use ($petition, $locale, $defaultLocale) {
                 if (! $petition->category_id) {
@@ -313,11 +305,7 @@ class PetitionController extends Controller
             return response()->view('petition.offline', compact('petition', 'tr', 'locale', 'related'));
         }
 
-        $hasSigned = auth()->check()
-            ? Signature::where('petition_id', $petition->id)
-                ->where('email', auth()->user()->email)
-                ->exists()
-            : false;
+        $hasSigned = auth()->check() && $this->hasSigned($petition);
 
         $goalTotal = (int) ($petition->goal_signatures ?? 100);
         $goalCurrent = (int) ($petition->signature_count ?? 0);
@@ -340,13 +328,9 @@ class PetitionController extends Controller
             'id' => $petition->id,
         ]);
 
-        $content = PageContent::where('page', 'petition_show')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
-
-        $formContent = PageContent::where('page', 'petition_sign_form')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
+        $pages = app(PageContentService::class);
+        $content = collect($pages->getPage('petition_show', $tr->locale));
+        $formContent = collect($pages->getPage('petition_sign_form', $tr->locale));
 
         $defaultComments = DefaultComments::forLocales(
             Language::where('is_active', true)
@@ -466,6 +450,12 @@ class PetitionController extends Controller
         $u = $request->user();
         $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->where('confirmed', true)->where('is_spam', false)->first();
         abort_unless($sig && $u->verified, 403);
+        if (Spam::isSpam($data['comment'], Spam::reviewOwned())) {
+            Spam::log('comment', json_encode(['petition_id' => $petition->id, 'comment' => $data['comment']]));
+            toast('Suspicious activity detected.', 'error');
+
+            return back()->withInput();
+        }
         $sig->forceFill(['text' => $data['comment']])->save();
         toast('Comment posted!', 'success');
         $tr = $petition->translationOrFallback($locale);
@@ -544,7 +534,7 @@ class PetitionController extends Controller
                 $petition->country = $data['country'] ?? null;
                 $petition->community = $data['community'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
-                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
+                $petition->youtube_url = Petition::youtubeId($data['youtube'] ?? null);
                 $petition->image_url = $request->hasFile('image') ? null : ($data['image_url'] ?? null);
 
                 if ($request->hasFile('image')) {
@@ -587,7 +577,7 @@ class PetitionController extends Controller
                 );
 
                 if ($sig->wasRecentlyCreated) {
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                     PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
                 }
 
@@ -622,7 +612,6 @@ class PetitionController extends Controller
     public function thanks(Request $request, string $locale, string $slug, int $id)
     {
         $requestedLocale = normalize_locale($locale);
-        $defaultLocale = default_locale();
 
         $petition = Petition::query()->with('category')->where('id', $id)->firstOrFail();
 
@@ -630,20 +619,14 @@ class PetitionController extends Controller
 
         abort_unless($petition->status === 'published' ? (bool) $petition->is_active : $isOwner, 404);
 
-        $tr = $petition->translationOrFallback($requestedLocale, $defaultLocale);
-
-        abort_if(! $tr, 404);
-
         $mode = $request->session()->get('petition_mode', 'signed');
         $verified = $request->session()->get('petition_verified', true);
 
-        if ($tr->slug !== $slug || $tr->locale !== $requestedLocale) {
-            return redirect()->route('petition.thanks', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ])->with('petition_mode', $mode)->with('petition_verified', $verified);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.thanks', $requestedLocale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect->with('petition_mode', $mode)->with('petition_verified', $verified);
         }
+        $tr = $trOrRedirect;
 
         $locale = $tr->locale;
         App::setLocale($locale);
@@ -670,20 +653,10 @@ class PetitionController extends Controller
             ->limit(5)
             ->get();
 
-        $content = PageContent::where('page', 'petition_thanks')
-            ->where('locale', $tr->locale)
-            ->pluck('value', 'key');
-
-        $claim = $request->session()->get('sign_claim');
-        $canClaim = false;
-
-        if ($claim) {
-            $claimUser = User::where('email', $claim['email'])->first();
-            $canClaim = $claimUser && ! filled($claimUser->password);
-        }
+        $content = collect(app(PageContentService::class)->getPage('petition_thanks', $tr->locale));
 
         $count = (int) ($petition->signature_count ?? 0);
-        $ladder = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+        $ladder = Petition::GOALS;
         $nextMilestone = null;
         foreach ($ladder as $m) {
             if ($m > $count) {
@@ -704,61 +677,10 @@ class PetitionController extends Controller
             'verified',
             'tr',
             'content',
-            'claim',
-            'canClaim',
             'nextMilestone',
             'shareUrl',
             'reviewRequired'
         ));
-    }
-
-    public function claimAccount(ClaimAccountRequest $request, string $locale, string $slug, int $id)
-    {
-        $data = $request->validated();
-
-        $claim = $request->session()->get('sign_claim');
-
-        if (! $claim) {
-            $request->session()->forget('sign_claim');
-            toast(__('sign.claim_expired'), 'warning');
-
-            return redirect()->route('login', ['locale' => $locale]);
-        }
-
-        $claimed = false;
-
-        $user = DB::transaction(function () use ($claim, $data, &$claimed) {
-            $locked = User::lockForUpdate()->where('email', $claim['email'])->first();
-            abort_unless($locked && $locked->verified && is_null($locked->verification_token), 403);
-            if (filled($locked->password)) {
-                return $locked;
-            }
-            $locked->forceFill(['password' => Hash::make($data['password'])])->save();
-            $claimed = true;
-
-            return $locked;
-        });
-
-        if (! $claimed) {
-            return back()->withErrors([
-                'password' => 'This account already has a password — please log in.',
-            ]);
-        }
-
-        $request->session()->forget('sign_claim');
-
-        auth()->login($user);
-        $request->session()->regenerate();
-
-        toast(__('sign.claim_success'), 'success');
-
-        $dest = lroute('petition.show', ['slug' => $slug, 'id' => $id]);
-
-        if (! $user->hasCompleteProfile()) {
-            $dest = self::profileCompletionTarget($locale, $dest);
-        }
-
-        return redirect()->to($dest);
     }
 
     public function signPage(Request $request, string $locale, string $slug, int $id)
@@ -770,26 +692,13 @@ class PetitionController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.sign.page', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.sign.page', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
-        $alreadySigned = auth()->check() && Signature::where('petition_id', $petition->id)
-            ->where('email', auth()->user()->email)
-            ->exists();
+        $alreadySigned = auth()->check() && $this->hasSigned($petition);
 
         if ($alreadySigned) {
             return redirect()->route('petition.show', [
@@ -799,11 +708,9 @@ class PetitionController extends Controller
             ]);
         }
 
-        if ($request->isMethod('get')) {
-            $content = PageContent::where('page', 'petition_sign')
-                ->where('locale', $locale)
-                ->pluck('value', 'key');
+        $content = collect(app(PageContentService::class)->getPage('petition_sign', $locale));
 
+        if ($request->isMethod('get')) {
             return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
         }
 
@@ -812,10 +719,6 @@ class PetitionController extends Controller
             : PetitionSigning::guestRules();
 
         session(["sign.{$petition->id}" => $request->validate($rules)]);
-
-        $content = PageContent::where('page', 'petition_sign')
-            ->where('locale', $locale)
-            ->pluck('value', 'key');
 
         return view('petition.sign_page', compact('petition', 'tr', 'locale', 'content'));
     }
@@ -852,12 +755,18 @@ class PetitionController extends Controller
             ->tap($withTr)
             ->latest('petitions.created_at');
 
+        $cachedTotal = fn ($base, string $kind) => cache()->remember(
+            "my-petitions:total:{$kind}:{$u->id}:{$locale}:".CacheVersion::get('list'),
+            300,
+            fn () => (clone $base)->toBase()->getCountForPagination()
+        );
+
         if ($tab === 'signed') {
-            $signed = $signedBase->paginate(10)->withQueryString();
+            $signed = $signedBase->paginate(10, ['*'], 'page', null, $cachedTotal($signedBase, 'signed'))->withQueryString();
             $created = $createdBase->limit(5)->get();
         } elseif ($tab === 'created') {
             $signed = $signedBase->limit(5)->get();
-            $created = $createdBase->paginate(10)->withQueryString();
+            $created = $createdBase->paginate(10, ['*'], 'page', null, $cachedTotal($createdBase, 'created'))->withQueryString();
         } else {
             $signed = $signedBase->limit(5)->get();
             $created = $createdBase->limit(5)->get();
@@ -891,6 +800,19 @@ class PetitionController extends Controller
         return view('petition.create', compact('petition', 'tr', 'locale', 'categories', 'mode'));
     }
 
+    public function withdraw(string $locale, string $slug, int $id): RedirectResponse
+    {
+        $petition = Petition::query()->findOrFail($id);
+        $this->requireOwner($petition);
+        abort_unless($petition->status === 'published', 403);
+
+        // Reversible: the public page falls back to the offline view; FlushesListingCaches bumps the listing cache.
+        $petition->is_active = 0;
+        $petition->save();
+
+        return redirect()->to(lroute('account.petitions'))->with('success', __('myp.withdrawn'));
+    }
+
     public function update(PetitionRequest $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
@@ -903,6 +825,13 @@ class PetitionController extends Controller
         $tr = $trOrRedirect;
 
         $data = $request->validated();
+        $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
+
+        if ($reviewMatches === [] && Spam::isSpam($data['title'].' '.strip_tags($data['description']), Spam::reviewOwned())) {
+            Spam::log('petition.update', json_encode(['petition_id' => $petition->id, 'title' => $data['title']]));
+
+            return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
+        }
 
         if ($this->imageConflict($request, $data)) {
             return back()
@@ -917,10 +846,10 @@ class PetitionController extends Controller
         $newCoverImage = null;
 
         try {
-            $response = DB::transaction(function () use ($request, $data, $petition, $tr, &$newCoverImage) {
+            $response = DB::transaction(function () use ($request, $data, $petition, $tr, $reviewMatches, &$newCoverImage) {
                 $locked = Petition::query()->lockForUpdate()->findOrFail($petition->id);
                 $this->requireEditable($locked);
-                $petition->setRawAttributes($locked->getAttributes());
+                $petition->setRawAttributes($locked->getAttributes(), true);
 
                 $tags = $this->normalizeTags($data['tags'] ?? null);
 
@@ -932,7 +861,9 @@ class PetitionController extends Controller
                 $petition->country = $data['country'] ?? null;
                 $petition->community_url = $data['community_url'] ?? null;
 
-                $petition->youtube_url = $this->youtubeId($data['youtube'] ?? null);
+                if (($data['youtube'] ?? null) !== $petition->youtube_url) {
+                    $petition->youtube_url = Petition::youtubeId($data['youtube'] ?? null);
+                }
 
                 $petition->image_url = $data['image_url'] ?? null;
 
@@ -943,8 +874,15 @@ class PetitionController extends Controller
                     $petition->image_url = null;
                 } elseif ($request->boolean('remove_image')) {
                     $petition->cover_image = null;
-                } elseif (filled($data['image_url'] ?? null) && ($data['image_url'] ?? null) !== $petition->image_url) {
+                } elseif (filled($data['image_url'] ?? null) && $petition->isDirty('image_url')) {
                     $petition->cover_image = null;
+                }
+
+                $heldForReview = $reviewMatches !== [] && $petition->status === 'published';
+                if ($heldForReview) {
+                    $petition->status = 'draft';
+                } elseif ($reviewMatches === [] && $petition->status === 'draft' && ! $petition->held_by_admin) {
+                    $petition->status = 'published';
                 }
 
                 $petition->save();
@@ -954,12 +892,7 @@ class PetitionController extends Controller
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
-                $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
-
-                if ($reviewMatches !== [] && $petition->status === 'published') {
-                    $petition->status = 'draft';
-                    $petition->save();
-
+                if ($heldForReview) {
                     Spam::log('petition.review', json_encode([
                         'petition_id' => $petition->id,
                         'title' => $data['title'],
@@ -967,11 +900,6 @@ class PetitionController extends Controller
                     ]));
 
                     toast(__('petition.review_required'), 'warning');
-                } elseif ($reviewMatches === [] && $petition->status === 'draft') {
-                    $petition->status = 'published';
-                    $petition->save();
-
-                    toast(__('create.toast_updated'), 'success');
                 } else {
                     toast(__('create.toast_updated'), 'success');
                 }
@@ -1032,7 +960,8 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')->orderBy('id')
+                ->where('confirmed', true)
+                ->where('is_spam', false)
                 ->chunkById(1000, function ($rows) use ($out, &$num) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1070,6 +999,8 @@ class PetitionController extends Controller
         // uncapped export is available as TXT/CSV (streamed).
         $signatures = Signature::query()
             ->where('petition_id', $petition->id)
+            ->where('confirmed', true)
+            ->where('is_spam', false)
             ->orderBy('created_at')
             ->limit(1000)
             ->get();
@@ -1104,7 +1035,7 @@ class PetitionController extends Controller
 
         // Stream ALL signatures as CSV (chunked cursor) so the export is
         // memory-safe on large petitions.
-        $showEmail = (bool) (admin_user()?->canAccessAdmin());
+        $showEmail = admin_can('signatures', 'view');
         $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'confirmed', 'signed_at'];
 
         return response()->streamDownload(function () use ($petition, $showEmail, $header) {
@@ -1118,7 +1049,7 @@ class PetitionController extends Controller
             $num = 0;
             Signature::query()
                 ->where('petition_id', $petition->id)
-                ->orderBy('created_at')->orderBy('id')
+                ->where('is_spam', false)
                 ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1130,7 +1061,7 @@ class PetitionController extends Controller
                         $row[] = $sig->locale ?? '';
                         $row[] = $sig->confirmed ? '1' : '0';
                         $row[] = optional($sig->created_at)->format('Y-m-d H:i:s');
-                        fputcsv($out, $row);
+                        fputcsv($out, array_map('csv_safe', $row));
                     }
                 });
 
@@ -1153,52 +1084,20 @@ class PetitionController extends Controller
         );
     }
 
-    private function youtubeId(?string $value): ?string
-    {
-        if (! $value) {
-            return null;
-        }
-
-        if (preg_match('/(?:v=|youtu\.be\/)([\w_-]+)/i', $value, $matches)) {
-            return $matches[1];
-        }
-
-        if (preg_match('/^[\w-]{11}$/', $value)) {
-            return $value;
-        }
-
-        return null;
-    }
-
     public function signatures(Request $request, string $locale, string $slug, int $id)
     {
         $locale = normalize_locale($locale);
-        $defaultLocale = default_locale();
 
         $petition = Petition::with('category', 'user', 'translations')
             ->where('id', $id)
             ->visible()
             ->firstOrFail();
 
-        $tr = PetitionTranslation::where('petition_id', $petition->id)
-            ->where('locale', $locale)
-            ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->where('locale', $defaultLocale)
-                ->first()
-            ?? PetitionTranslation::where('petition_id', $petition->id)
-                ->orderBy('id')
-                ->first();
-
-        abort_if(! $tr, 404);
-
-        if ($tr->slug !== $slug || $tr->locale !== $locale) {
-            return redirect()->route('petition.signatures', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ]);
+        $trOrRedirect = $this->resolveTrOrRedirect('petition.signatures', $locale, $slug, $petition);
+        if ($trOrRedirect instanceof RedirectResponse) {
+            return $trOrRedirect;
         }
+        $tr = $trOrRedirect;
 
         $page = max(1, min((int) request('page', 1), 500));
 

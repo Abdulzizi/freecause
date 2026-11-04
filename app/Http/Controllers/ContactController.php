@@ -21,7 +21,7 @@ class ContactController extends Controller
 
         // Spam defenses, consistent with the sign/register flows: CAPTCHA
         // (no-op when Turnstile is disabled by the admin), keyword filter,
-        // and per-IP rate limit. The contact form previously had none,
+        // and per-IP route throttle. The contact form previously had none,
         // leaving it an unauthenticated mail-relay / spam vector.
         if (! Spam::verifyTurnstile($request->input('cf-turnstile-response'))) {
             if ($request->expectsJson()) {
@@ -43,18 +43,6 @@ class ContactController extends Controller
             }
 
             toast('Suspicious activity detected.', 'error');
-
-            return back()->withInput();
-        }
-
-        if (Spam::rateLimit('contact')) {
-            Spam::log('contact', 'Rate limit exceeded');
-
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Too many messages. Please try again later.'], 429);
-            }
-
-            toast('Too many messages. Please try again later.', 'error');
 
             return back()->withInput();
         }

@@ -25,7 +25,7 @@ class Fields {
 	 *
 	 * @return array All possible fields.
 	 */
-	private function get_all() {
+	private function get_all(): array {
 
 		if ( ! empty( $this->fields ) ) {
 			return $this->fields;
@@ -49,12 +49,21 @@ class Fields {
 				'order'   => '70',
 			],
 			[
+				'icon'    => 'fa-map-location-dot',
+				'name'    => esc_html__( 'Map', 'wpforms-lite' ),
+				'name_en' => 'Map',
+				'type'    => 'Map',
+				'group'   => 'fancy',
+				'addon'   => 'wpforms-geolocation',
+				'order'   => '75',
+			],
+			[
 				'icon'    => 'fa-calendar-o',
 				'name'    => esc_html__( 'Date / Time', 'wpforms-lite' ),
 				'name_en' => 'Date / Time',
 				'type'    => 'date-time',
 				'group'   => 'fancy',
-				'order'   => '80',
+				'order'   => '60',
 			],
 			[
 				'icon'    => 'fa-link',
@@ -65,12 +74,21 @@ class Fields {
 				'order'   => '90',
 			],
 			[
-				'icon'    => 'fa-upload',
-				'name'    => esc_html__( 'File Upload', 'wpforms-lite' ),
-				'name_en' => 'File Upload',
-				'type'    => 'file-upload',
+				'icon'     => 'fa-upload',
+				'name'     => esc_html__( 'File Upload', 'wpforms-lite' ),
+				'keywords' => esc_html__( 'attach, attachment, document, upload, resume, cv', 'wpforms-lite' ),
+				'name_en'  => 'File Upload',
+				'type'     => 'file-upload',
+				'group'    => 'fancy',
+				'order'    => '100',
+			],
+			[
+				'icon'    => 'fa-camera',
+				'name'    => esc_html__( 'Camera', 'wpforms-lite' ),
+				'name_en' => 'Camera',
+				'type'    => 'camera',
 				'group'   => 'fancy',
-				'order'   => '100',
+				'order'   => '105',
 			],
 			[
 				'icon'    => 'fa-lock',
@@ -78,15 +96,16 @@ class Fields {
 				'name_en' => 'Password',
 				'type'    => 'password',
 				'group'   => 'fancy',
-				'order'   => '130',
+				'order'   => '95',
 			],
 			[
-				'icon'    => 'fa-columns',
-				'name'    => esc_html__( 'Layout', 'wpforms-lite' ),
-				'name_en' => 'Layout',
-				'type'    => 'layout',
-				'group'   => 'fancy',
-				'order'   => '140',
+				'icon'     => 'fa-columns',
+				'name'     => esc_html__( 'Layout', 'wpforms-lite' ),
+				'keywords' => esc_html__( 'column, row, side by side, side-by-side, multi-column, multi column, two-column, two column, grid, arrange', 'wpforms-lite' ),
+				'name_en'  => 'Layout',
+				'type'     => 'layout',
+				'group'    => 'fancy',
+				'order'    => '140',
 			],
 			[
 				'icon'    => 'fa-list',
@@ -150,7 +169,7 @@ class Fields {
 				'name_en' => 'Rating',
 				'type'    => 'rating',
 				'group'   => 'fancy',
-				'order'   => '200',
+				'order'   => '310',
 			],
 			[
 				'icon'    => 'fa-eye-slash',
@@ -158,7 +177,7 @@ class Fields {
 				'name_en' => 'Hidden Field',
 				'type'    => 'hidden',
 				'group'   => 'fancy',
-				'order'   => '210',
+				'order'   => '305',
 			],
 			[
 				'icon'     => 'fa-question-circle',
@@ -178,7 +197,7 @@ class Fields {
 				'type'     => 'signature',
 				'group'    => 'fancy',
 				'addon'    => 'wpforms-signatures',
-				'order'    => '310',
+				'order'    => '200',
 			],
 			[
 				'icon'     => 'fa-ellipsis-h',
@@ -201,24 +220,14 @@ class Fields {
 				'order'    => '410',
 			],
 			[
-				'icon'     => 'fa-credit-card',
-				'name'     => esc_html__( 'PayPal Commerce', 'wpforms-lite' ),
-				'keywords' => esc_html__( 'store, ecommerce, credit card, pay, payment, debit card', 'wpforms-lite' ),
-				'name_en'  => 'PayPal Commerce',
-				'type'     => 'paypal-commerce',
-				'group'    => 'payment',
-				'addon'    => 'wpforms-paypal-commerce',
-				'order'    => '89',
-			],
-			[
-				'icon'     => 'fa-credit-card',
-				'name'     => esc_html__( 'Square', 'wpforms-lite' ),
-				'keywords' => esc_html__( 'store, ecommerce, credit card, pay, payment, debit card', 'wpforms-lite' ),
-				'name_en'  => 'Square',
-				'type'     => 'square',
-				'group'    => 'payment',
-				'addon'    => 'wpforms-square',
-				'order'    => '92',
+				'icon'     => 'fa-chart-simple',
+				'name'     => esc_html__( 'Ranking', 'wpforms-lite' ),
+				'keywords' => esc_html__( 'rank, order, priority, survey', 'wpforms-lite' ),
+				'name_en'  => 'Ranking',
+				'type'     => 'ranking',
+				'group'    => 'fancy',
+				'addon'    => 'wpforms-surveys-polls',
+				'order'    => '307',
 			],
 			[
 				'icon'     => 'fa-credit-card',
@@ -229,6 +238,16 @@ class Fields {
 				'group'    => 'payment',
 				'addon'    => 'wpforms-authorize-net',
 				'order'    => '95',
+			],
+			[
+				'icon'     => 'fa-credit-card',
+				'name'     => esc_html__( 'Mercado Pago', 'wpforms-lite' ),
+				'keywords' => esc_html__( 'store, ecommerce, credit card, pay, payment, debit card, installments, latam', 'wpforms-lite' ),
+				'name_en'  => 'Mercado Pago',
+				'type'     => 'mercado_pago',
+				'group'    => 'payment',
+				'addon'    => 'wpforms-mercado-pago',
+				'order'    => '96',
 			],
 			[
 				'icon'     => 'fa-ticket',
@@ -245,7 +264,7 @@ class Fields {
 		$captcha = $this->get_captcha();
 
 		if ( ! empty( $captcha ) ) {
-			array_push( $this->fields, $captcha );
+			$this->fields[] = $captcha;
 		}
 
 		return $this->fields;
@@ -258,7 +277,7 @@ class Fields {
 	 *
 	 * @return array Captcha field data.
 	 */
-	private function get_captcha() {
+	private function get_captcha(): array {
 
 		$captcha_settings = wpforms_get_captcha_settings();
 
@@ -315,7 +334,7 @@ class Fields {
 	 *
 	 * @return array Fields data filtered according to given arguments.
 	 */
-	private function get_filtered( $args = [] ) {
+	private function get_filtered( array $args = [] ): array {
 
 		$default_args = [
 			'group' => '',
@@ -331,7 +350,7 @@ class Fields {
 		foreach ( $args as $prop => $prop_val ) {
 			foreach ( $fields as $field ) {
 				if ( ! empty( $field[ $prop ] ) && $field[ $prop ] === $prop_val ) {
-					array_push( $filtered_fields, $field );
+					$filtered_fields[] = $field;
 				}
 			}
 		}
@@ -348,7 +367,7 @@ class Fields {
 	 *
 	 * @return array.
 	 */
-	public function get_by_group( $group ) {
+	public function get_by_group( string $group ): array {
 
 		return $this->get_filtered( [ 'group' => $group ] );
 	}
@@ -362,7 +381,7 @@ class Fields {
 	 *
 	 * @return array.
 	 */
-	public function get_by_addon( $addon ) {
+	public function get_by_addon( string $addon ): array {
 
 		return $this->get_filtered( [ 'addon' => $addon ] );
 	}
@@ -376,7 +395,7 @@ class Fields {
 	 *
 	 * @return array Single field data. Empty array if field is not available.
 	 */
-	public function get_field( $type ) {
+	public function get_field( string $type ): array {
 
 		$fields = $this->get_filtered( [ 'type' => $type ] );
 
@@ -395,7 +414,7 @@ class Fields {
 	 *
 	 * @return array Updated field data.
 	 */
-	public function set_values( $fields, $key, $value, $condition ) {
+	public function set_values( array $fields, string $key, string $value, string $condition ): array {
 
 		if ( empty( $fields ) || empty( $key ) ) {
 			return $fields;

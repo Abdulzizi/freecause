@@ -55,7 +55,7 @@ class ImportPages extends Command
                 'locale' => $locale,
                 'title' => $title,
                 'slug' => $en->slug,
-                'content' => $content,
+                'content' => sanitizeAdminHtml($content),
                 'published' => $en->published,
             ]);
             $created++;

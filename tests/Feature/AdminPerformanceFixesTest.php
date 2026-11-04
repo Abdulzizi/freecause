@@ -64,14 +64,10 @@ class AdminPerformanceFixesTest extends TestCase
 
         $first = $this->actingAs($viewer, 'admin')->get(route('admin.stats'));
         $first->assertOk();
-        $this->assertTrue(Cache::has('admin:stats:totals:v2'));
+        $this->assertTrue(Cache::has('admin:dashboard:stats:v4'));
+        $this->assertSame(3, Cache::get('admin:dashboard:stats:v4')['petitions_total']);
 
-        $cached = Cache::get('admin:stats:totals:v2');
-        $this->assertSame('3', (string) $cached->petitions_total);
-
-        $snapshot = Cache::get('admin:stats:totals:v2');
         $this->actingAs($viewer, 'admin')->get(route('admin.stats', ['type' => 'top_petitioners']));
-        $this->assertSame(spl_object_hash($snapshot), spl_object_hash(Cache::get('admin:stats:totals:v2')));
 
         $typePage = $this->actingAs($viewer, 'admin')->get(route('admin.stats', ['type' => 'petitions_all']));
         $typePage->assertOk();
@@ -126,8 +122,8 @@ class AdminPerformanceFixesTest extends TestCase
             ->assertSessionHas('success');
 
         $this->assertFalse(Cache::has('settings:all'));
-        $this->assertFalse(Cache::has('ver:home'));
-        $this->assertFalse(Cache::has('ver:list'));
+        $this->assertSame(6, Cache::get('ver:home'));
+        $this->assertSame(6, Cache::get('ver:list'));
         $this->assertSame('keepme', Cache::get('unrelated:key'), 'targeted rebuild must not wipe unrelated keys');
     }
 
@@ -139,7 +135,7 @@ class AdminPerformanceFixesTest extends TestCase
         PetitionTranslation::create([
             'petition_id' => $a->id, 'locale' => 'en',
             'title' => 'Save the whales specifically', 'slug' => 'save-the-whales-specifically',
-            'description' => 'd', 'text' => '<p>t</p>',
+            'description' => 'd', 'text' => '<p>t</p>', 'is_featured' => true,
         ]);
 
         $b = Petition::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'is_featured' => 0]);

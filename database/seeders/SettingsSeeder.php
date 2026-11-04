@@ -17,7 +17,6 @@ class SettingsSeeder extends Seeder
             ['group' => 'global', 'key' => 'email_to_staff', 'type' => 'string', 'value' => env('MAIL_USERNAME')],
             ['group' => 'global', 'key' => 'email_from', 'type' => 'string', 'value' => 'noreply@freecause.com'],
 
-            ['group' => 'global', 'key' => 'inject_head_html', 'type' => 'text', 'value' => ''],
             ['group' => 'global', 'key' => 'inject_body_html', 'type' => 'text', 'value' => ''],
 
             ['group' => 'global', 'key' => 'google_client_id', 'type' => 'string', 'value' => env('GOOGLE_CLIENT_ID')],
@@ -31,7 +30,6 @@ class SettingsSeeder extends Seeder
             ['group' => 'global', 'key' => 'smtp_encryption', 'type' => 'string', 'value' => env('MAIL_ENCRYPTION', 'tls')],
 
             ['group' => 'global', 'key' => 'max_featured_petitions_per_country', 'type' => 'int', 'value' => '10'],
-            ['group' => 'global', 'key' => 'special_debug_ip', 'type' => 'string', 'value' => ''],
 
             ['group' => 'global', 'key' => 'logging_enabled', 'type' => 'bool', 'value' => '0'],
             ['group' => 'global', 'key' => 'logging_cookie_name', 'type' => 'string', 'value' => 'dothelog'],

@@ -36,7 +36,7 @@
 
         <form method="post" action="{{ route('admin.logs.prune') }}" class="flex gap-1.5 items-center" data-admin-confirm="Delete all logs older than the selected number of days?">
             @csrf
-            <select name="days" class="fc-filter-field">
+            <select name="days" aria-label="days" class="fc-filter-field">
                 <option value="30">30 days</option>
                 <option value="60">60 days</option>
                 <option value="90" selected>90 days</option>

@@ -20,7 +20,7 @@ class ProfilePasswordTest extends TestCase
         $this->seed([UserLevelSeeder::class, LanguageSeeder::class]);
     }
 
-    public function test_google_only_user_can_set_a_first_password_without_a_current_password(): void
+    public function test_google_only_user_cannot_set_a_password_from_the_profile_form(): void
     {
         $user = User::factory()->create([
             'google_id' => 'google-account-id',
@@ -33,7 +33,6 @@ class ProfilePasswordTest extends TestCase
 
         $this->assertFalse($user->hasLocalPassword());
 
-        // Setting a first password now requires a recent password confirmation.
         $this->actingAs($user)
             ->withSession(['password.confirmed_at' => now()->timestamp])
             ->post('/en/profile', [
@@ -45,14 +44,25 @@ class ProfilePasswordTest extends TestCase
                 'new_password' => 'brand-new-pass',
                 'new_password_confirmation' => 'brand-new-pass',
             ])
-            ->assertRedirect('/en/profile')
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasErrors('profile');
 
-        $user->refresh();
+        $this->assertFalse($user->fresh()->hasLocalPassword());
+        $this->assertTrue(Hash::check('unknown-random-password', $user->fresh()->password));
+    }
 
-        $this->assertTrue($user->hasLocalPassword());
-        $this->assertNotNull($user->password_changed_at);
-        $this->assertTrue(Hash::check('brand-new-pass', $user->password));
+    public function test_google_only_profile_links_to_forgot_password(): void
+    {
+        $user = User::factory()->create([
+            'google_id' => 'google-account-id',
+            'password' => Hash::make('unknown-random-password'),
+            'password_changed_at' => null,
+            'verified' => true,
+        ]);
+
+        $this->actingAs($user)->get('/en/profile')
+            ->assertOk()
+            ->assertSee('/en/forgot-password', false)
+            ->assertDontSee('name="new_password"', false);
     }
 
     public function test_user_with_a_password_still_needs_the_correct_current_password(): void
@@ -80,6 +90,33 @@ class ProfilePasswordTest extends TestCase
             ->assertSessionHasErrors('current_password');
 
         $this->assertTrue(Hash::check('correct-current', $user->fresh()->password));
+    }
+
+    public function test_user_with_a_password_can_save_the_profile_with_blank_password_fields(): void
+    {
+        $user = User::factory()->create([
+            'google_id' => null,
+            'password' => Hash::make('correct-current'),
+            'password_changed_at' => now(),
+            'verified' => true,
+            'country' => null,
+            'gender' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->post('/en/profile', [
+                'first_name' => 'Ada',
+                'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'female',
+                'locale' => 'en',
+                'current_password' => null,
+                'new_password' => null,
+                'new_password_confirmation' => null,
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('US', $user->fresh()->country);
     }
 
     public function test_user_with_a_password_can_change_it_with_the_correct_current_password(): void

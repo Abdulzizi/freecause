@@ -14,7 +14,7 @@
  *
  * @return bool
  */
-function wpforms_can_install( $type ) {
+function wpforms_can_install( $type ): bool {
 
 	return wpforms_can_do( 'install', $type );
 }
@@ -28,7 +28,7 @@ function wpforms_can_install( $type ) {
  *
  * @return bool
  */
-function wpforms_can_activate( $type ) {
+function wpforms_can_activate( $type ): bool {
 
 	return wpforms_can_do( 'activate', $type );
 }
@@ -45,7 +45,7 @@ function wpforms_can_activate( $type ) {
  *
  * @return bool
  */
-function wpforms_can_do( $what, $type ) {
+function wpforms_can_do( $what, $type ): bool {
 
 	if ( ! in_array( $what, [ 'install', 'activate' ], true ) ) {
 		return false;
@@ -104,14 +104,31 @@ function wpforms_get_license_type() {
  *
  * @return string
  */
-function wpforms_get_license_key() {
+function wpforms_get_license_key(): string {
 
 	// Allow wp-config constant to pass key.
 	if ( defined( 'WPFORMS_LICENSE_KEY' ) && WPFORMS_LICENSE_KEY ) {
 		return WPFORMS_LICENSE_KEY;
 	}
 
-	return wpforms_setting( 'key', '', 'wpforms_license' );
+	return (string) wpforms_setting( 'key', '', 'wpforms_license' );
+}
+
+/**
+ * Determine whether the current site has a valid (active, non-error) WPForms license.
+ *
+ * @since 2.0.0
+ *
+ * @return bool True when a license key is present and the license is not expired, disabled, or invalid.
+ */
+function wpforms_is_license_valid(): bool {
+
+	$license = (array) get_option( 'wpforms_license', [] );
+
+	return ! empty( wpforms_get_license_key() ) &&
+		empty( $license['is_expired'] ) &&
+		empty( $license['is_disabled'] ) &&
+		empty( $license['is_invalid'] );
 }
 
 /**
@@ -183,7 +200,7 @@ function wpforms_get_upgraded_timestamp( $version ) {
  *
  * @return string
  */
-function wpforms_get_capability_manage_options() {
+function wpforms_get_capability_manage_options(): string {
 
 	/**
 	 * Filters the default capability to manage everything for WPForms.
@@ -193,12 +210,12 @@ function wpforms_get_capability_manage_options() {
 	 *
 	 * @param string $capability Default capability to manage everything for WPForms.
 	 */
-	return apply_filters( 'wpforms_manage_cap', 'manage_options' );
+	return (string) apply_filters( 'wpforms_manage_cap', 'manage_options' );
 }
 
 /**
  * Check WPForms permissions for currently logged-in user.
- * Both short (e.g. 'view_own_forms') or long (e.g. 'wpforms_view_own_forms') capability name can be used.
+ * Both short (e.g. 'view_own_forms') or long (e.g. 'wpforms_view_own_forms') capability names can be used.
  * Only WPForms capabilities get processed.
  *
  * @since 1.4.4
@@ -214,7 +231,21 @@ function wpforms_get_capability_manage_options() {
  */
 function wpforms_current_user_can( $caps = [], $id = 0 ): bool {
 
-	$id     = (int) $id;
+	static $results;
+
+	$id       = (int) $id;
+	$caps_str = is_array( $caps ) ? implode( ' ', $caps ) : (string) $caps;
+
+	// Key by the current user: the result is user-specific, so a process that swaps the
+	// current user (batch user processing, integration tests) must not read a prior
+	// user's cached result.
+	$hash = md5( $caps_str . '|' . $id . '|' . get_current_user_id() ); // NOSONAR.
+
+	// Return a cached result.
+	if ( isset( $results[ $hash ] ) ) {
+		return $results[ $hash ];
+	}
+
 	$access = wpforms()->obj( 'access' );
 
 	if ( ! $access || ! method_exists( $access, 'current_user_can' ) ) {
@@ -232,11 +263,69 @@ function wpforms_current_user_can( $caps = [], $id = 0 ): bool {
 	 * @param array|string $caps     Capability name(s).
 	 * @param int          $id       ID of the specific object to check against if capability is a "meta" cap.
 	 */
-	return apply_filters( 'wpforms_current_user_can', $user_can, $caps, $id );
+	$results[ $hash ] = (bool) apply_filters( 'wpforms_current_user_can', $user_can, $caps, $id );
+
+	return $results[ $hash ];
 }
 
 /**
- * Search for posts editable by user.
+ * Determine whether the current user is entitled to view forms.
+ *
+ * The capability is enforced in Pro only, where Access Controls can grant it. In Lite every
+ * capability check collapses to manage_options, which would leave editors and authors without
+ * a form to embed at all.
+ *
+ * @since 2.0.1
+ *
+ * @return bool
+ */
+function wpforms_current_user_can_view_forms(): bool {
+
+	if ( ! wpforms()->is_pro() ) {
+		return true;
+	}
+
+	return wpforms_current_user_can( 'view_forms' );
+}
+
+/**
+ * Add the author restriction the current user's view capabilities imply to form query arguments.
+ *
+ * Page builders assemble their form list from an editor preview, which is a frontend request, and
+ * from admin-ajax, whose classification depends on the request's HTTP referer. The Pro owner-scoping
+ * filter ( wpforms_get_multiple_forms_args ) is not registered in either context, so a caller there
+ * scopes the query itself instead of relying on the filter.
+ *
+ * Callers are expected to have consulted wpforms_current_user_can_view_forms() first. A user holding
+ * neither half of the view_forms category gets no restriction from this function.
+ *
+ * @since 2.0.1
+ *
+ * @param array $args Form query arguments to add the author restriction to.
+ *
+ * @return array
+ */
+function wpforms_get_viewable_forms_args( array $args = [] ): array {
+
+	// Lite has no per-author form access, so there is nothing to scope.
+	if ( ! wpforms()->is_pro() ) {
+		return $args;
+	}
+
+	// A role can hold either half of the view_forms category on its own, so both halves are asked
+	// about: without others' forms the list is limited to the requester, and without own forms it
+	// excludes them.
+	if ( ! wpforms_current_user_can( 'view_others_forms' ) ) {
+		$args['author'] = get_current_user_id();
+	} elseif ( ! wpforms_current_user_can( 'view_own_forms' ) ) {
+		$args['author__not_in'] = get_current_user_id();
+	}
+
+	return $args;
+}
+
+/**
+ * Search for posts editable by the user.
  *
  * @since 1.7.9
  *
@@ -253,7 +342,7 @@ function wpforms_current_user_can( $caps = [], $id = 0 ): bool {
  * @noinspection PhpTernaryExpressionCanBeReducedToShortVersionInspection
  * @noinspection ElvisOperatorCanBeUsedInspection
  */
-function wpforms_search_posts( $search_term = '', $args = [] ) {
+function wpforms_search_posts( $search_term = '', $args = [] ): array {
 
 	global $wpdb;
 
@@ -272,7 +361,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$user_id   = $user->ID ?? 0;
 	$post_type = get_post_type_object( $args['post_type'] );
 
-	if ( ! $user_id || ! $post_type || $args['count'] <= 0 ) {
+	if ( ! $user || ! $user_id || ! $post_type || $args['count'] <= 0 ) {
 		return [];
 	}
 
@@ -281,7 +370,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$cache_posts  = wp_cache_get( $key, '', false, $found );
 
 	if ( $found ) {
-		return $cache_posts;
+		return (array) $cache_posts;
 	}
 
 	$post_title_where = $search_term ? $wpdb->prepare(
@@ -299,7 +388,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$can_delete_private_posts   = (int) $user->has_cap( $post_type->cap->delete_private_posts );
 	$can_edit_policy            = (int) $user->has_cap( map_meta_cap( 'manage_privacy_options', $user_id )[0] );
 
-	// For the case when user is post author.
+	// For the case when the user is post author.
 	$capability_author_where = "post_author = $user_id AND
 		( ( post_status IN ( 'publish', 'future' ) AND $can_delete_published_posts ) OR
 		( ( post_status NOT IN ( 'publish', 'future', 'trash' ) ) AND $can_delete_posts )
@@ -359,22 +448,39 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
  * `value` and `label` which is the post ID and post title respectively.
  *
  * @since 1.7.9
+ * @since 2.0.1 Each item also carries the page permalink in `customProperties.permalink`.
  *
  * @param string $search_term The search term.
  * @param array  $args        Optional. An array of arguments.
  *
  * @return array
  */
-function wpforms_search_pages_for_dropdown( $search_term, $args = [] ) {
+function wpforms_search_pages_for_dropdown( $search_term, $args = [] ): array {
 
 	$search_results = wpforms_search_posts( $search_term, $args );
 	$result_pages   = [];
 
 	// Prepare for ChoicesJS render.
 	foreach ( $search_results as $search_result ) {
+		// The search selects only a few columns, and get_permalink() needs the whole post to build the URL.
+		$page = get_post( $search_result->ID );
+
+		/**
+		 * Filter the page permalink attached to the dropdown search results, e.g., for multilingual plugins.
+		 *
+		 * @since 2.0.1
+		 *
+		 * @param string  $permalink Resolved page permalink.
+		 * @param WP_Post $page      Page object.
+		 */
+		$permalink = (string) apply_filters( 'wpforms_search_pages_for_dropdown_permalink', get_permalink( $page ), $page ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+
 		$result_pages[] = [
-			'value' => absint( $search_result->ID ),
-			'label' => esc_html( $search_result->post_title ),
+			'value'            => absint( $search_result->ID ),
+			'label'            => esc_html( $search_result->post_title ),
+			'customProperties' => [
+				'permalink' => esc_url_raw( $permalink ),
+			],
 		];
 	}
 

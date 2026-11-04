@@ -9,6 +9,7 @@ use App\Models\Permission;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\WordPressUserDeletionService;
 use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -374,6 +375,7 @@ class AdminBackendFixesTest extends TestCase
         $this->postJson('/admin/users/bulk-unban', ['ids' => [$target2->id]])->assertOk();
         $this->assertFalse(Cache::has('level:user_counts'));
 
+        $this->mock(WordPressUserDeletionService::class, fn ($m) => $m->shouldReceive('delete')->once());
         Cache::put('level:user_counts', ['stale' => 1], 3600);
         $this->postJson('/admin/users/bulk-delete', ['ids' => [$target2->id]])->assertOk();
         $this->assertFalse(Cache::has('level:user_counts'));
@@ -561,7 +563,7 @@ class AdminBackendFixesTest extends TestCase
         $this->assertDatabaseMissing('signatures', ['id' => $signatureId]);
     }
 
-    public function test_unfeaturing_petition_clears_all_translation_flags(): void
+    public function test_unfeaturing_petition_clears_only_edited_locale_flag(): void
     {
         $petition = Petition::factory()->create(['is_featured' => 1]);
 
@@ -580,8 +582,9 @@ class AdminBackendFixesTest extends TestCase
                 'slug' => 't-en',
             ]);
 
-        $this->assertSame(0, (int) $petition->fresh()->is_featured);
-        $this->assertSame(0, DB::table('petition_translations')->where('petition_id', $petition->id)->where('is_featured', 1)->count());
+        $this->assertSame(0, (int) DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'en')->value('is_featured'));
+        $this->assertSame(1, (int) DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'fr')->value('is_featured'));
+        $this->assertSame(1, (int) $petition->fresh()->is_featured, 'petitions.is_featured is no longer written');
     }
 
     public function test_featuring_petition_sets_edited_locale_translation_flag(): void
@@ -598,7 +601,7 @@ class AdminBackendFixesTest extends TestCase
                 'is_featured' => '1',
             ]);
 
-        $this->assertSame(1, (int) $petition->fresh()->is_featured);
+        $this->assertSame(0, (int) $petition->fresh()->is_featured, 'petitions.is_featured is no longer written');
         $this->assertSame(1, DB::table('petition_translations')->where('petition_id', $petition->id)->where('locale', 'en')->value('is_featured'));
     }
 
@@ -628,5 +631,23 @@ class AdminBackendFixesTest extends TestCase
         $this->assertStringContainsString('First', $content);
         $this->assertStringContainsString('Second', $content);
         $this->assertSame(1, substr_count($content, 'First'));
+    }
+
+    public function test_ip_ban_and_unban_take_effect_immediately(): void
+    {
+        Cache::put('banned_ip:10.1.1.1', false, 300);
+
+        $this->actingAs($this->systemAdmin(), 'admin')
+            ->post('/admin/spam/ban', ['ip' => '10.1.1.1'])
+            ->assertRedirect();
+        $this->assertDatabaseHas('banned_ips', ['ip' => '10.1.1.1']);
+        $this->assertNull(Cache::get('banned_ip:10.1.1.1'));
+
+        Cache::put('banned_ip:10.1.1.1', true, 300);
+        $this->actingAs($this->systemAdmin(), 'admin')
+            ->post('/admin/spam/unban', ['ip' => '10.1.1.1'])
+            ->assertRedirect();
+        $this->assertDatabaseMissing('banned_ips', ['ip' => '10.1.1.1']);
+        $this->assertNull(Cache::get('banned_ip:10.1.1.1'));
     }
 }

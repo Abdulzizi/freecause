@@ -58,8 +58,7 @@ class EnsureProfileComplete
         $name = (string) $request->route()?->getName();
 
         return match (true) {
-            str_starts_with($name, 'petition.sign'),
-            str_starts_with($name, 'petition.claim') => 'sign',
+            str_starts_with($name, 'petition.sign') => 'sign',
             str_starts_with($name, 'petition.store') => 'create',
             str_starts_with($name, 'petition.edit'),
             str_starts_with($name, 'petition.update') => 'edit',

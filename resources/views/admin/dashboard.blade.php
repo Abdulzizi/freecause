@@ -38,7 +38,6 @@
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">New Petitions (Today)</h2>
         <div class="text-2xl font-bold text-ink max-sm:text-xl">{{ number_format($stats['petitions_new_today']) }}</div>
-        <div class="text-xs text-muted mt-1">{{ number_format($stats['petitions_pending']) }} pending review</div>
     </x-blatui.card>
     <x-blatui.card class="p-5 max-sm:p-4">
         <h2 class="m-0 mb-2 text-sm text-muted uppercase">Signatures (This Week)</h2>
@@ -91,7 +90,7 @@
 <div class="grid grid-cols-2 gap-5 mb-5 max-sm:grid-cols-1 max-sm:gap-4">
     <x-blatui.card class="p-5 mb-5">
         <h2 class="m-0 mb-4 text-lg text-ink border-b border-border pb-2.5">Top Petitions</h2>
-        <table class="w-full border-collapse overflow-x-auto block text-sm">
+        <table tabindex="0" class="w-full border-collapse overflow-x-auto block text-sm">
             <thead>
                 <tr>
                     <th class="p-2.5 px-3 text-left border-b border-border whitespace-nowrap bg-surface-2 font-semibold text-xs uppercase text-muted">ID</th>
@@ -151,7 +150,7 @@
 <div class="grid grid-cols-2 gap-5 mb-5 max-sm:grid-cols-1 max-sm:gap-4">
     <x-blatui.card class="p-5 mb-5">
         <h2 class="m-0 mb-4 text-lg text-ink border-b border-border pb-2.5">Recent Users</h2>
-        <table class="w-full border-collapse overflow-x-auto block text-sm">
+        <table tabindex="0" class="w-full border-collapse overflow-x-auto block text-sm">
             <thead>
                 <tr>
                     <th class="p-2.5 px-3 text-left border-b border-border whitespace-nowrap bg-surface-2 font-semibold text-xs uppercase text-muted">Email</th>
@@ -181,7 +180,7 @@
 
     <x-blatui.card class="p-5 mb-5">
         <h2 class="m-0 mb-4 text-lg text-ink border-b border-border pb-2.5">Recent Petitions</h2>
-        <table class="w-full border-collapse overflow-x-auto block text-sm">
+        <table tabindex="0" class="w-full border-collapse overflow-x-auto block text-sm">
             <thead>
                 <tr>
                     <th class="p-2.5 px-3 text-left border-b border-border whitespace-nowrap bg-surface-2 font-semibold text-xs uppercase text-muted">ID</th>

@@ -18,7 +18,7 @@ class AddSecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        if (! $request->is('ads/frame/*') || ! Ads::frameHostMatchesRequest()) {
+        if (! $request->is('widget-render/*') && (! $request->is('ads/frame/*') || ! Ads::frameHostMatchesRequest())) {
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         }
 
@@ -64,30 +64,27 @@ class AddSecurityHeaders
                 "base-uri 'self'; ".
                 'frame-ancestors '.($parentOrigin !== '' ? $parentOrigin : "'self'").';'.
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
+
+            // A www frame opened directly has no embedding iframe attribute.
+            // Enforce the same opaque-origin sandbox through the response too.
+            if (! Ads::dedicatedFrameHostMatchesRequest()) {
+                $csp .= ' sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms;';
+            }
         } else {
             $frameOrigin = Ads::frameOrigin();
 
             $inlineHashes = '';
 
-            foreach (['inject_head_html', 'inject_body_html'] as $key) {
-                $html = (string) Settings::get($key, '');
-
-                if ($html === '') {
-                    continue;
-                }
-
-                if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', $html, $matches)) {
-                    foreach ($matches[1] as $body) {
-                        $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
-                    }
+            if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', (string) Settings::get('inject_body_html', ''), $matches)) {
+                foreach ($matches[1] as $body) {
+                    $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
                 }
             }
 
             $csp =
                 "default-src 'self'; ".
                 "script-src 'self' ".
-                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                    'https://ajax.googleapis.com https://accounts.google.com '.
+                    'https://cdn.jsdelivr.net/npm/quill@1.3.7/ https://accounts.google.com '.
                     'https://challenges.cloudflare.com '.
                     'https://bicea.org '.
                     'https://pagead2.googlesyndication.com https://partner.googleadservices.com '.
@@ -99,8 +96,7 @@ class AddSecurityHeaders
                     'https://ep2.adtrafficquality.google '.
                     $inlineHashes.'; '.
                 "style-src 'self' 'unsafe-inline' ".
-                    'https://cdn.jsdelivr.net https://cdnjs.cloudflare.com '.
-                    'https://ajax.googleapis.com; '.
+                    'https://cdn.jsdelivr.net/npm/quill@1.3.7/; '.
                 "img-src 'self' data: blob: https:; ".
                 "font-src 'self' https://cdnjs.cloudflare.com; ".
                 "frame-src 'self' https://accounts.google.com https://www.google.com ".
@@ -108,7 +104,7 @@ class AddSecurityHeaders
                     ($frameOrigin !== '' ? $frameOrigin.' ' : '').'https://bicea.org '.
                     'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com '.
                     'https://ep2.adtrafficquality.google '.
-                    'https://www.googletagmanager.com; '.
+                    'https://www.googletagmanager.com https://www.youtube-nocookie.com; '.
                 "connect-src 'self' https://www.googleapis.com https://cdn.jsdelivr.net ".
                     'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.
@@ -117,6 +113,7 @@ class AddSecurityHeaders
                     'https://bicea.org; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".
+                ($request->is('widget-render/*') ? ' frame-ancestors *;' : '').
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
         }
         $response->headers->set('Content-Security-Policy', $csp);

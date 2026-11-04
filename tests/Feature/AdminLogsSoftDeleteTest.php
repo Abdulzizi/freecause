@@ -115,4 +115,20 @@ class AdminLogsSoftDeleteTest extends TestCase
         $this->assertSame(1, $forms->length);
         $this->assertSame(1, $xpath->query('.//input[@name="_token"]', $forms->item(0))->length);
     }
+
+    public function test_csv_export_applies_the_same_filters_as_the_log_list(): void
+    {
+        Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'kept export', 'content' => 'c', 'ip' => '10.0.0.1']);
+        Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'other ip', 'content' => 'c', 'ip' => '192.168.0.1']);
+        Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'not a prefix', 'content' => 'kept export', 'ip' => '10.0.0.2']);
+
+        $content = $this->actingAs($this->admin(), 'admin')
+            ->get(route('admin.logs.export', ['q' => 'kept', 'ip' => '10.0.']))
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringContainsString('kept export', $content);
+        $this->assertStringNotContainsString('other ip', $content);
+        $this->assertStringNotContainsString('not a prefix', $content);
+    }
 }

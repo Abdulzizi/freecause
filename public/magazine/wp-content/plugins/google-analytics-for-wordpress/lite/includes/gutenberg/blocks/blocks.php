@@ -77,31 +77,29 @@ class MonsterInsights_Blocks {
 	 * @since 7.13.0
 	 */
 	public function register_blocks() {
-		register_block_type(
-			'monsterinsights/popular-posts-inline',
+		// Registered from block.json so the attribute schema (including its
+		// defaults) and the editor stylesheet handle come from the same source
+		// the editor JS uses. Two things depend on this:
+		//
+		//  - Gutenberg omits any attribute still at its default when it
+		//    serialises a block, so without the defaults here the render
+		//    callback silently falls back to the site-wide settings and the
+		//    front end disagrees with what the editor showed.
+		//  - `editorStyle` is what makes WordPress inject the stylesheet into
+		//    the iframed editor canvas. `enqueue_block_editor_assets` only
+		//    reaches the parent admin document, which stopped being enough
+		//    when WordPress 7.0 began iframing the post editor unconditionally.
+		$metadata_path = MONSTERINSIGHTS_PLUGIN_DIR . 'includes/gutenberg/blocks/metadata/';
+
+		register_block_type_from_metadata(
+			$metadata_path . 'popular-posts-inline',
 			array(
-				'attributes'      => array(
-					'slug'        => array(
-						'type' => 'string',
-					),
-					'followrules' => array(
-						'type' => 'boolean',
-					),
-				),
 				'render_callback' => array( $this, 'popular_posts_inline_output' ),
 			)
 		);
-		register_block_type(
-			'monsterinsights/popular-posts-widget',
+		register_block_type_from_metadata(
+			$metadata_path . 'popular-posts-widget',
 			array(
-				'attributes'      => array(
-					'slug'        => array(
-						'type' => 'string',
-					),
-					'followrules' => array(
-						'type' => 'boolean',
-					),
-				),
 				'render_callback' => array( $this, 'popular_posts_widget_output' ),
 			)
 		);

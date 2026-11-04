@@ -42,14 +42,20 @@
                         </x-ui.alert>
                     @endif
 
+                    @foreach (['name', 'email'] as $field)
+                        @if (filled(data_get($signData, $field)))
+                            <input type="hidden" name="{{ $field }}" value="{{ $signData[$field] }}">
+                        @endif
+                    @endforeach
+
                     <input type="hidden" name="agree1" value="{{ data_get($signData, 'agree1', 'agree') }}">
                     <input type="hidden" name="agree2" value="{{ data_get($signData, 'agree2', 'agree') }}">
                     <input type="hidden" name="agree3" value="{{ data_get($signData, 'agree3', 'agree') }}">
 
                     <input type="hidden" name="comment" value="{{ data_get($signData, 'comment', __('sign.default_comment')) }}">
-                    <button class="inline-flex items-center justify-center gap-2 bg-brand text-white border border-brand rounded-lg px-5 py-3 text-xl font-semibold no-underline hover:bg-brand-hover max-md:hidden" type="submit">
+                    <x-ui.button type="submit" size="lg" class="max-md:hidden">
                         {{ $btnText }} <span>»</span>
-                    </button>
+                    </x-ui.button>
 
                     <x-ui.sticky-action :label="$btnText" />
                 </form>

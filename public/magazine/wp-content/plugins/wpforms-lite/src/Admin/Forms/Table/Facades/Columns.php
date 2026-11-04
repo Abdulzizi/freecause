@@ -4,6 +4,7 @@ namespace WPForms\Admin\Forms\Table\Facades;
 
 use WPForms\Admin\Base\Tables\Facades\ColumnsBase;
 use WPForms\Admin\Forms\Table\DataObjects\Column;
+use WPForms\Analytics\Analytics;
 use WPForms\Integrations\LiteConnect\LiteConnect;
 
 /**
@@ -75,11 +76,11 @@ class Columns extends ColumnsBase {
 			'shortcode' => [
 				'label' => esc_html__( 'Shortcode', 'wpforms-lite' ),
 			],
-			'created'   => [
-				'label' => esc_html__( 'Date', 'wpforms-lite' ),
-			],
 			'entries'   => [
 				'label' => esc_html__( 'Entries', 'wpforms-lite' ),
+			],
+			'created'   => [
+				'label' => esc_html__( 'Date', 'wpforms-lite' ),
 			],
 		];
 
@@ -125,12 +126,20 @@ class Columns extends ColumnsBase {
 		$user_meta_columns               = get_user_meta( $user_id, self::COLUMNS_USER_META_NAME, true );
 		$user_meta_legacy_columns_hidden = get_user_meta( $user_id, self::LEGACY_COLUMNS_USER_META_NAME, true );
 
-		$user_meta_columns               = $user_meta_columns ? $user_meta_columns : [];
-		$user_meta_legacy_columns_hidden = $user_meta_legacy_columns_hidden ? $user_meta_legacy_columns_hidden : [];
+		$user_meta_columns               = is_array( $user_meta_columns ) ? $user_meta_columns : [];
+		$user_meta_legacy_columns_hidden = is_array( $user_meta_legacy_columns_hidden ) ? $user_meta_legacy_columns_hidden : [];
+		$user_meta_columns_is_empty      = empty( $user_meta_columns );
 
-		// Make form id column hidden by default.
-		if ( empty( $user_meta_columns ) ) {
-			$user_meta_legacy_columns_hidden[] = 'id';
+		// Keep the overview focused on entries, analytics, date and locations by hiding the
+		// ID, Tags and Author columns for users who have no saved selection yet.
+		if ( $user_meta_columns_is_empty ) {
+			$user_meta_legacy_columns_hidden = array_merge( $user_meta_legacy_columns_hidden, [ 'id', 'tags', 'author' ] );
+		}
+
+		// The Shortcode column is also default-hidden when Form Analytics is active so
+		// the analytics columns sit closer to Entries without crowding the row.
+		if ( $user_meta_columns_is_empty && Analytics::is_enabled() ) {
+			$user_meta_legacy_columns_hidden[] = 'shortcode';
 		}
 
 		// Always include readonly columns.

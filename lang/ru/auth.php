@@ -9,6 +9,7 @@ return [
     'create_account' => 'Создать аккаунт',
     'email' => 'E-mail',
     'email_placeholder' => 'Введите email',
+    'email_try_later' => 'Электронная почта временно недоступна. Повторите попытку позже.',
     'forgot_password' => 'Zabyli parol?',
     'forgot_title' => 'Забыл пароль',
     'go_to_login' => 'pereti k vhodu',

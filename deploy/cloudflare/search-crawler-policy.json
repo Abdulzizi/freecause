@@ -1,6 +1,12 @@
 {
-  "description": "Applied manually in Cloudflare. Permit verified Applebot search discovery while rejecting impostors and Applebot-Extended training. Keep the existing unrelated scraper blocks.",
+  "description": "Applied manually in Cloudflare. Must run before any verified-profile Skip rule: that rule skips all remaining custom rules. Block the existing unwanted scraper list and a narrowly matched automated Chromium fingerprint from AS14061 on public hostnames. Verified search crawlers are excluded from the new browser condition; verified Applebot search remains allowed.",
   "rule_id": "7f5a0f0fd2e441cc87ecad5f1defe188",
   "action": "block",
-  "expression": "(http.user_agent contains \"Lightpanda\") or (http.user_agent contains \"ExaSearchBot\") or (http.user_agent contains \"SemrushBot\") or (http.user_agent contains \"Sogou\") or (http.user_agent contains \"Applebot-Extended\") or ((http.user_agent contains \"Applebot\") and not cf.client.bot)"
+  "expression": "((http.user_agent contains \"Lightpanda\") or (http.user_agent contains \"ExaSearchBot\") or (http.user_agent contains \"SemrushBot\") or (http.user_agent contains \"Sogou\") or (http.user_agent contains \"Applebot-Extended\") or ((http.user_agent contains \"Applebot\") and not cf.client.bot)) or (ip.src.asnum eq 14061 and not cf.client.bot and http.host in {\"www.freecause.com\" \"freecause.com\"} and http.request.method in {\"GET\" \"HEAD\"} and http.user_agent contains \"X11; Linux x86_64\" and (http.user_agent contains \"Chrome/146.0.0.0\" or http.user_agent contains \"Chrome/152.0.0.0\") and not starts_with(http.request.uri.path, \"/admin\") and not starts_with(http.request.uri.path, \"/api/\") and http.request.uri.path ne \"/up\")",
+  "position": "first",
+  "rollback": {
+    "expression": "(http.user_agent contains \"Lightpanda\") or (http.user_agent contains \"ExaSearchBot\") or (http.user_agent contains \"SemrushBot\") or (http.user_agent contains \"Sogou\") or (http.user_agent contains \"Applebot-Extended\") or ((http.user_agent contains \"Applebot\") and not cf.client.bot)",
+    "position": "first"
+  },
+  "updated_on": "2026-11-01"
 }

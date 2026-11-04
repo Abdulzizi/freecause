@@ -41,7 +41,10 @@ class Notices implements Runner {
 	public function notices() {
 		$this->is_plugin_configured();
 		$this->new_post_type();
-		$this->convert_wpml_settings();
+		if ( Sitepress::get()->is_active() ) {
+			$this->convert_wpml_settings();
+			$this->display_wpml_notice();
+		}
 		$this->permalink_changes_warning();
 		$this->react_settings_ui_notice();
 	}
@@ -67,7 +70,7 @@ class Notices implements Runner {
 		if ( ! Helper::is_react_enabled() ) {
 			$message = sprintf(
 				// Translators: 1: opening anchor tag, 2: closing anchor tag.
-				__( 'The React Settings UI is currently disabled, and the classic settings interface is active. Note: The PHP-based settings interface will be removed in an upcoming release. %1$sEnable the React Settings UI%2$s to switch back.', 'rank-math' ),
+				__( 'The React Settings UI is currently disabled, and the classic settings interface is active. Note: The PHP-based settings interface will be removed in an upcoming release. %1$sEnable the React Settings UI%2$s to switch back.', 'seo-by-rank-math' ),
 				'<a href="' . esc_url( Helper::get_dashboard_url() ) . '">',
 				'</a>'
 			);
@@ -102,7 +105,7 @@ class Notices implements Runner {
 			return;
 		}
 
-		if ( 'convert_wpml_settings' === $notification_id ) {
+		if ( 'display_wpml_notice' === $notification_id ) {
 			update_option( 'rank_math_wpml_notice_dismissed', true );
 		}
 
@@ -148,11 +151,11 @@ class Notices implements Runner {
 
 		$list = '<code>' . implode( '</code>, <code>', $new ) . '</code>';
 		/* Translators: placeholder is the post type name. */
-		$message = __( 'Rank Math has detected a new post type: %1$s. You may want to check the settings of the <a href="%2$s">Titles &amp; Meta page</a>.', 'rank-math' );
+		$message = __( 'Rank Math has detected a new post type: %1$s. You may want to check the settings of the <a href="%2$s">Titles &amp; Meta page</a>.', 'seo-by-rank-math' );
 		$count   = count( $new );
 		if ( $count > 1 ) {
 			/* Translators: placeholder is the post type names separated with commas. */
-			$message = __( 'Rank Math has detected new post types: %1$s. You may want to check the settings of the <a href="%2$s">Titles &amp; Meta page</a>.', 'rank-math' );
+			$message = __( 'Rank Math has detected new post types: %1$s. You may want to check the settings of the <a href="%2$s">Titles &amp; Meta page</a>.', 'seo-by-rank-math' );
 		}
 
 		$message = $this->do_filter( 'admin/notice/new_post_type', $message, $count );
@@ -170,20 +173,7 @@ class Notices implements Runner {
 	 * Function to show Show String Translation plugin notice and convert the settings.
 	 */
 	private function convert_wpml_settings() {
-		if ( ! Sitepress::get()->is_active() || get_option( 'rank_math_wpml_data_converted' ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'icl_add_string_translation' ) ) {
-			if ( ! get_option( 'rank_math_wpml_notice_dismissed' ) ) {
-				Helper::add_notification(
-					__( 'Please activate the WPML String Translation plugin to convert Rank Math Setting values in different languages.', 'rank-math' ),
-					[
-						'type' => 'error',
-						'id'   => 'convert_wpml_settings',
-					]
-				);
-			}
+		if ( ! function_exists( 'icl_get_languages' ) || get_option( 'rank_math_wpml_data_converted' ) ) {
 			return;
 		}
 
@@ -209,6 +199,32 @@ class Notices implements Runner {
 		}
 
 		update_option( 'rank_math_wpml_data_converted', true );
+	}
+
+	/**
+	 * Display WPML notice.
+	 *
+	 * @return void
+	 */
+	private function display_wpml_notice() {
+		if ( function_exists( 'icl_add_string_translation' ) || get_option( 'rank_math_wpml_notice_dismissed' ) ) {
+			return;
+		}
+
+		$sitepress      = Sitepress::get()->get_var();
+		$setup_complete = $sitepress->get_setting( 'setup_complete', false );
+
+		if ( ! $setup_complete ) {
+			return;
+		}
+
+		Helper::add_notification(
+			__( 'Please activate the WPML String Translation plugin to convert Rank Math Setting values in different languages.', 'seo-by-rank-math' ),
+			[
+				'type' => 'error',
+				'id'   => 'display_wpml_notice',
+			]
+		);
 	}
 
 	/**
@@ -293,7 +309,7 @@ class Notices implements Runner {
 	 */
 	public function add_permalink_changes_warning() {
 		wp_enqueue_script( 'rank-math-core-permalink-settings' );
-		$message = __( '<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one.', 'rank-math' );
+		$message = __( '<b>Rank Math Warning:</b> Changing the permalinks on a live, indexed site may result in serious loss of traffic if done incorrectly. Consider adding a new redirection from the old URL format to the new one.', 'seo-by-rank-math' );
 		Helper::add_notification(
 			$message,
 			[

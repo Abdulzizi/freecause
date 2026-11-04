@@ -15,6 +15,7 @@ use App\Models\PetitionTranslation;
 use App\Services\PetitionStats;
 use App\Support\ApproxRows;
 use App\Support\CacheVersion;
+use App\Support\EdgeCachePurge;
 use App\Support\ImageVariants;
 use App\Support\Locale;
 use App\Support\ReviewKeywords;
@@ -23,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
@@ -31,7 +33,7 @@ class AdminPetitionsController extends Controller
 
     public function index(Request $request)
     {
-        $locale = $request->query('locale', 'en');
+        $locale = (string) $request->query('locale', Locale::default());
 
         $filters = [
             'id' => trim((string) $request->query('id', '')),
@@ -44,11 +46,7 @@ class AdminPetitionsController extends Controller
             'missing_locale' => trim((string) $request->query('missing_locale', '')),
         ];
 
-        $defaultLocale = cache()->remember(
-            'default_language',
-            60,
-            fn () => Language::where('is_default', 1)->value('code') ?? 'en'
-        );
+        $defaultLocale = Locale::default();
 
         $driver = DB::connection()->getDriverName();
         $isMysql = $driver === 'mysql' || $driver === 'mariadb';
@@ -71,7 +69,10 @@ class AdminPetitionsController extends Controller
                     ->select('petition_id')
                     ->whereIn('locale', $searchLocales);
                 if ($isMysql) {
-                    $sub->whereRaw('MATCH (title) AGAINST (? IN BOOLEAN MODE)', [$searchTerm]);
+                    $terms = PetitionTranslation::booleanTerms($searchTerm);
+                    $terms === ''
+                        ? $sub->whereRaw('1 = 0')
+                        : $sub->whereRaw('MATCH (title) AGAINST (? IN BOOLEAN MODE)', [$terms]);
                 } else {
                     $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $searchTerm).'%';
                     $sub->where('title', 'like', $like);
@@ -96,7 +97,10 @@ class AdminPetitionsController extends Controller
         }
 
         if ($filters['featured'] !== '') {
-            $idQuery->where('petitions.is_featured', 1);
+            $idQuery->whereExists(fn ($sub) => $sub->select(DB::raw(1))
+                ->from('petition_translations as pt_f')
+                ->whereColumn('pt_f.petition_id', 'petitions.id')
+                ->where('pt_f.is_featured', 1));
         }
 
         if ($filters['missing_locale'] !== '') {
@@ -130,8 +134,8 @@ class AdminPetitionsController extends Controller
                     'petitions.goal_signatures',
                     'petitions.status',
                     'petitions.is_active',
-                    'petitions.is_featured',
                     'petitions.created_at',
+                    DB::raw('EXISTS (SELECT 1 FROM petition_translations pt_f WHERE pt_f.petition_id = petitions.id AND pt_f.is_featured = 1) as is_featured'),
                     DB::raw('COALESCE(pt.title, pt_default.title) as title'),
                     DB::raw('COALESCE(pt.slug, pt_default.slug) as slug'),
                 ])
@@ -265,7 +269,6 @@ class AdminPetitionsController extends Controller
             $missingTranslationCount = count(array_diff($activeLanguages, $existingLocales));
         }
 
-        $defaultLocale = default_locale();
         $categories = Category::query()
             ->select(['categories.id'])
             ->addSelect([
@@ -300,6 +303,19 @@ class AdminPetitionsController extends Controller
     public function save(AdminPetitionSaveRequest $request)
     {
         $data = $request->validated();
+        $storedSlug = DB::table('petition_translations')
+            ->where('petition_id', $data['id'])
+            ->where('locale', $data['locale'])
+            ->value('slug');
+
+        // Keep legacy slugs (uppercase/underscores) when unchanged; only slugify edits and new rows.
+        if ($data['slug'] !== $storedSlug) {
+            $data['slug'] = Str::slug($data['slug']);
+        }
+
+        if ($data['slug'] === '') {
+            return back()->withErrors(['slug' => 'Slug is invalid'])->withInput();
+        }
 
         $slugTaken = DB::table('petition_translations')
             ->where('slug', $data['slug'])
@@ -314,8 +330,8 @@ class AdminPetitionsController extends Controller
         $petitionUpdate = [
             'goal_signatures' => $data['goal_signatures'] ?? 100,
             'status' => $data['status'],
+            'held_by_admin' => $data['status'] === 'draft',
             'is_active' => $request->boolean('is_active'),
-            'is_featured' => $request->boolean('is_featured'),
         ];
 
         foreach (['category_id', 'tags', 'youtube_url', 'target', 'community', 'community_url', 'city'] as $field) {
@@ -323,6 +339,11 @@ class AdminPetitionsController extends Controller
                 $value = $data[$field] ?? null;
                 $petitionUpdate[$field] = ($value === '' ? null : $value);
             }
+        }
+
+        if (array_key_exists('youtube_url', $petitionUpdate)
+            && $petitionUpdate['youtube_url'] !== Petition::query()->whereKey($data['id'])->value('youtube_url')) {
+            $petitionUpdate['youtube_url'] = Petition::youtubeId($petitionUpdate['youtube_url']);
         }
 
         if ($request->has('created_at') && ! empty($data['created_at'])) {
@@ -335,6 +356,13 @@ class AdminPetitionsController extends Controller
 
         $newImagePath = null;
         $oldImageToDelete = null;
+
+        try {
+            $urlsBefore = EdgeCachePurge::petitionUrls([$data['id']]);
+        } catch (\Throwable $e) {
+            $urlsBefore = [];
+            Log::warning('Edge cache URL lookup failed before petition save: '.$e->getMessage());
+        }
 
         try {
             if ($request->hasFile('cover_image')) {
@@ -376,12 +404,6 @@ class AdminPetitionsController extends Controller
                             'is_featured' => $isFeatured,
                         ]
                     );
-
-                if (! $isFeatured) {
-                    DB::table('petition_translations')
-                        ->where('petition_id', $data['id'])
-                        ->update(['is_featured' => 0]);
-                }
             });
         } catch (\Throwable $e) {
             if ($newImagePath) {
@@ -401,6 +423,12 @@ class AdminPetitionsController extends Controller
             CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition save: '.$e->getMessage());
+        }
+
+        try {
+            EdgeCachePurge::urls([...$urlsBefore, ...EdgeCachePurge::petitionUrls([$data['id']])]);
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache purge failed after petition save: '.$e->getMessage());
         }
 
         $viewUrl = null;
@@ -504,12 +532,13 @@ class AdminPetitionsController extends Controller
         }
 
         $created = DB::transaction(function () use ($source, $targets, $id) {
+            $petition = new Petition;
             foreach ($targets as $code) {
                 PetitionTranslation::updateOrCreate(
                     ['petition_id' => $id, 'locale' => $code],
                     [
                         'title' => $source->title,
-                        'slug' => $source->slug,
+                        'slug' => $petition->uniqueTranslationSlug($source->slug, $code, null, 255),
                         'description' => $source->description,
                         'is_featured' => false,
                     ]
@@ -543,12 +572,14 @@ class AdminPetitionsController extends Controller
             case 'publish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'published',
+                    'held_by_admin' => 0,
                 ]);
                 break;
 
             case 'unpublish':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
+                    'held_by_admin' => 1,
                 ]);
                 break;
 
@@ -565,25 +596,31 @@ class AdminPetitionsController extends Controller
                 break;
 
             case 'feature':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 1]);
-                $defaultLocale = Language::where('is_default', true)->value('code') ?? 'en';
                 DB::table('petition_translations')
                     ->whereIn('petition_id', $ids)
-                    ->where('locale', $defaultLocale)
+                    ->where('locale', Locale::default())
                     ->update(['is_featured' => 1]);
+                // Petitions with no default-locale row: feature their first translation instead.
+                $firstIds = DB::table('petition_translations')
+                    ->whereIn('petition_id', $ids)
+                    ->whereNotIn('petition_id', DB::table('petition_translations')->where('locale', Locale::default())->select('petition_id'))
+                    ->groupBy('petition_id')
+                    ->selectRaw('MIN(id) as id')
+                    ->pluck('id');
+                DB::table('petition_translations')->whereIn('id', $firstIds)->update(['is_featured' => 1]);
                 break;
 
             case 'unfeature':
-                DB::table('petitions')->whereIn('id', $ids)->update(['is_featured' => 0]);
                 DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
             case 'ban':
                 DB::table('petitions')->whereIn('id', $ids)->update([
                     'status' => 'draft',
+                    'held_by_admin' => 1,
                     'is_active' => 0,
-                    'is_featured' => 0,
                 ]);
+                DB::table('petition_translations')->whereIn('petition_id', $ids)->update(['is_featured' => 0]);
                 break;
 
             default:
@@ -594,6 +631,14 @@ class AdminPetitionsController extends Controller
             CacheVersion::bumpAll();
         } catch (\Throwable $e) {
             Log::warning('Cache bump failed after petition bulk action: '.$e->getMessage());
+        }
+
+        if (in_array($data['action'], ['publish', 'unpublish', 'activate', 'deactivate', 'ban'], true)) {
+            try {
+                EdgeCachePurge::urls(EdgeCachePurge::petitionUrls($ids));
+            } catch (\Throwable $e) {
+                Log::warning('Edge cache purge failed after petition bulk action: '.$e->getMessage());
+            }
         }
 
         return response()->json(['ok' => true]);
@@ -619,26 +664,7 @@ class AdminPetitionsController extends Controller
     {
         $total = Petition::count();
 
-        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
-            DB::statement(<<<'SQL'
-                UPDATE petitions AS p
-                LEFT JOIN (
-                    SELECT petition_id, COUNT(*) AS actual_count
-                    FROM signatures
-                    WHERE confirmed = 1
-                    GROUP BY petition_id
-                ) AS s ON s.petition_id = p.id
-                SET p.signature_count = COALESCE(s.actual_count, 0)
-            SQL);
-        } else {
-            DB::table('petitions')->update([
-                'signature_count' => DB::raw(
-                    '(SELECT COUNT(*) FROM signatures WHERE signatures.petition_id = petitions.id AND signatures.confirmed = 1)'
-                ),
-            ]);
-        }
-
-        CacheVersion::bumpListings();
+        PetitionStats::reconcileAll();
 
         Log::info("All signature counts reconciled: {$total} petitions");
 

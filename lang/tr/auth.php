@@ -9,6 +9,7 @@ return [
     'create_account' => 'Hesabınızı oluşturun',
     'email' => 'E-posta',
     'email_placeholder' => 'E-postanızı girin',
+    'email_try_later' => 'E-posta geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
     'forgot_password' => 'Sifrenizi mi unuttunuz?',
     'forgot_title' => 'Şifremi Unuttum',
     'go_to_login' => 'girişe git',

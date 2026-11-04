@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\PetitionSigning;
 use App\Support\AppLog;
 use App\Support\Locale;
 use App\Support\WpSso;
@@ -221,7 +222,7 @@ class GoogleAuthController extends Controller
             return redirect("/{$destLocale}/register")->withErrors(['email' => 'google did not provide email.']);
         }
 
-        $user = User::where('email', $email)->first();
+        $user = User::where('google_id', $google->getId())->first() ?? User::where('email', $email)->first();
         $userLevel = UserLevel::where('name', 'user')->first();
 
         $newUser = false;
@@ -305,13 +306,18 @@ class GoogleAuthController extends Controller
             $user->last_name = $last;
         }
 
-        if ($user->verified === false) {
-            $user->verified = true;
-        }
+        // markVerified() flips verified and confirms pending signatures in one
+        // transaction; if it fails the user stays unverified and the next login retries.
+        $wasUnverified = $user->verified === false;
 
         $user->google_id = $google->getId();
 
         $user->save();
+
+        if ($wasUnverified) {
+            PetitionSigning::markVerified($user);
+            $user->refresh();
+        }
         Auth::login($user);
 
         if (! $newUser) {

@@ -21,6 +21,7 @@ module.exports = {
 		dashboard: './src/dashboard.js',
 		editor: './src/editor.js',
 		packages: './src/packages.scss',
+		'adjacent-posts': './src/adjacent-posts.js',
 	},
 	output: {
 		...defaultConfig.output,

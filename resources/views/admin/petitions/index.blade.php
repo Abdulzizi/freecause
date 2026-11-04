@@ -82,7 +82,7 @@
 
         <input class="fc-filter-field" name="owner" placeholder="Owner ID" value="{{ $filters['owner'] ?? '' }}">
 
-        <select data-admin-autosubmit class="fc-filter-field" name="category">
+        <select data-admin-autosubmit class="fc-filter-field" name="category" aria-label="category">
             <option value="">category...</option>
             @foreach ($categories as $cat)
                 <option value="{{ $cat->id }}" {{ (string) ($filters['category'] ?? '') === (string) $cat->id ? 'selected' : '' }}>
@@ -91,13 +91,13 @@
             @endforeach
         </select>
 
-        <select data-admin-autosubmit class="fc-filter-field" name="status">
+        <select data-admin-autosubmit class="fc-filter-field" name="status" aria-label="status">
             <option value="">any status</option>
             <option value="published" {{ ($filters['status'] ?? '') === 'published' ? 'selected' : '' }}>published</option>
             <option value="draft" {{ ($filters['status'] ?? '') === 'draft' ? 'selected' : '' }}>draft</option>
         </select>
 
-        <select data-admin-autosubmit class="fc-filter-field" name="active">
+        <select data-admin-autosubmit class="fc-filter-field" name="active" aria-label="active">
             <option value="">active...</option>
             <option value="1" {{ ($filters['active'] ?? '') === '1' ? 'selected' : '' }}>active</option>
             <option value="0" {{ ($filters['active'] ?? '') === '0' ? 'selected' : '' }}>inactive</option>
@@ -110,7 +110,7 @@
         </label>
 
         @if (!empty($activeLanguages))
-            <select data-admin-autosubmit class="fc-filter-field" name="missing_locale">
+            <select data-admin-autosubmit class="fc-filter-field" name="missing_locale" aria-label="missing locale">
                 <option value="">missing locale...</option>
                 @foreach ($activeLanguages as $lang)
                     <option value="{{ $lang }}" {{ ($filters['missing_locale'] ?? '') === $lang ? 'selected' : '' }}>
@@ -222,7 +222,7 @@
                     </x-blatui.button>
                 @endif
                 @if (admin_can('petitions', 'edit'))
-                    <x-blatui.button variant="destructive" size="sm" type="button" data-petition-bulk-ban
+                    <x-blatui.button variant="destructive" size="sm" type="button" data-petition-bulk-ban aria-label="Ban"
                         data-url="{{ route('admin.petitions.bulkAction') }}">
                         <x-lucide-ban aria-hidden="true" />
                         <span class="max-md:hidden">Ban</span>
@@ -373,7 +373,7 @@
                     <label for="petition-featured">featured <span class="text-muted">(this locale)</span></label>
                     <span class="fc-switch">
                         <input id="petition-featured" type="checkbox" name="is_featured" value="1"
-                            {{ ($selectedTranslation->is_featured ?? $selectedDefaultTranslation?->is_featured ?? false) ? 'checked' : '' }}>
+                            {{ ($selectedTranslation?->is_featured ?? false) ? 'checked' : '' }}>
                         <span class="fc-switch__track" aria-hidden="true"></span>
                     </span>
                 </div>
@@ -470,7 +470,7 @@
 </x-admin.form-field>
 
                 <div class="flex flex-col items-start gap-1.5 py-1.5 [&_label]:font-bold [&_label]:text-sm max-md:[&_label]:text-xs">
-                    <label>cover image</label>
+                    <label for="petition-cover-image">cover image</label>
                     @php
                         $imgSrc = null;
                         if (!empty($selectedPetition->cover_image)) {
@@ -497,7 +497,7 @@
                     @else
                         <span class="text-muted text-sm">no image</span>
                     @endif
-                    <input class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white mt-1" type="file" name="cover_image" accept="image/*">
+                    <input id="petition-cover-image" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white mt-1" type="file" name="cover_image" accept="image/*">
                     <span class="text-muted text-xs">upload new image to replace current (max 4 MB)</span>
                 </div>
 

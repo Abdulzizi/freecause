@@ -41,6 +41,12 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString('adtrafficquality.google', $csp);
     }
 
+    public function test_public_csp_allows_youtube_nocookie_frames_only_on_the_public_site(): void
+    {
+        $this->assertMatchesRegularExpression('#frame-src [^;]*https://www\.youtube-nocookie\.com[ ;]#', $this->cspFor('/en'));
+        $this->assertStringNotContainsString('youtube-nocookie.com', $this->cspFor('/admin/login'));
+    }
+
     public function test_object_src_none_still_enforced(): void
     {
         $csp = $this->cspFor('/en');
@@ -71,5 +77,17 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringContainsString('https://bicea.org', $csp);
         $this->assertStringContainsString("script-src 'self'", $csp);
         $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
+    }
+
+    public function test_public_csp_limits_script_cdns_to_quill(): void
+    {
+        preg_match('/script-src[^;]*/', $this->cspFor('/en'), $m);
+        $scriptSrc = $m[0].' ';
+
+        $this->assertStringNotContainsString('ajax.googleapis.com', $scriptSrc);
+        $this->assertStringNotContainsString('cdnjs.cloudflare.com', $scriptSrc);
+        $this->assertStringNotContainsString('https://cdn.jsdelivr.net ', $scriptSrc);
+        $this->assertStringContainsString('https://cdn.jsdelivr.net/npm/quill@1.3.7/', $scriptSrc);
+        $this->assertStringContainsString('https://cdnjs.cloudflare.com', $this->cspFor('/admin/login'));
     }
 }

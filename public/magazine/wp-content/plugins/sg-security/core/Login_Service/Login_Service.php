@@ -41,6 +41,13 @@ class Login_Service {
 	 * @since  1.0.0
 	 */
 	public function restrict_login_to_ips() {
+		// Bail if the user is trying to access password protected page.
+		$action = isset( $_REQUEST['action'] ) && is_string( $_REQUEST['action'] ) ? wp_unslash( $_REQUEST['action'] ) : '';
+
+		if ( isset( $_POST['post_password'] ) && ! is_admin() && 'postpass' === $action ) { //phpcs:ignore
+			return true;
+		}
+
 		// Get the list of allowed IP addresses.
 		$allowed_ips = get_option( 'sg_login_access', array() );
 
@@ -91,6 +98,12 @@ class Login_Service {
 		// Bail if ip, has reached login attempts limit.
 		if ( $login_attempts[ $user_ip ]['timestamp'] > time() ) {
 
+			// Store the time when the block occurred.
+			if ( empty( $login_attempts[ $user_ip ]['blocked_at'] ) ) {
+				$login_attempts[ $user_ip ]['blocked_at'] = time();
+				update_option( 'sg_security_unsuccessful_login', $login_attempts );
+			}
+
 			// Update the total blocked logins counter.
 			update_option( 'sg_security_total_blocked_logins', get_option( 'sg_security_total_blocked_logins', 0 ) + 1 );
 
@@ -138,6 +151,22 @@ class Login_Service {
 			return $error;
 		}
 
+		$this->log_failed_login_attempt();
+
+		return $error;
+	}
+
+	/**
+	 * Add a failed login attempt for the current IP address.
+	 *
+	 * @since 1.6.9
+	 */
+	public function log_failed_login_attempt() {
+		// Bail if the login attempts limit is disabled.
+		if ( 0 === intval( $this->login_attempts_limit ) ) {
+			return;
+		}
+
 		// Get the current user ip.
 		$user_ip = Helper::get_current_user_ip();
 		// Get the login attempts data.
@@ -180,8 +209,6 @@ class Login_Service {
 
 		// Update the login attempts data.
 		update_option( 'sg_security_unsuccessful_login', $login_attempts );
-
-		return $error;
 	}
 
 	/**

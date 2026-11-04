@@ -7,15 +7,30 @@ use App\Rules\MinCharacters;
 use App\Rules\MinWords;
 use App\Rules\SafeExternalImageUrl;
 use App\Rules\TagList;
+use App\Rules\YoutubeVideo;
 use App\Support\Countries;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class PetitionRequest extends FormRequest
 {
+    private ?Petition $petition = null;
+
     public function authorize(): bool
     {
-        return true;
+        if ($this->routeIs('petition.store')) {
+            return true;
+        }
+
+        // Missing petition answers 404 before any validation or remote image fetch.
+        $petition = $this->currentPetition() ?? abort(404);
+
+        return auth()->check() && (int) $petition->user_id === (int) auth()->id();
+    }
+
+    private function currentPetition(): ?Petition
+    {
+        return $this->petition ??= Petition::query()->whereKey($this->route('id'))->first(['user_id', 'image_url', 'youtube_url']);
     }
 
     public function rules(): array
@@ -26,9 +41,16 @@ class PetitionRequest extends FormRequest
             ? ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp']
             : ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'];
 
-        $currentUrl = $creating
+        $current = $creating
             ? null
-            : Petition::query()->whereKey($this->route('id'))->value('image_url');
+            : $this->currentPetition();
+        $currentUrl = $current?->image_url;
+
+        // An unchanged stored value passes, so legacy values saved under the old rules do not block unrelated edits.
+        $youtube = ['nullable', 'string', 'max:200'];
+        if ($this->input('youtube') !== $current?->youtube_url) {
+            $youtube[] = new YoutubeVideo;
+        }
 
         $imageUrl = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
         if (! $this->hasFile('image')
@@ -44,14 +66,14 @@ class PetitionRequest extends FormRequest
             'tags' => ['nullable', 'string', 'max:255', new TagList(10, 30)],
             'image' => $image,
             'image_url' => $imageUrl,
-            'youtube' => ['nullable', 'string', 'max:200', 'regex:/^(?:https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w_-]+|[\w_-]+)$/i'],
+            'youtube' => $youtube,
             'target' => ['nullable', 'string', 'max:255'],
             'community' => ['nullable', 'string', 'max:255'],
             'community_url' => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'],
             'city' => ['nullable', 'string', 'max:120'],
             'country' => ['nullable', 'string', 'size:2', Rule::in(Countries::codes())],
         ] + ($creating
-            ? ['goal_signatures' => ['required', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000']]
+            ? ['goal_signatures' => ['required', 'integer', Rule::in(Petition::GOALS)]]
             : ['remove_image' => ['nullable', 'boolean']]);
     }
 }

@@ -949,6 +949,7 @@ class GeneratePress_Site_Library_Helper {
 			'Spacing' => 'generate_package_spacing',
 			'Typography' => 'generate_package_typography',
 			'WooCommerce' => 'generate_package_woocommerce',
+			'Font Library' => 'generate_package_font_library',
 		);
 	}
 

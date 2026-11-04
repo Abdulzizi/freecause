@@ -89,7 +89,8 @@ class Ads
 
     public static function frameUrl(string $name): string
     {
-        return self::frameOrigin().'/ads/frame/'.$name;
+        // Avoid reusing a permanent redirect cached before the dedicated ad host was configured.
+        return self::frameOrigin().'/ads/frame/'.$name.'?v=2';
     }
 
     public static function frameHost(): string
@@ -100,6 +101,15 @@ class Ads
     public static function frameHostMatchesRequest(): bool
     {
         return self::frameHost() !== '' && self::frameHost() === strtolower(request()->getHost());
+    }
+
+    // A frame origin that is also the public site must not make normal site
+    // pages frame-only. Keep the dedicated-host restriction for legacy setups.
+    public static function dedicatedFrameHostMatchesRequest(): bool
+    {
+        $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
+
+        return self::frameHostMatchesRequest() && self::frameHost() !== $parentHost;
     }
 
     public static function frameIsCrossOrigin(): bool
@@ -123,12 +133,6 @@ class Ads
         }
 
         return $cfg;
-    }
-
-    // slot names in a fixed order (for the admin form + iteration).
-    public static function slotNames(): array
-    {
-        return array_keys((array) config('ads.slots', []));
     }
 
     // True the first time a slot name is rendered for the current request, false

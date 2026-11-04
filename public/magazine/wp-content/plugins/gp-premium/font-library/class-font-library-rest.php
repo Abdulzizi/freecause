@@ -74,17 +74,6 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 			)
 		);
 
-		// Download a Google font.
-		register_rest_route(
-			$namespace,
-			'/download-google-font/',
-			array(
-				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'download_google_font' ),
-				'permission_callback' => array( $this, 'edit_posts_permission' ),
-			)
-		);
-
 		// Upload a font.
 		register_rest_route(
 			$namespace,
@@ -188,7 +177,15 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 	 * @return mixed
 	 */
 	public function delete_font( WP_REST_Request $request ) {
-		$font_id        = $request->get_param( 'fontId' );
+		$font_id = $request->get_param( 'fontId' );
+
+		if ( GeneratePress_Pro_Font_Library::FONT_LIBRARY_CPT !== get_post_type( $font_id ) ) {
+			return $this->error(
+				'invalid_font_post',
+				__( 'Invalid font post.', 'gp-premium' )
+			);
+		}
+
 		$slug           = get_post_field( 'post_name', $font_id );
 		$upload_dir     = wp_get_upload_dir();
 		$font_base_path = trailingslashit( $upload_dir['basedir'] ) . 'generatepress/fonts/' . $slug . '/';
@@ -303,6 +300,7 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 		$variants = $request->get_param( 'variants' );
 		$source   = $request->get_param( 'source' );
 		$slug     = $request->get_param( 'slug' ) ?? $font['slug'] ?? '';
+		$slug     = sanitize_title( $slug );
 		$results  = array(
 			'ID'       => null,
 			'variants' => array(),
@@ -385,12 +383,16 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 			// Generate the font CSS.
 			$generate_css = $this->build_css_file();
 
-			if ( false === $generate_css->success ) {
+			if ( false === $generate_css->data['success'] ) {
 				return $this->error( 500, __( 'CSS Generation failed', 'gp-premium' ) );
 			}
 
 			$results['ID']       = $font_post;
 			$results['variants'] = $checked_variants;
+		}
+
+		if ( empty( $results['ID'] ) && ! empty( $results['error'] ) ) {
+			return $this->failed( $results );
 		}
 
 		return $this->success( $results );
@@ -469,7 +471,15 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 		$font_display      = $request->get_param( 'fontDisplay' );
 		$fallback          = $request->get_param( 'fallback' );
 		$css_variable      = $request->get_param( 'cssVariable' );
-		$slug              = get_post_field( 'post_name', $font_id );
+
+		if ( GeneratePress_Pro_Font_Library::FONT_LIBRARY_CPT !== get_post_type( $font_id ) ) {
+			return $this->error(
+				'invalid_font_post',
+				__( 'Invalid font post.', 'gp-premium' )
+			);
+		}
+
+		$slug = get_post_field( 'post_name', $font_id );
 
 		// Update the font post.
 		wp_update_post(
@@ -519,7 +529,7 @@ class GeneratePress_Pro_Font_Library_Rest extends WP_REST_Controller {
 	 * @return bool
 	 */
 	public function edit_posts_permission() {
-		return current_user_can( 'edit_posts' );
+		return current_user_can( 'manage_options' );
 	}
 
 	/**

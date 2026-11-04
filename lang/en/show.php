@@ -2,6 +2,7 @@
 
 return [
     'page_title' => ':title - FreeCause',
+    'video_title' => 'Video: :title',
     'btn_sign_now' => 'Sign Now',
     'google_continue' => 'Continue with Google',
     'or' => 'OR',

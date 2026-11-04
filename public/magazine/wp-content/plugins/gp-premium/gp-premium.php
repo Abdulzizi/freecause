@@ -3,7 +3,7 @@
  * Plugin Name: GP Premium
  * Plugin URI: https://generatepress.com
  * Description: The entire collection of GeneratePress premium modules.
- * Version: 2.5.0
+ * Version: 2.5.6
  * Requires at least: 6.1
  * Requires PHP: 7.2
  * Author: Tom Usborne
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'GP_PREMIUM_VERSION', '2.5.0' );
+define( 'GP_PREMIUM_VERSION', '2.5.6' );
 define( 'GP_PREMIUM_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GP_PREMIUM_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'GP_LIBRARY_DIRECTORY', plugin_dir_path( __FILE__ ) . 'library/' );
@@ -53,16 +53,6 @@ if ( ! function_exists( 'generatepress_is_module_active' ) ) {
 	}
 }
 
-if ( ! function_exists( 'generate_package_setup' ) ) {
-	add_action( 'plugins_loaded', 'generate_package_setup' );
-	/**
-	 * Set up our translations
-	 **/
-	function generate_package_setup() {
-		load_plugin_textdomain( 'gp-premium', false, 'gp-premium/langs/' );
-	}
-}
-
 if ( generatepress_is_module_active( 'generate_package_backgrounds', 'GENERATE_BACKGROUNDS' ) ) {
 	require_once GP_PREMIUM_DIR_PATH . 'backgrounds/generate-backgrounds.php';
 }
@@ -81,6 +71,8 @@ if ( generatepress_is_module_active( 'generate_package_disable_elements', 'GENER
 
 if ( generatepress_is_module_active( 'generate_package_elements', 'GENERATE_ELEMENTS' ) ) {
 	require_once GP_PREMIUM_DIR_PATH . 'elements/elements.php';
+	require_once GP_PREMIUM_DIR_PATH . 'inc/class-register-dynamic-tags.php';
+	require_once GP_PREMIUM_DIR_PATH . 'inc/class-adjacent-posts.php';
 }
 
 if ( generatepress_is_module_active( 'generate_package_secondary_nav', 'GENERATE_SECONDARY_NAV' ) ) {
@@ -132,6 +124,8 @@ function generate_premium_load_modules() {
 	if ( version_compare( generate_premium_get_theme_version(), '3.1.0-alpha.1', '<' ) && generatepress_is_module_active( 'generate_package_colors', 'GENERATE_COLORS' ) ) {
 		require_once GP_PREMIUM_DIR_PATH . 'colors/generate-colors.php';
 	}
+
+	load_plugin_textdomain( 'gp-premium', false, 'gp-premium/langs/' );
 }
 
 // General functionality.
@@ -160,10 +154,7 @@ if ( generatepress_is_module_active( 'generate_package_font_library', 'GENERATE_
 	require_once GP_PREMIUM_DIR_PATH . 'font-library/class-font-library.php';
 	require_once GP_PREMIUM_DIR_PATH . 'font-library/class-font-library-rest.php';
 	require_once GP_PREMIUM_DIR_PATH . 'font-library/class-font-library-optimize.php';
-
-	if ( is_admin() ) {
-		require_once GP_PREMIUM_DIR_PATH . 'font-library/class-font-library-cpt.php';
-	}
+	require_once GP_PREMIUM_DIR_PATH . 'font-library/class-font-library-cpt.php';
 }
 
 if ( ! function_exists( 'generate_premium_updater' ) ) {

@@ -24,7 +24,6 @@ class SpamTest extends TestCase
         $this->assertTrue(Spam::isSpam('Buy v1agra online now'));
         $this->assertTrue(Spam::isSpam('cas1no online gambling'));
         $this->assertTrue(Spam::isSpam('Free money at paypal'));
-        $this->assertTrue(Spam::isSpam('cheap loan approved'));
     }
 
     public function test_a_review_owned_word_is_ignored_as_a_whole_word(): void
@@ -72,31 +71,6 @@ class SpamTest extends TestCase
     public function test_spam_allows_single_url(): void
     {
         $this->assertFalse(Spam::isSpam('Sign my petition at http://petition.com'));
-    }
-
-    public function test_spam_rate_limit_allows_normal_requests(): void
-    {
-        Spam::rateLimit('petition', 5);
-
-        $this->assertFalse(Spam::rateLimit('petition', 5));
-    }
-
-    public function test_spam_rate_limit_blocks_excessive_requests(): void
-    {
-        for ($i = 0; $i < 20; $i++) {
-            Spam::rateLimit('petition', 20);
-        }
-
-        $this->assertTrue(Spam::rateLimit('petition', 20));
-    }
-
-    public function test_spam_ban_current_ip(): void
-    {
-        Spam::banCurrentIp('Test ban');
-
-        $this->assertDatabaseHas('banned_ips', [
-            'ip' => request()->ip(),
-        ]);
     }
 
     public function test_spam_log_creates_record(): void

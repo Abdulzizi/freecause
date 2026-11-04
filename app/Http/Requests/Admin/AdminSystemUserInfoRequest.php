@@ -12,12 +12,25 @@ class AdminSystemUserInfoRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        // Match what the controller stores, so the unique check sees the same value.
+        if (is_string($this->input('email'))) {
+            $this->merge(['email' => strtolower(trim($this->input('email')))]);
+        }
+    }
+
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'max:190'],
-            'current_password' => [Rule::requiredIf(fn () => $this->filled('new_password')), 'nullable', 'string'],
+            'email' => ['required', 'email', 'max:190', Rule::unique('users', 'email')->ignore(admin_user()?->id)],
+            'current_password' => [Rule::requiredIf(fn () => $this->filled('new_password') || $this->emailChanged()), 'nullable', 'string'],
             'new_password' => ['nullable', 'confirmed', 'min:8', 'max:72'],
         ];
+    }
+
+    public function emailChanged(): bool
+    {
+        return $this->input('email') !== strtolower(trim((string) admin_user()?->email));
     }
 }

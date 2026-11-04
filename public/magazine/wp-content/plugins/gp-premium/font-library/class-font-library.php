@@ -315,9 +315,8 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 	 * Overwrite it if it exists, and delete associated font file if different.
 	 * Otherwise, add new variant if not found in the list.
 	 *
-	 * @param array  $variants Font variants.
-	 * @param int    $new_variant New variant to be added.
-	 * @param string $base_path Base path.
+	 * @param array $variants Font variants.
+	 * @param int   $new_variant New variant to be added.
 	 *
 	 * @return array The resolved list of variants.
 	 */
@@ -468,6 +467,7 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 		if ( ! $slug ) {
 			$slug = $variant['slug'] ?? '';
 		}
+		$slug       = sanitize_title( $slug );
 		$upload_dir = wp_get_upload_dir();
 		$base_path  = trailingslashit( $upload_dir['basedir'] ) . 'generatepress/fonts/' . $slug . '/';
 
@@ -480,18 +480,13 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 		 * If $file is an array, assume it's a param from $_FILES.
 		 */
 		if ( is_array( $file ) ) {
-			$file_name = basename( $file['name'] );
-			$file_path = $base_path . $file_name;
+			$file_name = sanitize_file_name( wp_basename( $file['name'] ) );
+			$file['name'] = $file_name;
 
-			// Check if the font file exists and delete it if so.
-			if ( file_exists( $file_path ) ) {
-				unlink( $file_path );
-			}
-
-			$set_upload_dir = function ( $font_dir ) use ( $base_path, $slug ) {
+			$set_upload_dir = function ( $font_dir ) use ( $base_path, $slug, $upload_dir ) {
 				$font_dir['path'] = $base_path;
 				$font_dir['url']  = untrailingslashit(
-					content_url( 'uploads/generatepress/fonts/' . $slug )
+					trailingslashit( $upload_dir['baseurl'] ) . 'generatepress/fonts/' . $slug
 				);
 				$font_dir['subdir'] = '';
 				return $font_dir;
@@ -501,11 +496,14 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 			add_filter( 'upload_dir', $set_upload_dir );
 
 			$overrides = array(
-				'upload_error_handler' => array( __CLASS__, 'handle_font_file_upload_error' ),
+				'upload_error_handler'     => array( __CLASS__, 'handle_font_file_upload_error' ),
 				// Not testing a form submission.
-				'test_form'            => false,
+				'test_form'                => false,
 				// Only allow uploading font files for this request.
-				'mimes'                => self::get_allowed_font_mime_types(),
+				'mimes'                    => self::get_allowed_font_mime_types(),
+				'unique_filename_callback' => function () use ( $file_name ) {
+					return $file_name;
+				},
 			);
 
 			$uploaded_file = wp_handle_upload( $file, $overrides );
@@ -516,44 +514,67 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 			return $uploaded_file;
 		}
 
-		$file_name = basename( $variant['src'] );
-		$file_path = $base_path . $file_name;
-
-		$response = wp_remote_get( $variant['src'] );
-
-		if ( is_wp_error( $response ) ) {
-			$error_message = $response->get_error_message();
-			return new WP_Error( 500, "Failed to download {$variant['fontFamily']} from {$variant['src']}: $error_message" );
+		if ( ! function_exists( 'download_url' ) || ! function_exists( 'wp_handle_sideload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		// Save the file.
-		$filesystem = generate_premium_get_wp_filesystem();
+		$file_name = sanitize_file_name( wp_basename( (string) wp_parse_url( $variant['src'], PHP_URL_PATH ) ) );
+		$file_type = wp_check_filetype( $file_name, self::get_allowed_font_mime_types() );
 
-		if ( ! $filesystem ) {
-			return new WP_Error( 500, 'Error setting up the file system object.' );
+		if ( empty( $file_type['ext'] ) || empty( $file_type['type'] ) ) {
+			return new WP_Error(
+				'rest_font_upload_invalid_file_type',
+				__( 'Sorry, you are not allowed to upload this file type.', 'gp-premium' ),
+				array( 'status' => 400 )
+			);
 		}
 
-		$file_contents = wp_remote_retrieve_body( $response );
+		$tmp_file = download_url( $variant['src'] );
 
-		if ( ! $file_contents ) {
-			return new WP_Error( 500, "Failed to download $variant from {$variant['src']}: Empty body" );
+		if ( is_wp_error( $tmp_file ) ) {
+			return new WP_Error( 500, $tmp_file->get_error_message() );
 		}
 
-		// Assuming $filesystem is already set up correctly.
-		$chmod_file = defined( 'FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : 0644;
+		$sideload_file = array(
+			'name'     => $file_name,
+			'tmp_name' => $tmp_file,
+			'type'     => '',
+			'error'    => 0,
+			'size'     => filesize( $tmp_file ),
+		);
 
-		if ( is_writable( $file_path ) || is_writable( dirname( $file_path ) ) ) {
-			if ( $filesystem->put_contents( $file_path, $file_contents, $chmod_file ) ) {
-				return array(
-					'file' => $file_path,
-					'url'  => trailingslashit( $upload_dir['baseurl'] ) . 'generatepress/fonts/' . $slug . '/' . $file_name,
-				);
-			} else {
-				return new WP_Error( 500, "Failed to download $variant from {$variant['src']}." );
-			}
+		$set_upload_dir = function ( $font_dir ) use ( $base_path, $slug, $upload_dir ) {
+			$font_dir['path'] = $base_path;
+			$font_dir['url']  = untrailingslashit(
+				trailingslashit( $upload_dir['baseurl'] ) . 'generatepress/fonts/' . $slug
+			);
+			$font_dir['subdir'] = '';
+			return $font_dir;
+		};
+
+		add_filter( 'upload_mimes', array( __CLASS__, 'get_allowed_font_mime_types' ) );
+		add_filter( 'upload_dir', $set_upload_dir );
+
+		$uploaded_file = wp_handle_sideload(
+			$sideload_file,
+			array(
+				'upload_error_handler'     => array( __CLASS__, 'handle_font_file_upload_error' ),
+				'test_form'                => false,
+				'mimes'                    => self::get_allowed_font_mime_types(),
+				'unique_filename_callback' => function () use ( $file_name ) {
+					return $file_name;
+				},
+			)
+		);
+
+		remove_filter( 'upload_dir', $set_upload_dir );
+		remove_filter( 'upload_mimes', array( __CLASS__, 'get_allowed_font_mime_types' ) );
+
+		if ( is_wp_error( $uploaded_file ) && file_exists( $tmp_file ) ) {
+			unlink( $tmp_file );
 		}
 
-		return new WP_Error( 500, 'Unable to write to file path.' );
+		return $uploaded_file;
 	}
 
 	/**
@@ -585,7 +606,6 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 	 * @return void
 	 */
 	public function update_post_meta( $post_id, $key, $value ) {
-		$upload_dir = wp_get_upload_dir();
 		// Bail if we're not working with a font library post variant meta value.
 		if ( get_post_type( $post_id ) !== self::FONT_LIBRARY_CPT || 'gp_font_variants' !== $key ) {
 			return;
@@ -607,49 +627,14 @@ class GeneratePress_Pro_Font_Library extends GeneratePress_Pro_Singleton {
 				continue;
 			}
 
-			$font_slug     = get_post_field( 'post_name', $post_id );
-			$font_dir      = trailingslashit( $upload_dir['basedir'] ) . 'generatepress/fonts/' . $font_slug . '/';
-			$font_base_url = trailingslashit( $upload_dir['baseurl'] ) . 'generatepress/fonts/' . $font_slug . '/';
-			$response      = wp_remote_get( $variant['src'] );
-			$response_code = (int) wp_remote_retrieve_response_code( $response );
+			$font_slug = get_post_field( 'post_name', $post_id );
+			$font_file = self::handle_font_file_upload( $variant, $font_slug, null );
 
-			if ( is_wp_error( $response ) || 200 !== $response_code ) {
+			if ( is_wp_error( $font_file ) ) {
 				continue;
 			}
 
-			$file_name = basename( $variant['src'] );
-			$file_path = $font_dir . $file_name;
-
-			// If the directory exists, remove it and it's contents.
-			if ( ! file_exists( $font_dir ) ) {
-				wp_mkdir_p( $font_dir );
-			}
-
-			// Setup filesystem.
-			$filesystem = generate_premium_get_wp_filesystem();
-
-			// Bail here if the filesystem can't initialize.
-			if ( ! $filesystem ) {
-				continue;
-			}
-
-			$file_contents = wp_remote_retrieve_body( $response );
-
-			// Bail if file contents are empty or not found.
-			if ( ! $file_contents ) {
-				continue;
-			}
-
-			$chmod_file = defined( 'FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : 0644;
-
-			if ( is_writable( $file_path ) || is_writable( dirname( $file_path ) ) ) {
-				// Bail if the file can't be written.
-				if ( ! $filesystem->put_contents( $file_path, $file_contents, $chmod_file ) ) {
-					continue;
-				}
-			}
-
-			$variant['src'] = $font_base_url . $file_name;
+			$variant['src'] = $font_file['url'];
 		}
 
 		// Update the meta value with the new src for each variant.

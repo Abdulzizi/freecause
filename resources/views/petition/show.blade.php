@@ -8,6 +8,7 @@
 
     $petitionImg = $petition->coverUrl();
     $coverVariants = \App\Support\ImageVariants::urls($petition->cover_image);
+    $youtubeId = \App\Models\Petition::youtubeId($petition->youtube_url);
     $hasCover = false;
     foreach ([$petition->cover_image, $petition->image_url] as $index => $coverPath) {
         if (!$coverPath) {
@@ -143,7 +144,7 @@
                             Active
                         </x-ui.badge>
                     @endif
-                    @if ($petition->is_featured)
+                    @if ($tr->is_featured)
                         <x-ui.badge variant="brand">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -206,28 +207,28 @@
                 <div class="hidden md:flex flex-wrap items-center gap-2 mb-4">
                     <span class="text-sm font-semibold text-muted">{{ __('show.share') }}:</span>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
-                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-facebook text-white"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-xs px-3 py-1 text-sm font-semibold no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-facebook text-white"
                        aria-label="Share on Facebook">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg> Facebook
                     </a>
                     <a href="https://x.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($petitionTitle) }}"
-                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-dark text-on-dark"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-xs px-3 py-1 text-sm font-semibold no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-dark text-on-dark"
                        aria-label="Share on X">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.29 19.496h2.039L6.487 3.24H4.3l13.31 17.409z"/></svg> X
                     </a>
                     <a href="https://wa.me/?text={{ urlencode($petitionTitle.' '.request()->url()) }}"
-                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-whatsapp text-white"
+                       target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-xs px-3 py-1 text-sm font-semibold no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-whatsapp text-ink"
                        aria-label="Share on WhatsApp">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp
                     </a>
                     @if (auth()->check() && (int) auth()->id() === (int) $petition->user_id)
                         <a href="{{ lroute('petition.edit', ['slug' => $tr->slug, 'id' => $petition->id]) }}"
-                           class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border border-border cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-surface-2 text-ink"
+                           class="inline-flex items-center gap-1 rounded-xs px-3 py-1 text-sm font-semibold no-underline border border-border cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline bg-surface-2 text-ink"
                            aria-label="{{ __('show.edit') }}">
                             {{ __('show.edit') }}
                         </a>
                     @endif
-                    <button type="button" id="copyPetitionLink" class="fc-share-copy inline-flex items-center gap-1 rounded-sm px-3 py-1 text-sm font-medium no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline"
+                    <button type="button" id="copyPetitionLink" class="fc-share-copy inline-flex items-center gap-1 rounded-xs px-3 py-1 text-sm font-semibold no-underline border-0 cursor-pointer transition-opacity duration-150 hover:opacity-85 hover:no-underline"
                             data-url="{{ request()->url() }}"
                             data-copied-label="{{ __('show.link_copied') }}"
                             aria-label="Copy link">
@@ -307,6 +308,9 @@
                             <div class="text-base leading-[1.75] text-ink [&_p]:mb-3 [&_p]:text-sm [&_p]:leading-[1.75] [&_ul]:my-2.5 [&_ul]:mt-0 [&_ul]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2.5 [&_ol]:mt-0 [&_ol]:mb-3.5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1.5 [&_li]:text-sm [&_li]:leading-[1.75] [&_li>ul]:mt-2 [&_li>ol]:mt-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-bold [&_h4]:mt-3.5 [&_h4]:text-sm [&_h4]:font-bold">
                                 {!! $tr->description !!}
                             </div>
+                            @if ($youtubeId)
+                                <iframe src="https://www.youtube-nocookie.com/embed/{{ $youtubeId }}" title="{{ __('show.video_title', ['title' => $petitionTitle]) }}" class="mt-4 block w-full aspect-video rounded-md border-0" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            @endif
                         </div>
 
                         {{-- ad: 468x60, left column, between about and bottom sign form, tablet+ only --}}
@@ -558,17 +562,17 @@
 
                             <div class="mt-4 text-sm">
                                 <div class="mb-2"><strong>{{ $embedDirect }}</strong></div>
-                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" value="{{ $directLink }}" readonly>
+                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" aria-label="{{ $embedDirect }}" value="{{ $directLink }}" readonly>
 
                                 <div class="mb-2"><strong>{{ $embedHtml }}</strong></div>
-                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4"
+                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" aria-label="{{ $embedHtml }}"
                                     value='<a href="{{ $directLink }}">{{ $petitionTitle }}</a>' readonly>
 
                                 <div class="mb-2"><strong>{{ $embedForumNoTitle }}</strong></div>
-                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" value='[URL="{{ $directLink }}"][/URL]' readonly>
+                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25 mb-4" aria-label="{{ $embedForumNoTitle }}" value='[URL="{{ $directLink }}"][/URL]' readonly>
 
                                 <div class="mb-2"><strong>{{ $embedForumWithTitle }}</strong></div>
-                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25" value='[URL]{{ $directLink }}[/URL]' readonly>
+                                <input class="block w-full px-3 py-1.5 text-base leading-normal text-ink bg-white border border-border rounded-md appearance-none focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/25" aria-label="{{ $embedForumWithTitle }}" value='[URL]{{ $directLink }}[/URL]' readonly>
                             </div>
                         </div>
 
@@ -621,6 +625,12 @@
                                             <a class="text-brand"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
+
+                                        @if ($petition->status === 'published' && $petition->is_active)
+                                            <div class="mt-2">
+                                                @include('partials.petition-withdraw', ['slug' => $tr->slug, 'id' => $petition->id])
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endif

@@ -73,18 +73,23 @@ export function init() {
         }
     }
 
-    const scrollToPassword = document.querySelector('[data-scroll-to-password]');
-    const passwordSection = document.getElementById('password-section');
-    if (scrollToPassword && passwordSection) {
-        scrollToPassword.addEventListener('click', function (event) {
+    document.querySelectorAll('[data-petition-withdraw]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
-            passwordSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            const firstField = passwordSection.querySelector('input[name="new_password"]');
-            if (firstField) {
-                window.setTimeout(function () {
-                    firstField.focus();
-                }, 400);
-            }
+            const d = form.dataset;
+            Swal.fire({
+                icon: 'warning',
+                title: d.confirmTitle || 'Withdraw this petition?',
+                text: d.confirmText || 'It will be taken offline and no longer appear in listings.',
+                showCancelButton: true,
+                confirmButtonText: d.confirmOk || 'Yes, withdraw',
+                cancelButtonText: d.confirmCancel || 'Cancel',
+                confirmButtonColor: '#b91c1c',
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
-    }
+    });
 }

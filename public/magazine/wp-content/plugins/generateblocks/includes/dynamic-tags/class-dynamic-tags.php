@@ -375,6 +375,17 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 		$block_name = $block['blockName'] ?? '';
 
 		if ( $block_name && in_array( $block_name, $this->get_allowed_blocks(), true ) ) {
+			if (
+				GenerateBlocks_Dynamic_Tag_Security::should_suppress_dynamic_data() ||
+				GenerateBlocks_Dynamic_Tag_Security::is_non_trusted_block_renderer_rest_request()
+			) {
+				$block_html = ! empty( $block['innerHTML'] ) && is_string( $block['innerHTML'] )
+					? $block['innerHTML']
+					: $content;
+
+				return GenerateBlocks_Dynamic_Tag_Security::replace_dynamic_tags_with_empty( $content, $block_html );
+			}
+
 			return GenerateBlocks_Register_Dynamic_Tag::replace_tags( $content, $block, $instance );
 		}
 
@@ -427,7 +438,7 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 			[
 				'methods'  => 'POST',
 				'callback' => [ $this, 'get_dynamic_tag_replacements' ],
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
 			]
@@ -439,31 +450,31 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 			array(
 				'methods'  => 'GET',
 				'callback' => [ $this, 'get_custom_post_record' ],
-				'permission_callback' => function() {
-					return current_user_can( 'edit_posts' );
+				'permission_callback' => function () {
+					return GenerateBlocks_Dynamic_Tag_Security::user_can_author_dynamic_data();
 				},
 				'args'     => array(
 					'postId'   => array(
 						'required' => true,
-						'validate_callback' => function( $param, $request, $key ) {
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_numeric( $param );
 						},
 					),
 					'load'     => array(
 						'required' => false,
-						'validate_callback' => function( $param, $request, $key ) {
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_string( $param ) || is_array( $param );
 						},
-						'sanitize_callback' => function( $param, $request, $key ) {
+						'sanitize_callback' => function ( $param, $request, $key ) {
 							return is_string( $param ) ? explode( ',', $param ) : $param;
 						},
 					),
 					'options'  => array(
 						'required' => false,
-						'validate_callback' => function( $param, $request, $key ) {
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_string( $param ) || is_array( $param );
 						},
-						'sanitize_callback' => function( $param, $request, $key ) {
+						'sanitize_callback' => function ( $param, $request, $key ) {
 							return is_string( $param ) ? json_decode( $param, true ) : $param;
 						},
 					),
@@ -477,13 +488,13 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 			array(
 				'methods'  => 'GET',
 				'callback' => [ $this, 'get_user_record' ],
-				'permission_callback' => function() {
-					return current_user_can( 'edit_posts' );
+				'permission_callback' => function () {
+					return GenerateBlocks_Dynamic_Tag_Security::user_can_author_dynamic_data();
 				},
 				'args' => array(
 					'id' => array(
 						'required'          => true,
-						'validate_callback' => function( $param ) {
+						'validate_callback' => function ( $param ) {
 							return is_numeric( $param );
 						},
 					),
@@ -502,27 +513,45 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 		$content      = $request->get_param( 'content' );
 		$context      = $request->get_param( 'context' );
 		$client_id    = $request->get_param( 'clientId' );
-		$post_id      = $context['postId'] ?? 0;
+		$post_id      = absint( is_array( $context ) ? ( $context['postId'] ?? 0 ) : 0 );
+
+		// Bail if the content isn't a string we can scan for dynamic tags.
+		if ( ! is_string( $content ) ) {
+			return rest_ensure_response( [] );
+		}
+
 		$fallback_id  = $post_id;
 		$instance     = new stdClass();
+		$is_trusted   = GenerateBlocks_Dynamic_Tag_Security::user_can_author_dynamic_data();
 		$replacements = [];
 
 		// Set up an instance object with a context key.
 		$instance->context = $context;
 
-		// Create a unique cache key.
-		$cache_key = sprintf(
-			'replacements_%s_%s_%s',
-			md5( $content ),
-			$client_id,
-			$post_id
-		);
+		// Only trusted users use the cache. A persistent object cache outlives a
+		// capability change, so a resolved preview cached while a user was trusted
+		// must not be replayable after they are demoted — and the untrusted response
+		// resolves nothing, so caching it would only serve stale blanks to a user
+		// promoted later. The unfiltered_html bit is part of the key because
+		// sanitize_preview_replacement() varies on it at build time (a trusted user
+		// can hold manage_options without unfiltered_html, e.g. multisite admins).
+		if ( $is_trusted ) {
+			// Create a unique cache key.
+			$cache_key = sprintf(
+				'replacements_%s_%s_%s_%s_%s',
+				md5( $content ),
+				$client_id,
+				$post_id,
+				get_current_user_id(),
+				(int) current_user_can( 'unfiltered_html' )
+			);
 
-		$replacements_cache = wp_cache_get( $cache_key, 'generate_blocks_dynamic_tags' );
+			$replacements_cache = wp_cache_get( $cache_key, 'generateblocks_dynamic_tags' );
 
-		// Return the cache here if present.
-		if ( false !== $replacements_cache ) {
-			return rest_ensure_response( $replacements_cache );
+			// Return the cache here if present.
+			if ( false !== $replacements_cache ) {
+				return rest_ensure_response( $replacements_cache );
+			}
 		}
 
 		$all_tags  = GenerateBlocks_Register_Dynamic_Tag::get_tags();
@@ -552,6 +581,16 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 				$type        = $tag_details['type'];
 				$fallback    = $tag_details['title'];
 
+				if ( ! $is_trusted ) {
+					$replacements[] = [
+						'original'    => "{{{$tag}}}",
+						'replacement' => '',
+						'fallback'    => $fallback,
+					];
+
+					continue;
+				}
+
 				if ( 'user' === $type ) {
 					$fallback_id = get_current_user_id();
 				}
@@ -562,7 +601,9 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 
 					$replacements[] = [
 						'original' => "{{{$tag}}}",
-						'replacement' => GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$content}}}", [], $instance ),
+						'replacement' => self::sanitize_preview_replacement(
+							GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$content}}}", [], $instance )
+						),
 						'fallback'    => $fallback,
 					];
 				} elseif ( ! generateblocks_str_contains( $tag, 'id:' ) ) {
@@ -571,30 +612,74 @@ class GenerateBlocks_Dynamic_Tags extends GenerateBlocks_Singleton {
 
 					$replacements[] = [
 						'original' => "{{{$tag}}}",
-						'replacement' => GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$content}}}", [], $instance ),
+						'replacement' => self::sanitize_preview_replacement(
+							GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$content}}}", [], $instance )
+						),
 						'fallback'    => $fallback,
 					];
 				} else {
 					$replacements[] = [
 						'original' => "{{{$tag}}}",
-						'replacement' => GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$tag}}}", [], $instance ),
+						'replacement' => self::sanitize_preview_replacement(
+							GenerateBlocks_Register_Dynamic_Tag::replace_tags( "{{{$tag}}}", [], $instance )
+						),
 						'fallback'    => $fallback,
 					];
 				}
 			}
 		}
 
-		// Set the cache with filterable duration.
-		/**
-		 * Set the duration of the cache for dynamic tag replacements.
-		 *
-		 * @since 2.0.0
-		 */
-		$cache_duration = apply_filters( 'generateblocks_dynamic_tags_replacement_cache_duration', 3600, $content, $context, $request );
+		if ( $is_trusted ) {
+			// Set the cache with filterable duration.
+			/**
+			 * Set the duration of the cache for dynamic tag replacements.
+			 *
+			 * @since 2.0.0
+			 */
+			$cache_duration = apply_filters( 'generateblocks_dynamic_tags_replacement_cache_duration', 3600, $content, $context, $request );
 
-		wp_cache_set( $cache_key, $replacements, 'generateblocks_dynamic_tags', $cache_duration );
+			wp_cache_set( $cache_key, $replacements, 'generateblocks_dynamic_tags', $cache_duration );
+		}
 
 		return rest_ensure_response( $replacements );
+	}
+
+	/**
+	 * Sanitize a dynamic tag replacement returned to the editor preview.
+	 *
+	 * Saved post content from users without unfiltered_html is filtered by WordPress
+	 * before render, but preview replacements are generated before save and can include
+	 * raw option-derived markup such as replace:<img onerror=...>. Keep admins' preview
+	 * output unchanged; strip unsafe markup for users who cannot save it.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param mixed $replacement Replacement value.
+	 * @return mixed Sanitized replacement.
+	 */
+	private static function sanitize_preview_replacement( $replacement ) {
+		if ( current_user_can( 'unfiltered_html' ) ) {
+			return $replacement;
+		}
+
+		if ( ! is_scalar( $replacement ) ) {
+			return '';
+		}
+
+		$replacement = (string) $replacement;
+
+		if (
+			false === strpos( $replacement, '<' ) &&
+			false === strpos( $replacement, '>' )
+		) {
+			return $replacement;
+		}
+
+		add_filter( 'wp_kses_allowed_html', [ 'GenerateBlocks_Dynamic_Tags', 'expand_allowed_html' ], 10, 2 );
+		$replacement = wp_kses_post( $replacement );
+		remove_filter( 'wp_kses_allowed_html', [ 'GenerateBlocks_Dynamic_Tags', 'expand_allowed_html' ], 10, 2 );
+
+		return $replacement;
 	}
 
 

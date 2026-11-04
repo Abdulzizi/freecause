@@ -138,7 +138,7 @@
                                 </div>
 
                                 <div class="hidden text-center md:block">
-                                    <x-ui.button type="submit" variant="danger" class="px-6 py-2 rounded-lg min-w-40 max-md:min-h-12">
+                                    <x-ui.button type="submit" variant="danger" class="px-6 py-2 min-w-40 max-md:min-h-12">
                                         {{ __('auth.submit') }}
                                     </x-ui.button>
                                 </div>

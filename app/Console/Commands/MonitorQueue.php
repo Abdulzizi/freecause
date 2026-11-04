@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\MailQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -18,13 +19,16 @@ class MonitorQueue extends Command
 
     private const CHECKPOINT_KEY = 'queue:monitor:last-checked-at';
 
+    private const ALERTED_KEY = 'queue:monitor:alerted';
+
     public function handle(): int
     {
         $alerts = [];
+        $conditionAlert = false;
 
-        // Read the backlog from the CONFIGURED queue backend. Prod runs
-        // QUEUE_CONNECTION=redis, so counting DB::table('jobs') always
-        // returned 0 and backlog/stale alerts could never fire.
+        // Read the backlog from the CONFIGURED queue backend (prod runs
+        // QUEUE_CONNECTION=database) instead of assuming a table, so the
+        // backlog/stale alerts follow whatever driver is configured.
         $connection = config('queue.default');
         $driver = config("queue.connections.{$connection}.driver");
 
@@ -58,6 +62,7 @@ class MonitorQueue extends Command
         if ($pendingJobs > 1000) {
             $msg = "High queue backlog: {$pendingJobs} pending jobs";
             $alerts[] = $msg;
+            $conditionAlert = true;
             $this->error($msg);
         }
 
@@ -87,12 +92,26 @@ class MonitorQueue extends Command
             if ($age > 30) {
                 $msg = "Stale job detected: oldest job is {$age} minutes old";
                 $alerts[] = $msg;
+                $conditionAlert = true;
                 $this->warn($msg);
             }
         }
 
-        if (! empty($alerts) && $this->option('alert-email')) {
-            $this->sendAlert($this->option('alert-email'), $alerts);
+        // Backlog/stale persist across runs, so email them at most hourly; new
+        // failures are already deduped by the checkpoint and always email.
+        // The hourly slot is only claimed when a mail will really be attempted,
+        // and is released once the condition clears so a recurrence alerts at once.
+        if (! $conditionAlert) {
+            Cache::forget(self::ALERTED_KEY);
+        }
+
+        $email = $this->option('alert-email');
+        if ($email && ($newFailures > 0 || $conditionAlert)) {
+            // While the quota is tripped sendAlert only logs, so leave the slot free.
+            $conditionDue = $conditionAlert && (MailQuota::tripped() || Cache::add(self::ALERTED_KEY, 1, 3600));
+            if ($newFailures > 0 || $conditionDue) {
+                $this->sendAlert($email, $alerts);
+            }
         }
 
         Log::channel('daily')->info('Queue monitor check', [
@@ -104,11 +123,20 @@ class MonitorQueue extends Command
 
         Cache::forever(self::CHECKPOINT_KEY, now()->toDateTimeString());
 
-        return empty($alerts) ? 0 : 1;
+        // Alerts are findings of a healthy check, not a command failure: a non-zero
+        // exit makes the scheduler raise ScheduledTaskFailed (a Sentry event per run).
+        return 0;
     }
 
     private function sendAlert(string $email, array $alerts): void
     {
+        if (MailQuota::tripped()) {
+            Log::channel('daily')->warning('Queue alert not emailed, mail quota exhausted', ['alerts' => $alerts]);
+            $this->warn('Mail quota exhausted - alert logged, not emailed.');
+
+            return;
+        }
+
         try {
             Mail::raw(
                 "Queue Health Alert\n\n".implode("\n", $alerts)."\n\nTime: ".now()->toDateTimeString(),

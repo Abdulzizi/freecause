@@ -133,6 +133,12 @@ final class MonsterInsights_Report_Overview extends MonsterInsights_Report {
 	/**
 	 * Find when GA connected.
 	 *
+	 * Returns the *latest* connection date, which is the right answer for the
+	 * only caller: `define_chart_overlay()` asks "did this site connect within
+	 * the last 24 hours". Do not reuse this to answer "how far back does this
+	 * site have data" — use `monsterinsights_get_connection_date()`, which
+	 * takes the earliest date, for that.
+	 *
 	 * @return int
 	 */
 	private function get_connection_time() {

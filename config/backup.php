@@ -25,7 +25,7 @@ return [
                 /*
                  * The list of directories and files that will be included in the backup.
                  * Note: Petition images in storage/app/public/petitions are excluded
-                 * (local disk, will be migrated to R2). Back up separately if needed.
+                 * (local disk). Backed up by the root-only vault, see docs/operations.md.
                  *
                  * For production with large DBs, consider backing up files separately
                  * or using a dedicated backup strategy for uploads.
@@ -308,7 +308,7 @@ return [
             'disks' => ['backups'],
             'health_checks' => [
                 MaximumAgeInDays::class => 1,
-                MaximumStorageInMegabytes::class => 5000,
+                MaximumStorageInMegabytes::class => 20000,
             ],
         ],
 
@@ -373,7 +373,7 @@ return [
              * this amount of megabytes has been reached.
              * Set null for unlimited size.
              */
-            'delete_oldest_backups_when_using_more_megabytes_than' => 5000,
+            'delete_oldest_backups_when_using_more_megabytes_than' => 15000,
         ],
 
         /*

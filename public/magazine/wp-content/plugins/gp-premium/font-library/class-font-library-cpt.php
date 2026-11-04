@@ -54,7 +54,20 @@ class GeneratePress_Pro_Font_Library_CPT extends GeneratePress_Pro_Singleton {
 			'show_in_menu'          => true,
 			'has_archive'           => false,
 			'exclude_from_search'   => true,
-			'show_in_rest'          => true,
+			'show_in_rest'          => false,
+			'capabilities'          => array(
+				'read'                   => 'manage_options',
+				'read_private_posts'     => 'manage_options',
+				'create_posts'           => 'manage_options',
+				'publish_posts'          => 'manage_options',
+				'edit_posts'             => 'manage_options',
+				'edit_others_posts'      => 'manage_options',
+				'edit_published_posts'   => 'manage_options',
+				'delete_posts'           => 'manage_options',
+				'delete_others_posts'    => 'manage_options',
+				'delete_published_posts' => 'manage_options',
+			),
+			'map_meta_cap'          => true,
 		);
 
 		register_post_type( GeneratePress_Pro_Font_Library::FONT_LIBRARY_CPT, $args );

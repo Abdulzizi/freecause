@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Permission;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
+use App\Models\UserLevel;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -97,5 +99,57 @@ class PetitionSignatureExportTest extends TestCase
     {
         // Export routes are behind auth; a guest is redirected to login, not 200.
         $this->get($this->url('csv'))->assertRedirect();
+    }
+
+    private function adminWith(string $module, string $action): User
+    {
+        $level = UserLevel::create(['name' => "ed_{$module}_{$action}", 'visible_name' => 'Editor', 'is_system' => false]);
+        Permission::create(['level_id' => $level->id, 'module' => $module, 'action' => $action]);
+
+        return User::factory()->create(['level_id' => $level->id, 'verified' => true]);
+    }
+
+    public function test_admin_without_signatures_permission_cannot_download_signatures(): void
+    {
+        // Any single admin permission used to pass canAccessAdmin(); exports need signatures.view.
+        $admin = $this->adminWith('categories', 'view');
+
+        $this->actingAs($admin, 'admin')->get($this->url('csv'))->assertForbidden();
+        $this->actingAs($admin, 'admin')->get($this->url('txt'))->assertForbidden();
+        $this->actingAs($admin, 'admin')->get($this->url('pdf'))->assertForbidden();
+    }
+
+    public function test_admin_with_signatures_permission_gets_csv_with_emails(): void
+    {
+        Signature::factory()->create([
+            'petition_id' => $this->petition->id,
+            'email' => 'signer@example.com',
+            'confirmed' => true,
+        ]);
+        $admin = $this->adminWith('signatures', 'view');
+
+        $response = $this->actingAs($admin, 'admin')->get($this->url('csv'));
+
+        $response->assertOk();
+        $body = $response->streamedContent();
+        $this->assertStringContainsString('#,name,email,comment,locale,confirmed,signed_at', $body);
+        $this->assertStringContainsString('signer@example.com', $body);
+    }
+
+    public function test_system_admin_gets_csv_with_emails(): void
+    {
+        Signature::factory()->create([
+            'petition_id' => $this->petition->id,
+            'email' => 'signer@example.com',
+            'confirmed' => true,
+        ]);
+        $admin = User::factory()->create(['level_id' => UserLevel::where('name', 'admin')->value('id'), 'verified' => true]);
+
+        $response = $this->actingAs($admin, 'admin')->get($this->url('csv'));
+
+        $response->assertOk();
+        $body = $response->streamedContent();
+        $this->assertStringContainsString('#,name,email,comment,locale,confirmed,signed_at', $body);
+        $this->assertStringContainsString('signer@example.com', $body);
     }
 }

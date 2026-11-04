@@ -15,11 +15,6 @@ class PetitionStats
 {
     public const MILESTONES = [100, 1000, 10000, 100000];
 
-    public static function increment(int $petitionId, int $by = 1): void
-    {
-        self::incrementMany([$petitionId => $by]);
-    }
-
     public static function incrementMany(array $byPetitionId): array
     {
         $touched = [];
@@ -49,22 +44,14 @@ class PetitionStats
 
     /**
      * Notify the owner for every milestone CROSSED when the signature count
-     * moved from $previousCount to its current value. Passing null for
-     * $previousCount preserves the legacy exact-equality behaviour (fire only
-     * when the current count lands exactly on a milestone).
+     * moved from $previousCount to its current value.
      */
-    public static function notifyMilestoneIfCrossed(int $petitionId, ?int $previousCount = null): void
+    public static function notifyMilestoneIfCrossed(int $petitionId, int $previousCount): void
     {
         try {
             $count = (int) DB::table('petitions')->where('id', $petitionId)->value('signature_count');
 
-            $crossed = array_values(array_filter(self::MILESTONES, function (int $m) use ($count, $previousCount): bool {
-                if ($previousCount === null) {
-                    return $m === $count;
-                }
-
-                return $m > $previousCount && $m <= $count;
-            }));
+            $crossed = array_filter(self::MILESTONES, fn (int $m): bool => $m > $previousCount && $m <= $count);
 
             if ($crossed === []) {
                 return;
@@ -101,22 +88,12 @@ class PetitionStats
 
     public static function recalculate(int $petitionId): int
     {
-        $count = DB::table('signatures')
-            ->where('petition_id', $petitionId)
-            ->where('confirmed', 1)
-            ->where('is_spam', 0)
-            ->count();
-
-        DB::table('petitions')->where('id', $petitionId)->update(['signature_count' => $count]);
-
-        self::invalidate([$petitionId]);
-
-        return $count;
+        return self::recalculateMany([$petitionId])[$petitionId] ?? 0;
     }
 
-    public static function recalculateMany(array $petitionIds): void
+    public static function recalculateMany(array $petitionIds): array
     {
-        $touched = [];
+        $counts = [];
 
         foreach (array_unique(array_map('intval', $petitionIds)) as $id) {
             if ($id <= 0) {
@@ -130,10 +107,38 @@ class PetitionStats
                 ->count();
 
             DB::table('petitions')->where('id', $id)->update(['signature_count' => $count]);
-            $touched[] = $id;
+            $counts[$id] = $count;
         }
 
-        self::invalidate($touched);
+        DB::afterCommit(fn () => CacheVersion::bumpListings());
+        self::invalidate(array_keys($counts));
+
+        return $counts;
+    }
+
+    public static function reconcileAll(): void
+    {
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            DB::update(<<<'SQL'
+                UPDATE petitions AS p
+                LEFT JOIN (
+                    SELECT petition_id, COUNT(*) AS actual_count
+                    FROM signatures
+                    WHERE confirmed = 1 AND is_spam = 0
+                    GROUP BY petition_id
+                ) AS s ON s.petition_id = p.id
+                SET p.signature_count = COALESCE(s.actual_count, 0)
+                WHERE p.signature_count != COALESCE(s.actual_count, 0)
+            SQL);
+        } else {
+            DB::table('petitions')->update([
+                'signature_count' => DB::raw(
+                    '(SELECT COUNT(*) FROM signatures WHERE signatures.petition_id = petitions.id AND signatures.confirmed = 1 AND signatures.is_spam = 0)'
+                ),
+            ]);
+        }
+
+        CacheVersion::bumpListings();
     }
 
     private static function invalidate(array $petitionIds): void
@@ -142,7 +147,13 @@ class PetitionStats
             return;
         }
 
-        CacheVersion::bumpListings();
+        // Bump listing caches at most once a minute instead of on every signature,
+        // after commit so a reader can't recache the old count.
+        DB::afterCommit(function () {
+            if (Cache::add('listings:bump', 1, 60)) {
+                CacheVersion::bumpListings();
+            }
+        });
 
         foreach ($petitionIds as $id) {
             Cache::forget("petition:latest_sigs:{$id}");

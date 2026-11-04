@@ -7,6 +7,7 @@
  * @var string $active_class        Active item class.
  * @var string $current_version_url The URL to load the current form version.
  * @var string $author_id           Current form author ID.
+ * @var string $author_name         Name to credit the current version to.
  * @var array  $revisions           A list of all form revisions.
  * @var string $show_avatars        Whether the site settings for showing avatars is enabled.
  */
@@ -32,11 +33,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<p class='wpforms-revision-author'>
 					<?php
-					$display_name = get_the_author_meta( 'display_name', $author_id );
-
 					printf( /* translators: %s - form revision author name. */
 						esc_html__( 'by %s', 'wpforms-lite' ),
-						! empty( $display_name ) ? esc_html( $display_name ) : esc_html__( 'Unknown user', 'wpforms-lite' )
+						esc_html( $author_name )
 					);
 					?>
 				</p>
@@ -56,17 +55,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php endif; ?>
 
 					<div class='wpforms-revision-details'>
+						<?php if ( ! empty( $revision['ai_label'] ) ) : ?>
+							<p class='wpforms-revision-label'>
+								<span><?php echo esc_html( $revision['ai_label'] ); ?></span>
+							</p>
+						<?php endif; ?>
+
 						<p class='wpforms-revision-created'>
 							<strong><?php echo esc_html( $revision['time_diff'] ); ?></strong> (<?php echo esc_html( $revision['date_time'] ); ?>)
 						</p>
 
 						<p class='wpforms-revision-author'>
 							<?php
-							$display_name = get_the_author_meta( 'display_name', $revision['author_id'] );
-
 							printf( /* translators: %s - form revision author name. */
 								esc_html__( 'by %s', 'wpforms-lite' ),
-								! empty( $display_name ) ? esc_html( $display_name ) : esc_html__( 'Unknown user', 'wpforms-lite' )
+								esc_html( $revision['author_name'] )
 							);
 							?>
 						</p>

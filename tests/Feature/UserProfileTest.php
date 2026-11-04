@@ -78,6 +78,7 @@ class UserProfileTest extends TestCase
         $this->get('/en/user/scraper-target/'.$this->profileUser->id)->assertStatus(200);
 
         $this->assertTrue(Cache::has($cacheKey));
+        $this->assertSame(['display_name', 'created_at'], array_keys((array) Cache::get($cacheKey)['user']));
         $this->assertSame(0, Cache::get($cacheKey)['signatureCount']);
         $this->assertSame(1, Cache::get($cacheKey)['petitionCount']);
 

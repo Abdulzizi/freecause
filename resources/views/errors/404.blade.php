@@ -1,84 +1,61 @@
 @extends('layouts.legacy')
 
-@section('title', '404 - Page not found')
+@section('title', __('errors.404_title') . ' | FreeCause')
 
 @section('content')
-    <section class="fc-section">
+    @php
+        $locale = app()->getLocale();
+        $mostRead = \App\Support\ErrorPageData::mostReadPetitions();
+    @endphp
+
+    <section id="fc-404-recovery" class="fc-section">
         <x-ui.container>
-
-            @php
-                $locale = app()->getLocale();
-                $mostRead = \App\Support\ErrorPageData::mostReadPetitions();
-            @endphp
-
-            <div class="mb-6">
-                <h1 class="mb-2 text-2xl font-semibold">{{ __('errors.404_title') }}</h1>
-                <div class="text-sm">
-                    <a class="text-brand" href="{{ url('/'.app()->getLocale()) }}">{{ __('errors.home') }}</a>
-                    <span class="text-muted"> / </span>
-                    <span class="text-muted">404</span>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-elev-1 rounded-lg p-6 mb-12 fc-enter">
-                <div class="flex justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="156" viewBox="0 0 240 170" fill="none" aria-hidden="true">
-                        <rect x="52" y="16" width="120" height="138" rx="10" fill="var(--fc-surface)" stroke="var(--fc-border-strong)" stroke-width="2"></rect>
-                        <path d="M144 16h18a10 10 0 0 1 10 10v10h-18a10 10 0 0 1-10-10z" fill="var(--fc-surface-2)" stroke="var(--fc-border-strong)" stroke-width="2" stroke-linejoin="round"></path>
-                        <line x1="74" y1="78" x2="150" y2="78" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
-                        <line x1="74" y1="98" x2="134" y2="98" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
-                        <line x1="74" y1="118" x2="142" y2="118" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
-                        <line x1="74" y1="138" x2="112" y2="138" stroke="var(--fc-border)" stroke-width="4" stroke-linecap="round"></line>
-                        <circle cx="176" cy="112" r="32" fill="var(--fc-brand-soft)" stroke="var(--fc-brand)" stroke-width="4"></circle>
-                        <path d="M158 96a24 24 0 0 1 18-14" stroke="var(--fc-surface)" stroke-width="4" stroke-linecap="round"></path>
-                        <line x1="199" y1="135" x2="224" y2="160" stroke="var(--fc-brand)" stroke-width="8" stroke-linecap="round"></line>
-                    </svg>
-                </div>
-
-                <p class="text-sm text-muted mb-1.5">
-                    {{ __('errors.404_lead') }}
-                </p>
-                <p class="text-sm text-muted mb-5">
-                    {{ __('errors.404_hint') }}
-                </p>
-                <p class="text-sm text-muted mb-5">
-                    {{ __('errors.404_suggestions') }}
-                </p>
-
-                @if ($mostRead->isNotEmpty())
-                        <h2 class="text-lg font-bold mb-4">
-                            {{ __('errors.404_most_read') }}
-                        </h2>
-
-                        <div class="flex flex-wrap -mt-4 -mx-2">
-                            @foreach ($mostRead as $p)
-                                <div class="shrink-0 grow-0 mt-4 px-2 w-full md:w-1/2">
-                                    <div class="p-2.5 border border-border rounded-md">
-                                        <a class="text-brand text-sm font-medium no-underline" data-prefetch
-                                            href="{{ route('petition.show', [
-                                                'locale' => $locale,
-                                                'slug' => $p->slug,
-                                                'id' => $p->id,
-                                            ]) }}">
-                                            {{ $p->title }}
-                                        </a>
-                                        <div class="text-xs text-muted mt-1">
-                                            {{ number_format($p->signature_count) }} {{ __('errors.signatures') }}
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+            <div class="bg-white border border-border rounded-lg shadow-elev-1 overflow-hidden mb-8">
+                <div class="grid md:grid-cols-2 gap-6 items-center p-6 md:p-8">
+                    <div class="flex justify-center bg-brand-soft rounded-lg p-6" aria-hidden="true">
+                        <svg width="360" height="240" viewBox="0 0 360 240" fill="none" class="max-w-full h-auto" focusable="false">
+                            <circle cx="180" cy="120" r="108" fill="var(--fc-surface)" />
+                            <path d="M92 48h122l42 42v104H92V48Z" fill="var(--fc-surface)" stroke="var(--fc-border-strong)" stroke-width="3" stroke-linejoin="round" />
+                            <path d="M214 48v42h42" stroke="var(--fc-border-strong)" stroke-width="3" stroke-linejoin="round" />
+                            <text x="174" y="148" text-anchor="middle" fill="var(--fc-brand)" font-family="system-ui, sans-serif" font-size="64" font-weight="800">404</text>
+                            <path d="M120 171h62" stroke="var(--fc-border-strong)" stroke-width="5" stroke-linecap="round" />
+                            <circle cx="252" cy="170" r="34" fill="var(--fc-brand-soft)" stroke="var(--fc-brand)" stroke-width="6" />
+                            <path d="m277 195 28 28" stroke="var(--fc-brand)" stroke-width="10" stroke-linecap="round" />
+                            <path d="M236 157a22 22 0 0 1 17-9" stroke="var(--fc-surface)" stroke-width="4" stroke-linecap="round" />
+                            <path d="m64 80 8-8m-8 0 8 8m216-32 10 10m-10 0 10-10" stroke="var(--fc-brand)" stroke-width="3" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div class="space-y-4">
+                        <span class="inline-flex bg-brand-soft text-brand font-bold px-3 py-1 rounded-sm">404</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-ink">{{ __('errors.404_title') }}</h1>
+                        <p class="text-muted">{{ __('errors.404_hint') }}</p>
+                        <p class="text-sm text-muted">{{ __('errors.404_suggestions') }}</p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <x-ui.button :href="url('/'.$locale)">{{ __('errors.back_home') }}</x-ui.button>
+                            <x-ui.button variant="secondary" :href="lroute('petitions.index')">{{ __('list.petitions') }}</x-ui.button>
                         </div>
-                @endif
-
-                <x-ui.button variant="danger" :href="url('/'.app()->getLocale())" class="mt-6 hidden max-md:min-h-12 md:inline-flex">{{ __('errors.back_home') }}</x-ui.button>
+                    </div>
+                </div>
             </div>
 
-            <x-ui.sticky-action :href="url('/'.app()->getLocale())" :label="__('errors.back_home')" />
+            <x-ads.slot name="rectangle" class="my-8 text-center" />
 
+            @if ($mostRead->isNotEmpty())
+                <section class="mb-8" aria-labelledby="fc-404-petitions">
+                    <h2 id="fc-404-petitions" class="text-xl font-bold mb-4">{{ __('errors.404_most_read') }}</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        @foreach ($mostRead as $p)
+                            <a class="block bg-white border border-border rounded-lg p-5 text-brand" data-prefetch
+                               href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->slug, 'id' => $p->id]) }}">
+                                <h3 class="font-semibold mb-2 break-words">{{ $p->title }}</h3>
+                                <span class="text-sm text-muted">{{ number_format($p->signature_count) }} {{ __('errors.signatures') }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            <x-ads.rotate placement="page_mid" class="my-8 text-center" />
         </x-ui.container>
-
-        <x-ads.rotate placement="inline" class="mt-6 text-center" />
-        <x-ads.rotate placement="page_mid" class="mt-6" />
     </section>
 @endsection

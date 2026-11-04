@@ -7,13 +7,13 @@
     $accountLabel = $isAuthed ? auth()->user()->display_name : $loginLabel;
     $startFree = $c['nav_startfree'] ?? __('nav.startfree');
 @endphp
-<nav class="navbar navbar-expand-md bg-white shadow-elev-1">
+<nav class="navbar navbar-expand-lg bg-white shadow-elev-1">
     <div class="container">
         <a class="navbar-brand" href="{{ lroute('home') }}">
             <img src="{{ asset('legacy/images/logo7.png') }}" class="img-fluid" loading="lazy" alt="FreeCause">
         </a>
 
-        <div class="flex items-center gap-2 md:hidden ms-auto">
+        <div class="flex items-center gap-2 lg:hidden ms-auto">
             <a href="{{ lroute('petitions.index') }}" class="fcui-icon-btn" aria-label="{{ __('list.search') }}">
                 <x-lucide-search aria-hidden="true" />
             </a>
@@ -26,7 +26,7 @@
         </div>
 
         <div class="collapse navbar-collapse" id="fcNav">
-            <ul class="navbar-nav ms-auto mb-2 md:mb-0 md:items-center">
+            <ul class="navbar-nav ms-auto mb-2 lg:mb-0 lg:items-center">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ lroute('petitions.index') }}">
                         {{ $explore }}
@@ -52,10 +52,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ lroute('profile') }}">{{ auth()->user()->display_name }}</a>
                     </li>
-                    <li class="nav-item md:ms-2 md:me-3">
+                    <li class="nav-item lg:ms-2 lg:me-3">
                         <form method="POST" action="{{ lroute('logout') }}" class="d-inline">
                             @csrf
-                            <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
                             <button type="submit" class="nav-link">
                                 {{ $c['nav_logout'] ?? __('nav.logout') }}
                             </button>
@@ -63,13 +62,13 @@
                     </li>
                 @endif
 
-                <li class="nav-item mt-2 md:mt-0 md:ms-3">
+                <li class="nav-item mt-2 lg:mt-0 lg:ms-3">
                     <a class="fcui-btn fcui-btn--md fcui-btn--primary w-100 w-lg-auto" href="{{ lroute('petition.create') }}">
                         {{ $startFree }}
                     </a>
                 </li>
 
-                <li class="nav-item md:ms-4 hidden md:block">
+                <li class="nav-item lg:ms-4 hidden lg:block">
                     @include('partials.language_switch')
                 </li>
             </ul>
@@ -116,7 +115,6 @@
             </a>
             <form method="POST" action="{{ lroute('logout') }}" class="contents">
                 @csrf
-                <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
                 <button type="submit" class="fcui-sheet-list__item w-full">
                     <x-lucide-log-out aria-hidden="true" />
                     <span>{{ $c['nav_logout'] ?? __('nav.logout') }}</span>

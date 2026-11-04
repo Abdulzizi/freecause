@@ -8,6 +8,7 @@ use App\Models\Language;
 use App\Models\Permission;
 use App\Models\UserLevel;
 use App\Support\Ads;
+use App\Support\CacheVersion;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +20,6 @@ class GlobalOptionsController extends Controller
         'short_base_url' => '',
         'email_to_staff' => '',
         'email_from' => '',
-        'inject_head_html' => '',
         'inject_body_html' => '',
         'google_client_id' => '',
         'google_client_secret' => '',
@@ -30,7 +30,6 @@ class GlobalOptionsController extends Controller
         'smtp_pass' => '',
         'smtp_encryption' => 'tls',
         'max_featured_petitions_per_country' => 5,
-        'special_debug_ip' => '',
         'logging_enabled' => false,
         'logging_cookie_name' => '',
         'logging_cookie_value' => '',
@@ -62,7 +61,6 @@ class GlobalOptionsController extends Controller
     private array $systemOnlyKeys = [
         'base_url',
         'short_base_url',
-        'inject_head_html',
         'inject_body_html',
         'google_client_id',
         'google_client_secret',
@@ -72,7 +70,6 @@ class GlobalOptionsController extends Controller
         'smtp_user',
         'smtp_pass',
         'smtp_encryption',
-        'special_debug_ip',
         'logging_enabled',
         'logging_cookie_name',
         'logging_cookie_value',
@@ -171,7 +168,6 @@ class GlobalOptionsController extends Controller
 
         try {
             Cache::forget('default_language');
-            Cache::forget('languages:codes');
         } catch (\Throwable) {
         }
 
@@ -196,7 +192,6 @@ class GlobalOptionsController extends Controller
             $flatKeys = [
                 'settings:all',
                 'default_language',
-                'languages:codes',
                 'active_languages',
                 'active_languages_full',
 
@@ -220,9 +215,7 @@ class GlobalOptionsController extends Controller
                 Cache::forget("approx_rows:{$table}");
             }
 
-            foreach (['home', 'list', 'sitemap'] as $group) {
-                Cache::forget("ver:{$group}");
-            }
+            CacheVersion::bumpAll();
 
             $modules = Permission::matrix();
             foreach (UserLevel::pluck('id') as $levelId) {

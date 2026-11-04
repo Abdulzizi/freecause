@@ -12,11 +12,12 @@ use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
 use App\Models\UserLevel;
-use App\Services\PetitionStats;
+use App\Services\PetitionSigning;
 use App\Services\WordPressUserDeletionService;
 use App\Support\AppLog;
 use App\Support\Countries;
 use App\Support\Locale;
+use App\Support\MailQuota;
 use App\Support\Settings;
 use App\Support\Spam;
 use App\Support\WpSso;
@@ -84,19 +85,6 @@ class AuthController extends Controller
             );
 
             toast(__('auth.err_spam'), 'error');
-
-            return back()->withInput();
-        }
-
-        if (Spam::rateLimit('register')) {
-
-            AppLog::warning(
-                'Registration rate limit exceeded',
-                'IP: '.$request->ip(),
-                'auth.register'
-            );
-
-            toast(__('auth.err_throttled'), 'error');
 
             return back()->withInput();
         }
@@ -220,15 +208,9 @@ class AuthController extends Controller
             $loggedIn = false;
         }
 
-        if (! $loggedIn && $legacyHash) {
-            [$hash, $salt] = explode(':', $user->password, 2);
-            if (hash_equals($hash, md5(md5($credentials['password']).$salt))) {
-                $user->password = Hash::make($credentials['password']);
-                $user->password_changed_at = now();
-                $user->save();
-                Auth::guard('web')->login($user, $remember);
-                $loggedIn = true;
-            }
+        if (! $loggedIn && $legacyHash && $user->upgradeLegacyPassword($credentials['password'])) {
+            Auth::guard('web')->login($user, $remember);
+            $loggedIn = true;
         }
 
         if ($loggedIn) {
@@ -269,14 +251,12 @@ class AuthController extends Controller
         return back()->withErrors(['email' => __('auth.err_invalid_credentials')])->onlyInput('email', 'auth_form');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request, string $locale)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        $locale = $request->input('locale', 'en');
 
         return redirect()->to(WpSso::logoutUrl("/{$locale}"));
     }
@@ -305,16 +285,6 @@ class AuthController extends Controller
         $emailChanged = false;
 
         if ($newEmail !== '' && $newEmail !== strtolower((string) $u->email)) {
-            $exists = User::where('email', $newEmail)
-                ->where('id', '!=', $u->id)
-                ->exists();
-
-            if ($exists) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['new_email' => __('profile.email_taken')]);
-            }
-
             if (! Settings::get('smtp_enabled', false)) {
 
                 return back()
@@ -331,13 +301,7 @@ class AuthController extends Controller
 
         if (! empty($data['new_password'])) {
             if (! $u->hasLocalPassword()) {
-                if (! $request->session()->get('password.confirmed_at') || now()->timestamp - (int) $request->session()->get('password.confirmed_at') > 10800) {
-                    return back()->withInput()->withErrors(['current_password' => __('auth.confirm_password')]);
-                }
-            } elseif (! Hash::check($data['current_password'] ?? '', $u->password)) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['current_password' => __('profile.current_password_incorrect')]);
+                return back()->withInput()->withErrors(['profile' => __('profile.google_only_note')]);
             }
 
             $u->password = Hash::make($data['new_password']);
@@ -461,46 +425,7 @@ class AuthController extends Controller
             return redirect()->to("/{$locale}/resend-verification");
         }
 
-        $previousCounts = [];
-
-        DB::transaction(function () use ($user, &$previousCounts) {
-
-            $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
-
-            if (! $locked) {
-                return;
-            }
-
-            $pending = DB::table('signatures')
-                ->where('user_id', $user->id)
-                ->where('confirmed', false)
-                ->lockForUpdate()
-                ->selectRaw('petition_id, COUNT(*) as total')
-                ->groupBy('petition_id')
-                ->get();
-
-            $locked->verified = true;
-            $locked->verification_token = null;
-            $locked->save();
-
-            DB::table('signatures')
-                ->where('user_id', $user->id)
-                ->where('confirmed', false)
-                ->update(['confirmed' => true, 'updated_at' => now()]);
-
-            $increments = [];
-            foreach ($pending as $row) {
-                $increments[(int) $row->petition_id] = (int) $row->total;
-            }
-            $previousCounts = PetitionStats::incrementMany($increments);
-        });
-
-        // After commit: notify owners of any milestone crossed by this
-        // bulk confirmation (e.g. 98 -> 103 crosses 100). Previously no
-        // milestone email fired on bulk confirms at all.
-        foreach ($previousCounts as $petitionId => $previousCount) {
-            PetitionStats::notifyMilestoneIfCrossed($petitionId, $previousCount);
-        }
+        PetitionSigning::markVerified($user);
 
         if ($request->session()->pull('verify_autologin')) {
             $user->refresh();
@@ -568,9 +493,24 @@ class AuthController extends Controller
 
     public function sendResetLink(EmailRequest $request, string $locale)
     {
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        if (MailQuota::tripped()) {
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
+        }
+
+        try {
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            if (! MailQuota::causedBy($e)) {
+                throw $e;
+            }
+
+            MailQuota::trip();
+            AppLog::error('Password reset mail refused', $e->getMessage(), 'auth.password');
+
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
+        }
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
@@ -612,10 +552,6 @@ class AuthController extends Controller
             return redirect("/{$locale}/login")->with('success', __($status));
         }
 
-        if (config('session.driver') === 'database') {
-            DB::table(config('session.table', 'sessions'))->where('user_id', $user->id)->delete();
-        }
-
         auth()->login($user);
         $request->session()->regenerate();
 
@@ -641,6 +577,11 @@ class AuthController extends Controller
             return back()->withErrors([
                 'email' => __('auth.resend_disabled'),
             ]);
+        }
+
+        // Verification mail is dropped while the quota is out, so don't claim it was sent.
+        if (MailQuota::tripped()) {
+            return back()->withInput()->withErrors(['email' => __('auth.email_try_later')]);
         }
 
         $user = User::where('email', strtolower(trim($request->email)))->first();

@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Jobs\PurgeEdgeListings;
 use App\Models\CategoryTranslation;
 use App\Models\Language;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -32,6 +33,35 @@ class EdgeCachePurge
         }
 
         return $urls;
+    }
+
+    public static function petitionUrls(array $ids): array
+    {
+        if (! config('edge-cache.purge_enabled')) {
+            return [];
+        }
+
+        $base = rtrim((string) config('edge-cache.base_url'), '/');
+
+        return DB::table('petition_translations')->whereIn('petition_id', $ids)
+            ->get(['petition_id', 'locale', 'slug'])
+            ->flatMap(fn ($tr) => [
+                $base.'/'.rawurlencode($tr->locale).'/petition/'.rawurlencode($tr->slug).'/'.$tr->petition_id,
+                $base.'/'.rawurlencode($tr->locale).'/petition/'.rawurlencode($tr->slug).'/'.$tr->petition_id.'/signatures',
+            ])->all();
+    }
+
+    public static function pageUrls(array $ids): array
+    {
+        if (! config('edge-cache.purge_enabled')) {
+            return [];
+        }
+
+        $base = rtrim((string) config('edge-cache.base_url'), '/');
+
+        return DB::table('page_translations')->whereIn('page_id', $ids)
+            ->get(['locale', 'slug'])
+            ->map(fn ($tr) => $base.'/'.rawurlencode($tr->locale).'/'.rawurlencode($tr->slug))->all();
     }
 
     public static function dispatchListingPurge(): void

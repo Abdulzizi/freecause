@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\Language;
-use Illuminate\Support\Facades\Lang;
 
 class Locale
 {
@@ -11,15 +10,14 @@ class Locale
     {
         $locale = strtolower(trim($locale));
 
-        $language = Language::where('code', $locale)->where('is_active', true)->first();
+        $flags = config('language_flags');
+        $default = self::default();
 
-        if ($language) {
-            return config('language_flags')[$locale] ?? config('language_flags')[config('locales.default')] ?? 'en_US';
+        if (in_array($locale, self::supported(), true)) {
+            return $flags[$locale] ?? $flags[$default] ?? 'en_US';
         }
 
-        $default = config('locales.default', 'en');
-
-        return config('language_flags')[$default] ?? 'en_US';
+        return $flags[$default] ?? 'en_US';
     }
 
     public static function toShort(?string $fullLocale): string
@@ -66,19 +64,5 @@ class Locale
             300,
             fn () => Language::where('is_default', true)->value('code') ?? config('locales.default', 'en')
         );
-    }
-
-    public static function trans(string $key, array $params = [], ?string $locale = null): string
-    {
-        $currentLocale = $locale ?? app()->getLocale();
-        $defaultLocale = config('locales.default', 'en');
-
-        $translation = Lang::get("messages.{$key}", $params, $currentLocale);
-
-        if ($translation === "messages.{$key}") {
-            $translation = Lang::get("messages.{$key}", $params, $defaultLocale);
-        }
-
-        return $translation;
     }
 }

@@ -9,6 +9,7 @@ return [
     'create_account' => 'Créer votre compte',
     'email' => 'E-mail',
     'email_placeholder' => 'Entrez votre e-mail',
+    'email_try_later' => 'L\'e-mail est temporairement indisponible. Veuillez réessayer plus tard.',
     'forgot_password' => 'Mot de passe oublie?',
     'forgot_title' => 'Mot de passe oublié',
     'go_to_login' => 'aller à la connexion',

@@ -570,7 +570,7 @@ class PirateForms extends Base {
 	 * @param int   $pf_form_id PirateForms form ID.
 	 * @param array $form       WPForms form array.
 	 */
-	protected function import_smtp( $pf_form_id, $form ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function import_smtp( $pf_form_id, $form ) {
 
 		// At this point we import only default form SMTP settings.
 		if ( $pf_form_id !== 0 ) {
@@ -686,7 +686,7 @@ class PirateForms extends Base {
 			// Activate, do not redirect, run the plugin activation routine.
 			$activated = activate_plugin( $plugin_basename );
 
-			if ( ! is_wp_error( $activated ) ) {
+			if ( ! wpforms_is_plugin_activation_failed( $activated ) ) {
 				return true;
 			}
 		}

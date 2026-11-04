@@ -2,10 +2,9 @@
 
 namespace App\Observers;
 
-use App\Models\Language;
 use App\Models\User;
+use App\Support\Locale;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 
 class UserProfileCacheFlusher
 {
@@ -21,18 +20,9 @@ class UserProfileCacheFlusher
     private function activeLocales(): array
     {
         try {
-            if (Schema::hasTable('languages')) {
-                $cached = Cache::remember('languages:codes', 60, function () {
-                    return Language::where('is_active', 1)->pluck('code')->toArray() ?: ['en'];
-                });
-
-                if (is_array($cached) && ! empty($cached)) {
-                    return $cached;
-                }
-            }
+            return Locale::supported();
         } catch (\Throwable) {
+            return ['en'];
         }
-
-        return ['en'];
     }
 }

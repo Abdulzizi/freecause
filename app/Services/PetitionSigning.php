@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\Petition;
-use App\Models\PetitionTranslation;
 use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
@@ -71,19 +70,10 @@ class PetitionSigning
             $data['comment'] ?? '',
         ]);
 
-        if (Spam::isSpam($spamText)) {
+        if (Spam::isSpam($spamText, Spam::reviewOwned())) {
             Spam::log('signature', json_encode($data));
 
             toast('Suspicious activity detected.', 'error');
-
-            return back()->withInput();
-        }
-
-        if (Spam::rateLimit('petition')) {
-            Spam::log('petition', 'Rate limit exceeded');
-            Spam::banCurrentIp('Too many petition attempts');
-
-            toast('Too many petition attempts.', 'error');
 
             return back()->withInput();
         }
@@ -95,7 +85,38 @@ class PetitionSigning
         if ($existingUser) {
             session()->forget("sign.{$petition->id}");
             $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
-            if (Settings::get('smtp_enabled', false)) {
+
+            // Only an unverified account with verification on gets a row: it stays
+            // unconfirmed until the inbox owner verifies. Verified accounts get nothing, since a guest form
+            // can't prove email ownership. Every outcome returns the same thanks
+            // redirect so the response never reveals account or signature state.
+            $alreadySigned = Signature::where('petition_id', $petition->id)
+                ->where(fn ($q) => $q->where('email', $email)->orWhere('user_id', $existingUser->id))
+                ->exists();
+
+            if (! $existingUser->verified && $needsVerification && ! $alreadySigned) {
+                try {
+                    Signature::create([
+                        'petition_id' => $petition->id,
+                        'email' => $email,
+                        'user_id' => $existingUser->id,
+                        'name' => $data['name'],
+                        'locale' => $locale,
+                        'text' => $data['comment'] ?? 'I support this petition',
+                        'confirmed' => false,
+                        'ip_address' => request()->ip(),
+                    ]);
+                } catch (QueryException $e) {
+                    if (($e->errorInfo[0] ?? null) !== '23000') {
+                        throw $e;
+                    }
+                }
+            }
+
+            $sentAt = $existingUser->verification_token_sent_at;
+            // Re-send at most once per token lifetime (48h, see AuthController::verify).
+            if (! $existingUser->verified && $needsVerification && Settings::get('smtp_enabled', false)
+                && (! $sentAt || $sentAt->lt(now()->subHours(48)))) {
                 try {
                     $existingUser->forceFill([
                         'verification_token' => Str::random(64),
@@ -146,7 +167,7 @@ class PetitionSigning
                     'verification_token_sent_at' => now(),
                 ]);
 
-                if (Settings::get('smtp_enabled', false)) {
+                if ($needsVerification && Settings::get('smtp_enabled', false)) {
                     $mailUser = $user->fresh();
                 }
 
@@ -164,7 +185,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated && $sig->confirmed) {
                     $counted = true;
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                 }
 
                 AppLog::info(
@@ -192,7 +213,7 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
         }
 
         if ($mailUser) {
@@ -209,6 +230,14 @@ class PetitionSigning
     public static function signAsAuthed(Request $request, string $locale, Petition $petition): RedirectResponse
     {
         $data = $request->validate(self::authedRules());
+
+        if (Spam::isSpam($data['comment'] ?? '', Spam::reviewOwned())) {
+            Spam::log('signature', json_encode($data));
+
+            toast('Suspicious activity detected.', 'error');
+
+            return back()->withInput();
+        }
 
         $u = auth()->user();
 
@@ -242,7 +271,7 @@ class PetitionSigning
 
                 if ($sig->wasRecentlyCreated) {
                     $counted = true;
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id] ?? null;
+                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
                 }
 
                 session()->forget("sign.{$petition->id}");
@@ -285,11 +314,7 @@ class PetitionSigning
                 throw $e;
             }
 
-            $tr = PetitionTranslation::query()
-                ->where('petition_id', $petition->id)
-                ->where('locale', $locale)
-                ->first()
-                ?? PetitionTranslation::query()->where('petition_id', $petition->id)->orderBy('id')->first();
+            $tr = $petition->translationOrFallback($locale, default_locale());
 
             abort_if(! $tr, 404);
 
@@ -301,9 +326,60 @@ class PetitionSigning
         }
 
         if ($counted) {
-            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount ?? null);
+            PetitionStats::notifyMilestoneIfCrossed($petition->id, $previousCount);
         }
 
         return $response;
+    }
+
+    /**
+     * Mark the account verified and confirm its pending signatures. Shared by
+     * the email link, Google sign-in and the admin drawer, and the only writer
+     * of verified=true on that transition. A no-op once the user is verified,
+     * so later confirmed=false rows (admin rejections) are never re-confirmed.
+     */
+    public static function markVerified(User $user): void
+    {
+        $previousCounts = DB::transaction(function () use ($user) {
+
+            $locked = User::whereKey($user->id)->where('verified', false)->lockForUpdate()->first();
+
+            if (! $locked) {
+                return [];
+            }
+
+            $pending = DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->where('is_spam', false)
+                ->lockForUpdate()
+                ->selectRaw('petition_id, COUNT(*) as total')
+                ->groupBy('petition_id')
+                ->get();
+
+            $locked->verified = true;
+            $locked->verification_token = null;
+            $locked->save();
+
+            DB::table('signatures')
+                ->where('user_id', $user->id)
+                ->where('confirmed', false)
+                ->where('is_spam', false)
+                ->update(['confirmed' => true, 'updated_at' => now()]);
+
+            $increments = [];
+            foreach ($pending as $row) {
+                $increments[(int) $row->petition_id] = (int) $row->total;
+            }
+
+            return PetitionStats::incrementMany($increments);
+        });
+
+        // After commit: notify owners of any milestone crossed by this
+        // bulk confirmation (e.g. 98 -> 103 crosses 100). Previously no
+        // milestone email fired on bulk confirms at all.
+        foreach ($previousCounts as $petitionId => $previousCount) {
+            PetitionStats::notifyMilestoneIfCrossed($petitionId, $previousCount);
+        }
     }
 }

@@ -215,7 +215,8 @@ class Installer {
 					updated datetime NOT NULL default '0000-00-00 00:00:00',
 					last_accessed datetime NOT NULL default '0000-00-00 00:00:00',
 					PRIMARY KEY  (id),
-					KEY status (status)",
+					KEY status (status),
+					KEY idx_rm_status_updated (status, updated)",
 				'rank_math_redirections_cache' => "id bigint(20) unsigned NOT NULL auto_increment,
 					from_url text CHARACTER SET {$wpdb->charset} COLLATE {$wpdb->charset}_bin NOT NULL,
 					redirection_id bigint(20) unsigned NOT NULL,
@@ -253,7 +254,7 @@ class Installer {
 				'rank_math/admin/create_tables',
 				'1.0.253',
 				'rank_math/admin/create_tables',
-				esc_html__( 'The format of the tables array has changed. Please update your code accordingly.', 'rank-math' )
+				esc_html__( 'The format of the tables array has changed. Please update your code accordingly.', 'seo-by-rank-math' )
 			);
 			foreach ( $old_schema as $query ) {
 				if ( preg_match( '/CREATE TABLE\s+[`"]?([^`"\s]+)[`"]?/i', $query, $match ) ) {
@@ -270,6 +271,16 @@ class Installer {
 				DB_Helper::create_table( $table_name, $schema );
 			}
 		}
+
+		/**
+		 * Fires after database tables have been created.
+		 *
+		 * Allows extensions to modify or extend the created tables.
+		 *
+		 * @param array $tables  The tables that were created.
+		 * @param array $modules The modules for which tables were created.
+		 */
+		do_action( 'rank_math/admin/after_create_tables', $tables, $modules );
 	}
 
 	/**
@@ -321,6 +332,7 @@ class Installer {
 			'web-stories',
 			'content-ai',
 			'instant-indexing',
+			'ai-visibility',
 		];
 
 		// Role Manager.
@@ -370,12 +382,12 @@ class Installer {
 					'breadcrumbs'                         => 'off',
 					'breadcrumbs_separator'               => '-',
 					'breadcrumbs_home'                    => 'on',
-					'breadcrumbs_home_label'              => esc_html__( 'Home', 'rank-math' ),
+					'breadcrumbs_home_label'              => esc_html__( 'Home', 'seo-by-rank-math' ),
 					/* translators: Archive title */
-					'breadcrumbs_archive_format'          => esc_html__( 'Archives for %s', 'rank-math' ),
+					'breadcrumbs_archive_format'          => esc_html__( 'Archives for %s', 'seo-by-rank-math' ),
 					/* translators: Search query term */
-					'breadcrumbs_search_format'           => esc_html__( 'Results for %s', 'rank-math' ),
-					'breadcrumbs_404_label'               => esc_html__( '404 Error: page not found', 'rank-math' ),
+					'breadcrumbs_search_format'           => esc_html__( 'Results for %s', 'seo-by-rank-math' ),
+					'breadcrumbs_404_label'               => esc_html__( '404 Error: page not found', 'seo-by-rank-math' ),
 					'breadcrumbs_ancestor_categories'     => 'off',
 					'breadcrumbs_blog_page'               => 'off',
 					'404_monitor_mode'                    => 'simple',

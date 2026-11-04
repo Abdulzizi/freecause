@@ -1,6 +1,18 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 add_action('init', function () {
+	
+	// Load API classes
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-error.php';
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api.php';
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-reports.php';
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-tracking.php';
+	
+	
 	if ( is_admin() ) {
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/tools.php';
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/metaboxes.php';
@@ -62,6 +74,7 @@ add_action('init', function () {
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api.php';
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-reports.php';
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-tracking.php';
+		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api/class-monsterinsights-api-token.php';
 	}
 
 	if ( is_admin() ) {
@@ -79,7 +92,6 @@ add_action('init', function () {
 		}
 
 		//  Common Site Health logic
-		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/wp-site-health.php';
 
 		//  Lite-only Site Health logic.
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/wp-site-health.php';
@@ -111,5 +123,11 @@ add_action('init', function () {
 	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/connect.php';
 
 	// Run hook to load MonsterInsights addons.
-	do_action( 'monsterinsights_load_plugins' ); // the updater class for each addon needs to be instantiated via `monsterinsights_updater`
+	// the updater class for each addon needs to be instantiated via `monsterinsights_updater`
+	do_action( 'monsterinsights_load_plugins' );
+
+	if ( ! is_admin() ) {
+		// Load PPC Core for frontend conversion tracking
+		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/ppc/class-monsterinsights-ppc-tracking-core.php';
+	}
 }, 0 );

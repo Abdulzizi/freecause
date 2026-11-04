@@ -6,4 +6,10 @@ return [
     'full_list' => '» lista completa',
     'created_heading' => 'Peticiones recientes que he creado',
     'created_empty' => 'Aún no has creado ninguna petición.',
+    'withdraw' => 'Retirar',
+    'withdraw_title' => '¿Retirar esta petición?',
+    'withdraw_text' => 'Se desconectará y ya no aparecerá en los listados.',
+    'withdraw_ok' => 'Sí, retirar',
+    'withdraw_cancel' => 'Cancelar',
+    'withdrawn' => 'Tu petición ha sido retirada.',
 ];

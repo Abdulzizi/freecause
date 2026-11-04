@@ -53,6 +53,10 @@ Route::get('/widgets/pbadge/{petition}/{type}', [WidgetController::class, 'scrip
 Route::get('/widget-render/pbadge/{petition}/{type}', [WidgetController::class, 'render'])
     ->where(['petition' => '[0-9]+', 'type' => '728x90|468x60|336x280|125x125']);
 
+if (app()->environment('local', 'e2e')) {
+    Route::view('/__components', 'dev.components');
+}
+
 Route::get('/', fn () => app(SetLocale::class)->autoRedirectToBrowserLocale(request()) ?? redirect('/'.default_locale()))
     ->name('root');
 
@@ -311,6 +315,7 @@ Route::prefix('{locale}')
 
             Route::get('/petition/{slug}/{id}/edit', [PetitionController::class, 'edit'])->name('petition.edit');
             Route::post('/petition/{slug}/{id}/edit', [PetitionController::class, 'update'])->name('petition.update')->middleware('throttle:10,1');
+            Route::post('/petition/{slug}/{id}/withdraw', [PetitionController::class, 'withdraw'])->name('petition.withdraw')->middleware('throttle:10,1');
             Route::get('/petition/{slug}/{id}/download/txt', [PetitionController::class, 'downloadTxt'])->name('petition.download.txt');
             Route::get('/petition/{slug}/{id}/download/pdf', [PetitionController::class, 'downloadPdf'])->name('petition.download.pdf');
             Route::get('/petition/{slug}/{id}/download/csv', [PetitionController::class, 'downloadCsv'])->name('petition.download.csv');
@@ -347,7 +352,6 @@ Route::prefix('{locale}')
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
         Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware(['throttle:10,1', 'profile.complete']);
-        Route::post('/petition/{slug}/{id}/claim', [PetitionController::class, 'claimAccount'])->name('petition.claim')->middleware(['throttle:10,1']);
         Route::post('/petition/{slug}/{id}/shoutbox', [PetitionController::class, 'shoutboxStore'])->name('petition.shoutbox')->middleware(['auth', 'throttle:10,1']);
         Route::get('/petition/{slug}/{id}/thanks', [PetitionController::class, 'thanks'])->name('petition.thanks');
         Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', function (string $locale, string $slug, int $id, $status = null) {

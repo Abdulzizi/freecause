@@ -11,14 +11,13 @@
 | [`public-motion.md`](public-motion.md) | Public motion/animation rules and reduced-motion handling |
 | [`i18n-crowdin.md`](i18n-crowdin.md) | Crowdin / i18n integration runbook |
 | [`performance-edge-cache.md`](performance-edge-cache.md) | Anonymous edge-cache design; why listings bypass |
-| [`performance-qa.md`](performance-qa.md) | Manual performance QA checklist |
 | [`speculation-rules.md`](speculation-rules.md) | Speculation Rules / prerender configuration |
+| [`mail-sources.md`](mail-sources.md) | Every mail source, the product-mail switches, SMTP2GO free-tier limits |
 | [`edge-waf-bots.md`](edge-waf-bots.md) | Cloudflare WAF rules, Free-plan limits, bot/crawler traffic findings |
 | [`admin-ui.md`](admin-ui.md) | Admin panel: BlatUI bundles/components, JS hooks, CSP, styling rules |
-| [`admin-perf.md`](admin-perf.md) | Admin list/search performance notes |
 
 Operational docs that are intentionally local-only (never committed, per
-`AGENTS.md`): `AGENTS.md`, `HANDOFF.md`, `SPEC.md`, and any
+`AGENTS.md`): `AGENTS.md` and any
 handover/plan files.
 
 Root-level project docs (tracked): `README.md` (overview), `CONTRIBUTING.md`

@@ -88,6 +88,7 @@ class SitemapController extends Controller
             foreach (PageTranslation::query()
                 ->where('published', true)
                 ->whereIn('locale', active_locales())
+                ->whereNotIn('slug', self::STATIC_PAGE_SLUGS)
                 ->orderBy('locale')
                 ->get(['locale', 'slug', 'updated_at']) as $tr) {
                 $entries[] = $this->pageEntry(
