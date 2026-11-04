@@ -31,6 +31,9 @@ class AdminUsersController extends Controller
     use ApproxRows;
     use InteractsWithAdminLists;
 
+    // Each delete boots WordPress in a child process (up to 20 s), so keep one request well under the timeout.
+    private const BULK_DELETE_MAX = 25;
+
     public function index(Request $request)
     {
         $filters = $this->filters($request);
@@ -485,6 +488,10 @@ class AdminUsersController extends Controller
         $ids = $this->adminBulkIds($request, 'users');
         if (empty($ids)) {
             return response()->json(['ok' => false]);
+        }
+
+        if (count($ids) > self::BULK_DELETE_MAX) {
+            return response()->json(['ok' => false, 'error' => 'Select at most '.self::BULK_DELETE_MAX.' users per delete.'], 422);
         }
 
         $adminLevelId = UserLevel::where('name', 'admin')->value('id');
