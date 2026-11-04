@@ -1766,6 +1766,68 @@ class PetitionTest extends TestCase
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'spam@example.com']);
     }
 
+    #[DataProvider('commentSpamCases')]
+    public function test_signing_comment_uses_review_owned_ignore_list(bool $authed, string $comment, bool $accepted): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Comment Petition',
+            'slug' => 'comment-petition',
+            'description' => 'Description',
+        ]);
+
+        // authed rules want 'agree', guest rules accept '1'
+        $agree = $authed ? 'agree' : '1';
+        $fields = ['comment' => $comment, 'agree1' => $agree, 'agree2' => $agree, 'agree3' => $agree];
+        if ($authed) {
+            $this->actingAs($this->user);
+        } else {
+            $fields += ['name' => 'Guest', 'email' => 'comment-guest@example.com'];
+        }
+
+        $this->post("/en/petition/comment-petition/{$petition->id}/sign", $fields)->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertSame($accepted ? 1 : 0, Signature::query()->where('petition_id', $petition->id)->count());
+    }
+
+    public static function commentSpamCases(): array
+    {
+        return [
+            'guest casino' => [false, 'Stop the new casino in our town', true],
+            'authed casino' => [true, 'Stop the new casino in our town', true],
+            'guest viagra' => [false, 'Buy viagra here', false],
+            'authed viagra' => [true, 'Buy viagra here', false],
+            'guest casino and viagra' => [false, 'Stop the casino, buy viagra', false],
+            'authed casino and viagra' => [true, 'Stop the casino, buy viagra', false],
+        ];
+    }
+
+    public function test_shoutbox_accepts_review_owned_keyword(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Shout Petition',
+            'slug' => 'shout-petition',
+            'description' => 'Description',
+        ]);
+        $sig = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $this->user->id,
+            'confirmed' => true,
+            'is_spam' => false,
+        ]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/shout-petition/{$petition->id}/shoutbox", ['comment' => 'Stop the new casino in our town'])
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertSame('Stop the new casino in our town', $sig->fresh()->text);
+    }
+
     public function test_signature_rate_limited(): void
     {
         $petition = Petition::factory()->create([

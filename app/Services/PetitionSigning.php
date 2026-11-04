@@ -70,7 +70,7 @@ class PetitionSigning
             $data['comment'] ?? '',
         ]);
 
-        if (Spam::isSpam($spamText)) {
+        if (Spam::isSpam($spamText, Spam::reviewOwned())) {
             Spam::log('signature', json_encode($data));
 
             toast('Suspicious activity detected.', 'error');
@@ -231,7 +231,7 @@ class PetitionSigning
     {
         $data = $request->validate(self::authedRules());
 
-        if (Spam::isSpam($data['comment'] ?? '')) {
+        if (Spam::isSpam($data['comment'] ?? '', Spam::reviewOwned())) {
             Spam::log('signature', json_encode($data));
 
             toast('Suspicious activity detected.', 'error');

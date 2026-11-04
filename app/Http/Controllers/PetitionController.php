@@ -450,7 +450,7 @@ class PetitionController extends Controller
         $u = $request->user();
         $sig = Signature::query()->where('petition_id', $petition->id)->where('user_id', $u->id)->where('confirmed', true)->where('is_spam', false)->first();
         abort_unless($sig && $u->verified, 403);
-        if (Spam::isSpam($data['comment'])) {
+        if (Spam::isSpam($data['comment'], Spam::reviewOwned())) {
             Spam::log('comment', json_encode(['petition_id' => $petition->id, 'comment' => $data['comment']]));
             toast('Suspicious activity detected.', 'error');
 
