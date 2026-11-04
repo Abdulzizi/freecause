@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Петиция создана.',
     'toast_updated' => 'Петиция обновлена.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'Текст петиции не может быть длиннее :max символов.',
 ];

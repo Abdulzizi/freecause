@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Dilekçe oluşturuldu.',
     'toast_updated' => 'Dilekçe güncellendi.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'Dilekçe metni :max karakterden uzun olamaz.',
 ];

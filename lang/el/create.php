@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Η αίτηση δημιουργήθηκε.',
     'toast_updated' => 'Η αίτηση ενημερώθηκε.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'Το κείμενο της αίτησης δεν μπορεί να υπερβαίνει τους :max χαρακτήρες.',
 ];

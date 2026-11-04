@@ -61,7 +61,8 @@ class PetitionRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:255', new MinWords(3, 'Title')],
-            'description' => ['required', 'string', new MinCharacters(30, 'Text')],
+            // 65535 = the legacy MySQL TEXT limit, so the longest legacy descriptions still pass unrelated edits.
+            'description' => ['bail', 'required', 'string', 'max:65535', new MinCharacters(30, 'Text')],
             'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('is_active', true)],
             'tags' => ['nullable', 'string', 'max:255', new TagList(10, 30)],
             'image' => $image,
@@ -75,5 +76,10 @@ class PetitionRequest extends FormRequest
         ] + ($creating
             ? ['goal_signatures' => ['required', 'integer', Rule::in(Petition::GOALS)]]
             : ['remove_image' => ['nullable', 'boolean']]);
+    }
+
+    public function messages(): array
+    {
+        return ['description.max' => __('create.err_description_too_long')];
     }
 }
