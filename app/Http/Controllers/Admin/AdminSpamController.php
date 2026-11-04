@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\ReviewKeywordRescan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -107,8 +108,8 @@ class AdminSpamController extends Controller
 
     public function clear()
     {
-        DB::table('spam_logs')->delete();
+        DB::table('spam_logs')->where('type', '!=', ReviewKeywordRescan::LOG_TYPE)->delete();
 
-        return back()->with('success', 'Spam logs cleared');
+        return back()->with('success', 'Spam logs cleared (petition review holds kept)');
     }
 }
