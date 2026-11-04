@@ -24,7 +24,7 @@
         <input class="fc-filter-field" type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}">
     </x-admin.filter-box>
 
-    <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs. Continue?" class="mb-4">
+    <form method="post" action="{{ route('admin.spam.clear') }}" data-admin-confirm="You are about to permanently delete all spam logs except petition review holds. Continue?" class="mb-4">
         @csrf
         <x-blatui.button variant="destructive" type="submit">clear spam logs</x-blatui.button>
     </form>

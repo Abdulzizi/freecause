@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Models\Log;
+use App\Services\ReviewKeywordRescan;
 use App\Support\AppLog;
 use App\Support\Settings;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,9 @@ Schedule::call(function () {
 })->daily();
 
 Schedule::call(function () {
+    // shortcut: petition.review rows are kept forever, move them to their own table if spam_logs grows too large.
     $deleted = DB::table('spam_logs')
+        ->where('type', '!=', ReviewKeywordRescan::LOG_TYPE)
         ->where('created_at', '<', now()->subDays(7))
         ->delete();
 
