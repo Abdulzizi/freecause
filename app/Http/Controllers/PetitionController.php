@@ -60,7 +60,7 @@ class PetitionController extends Controller
         $this->requireOwner($petition);
         abort_unless($petition->is_active && in_array($petition->status, ['published', 'draft'], true), 403);
         abort_if(
-            $petition->signatures()->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
+            $petition->signatures()->where('confirmed', true)->where('is_spam', false)->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
             403,
             'Petition can no longer be edited after another person has signed.'
         );

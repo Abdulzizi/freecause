@@ -42,6 +42,9 @@ test('owner edits own petition, stranger cannot, owner locked after another sign
     const guest = await browser.newPage();
     await guestSign(guest, path, { name: 'Late Signer', email: `${uniq('late')}@e2e.test` });
     await guest.close();
+    // a guest signature stays unconfirmed (and does not lock editing) until the email is verified
+    expect((await page.request.get(`${path}/edit`)).status()).toBe(200);
+    db(`update signatures set confirmed=1 where petition_id=${id}`);
     expect((await page.request.get(`${path}/edit`)).status()).toBe(403);
 });
 
