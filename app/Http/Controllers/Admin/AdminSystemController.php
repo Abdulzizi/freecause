@@ -23,13 +23,13 @@ class AdminSystemController extends Controller
 
         $data = $request->validated();
 
-        if (! empty($data['new_password'])) {
-            if (! Hash::check($data['current_password'], $admin->password)) {
-                return back()->withErrors([
-                    'current_password' => 'Current password is incorrect.',
-                ]);
-            }
+        if ((! empty($data['new_password']) || $request->emailChanged()) && ! Hash::check($data['current_password'], $admin->password)) {
+            return back()->withErrors([
+                'current_password' => 'Current password is incorrect.',
+            ]);
+        }
 
+        if (! empty($data['new_password'])) {
             $admin->password = Hash::make($data['new_password']);
             $admin->password_changed_at = now();
         }

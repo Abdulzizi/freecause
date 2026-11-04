@@ -11,6 +11,7 @@ use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -64,6 +65,38 @@ class E2eRegressionFixesTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame('admin@example.com', $this->admin->fresh()->email);
+    }
+
+    public function test_admin_user_info_email_change_requires_the_current_password(): void
+    {
+        $this->actingAs($this->admin, 'admin')
+            ->post('/admin/system/user-info', ['email' => 'new@example.com'])
+            ->assertSessionHasErrors('current_password');
+        $this->assertSame('admin@example.com', $this->admin->fresh()->email);
+
+        $this->actingAs($this->admin, 'admin')
+            ->post('/admin/system/user-info', ['email' => 'new@example.com', 'current_password' => 'wrong-password'])
+            ->assertSessionHasErrors(['current_password' => 'Current password is incorrect.']);
+        $this->assertSame('admin@example.com', $this->admin->fresh()->email);
+
+        $passwordChangedAt = $this->admin->fresh()->password_changed_at;
+        $this->actingAs($this->admin, 'admin')
+            ->post('/admin/system/user-info', [
+                'email' => 'new@example.com',
+                'current_password' => 'wrong-password',
+                'new_password' => 'new-secret-1',
+                'new_password_confirmation' => 'new-secret-1',
+            ])
+            ->assertSessionHasErrors(['current_password' => 'Current password is incorrect.']);
+        $fresh = $this->admin->fresh();
+        $this->assertSame('admin@example.com', $fresh->email);
+        $this->assertTrue(Hash::check('password', $fresh->password));
+        $this->assertEquals($passwordChangedAt, $fresh->password_changed_at);
+
+        $this->actingAs($this->admin, 'admin')
+            ->post('/admin/system/user-info', ['email' => 'new@example.com', 'current_password' => 'password'])
+            ->assertSessionHasNoErrors();
+        $this->assertSame('new@example.com', $this->admin->fresh()->email);
     }
 
     public function test_admin_stats_with_an_unknown_type_does_not_error(): void
