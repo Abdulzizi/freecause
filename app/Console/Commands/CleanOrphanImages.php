@@ -28,7 +28,15 @@ class CleanOrphanImages extends Command
         $referenced = DB::table('petitions')
             ->whereNotNull('cover_image')
             ->where('cover_image', 'not like', 'http%')
-            ->pluck('cover_image');
+            ->pluck('cover_image')
+            // Legacy rows store a bare filename in image_url, served from petitions/ by Petition::coverUrl().
+            ->merge(DB::table('petitions')
+                ->whereNotNull('image_url')
+                ->where('image_url', '!=', '')
+                ->where('image_url', 'not like', 'http://%')
+                ->where('image_url', 'not like', 'https://%')
+                ->pluck('image_url')
+                ->map(fn ($name) => "petitions/{$name}"));
 
         $keep = array_flip($referenced
             ->flatMap(fn ($path) => [$path, ...array_values(ImageVariants::relativeVariantPaths($path))])
