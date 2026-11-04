@@ -119,6 +119,7 @@ class PetitionSigning
                 && (! $sentAt || $sentAt->lt(now()->subHours(48)))) {
                 try {
                     $existingUser->forceFill([
+                        'pending_email' => null, // token goes to the current address, not a pending one
                         'verification_token' => Str::random(64),
                         'verification_token_sent_at' => now(),
                     ])->save();

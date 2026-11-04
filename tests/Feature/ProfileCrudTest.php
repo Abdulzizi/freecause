@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\VerifyAccountMail;
 use App\Models\User;
+use App\Models\UserLevel;
+use App\Support\MailQuota;
 use App\Support\Settings;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -209,8 +212,193 @@ class ProfileCrudTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $user->refresh();
-        $this->assertSame('fresh-address@example.com', $user->email);
-        $this->assertFalse((bool) $user->verified);
+        $this->assertNotSame('fresh-address@example.com', $user->email);
+        $this->assertSame('fresh-address@example.com', $user->pending_email);
+        $this->assertTrue((bool) $user->verified);
+        Mail::assertQueued(VerifyAccountMail::class, fn ($mail) => $mail->hasTo('fresh-address@example.com'));
+    }
+
+    private function requestEmailChange(User $user, string $email)
+    {
+        return $this->actingAs($user)
+            ->from('/en/profile')
+            ->post('/en/profile', [
+                'first_name' => 'Ada',
+                'last_name' => 'Lovelace',
+                'country' => 'US',
+                'gender' => 'male',
+                'locale' => 'en',
+                'new_email' => $email,
+                'new_email_confirmation' => $email,
+            ]);
+    }
+
+    public function test_verify_link_moves_pending_email_into_email(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $user = $this->passwordUser();
+        $this->requestEmailChange($user, 'moved@example.com')->assertSessionHasNoErrors();
+
+        $this->get('/en/verify/'.$user->fresh()->verification_token)->assertRedirect('/en');
+
+        $user->refresh();
+        $this->assertSame('moved@example.com', $user->email);
+        $this->assertNull($user->pending_email);
+        $this->assertNull($user->verification_token);
+        $this->assertTrue((bool) $user->verified);
+    }
+
+    public function test_pending_email_cannot_be_registered_or_claimed_by_another_account(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $other = $this->passwordUser();
+        $this->requestEmailChange($this->passwordUser(), 'claimed@example.com')->assertSessionHasNoErrors();
+
+        $this->flushSession();
+        $this->requestEmailChange($other, 'claimed@example.com')->assertSessionHasErrors('new_email');
+        $this->assertNull($other->fresh()->pending_email);
+
+        auth()->logout();
+        $this->post('/en/register', [
+            'name' => 'Other',
+            'surname' => 'User',
+            'email' => 'claimed@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+        ])->assertSessionHasErrors('email');
+        $this->assertSame(0, User::where('email', 'claimed@example.com')->count());
+    }
+
+    public function test_resend_verification_clears_pending_email_and_voids_the_old_link(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $user = $this->passwordUser(['verified' => false, 'email' => 'old@example.com']);
+        $this->requestEmailChange($user, 'pending@example.com')->assertSessionHasNoErrors();
+        $oldToken = $user->fresh()->verification_token;
+        $this->assertSame('pending@example.com', $user->fresh()->pending_email);
+
+        auth()->logout();
+        $this->flushSession();
+        $this->post('/en/resend-verification', ['email' => 'old@example.com'])->assertSessionHasNoErrors();
+
+        $user->refresh();
+        $this->assertNull($user->pending_email);
+        $this->assertNotSame($oldToken, $user->verification_token);
+
+        $this->get("/en/verify/{$oldToken}");
+        $this->assertSame('old@example.com', $user->fresh()->email);
+    }
+
+    public function test_expired_pending_link_clears_pending_email_without_swapping(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $user = $this->passwordUser(['email' => 'kept@example.com']);
+        $this->requestEmailChange($user, 'late@example.com')->assertSessionHasNoErrors();
+        $token = $user->fresh()->verification_token;
+
+        $this->travel(49)->hours();
+        $this->get("/en/verify/{$token}")->assertRedirect('/en/profile');
+
+        $user->refresh();
+        $this->assertSame('kept@example.com', $user->email);
+        $this->assertNull($user->pending_email);
+        $this->assertNull($user->verification_token);
+    }
+
+    public function test_pending_email_can_be_registered_after_the_link_expires(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $this->requestEmailChange($this->passwordUser(), 'released@example.com')->assertSessionHasNoErrors();
+        auth()->logout();
+        $this->flushSession();
+
+        $this->travel(49)->hours();
+        $this->post('/en/register', [
+            'name' => 'Other',
+            'surname' => 'User',
+            'email' => 'released@example.com',
+            'password' => 'password123',
+            'agree_terms' => 'on',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame(1, User::where('email', 'released@example.com')->count());
+    }
+
+    public function test_admin_email_change_clears_pending_email(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true, 'global');
+
+        $admin = User::factory()->create(['level_id' => UserLevel::where('name', 'admin')->value('id'), 'verified' => true]);
+        // Unverified, so only the email change (not reverification) can clear it.
+        $target = $this->passwordUser([
+            'verified' => false,
+            'pending_email' => 'stale@example.com',
+            'verification_token' => str_repeat('p', 64),
+            'verification_token_sent_at' => now(),
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'email' => 'admin-set@example.com'])
+            ->assertSessionHasNoErrors();
+
+        $target->refresh();
+        $this->assertSame('admin-set@example.com', $target->email);
+        $this->assertNull($target->pending_email);
+    }
+
+    public function test_email_change_is_rejected_while_the_mail_quota_is_tripped(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+        MailQuota::trip();
+
+        $user = $this->passwordUser();
+        $this->requestEmailChange($user, 'quota@example.com')->assertSessionHasErrors('new_email');
+
+        $this->assertNull($user->fresh()->pending_email);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_mixed_case_new_email_is_stored_lowercase(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $user = $this->passwordUser();
+        $this->requestEmailChange($user, '  Mixed.Case@Example.COM ')->assertSessionHasNoErrors();
+
+        $this->assertSame('mixed.case@example.com', $user->fresh()->pending_email);
+    }
+
+    public function test_verify_does_not_swap_an_address_taken_in_the_meantime(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+
+        $user = $this->passwordUser();
+        $originalEmail = $user->email;
+        $this->requestEmailChange($user, 'raced@example.com')->assertSessionHasNoErrors();
+
+        // e.g. a Google sign-up or guest signature created the account directly.
+        $this->passwordUser(['email' => 'raced@example.com']);
+
+        $this->get('/en/verify/'.$user->fresh()->verification_token)->assertRedirect('/en');
+
+        $user->refresh();
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertNull($user->pending_email);
+        $this->assertNull($user->verification_token);
     }
 
     public function test_user_with_a_password_can_disconnect_google(): void

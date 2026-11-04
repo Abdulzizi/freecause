@@ -292,8 +292,15 @@ class AuthController extends Controller
                     ->withErrors(['new_email' => __('profile.email_needs_mail_system')]);
             }
 
-            $u->email = $newEmail;
-            $u->verified = false;
+            // No mail would go out, so don't reserve the address.
+            if (MailQuota::tripped()) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['new_email' => __('auth.email_try_later')]);
+            }
+
+            // email/verified stay until the link proves the new address (see verify()).
+            $u->pending_email = $newEmail;
             $u->verification_token = Str::random(64);
             $u->verification_token_sent_at = now();
             $emailChanged = true;
@@ -324,7 +331,7 @@ class AuthController extends Controller
 
         if ($emailChanged) {
             try {
-                Mail::to($u->email)->queue(new VerifyAccountMail($u, $locale));
+                Mail::to($u->pending_email)->queue(new VerifyAccountMail($u, $locale));
             } catch (\Throwable $e) {
                 AppLog::error(
                     'Mail sending failed (profile update)',
@@ -411,6 +418,35 @@ class AuthController extends Controller
             toast(__('auth.verify_invalid'), 'error');
 
             return redirect()->to("/{$locale}");
+        }
+
+        if ($user->pending_email) {
+            $expired = $user->verification_token_sent_at && $user->verification_token_sent_at->lt(now()->subHours(48));
+            // The address may have been registered or claimed since the link was sent.
+            $taken = ! $expired && User::where('email', strtolower($user->pending_email))->whereKeyNot($user->id)->exists();
+
+            if (! $expired && ! $taken) {
+                $user->email = $user->pending_email;
+            }
+
+            $user->pending_email = null;
+            $user->verification_token = null;
+            $user->save();
+
+            // A still-unverified account that just proved its (new) address falls through to markVerified().
+            if ($expired || $taken || $user->verified) {
+                $request->session()->forget(['verify_email', 'verify_intended', 'verify_autologin']);
+
+                if ($expired) {
+                    toast(__('auth.verify_expired'), 'error');
+
+                    return redirect()->to($user->verified ? "/{$locale}/profile" : "/{$locale}/resend-verification");
+                }
+
+                toast($taken ? __('profile.email_taken') : __('auth.verify_success'), $taken ? 'error' : 'success');
+
+                return redirect()->to("/{$locale}");
+            }
         }
 
         if ($user->verified) {
@@ -591,6 +627,8 @@ class AuthController extends Controller
         }
 
         try {
+            // This token goes to the current address, so it must not confirm a pending change.
+            $user->pending_email = null;
             $user->verification_token = Str::random(64);
             $user->verification_token_sent_at = now();
             $user->save();

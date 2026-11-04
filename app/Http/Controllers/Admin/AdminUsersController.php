@@ -257,7 +257,7 @@ class AdminUsersController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified, $wasVerified) {
+            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified, $wasVerified, $emailChanged) {
                 if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
@@ -281,6 +281,11 @@ class AdminUsersController extends Controller
                 // A false -> true flip is left to markVerified() after commit, so verified
                 // and the pending-signature confirm land in one transaction.
                 $user->verified = $nowVerified && $wasVerified;
+
+                // An old self-service link must not overwrite an admin-set address or verification.
+                if ($needsReverification || $emailChanged || $nowVerified) {
+                    $user->pending_email = null;
+                }
 
                 if ($needsReverification) {
                     $user->verification_token = Str::random(64);
@@ -332,6 +337,7 @@ class AdminUsersController extends Controller
         }
 
         try {
+            $user->pending_email = null; // token goes to the current address, not a pending one
             $user->verification_token = Str::random(64);
             $user->verification_token_sent_at = now();
             $user->save();
