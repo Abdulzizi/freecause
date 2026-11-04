@@ -14,6 +14,15 @@ class UpdateProfileRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        foreach (['new_email', 'new_email_confirmation'] as $key) {
+            if (is_string($this->input($key)) && filled($this->input($key))) {
+                $this->merge([$key => strtolower(trim((string) $this->input($key)))]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         $user = $this->user();
@@ -30,7 +39,9 @@ class UpdateProfileRequest extends FormRequest
                 Rule::exists('languages', 'code')->where(fn ($query) => $query->where('is_active', true)),
             ],
             'identify_mode' => ['nullable', Rule::in(['full', 'name', 'nick'])],
-            'new_email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user?->id)],
+            'new_email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user?->id),
+                Rule::unique('users', 'pending_email')->ignore($user?->id)->where(fn ($q) => $q->where('verification_token_sent_at', '>', now()->subHours(48))),
+            ],
             'new_email_confirmation' => ['required_with:new_email', 'same:new_email'],
             'current_password' => [Rule::requiredIf(fn () => filled($this->input('new_password')) && (bool) $user?->hasLocalPassword()), 'nullable', 'current_password:web'],
             'new_password' => ['nullable', 'string', 'min:8', 'max:72', 'confirmed'],
