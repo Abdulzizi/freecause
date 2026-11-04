@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Namninsamling skapad.',
     'toast_updated' => 'Namninsamling uppdaterad.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'Namninsamlingens text får inte vara längre än :max tecken.',
 ];

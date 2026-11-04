@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Petición creada.',
     'toast_updated' => 'Petición actualizada.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'El texto de la petición no puede superar los :max caracteres.',
 ];

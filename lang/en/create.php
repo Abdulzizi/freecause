@@ -38,4 +38,5 @@ return [
     'err_image_upload_failed' => 'Image upload failed. Please try again.',
     'toast_created' => 'Petition created.',
     'toast_updated' => 'Petition updated.',
+    'err_description_too_long' => 'The petition text may not be longer than :max characters.',
 ];

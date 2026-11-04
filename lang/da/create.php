@@ -38,4 +38,5 @@ return [
     'toast_created' => 'Underskriftsindsamling oprettet.',
     'toast_updated' => 'Underskriftsindsamling opdateret.',
     'help_link' => 'Tips for writing a petition',
+    'err_description_too_long' => 'Underskriftsindsamlingens tekst må ikke være længere end :max tegn.',
 ];

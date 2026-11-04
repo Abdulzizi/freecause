@@ -1263,6 +1263,35 @@ class PetitionTest extends TestCase
         ])->assertSessionHasErrors('category_id');
     }
 
+    public function test_description_length_is_capped_at_legacy_text_limit_on_create_and_update(): void
+    {
+        $create = fn (int $length) => $this->actingAs($this->user)->post('/en/create-petition', [
+            'title' => 'Test Petition Title Here',
+            'description' => str_repeat('a', $length),
+            'goal_signatures' => 100,
+            'category_id' => $this->category->id,
+        ]);
+
+        $create(65536)->assertSessionHasErrors([
+            'description' => 'The petition text may not be longer than 65535 characters.',
+        ]);
+        $this->assertDatabaseMissing('petitions', ['user_id' => $this->user->id]);
+
+        $create(65535)->assertSessionHasNoErrors()->assertRedirect();
+        $petition = Petition::where('user_id', $this->user->id)->sole();
+        $slug = $petition->translations()->value('slug');
+
+        $update = fn (int $length) => $this->actingAs($this->user)->post("/en/petition/{$slug}/{$petition->id}/edit", [
+            'title' => 'Test Petition Title Here',
+            'description' => str_repeat('b', $length),
+            'category_id' => $this->category->id,
+        ]);
+
+        $update(65536)->assertSessionHasErrors('description');
+        $update(65535)->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertSame(65535, strlen($petition->translations()->value('description')));
+    }
+
     public function test_creation_accepts_legacy_youtube_id_and_extensionless_image_url(): void
     {
         $this->actingAs($this->user)->post('/en/create-petition', [
