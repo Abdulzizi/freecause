@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class PetitionTest extends TestCase
@@ -1414,6 +1415,43 @@ class PetitionTest extends TestCase
         $this->actingAs($this->user)
             ->get("/en/petition/original-petition-title/{$petition->id}/edit")
             ->assertForbidden();
+    }
+
+    #[DataProvider('nonCountingSignatures')]
+    public function test_owner_can_still_edit_when_only_spam_or_unconfirmed_signatures_exist(array $state): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => User::factory()->create()->id] + $state);
+
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}/edit")
+            ->assertOk();
+
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", [
+            'title' => 'Updated Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ])->assertRedirect("/en/petition/updated-petition-title/{$petition->id}");
+    }
+
+    public static function nonCountingSignatures(): array
+    {
+        return [
+            'spam' => [['confirmed' => true, 'is_spam' => true]],
+            'unconfirmed' => [['confirmed' => false, 'is_spam' => false]],
+        ];
     }
 
     public function test_edit_updates_slug_but_preserves_goal(): void
