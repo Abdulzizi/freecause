@@ -336,8 +336,8 @@ class PetitionSigning
     /**
      * Mark the account verified and confirm its pending signatures. Shared by
      * the email link, Google sign-in and the admin drawer, and the only writer
-     * of verified=true on that transition. A no-op once the user is verified,
-     * so later confirmed=false rows (admin rejections) are never re-confirmed.
+     * of verified=true on that transition. A no-op once the user is verified.
+     * Admin rejections are is_spam=1, so the is_spam=false filters below skip them.
      */
     public static function markVerified(User $user): void
     {
