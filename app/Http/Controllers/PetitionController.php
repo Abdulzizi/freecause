@@ -656,7 +656,7 @@ class PetitionController extends Controller
         $content = collect(app(PageContentService::class)->getPage('petition_thanks', $tr->locale));
 
         $count = (int) ($petition->signature_count ?? 0);
-        $ladder = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+        $ladder = Petition::GOALS;
         $nextMilestone = null;
         foreach ($ladder as $m) {
             if ($m > $count) {
