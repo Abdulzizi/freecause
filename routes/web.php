@@ -155,7 +155,7 @@ Route::get('/{path?}', fn (?string $path = null) => $toDefaultLocale((string) $p
 
 Route::withoutMiddleware($withoutSession)->group(function () {
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
-    Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->whereNumber('page')->name('sitemap.petitions');
+    Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->where('page', '[0-9]{1,9}')->name('sitemap.petitions');
     Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
     Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
     Route::get('/sitemap-magazine.xml', [SitemapController::class, 'magazine'])->name('sitemap.magazine');

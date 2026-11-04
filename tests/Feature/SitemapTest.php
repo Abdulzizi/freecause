@@ -6,10 +6,12 @@ use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Support\CacheVersion;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -176,6 +178,32 @@ class SitemapTest extends TestCase
         $this->assertStringNotContainsString('p-second', $pageOne);
         $this->assertStringContainsString('p-second', $pageTwo);
         $this->assertStringNotContainsString('p-en', $pageTwo);
+        $this->get('/sitemap-petitions-3.xml')->assertNotFound();
+    }
+
+    public function test_petition_sitemap_page_past_the_last_returns_404_without_caching(): void
+    {
+        config(['sitemap.petitions_per_file' => 1]);
+
+        $this->petitionFixture();
+
+        $this->get('/sitemap-petitions-1.xml')->assertOk();
+        $response = $this->get('/sitemap-petitions-2.xml')->assertNotFound();
+
+        $this->assertCount(0, $response->headers->getCookies());
+        $response->assertHeader('Cache-Control', 'max-age=300, public, s-maxage=300');
+        $this->assertFalse(Cache::has('sitemap:'.CacheVersion::get('sitemap').':petitions.v2.2'));
+    }
+
+    public function test_petition_sitemap_page_number_too_large_for_int_is_not_a_server_error(): void
+    {
+        // Falls through to the locale redirect like any other unknown path, instead of an int overflow 500.
+        $this->get('/sitemap-petitions-99999999999999999999.xml')->assertRedirect('/en');
+    }
+
+    public function test_petition_sitemap_page_one_is_ok_without_petitions(): void
+    {
+        $this->get('/sitemap-petitions-1.xml')->assertOk();
     }
 
     public function test_petition_sitemap_page_zero_returns_empty_sitemap(): void

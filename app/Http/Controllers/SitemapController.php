@@ -144,6 +144,10 @@ class SitemapController extends Controller
             return $this->xml($this->urlset([]));
         }
 
+        if ($page > max(1, (int) ceil($this->petitionRowCount() / $this->petitionsPerFile()))) {
+            return response('', 404, ['Cache-Control' => 'public, max-age=300, s-maxage=300']);
+        }
+
         return $this->xml($this->cached('petitions.v2.'.$page, function () use ($page) {
             $limit = $this->petitionsPerFile();
 
