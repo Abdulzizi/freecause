@@ -10,7 +10,7 @@ A multi-language online petition platform built on Laravel 12. Users create, sig
 | Frontend   | Blade + Tailwind CSS v4, Vite                 |
 | Database   | MySQL (prod), SQLite (local/test)             |
 | Cache/Queue| Redis or database-backed, Supervisor workers  |
-| Auth       | Email/password, Google OAuth (Socialite), TOTP 2FA |
+| Auth       | Email/password, Google OAuth (Socialite)      |
 | PDF        | barryvdh/laravel-dompdf                       |
 | Images     | intervention/image-laravel                    |
 | CI/CD      | GitHub Actions: `ci.yml` gate → `deploy.yml` (Deployer 8, on push to `main`) |
@@ -169,7 +169,6 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 | User levels/permissions | `CheckPermission` middleware, `user_levels` table |
 | Admin audit log  | `AdminAuditLog` middleware               |
 | Email verification | Admin setting `require_email_verification`; signed-in users must be verified to sign |
-| 2FA              | Optional TOTP per admin account          |
 
 ## License
 
