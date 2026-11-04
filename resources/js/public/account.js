@@ -72,4 +72,24 @@ export function init() {
             });
         }
     }
+
+    document.querySelectorAll('[data-petition-withdraw]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const d = form.dataset;
+            Swal.fire({
+                icon: 'warning',
+                title: d.confirmTitle || 'Withdraw this petition?',
+                text: d.confirmText || 'It will be taken offline and no longer appear in listings.',
+                showCancelButton: true,
+                confirmButtonText: d.confirmOk || 'Yes, withdraw',
+                cancelButtonText: d.confirmCancel || 'Cancel',
+                confirmButtonColor: '#b91c1c',
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
 }

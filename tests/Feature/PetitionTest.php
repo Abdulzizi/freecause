@@ -389,6 +389,70 @@ class PetitionTest extends TestCase
             ->assertSee('This petition is currently offline.');
     }
 
+    public function test_owner_can_withdraw_petition_and_it_goes_offline(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'user_id' => $this->user->id]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Withdrawable Petition',
+            'slug' => 'withdrawable-petition',
+            'description' => 'Description',
+        ]);
+
+        $this->get('/en/petitions')->assertSee('Withdrawable Petition');
+        $this->actingAs($this->user)->get("/en/petition/withdrawable-petition/{$petition->id}")
+            ->assertSee('data-petition-withdraw', false);
+        $this->actingAs($this->user)->get('/en/my-petitions')
+            ->assertSee("/withdrawable-petition/{$petition->id}/withdraw", false);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/withdrawable-petition/{$petition->id}/withdraw")
+            ->assertRedirect(lroute('account.petitions'))
+            ->assertSessionHas('success');
+
+        $this->assertSame(0, (int) $petition->fresh()->is_active);
+        $this->get("/en/petition/withdrawable-petition/{$petition->id}")
+            ->assertOk()
+            ->assertSee('This petition is currently offline.');
+        $this->get('/en/petitions')->assertDontSee('Withdrawable Petition');
+        $this->actingAs($this->user)->get('/en/my-petitions')
+            ->assertSee('Withdrawable Petition')
+            ->assertDontSee("/withdrawable-petition/{$petition->id}/withdraw", false);
+    }
+
+    public function test_non_owner_cannot_withdraw_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertForbidden();
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
+    public function test_owner_cannot_withdraw_draft_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'draft', 'is_active' => true, 'user_id' => $this->user->id]);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertForbidden();
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
+    public function test_guest_cannot_withdraw_petition(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        $this->post("/en/petition/any-slug/{$petition->id}/withdraw")
+            ->assertRedirectContains('login');
+
+        $this->assertSame(1, (int) $petition->fresh()->is_active);
+    }
+
     public function test_authed_signature_shows_nickname_when_identify_mode_is_nick(): void
     {
         $user = User::factory()->create([

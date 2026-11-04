@@ -6,4 +6,10 @@ return [
     'full_list' => '» fullständig lista',
     'created_heading' => 'Senaste namninsamlingar jag har skapat',
     'created_empty' => 'Inga skapade namninsamlingar ännu.',
+    'withdraw' => 'Dra tillbaka',
+    'withdraw_title' => 'Dra tillbaka denna namninsamling?',
+    'withdraw_text' => 'Den tas offline och visas inte längre i listorna.',
+    'withdraw_ok' => 'Ja, dra tillbaka',
+    'withdraw_cancel' => 'Avbryt',
+    'withdrawn' => 'Din namninsamling har dragits tillbaka.',
 ];

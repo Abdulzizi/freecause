@@ -625,6 +625,12 @@
                                             <a class="text-brand"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
                                         </div>
+
+                                        @if ($petition->status === 'published' && $petition->is_active)
+                                            <div class="mt-2">
+                                                @include('partials.petition-withdraw', ['slug' => $tr->slug, 'id' => $petition->id])
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endif
