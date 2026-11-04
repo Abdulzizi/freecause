@@ -85,6 +85,30 @@ class PetitionCreateFlowTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_non_owner_invalid_update_is_forbidden_before_validation(): void
+    {
+        $other = User::factory()->create(['verified' => true]);
+        $petition = Petition::factory()->create(['user_id' => $other->id, 'category_id' => $this->category->id]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Original Petition Title', 'slug' => 'original-petition-title', 'description' => 'Original description.']);
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", ['title' => '', 'image_url' => 'https://example.com/x.png'])
+            ->assertForbidden()
+            ->assertSessionHasNoErrors();
+    }
+
+    public function test_update_of_missing_petition_returns_404(): void
+    {
+        $this->actingAs($this->user)->post('/en/petition/original-petition-title/999999/edit', ['title' => ''])
+            ->assertNotFound();
+    }
+
+    public function test_owner_invalid_update_still_gets_validation_errors(): void
+    {
+        $petition = Petition::factory()->create(['user_id' => $this->user->id, 'category_id' => $this->category->id]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Original Petition Title', 'slug' => 'original-petition-title', 'description' => 'Original description.']);
+        $this->actingAs($this->user)->post("/en/petition/original-petition-title/{$petition->id}/edit", $this->payload(['title' => '']))
+            ->assertSessionHasErrors('title');
+    }
+
     public function test_text_only_update_keeps_cover(): void
     {
         Storage::fake('public');
