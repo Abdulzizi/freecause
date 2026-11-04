@@ -50,7 +50,7 @@ class PetitionController extends Controller
     private function requireOwnerOrAdmin(Petition $petition): void
     {
         $isOwner = auth()->check() && (int) $petition->user_id === (int) auth()->id();
-        $isAdmin = admin_user()?->canAccessAdmin() ?? false;
+        $isAdmin = admin_can('signatures', 'view');
 
         abort_unless($isOwner || $isAdmin, 403);
     }
@@ -1035,7 +1035,7 @@ class PetitionController extends Controller
 
         // Stream ALL signatures as CSV (chunked cursor) so the export is
         // memory-safe on large petitions.
-        $showEmail = (bool) (admin_user()?->canAccessAdmin());
+        $showEmail = admin_can('signatures', 'view');
         $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'confirmed', 'signed_at'];
 
         return response()->streamDownload(function () use ($petition, $showEmail, $header) {
