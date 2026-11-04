@@ -76,6 +76,7 @@ class AdminSignaturesController extends Controller
                 's.locale',
                 's.text',
                 's.confirmed',
+                's.is_spam',
                 's.created_at',
                 'p.category_id',
                 DB::raw("COALESCE(pt.title, '') as petition_title"),
@@ -168,8 +169,8 @@ class AdminSignaturesController extends Controller
 
         DB::transaction(function () use ($data, $ids, $petitionIds) {
             match ($data['action']) {
-                'approve' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 1]),
-                'reject' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 0]),
+                'approve' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 1, 'is_spam' => 0]),
+                'reject' => DB::table('signatures')->whereIn('id', $ids)->update(['confirmed' => 0, 'is_spam' => 1]),
                 'delete' => DB::table('signatures')->whereIn('id', $ids)->delete(),
             };
 
@@ -183,19 +184,23 @@ class AdminSignaturesController extends Controller
     {
         $data = $request->validated();
 
-        $targetConfirmed = $data['action'] === 'approve' ? 1 : 0;
-        $result = DB::transaction(function () use ($signature, $targetConfirmed) {
+        $approve = $data['action'] === 'approve';
+        $result = DB::transaction(function () use ($signature, $approve) {
             $row = DB::table('signatures')->where('id', $signature)->lockForUpdate()->first();
 
             if (! $row) {
                 return ['status' => 'missing'];
             }
 
-            if ((int) $row->confirmed === $targetConfirmed) {
-                return ['status' => $targetConfirmed ? 'confirmed' : 'rejected'];
+            // Rejected is is_spam=1, so markVerified() never re-confirms it.
+            $isApproved = (int) $row->confirmed === 1 && (int) $row->is_spam === 0;
+            if ($approve ? $isApproved : (int) $row->is_spam === 1) {
+                return ['status' => $approve ? 'confirmed' : 'rejected'];
             }
 
-            DB::table('signatures')->where('id', $signature)->update(['confirmed' => $targetConfirmed]);
+            DB::table('signatures')->where('id', $signature)->update($approve
+                ? ['confirmed' => 1, 'is_spam' => 0]
+                : ['confirmed' => 0, 'is_spam' => 1]);
             PetitionStats::recalculateMany([(int) $row->petition_id]);
 
             return ['status' => 'updated'];

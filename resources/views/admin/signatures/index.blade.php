@@ -109,7 +109,9 @@
                     </td>
 
                     <td data-hide-mobile class="text-center" data-signature-status>
-                        @if ($s->confirmed)
+                        @if ($s->is_spam)
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round" title="Rejected"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        @elseif ($s->confirmed)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#198754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Confirmed"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         @else
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2.5" stroke-linecap="round" title="Unconfirmed"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
@@ -157,18 +159,18 @@
 
                     @if (admin_can('signatures', 'edit'))
                         <td data-hide-mobile class="fc-row-actions-cell">
-                            <div class="inline-flex" data-signature-actions data-confirmed="{{ $s->confirmed ? '1' : '0' }}">
+                            <div class="inline-flex" data-signature-actions data-confirmed="{{ $s->confirmed && ! $s->is_spam ? '1' : '0' }}">
                                 <x-admin.row-actions>
                                     <x-blatui.dropdown-menu-item type="button" data-signature-action="approve"
                                         data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                        :disabled="$s->confirmed"
-                                        title="{{ $s->confirmed ? 'Already confirmed' : 'Approve signature' }}">
+                                        :disabled="$s->confirmed && ! $s->is_spam"
+                                        title="{{ $s->confirmed && ! $s->is_spam ? 'Already confirmed' : 'Approve signature' }}">
                                         Approve
                                     </x-blatui.dropdown-menu-item>
                                     <x-blatui.dropdown-menu-item type="button" data-signature-action="reject"
                                         data-url="{{ route('admin.signatures.action', ['signature' => $s->id]) }}"
-                                        :disabled="! $s->confirmed"
-                                        title="{{ ! $s->confirmed ? 'Already rejected' : 'Reject signature' }}">
+                                        :disabled="(bool) $s->is_spam"
+                                        title="{{ $s->is_spam ? 'Already rejected' : 'Reject signature' }}">
                                         Reject
                                     </x-blatui.dropdown-menu-item>
                                 </x-admin.row-actions>
