@@ -279,7 +279,7 @@ class PetitionController extends Controller
         $tr = $trOrRedirect;
 
         $related = cache()->remember(
-            "petition:related:{$petition->id}:{$locale}",
+            "petition:related:{$petition->id}:{$locale}:".CacheVersion::get('list'),
             now()->addMinutes(10),
             function () use ($petition, $locale, $defaultLocale) {
                 if (! $petition->category_id) {
@@ -798,6 +798,19 @@ class PetitionController extends Controller
         $mode = 'edit';
 
         return view('petition.create', compact('petition', 'tr', 'locale', 'categories', 'mode'));
+    }
+
+    public function withdraw(string $locale, string $slug, int $id): RedirectResponse
+    {
+        $petition = Petition::query()->findOrFail($id);
+        $this->requireOwner($petition);
+        abort_unless($petition->status === 'published', 403);
+
+        // Reversible: the public page falls back to the offline view; FlushesListingCaches bumps the listing cache.
+        $petition->is_active = 0;
+        $petition->save();
+
+        return redirect()->to(lroute('account.petitions'))->with('success', __('myp.withdrawn'));
     }
 
     public function update(PetitionRequest $request, string $locale, string $slug, int $id)

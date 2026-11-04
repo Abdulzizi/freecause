@@ -48,11 +48,16 @@
                                 @if ($loop->index > 0 && $loop->index % 4 === 0)
                                     <x-ads.infeed />
                                 @endif
-                                <a class="flex max-md:min-h-12 items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 mb-2.5 text-ink hover:bg-brand-soft fc-lift" style="--fc-i: {{ min($loop->index, 12) }}"
-                                    href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
-                                    <div class="text-sm leading-[1.2] flex-1">{{ $p->tr_title }}</div>
-                                    <div class="text-sm text-ink whitespace-nowrap fc-tabular">{{ optional($p->created_at)->format('j F Y') }}</div>
-                                </a>
+                                <div class="flex items-center gap-2 mb-2.5" style="--fc-i: {{ min($loop->index, 12) }}">
+                                    <a class="flex flex-1 max-md:min-h-12 items-center justify-between gap-4 no-underline bg-surface border border-brand-border rounded-md px-3 py-2.5 text-ink hover:bg-brand-soft fc-lift"
+                                        href="{{ route('petition.show', ['locale' => $locale, 'slug' => $p->tr_slug, 'id' => $p->id]) }}">
+                                        <div class="text-sm leading-[1.2] flex-1">{{ $p->tr_title }}</div>
+                                        <div class="text-sm text-ink whitespace-nowrap fc-tabular">{{ optional($p->created_at)->format('j F Y') }}</div>
+                                    </a>
+                                    @if ($p->status === 'published' && $p->is_active)
+                                        @include('partials.petition-withdraw', ['slug' => $p->tr_slug, 'id' => $p->id])
+                                    @endif
+                                </div>
                             @empty
                                 <x-ui.empty :text="__('myp.created_empty')" class="fcui-empty--compact" />
                             @endforelse
