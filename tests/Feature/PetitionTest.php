@@ -728,6 +728,26 @@ class PetitionTest extends TestCase
             ->assertSee('href="'.e($mailUrl).'"', false);
     }
 
+    public function test_thanks_page_next_milestone_reaches_the_largest_allowed_goal(): void
+    {
+        $petition = Petition::factory()->create([
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        $petition->forceFill(['signature_count' => 1500000])->save();
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Big Goal',
+            'slug' => 'big-goal',
+            'description' => 'Description',
+        ]);
+
+        $this->get("/en/petition/big-goal/{$petition->id}/thanks")
+            ->assertOk()
+            ->assertSee('reach '.number_format(max(Petition::GOALS)));
+    }
+
     public function test_existing_email_sign_mirrors_guest_success(): void
     {
         $user = User::factory()->create([

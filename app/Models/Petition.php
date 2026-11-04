@@ -11,6 +11,8 @@ class Petition extends Model
 {
     use HasFactory, HasTranslations;
 
+    public const GOALS = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
+
     protected $fillable = [
         'goal_signatures',
         'category_id',
