@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Permission;
+use App\Models\Petition;
+use App\Models\Signature;
 use App\Models\User;
 use App\Models\UserLevel;
+use App\Services\PetitionSigning;
 use App\Services\WordPressUserDeletionService;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
@@ -121,5 +124,76 @@ class AdminUserProtectionTest extends TestCase
         $this->actingAs($admin, 'admin')
             ->post('/admin/system/user-info', ['email' => 'me@example.com'])
             ->assertSessionHasNoErrors();
+    }
+
+    public function test_admin_marking_user_verified_confirms_pending_signatures_once(): void
+    {
+        $user = User::factory()->create(['verified' => false, 'verification_token' => 'synthetic-token']);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $signature = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'confirmed' => false,
+        ]);
+        $spamPetition = Petition::factory()->create(['signature_count' => 0]);
+        $spam = Signature::factory()->create([
+            'petition_id' => $spamPetition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => true,
+        ]);
+        $admin = $this->sysAdmin();
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $user->id, 'verified' => '1'])
+            ->assertSessionHasNoErrors();
+        $this->assertTrue((bool) $signature->fresh()->confirmed);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+
+        PetitionSigning::markVerified($user->fresh());
+
+        $this->assertTrue((bool) $user->fresh()->verified);
+        $this->assertNull($user->fresh()->verification_token);
+        $this->assertTrue((bool) $signature->fresh()->confirmed);
+        $this->assertSame(1, (int) $petition->fresh()->signature_count);
+        $this->assertFalse((bool) $spam->fresh()->confirmed);
+        $this->assertSame(0, (int) $spamPetition->fresh()->signature_count);
+    }
+
+    public function test_admin_save_does_not_reconfirm_an_admin_rejected_signature(): void
+    {
+        $user = User::factory()->create(['verified' => true]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $rejected = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => false,
+        ]);
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->post('/admin/users/save', ['id' => $user->id, 'verified' => '1', 'first_name' => 'Resaved'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse((bool) $rejected->fresh()->confirmed);
+        $this->assertSame(0, (int) $petition->fresh()->signature_count);
+    }
+
+    public function test_mark_verified_is_a_no_op_for_an_already_verified_user(): void
+    {
+        $user = User::factory()->create(['verified' => true]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $rejected = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => false,
+        ]);
+
+        PetitionSigning::markVerified($user);
+
+        $this->assertFalse((bool) $rejected->fresh()->confirmed);
+        $this->assertSame(0, (int) $petition->fresh()->signature_count);
     }
 }
