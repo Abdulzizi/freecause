@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Vezi petiția ta',
+    'link_help' => 'Deschide acest link: :url',
+    'verify_subject' => 'Confirmă emailul FreeCause',
+    'verify_intro' => 'Confirmă această adresă de email pentru contul tău FreeCause.',
+    'verify_action' => 'Confirmă adresa de email',
+    'verify_note' => 'Acest link este valabil :hours ore. Dacă nu ai solicitat acest email, îl poți ignora.',
+    'reset_subject' => 'Resetează parola FreeCause',
+    'reset_intro' => 'Alege o parolă nouă pentru contul tău FreeCause.',
+    'reset_action' => 'Setează o parolă nouă',
+    'reset_note' => 'Acest link expiră în :minutes minute. Dacă nu ai cerut resetarea, ignoră acest email; parola ta nu se va schimba.',
+    'milestone_subject' => 'Petiția ta a ajuns la :count semnături',
+    'milestone_intro' => 'Petiția ta „:title” a ajuns la :count semnături.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
