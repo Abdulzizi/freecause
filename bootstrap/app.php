@@ -51,7 +51,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'setLocale' => SetLocale::class,
             'admin.auth' => AdminAuth::class,
             'admin.audit' => AdminAuditLog::class,
-            'block.banned.ip' => BlockBannedIp::class,
             'block.banned.user' => BlockBannedUser::class,
             'permission' => CheckPermission::class,
             'no.cache' => NoCacheHeaders::class,
