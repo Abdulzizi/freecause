@@ -496,17 +496,6 @@ class PetitionController extends Controller
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
         }
-        $uploaded = $request->file('image');
-        if ($uploaded !== null && ! $uploaded->isValid()) {
-            $reason = $uploaded->getError();
-            $message = in_array($reason, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
-                ? __('create.err_image_too_large')
-                : __('create.err_image_upload_failed');
-
-            return back()
-                ->withErrors(['image' => $message])
-                ->withInput();
-        }
 
         if ($this->imageConflict($request, $data)) {
             $conflict = __('create.err_image_conflict');
