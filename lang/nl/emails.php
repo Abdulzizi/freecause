@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Je petitie bekijken',
+    'link_help' => 'Open deze link: :url',
+    'verify_subject' => 'Bevestig je FreeCause-email',
+    'verify_intro' => 'Bevestig dit e-mailadres voor je FreeCause-account.',
+    'verify_action' => 'E-mailadres bevestigen',
+    'verify_note' => 'Deze link is :hours uur geldig. Als je deze e-mail niet hebt aangevraagd, kun je hem negeren.',
+    'reset_subject' => 'Je FreeCause-wachtwoord herstellen',
+    'reset_intro' => 'Kies een nieuw wachtwoord voor je FreeCause-account.',
+    'reset_action' => 'Nieuw wachtwoord instellen',
+    'reset_note' => 'Deze link verloopt over :minutes minuten. Als je geen herstel hebt aangevraagd, negeer dan deze e-mail; je wachtwoord blijft ongewijzigd.',
+    'milestone_subject' => 'Je petitie heeft :count handtekeningen bereikt',
+    'milestone_intro' => 'Je petitie “:title” heeft :count handtekeningen bereikt.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
