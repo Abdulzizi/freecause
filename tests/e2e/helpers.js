@@ -89,6 +89,7 @@ export async function newUser(page, prefix = 'u') {
     await page.goto('/en/profile');
     await page.locator('#country').selectOption({ index: 1 });
     await page.locator('#gender').selectOption({ index: 1 });
+    await page.locator('#locale').selectOption('en');
     await page.locator('form[action$="/en/profile"] [type=submit]:visible').first().click();
     await expect.poll(() => db(`select country from users where email='${email}'`)).not.toBe('');
     return email;

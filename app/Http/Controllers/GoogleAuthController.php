@@ -268,6 +268,7 @@ class GoogleAuthController extends Controller
                 'locale' => Locale::toFull($destLocale),
                 'ip' => $request->ip(),
                 'level_id' => $userLevel?->id,
+                'welcome_email_pending' => true,
                 'verified' => true,
             ]);
 

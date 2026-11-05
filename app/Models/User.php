@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\CacheVersion;
+use App\Support\Locale;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,6 +70,9 @@ class User extends Authenticatable
         'country',
         'gender',
         'nickname',
+        'welcome_email_pending',
+        'welcome_email_sent_at',
+        'preferred_language_confirmed_at',
         'google_id',
         'password_changed_at',
         'notify_milestones',
@@ -94,6 +98,9 @@ class User extends Authenticatable
     protected $casts = [
         'verification_token_sent_at' => 'datetime',
         'verified' => 'boolean',
+        'welcome_email_pending' => 'boolean',
+        'welcome_email_sent_at' => 'datetime',
+        'preferred_language_confirmed_at' => 'datetime',
         'banned_until' => 'datetime',
         'notify_milestones' => 'boolean',
         'notify_new_signatures' => 'boolean',
@@ -157,7 +164,18 @@ class User extends Authenticatable
 
     public function hasCompleteProfile(): bool
     {
-        return filled($this->country) && filled($this->gender);
+        return filled($this->country)
+            && filled($this->gender)
+            && $this->hasSupportedPreferredLanguage()
+            && (! $this->welcome_email_pending || $this->preferred_language_confirmed_at !== null);
+    }
+
+    public function hasSupportedPreferredLanguage(): bool
+    {
+        $locale = (string) $this->locale;
+        $short = array_search($locale, config('language_flags', []), true) ?: $locale;
+
+        return in_array($short, Locale::supported(), true);
     }
 
     public function wantsMilestoneEmails(): bool

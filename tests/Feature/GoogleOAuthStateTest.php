@@ -69,6 +69,7 @@ class GoogleOAuthStateTest extends TestCase
             'email' => 'google-state@example.test',
             'google_id' => 'synthetic-google-user',
             'verified' => true,
+            'welcome_email_pending' => true,
         ]);
         $this->assertCount(2, $this->googleRequests);
         $this->assertSame('POST', $this->googleRequests[0]['request']->getMethod());
