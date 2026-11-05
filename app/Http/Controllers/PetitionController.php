@@ -16,6 +16,7 @@ use App\Support\AppLog;
 use App\Support\CacheKeys;
 use App\Support\CacheVersion;
 use App\Support\DefaultComments;
+use App\Support\EdgeCachePurge;
 use App\Support\ImageVariants;
 use App\Support\ReviewKeywords;
 use App\Support\Slug;
@@ -28,6 +29,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -810,6 +812,12 @@ class PetitionController extends Controller
         $petition->is_active = 0;
         $petition->save();
 
+        try {
+            EdgeCachePurge::urls(EdgeCachePurge::petitionUrls([$petition->id]));
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache purge failed after petition save: '.$e->getMessage());
+        }
+
         return redirect()->to(lroute('account.petitions'))->with('success', __('myp.withdrawn'));
     }
 
@@ -844,6 +852,13 @@ class PetitionController extends Controller
 
         $oldCoverImage = $petition->cover_image;
         $newCoverImage = null;
+
+        try {
+            $urlsBefore = EdgeCachePurge::petitionUrls([$petition->id]);
+        } catch (\Throwable $e) {
+            $urlsBefore = [];
+            Log::warning('Edge cache URL lookup failed before petition save: '.$e->getMessage());
+        }
 
         try {
             $response = DB::transaction(function () use ($request, $data, $petition, $tr, $reviewMatches, &$newCoverImage) {
@@ -917,6 +932,12 @@ class PetitionController extends Controller
             }
 
             throw $e;
+        }
+
+        try {
+            EdgeCachePurge::urls([...$urlsBefore, ...EdgeCachePurge::petitionUrls([$petition->id])]);
+        } catch (\Throwable $e) {
+            Log::warning('Edge cache purge failed after petition save: '.$e->getMessage());
         }
 
         if ($oldCoverImage && $oldCoverImage !== $petition->cover_image && ! Str::startsWith($oldCoverImage, ['http://', 'https://'])) {
