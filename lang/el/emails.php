@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Δείτε το αίτημά σας',
+    'link_help' => 'Ανοίξτε αυτόν τον σύνδεσμο: :url',
+    'verify_subject' => 'Επιβεβαιώστε το email FreeCause',
+    'verify_intro' => 'Επιβεβαιώστε αυτή τη διεύθυνση email για τον λογαριασμό σας στο FreeCause.',
+    'verify_action' => 'Επιβεβαίωση διεύθυνσης email',
+    'verify_note' => 'Ο σύνδεσμος ισχύει για :hours ώρες. Αν δεν ζητήσατε αυτό το email, μπορείτε να το αγνοήσετε.',
+    'reset_subject' => 'Επαναφορά κωδικού FreeCause',
+    'reset_intro' => 'Επιλέξτε νέο κωδικό για τον λογαριασμό σας στο FreeCause.',
+    'reset_action' => 'Ορισμός νέου κωδικού',
+    'reset_note' => 'Ο σύνδεσμος λήγει σε :minutes λεπτά. Αν δεν ζητήσατε επαναφορά, αγνοήστε αυτό το email· ο κωδικός σας δεν θα αλλάξει.',
+    'milestone_subject' => 'Το αίτημά σας συγκέντρωσε :count υπογραφές',
+    'milestone_intro' => 'Το αίτημά σας «:title» συγκέντρωσε :count υπογραφές.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
