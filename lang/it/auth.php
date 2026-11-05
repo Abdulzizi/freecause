@@ -69,4 +69,9 @@ return [
     'verify_notice_pending' => 'Verification emails are temporarily unavailable. An administrator will activate your account shortly.',
     'verify_notice_spam' => 'Not seeing it? Check your spam folder, then resend.',
     'verify_notice_title' => 'Verify your email - FreeCause - Online Petition',
+    'google_unavailable' => 'L\'accesso con Google non è al momento disponibile. Usa email e password.',
+    'google_session_expired' => 'La sessione è scaduta o l\'accesso è stato interrotto. Riprova.',
+    'google_no_email' => 'Google non ha fornito un indirizzo email.',
+    'google_email_exists' => 'Esiste già un account con questa email. Accedi prima con la tua password, poi collega Google dal tuo profilo.',
+    'google_signin_failed' => 'Accesso non riuscito. Riprova.',
 ];

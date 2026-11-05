@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google hat keine E-Mail-Adresse übermittelt, daher konnten wir es nicht verbinden.',
     'google_link_failed' => 'Wir konnten Google nicht verbinden. Bitte versuchen Sie es erneut.',
     'google_link_session_lost' => 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich an und versuchen Sie erneut, Google zu verbinden.',
+    'google_delete_only_google' => 'Die Google-Verifizierung ist nur für reine Google-Konten verfügbar.',
+    'google_delete_unavailable' => 'Die Google-Verifizierung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+    'google_delete_mismatch' => 'Dieses Google-Konto passt nicht zu deinem FreeCause-Konto.',
+    'google_delete_verified' => 'Google-Identität bestätigt. Du kannst die Kontolöschung jetzt bestätigen.',
 ];

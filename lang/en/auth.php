@@ -69,4 +69,9 @@ return [
     'resend_sent' => 'If the account needs activation, a new email has been sent.',
     'resend_failed' => 'Failed to send email. Please try again later.',
     'update_failed' => 'Something went wrong. Please try again later.',
+    'google_unavailable' => 'Google sign-in is temporarily unavailable. Please use email and password.',
+    'google_session_expired' => 'Your session expired or the login was interrupted. Please try again.',
+    'google_no_email' => 'google did not provide email.',
+    'google_email_exists' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.',
+    'google_signin_failed' => 'Sign-in failed. Please try again.',
 ];

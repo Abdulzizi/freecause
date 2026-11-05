@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google nu a partajat o adresă de e-mail, așa că nu l-am putut conecta.',
     'google_link_failed' => 'Nu am putut conecta Google. Încercați din nou.',
     'google_link_session_lost' => 'Sesiunea dvs. a expirat. Autentificați-vă și încercați din nou să conectați Google.',
+    'google_delete_only_google' => 'Verificarea Google este disponibilă doar pentru conturile care folosesc numai Google.',
+    'google_delete_unavailable' => 'Verificarea Google este temporar indisponibilă. Încearcă din nou mai târziu.',
+    'google_delete_mismatch' => 'Acel cont Google nu corespunde contului tău FreeCause.',
+    'google_delete_verified' => 'Identitatea Google a fost verificată. Acum poți confirma ștergerea contului.',
 ];

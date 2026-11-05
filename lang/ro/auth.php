@@ -69,4 +69,9 @@ return [
     'verify_notice_pending' => 'Verification emails are temporarily unavailable. An administrator will activate your account shortly.',
     'verify_notice_spam' => 'Not seeing it? Check your spam folder, then resend.',
     'verify_notice_title' => 'Verify your email - FreeCause - Online Petition',
+    'google_unavailable' => 'Autentificarea cu Google este temporar indisponibilă. Folosește emailul și parola.',
+    'google_session_expired' => 'Sesiunea a expirat sau autentificarea a fost întreruptă. Încearcă din nou.',
+    'google_no_email' => 'Google nu a furnizat o adresă de email.',
+    'google_email_exists' => 'Există deja un cont cu acest email. Autentifică-te mai întâi cu parola, apoi conectează Google din profilul tău.',
+    'google_signin_failed' => 'Autentificarea a eșuat. Încearcă din nou.',
 ];

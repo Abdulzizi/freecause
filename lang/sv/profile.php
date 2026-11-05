@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google delade ingen e-postadress, så vi kunde inte ansluta det.',
     'google_link_failed' => 'Vi kunde inte ansluta Google. Försök igen.',
     'google_link_session_lost' => 'Din session har gått ut. Logga in och försök ansluta Google igen.',
+    'google_delete_only_google' => 'Google-verifiering är bara tillgänglig för konton som endast använder Google.',
+    'google_delete_unavailable' => 'Google-verifiering är tillfälligt otillgänglig. Försök igen senare.',
+    'google_delete_mismatch' => 'Det Google-kontot matchar inte ditt FreeCause-konto.',
+    'google_delete_verified' => 'Google-identitet verifierad. Du kan nu bekräfta borttagning av kontot.',
 ];

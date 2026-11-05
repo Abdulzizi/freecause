@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google heeft geen e-mailadres gedeeld, dus we konden het niet verbinden.',
     'google_link_failed' => 'We konden geen verbinding maken met Google. Probeer het opnieuw.',
     'google_link_session_lost' => 'Uw sessie is verlopen. Log in en probeer Google opnieuw te verbinden.',
+    'google_delete_only_google' => 'Google-verificatie is alleen beschikbaar voor accounts die alleen Google gebruiken.',
+    'google_delete_unavailable' => 'Google-verificatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
+    'google_delete_mismatch' => 'Dat Google-account komt niet overeen met je FreeCause-account.',
+    'google_delete_verified' => 'Google-identiteit geverifieerd. Je kunt het verwijderen van je account nu bevestigen.',
 ];

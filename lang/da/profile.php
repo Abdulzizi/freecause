@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google delte ikke en e-mailadresse, så vi kunne ikke forbinde den.',
     'google_link_failed' => 'Vi kunne ikke forbinde Google. Prøv igen.',
     'google_link_session_lost' => 'Din session udløb. Log ind og prøv at forbinde Google igen.',
+    'google_delete_only_google' => 'Google-bekræftelse er kun tilgængelig for konti, der kun bruger Google.',
+    'google_delete_unavailable' => 'Google-bekræftelse er midlertidigt utilgængelig. Prøv igen senere.',
+    'google_delete_mismatch' => 'Den Google-konto matcher ikke din FreeCause-konto.',
+    'google_delete_verified' => 'Google-identitet bekræftet. Du kan nu bekræfte sletning af kontoen.',
 ];

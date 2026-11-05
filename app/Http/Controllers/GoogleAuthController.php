@@ -22,7 +22,7 @@ class GoogleAuthController extends Controller
 
         if (! $user?->isGoogleOnly()) {
             return redirect("/{$locale}/profile")->withErrors([
-                'google_delete' => 'Google verification is only available for Google-only accounts.',
+                'google_delete' => __('profile.google_delete_only_google'),
             ]);
         }
 
@@ -30,7 +30,7 @@ class GoogleAuthController extends Controller
             ! config('services.google.client_secret') ||
             ! config('services.google.redirect')) {
             return redirect("/{$locale}/profile")->withErrors([
-                'google_delete' => 'Google verification is temporarily unavailable. Please try again later.',
+                'google_delete' => __('profile.google_delete_unavailable'),
             ]);
         }
 
@@ -58,7 +58,7 @@ class GoogleAuthController extends Controller
             );
 
             return back()->withErrors([
-                'oauth' => 'Google sign-in is temporarily unavailable. Please use email and password.',
+                'oauth' => __('auth.google_unavailable'),
             ]);
         }
 
@@ -97,6 +97,11 @@ class GoogleAuthController extends Controller
             'locale' => $locale,
         ]);
 
+        // The callback URL is always /en/, so flash messages follow the locale the flow started in.
+        if (in_array($ctx['locale'] ?? null, Locale::supported(), true)) {
+            app()->setLocale($ctx['locale']);
+        }
+
         try {
             $google = Socialite::driver('google')->user();
         } catch (InvalidStateException $e) {
@@ -111,7 +116,7 @@ class GoogleAuthController extends Controller
                 : "/{$locale}/login";
 
             return redirect($destination)->withErrors([
-                'oauth' => 'Your session expired or the login was interrupted. Please try again.',
+                'oauth' => __('auth.google_session_expired'),
             ]);
         }
 
@@ -137,7 +142,7 @@ class GoogleAuthController extends Controller
                 $request->session()->forget('account_delete_google_verified');
 
                 return redirect("/{$destLocale}/profile")->withErrors([
-                    'google_delete' => 'That Google account does not match your FreeCause account.',
+                    'google_delete' => __('profile.google_delete_mismatch'),
                 ]);
             }
 
@@ -147,7 +152,7 @@ class GoogleAuthController extends Controller
             ]);
 
             return redirect("/{$destLocale}/profile")
-                ->with('success', 'Google identity verified. You can now confirm account deletion.');
+                ->with('success', __('profile.google_delete_verified'));
         }
 
         if (($ctx['flow'] ?? null) === 'link') {
@@ -219,7 +224,7 @@ class GoogleAuthController extends Controller
                 'auth.google'
             );
 
-            return redirect("/{$destLocale}/register")->withErrors(['email' => 'google did not provide email.']);
+            return redirect("/{$destLocale}/register")->withErrors(['email' => __('auth.google_no_email')]);
         }
 
         $user = User::where('google_id', $google->getId())->first() ?? User::where('email', $email)->first();
@@ -246,7 +251,7 @@ class GoogleAuthController extends Controller
                 );
 
                 return redirect("/{$destLocale}/login")
-                    ->withErrors(['email' => 'An account with this email already exists. Please log in with your password first, then link Google from your profile.'])
+                    ->withErrors(['email' => __('auth.google_email_exists')])
                     ->withInput(['email' => $email]);
             }
         }
@@ -280,7 +285,7 @@ class GoogleAuthController extends Controller
                 'auth.google'
             );
 
-            return redirect("/{$destLocale}/login")->withErrors(['oauth' => 'Sign-in failed. Please try again.']);
+            return redirect("/{$destLocale}/login")->withErrors(['oauth' => __('auth.google_signin_failed')]);
         }
 
         if ($user->isBanned()) {

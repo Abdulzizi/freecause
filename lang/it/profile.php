@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google non ha condiviso un indirizzo email, quindi non siamo riusciti a collegarlo.',
     'google_link_failed' => 'Non siamo riusciti a collegare Google. Riprova.',
     'google_link_session_lost' => 'La tua sessione è scaduta. Accedi e prova a collegare di nuovo Google.',
+    'google_delete_only_google' => 'La verifica con Google è disponibile solo per gli account che usano solo Google.',
+    'google_delete_unavailable' => 'La verifica con Google non è al momento disponibile. Riprova più tardi.',
+    'google_delete_mismatch' => 'Quell\'account Google non corrisponde al tuo account FreeCause.',
+    'google_delete_verified' => 'Identità Google verificata. Ora puoi confermare l\'eliminazione dell\'account.',
 ];

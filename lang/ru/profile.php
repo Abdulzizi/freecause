@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google не предоставил адрес электронной почты, поэтому мы не смогли его подключить.',
     'google_link_failed' => 'Не удалось подключить Google. Пожалуйста, попробуйте снова.',
     'google_link_session_lost' => 'Ваша сессия истекла. Войдите и попробуйте подключить Google снова.',
+    'google_delete_only_google' => 'Проверка через Google доступна только для аккаунтов, использующих только Google.',
+    'google_delete_unavailable' => 'Проверка через Google временно недоступна. Попробуйте позже.',
+    'google_delete_mismatch' => 'Этот аккаунт Google не совпадает с вашим аккаунтом FreeCause.',
+    'google_delete_verified' => 'Личность Google подтверждена. Теперь вы можете подтвердить удаление аккаунта.',
 ];

@@ -69,4 +69,9 @@ return [
     'verify_notice_pending' => 'Verification emails are temporarily unavailable. An administrator will activate your account shortly.',
     'verify_notice_spam' => 'Not seeing it? Check your spam folder, then resend.',
     'verify_notice_title' => 'Verify your email - FreeCause - Online Petition',
+    'google_unavailable' => 'Η σύνδεση με Google δεν είναι προσωρινά διαθέσιμη. Χρησιμοποιήστε email και κωδικό πρόσβασης.',
+    'google_session_expired' => 'Η συνεδρία σας έληξε ή η σύνδεση διακόπηκε. Δοκιμάστε ξανά.',
+    'google_no_email' => 'Η Google δεν παρείχε διεύθυνση email.',
+    'google_email_exists' => 'Υπάρχει ήδη λογαριασμός με αυτό το email. Συνδεθείτε πρώτα με τον κωδικό σας και μετά συνδέστε το Google από το προφίλ σας.',
+    'google_signin_failed' => 'Η σύνδεση απέτυχε. Δοκιμάστε ξανά.',
 ];
