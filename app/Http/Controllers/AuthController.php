@@ -628,7 +628,8 @@ class AuthController extends Controller
 
         $user = User::where('email', strtolower(trim($request->email)))->first();
 
-        if (! $user || $user->verified) {
+        // Same reply as a sent mail, so the cooldown can't be told apart; a resend also voids the earlier link.
+        if (! $user || $user->verified || $user->verification_token_sent_at?->gt(now()->subMinutes(10))) {
             return back()->with('success', __('auth.resend_sent'));
         }
 

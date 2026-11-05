@@ -641,6 +641,28 @@ class AuthenticationTest extends TestCase
         Mail::assertQueued(VerifyAccountMail::class);
     }
 
+    public function test_resend_verification_has_ten_minute_cooldown(): void
+    {
+        Mail::fake();
+        Settings::set('smtp_enabled', true);
+        $user = User::factory()->create([
+            'email' => 'pending@example.com',
+            'verified' => false,
+            'verification_token_sent_at' => now()->subDay(),
+        ]);
+        $message = 'If the account needs activation, a new email has been sent.';
+
+        $this->post('/en/resend-verification', ['email' => 'pending@example.com'])
+            ->assertSessionHas('success', $message);
+        $token = $user->refresh()->verification_token;
+
+        $this->post('/en/resend-verification', ['email' => 'pending@example.com'])
+            ->assertSessionHas('success', $message);
+
+        $this->assertSame($token, $user->refresh()->verification_token);
+        Mail::assertQueued(VerifyAccountMail::class, 1);
+    }
+
     public function test_user_can_logout(): void
     {
         $user = User::factory()->create();
