@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Jobs\SendWelcomeEmail;
 use App\Mail\VerifyAccountMail;
 use App\Models\Language;
 use App\Models\User;
@@ -110,6 +111,7 @@ class AuthController extends Controller
                 'identify_mode' => filled($data['nickname'] ?? null) ? 'nick' : 'full', // legacy: nickname given => display nickname
                 'city' => $data['city'] ?? null,
 
+                'welcome_email_pending' => true,
                 'verified' => $needsVerif ? false : true,
                 'verification_token' => $token,
                 'verification_token_sent_at' => $needsVerif ? now() : null,
@@ -279,6 +281,7 @@ class AuthController extends Controller
         $u->country = $data['country'];
         $u->gender = $data['gender'];
         $u->locale = Locale::toFull($data['locale']);
+        $u->preferred_language_confirmed_at = now();
         $u->identify_mode = $data['identify_mode'] ?? ($u->identify_mode ?? 'full');
 
         $newEmail = strtolower(trim($data['new_email'] ?? ''));
@@ -327,6 +330,10 @@ class AuthController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(['profile' => __('profile.update_failed')]);
+        }
+
+        if ($u->welcome_email_pending && $u->verified && $u->hasCompleteProfile()) {
+            SendWelcomeEmail::dispatch($u->id)->afterCommit();
         }
 
         if ($emailChanged) {
