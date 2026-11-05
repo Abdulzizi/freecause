@@ -111,6 +111,25 @@ class AdminUserProtectionTest extends TestCase
         $this->assertNull($member->fresh());
     }
 
+    public function test_bulk_delete_is_capped_at_25_users_per_request(): void
+    {
+        $this->mock(WordPressUserDeletionService::class)->shouldReceive('delete');
+        $admin = $this->sysAdmin();
+        $ids = User::factory()->count(26)->create(['level_id' => UserLevel::where('name', 'user')->value('id')])->pluck('id');
+
+        $this->actingAs($admin, 'admin')
+            ->postJson('/admin/users/bulk-delete', ['ids' => $ids->all()])
+            ->assertStatus(422)
+            ->assertJsonPath('ok', false);
+        $this->assertSame(26, User::whereIn('id', $ids)->count());
+
+        $this->actingAs($admin, 'admin')
+            ->postJson('/admin/users/bulk-delete', ['ids' => $ids->take(25)->all()])
+            ->assertOk()
+            ->assertJson(['ok' => true, 'deleted' => 25]);
+        $this->assertSame(1, User::whereIn('id', $ids)->count());
+    }
+
     public function test_my_account_email_taken_by_another_user_is_a_validation_error(): void
     {
         User::factory()->create(['email' => 'taken@example.com']);
