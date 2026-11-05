@@ -23,6 +23,8 @@
         $mustComplete = ! $u->hasCompleteProfile();
         $missingCountry = ! old('country', $u->country);
         $missingGender = ! old('gender', $u->gender);
+        $preferredLanguage = old('locale', $u->welcome_email_pending && ! $u->preferred_language_confirmed_at ? '' : ($u->hasSupportedPreferredLanguage() ? \App\Support\Locale::toShort($u->locale) : ''));
+        $missingLanguage = ! $preferredLanguage;
         $reasonKey = match (request('reason')) {
             'sign' => 'complete_required_sign',
             'create' => 'complete_required_create',
@@ -39,7 +41,7 @@
                 <div class="mb-6">
                     <x-ui.alert variant="warning">
                         <p class="mb-2">{{ __('profile.'.$reasonKey) }}</p>
-                        <a class="inline-flex max-md:min-h-12 items-center text-sm font-medium text-brand no-underline hover:underline" href="#{{ $missingCountry ? 'country-field' : 'gender-field' }}">{{ __('profile.jump_to_fields') }}</a>
+                        <a class="inline-flex max-md:min-h-12 items-center text-sm font-medium text-brand no-underline hover:underline" href="#{{ $missingCountry ? 'country-field' : ($missingGender ? 'gender-field' : 'language-field') }}">{{ __('profile.jump_to_fields') }}</a>
                     </x-ui.alert>
                 </div>
             @endif
@@ -299,16 +301,23 @@
                                 </div>
                             </div>
 
-                            @php $preferredLanguage = old('locale', \App\Support\Locale::toShort($u->locale)); @endphp
-                            <div class="grid grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
+                            <div id="language-field" class="grid scroll-mt-16 grid-cols-1 gap-1 md:grid-cols-[160px_1fr] md:items-center md:gap-4">
                                 <label class="{{ $label }}" for="locale">{{ __('profile.preferred_language') }}</label>
-                                <select class="{{ $input }}" id="locale" name="locale" required>
+                                <div>
+                                <select class="{{ $mustComplete && $missingLanguage ? $inputInvalid : $input }}" id="locale" name="locale" required
+                                    @if ($mustComplete && $missingLanguage) aria-invalid="true" aria-describedby="language-required" @endif>
+                                    <option value="">{{ __('profile.select_language') }}</option>
                                     @foreach ($languages as $language)
                                         <option value="{{ $language->code }}" @selected($preferredLanguage === $language->code)>
                                             {{ $language->name }}
                                         </option>
                                     @endforeach
                                 </select>
+                                <p class="mt-1 text-xs text-muted">{{ __('profile.language_help') }}</p>
+                                @if ($mustComplete && $missingLanguage)
+                                    <span id="language-required" class="mt-1 block text-sm text-danger">{{ __('common.required') }}</span>
+                                @endif
+                                </div>
                             </div>
 
                             <hr class="border-border">
