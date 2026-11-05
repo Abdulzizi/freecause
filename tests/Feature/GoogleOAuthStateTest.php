@@ -120,6 +120,16 @@ class GoogleOAuthStateTest extends TestCase
         $this->assertRejectedCallback(['state' => 'synthetic-wrong-state', 'code' => 'synthetic-code']);
     }
 
+    public function test_google_callback_rejection_message_follows_the_locale(): void
+    {
+        $this->startGoogleLogin('/it/oauth/google?flow=login');
+
+        $this->googleCallback(['state' => 'synthetic-wrong-state', 'code' => 'synthetic-code'])
+            ->assertSessionHasErrors(['oauth' => trans('auth.google_session_expired', [], 'it')]);
+
+        $this->assertNotSame(trans('auth.google_session_expired', [], 'it'), trans('auth.google_session_expired', [], 'en'));
+    }
+
     public function test_google_callback_rejects_missing_returned_state_before_contacting_google(): void
     {
         $this->startGoogleLogin('/en/oauth/google?flow=login');

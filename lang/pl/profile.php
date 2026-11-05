@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google nie udostępnił adresu e-mail, więc nie mogliśmy go połączyć.',
     'google_link_failed' => 'Nie udało się połączyć Google. Spróbuj ponownie.',
     'google_link_session_lost' => 'Twoja sesja wygasła. Zaloguj się i spróbuj ponownie połączyć Google.',
+    'google_delete_only_google' => 'Weryfikacja Google jest dostępna tylko dla kont korzystających wyłącznie z Google.',
+    'google_delete_unavailable' => 'Weryfikacja Google jest chwilowo niedostępna. Spróbuj ponownie później.',
+    'google_delete_mismatch' => 'To konto Google nie pasuje do Twojego konta FreeCause.',
+    'google_delete_verified' => 'Tożsamość Google potwierdzona. Możesz teraz potwierdzić usunięcie konta.',
 ];

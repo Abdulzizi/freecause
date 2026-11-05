@@ -84,4 +84,8 @@ return [
     'google_link_no_email' => 'Google did not share an email address, so we could not connect it.',
     'google_link_failed' => 'We could not connect Google. Please try again.',
     'google_link_session_lost' => 'Your session expired. Please log in and try connecting Google again.',
+    'google_delete_only_google' => 'Google verification is only available for Google-only accounts.',
+    'google_delete_unavailable' => 'Google verification is temporarily unavailable. Please try again later.',
+    'google_delete_mismatch' => 'That Google account does not match your FreeCause account.',
+    'google_delete_verified' => 'Google identity verified. You can now confirm account deletion.',
 ];

@@ -69,4 +69,9 @@ return [
     'verify_notice_pending' => 'Verification emails are temporarily unavailable. An administrator will activate your account shortly.',
     'verify_notice_spam' => 'Not seeing it? Check your spam folder, then resend.',
     'verify_notice_title' => 'Verify your email - FreeCause - Online Petition',
+    'google_unavailable' => 'Inloggning med Google är tillfälligt otillgänglig. Använd e-post och lösenord.',
+    'google_session_expired' => 'Din session har gått ut eller inloggningen avbröts. Försök igen.',
+    'google_no_email' => 'Google angav ingen e-postadress.',
+    'google_email_exists' => 'Det finns redan ett konto med den här e-postadressen. Logga först in med ditt lösenord och koppla sedan Google från din profil.',
+    'google_signin_failed' => 'Inloggningen misslyckades. Försök igen.',
 ];
