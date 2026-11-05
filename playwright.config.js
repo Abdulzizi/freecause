@@ -1,5 +1,9 @@
 import { defineConfig } from '@playwright/test';
-import { E2E_DB } from './tests/e2e/env.js';
+import { E2E_DB, E2E_ORIGIN, E2E_PORT } from './tests/e2e/env.js';
+
+const visualIgnore = process.env.E2E_VISUAL ? [] : ['**/visual.spec.js'];
+const onlyA11y = process.env.E2E_SET === 'a11y';
+const withoutA11y = process.env.E2E_SET === 'rest';
 
 export default defineConfig({
     testDir: 'tests/e2e',
@@ -8,17 +12,21 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 1 : 0,
     reporter: process.env.CI ? 'github' : 'list',
-    testIgnore: process.env.E2E_VISUAL ? [] : ['**/visual.spec.js'],
     snapshotPathTemplate: '{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-snapshotSuffix}{ext}',
     projects: [
         { name: 'setup', testMatch: /auth\.setup\.js/ },
-        { name: 'e2e', dependencies: ['setup'] },
+        {
+            name: 'e2e',
+            dependencies: ['setup'],
+            testMatch: onlyA11y ? /a11y\.spec\.js$/ : /.*\.spec\.js$/,
+            testIgnore: withoutA11y ? [...visualIgnore, '**/a11y.spec.js'] : visualIgnore,
+        },
     ],
-    use: { baseURL: 'http://127.0.0.1:8099', contextOptions: { reducedMotion: 'reduce' }, trace: 'retain-on-failure' },
+    use: { baseURL: E2E_ORIGIN, contextOptions: { reducedMotion: 'reduce' }, trace: 'retain-on-failure' },
     webServer: {
         command: 'bash scripts/e2e-serve.sh',
-        url: 'http://127.0.0.1:8099/en',
-        env: { E2E_DB },
+        url: `${E2E_ORIGIN}/en`,
+        env: { E2E_DB, E2E_PORT },
         reuseExistingServer: false,
         timeout: 180000,
         stderr: 'pipe',

@@ -134,7 +134,14 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq sqlite3
 
       - name: Run browser tests
-        run: npx playwright test
+        run: |
+          E2E_SET=a11y E2E_PORT=8098 E2E_DB="$RUNNER_TEMP/a11y/e2e.sqlite" npx playwright test --output=test-results/a11y &
+          a11y_pid=$!
+          E2E_SET=rest npx playwright test --output=test-results/rest
+          rest_status=$?
+          wait "$a11y_pid"
+          a11y_status=$?
+          exit $((rest_status | a11y_status))
 
       - name: Run screenshot tests
         if: needs.changes.outputs.visual == 'true'

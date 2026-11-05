@@ -1,8 +1,8 @@
 import { test as base, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { E2E_DB } from './env.js';
+import { E2E_DB, E2E_ORIGIN } from './env.js';
 
-const ORIGIN = 'http://127.0.0.1:8099';
+const ORIGIN = E2E_ORIGIN;
 // The petition editor (Quill) is CDN-only; allow just that pinned path, block every other external host.
 const QUILL_CDN = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/';
 
