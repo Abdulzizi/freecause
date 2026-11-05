@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect, PETITION, adminLogin } from './helpers.js';
+import { test, expect, PETITION } from './helpers.js';
+import { ADMIN_STATE } from './env.js';
 
 const PUBLIC = ['/en', '/en/petitions', PETITION, '/en/create-petition', '/en/login', '/en/register', '/__components'];
 const ADMIN = [
@@ -42,10 +43,13 @@ for (const width of WIDTHS) {
     for (const path of PUBLIC) {
         test(`public ${path} at ${width}px`, async ({ page }) => check(page, path, width));
     }
-    for (const path of ADMIN) {
-        test(`admin ${path} at ${width}px`, async ({ page }) => {
-            await adminLogin(page);
-            await check(page, path, width);
-        });
-    }
 }
+
+test.describe('admin pages', () => {
+    test.use({ storageState: ADMIN_STATE });
+    for (const width of WIDTHS) {
+        for (const path of ADMIN) {
+            test(`admin ${path} at ${width}px`, async ({ page }) => check(page, path, width));
+        }
+    }
+});
