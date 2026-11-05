@@ -10,6 +10,7 @@ use App\Models\User;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -68,6 +69,14 @@ class PetitionCreateFlowTest extends TestCase
         $response->assertOk()
             ->assertSee('href="#field-petition_description"', false)
             ->assertDontSee('data-alert-variant="error"', false);
+    }
+
+    public function test_failed_upload_shows_upload_failed_message(): void
+    {
+        $file = new UploadedFile(__FILE__, 'cover.jpg', 'image/jpeg', UPLOAD_ERR_INI_SIZE, true);
+
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload(['image' => $file]))
+            ->assertSessionHasErrors(['image' => __('create.err_image_upload_failed')]);
     }
 
     public function test_invalid_country_fails_validation(): void
