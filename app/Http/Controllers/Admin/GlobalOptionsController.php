@@ -135,6 +135,9 @@ class GlobalOptionsController extends Controller
         $isSystemAdmin = admin_user()?->load('level')?->level?->is_system ?? false;
 
         foreach ($this->defaults as $key => $default) {
+            if (str_starts_with($key, 'email_verify_') && ! $request->exists($key)) {
+                continue;
+            }
             if (in_array($key, $this->systemOnlyKeys, true) && ! $isSystemAdmin) {
                 continue;
             }
