@@ -2,7 +2,8 @@
 
 namespace App\Mail;
 
-use App\Support\Settings;
+use App\Support\Locale;
+use App\Support\MailText;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -22,25 +23,14 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
     {
         $this->firstName = $user->first_name ?? '';
         $this->verificationToken = $user->verification_token ?? '';
-        $this->locale = $locale;
+        $this->locale = Locale::toShort(! empty($user->preferred_language_confirmed_at) ? $user->locale : $locale);
     }
 
     public function build()
     {
-        $subject = Settings::get('email_verify_subject', '', 'global') ?: 'Verify your account';
-        $greeting = Settings::get('email_verify_greeting', '', 'global') ?: 'Welcome to FreeCause';
-        $buttonText = Settings::get('email_verify_button_text', '', 'global') ?: 'Verify My Account';
-        $footer = Settings::get('email_verify_footer', '', 'global') ?: 'FreeCause – Online Petition Platform';
-
-        return $this->subject($subject)
+        return $this->subject(MailText::get('verify_subject', [], $this->locale))
             ->view('emails.verify-account')
-            ->with([
-                'firstName' => $this->firstName,
-                'locale' => $this->locale,
-                'token' => $this->verificationToken,
-                'greeting' => $greeting,
-                'buttonText' => $buttonText,
-                'footer' => $footer,
-            ]);
+            ->with(['firstName' => $this->firstName, 'locale' => $this->locale,
+                'emailLocale' => $this->locale, 'token' => $this->verificationToken]);
     }
 }
