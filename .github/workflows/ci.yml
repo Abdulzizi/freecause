@@ -91,7 +91,14 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Chromium
+        timeout-minutes: 5
         run: npx playwright install --with-deps chromium
 
       - name: Install sqlite3 CLI (e2e specs read tokens from the DB)
