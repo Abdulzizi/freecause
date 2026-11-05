@@ -1588,6 +1588,52 @@ class PetitionTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_show_hides_edit_link_once_another_user_signed(): void
+    {
+        $petition = $this->ownedPublishedPetition();
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}")
+            ->assertOk()
+            ->assertSee("/en/petition/original-petition-title/{$petition->id}/edit", false);
+
+        Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => User::factory()->create()->id, 'confirmed' => true, 'is_spam' => false]);
+
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}")
+            ->assertOk()
+            ->assertDontSee("/en/petition/original-petition-title/{$petition->id}/edit", false);
+    }
+
+    public function test_show_keeps_edit_link_when_only_owner_signed(): void
+    {
+        $petition = $this->ownedPublishedPetition();
+        Signature::factory()->create(['petition_id' => $petition->id, 'user_id' => $this->user->id, 'confirmed' => true, 'is_spam' => false]);
+
+        $this->actingAs($this->user)
+            ->get("/en/petition/original-petition-title/{$petition->id}")
+            ->assertOk()
+            ->assertSee("/en/petition/original-petition-title/{$petition->id}/edit", false);
+    }
+
+    private function ownedPublishedPetition(): Petition
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+
+        return $petition;
+    }
+
     #[DataProvider('nonCountingSignatures')]
     public function test_owner_can_still_edit_when_only_spam_or_unconfirmed_signatures_exist(array $state): void
     {
