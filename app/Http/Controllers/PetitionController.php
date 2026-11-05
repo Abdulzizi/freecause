@@ -829,7 +829,6 @@ class PetitionController extends Controller
     public function update(PetitionRequest $request, string $locale, string $slug, int $id)
     {
         $petition = Petition::query()->findOrFail($id);
-        $this->requireOwner($petition);
 
         $trOrRedirect = $this->resolveTrOrRedirect('petition.edit', $locale, $slug, $petition);
         if ($trOrRedirect instanceof RedirectResponse) {
@@ -907,8 +906,11 @@ class PetitionController extends Controller
 
                 $petition->save();
 
+                // Keep a legacy slug when the title is unchanged.
+                if ($data['title'] !== $tr->title) {
+                    $tr->slug = $this->makeUniqueSlug($data['title'], $tr->locale, $tr->id);
+                }
                 $tr->title = $data['title'];
-                $tr->slug = $this->makeUniqueSlug($data['title'], $tr->locale, $tr->id);
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
 
