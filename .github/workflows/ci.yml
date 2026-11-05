@@ -61,8 +61,31 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
-  e2e:
+  # e2e is ~8 of ~11 CI minutes per PR and the private-repo minute allowance is small,
+  # so a PR that only touches docs/ or *.md skips it. A skipped job counts as passed.
+  changes:
     if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    outputs:
+      e2e: ${{ steps.f.outputs.e2e }}
+    steps:
+      - id: f
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename')
+          if [ -z "$files" ] || grep -qvE '^docs/|\.md$' <<<"$files"; then
+            echo "e2e=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "e2e=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  e2e:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.e2e == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
