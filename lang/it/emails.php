@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Visualizza la tua petizione',
+    'link_help' => 'Apri questo link: :url',
+    'verify_subject' => 'Verifica la tua email FreeCause',
+    'verify_intro' => 'Conferma questo indirizzo email per il tuo account FreeCause.',
+    'verify_action' => 'Conferma indirizzo email',
+    'verify_note' => 'Questo link è valido per :hours ore. Se non hai richiesto questa email, puoi ignorarla.',
+    'reset_subject' => 'Reimposta la password FreeCause',
+    'reset_intro' => 'Scegli una nuova password per il tuo account FreeCause.',
+    'reset_action' => 'Imposta una nuova password',
+    'reset_note' => 'Questo link scade tra :minutes minuti. Se non hai richiesto il ripristino, ignora questa email: la tua password non cambierà.',
+    'milestone_subject' => 'La tua petizione ha raggiunto :count firme',
+    'milestone_intro' => 'La tua petizione “:title” ha raggiunto :count firme.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
