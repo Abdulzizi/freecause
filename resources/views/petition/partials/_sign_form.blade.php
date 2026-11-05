@@ -227,11 +227,6 @@
                     </div>
                 </div>
 
-                @if (\App\Support\Spam::turnstileEnabled())
-                    <div class="mb-3 cf-turnstile" data-sitekey="{{ \App\Support\Settings::get('turnstile_site_key', '', 'global') }}"></div>
-                    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-                @endif
-
                 <button class="{{ $submitClass }}@if ($stickySubmit) max-md:hidden @endif" type="submit">{{ $tBtnSign }}</button>
             </div>
         </div>
