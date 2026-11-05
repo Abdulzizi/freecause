@@ -21,6 +21,8 @@ class MonitorQueue extends Command
 
     private const ALERTED_KEY = 'queue:monitor:alerted';
 
+    private const FAILURES_ALERTED_KEY = 'queue:monitor:failures-alerted';
+
     public function handle(): int
     {
         $alerts = [];
@@ -97,8 +99,9 @@ class MonitorQueue extends Command
             }
         }
 
-        // Backlog/stale persist across runs, so email them at most hourly; new
-        // failures are already deduped by the checkpoint and always email.
+        // Backlog/stale persist across runs, so email them at most hourly.
+        // New failures get their own hourly slot: a job that keeps failing would
+        // otherwise mail every run. That slot is never released early.
         // The hourly slot is only claimed when a mail will really be attempted,
         // and is released once the condition clears so a recurrence alerts at once.
         if (! $conditionAlert) {
@@ -109,7 +112,8 @@ class MonitorQueue extends Command
         if ($email && ($newFailures > 0 || $conditionAlert)) {
             // While the quota is tripped sendAlert only logs, so leave the slot free.
             $conditionDue = $conditionAlert && (MailQuota::tripped() || Cache::add(self::ALERTED_KEY, 1, 3600));
-            if ($newFailures > 0 || $conditionDue) {
+            $failuresDue = $newFailures > 0 && (MailQuota::tripped() || Cache::add(self::FAILURES_ALERTED_KEY, 1, 3600));
+            if ($failuresDue || $conditionDue) {
                 $this->sendAlert($email, $alerts);
             }
         }
