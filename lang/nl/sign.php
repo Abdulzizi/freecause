@@ -48,4 +48,8 @@ return [
     'surname' => 'Achternaam',
     'thanks' => 'Bedankt voor het tekenen!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Reactie geplaatst!',
+    'suspicious' => 'Verdachte activiteit gedetecteerd.',
+    'thanks_toast' => 'Bedankt voor het tekenen!',
+    'verify_first' => 'Bevestig je e-mailadres voordat je petities ondertekent.',
 ];

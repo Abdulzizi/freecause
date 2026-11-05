@@ -48,4 +48,8 @@ return [
     'surname' => 'Epitheto',
     'thanks' => 'Sas eyxaristo gia tin ypografi!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'To sxolio dimosieftike!',
+    'suspicious' => 'Entopistike ypopti drastiriotita.',
+    'thanks_toast' => 'Sas eyxaristo gia tin ypografi!',
+    'verify_first' => 'Epivevaiste to email sas prin ypograpsete aitisis.',
 ];

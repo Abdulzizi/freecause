@@ -48,4 +48,8 @@ return [
     'surname' => 'Familiya',
     'thanks' => 'Spasibo za podpis!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Kommentariy opublikovan!',
+    'suspicious' => 'Obnaruzhena podozritelnaya aktivnost.',
+    'thanks_toast' => 'Spasibo za podpis!',
+    'verify_first' => 'Podtverdite svoyu pochtu pered podpisaniem peticiy.',
 ];
