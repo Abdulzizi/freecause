@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class MonitorQueueTest extends TestCase
@@ -49,5 +50,21 @@ class MonitorQueueTest extends TestCase
         $this->recordFailure(now()->toDateTimeString());
 
         $this->artisan('queue:monitor')->assertExitCode(0);
+    }
+
+    public function test_repeated_new_failures_mail_at_most_hourly(): void
+    {
+        Cache::flush();
+        Mail::shouldReceive('raw')->once();
+
+        $this->recordFailure(now()->toDateTimeString());
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])->expectsOutput('Alert sent to ops@example.com')->run();
+
+        $this->travel(5)->minutes();
+        $this->recordFailure(now()->toDateTimeString());
+        $this->artisan('queue:monitor', ['--alert-email' => 'ops@example.com'])
+            ->expectsOutput('New failed jobs: 1')
+            ->doesntExpectOutput('Alert sent to ops@example.com')
+            ->assertExitCode(0);
     }
 }
