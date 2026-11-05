@@ -48,4 +48,8 @@ return [
     'surname' => 'Prenume',
     'thanks' => 'Multumim pentru semnatura!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Comentariu postat!',
+    'suspicious' => 'Activitate suspecta detectata.',
+    'thanks_toast' => 'Multumim pentru semnatura!',
+    'verify_first' => 'Verifica-ti adresa de e-mail inainte de a semna petitii.',
 ];

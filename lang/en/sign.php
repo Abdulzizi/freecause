@@ -48,4 +48,8 @@ return [
     'submit' => 'Sign Petition',
     'surname' => 'Surname',
     'thanks' => 'Thank you for signing!',
+    'comment_posted' => 'Comment posted!',
+    'suspicious' => 'Suspicious activity detected.',
+    'thanks_toast' => 'Thank you for signing!',
+    'verify_first' => 'Please verify your email before signing petitions.',
 ];

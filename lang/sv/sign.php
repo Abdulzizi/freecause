@@ -48,4 +48,8 @@ return [
     'surname' => 'Efternamn',
     'thanks' => 'Tack för att du undertecknade!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Kommentaren publicerad!',
+    'suspicious' => 'Misstänkt aktivitet upptäckt.',
+    'thanks_toast' => 'Tack för att du undertecknade!',
+    'verify_first' => 'Verifiera din e-post innan du undertecknar petitioner.',
 ];
