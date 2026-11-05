@@ -52,11 +52,12 @@ class PetitionRequest extends FormRequest
             $youtube[] = new YoutubeVideo;
         }
 
-        $imageUrl = ['nullable', 'url', 'max:500', 'regex:/^https?:\/\//i'];
-        if (! $this->hasFile('image')
-            && filled($this->input('image_url'))
-            && $this->input('image_url') !== $currentUrl) {
-            $imageUrl[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+        $imageUrl = ['nullable', 'max:500'];
+        if ($this->input('image_url') !== $currentUrl) {
+            array_push($imageUrl, 'url', 'regex:/^https?:\/\//i');
+            if (! $this->hasFile('image') && filled($this->input('image_url'))) {
+                $imageUrl[] = new SafeExternalImageUrl(4 * 1024 * 1024);
+            }
         }
 
         return [

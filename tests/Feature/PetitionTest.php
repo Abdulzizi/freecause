@@ -1636,6 +1636,46 @@ class PetitionTest extends TestCase
         $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'youtube_url' => 'dQw4w9WgXcQ']);
     }
 
+    public function test_edit_keeps_an_unchanged_legacy_image_filename_and_validates_a_changed_one(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+            'image_url' => 'abc123.jpg',
+        ]);
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Original Petition Title',
+            'slug' => 'original-petition-title',
+            'description' => 'Original petition description.',
+        ]);
+        $payload = [
+            'title' => 'Original Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ];
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['image_url' => 'abc123.jpg'] + $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'image_url' => 'abc123.jpg']);
+        $this->assertStringContainsString('This updated description', PetitionTranslation::where('petition_id', $petition->id)->value('description'));
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['image_url' => 'other.jpg'] + $payload)
+            ->assertSessionHasErrors('image_url');
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'image_url' => 'abc123.jpg']);
+
+        $this->actingAs($this->user)
+            ->post("/en/petition/original-petition-title/{$petition->id}/edit", ['image_url' => null] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'image_url' => null]);
+    }
+
     public function test_edit_can_remove_current_image_without_orphaning_file(): void
     {
         Storage::fake('public');
