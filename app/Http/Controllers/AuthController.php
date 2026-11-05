@@ -237,7 +237,10 @@ class AuthController extends Controller
 
             $dest = self::sanitizeRedirectPath($request->input('redirect'), '');
             if ($dest === '') {
-                $dest = $request->session()->pull('url.intended', '');
+                $intended = (string) $request->session()->pull('url.intended', '');
+                $path = (string) parse_url($intended, PHP_URL_PATH);
+                $query = parse_url($intended, PHP_URL_QUERY);
+                $dest = self::sanitizeRedirectPath($path.(filled($query) ? '?'.$query : ''), '');
             }
             if ($dest === '') {
                 $dest = '/'.Locale::toShort($user->locale);
