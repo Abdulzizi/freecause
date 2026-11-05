@@ -70,11 +70,13 @@ jobs:
     outputs:
       e2e: ${{ steps.f.outputs.e2e }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - id: f
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename')
+          # HEAD is the PR merge commit; its first parent is the base tip.
+          files=$(git diff --name-only HEAD^1 HEAD)
           if [ -z "$files" ] || grep -qvE '^docs/|\.md$' <<<"$files"; then
             echo "e2e=true" >> "$GITHUB_OUTPUT"
           else
