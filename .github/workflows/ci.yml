@@ -121,7 +121,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Chromium
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: npx playwright install --with-deps chromium
 
       - name: Install sqlite3 CLI (e2e specs read tokens from the DB)
