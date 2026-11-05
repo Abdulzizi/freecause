@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Visa din namninsamling',
+    'link_help' => 'Öppna denna länk: :url',
+    'verify_subject' => 'Bekräfta din FreeCause-mejl',
+    'verify_intro' => 'Bekräfta denna mejladress för ditt FreeCause-konto.',
+    'verify_action' => 'Bekräfta mejladress',
+    'verify_note' => 'Denna länk är giltig i :hours timmar. Om du inte begärt detta mejl kan du ignorera det.',
+    'reset_subject' => 'Återställ ditt FreeCause-lösenord',
+    'reset_intro' => 'Välj ett nytt lösenord för ditt FreeCause-konto.',
+    'reset_action' => 'Ange ett nytt lösenord',
+    'reset_note' => 'Denna länk upphör att gälla om :minutes minuter. Om du inte begärt en återställning kan du ignorera detta mejl; ditt lösenord ändras inte.',
+    'milestone_subject' => 'Din namninsamling har nått :count underskrifter',
+    'milestone_intro' => 'Din namninsamling ”:title” har nått :count underskrifter.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
