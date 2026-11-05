@@ -238,6 +238,19 @@ class AuditRegressionTest extends TestCase
         $mirrorAgain = $sign('mirror-existing@example.com', 'Existing Holder')->assertSessionHasNoErrors();
         $this->assertSame($freshAgain->headers->get('Location'), $mirrorAgain->headers->get('Location'));
         $this->assertSame($fresh->headers->get('Location'), $freshAgain->headers->get('Location'));
+
+        // Orphaned signature (no User for the email) must look like a fresh sign too.
+        Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'email' => 'mirror-orphan@example.com',
+            'confirmed' => true,
+        ]);
+        $orphan = $sign('mirror-orphan@example.com', 'Orphan Signer')->assertSessionHasNoErrors();
+        Mail::assertNotQueued(VerifyAccountMail::class, fn ($mail) => $mail->hasTo('mirror-orphan@example.com'));
+        $this->assertSame($fresh->headers->get('Location'), $orphan->headers->get('Location'));
+        $orphanBody = $strip((string) $this->followingRedirects()->get($orphan->headers->get('Location'))->getContent());
+        $this->assertSame($freshBody, $orphanBody);
+        $this->assertDatabaseMissing('users', ['email' => 'mirror-orphan@example.com']);
     }
 
     public function test_08b_guest_sign_with_existing_unverified_email_mails_at_most_every_48_hours(): void

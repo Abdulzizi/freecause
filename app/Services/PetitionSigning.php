@@ -81,11 +81,18 @@ class PetitionSigning
         $email = strtolower(trim($data['email']));
 
         $existingUser = User::where('email', $email)->first();
+        $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
+        $thanks = function () use ($petition, $tr, $needsVerification) {
+            session()->forget("sign.{$petition->id}");
+
+            return redirect()->route('petition.thanks', [
+                'locale' => $tr->locale,
+                'slug' => $tr->slug,
+                'id' => $petition->id,
+            ])->with('petition_verified', ! $needsVerification);
+        };
 
         if ($existingUser) {
-            session()->forget("sign.{$petition->id}");
-            $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
-
             // Only an unverified account with verification on gets a row: it stays
             // unconfirmed until the inbox owner verifies. Verified accounts get nothing, since a guest form
             // can't prove email ownership. Every outcome returns the same thanks
@@ -129,11 +136,7 @@ class PetitionSigning
                 }
             }
 
-            return redirect()->route('petition.thanks', [
-                'locale' => $tr->locale,
-                'slug' => $tr->slug,
-                'id' => $petition->id,
-            ])->with('petition_verified', ! $needsVerification);
+            return $thanks();
         }
 
         $alreadySigned = Signature::where('petition_id', $petition->id)
@@ -141,9 +144,7 @@ class PetitionSigning
             ->exists();
 
         if ($alreadySigned) {
-            return back()
-                ->withErrors(['email' => 'You already signed this petition.'])
-                ->withInput($request->except('password'));
+            return $thanks();
         }
 
         try {
@@ -151,9 +152,8 @@ class PetitionSigning
             $previousCount = null;
             $mailUser = null;
 
-            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, &$counted, &$previousCount, &$mailUser) {
+            $response = DB::transaction(function () use ($data, $email, $locale, $petition, $tr, $needsVerification, &$counted, &$previousCount, &$mailUser) {
                 $userLevel = UserLevel::where('name', 'user')->first();
-                $needsVerification = (bool) Settings::get('require_email_verification', false, 'global');
 
                 $user = User::create([
                     'name' => $data['name'],
@@ -205,9 +205,9 @@ class PetitionSigning
             });
         } catch (QueryException $e) {
             if (($e->errorInfo[0] ?? null) === '23000') {
-                return back()
-                    ->withErrors(['email' => 'You already signed this petition.'])
-                    ->withInput($request->except('password'));
+                AppLog::error('Guest sign duplicate', $e->getMessage(), 'petition.sign');
+
+                return $thanks();
             }
 
             throw $e;
