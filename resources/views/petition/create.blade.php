@@ -196,11 +196,10 @@
                                                 <option value="">{{ __('create.select_one') }}</option>
 
                                                 @php
-                                                    $goals = [50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000];
                                                     $goalLabel = fn($n) => number_format($n, 0, '.', "'") . ' ' . __('create.signatures_sfx');
                                                 @endphp
 
-                                                @foreach ($goals as $g)
+                                                @foreach (\App\Models\Petition::GOALS as $g)
                                                     <option value="{{ $g }}" @selected((int) $oldGoal === (int) $g)>
                                                         {{ $goalLabel($g) }}
                                                     </option>

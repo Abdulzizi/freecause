@@ -1222,6 +1222,16 @@ class PetitionTest extends TestCase
             ->assertDontSee('id="create-register-tab"', false);
     }
 
+    public function test_create_page_offers_one_goal_option_per_petition_goal(): void
+    {
+        $html = $this->actingAs($this->user)->get('/en/create-petition')->assertOk()->getContent();
+
+        preg_match('/<select id="field-goal_signatures".*?<\/select>/s', $html, $select);
+        preg_match_all('/<option value="(\d+)"/', $select[0], $values);
+
+        $this->assertSame(Petition::GOALS, array_map('intval', $values[1]));
+    }
+
     public function test_petition_creation_requires_authentication(): void
     {
         $response = $this->post('/en/create-petition', [
