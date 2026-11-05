@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Mail\VerifyAccountMail;
 use App\Models\Language;
+use App\Models\Petition;
+use App\Models\Signature;
 use App\Models\User;
 use App\Providers\AppServiceProvider;
 use App\Support\Countries;
@@ -416,6 +418,63 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticatedAs($user->fresh());
         $this->assertTrue(Hash::check('new-password-123', $user->fresh()->password));
+    }
+
+    public function test_password_reset_verifies_user_and_confirms_pending_signatures(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'unverified-reset@example.com',
+            'verified' => false,
+            'country' => 'NL',
+            'gender' => 'female',
+        ]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $signature = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => false,
+        ]);
+
+        $this->post('/en/reset-password', [
+            'token' => Password::createToken($user),
+            'email' => 'unverified-reset@example.com',
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ])->assertRedirect();
+
+        $this->assertTrue($user->fresh()->verified);
+        $this->assertDatabaseHas('signatures', ['id' => $signature->id, 'confirmed' => 1]);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 1]);
+        $this->assertAuthenticatedAs($user->fresh());
+    }
+
+    public function test_password_reset_does_not_verify_banned_user(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'banned-reset@example.com',
+            'verified' => false,
+            'banned_until' => now()->addDay(),
+        ]);
+        $petition = Petition::factory()->create(['signature_count' => 0]);
+        $signature = Signature::factory()->create([
+            'petition_id' => $petition->id,
+            'user_id' => $user->id,
+            'confirmed' => false,
+            'is_spam' => false,
+        ]);
+
+        $this->post('/en/reset-password', [
+            'token' => Password::createToken($user),
+            'email' => 'banned-reset@example.com',
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
+        ])->assertRedirect();
+
+        $this->assertTrue($user->fresh()->isBanned());
+        $this->assertFalse($user->fresh()->verified);
+        $this->assertDatabaseHas('signatures', ['id' => $signature->id, 'confirmed' => 0]);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'signature_count' => 0]);
     }
 
     public function test_user_can_register(): void

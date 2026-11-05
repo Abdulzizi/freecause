@@ -588,6 +588,12 @@ class AuthController extends Controller
             return redirect("/{$locale}/login")->with('success', __($status));
         }
 
+        // The reset link came by email, so using it proves inbox ownership.
+        if (! $user->verified && ! $user->isBanned()) {
+            PetitionSigning::markVerified($user);
+            $user->refresh();
+        }
+
         auth()->login($user);
         $request->session()->regenerate();
 
