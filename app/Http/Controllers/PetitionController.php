@@ -60,12 +60,14 @@ class PetitionController extends Controller
     private function requireEditable(Petition $petition): void
     {
         $this->requireOwner($petition);
-        abort_unless($petition->is_active && in_array($petition->status, ['published', 'draft'], true), 403);
-        abort_if(
-            $petition->signatures()->where('confirmed', true)->where('is_spam', false)->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists(),
-            403,
-            'Petition can no longer be edited after another person has signed.'
-        );
+        abort_unless($this->isEditable($petition), 403, 'Petition can no longer be edited after another person has signed.');
+    }
+
+    private function isEditable(Petition $petition): bool
+    {
+        return $petition->is_active
+            && in_array($petition->status, ['published', 'draft'], true)
+            && ! $petition->signatures()->where('confirmed', true)->where('is_spam', false)->where(fn ($q) => $q->where('user_id', '!=', $petition->user_id)->orWhereNull('user_id'))->exists();
     }
 
     private function resolveTrOrRedirect(string $routeName, string $locale, string $slug, Petition $petition, array $extra = [])
@@ -366,7 +368,10 @@ class PetitionController extends Controller
                 ->count()
         );
 
+        $canEdit = auth()->check() && (int) auth()->id() === (int) $petition->user_id && $this->isEditable($petition);
+
         return view('petition.show', compact(
+            'canEdit',
             'petition',
             'tr',
             'locale',
