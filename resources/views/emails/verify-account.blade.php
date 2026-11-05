@@ -1,31 +1,20 @@
 @extends('emails.layout')
 
-@php
-    $verifyUrl = route('verify.account', [
-        'locale' => $locale,
-        'token'  => $token,
-    ]);
-@endphp
+@php $t = fn ($key, $replace = []) => \App\Support\MailText::get($key, $replace, $emailLocale); @endphp
 
-@section('preheader', 'One click and your FreeCause account is active.')
-
-@section('eyebrow', 'Account Verification')
-@section('heading', $greeting ?? 'Welcome to FreeCause')
-@section('title', ($greeting ?? 'Welcome to FreeCause').' · FreeCause')
-
+@php $verifyUrl = route('verify.account', ['locale' => $emailLocale, 'token' => $token]); @endphp
+@section('title', $t('verify_subject'))
+@section('heading', $t('verify_heading'))
+@section('preheader', $t('verify_intro'))
 @section('content')
-    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
-    <p style="margin:0 0 16px;">Thank you for joining FreeCause. Please confirm your email address so your account is activated and your signature counts.</p>
-    <p style="margin:0;">Confirming takes a single click — no password required.</p>
+    <p style="margin:0 0 16px;">{{ $t('common_greeting', ['name' => $firstName]) }}</p>
+    <p style="margin:0 0 16px;">{{ $t('verify_intro') }}</p>
+    <p style="margin:0;">{{ $t('verify_note', ['hours' => 48]) }}</p>
 @endsection
-
-@section('action', $buttonText ?? 'Verify My Account')
+@section('action', $t('verify_action'))
 @section('action_url', $verifyUrl)
-
 @section('note')
-    <strong>Your secure link is valid for 48 hours.</strong><br>
-    If the button above does not work, copy and paste this link into your browser:
-    <span style="word-break:break-all;">{{ $verifyUrl }}</span>
-    <br><br>
-    Didn't create an account with FreeCause? You can safely ignore this email.
+    <span style="word-break:break-all;">{{ $t('link_help', ['url' => $verifyUrl]) }}</span>
 @endsection
+
+@section('footer', $t('verify_footer'))
