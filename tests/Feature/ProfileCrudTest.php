@@ -283,6 +283,8 @@ class ProfileCrudTest extends TestCase
         $oldToken = $user->fresh()->verification_token;
         $this->assertSame('pending@example.com', $user->fresh()->pending_email);
 
+        $user->forceFill(['verification_token_sent_at' => now()->subMinutes(11)])->save();
+
         auth()->logout();
         $this->flushSession();
         $this->post('/en/resend-verification', ['email' => 'old@example.com'])->assertSessionHasNoErrors();
