@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\Petition;
 use App\Models\User;
 use App\Support\Locale;
+use App\Support\MailText;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -35,11 +36,12 @@ class PetitionMilestoneMail extends Mailable implements ShouldQueue
 
         $token = $this->owner->ensureUnsubscribeToken();
 
-        return $this->subject('Your petition just reached '.number_format($this->milestone).' signatures')
+        return $this->subject(MailText::get('milestone_subject', ['count' => number_format($this->milestone)], $locale))
             ->view('emails.petition-milestone')
             ->with([
+                'emailLocale' => $locale,
                 'firstName' => $this->owner->first_name ?: $this->owner->name,
-                'petitionTitle' => $translation?->title ?? 'your petition',
+                'petitionTitle' => $translation?->title ?? MailText::get('common_petition', [], $locale),
                 'petitionUrl' => $petitionUrl,
                 'milestone' => $this->milestone,
                 'unsubscribeUrl' => lroute('preferences.unsubscribe', ['locale' => $locale, 'token' => $token]),
