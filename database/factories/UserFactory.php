@@ -52,6 +52,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'locale' => $locale,
+            'preferred_language_confirmed_at' => now(),
             'ip' => $this->faker->ipv4(),
             'level_id' => $userLevelId,
             'google_id' => $this->faker->optional(0.2)->uuid(),
