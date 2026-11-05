@@ -109,6 +109,19 @@ class PetitionCreateFlowTest extends TestCase
             ->assertSessionHasErrors('title');
     }
 
+    public function test_unchanged_title_keeps_legacy_slug_and_new_title_gets_new_slug(): void
+    {
+        $petition = Petition::factory()->create(['user_id' => $this->user->id, 'category_id' => $this->category->id, 'status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Save the Old Town', 'slug' => 'save-old-town-4711', 'description' => 'Original description.']);
+        $url = "/en/petition/save-old-town-4711/{$petition->id}/edit";
+
+        $this->actingAs($this->user)->post($url, $this->payload(['title' => 'Save the Old Town']))->assertRedirect();
+        $this->assertDatabaseHas('petition_translations', ['petition_id' => $petition->id, 'slug' => 'save-old-town-4711']);
+
+        $this->actingAs($this->user)->post($url, $this->payload(['title' => 'Save the Old Town Now']))->assertRedirect();
+        $this->assertDatabaseHas('petition_translations', ['petition_id' => $petition->id, 'slug' => 'save-the-old-town-now']);
+    }
+
     public function test_text_only_update_keeps_cover(): void
     {
         Storage::fake('public');
