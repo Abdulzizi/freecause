@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Se din underskriftsindsamling',
+    'link_help' => 'Åbn dette link: :url',
+    'verify_subject' => 'Bekræft din FreeCause-email',
+    'verify_intro' => 'Bekræft denne emailadresse til din FreeCause-konto.',
+    'verify_action' => 'Bekræft emailadresse',
+    'verify_note' => 'Dette link er gyldigt i :hours timer. Hvis du ikke har bedt om denne email, kan du ignorere den.',
+    'reset_subject' => 'Nulstil din FreeCause-adgangskode',
+    'reset_intro' => 'Vælg en ny adgangskode til din FreeCause-konto.',
+    'reset_action' => 'Vælg en ny adgangskode',
+    'reset_note' => 'Dette link udløber om :minutes minutter. Hvis du ikke har bedt om en nulstilling, kan du ignorere denne email; din adgangskode ændres ikke.',
+    'milestone_subject' => 'Din underskriftsindsamling har nået :count underskrifter',
+    'milestone_intro' => 'Din underskriftsindsamling “:title” har nået :count underskrifter.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
