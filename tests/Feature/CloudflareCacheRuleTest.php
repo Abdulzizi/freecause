@@ -70,4 +70,29 @@ class CloudflareCacheRuleTest extends TestCase
         $this->assertSame('bypass_by_default', $parameters['edge_ttl']['mode']);
         $this->assertSame('respect_origin', $parameters['browser_ttl']['mode']);
     }
+
+    private function adsFrameRule(): array
+    {
+        $path = base_path('deploy/cloudflare/ads-frame-cache-rule.json');
+
+        return json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    public function test_ads_frame_rule_targets_the_frame_origin_and_respects_the_origin_ttl(): void
+    {
+        $rule = $this->adsFrameRule();
+
+        $this->assertFalse($rule['enabled']);
+        $this->assertSame('set_cache_settings', $rule['action']);
+        $this->assertSame('http.host eq "ads.freecause.com" and http.request.uri.path contains "/ads/frame/"', $rule['expression']);
+
+        foreach (['matches', 'starts_with', 'ends_with', 'wildcard', 'lower('] as $forbidden) {
+            $this->assertStringNotContainsString($forbidden, $rule['expression'], "Free plan rejects {$forbidden}");
+        }
+
+        $parameters = $rule['action_parameters'];
+        $this->assertTrue($parameters['cache']);
+        $this->assertSame('bypass_by_default', $parameters['edge_ttl']['mode']);
+        $this->assertSame('respect_origin', $parameters['browser_ttl']['mode']);
+    }
 }

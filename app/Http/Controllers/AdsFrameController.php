@@ -19,10 +19,12 @@ class AdsFrameController extends Controller
 
         abort_if($cfg === null || empty($cfg['key']), 404);
 
-        return view('ads.frame', [
-            'slot' => $slot,
-            'cfg' => $cfg,
-            'host' => Ads::host(),
-        ]);
+        return response()
+            ->view('ads.frame', [
+                'slot' => $slot,
+                'cfg' => $cfg,
+                'host' => Ads::host(),
+            ])
+            ->header('Cache-Control', 'public, max-age=300, s-maxage=3600');
     }
 }
