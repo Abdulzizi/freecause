@@ -127,6 +127,17 @@ task('db:snapshot', function () {
     // large users table can be restored. Reads creds from the deployed .env.
     $envPath = '{{deploy_path}}/shared/.env';
 
+    // Dumping the ~18M-row DB takes ~7 min of silent SSH, which the connection
+    // cannot survive; skip entirely when there is nothing to migrate.
+    $status = run('cd {{release_path}} && {{bin/php}} {{bin/artisan}} migrate:status --pending --no-ansi 2>&1 || true');
+    if (str_contains($status, 'No pending migrations')) {
+        writeln('<comment>db:snapshot: no pending migrations; skipping mysqldump.</comment>');
+
+        return;
+    }
+
+    invoke('artisan:down');
+
     if (! test("[ -f {$envPath} ]")) {
         writeln('<comment>db:snapshot: no shared/.env yet (first deploy?); skipping.</comment>');
 
@@ -155,15 +166,6 @@ task('db:snapshot', function () {
 
     if ($db === '' || $user === '') {
         writeln('<comment>db:snapshot: DB_DATABASE/DB_USERNAME missing; skipping.</comment>');
-
-        return;
-    }
-
-    // Dumping the ~18M-row DB takes ~7 min of silent SSH, which the connection
-    // cannot survive; skip entirely when there is nothing to migrate.
-    $status = run('cd {{release_path}} && {{bin/php}} {{bin/artisan}} migrate:status --pending --no-ansi 2>&1 || true');
-    if (str_contains($status, 'No pending migrations')) {
-        writeln('<comment>db:snapshot: no pending migrations; skipping mysqldump.</comment>');
 
         return;
     }
@@ -202,8 +204,6 @@ task('db:snapshot', function () {
 });
 
 before('artisan:migrate', 'db:snapshot');
-before('artisan:migrate', 'artisan:down');
-after('deploy:vendors', 'artisan:migrate');
 after('deploy:symlink', 'artisan:up');
 after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');
