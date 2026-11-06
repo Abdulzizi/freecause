@@ -23,12 +23,24 @@ class EmailTemplateTranslator
         $host = str_ends_with($key, ':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com';
         $translated = [];
         foreach (array_chunk($texts, 20, true) as $batch) {
-            $xml = array_map(function ($text) {
+            $xml = [];
+            $protected = [];
+            foreach ($batch as $field => $text) {
+                $markers = [];
+                $index = 0;
                 $escaped = htmlspecialchars($text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-                $escaped = preg_replace('/:[a-z_]+/', '<keep>$0</keep>', $escaped);
+                $escaped = preg_replace_callback('/:[a-z_]+/', function ($match) use (&$markers, &$index, $text) {
+                    do {
+                        $marker = '__FC_VAR_'.$index++.'__';
+                    } while (str_contains($text, $marker));
+                    $markers[$marker] = $match[0];
 
-                return '<text>'.$escaped.'</text>';
-            }, array_values($batch));
+                    return '<keep>'.$marker.'</keep>';
+                }, $escaped);
+
+                $xml[] = '<text>'.$escaped.'</text>';
+                $protected[$field] = $markers;
+            }
             try {
                 $response = Http::withHeaders(['Authorization' => 'DeepL-Auth-Key '.$key])
                     ->connectTimeout(5)->timeout(15)->post($host.'/v2/translate', [
@@ -54,7 +66,17 @@ class EmailTemplateTranslator
                 if (! is_string($value) || preg_match('/<!DOCTYPE|<!ENTITY/i', $value) || ! @$document->loadXML($value, LIBXML_NONET)) {
                     throw new \RuntimeException('DeepL returned invalid template markup.');
                 }
-                $value = $document->documentElement->textContent;
+                $kept = [];
+                foreach ($document->getElementsByTagName('keep') as $node) {
+                    $kept[] = $node->textContent;
+                }
+                $expectedMarkers = array_keys($protected[$field]);
+                sort($kept);
+                sort($expectedMarkers);
+                if ($kept !== $expectedMarkers) {
+                    throw new \RuntimeException('A translated template changed a protected placeholder. Existing templates have been preserved.');
+                }
+                $value = strtr($document->documentElement->textContent, $protected[$field]);
                 preg_match_all('/:[a-z_]+/', $batch[$field], $expected);
                 preg_match_all('/:[a-z_]+/', $value, $actual);
                 $a = $expected[0];
