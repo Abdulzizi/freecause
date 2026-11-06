@@ -189,7 +189,7 @@ async function handleReconcile(button) {
 }
 
 async function handleTranslateMissing(button) {
-    const message = `Create draft translations for all ${button.dataset.count || ''} missing active locale(s), seeded from the source translation?`;
+    const message = `Create translations for all ${button.dataset.count || ''} missing active locale(s), copied from the source translation? They go live immediately and still show the source language until translated.`;
     if (!(await confirmAction(message, 'Translate to missing locales'))) return;
     button.disabled = true;
     try {
@@ -197,7 +197,7 @@ async function handleTranslateMissing(button) {
             id: button.dataset.id,
             locale: button.dataset.source || undefined,
         });
-        notify('success', `Created ${result.created} draft translation(s).`);
+        notify('success', `Created ${result.created} translation(s). They are public now and still in the source language.`);
         window.setTimeout(() => window.fcRefresh(), 700);
     } catch (error) {
         notify('error', error.message || 'Could not create missing translations.');
