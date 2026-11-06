@@ -65,6 +65,47 @@ class AdminAuditFollowupTest extends TestCase
         $this->assertTrue(Hash::check('changed-pass-123', $target->fresh()->password));
     }
 
+    public function test_admin_users_save_rotates_remember_token_on_password_change(): void
+    {
+        $target = User::factory()->create(['remember_token' => 'known-token']);
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'password' => 'changed-pass-123'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNotSame('known-token', $target->fresh()->remember_token);
+    }
+
+    public function test_admin_users_save_keeps_remember_token_without_password_change(): void
+    {
+        $target = User::factory()->create(['remember_token' => 'known-token']);
+
+        $this->actingAs($this->sysAdmin(), 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'first_name' => 'Renamed'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('known-token', $target->fresh()->remember_token);
+    }
+
+    public function test_own_password_change_rotates_remember_token(): void
+    {
+        $admin = $this->sysAdmin([
+            'password' => Hash::make('old-password-1'),
+            'remember_token' => 'known-token',
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/system/user-info', [
+                'email' => $admin->email,
+                'current_password' => 'old-password-1',
+                'new_password' => 'new-password-123',
+                'new_password_confirmation' => 'new-password-123',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNotSame('known-token', $admin->fresh()->remember_token);
+    }
+
     public function test_admin_session_is_dropped_after_password_change(): void
     {
         $admin = $this->sysAdmin(['email' => 'adm@example.com', 'password' => Hash::make('old-password-1')]);

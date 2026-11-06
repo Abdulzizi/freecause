@@ -271,6 +271,7 @@ class AdminUsersController extends Controller
                 if (! empty($data['password'])) {
                     $user->password = Hash::make($data['password']);
                     $user->password_changed_at = now();
+                    $user->setRememberToken(Str::random(60));
                 }
 
                 $user->name = $data['username'] ?? $user->name;
