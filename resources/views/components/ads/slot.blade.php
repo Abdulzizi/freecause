@@ -7,7 +7,6 @@
     // renders nothing rather than aliasing onto another zone.
     $adsOn = \App\Support\Ads::enabled();
     $cfg = \App\Support\Ads::slot($name);
-    $frameOrigin = \App\Support\Ads::frameOrigin();
     $hasKey = $adsOn && $cfg && !empty($cfg['key']);
     // The 320x50 "mobile" zone belongs to the sticky anchor (partials.ads-anchor).
     // Blade renders a page's content before the layout, so an inline copy would always
@@ -15,7 +14,7 @@
     $anchorOnly = $name === 'mobile' && ! $sticky;
     // otherwise the first occurrence of a slot in the request wins, so the layout's
     // default stack fills gaps without duplicating a zone a page already places inline.
-    $show = ! $anchorOnly && $adsOn && $hasKey && $frameOrigin !== '' && ($claimed || \App\Support\Ads::renderOnce($name));
+    $show = ! $anchorOnly && \App\Support\Ads::canShow($name) && ($claimed || \App\Support\Ads::renderOnce($name));
 @endphp
 
 @if ($show)
