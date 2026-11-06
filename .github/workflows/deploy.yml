@@ -40,9 +40,11 @@ jobs:
 
       - name: Resolve the target commit
         id: target
+        env:
+          REF: ${{ inputs.ref }}
         run: |
           set -euo pipefail
-          ref='${{ inputs.ref }}'
+          ref="$REF"
           if [ -z "$ref" ]; then
             sha='${{ github.sha }}'
           else
