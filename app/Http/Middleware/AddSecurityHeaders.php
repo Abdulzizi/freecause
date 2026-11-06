@@ -63,7 +63,9 @@ class AddSecurityHeaders
 
             $inlineHashes = '';
 
-            if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', (string) Settings::get('inject_body_html', ''), $matches)) {
+            $inlineHtml = (string) Settings::get('inject_body_html', '')."\n".(string) $request->attributes->get('head_additional_html', '');
+
+            if (preg_match_all('#<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>#is', $inlineHtml, $matches)) {
                 foreach ($matches[1] as $body) {
                     $inlineHashes .= " 'sha256-".base64_encode(hash('sha256', $body, true))."'";
                 }
