@@ -26,7 +26,8 @@ class CanonicalHost
         $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
 
         $host = strtolower($request->getHost());
-        $retiredAdHost = $host === 'ads.freecause.com' && $host !== Ads::frameHost();
+        $configuredFrameHost = strtolower((string) parse_url((string) config('ads.frame_origin'), PHP_URL_HOST));
+        $retiredAdHost = $configuredFrameHost !== '' && $host === $configuredFrameHost && $host !== Ads::frameHost();
         $isPublicDomain = $retiredAdHost || in_array($host, self::PUBLIC_HOSTS, true);
 
         if ($isPublicDomain && $host !== $canonicalHost) {

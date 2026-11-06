@@ -97,6 +97,28 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringNotContainsString('/ads/frame/skyscraper', $html);
     }
 
+    public function test_separate_frame_origin_drives_slots_route_and_public_csp(): void
+    {
+        config([
+            'ads.enabled' => true,
+            'ads.frame_origin' => 'https://ads.example.net',
+        ]);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $page = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk();
+        $html = $page->getContent();
+
+        $this->assertStringContainsString('src="https://ads.example.net/ads/frame/rectangle?v=2"', $html);
+        $this->assertStringNotContainsString('ads.freecause.com', $html);
+
+        $csp = (string) $page->headers->get('Content-Security-Policy');
+        $this->assertMatchesRegularExpression('#frame-src [^;]*https://ads\.example\.net[ ;]#', $csp);
+
+        $this->get('https://ads.example.net/ads/frame/rectangle')->assertOk();
+        $this->get('https://www.freecause.com/ads/frame/rectangle')->assertNotFound();
+    }
+
     public function test_parent_origin_prefers_the_canonical_url(): void
     {
         config(['app.canonical_url' => 'https://www.freecause.com:8443', 'app.url' => 'http://fallback.test']);

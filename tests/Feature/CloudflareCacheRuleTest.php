@@ -84,7 +84,10 @@ class CloudflareCacheRuleTest extends TestCase
 
         $this->assertFalse($rule['enabled']);
         $this->assertSame('set_cache_settings', $rule['action']);
-        $this->assertSame('http.host eq "ads.freecause.com" and http.request.uri.path contains "/ads/frame/"', $rule['expression']);
+        $this->assertSame('http.host eq "ADS_FRAME_HOST" and http.request.uri.path contains "/ads/frame/"', $rule['expression']);
+        $this->assertStringNotContainsString('freecause.com', $rule['expression']);
+        $this->assertStringContainsString('ADS_FRAME_HOST', $rule['description']);
+        $this->assertStringContainsString('ADS_FRAME_ORIGIN', $rule['description']);
 
         foreach (['matches', 'starts_with', 'ends_with', 'wildcard', 'lower('] as $forbidden) {
             $this->assertStringNotContainsString($forbidden, $rule['expression'], "Free plan rejects {$forbidden}");

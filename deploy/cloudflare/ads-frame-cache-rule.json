@@ -1,6 +1,6 @@
 {
-  "description": "Ads frame origin cache. Applied manually in the Cloudflare dashboard because the API token cannot create cache rules. Enable only after the origin ships Cache-Control public on /ads/frame/*. The query string carries the ?v= cache buster and stays in the cache key.",
-  "expression": "http.host eq \"ads.freecause.com\" and http.request.uri.path contains \"/ads/frame/\"",
+  "description": "Ads frame origin cache. Applied manually in the Cloudflare dashboard because the API token cannot create cache rules. Enable only after the origin ships Cache-Control public on /ads/frame/*. The query string carries the ?v= cache buster and stays in the cache key. Replace the ADS_FRAME_HOST placeholder with the host of the configured ADS_FRAME_ORIGIN / ads_frame_origin.",
+  "expression": "http.host eq \"ADS_FRAME_HOST\" and http.request.uri.path contains \"/ads/frame/\"",
   "action": "set_cache_settings",
   "action_parameters": {
     "cache": true,
