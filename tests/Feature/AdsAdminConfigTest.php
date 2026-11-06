@@ -86,6 +86,25 @@ class AdsAdminConfigTest extends TestCase
         $this->assertFalse(Ads::enabled());
     }
 
+    public function test_site_host_setting_falls_back_to_configured_frame_origin(): void
+    {
+        config([
+            'app.canonical_url' => 'https://www.freecause.com',
+            'ads.enabled' => true,
+            'ads.frame_origin' => 'https://ads.freecause.com',
+        ]);
+        Settings::set('ads_frame_origin', 'https://www.freecause.com', 'global');
+
+        $this->assertSame('https://ads.freecause.com', Ads::frameOrigin());
+
+        [$petition, $slug] = $this->publishedPetition();
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk()->getContent();
+
+        preg_match('/<iframe[^>]*src="https:\/\/ads\.freecause\.com\/ads\/frame\/rectangle\?v=2"[^>]*>/', $html, $frame);
+        $this->assertNotEmpty($frame);
+        $this->assertStringContainsString('allow-same-origin', $frame[0]);
+    }
+
     public function test_system_admin_can_save_ad_keys_and_they_render_on_the_petition_page(): void
     {
         config(['ads.enabled' => true]);

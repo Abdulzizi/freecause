@@ -11,7 +11,7 @@ class CanonicalHost
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Ads::dedicatedFrameHostMatchesRequest() && ! $request->is('ads/frame/*')) {
+        if (Ads::frameHostMatchesRequest() && ! $request->is('ads/frame/*')) {
             abort(404);
         }
 

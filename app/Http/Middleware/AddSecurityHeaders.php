@@ -64,12 +64,6 @@ class AddSecurityHeaders
                 "base-uri 'self'; ".
                 'frame-ancestors '.($parentOrigin !== '' ? $parentOrigin : "'self'").';'.
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
-
-            // A www frame opened directly has no embedding iframe attribute.
-            // Enforce the same opaque-origin sandbox through the response too.
-            if (! Ads::dedicatedFrameHostMatchesRequest()) {
-                $csp .= ' sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms;';
-            }
         } else {
             $frameOrigin = Ads::frameOrigin();
 
