@@ -9,6 +9,11 @@ export default defineConfig({
     retries: process.env.CI ? 1 : 0,
     reporter: process.env.CI ? 'github' : 'list',
     testIgnore: process.env.E2E_VISUAL ? [] : ['**/visual.spec.js'],
+    snapshotPathTemplate: '{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-snapshotSuffix}{ext}',
+    projects: [
+        { name: 'setup', testMatch: /auth\.setup\.js/ },
+        { name: 'e2e', dependencies: ['setup'] },
+    ],
     use: { baseURL: 'http://127.0.0.1:8099', contextOptions: { reducedMotion: 'reduce' }, trace: 'retain-on-failure' },
     webServer: {
         command: 'bash scripts/e2e-serve.sh',
