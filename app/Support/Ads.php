@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Http\Middleware\CanonicalHost;
+
 // Resolves Adsterra ad config, preferring runtime admin Settings (group "ads")
 // over the config/ads.php baseline. Admin edits the enable flag, host and the
 // per-slot zone keys without a deploy; structural bits (dimensions, format,
@@ -46,11 +48,28 @@ class Ads
             ? self::bareOrigin((string) $v)
             : '';
 
-        if ($origin === '') {
+        if ($origin === '' || self::isSiteHost($origin)) {
             $origin = self::bareOrigin((string) config('ads.frame_origin', ''));
         }
 
+        if (self::isSiteHost($origin)) {
+            return '';
+        }
+
         return $origin;
+    }
+
+    private static function isSiteHost(string $origin): bool
+    {
+        $host = strtolower((string) parse_url($origin, PHP_URL_HOST));
+
+        if ($host === '') {
+            return false;
+        }
+
+        $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
+
+        return $host === $parentHost || in_array($host, CanonicalHost::PUBLIC_HOSTS, true);
     }
 
     // exact scheme://host origin, or '' for anything else.
@@ -101,20 +120,6 @@ class Ads
     public static function frameHostMatchesRequest(): bool
     {
         return self::frameHost() !== '' && self::frameHost() === strtolower(request()->getHost());
-    }
-
-    // A frame origin that is also the public site must not make normal site
-    // pages frame-only. Keep the dedicated-host restriction for legacy setups.
-    public static function dedicatedFrameHostMatchesRequest(): bool
-    {
-        $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
-
-        return self::frameHostMatchesRequest() && self::frameHost() !== $parentHost;
-    }
-
-    public static function frameIsCrossOrigin(): bool
-    {
-        return self::frameHost() !== '' && self::frameHost() !== strtolower(request()->getHost());
     }
 
     // resolved slot config, or null for an unknown slot. The zone key is

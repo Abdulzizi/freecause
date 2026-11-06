@@ -97,7 +97,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Ad-frame failures must never render the full site: its ad slots would
         // request more frames, recursively loading error pages and analytics.
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
-            if ($request->is('ads/frame/*') || Ads::dedicatedFrameHostMatchesRequest()) {
+            if ($request->is('ads/frame/*') || Ads::frameHostMatchesRequest()) {
                 return response('', $e->getStatusCode(), [
                     ...$e->getHeaders(),
                     'Cache-Control' => 'no-store',
