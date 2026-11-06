@@ -11,6 +11,7 @@ use App\Rules\YoutubeVideo;
 use App\Support\Countries;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class PetitionRequest extends FormRequest
 {
@@ -77,6 +78,18 @@ class PetitionRequest extends FormRequest
         ] + ($creating
             ? ['goal_signatures' => ['required', 'integer', Rule::in(Petition::GOALS)]]
             : ['remove_image' => ['nullable', 'boolean']]);
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                if ($this->hasFile('image') && filled($this->input('image_url'))) {
+                    $validator->errors()->add('image', __('create.err_image_conflict'));
+                    $validator->errors()->add('image_url', __('create.err_image_conflict'));
+                }
+            },
+        ];
     }
 
     public function messages(): array
