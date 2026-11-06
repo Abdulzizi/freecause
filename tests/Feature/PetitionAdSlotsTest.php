@@ -249,6 +249,34 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringNotContainsString(config('ads.slots.rectangle.key'), $html);
     }
 
+    public function test_ads_disabled_leaves_no_ad_wrappers_on_home_and_signatures(): void
+    {
+        config(['ads.enabled' => false]);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $home = $this->get('/en')->assertOk()->getContent();
+        $signatures = $this->get("/en/petition/{$slug}/{$petition->id}/signatures")->assertOk()->getContent();
+
+        foreach ([$home, $signatures] as $html) {
+            $this->assertStringNotContainsString('fc-ad-infeed', $html);
+            $this->assertStringNotContainsString('data-ad-slot', $html);
+        }
+
+        $this->assertStringNotContainsString('<div class="my-6">', $home);
+    }
+
+    public function test_missing_frame_origin_hides_infeed_on_signatures(): void
+    {
+        config(['ads.enabled' => true, 'ads.frame_origin' => 'https://www.freecause.com']);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $this->get("/en/petition/{$slug}/{$petition->id}/signatures")
+            ->assertOk()
+            ->assertDontSee('fc-ad-infeed');
+    }
+
     public function test_anchor_bar_is_absent_when_ads_are_disabled(): void
     {
         config(['ads.enabled' => false]);

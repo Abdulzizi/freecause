@@ -80,7 +80,5 @@
             </div>
         </x-ui.section>
 
-    <div class="mb-4 text-center">
-        <x-ads.slot name="rectangle" />
-    </div>
+    <x-ads.slot name="rectangle" class="mb-4 text-center" />
 @endsection

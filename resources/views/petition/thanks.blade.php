@@ -101,9 +101,7 @@
                     @endforelse
                 </div>
 
-                <div class="mb-4 text-center">
-                    <x-ads.slot name="rectangle" />
-                </div>
+                <x-ads.slot name="rectangle" class="mb-4 text-center" />
                 <x-ui.button variant="danger"
                     :href="$shareEmailUrl"
                     data-share-petition
@@ -142,7 +140,5 @@
         </a>
     </x-ui.action-sheet>
 
-    <div class="my-4 text-center">
-        <x-ads.slot name="banner468" />
-    </div>
+    <x-ads.slot name="banner468" class="my-4 text-center" />
 @endsection
