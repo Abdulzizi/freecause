@@ -195,6 +195,33 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringNotContainsString(config('ads.slots.rectangle.key'), $html);
     }
 
+    public function test_anchor_bar_is_absent_when_ads_are_disabled(): void
+    {
+        config(['ads.enabled' => false]);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringNotContainsString('id="fc-ad-anchor"', $html);
+    }
+
+    public function test_anchor_bar_renders_when_ads_are_enabled_with_a_valid_origin(): void
+    {
+        config(['ads.enabled' => true]);
+        config(['ads.frame_origin' => 'https://ads.freecause.com']);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('id="fc-ad-anchor"', $html);
+    }
+
     public function test_slots_render_identically_on_a_second_locale(): void
     {
         config(['ads.enabled' => true]);
