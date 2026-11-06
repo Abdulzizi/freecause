@@ -31,7 +31,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
       - name: Run test suite
-        run: php artisan test
+        run: touch .env && php artisan test
 
       - name: Check code style
         run: ./vendor/bin/pint --test app database tests routes config
