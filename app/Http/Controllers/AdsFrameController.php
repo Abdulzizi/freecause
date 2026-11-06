@@ -25,6 +25,6 @@ class AdsFrameController extends Controller
                 'cfg' => $cfg,
                 'host' => Ads::host(),
             ])
-            ->header('Cache-Control', 'public, max-age=300, s-maxage=3600');
+            ->header('Cache-Control', 'public, max-age=300, s-maxage=300');
     }
 }
