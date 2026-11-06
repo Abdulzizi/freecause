@@ -70,13 +70,12 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringNotContainsString('unsafe-eval', $csp);
     }
 
-    public function test_public_csp_allows_adsterra_network(): void
+    public function test_public_csp_drops_adsterra_network(): void
     {
         $csp = $this->cspFor('/en/petition/x/1');
 
-        $this->assertStringContainsString('https://bicea.org', $csp);
+        $this->assertStringNotContainsString('https://bicea.org', $csp);
         $this->assertStringContainsString("script-src 'self'", $csp);
-        $this->assertMatchesRegularExpression('/connect-src[^;]*https:\/\/bicea\.org/', $csp);
     }
 
     public function test_public_csp_limits_script_cdns_to_quill(): void
