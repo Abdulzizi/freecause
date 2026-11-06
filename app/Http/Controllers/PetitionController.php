@@ -145,11 +145,6 @@ class PetitionController extends Controller
         return $path;
     }
 
-    private function imageConflict(Request $request, array $data): bool
-    {
-        return $request->hasFile('image') && filled($data['image_url'] ?? null);
-    }
-
     /** Base query for the public petition listing; cache:warm uses it too. */
     public static function listingQuery(string $locale): Builder
     {
@@ -471,16 +466,19 @@ class PetitionController extends Controller
         return redirect()->to(route('petition.show', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id]).'#petition-comments');
     }
 
-    public function create(string $locale)
+    private function activeCategories(string $locale)
     {
-        $defaultLocale = default_locale();
-
-        $categories = Category::query()
+        return Category::query()
             ->select(['categories.id'])
-            ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'name', 'slug' => 'slug'], $defaultLocale)
+            ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'name', 'slug' => 'slug'], default_locale())
             ->where('categories.is_active', true)
             ->orderBy('name')
             ->get();
+    }
+
+    public function create(string $locale)
+    {
+        $categories = $this->activeCategories($locale);
 
         return view('petition.create', compact('locale', 'categories'));
     }
@@ -491,21 +489,10 @@ class PetitionController extends Controller
         $petitionText = ($data['title'] ?? '').' '.strip_tags($data['description'] ?? '');
         $reviewMatches = ReviewKeywords::matches($petitionText);
 
-        if ($reviewMatches === [] && Spam::isSpam($petitionText, Spam::reviewOwned())) {
+        if (Spam::isSpam($petitionText, Spam::reviewOwned())) {
             Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
-        }
-
-        if ($this->imageConflict($request, $data)) {
-            $conflict = __('create.err_image_conflict');
-
-            return back()
-                ->withErrors([
-                    'image' => $conflict,
-                    'image_url' => $conflict,
-                ])
-                ->withInput();
         }
 
         $newCoverImage = null;
@@ -782,14 +769,7 @@ class PetitionController extends Controller
         }
         $tr = $trOrRedirect;
 
-        $defaultLocale = default_locale();
-
-        $categories = Category::query()
-            ->select(['categories.id'])
-            ->translated($locale, 'ct_locale', 'ct_default', ['name' => 'name', 'slug' => 'slug'], $defaultLocale)
-            ->where('categories.is_active', true)
-            ->orderBy('name')
-            ->get();
+        $categories = $this->activeCategories($locale);
 
         $mode = 'edit';
 
@@ -828,19 +808,10 @@ class PetitionController extends Controller
         $data = $request->validated();
         $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
 
-        if ($reviewMatches === [] && Spam::isSpam($data['title'].' '.strip_tags($data['description']), Spam::reviewOwned())) {
+        if (Spam::isSpam($data['title'].' '.strip_tags($data['description']), Spam::reviewOwned())) {
             Spam::log('petition.update', json_encode(['petition_id' => $petition->id, 'title' => $data['title']]));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
-        }
-
-        if ($this->imageConflict($request, $data)) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'image' => __('create.err_image_conflict'),
-                    'image_url' => __('create.err_image_conflict'),
-                ]);
         }
 
         $oldCoverImage = $petition->cover_image;

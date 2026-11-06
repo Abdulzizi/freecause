@@ -162,6 +162,32 @@ class PetitionReviewKeywordsTest extends TestCase
         $this->assertDatabaseHas('spam_logs', ['type' => 'petition.review']);
     }
 
+    public function test_hard_block_word_with_review_word_is_rejected_on_create(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload([
+            'title' => 'Cheap viagra and betting offers',
+        ]))->assertSessionHasErrors(['title' => __('create.err_suspicious')]);
+
+        $this->assertDatabaseCount('petitions', 0);
+    }
+
+    public function test_hard_block_word_with_review_word_is_rejected_on_update(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload([
+            'title' => 'Clean petition title',
+        ]))->assertRedirect();
+
+        $petition = Petition::latest('id')->firstOrFail();
+        $slug = $petition->translations()->where('locale', 'en')->value('slug');
+
+        $this->actingAs($this->user)->post("/en/petition/{$slug}/{$petition->id}/edit", $this->payload([
+            'title' => 'Cheap viagra and betting offers',
+        ]))->assertSessionHasErrors(['title' => __('create.err_suspicious')]);
+
+        $this->assertDatabaseHas('petition_translations', ['petition_id' => $petition->id, 'title' => 'Clean petition title']);
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'status' => 'published']);
+    }
+
     public function test_admin_detail_sheet_shows_the_matched_keywords(): void
     {
         $this->actingAs($this->user)->post('/en/create-petition', $this->payload([
