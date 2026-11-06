@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\GlobalOptionsController;
 use App\Http\Controllers\Admin\LanguageOptionsController;
 use App\Http\Controllers\Admin\System\PermissionController;
 use App\Http\Controllers\AdsFrameController;
+use App\Http\Controllers\AggregateTrafficController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryPetitionController;
 use App\Http\Controllers\ContactController;
@@ -41,6 +42,7 @@ use App\Support\Settings;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -72,6 +74,10 @@ $withoutSession = [
 ];
 
 Route::get('/ads/frame/{slot}', AdsFrameController::class)->withoutMiddleware($withoutSession)->name('ads.frame');
+
+Route::post('/site-metrics', AggregateTrafficController::class)
+    ->withoutMiddleware([...$withoutSession, AuthenticateSession::class])
+    ->middleware('throttle:120,1')->name('site.metrics');
 
 Route::get('/speculationrules.json', function () {
     $urlExclusions = [
