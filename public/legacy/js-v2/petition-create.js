@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var removeBtn = form.querySelector('[data-image-remove]');
     var submitBtn = null;
 
-    var MAX_SIZE = fileInput ? parseInt(fileInput.getAttribute('data-max-size'), 10) || 4194304 : 4194304;
+    var MAX_SIZE = fileInput ? parseInt(fileInput.getAttribute('data-max-size'), 10) || 8388608 : 8388608;
     var ACCEPTED = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     var objectUrl = null;
 

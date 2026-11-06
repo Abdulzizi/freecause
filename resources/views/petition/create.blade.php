@@ -243,11 +243,11 @@
                                             {{ __('create.image_instructions') }}
                                         </p>
 
-                                        <input type="hidden" name="MAX_FILE_SIZE" value="4194304">
+                                        <input type="hidden" name="MAX_FILE_SIZE" value="8388608">
 
                                         <input type="file" id="petition-image" class="form-control max-md:min-h-12 @error('image') is-invalid @enderror"
                                             name="image" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
-                                            data-image-input data-max-size="4194304" @error('image') aria-invalid="true" aria-describedby="petition-image-error" @enderror>
+                                            data-image-input data-max-size="8388608" @error('image') aria-invalid="true" aria-describedby="petition-image-error" @enderror>
 
                                         <small class="text-muted block mt-1" data-image-formats>
                                             {{ __('create.image_formats') }}
