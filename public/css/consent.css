@@ -1,0 +1,23 @@
+#cc-main {
+    --cc-font-family: Arial, sans-serif;
+    --cc-modal-border-radius: 8px;
+    --cc-btn-border-radius: 5px;
+    --cc-primary-color: #252525;
+    --cc-btn-primary-bg: #c51b1b;
+    --cc-btn-primary-border-color: #c51b1b;
+    --cc-btn-primary-hover-bg: #a41616;
+    --cc-btn-primary-hover-border-color: #a41616;
+    --cc-btn-secondary-bg: #f2f2f2;
+    --cc-btn-secondary-color: #252525;
+    --cc-btn-secondary-border-color: #d6d6d6;
+    --cc-cookie-category-block-bg: #f5f5f5;
+    --cc-toggle-on-bg: #a41616;
+    --cc-z-index: 2147483000;
+}
+#cc-main .cm { max-width: calc(100vw - 24px); }
+#cc-main .cm__btn, #cc-main .pm__btn { min-height: 44px; }
+html[data-fc-ads="off"] .fc-ad,
+html[data-fc-ads="off"] .fc-ad-infeed,
+html[data-fc-ads="off"] .fc-ad-anchor,
+html[data-fc-ads="off"] .fc-ad-anchor-spacer { display: none; }
+[data-fc-cookie-settings] { cursor: pointer; text-decoration: underline; }
