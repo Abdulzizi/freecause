@@ -1939,6 +1939,32 @@ class PetitionTest extends TestCase
         $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'spam@example.com']);
     }
 
+    public function test_guest_sign_with_spam_keyword_in_email_is_rejected(): void
+    {
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true]);
+
+        PetitionTranslation::create([
+            'petition_id' => $petition->id,
+            'locale' => 'en',
+            'title' => 'Test Petition',
+            'slug' => 'test-petition',
+            'description' => 'Test petition description.',
+        ]);
+
+        $response = $this->post("/en/petition/test-petition/{$petition->id}/sign", [
+            'name' => 'Test',
+            'email' => 'viagra@example.com',
+            'agree1' => '1',
+            'agree2' => '1',
+            'agree3' => '1',
+        ]);
+
+        $response->assertSessionHas('toast.type', 'error');
+        $this->assertDatabaseMissing('users', ['email' => 'viagra@example.com']);
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'email' => 'viagra@example.com']);
+        $this->assertSame(0, (int) $petition->fresh()->signature_count);
+    }
+
     #[DataProvider('commentSpamCases')]
     public function test_signing_comment_uses_review_owned_ignore_list(bool $authed, string $comment, bool $accepted): void
     {

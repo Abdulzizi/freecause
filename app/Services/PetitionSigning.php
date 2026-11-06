@@ -68,6 +68,7 @@ class PetitionSigning
 
         $spamText = implode(' ', [
             $data['name'] ?? '',
+            $data['email'] ?? '',
             $data['comment'] ?? '',
         ]);
 
