@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('signatures:reconcile')->dailyAt('03:00');
+Schedule::command('images:cleanup')->dailyAt('05:00');
 Schedule::command('backup:run')->dailyAt('02:00')->appendOutputTo(storage_path('logs/backup.log'));
 Schedule::command('backup:clean')->dailyAt('04:00')->appendOutputTo(storage_path('logs/backup.log'));
 Schedule::command('backup:monitor')->dailyAt('06:00');
