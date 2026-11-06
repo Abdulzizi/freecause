@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\AddSecurityHeaders;
+use App\Models\PageContent;
+use App\Support\Settings;
+use Database\Seeders\LanguageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -88,5 +91,33 @@ class SecurityHeadersAdsenseTest extends TestCase
         $this->assertStringNotContainsString('https://cdn.jsdelivr.net ', $scriptSrc);
         $this->assertStringContainsString('https://cdn.jsdelivr.net/npm/quill@1.3.7/', $scriptSrc);
         $this->assertStringContainsString('https://cdnjs.cloudflare.com', $this->cspFor('/admin/login'));
+    }
+
+    private function hash(string $body): string
+    {
+        return "'sha256-".base64_encode(hash('sha256', $body, true))."'";
+    }
+
+    public function test_public_csp_hashes_inline_script_in_inject_body_html(): void
+    {
+        $this->seed(LanguageSeeder::class);
+        Settings::set('inject_body_html', '<script>window.bodyHook=1</script>');
+
+        $csp = $this->get('/en')->assertOk()->headers->get('Content-Security-Policy');
+
+        $this->assertStringContainsString($this->hash('window.bodyHook=1'), $csp);
+    }
+
+    public function test_public_csp_hashes_inline_script_in_head_additional_html(): void
+    {
+        $this->seed(LanguageSeeder::class);
+        PageContent::updateOrCreate(
+            ['page' => 'global', 'locale' => 'en', 'key' => 'head_additional_html'],
+            ['value' => '<script>window.headHook=1</script>']
+        );
+
+        $csp = $this->get('/en')->assertOk()->headers->get('Content-Security-Policy');
+
+        $this->assertStringContainsString($this->hash('window.headHook=1'), $csp);
     }
 }

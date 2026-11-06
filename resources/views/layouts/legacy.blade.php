@@ -90,7 +90,11 @@
     <meta name="twitter:description" content="{{ $ogDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
 
-    {!! \App\Services\ContentRenderer::render($headExtra) !!}
+    @php
+        $headExtraHtml = \App\Services\ContentRenderer::render($headExtra);
+        request()->attributes->set('head_additional_html', $headExtraHtml);
+    @endphp
+    {!! $headExtraHtml !!}
 
     @if (config('services.adsense.enabled') && config('services.adsense.client'))
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client') }}" crossorigin="anonymous"></script>
