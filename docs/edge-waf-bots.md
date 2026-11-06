@@ -67,6 +67,19 @@ is inert on Free). Custom-rule expressions on Free reject `matches` and
   plus crawler retries. Deploy recipe fix `c02a8117` targets lifting maintenance
   earlier.
 
+## Known gap: Cloudflare JavaScript detections vs CSP
+
+Cloudflare injects an inline `challenge-platform` script into every HTML page.
+The public CSP has no hash for it (the ray ID changes per request), so the
+browser logs a `script-src` violation on each page view. Accepted gap.
+
+- Zone settings: `enable_js: true`, `fight_mode: true`.
+- JavaScript detections cannot be turned off alone: the API rejects
+  `enable_js: false` with `cannot enable Fight_Mode while EnableJS is disabled`.
+- Turning it off means turning off Bot Fight Mode too. Decision (2026-11-06):
+  keep Bot Fight Mode, keep the CSP strict, no `'unsafe-inline'`.
+- Revisit if the CSP error becomes a problem or Bot Fight Mode is dropped.
+
 ## Verify
 
 Dashboard → Security → WAF → Custom rules (per-rule event counts / CSR), or the
