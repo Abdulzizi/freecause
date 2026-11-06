@@ -38,7 +38,7 @@ test('the owner sees the export links and downloads TXT, CSV and PDF that includ
     const body = await csv.text();
     expect(body).toContain(signer.name);
     // Owners get no email column; only admins do.
-    expect(body.split('\n')[0]).toBe('\uFEFF#,name,comment,locale,confirmed,signed_at');
+    expect(body.split('\n')[0]).toBe('\uFEFF#,name,comment,locale,signed_at');
     expect(body).not.toContain(signer.email);
 
     const pdf = await page.request.get(`${petition}/download/pdf`);
