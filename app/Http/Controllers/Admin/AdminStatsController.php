@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Support\AggregateTraffic;
 use App\Support\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -41,12 +42,15 @@ class AdminStatsController extends Controller
             ->orderByDesc('is_default')
             ->get();
 
+        $traffic = AggregateTraffic::report($filters['locale'], $filters['range']);
+
         return view('admin.stats.index', compact(
             'filters',
             'summary',
             'columns',
             'results',
-            'languages'
+            'languages',
+            'traffic'
         ));
     }
 
