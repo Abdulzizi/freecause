@@ -29,9 +29,11 @@ jobs:
 
       - name: Resolve the tag
         id: tag
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           set -euo pipefail
-          tag='${{ inputs.tag || github.ref_name }}'
+          tag="$TAG"
           if ! [[ "$tag" =~ ^v[0-9] ]]; then
             echo "::error::refusing to release '$tag' — a version tag must look like vYYYY.MM.DD-HHMMSS"
             exit 1
