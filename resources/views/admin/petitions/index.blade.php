@@ -52,7 +52,7 @@
 
                     <x-admin.form-field label="goal">
                         <select name="goal_signatures" class="fc-filter-field">
-                            @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
+                            @foreach (\App\Models\Petition::GOALS as $goalOption)
                                 <option value="{{ $goalOption }}" {{ $goalOption === 1000 ? 'selected' : '' }}>
                                     {{ number_format($goalOption) }}
                                 </option>
@@ -408,7 +408,7 @@
 
                 <x-admin.form-field label="signature goal">
 <select class="fc-filter-field" name="goal_signatures">
-                            @foreach ([50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000] as $goalOption)
+                            @foreach (collect(\App\Models\Petition::GOALS)->push((int) $selectedPetition->goal_signatures)->unique()->sort()->values() as $goalOption)
                                 <option value="{{ $goalOption }}" {{ (int) $selectedPetition->goal_signatures === $goalOption ? 'selected' : '' }}>
                                     {{ number_format($goalOption) }}
                                 </option>

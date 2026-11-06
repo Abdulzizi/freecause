@@ -81,6 +81,9 @@ class PetitionRequest extends FormRequest
 
     public function messages(): array
     {
-        return ['description.max' => __('create.err_description_too_long')];
+        return [
+            'description.max' => __('create.err_description_too_long'),
+            'image.uploaded' => __('create.err_image_upload_failed'),
+        ];
     }
 }

@@ -176,6 +176,17 @@ if (! function_exists('admin_can')) {
     }
 }
 
+if (! function_exists('sanitizeHeadHtml')) {
+    function sanitizeHeadHtml(?string $html): string
+    {
+        if ($html === null) {
+            return '';
+        }
+
+        return trim(HtmlSanitizer::head()->sanitizeFor('head', $html));
+    }
+}
+
 if (! function_exists('sanitizeAdminHtml')) {
     function sanitizeAdminHtml(?string $html): string
     {

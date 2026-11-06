@@ -69,6 +69,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       e2e: ${{ steps.f.outputs.e2e }}
+      visual: ${{ steps.f.outputs.visual }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,6 +82,11 @@ jobs:
             echo "e2e=true" >> "$GITHUB_OUTPUT"
           else
             echo "e2e=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -z "$files" ] || grep -qE '^(resources|lang|public|app/View|tests/e2e|database/seeders|scripts|\.github)/|^(package|playwright)' <<<"$files"; then
+            echo "visual=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "visual=false" >> "$GITHUB_OUTPUT"
           fi
 
   e2e:
@@ -121,7 +127,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Chromium
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: npx playwright install --with-deps chromium
 
       - name: Install sqlite3 CLI (e2e specs read tokens from the DB)
@@ -131,6 +137,7 @@ jobs:
         run: npx playwright test
 
       - name: Run screenshot tests
+        if: needs.changes.outputs.visual == 'true'
         run: bash scripts/e2e-visual.sh
 
       - name: Upload failure traces

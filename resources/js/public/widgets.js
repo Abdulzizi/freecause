@@ -9,16 +9,6 @@ export function init(ctx) {
         if (details) details.removeAttribute('open');
     });
 
-    document.querySelectorAll('ins.adsbygoogle[data-adsense]').forEach(function (slot) {
-        if (slot.dataset.fcAdsPushed === '1') return;
-        slot.dataset.fcAdsPushed = '1';
-        try {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (error) {
-            slot.dataset.fcAdsPushed = '';
-        }
-    });
-
     document.addEventListener('click', function (event) {
         const anchorClose = event.target.closest('[data-ad-anchor-close]');
         if (anchorClose) {

@@ -45,16 +45,10 @@ class AddSecurityHeaders
                 "object-src 'none'; ".
                 "base-uri 'self';";
         } elseif ($request->is('ads/frame/*')) {
-            $appOrigin = '';
-            $appUrl = (array) parse_url((string) config('app.url'));
-            if (! empty($appUrl['host'])) {
-                $appOrigin = ' '.($appUrl['scheme'] ?? 'https').'://'.$appUrl['host']
-                    .(! empty($appUrl['port']) ? ':'.$appUrl['port'] : '');
-            }
             $parentOrigin = Ads::parentOrigin();
             $csp =
                 "default-src 'self' https: data: blob:; ".
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:".$appOrigin.'; '.
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; ".
                 "style-src 'self' 'unsafe-inline' https:; ".
                 "img-src 'self' data: blob: https:; ".
                 "font-src 'self' data: https:; ".
@@ -64,12 +58,6 @@ class AddSecurityHeaders
                 "base-uri 'self'; ".
                 'frame-ancestors '.($parentOrigin !== '' ? $parentOrigin : "'self'").';'.
                 ($request->isSecure() ? 'upgrade-insecure-requests;' : '');
-
-            // A www frame opened directly has no embedding iframe attribute.
-            // Enforce the same opaque-origin sandbox through the response too.
-            if (! Ads::dedicatedFrameHostMatchesRequest()) {
-                $csp .= ' sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms;';
-            }
         } else {
             $frameOrigin = Ads::frameOrigin();
 
@@ -86,7 +74,6 @@ class AddSecurityHeaders
                 "script-src 'self' ".
                     'https://cdn.jsdelivr.net/npm/quill@1.3.7/ https://accounts.google.com '.
                     'https://challenges.cloudflare.com '.
-                    'https://bicea.org '.
                     'https://pagead2.googlesyndication.com https://partner.googleadservices.com '.
                     'https://tpc.googlesyndication.com https://www.googletagservices.com '.
                     'https://googleads.g.doubleclick.net '.
@@ -101,7 +88,7 @@ class AddSecurityHeaders
                 "font-src 'self' https://cdnjs.cloudflare.com; ".
                 "frame-src 'self' https://accounts.google.com https://www.google.com ".
                     'https://challenges.cloudflare.com '.
-                    ($frameOrigin !== '' ? $frameOrigin.' ' : '').'https://bicea.org '.
+                    ($frameOrigin !== '' ? $frameOrigin.' ' : '').
                     'https://googleads.g.doubleclick.net https://tpc.googlesyndication.com '.
                     'https://ep2.adtrafficquality.google '.
                     'https://www.googletagmanager.com https://www.youtube-nocookie.com; '.
@@ -109,8 +96,7 @@ class AddSecurityHeaders
                     'https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net '.
                     'https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com '.
                     'https://*.analytics.google.com https://*.adtrafficquality.google '.
-                    'https://ep2.adtrafficquality.google '.
-                    'https://bicea.org; '.
+                    'https://ep2.adtrafficquality.google; '.
                 "object-src 'none'; ".
                 "base-uri 'self';".
                 ($request->is('widget-render/*') ? ' frame-ancestors *;' : '').

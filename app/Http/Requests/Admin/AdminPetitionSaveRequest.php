@@ -22,6 +22,12 @@ class AdminPetitionSaveRequest extends FormRequest
             $youtube[] = new YoutubeVideo;
         }
 
+        $goal = ['nullable', 'integer'];
+        $storedGoal = Petition::query()->whereKey($this->input('id'))->value('goal_signatures');
+        if ((string) $this->input('goal_signatures') !== (string) $storedGoal) {
+            $goal[] = Rule::in(Petition::GOALS);
+        }
+
         return [
             'id' => ['required', 'integer', 'exists:petitions,id'],
             'locale' => ['required', 'string', Rule::exists('languages', 'code')->where('is_active', 1)],
@@ -29,7 +35,7 @@ class AdminPetitionSaveRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
             'text' => ['nullable', 'string'],
-            'goal_signatures' => ['nullable', 'integer', 'in:50,100,1000,5000,10000,50000,100000,500000,1000000,10000000'],
+            'goal_signatures' => $goal,
             'is_active' => ['nullable'],
             'is_featured' => ['nullable'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],

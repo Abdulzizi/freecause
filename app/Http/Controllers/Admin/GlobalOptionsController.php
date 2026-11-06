@@ -198,14 +198,15 @@ class GlobalOptionsController extends Controller
                 'active_languages',
                 'active_languages_full',
 
-                'admin:dashboard:stats:v2',
+                'admin:dashboard:stats:v4',
                 'admin:dashboard:quick',
                 'admin:dashboard:recent',
                 'admin:dashboard:top_petitions',
                 'admin:dashboard:health',
-                'admin:stats:totals',
-                'admin:users:verified_count',
-                'admin:petitions:status_counts',
+                'admin:petitions:status_counts:v2',
+                'admin:users:synthetic_count:v3',
+                'admin:users:verified_real_count:v3',
+                'admin:signatures:real_count:v3',
                 'level:user_counts',
 
             ];
@@ -214,7 +215,7 @@ class GlobalOptionsController extends Controller
                 Cache::forget($key);
             }
 
-            foreach (['users', 'petitions', 'signatures', 'categories', 'pages', 'logs', 'banned_ips'] as $table) {
+            foreach (['users', 'petitions', 'signatures', 'categories', 'pages', 'logs', 'banned_ips', 'reports'] as $table) {
                 Cache::forget("approx_rows:{$table}");
             }
 

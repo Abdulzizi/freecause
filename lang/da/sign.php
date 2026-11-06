@@ -48,4 +48,8 @@ return [
     'surname' => 'Efternavn',
     'thanks' => 'Tak fordi du underskrev!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Kommentar sendt!',
+    'suspicious' => 'Mistænkelig aktivitet registreret.',
+    'thanks_toast' => 'Tak fordi du underskrev!',
+    'verify_first' => 'Bekræft din e-mail, før du underskriver petitioner.',
 ];

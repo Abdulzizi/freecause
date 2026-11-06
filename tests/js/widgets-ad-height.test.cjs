@@ -61,3 +61,8 @@ test('non-fluid ad frame keeps the 1000 cap', () => {
     assert.equal(banner.style.height, '1000px');
     assert.equal(banner.style.maxHeight, '1000px');
 });
+
+test('widgets source has no adsense slot push code', () => {
+    assert.equal(/data-adsense/.test(SRC), false);
+    assert.equal(/adsbygoogle/.test(SRC), false);
+});

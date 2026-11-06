@@ -48,4 +48,8 @@ return [
     'surname' => 'Soyad',
     'thanks' => 'Imzaladiginiz icin tesekkurler!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Yorum yayinlandi!',
+    'suspicious' => 'Supheli etkinlik algilandi.',
+    'thanks_toast' => 'Imzaladiginiz icin tesekkurler!',
+    'verify_first' => 'Dilekceleri imzalamadan once e-postanizi dogrulayin.',
 ];

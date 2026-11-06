@@ -10,6 +10,7 @@ use App\Mail\VerifyAccountMail;
 use App\Mail\WelcomeAccountMail;
 use App\Models\PageContent;
 use App\Models\Petition;
+use App\Models\PetitionTranslation;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Services\EmailTemplateTranslator;
@@ -74,20 +75,33 @@ class TransactionalEmailTemplatesTest extends TestCase
         $this->assertStringNotContainsString('Benvenuto nella nostra comunità', (new WelcomeAccountMail('fr'))->render());
     }
 
-    public function test_legacy_account_with_country_and_gender_must_explicitly_save_language(): void
+    public function test_legacy_account_with_complete_profile_can_sign_without_language_confirmation(): void
     {
-        $user = User::factory()->create(['verified' => true, 'country' => 'IT', 'gender' => 'female', 'locale' => 'it_IT', 'preferred_language_confirmed_at' => null]);
-        $this->assertFalse($user->hasCompleteProfile());
-        $this->actingAs($user)->get('/en/my-petitions')->assertRedirectContains('/en/profile');
-        $this->actingAs($user)->get('/en/profile')->assertOk()->assertSee('href="#language-field"', false);
-        $this->actingAs($user)->post('/en/profile', ['first_name' => 'Test', 'last_name' => 'User', 'country' => 'IT', 'gender' => 'female', 'locale' => 'it', 'identify_mode' => 'full'])
-            ->assertSessionHasNoErrors()->assertRedirect('/it/profile');
-        $this->assertTrue($user->fresh()->hasCompleteProfile());
+        $owner = User::factory()->create(['verified' => true]);
+        $petition = Petition::factory()->create(['user_id' => $owner->id, 'status' => 'published', 'is_active' => true]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Legacy', 'slug' => 'legacy', 'description' => '<p>Description.</p>']);
+
+        $user = User::factory()->create([
+            'verified' => true,
+            'country' => 'IT',
+            'gender' => 'female',
+            'locale' => 'it_IT',
+            'preferred_language_confirmed_at' => null,
+            'welcome_email_pending' => false,
+        ]);
+
+        $this->assertTrue($user->hasCompleteProfile());
+
+        $response = $this->actingAs($user)->post('/en/petition/legacy/'.$petition->id.'/sign', [
+            'agree1' => 'agree', 'agree2' => 'agree', 'agree3' => 'agree',
+        ]);
+        $response->assertSessionHasNoErrors();
+        $this->assertStringNotContainsString('/profile', (string) $response->headers->get('Location'));
     }
 
     public function test_incomplete_legacy_account_cannot_use_sign_confirmation_or_shoutbox(): void
     {
-        $user = User::factory()->create(['verified' => true, 'preferred_language_confirmed_at' => null]);
+        $user = User::factory()->create(['verified' => true, 'preferred_language_confirmed_at' => null, 'country' => null, 'gender' => null]);
         $this->actingAs($user)->get('/en/petition/test/1/sign/confirm')->assertRedirectContains('/en/profile');
         $this->actingAs($user)->post('/en/petition/test/1/shoutbox', ['text' => 'Blocked until complete'])->assertRedirectContains('/en/profile');
         $this->actingAs($user)->get('/en/profile')->assertOk();

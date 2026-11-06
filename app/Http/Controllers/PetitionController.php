@@ -439,7 +439,7 @@ class PetitionController extends Controller
 
         if (auth()->check()) {
             if (! auth()->user()->verified) {
-                toast('Please verify your email before signing petitions.', 'warning');
+                toast(__('sign.verify_first'), 'warning');
 
                 return back()->withInput();
             }
@@ -459,12 +459,12 @@ class PetitionController extends Controller
         abort_unless($sig && $u->verified, 403);
         if (Spam::isSpam($data['comment'], Spam::reviewOwned())) {
             Spam::log('comment', json_encode(['petition_id' => $petition->id, 'comment' => $data['comment']]));
-            toast('Suspicious activity detected.', 'error');
+            toast(__('sign.suspicious'), 'error');
 
             return back()->withInput();
         }
         $sig->forceFill(['text' => $data['comment']])->save();
-        toast('Comment posted!', 'success');
+        toast(__('sign.comment_posted'), 'success');
         $tr = $petition->translationOrFallback($locale);
         abort_if(! $tr, 404);
 
@@ -495,17 +495,6 @@ class PetitionController extends Controller
             Spam::log('petition.create', json_encode(['title' => $data['title'] ?? '']));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
-        }
-        $uploaded = $request->file('image');
-        if ($uploaded !== null && ! $uploaded->isValid()) {
-            $reason = $uploaded->getError();
-            $message = in_array($reason, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
-                ? __('create.err_image_too_large')
-                : __('create.err_image_upload_failed');
-
-            return back()
-                ->withErrors(['image' => $message])
-                ->withInput();
         }
 
         if ($this->imageConflict($request, $data)) {

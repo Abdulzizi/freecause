@@ -1,9 +1,9 @@
 {
-  "description": "Production Adsterra frames use www.freecause.com, with the existing same-origin sandbox that omits allow-same-origin. The network still decides whether to return an advertisement.",
+  "description": "Production Adsterra frames use ads.freecause.com, a dedicated origin sandboxed with allow-same-origin. The network still decides whether to return an advertisement.",
   "settings_group": "global",
   "settings_key": "ads_frame_origin",
-  "settings_value": "https://www.freecause.com",
-  "application": "Apply this runtime setting only after deploying the dedicatedFrameHostMatchesRequest guards. Settings override config/ads.php and ADS_FRAME_ORIGIN. This reference is not executed automatically by deployment.",
+  "settings_value": "https://ads.freecause.com",
+  "application": "A value whose host is the public site (or one of its aliases) is rejected by Ads::frameOrigin() and falls back to config/ads.php. Settings override config/ads.php and ADS_FRAME_ORIGIN. This reference is not executed automatically by deployment.",
   "legacy_host": "ads.freecause.com redirects to the corresponding canonical URL when it is no longer the configured frame host.",
-  "rollback": "Restore ads_frame_origin to https://ads.freecause.com before rolling back to code without the shared-host guards."
+  "rollback": "Remove the ads_frame_origin setting to fall back to config/ads.php (ADS_FRAME_ORIGIN, default https://ads.freecause.com)."
 }

@@ -36,6 +36,28 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_guest_intended_url_reaches_sso_as_path(): void
+    {
+        config(['app.sso_secret' => 'test-secret']);
+        $user = User::factory()->create([
+            'verified' => true,
+            'password' => Hash::make('secret-pass-1'),
+            'locale' => 'en_US',
+            'country' => 'IT',
+            'gender' => 'prefer_not_to_say',
+            'welcome_email_pending' => false,
+        ]);
+
+        $this->get('/en/my-petitions')->assertRedirect();
+
+        $response = $this->post('/en/login', ['email' => $user->email, 'password' => 'secret-pass-1']);
+
+        $location = $response->headers->get('Location');
+        $this->assertSame('/magazine/sso.php', parse_url($location, PHP_URL_PATH));
+        parse_str(parse_url($location, PHP_URL_QUERY), $query);
+        $this->assertSame('/en/my-petitions', $query['r']);
+    }
+
     public function test_login_page_renders_sized_google_button(): void
     {
         $this->get('/en/login')
@@ -675,7 +697,7 @@ class AuthenticationTest extends TestCase
 
     public function test_profile_renders_complete_country_and_supported_language_selectors(): void
     {
-        $user = User::factory()->create([
+        $user = User::factory()->languageConfirmed()->create([
             'country' => 'US',
             'locale' => 'en_US',
         ]);

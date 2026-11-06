@@ -168,7 +168,7 @@ class User extends Authenticatable implements HasLocalePreference
         return filled($this->country)
             && filled($this->gender)
             && $this->hasSupportedPreferredLanguage()
-            && $this->preferred_language_confirmed_at !== null;
+            && (! $this->welcome_email_pending || $this->preferred_language_confirmed_at !== null);
     }
 
     public function hasSupportedPreferredLanguage(): bool

@@ -13,6 +13,7 @@ use App\Support\Spam;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -73,7 +74,7 @@ class PetitionSigning
         if (Spam::isSpam($spamText, Spam::reviewOwned())) {
             Spam::log('signature', json_encode($data));
 
-            toast('Suspicious activity detected.', 'error');
+            toast(__('sign.suspicious'), 'error');
 
             return back()->withInput();
         }
@@ -218,6 +219,19 @@ class PetitionSigning
         }
 
         if ($mailUser) {
+            $capKey = 'mail:verify-guest:'.today()->toDateString();
+            Cache::add($capKey, 0, now()->endOfDay());
+            $sentToday = Cache::increment($capKey);
+            $cap = (int) Settings::get('verify_guest_daily_cap', 200, 'global');
+
+            if ($sentToday > $cap) {
+                if ($sentToday === $cap + 1) {
+                    AppLog::error('Guest verification mail daily cap reached', 'cap '.$cap, 'petition.sign');
+                }
+
+                return $response;
+            }
+
             try {
                 Mail::to($mailUser->email)->queue(new VerifyAccountMail($mailUser, $locale));
             } catch (\Throwable $e) {
@@ -235,7 +249,7 @@ class PetitionSigning
         if (Spam::isSpam($data['comment'] ?? '', Spam::reviewOwned())) {
             Spam::log('signature', json_encode($data));
 
-            toast('Suspicious activity detected.', 'error');
+            toast(__('sign.suspicious'), 'error');
 
             return back()->withInput();
         }
@@ -251,13 +265,14 @@ class PetitionSigning
                 if ($dup) {
                     $tr = $petition->translationOrFallback($locale);
                     abort_if(! $tr, 404);
-                    toast('You already signed this petition.', 'info');
+                    toast(__('sign.already_signed'), 'info');
 
                     return redirect()->route('petition.thanks', ['locale' => $tr->locale, 'slug' => $tr->slug, 'id' => $petition->id])->with('petition_verified', true);
                 }
-                $sig = Signature::firstOrCreate(
-                    ['petition_id' => $petition->id, 'email' => $u->email],
+                $sig = Signature::create(
                     [
+                        'petition_id' => $petition->id,
+                        'email' => $u->email,
                         'user_id' => $u->id,
                         'name' => $u->display_name, // frozen snapshot; live display via Signature::display_name
                         'locale' => $locale,
@@ -266,14 +281,8 @@ class PetitionSigning
                     ]
                 );
 
-                if (! $sig->wasRecentlyCreated) {
-                    toast('You already signed this petition.', 'info');
-                }
-
-                if ($sig->wasRecentlyCreated) {
-                    $counted = true;
-                    $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
-                }
+                $counted = true;
+                $previousCount = PetitionStats::incrementMany([$petition->id => 1])[$petition->id];
 
                 session()->forget("sign.{$petition->id}");
 
@@ -287,9 +296,7 @@ class PetitionSigning
                     'petition.sign'
                 );
 
-                if ($sig->wasRecentlyCreated) {
-                    toast('Thank you for signing!', 'success');
-                }
+                toast(__('sign.thanks_toast'), 'success');
 
                 return redirect()->route('petition.thanks', [
                     'locale' => $tr->locale,
@@ -310,7 +317,7 @@ class PetitionSigning
                 ->first();
 
             if ($sig) {
-                toast('You already signed this petition.', 'info');
+                toast(__('sign.already_signed'), 'info');
             } else {
                 throw $e;
             }

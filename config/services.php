@@ -44,11 +44,6 @@ return [
     'adsense' => [
         'client' => env('ADSENSE_CLIENT', 'ca-pub-5636773008040262'),
         'enabled' => env('ADSENSE_ENABLED', true),
-        'slots' => [
-            'petition_sidebar' => env('ADSENSE_SLOT_PETITION_SIDEBAR'),
-            'listing_inline' => env('ADSENSE_SLOT_LISTING_INLINE'),
-            'article_footer' => env('ADSENSE_SLOT_ARTICLE_FOOTER'),
-        ],
     ],
 
     'emergency_email' => env('ADMIN_EMERGENCY_EMAIL'),

@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Petition;
 use App\Models\User;
 use App\Support\Locale;
-use App\Support\MailText;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -35,15 +34,29 @@ class PetitionMilestoneMail extends Mailable implements ShouldQueue
             : lroute('home', ['locale' => $locale]);
 
         $token = $this->owner->ensureUnsubscribeToken();
+        $firstName = $this->owner->first_name ?: $this->owner->name;
+        $petitionTitle = $translation?->title ?? 'your petition';
+        $count = number_format($this->milestone);
 
-        return $this->subject(MailText::get('milestone_subject', ['count' => number_format($this->milestone)], $locale))
+        return $this->subject(trans('emails.petition_milestone.subject', ['count' => $count], $locale))
             ->view('emails.petition-milestone')
             ->with([
                 'emailLocale' => $locale,
-                'firstName' => $this->owner->first_name ?: $this->owner->name,
-                'petitionTitle' => $translation?->title ?? MailText::get('common_petition', [], $locale),
+                'preheader' => trans('emails.petition_milestone.preheader', [], $locale),
+                'eyebrow' => trans('emails.petition_milestone.eyebrow', [], $locale),
+                'heading' => trans('emails.petition_milestone.heading', [], $locale),
+                'title' => trans('emails.petition_milestone.title', ['count' => $count], $locale),
+                'hello' => trans('emails.petition_milestone.hello', ['name' => $firstName], $locale),
+                'intro' => trans('emails.petition_milestone.intro', [
+                    'title' => '<strong>'.e($petitionTitle).'</strong>',
+                    'count' => '<strong>'.e($count).'</strong>',
+                ], $locale),
+                'share' => trans('emails.petition_milestone.share', [], $locale),
+                'action' => trans('emails.petition_milestone.action', [], $locale),
                 'petitionUrl' => $petitionUrl,
-                'milestone' => $this->milestone,
+                'footer' => trans('emails.petition_milestone.footer', [], $locale),
+                'unsubscribeLabel' => trans('emails.petition_milestone.unsubscribe', [], $locale),
+                'manageLabel' => trans('preferences.manage_preferences', [], $locale),
                 'unsubscribeUrl' => lroute('preferences.unsubscribe', ['locale' => $locale, 'token' => $token]),
                 'preferencesUrl' => lroute('preferences.show', ['locale' => $locale]),
             ]);

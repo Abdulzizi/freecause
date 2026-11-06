@@ -144,7 +144,20 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval'", $csp);
         $this->assertDoesNotMatchRegularExpression('/[\s;]http:[\s;]/', $csp);
         $this->assertStringContainsString('frame-ancestors '.config('app.canonical_url'), $csp);
-        $this->assertStringContainsString((string) config('app.url'), $csp);
+        $this->assertStringNotContainsString((string) config('app.url'), $csp);
+    }
+
+    public function test_ad_frame_response_is_publicly_cacheable_without_cookies(): void
+    {
+        config(['ads.enabled' => true]);
+
+        $response = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
+
+        $cacheControl = (string) $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('public', $cacheControl);
+        $this->assertStringContainsString('max-age=300', $cacheControl);
+        $this->assertStringContainsString('s-maxage=3600', $cacheControl);
+        $response->assertHeaderMissing('Set-Cookie');
     }
 
     public function test_ad_frame_404s_for_unknown_or_keyless_slot(): void
@@ -193,6 +206,33 @@ class PetitionAdSlotsTest extends TestCase
 
         $this->assertStringNotContainsString('fc-ad fc-ad--', $html);
         $this->assertStringNotContainsString(config('ads.slots.rectangle.key'), $html);
+    }
+
+    public function test_anchor_bar_is_absent_when_ads_are_disabled(): void
+    {
+        config(['ads.enabled' => false]);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringNotContainsString('id="fc-ad-anchor"', $html);
+    }
+
+    public function test_anchor_bar_renders_when_ads_are_enabled_with_a_valid_origin(): void
+    {
+        config(['ads.enabled' => true]);
+        config(['ads.frame_origin' => 'https://ads.freecause.com']);
+
+        [$petition, $slug] = $this->publishedPetition();
+
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('id="fc-ad-anchor"', $html);
     }
 
     public function test_slots_render_identically_on_a_second_locale(): void

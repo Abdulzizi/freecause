@@ -48,4 +48,8 @@ return [
     'surname' => 'Apelido',
     'thanks' => 'Obrigado por assinar!',
     'guidelines_link' => 'Read our community guidelines',
+    'comment_posted' => 'Comentario publicado!',
+    'suspicious' => 'Atividade suspeita detectada.',
+    'thanks_toast' => 'Obrigado por assinar!',
+    'verify_first' => 'Verifique seu e-mail antes de assinar peticoes.',
 ];
