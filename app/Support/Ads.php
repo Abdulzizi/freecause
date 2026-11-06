@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Http\Middleware\CanonicalHost;
+
 // Resolves Adsterra ad config, preferring runtime admin Settings (group "ads")
 // over the config/ads.php baseline. Admin edits the enable flag, host and the
 // per-slot zone keys without a deploy; structural bits (dimensions, format,
@@ -67,12 +69,7 @@ class Ads
 
         $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
 
-        return $host === $parentHost || in_array($host, [
-            'freecause.com',
-            'www.freecause.com',
-            'client.freecause.com',
-            'www.client.freecause.com',
-        ], true);
+        return $host === $parentHost || in_array($host, CanonicalHost::PUBLIC_HOSTS, true);
     }
 
     // exact scheme://host origin, or '' for anything else.

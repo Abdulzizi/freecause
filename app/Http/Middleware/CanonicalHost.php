@@ -9,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CanonicalHost
 {
+    public const PUBLIC_HOSTS = [
+        'freecause.com',
+        'www.freecause.com',
+        'client.freecause.com',
+        'www.client.freecause.com',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         if (Ads::frameHostMatchesRequest() && ! $request->is('ads/frame/*')) {
@@ -20,7 +27,7 @@ class CanonicalHost
 
         $host = strtolower($request->getHost());
         $retiredAdHost = $host === 'ads.freecause.com' && $host !== Ads::frameHost();
-        $isPublicDomain = $retiredAdHost || in_array($host, ['freecause.com', 'www.freecause.com', 'client.freecause.com', 'www.client.freecause.com'], true);
+        $isPublicDomain = $retiredAdHost || in_array($host, self::PUBLIC_HOSTS, true);
 
         if ($isPublicDomain && $host !== $canonicalHost) {
             $target = rtrim($canonicalUrl, '/').'/'.ltrim($request->path(), '/');
