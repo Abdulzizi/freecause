@@ -40,7 +40,7 @@
 
     @if($showForm)
 
-        <form method="post" action="{{ route('admin.options.language.update') }}" data-turbo="false">
+        <form method="post" action="{{ route('admin.options.language.update') }}" data-turbo="false" data-no-pending>
             @csrf
             <input type="hidden" name="locale" value="{{ $locale }}">
 
