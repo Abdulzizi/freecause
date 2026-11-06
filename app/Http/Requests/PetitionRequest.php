@@ -39,8 +39,8 @@ class PetitionRequest extends FormRequest
         $creating = $this->routeIs('petition.store');
 
         $image = $creating
-            ? ['nullable', 'file', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp']
-            : ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'];
+            ? ['nullable', 'file', 'image', 'max:8192', 'mimes:jpg,jpeg,png,gif,webp']
+            : ['nullable', 'image', 'max:8192', 'mimes:jpg,jpeg,png,gif,webp'];
 
         $current = $creating
             ? null

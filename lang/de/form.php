@@ -13,7 +13,7 @@ return [
     'community_url' => 'Petitionsgemeinschaft URL',
     'description' => 'Text (Pflichtfeld)',
     'goal_signatures' => 'Ziel (Pflichtfeld)',
-    'image' => 'Bild (Max 4MB, JPG/PNG)',
+    'image' => 'Bild (Max 8MB, JPG/PNG)',
     'image_external' => 'Oder geben Sie einen externen Link an:',
     'preview' => 'Vorschau',
     'submit' => 'Absenden',

@@ -13,7 +13,7 @@ return [
     'community_url' => 'URL spolecznosci',
     'description' => 'Tekst (wymagane)',
     'goal_signatures' => 'Cel (wymagane)',
-    'image' => 'Obrazek (Max 4MB, JPG/PNG)',
+    'image' => 'Obrazek (Max 8MB, JPG/PNG)',
     'image_external' => 'Lub podaj link zewnetrzny:',
     'preview' => 'Podgląd',
     'submit' => 'Wyslij',

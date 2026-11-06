@@ -13,7 +13,7 @@ return [
     'community_url' => 'Petition community-URL',
     'description' => 'Text (obligatoriskt)',
     'goal_signatures' => 'Mal (obligatoriskt)',
-    'image' => 'Bild (Max 4MB, JPG/PNG)',
+    'image' => 'Bild (Max 8MB, JPG/PNG)',
     'image_external' => 'Eller ange en extern länk:',
     'preview' => 'Forhandsvisning',
     'submit' => 'Skicka',

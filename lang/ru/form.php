@@ -13,7 +13,7 @@ return [
     'community_url' => 'URL soobshestva',
     'description' => 'Tekst (obyazatelno)',
     'goal_signatures' => 'Celi (obyazatelno)',
-    'image' => 'Izobrazhenie (Maks 4MB, JPG/PNG)',
+    'image' => 'Izobrazhenie (Maks 8MB, JPG/PNG)',
     'image_external' => 'Ili ukazhete vneshnyuyu ssylku:',
     'preview' => 'Predprosmotr',
     'submit' => 'Otpravit',

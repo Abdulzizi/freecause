@@ -13,7 +13,7 @@ return [
     'community_url' => 'Topluluk URLsi',
     'description' => 'Metin (zorunlu)',
     'goal_signatures' => 'Hedef (zorunlu)',
-    'image' => 'Resim (Maks 4MB, JPG/PNG)',
+    'image' => 'Resim (Maks 8MB, JPG/PNG)',
     'image_external' => 'Veya dis bir baglanti saglayin:',
     'preview' => 'Onizleme',
     'submit' => 'Gonder',
