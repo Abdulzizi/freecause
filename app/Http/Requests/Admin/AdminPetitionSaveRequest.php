@@ -47,7 +47,7 @@ class AdminPetitionSaveRequest extends FormRequest
             'community_url' => ['nullable', 'url', 'max:500'],
             'city' => ['nullable', 'string', 'max:120'],
             'created_at' => ['nullable', 'date'],
-            'cover_image' => ['nullable', 'image', 'max:4096', 'mimes:jpg,jpeg,png,gif,webp'],
+            'cover_image' => ['nullable', 'image', 'max:8192', 'mimes:jpg,jpeg,png,gif,webp'],
             'remove_image' => ['nullable'],
         ];
     }
