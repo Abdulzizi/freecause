@@ -70,6 +70,29 @@
 
     </div>
 
+    <section class="border border-border rounded-sm p-4 mb-5" aria-labelledby="aggregate-traffic-title">
+        <h2 id="aggregate-traffic-title" class="font-bold mb-2">Aggregate page loads</h2>
+        <p class="mb-3">First-party counts across the site and magazine, including visitors who reject optional cookies.
+            No visitor identifiers, cookies, full URLs or referrers are stored in these statistics.</p>
+        <div class="flex flex-wrap gap-8 mb-3">
+            <div><strong>{{ number_format($traffic['browser']) }}</strong><br>Browser page loads</div>
+            <div><strong>{{ number_format($traffic['automation']) }}</strong><br>Recognized automated loads</div>
+            @foreach ($traffic['devices'] as $device => $total)
+                <div><strong>{{ number_format($total) }}</strong><br>{{ ucfirst($device) }} loads</div>
+            @endforeach
+        </div>
+        @if ($traffic['areas'])
+            <ul class="mb-3">
+                @foreach ($traffic['areas'] as $area => $total)
+                    <li>{{ ucfirst($area) }}: {{ number_format($total) }}</li>
+                @endforeach
+            </ul>
+        @endif
+        <p class="text-sm text-muted">Page loads are not unique visitors or verified humans. Reloads count again;
+            bots that imitate browsers may be included. JavaScript blockers, Do Not Track and Global Privacy Control can prevent counting.
+            Hourly UTC totals follow the selected language and period, with up to one hour of rounding. Aggregate totals are retained for 90 days.</p>
+    </section>
+
     @if ($results)
 
         <x-admin.data-table :p="$results">

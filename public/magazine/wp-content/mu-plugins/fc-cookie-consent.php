@@ -65,7 +65,8 @@ add_action('wp_head', function () {
     echo '<link rel="stylesheet" href="/css/consent.css?v=1">';
     echo '<script src="/js/consent-bootstrap.js?v=1" data-cfasync="false"></script>';
     echo '<script defer src="/vendor/cookieconsent/cookieconsent.umd.js?v=3.2.1" data-cfasync="false"></script>';
-    echo '<script defer src="/js/consent.js?v=1" data-fc-consent-locale="'.esc_attr($locale).'" data-cfasync="false"></script>';
+    echo '<script defer src="/js/consent.js?v=2" data-fc-consent-locale="'.esc_attr($locale).'" data-cfasync="false"></script>';
+    echo '<script defer src="/js/aggregate-traffic.js?v=1" data-cfasync="false"></script>';
 }, -1000);
 
 add_action('wp_footer', function () {
