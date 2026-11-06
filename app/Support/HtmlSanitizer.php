@@ -66,6 +66,8 @@ class HtmlSanitizer
 
     private static ?SymfonyHtmlSanitizer $admin = null;
 
+    private static ?SymfonyHtmlSanitizer $head = null;
+
     public static function petition(): SymfonyHtmlSanitizer
     {
         if (self::$petition) {
@@ -101,6 +103,21 @@ class HtmlSanitizer
                 ->allowRelativeMedias()
                 ->forceAttribute('a', 'rel', 'noopener')
                 ->withAttributeSanitizer(self::rejectProtocolRelativeUrls())
+                ->withMaxInputLength(-1)
+        );
+    }
+
+    public static function head(): SymfonyHtmlSanitizer
+    {
+        if (self::$head) {
+            return self::$head;
+        }
+
+        $config = new HtmlSanitizerConfig;
+
+        return self::$head = new SymfonyHtmlSanitizer(
+            $config
+                ->allowElement('meta', ['name', 'property', 'content'])
                 ->withMaxInputLength(-1)
         );
     }

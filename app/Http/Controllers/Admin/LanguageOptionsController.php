@@ -116,7 +116,9 @@ class LanguageOptionsController extends Controller
             }
 
             if ($sanitize) {
-                $value = sanitizeAdminHtml($value);
+                $value = $key === 'head_additional_html'
+                    ? sanitizeHeadHtml($value)
+                    : sanitizeAdminHtml($value);
             }
 
             PageContent::updateOrCreate(
