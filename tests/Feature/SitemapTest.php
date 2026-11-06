@@ -245,4 +245,15 @@ class SitemapTest extends TestCase
         $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/faqs').'</loc>'));
         $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/about-us').'</loc>'));
     }
+
+    public function test_pages_sitemap_omits_register_and_untranslated_fixed_pages(): void
+    {
+        PageTranslation::where('locale', 'tr')->where('slug', 'faqs')->delete();
+
+        $content = $this->get('/sitemap-pages.xml')->assertOk()->getContent();
+
+        $this->assertStringNotContainsString('/register', $content);
+        $this->assertStringNotContainsString('<loc>'.canonical_url('tr/faqs').'</loc>', $content);
+        $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/faqs').'</loc>'));
+    }
 }

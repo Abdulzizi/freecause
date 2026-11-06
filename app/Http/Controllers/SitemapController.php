@@ -17,10 +17,6 @@ class SitemapController extends Controller
     private const PETITIONS_PER_FILE = 50000;
 
     private const STATIC_PAGE_SLUGS = [
-        'faqs',
-        'how-to-write-a-petition',
-        'donations',
-        'personal-data-processing',
         'contacts',
     ];
 
@@ -79,8 +75,6 @@ class SitemapController extends Controller
                 foreach (self::STATIC_PAGE_SLUGS as $slug) {
                     $pagesByLocale[$locale][] = $this->pageEntry(canonical_url($locale.'/'.$slug));
                 }
-
-                $pagesByLocale[$locale][] = $this->pageEntry(lroute('register', ['locale' => $locale]));
             }
 
             $entries = $this->withLocaleAlternates($pagesByLocale);
