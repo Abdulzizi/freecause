@@ -110,16 +110,17 @@
     @php
         $anchorSlot = \App\Support\Ads::pick('anchor');
     @endphp
-    @if (\App\Support\Ads::enabled() && \App\Support\Ads::frameOrigin() !== '' && $anchorSlot && ($cfg = \App\Support\Ads::slot($anchorSlot)) && ! empty($cfg['key']))
+    @if ($anchorSlot && \App\Support\Ads::canShow($anchorSlot))
         <div id="fc-ad-anchor" class="fc-ad-anchor" role="complementary" aria-label="Advertisement">
             <button type="button" class="fc-ad-anchor__close" data-ad-anchor-close aria-label="Close advertisement">
                 <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l12 12M14 2L2 14" /></svg>
             </button>
             <x-ads.slot :name="$anchorSlot" sticky class="mx-auto" />
         </div>
+        <div class="fc-ad-anchor-spacer" aria-hidden="true"></div>
     @endif
     @unless (isset($exception))
-        @if (\App\Support\Ads::enabled() && ($cfg = \App\Support\Ads::slot('skyscraper')) && ! empty($cfg['key']) && ! request()->attributes->has('ads_slot_rendered_skyscraper') && \App\Support\Ads::renderOnce('skyscraper'))
+        @if (\App\Support\Ads::canShow('skyscraper') && \App\Support\Ads::renderOnce('skyscraper'))
             <aside id="fc-ad-rail" class="fc-ad-rail" aria-label="Advertisement">
                 <x-ads.slot name="skyscraper" claimed />
             </aside>
@@ -137,7 +138,7 @@
     @endif
 
     <main id="fc-main">
-        @if (\App\Support\Ads::enabled() && ($lbCfg = \App\Support\Ads::slot('leaderboard')) && ! empty($lbCfg['key']) && ! request()->attributes->has('ads_slot_rendered_leaderboard'))
+        @if (\App\Support\Ads::canShow('leaderboard') && ! request()->attributes->has('ads_slot_rendered_leaderboard'))
             <div class="hidden lg:block text-center my-4"><x-ads.slot name="leaderboard" /></div>
         @endif
 
@@ -175,11 +176,6 @@
     {!! \App\Support\Settings::get('inject_body_html', '') !!}
 
     @include('partials.footer')
-    @unless (isset($exception))
-        @if (\App\Support\Ads::enabled() && \App\Support\Ads::slot('mobile') && ! empty(\App\Support\Ads::slot('mobile')['key']))
-            <div class="fc-ad-anchor-spacer" aria-hidden="true"></div>
-        @endif
-    @endunless
     @include('partials.mobile-nav')
 </body>
 
