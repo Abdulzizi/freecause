@@ -238,7 +238,7 @@ class LegacyWordRedirect
 
         $rest = implode('/', $tail);
 
-        if ($canonical && $page === null) {
+        if ($page === null && ($canonical || $rest === '')) {
             return $next($request);
         }
 

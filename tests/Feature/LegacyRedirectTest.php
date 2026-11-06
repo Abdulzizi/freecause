@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use App\Models\Language;
+use App\Models\Page;
+use App\Models\PageTranslation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -94,6 +96,21 @@ class LegacyRedirectTest extends TestCase
         $this->get('/tr/dilekce/qualcosa/123')
             ->assertStatus(301)
             ->assertHeader('Location', 'http://localhost/tr/petition/qualcosa/123');
+    }
+
+    public function test_bare_italian_petizione_serves_cms_page(): void
+    {
+        $page = Page::create();
+        PageTranslation::create(['page_id' => $page->id, 'locale' => 'it', 'slug' => 'petizione', 'title' => 'Petizione', 'content' => '<p>Contenuto</p>', 'published' => true]);
+
+        $this->get('/it/petizione')->assertOk();
+    }
+
+    public function test_italian_petizione_with_tail_still_redirects(): void
+    {
+        $this->get('/it/petizione/some-slug/123')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/it/petition/some-slug/123');
     }
 
     public function test_canonical_petition_passes_through_untouched(): void
