@@ -126,6 +126,22 @@ jobs:
             echo "::warning::server PHP $version is below $MIN_PHP — vulnerable to php2shell (CVE-2026-109618 / CVE-2026-109619). Patch the host."
           fi
 
+      - name: Record live release
+        id: before
+        if: ${{ github.event_name == 'push' || inputs.action != 'rollback' }}
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
+          DEPLOY_PATH: /var/www/freecause
+        run: |
+          set -uo pipefail
+          current=$(ssh -i ~/.ssh/id_deploy -o ConnectTimeout=20 "$DEPLOY_USER"@"$DEPLOY_HOST" "readlink $DEPLOY_PATH/current" 2>/dev/null || true)
+          if [ -z "$current" ]; then
+            echo "::warning::live release before deploy is unknown (first deploy or SSH failure), automatic rollback is disabled for this run"
+          fi
+          echo "live release before deploy: ${current:-unknown}"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+
       - name: Deploy
         if: ${{ github.event_name == 'push' || inputs.action != 'rollback' }}
         env:
@@ -176,4 +192,25 @@ jobs:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
           DEPLOY_PATH: /var/www/freecause
-        run: dep -f deploy/deploy.php rollback production --no-interaction || true
+          BEFORE: ${{ steps.before.outputs.current }}
+        run: |
+          set -uo pipefail
+          if [ -z "$BEFORE" ]; then
+            echo "::warning::live release before deploy is unknown, skipping rollback"
+            exit 0
+          fi
+          now=""
+          for i in 1 2 3; do
+            now=$(ssh -i ~/.ssh/id_deploy -o ConnectTimeout=20 "$DEPLOY_USER"@"$DEPLOY_HOST" "readlink $DEPLOY_PATH/current" 2>/dev/null || true)
+            [ -n "$now" ] && break
+            sleep 5
+          done
+          if [ -z "$now" ]; then
+            echo "::error::cannot read the live release after 3 tries, rollback skipped, check production by hand"
+            exit 0
+          fi
+          if [ "$now" = "$BEFORE" ]; then
+            echo "new release never went live, nothing to roll back"
+            exit 0
+          fi
+          dep -f deploy/deploy.php rollback production --no-interaction || echo "::error::rollback failed, manual action needed"
