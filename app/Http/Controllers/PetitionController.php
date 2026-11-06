@@ -81,7 +81,7 @@ class PetitionController extends Controller
                 'locale' => $tr->locale,
                 'slug' => $tr->slug,
                 'id' => $petition->id,
-            ], $extra));
+            ], $extra), 301);
         }
 
         return $tr;
@@ -276,13 +276,13 @@ class PetitionController extends Controller
             })
             ->firstOrFail();
 
-        if ($petition->status === 'published' && $petition->is_active) {
-            $this->recordView($request, $petition);
-        }
-
         $trOrRedirect = $this->resolveTrOrRedirect('petition.show', $locale, $slug, $petition);
         if ($trOrRedirect instanceof RedirectResponse) {
             return $trOrRedirect;
+        }
+
+        if ($petition->status === 'published' && $petition->is_active) {
+            $this->recordView($request, $petition);
         }
         $tr = $trOrRedirect;
 
