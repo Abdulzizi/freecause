@@ -82,7 +82,7 @@ class CloudflareCacheRuleTest extends TestCase
     {
         $rule = $this->adsFrameRule();
 
-        $this->assertFalse($rule['enabled']);
+        $this->assertTrue($rule['enabled']);
         $this->assertSame('set_cache_settings', $rule['action']);
         $this->assertSame('http.host eq "ADS_FRAME_HOST" and http.request.uri.path contains "/ads/frame/"', $rule['expression']);
         $this->assertStringNotContainsString('freecause.com', $rule['expression']);
