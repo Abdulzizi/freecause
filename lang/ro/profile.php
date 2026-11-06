@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Verificarea Google este temporar indisponibilă. Încearcă din nou mai târziu.',
     'google_delete_mismatch' => 'Acel cont Google nu corespunde contului tău FreeCause.',
     'google_delete_verified' => 'Identitatea Google a fost verificată. Acum poți confirma ștergerea contului.',
+    'page_title' => 'Cont',
 ];

@@ -11,4 +11,5 @@ return [
     'continue' => 'verder lezen »',
     'goal' => 'Doel:',
     'signatures' => 'handtekeningen',
+    'page_title' => 'Handtekeningen: :title',
 ];

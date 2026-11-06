@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Google doğrulaması geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
     'google_delete_mismatch' => 'Bu Google hesabı FreeCause hesabınızla eşleşmiyor.',
     'google_delete_verified' => 'Google kimliği doğrulandı. Artık hesap silme işlemini onaylayabilirsiniz.',
+    'page_title' => 'Hesap',
 ];

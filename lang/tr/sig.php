@@ -11,4 +11,5 @@ return [
     'continue' => 'okumaya devam et »',
     'goal' => 'Hedef:',
     'signatures' => 'imzalar',
+    'page_title' => 'İmzalar: :title',
 ];

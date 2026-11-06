@@ -11,4 +11,5 @@ return [
     'continue' => 'fortsæt læsning »',
     'goal' => 'Mål:',
     'signatures' => 'underskrifter',
+    'page_title' => 'Underskrifter: :title',
 ];
