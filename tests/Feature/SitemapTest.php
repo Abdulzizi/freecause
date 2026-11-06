@@ -15,6 +15,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class SitemapTest extends TestCase
@@ -255,5 +256,16 @@ class SitemapTest extends TestCase
         $this->assertStringNotContainsString('/register', $content);
         $this->assertStringNotContainsString('<loc>'.canonical_url('tr/faqs').'</loc>', $content);
         $this->assertSame(1, substr_count($content, '<loc>'.canonical_url('en/faqs').'</loc>'));
+    }
+
+    public function test_magazine_is_not_in_our_sitemaps_and_the_magazine_sitemap_route_is_gone(): void
+    {
+        $this->assertStringNotContainsString('sitemap-magazine.xml', $this->get('/sitemap.xml')->assertOk()->getContent());
+        $this->assertStringNotContainsString('/magazine', $this->get('/sitemap-pages.xml')->assertOk()->getContent());
+        $this->assertSame(
+            $this->get('/sitemap-unknown.xml')->getStatusCode(),
+            $this->get('/sitemap-magazine.xml')->getStatusCode()
+        );
+        $this->assertFalse(Route::has('sitemap.magazine'));
     }
 }

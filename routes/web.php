@@ -164,7 +164,6 @@ Route::withoutMiddleware($withoutSession)->group(function () {
     Route::get('/sitemap-petitions-{page}.xml', [SitemapController::class, 'petitions'])->where('page', '[0-9]{1,9}')->name('sitemap.petitions');
     Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
     Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
-    Route::get('/sitemap-magazine.xml', [SitemapController::class, 'magazine'])->name('sitemap.magazine');
 });
 
 Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function () {

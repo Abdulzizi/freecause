@@ -8,7 +8,6 @@ use Closure;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SitemapController extends Controller
 {
@@ -22,13 +21,12 @@ class SitemapController extends Controller
 
     public function index()
     {
-        return $this->xml($this->cached('index.v2', function () {
+        return $this->xml($this->cached('index.v3', function () {
             return '<?xml version="1.0" encoding="UTF-8"?>'."\n".
                 '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n".
                 $this->indexEntry('sitemap-pages.xml').
                 $this->indexEntry('sitemap-categories.xml').
                 $this->petitionIndexEntries().
-                $this->indexEntry('sitemap-magazine.xml').
                 '</sitemapindex>';
         }));
     }
@@ -65,7 +63,7 @@ class SitemapController extends Controller
 
     public function pages()
     {
-        return $this->xml($this->cached(__FUNCTION__, function () {
+        return $this->xml($this->cached('pages.v2', function () {
             $pagesByLocale = [];
 
             foreach (active_locales() as $locale) {
@@ -90,8 +88,6 @@ class SitemapController extends Controller
                     $tr->updated_at?->toDateString()
                 );
             }
-
-            $entries[] = $this->pageEntry(canonical_url('magazine/'));
 
             return $this->urlset($entries);
         }));
@@ -205,36 +201,6 @@ class SitemapController extends Controller
             }
 
             return $out.'</urlset>';
-        }));
-    }
-
-    public function magazine()
-    {
-        return $this->xml($this->cached(__FUNCTION__, function () {
-            try {
-                $posts = DB::connection('magazine')->select("
-                    SELECT ID AS id, post_name, post_modified
-                    FROM abi_posts
-                    WHERE post_status = 'publish' AND post_type = 'post'
-                    ORDER BY post_modified DESC
-                ");
-            } catch (\Throwable $e) {
-                Log::error('Sitemap: magazine DB connection failed - '.$e->getMessage());
-
-                $posts = [];
-            }
-
-            $entries = [];
-            foreach ($posts as $post) {
-                $post = is_array($post) ? (object) $post : $post;
-
-                $entries[] = $this->pageEntry(
-                    canonical_url('magazine/'.$post->post_name.'/'),
-                    ! empty($post->post_modified) ? $this->dateOnly((string) $post->post_modified) : null
-                );
-            }
-
-            return $this->urlset($entries);
         }));
     }
 
