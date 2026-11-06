@@ -11,8 +11,10 @@ use Database\Seeders\UserLevelSeeder;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminPetitionPanelTest extends TestCase
@@ -157,6 +159,48 @@ class AdminPetitionPanelTest extends TestCase
         $this->assertSame('published', DB::table('petitions')->where('id', $petitionId)->value('status'));
         $this->assertSame('New Title', DB::table('petition_translations')
             ->where('petition_id', $petitionId)->where('locale', 'en')->value('title'));
+    }
+
+    public function test_save_accepts_a_six_mb_cover(): void
+    {
+        Storage::fake('public');
+        $admin = $this->petitionsEditor();
+        $petitionId = $this->createPetitionViaDb('Cover Title', 'en', 'cover-title');
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', [
+                'id' => $petitionId,
+                'locale' => 'en',
+                'status' => 'published',
+                'title' => 'Cover Title',
+                'slug' => 'cover-title',
+                'cover_image' => UploadedFile::fake()->image('c.jpg', 1000, 800)->size(6144),
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNotNull(DB::table('petitions')->where('id', $petitionId)->value('cover_image'));
+    }
+
+    public function test_save_rejects_a_cover_over_the_pixel_cap_without_storing_it(): void
+    {
+        Storage::fake('public');
+        $admin = $this->petitionsEditor();
+        $petitionId = $this->createPetitionViaDb('Cover Title', 'en', 'cover-title');
+        $png = "\x89PNG\r\n\x1a\n".pack('N', 13).'IHDR'.pack('NN', 7000, 6000)."\x08\x02\x00\x00\x00".pack('N', 0);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', [
+                'id' => $petitionId,
+                'locale' => 'en',
+                'status' => 'published',
+                'title' => 'Cover Title',
+                'slug' => 'cover-title',
+                'cover_image' => UploadedFile::fake()->createWithContent('huge.png', $png),
+            ])
+            ->assertSessionHasErrors(['cover_image' => __('create.err_image_pixels')]);
+
+        $this->assertSame([], Storage::disk('public')->allFiles());
+        $this->assertNull(DB::table('petitions')->where('id', $petitionId)->value('cover_image'));
     }
 
     public function test_save_normalises_youtube_links_to_the_id_and_rejects_other_values(): void

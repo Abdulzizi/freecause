@@ -498,7 +498,7 @@
                         <span class="text-muted text-sm">no image</span>
                     @endif
                     <input id="petition-cover-image" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white mt-1" type="file" name="cover_image" accept="image/*">
-                    <span class="text-muted text-xs">upload new image to replace current (max 4 MB)</span>
+                    <span class="text-muted text-xs">upload new image to replace current (max 8 MB)</span>
                 </div>
 
                 <div class="flex justify-end fc-drawer-savebar">

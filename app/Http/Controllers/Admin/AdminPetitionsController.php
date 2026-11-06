@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Intervention\Image\Laravel\Facades\Image;
 
 class AdminPetitionsController extends Controller
@@ -366,6 +367,13 @@ class AdminPetitionsController extends Controller
 
         try {
             if ($request->hasFile('cover_image')) {
+                $size = @getimagesize($request->file('cover_image')->getPathname());
+                if ($size !== false && $size[0] * $size[1] > 40_000_000) {
+                    throw ValidationException::withMessages([
+                        'cover_image' => __('create.err_image_pixels'),
+                    ]);
+                }
+
                 $newImagePath = $request->file('cover_image')->store('petitions', 'public');
                 $abs = Storage::disk('public')->path($newImagePath);
                 Image::read($abs)->cover(1200, 630)->toJpeg(82)->save($abs);
