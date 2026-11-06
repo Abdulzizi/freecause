@@ -208,6 +208,35 @@ class AdminPetitionPanelTest extends TestCase
         $this->assertSame('abc', DB::table('petitions')->where('id', $petitionId)->value('youtube_url'));
     }
 
+    public function test_legacy_goal_is_rendered_selected_and_survives_an_unrelated_save(): void
+    {
+        $admin = $this->petitionsEditor();
+        $petitionId = $this->createPetitionViaDb('Goal Title', 'en', 'goal-title');
+        DB::table('petitions')->where('id', $petitionId)->update(['goal_signatures' => 250]);
+        $payload = [
+            'id' => $petitionId,
+            'locale' => 'en',
+            'status' => 'published',
+            'title' => 'Goal Title',
+            'slug' => 'goal-title',
+        ];
+
+        $this->actingAs($admin, 'admin')
+            ->get('/admin/petitions?select='.$petitionId.'&locale=en')
+            ->assertOk()
+            ->assertSee('<option value="250" selected>', false);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', ['goal_signatures' => 250] + $payload)
+            ->assertSessionHasNoErrors();
+        $this->assertSame(250, (int) DB::table('petitions')->where('id', $petitionId)->value('goal_signatures'));
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/petitions/save', ['goal_signatures' => 251] + $payload)
+            ->assertSessionHasErrors('goal_signatures');
+        $this->assertSame(250, (int) DB::table('petitions')->where('id', $petitionId)->value('goal_signatures'));
+    }
+
     private function createPetitionViaDb(string $title, string $locale, string $slug): int
     {
         $id = DB::table('petitions')->insertGetId([
