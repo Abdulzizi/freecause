@@ -1,23 +1,23 @@
 @extends('emails.layout')
 
-@section('preheader', 'Your petition just passed a new signature milestone.')
+@section('preheader', $preheader)
 
-@section('eyebrow', 'Milestone Reached')
-@section('heading', 'A milestone for your petition')
-@section('title', 'Your petition reached '.number_format($milestone).' signatures · FreeCause')
+@section('eyebrow', $eyebrow)
+@section('heading', $heading)
+@section('title', $title.' · FreeCause')
 
 @section('content')
-    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
-    <p style="margin:0 0 16px;">Your petition <strong>{{ $petitionTitle }}</strong> just reached <strong>{{ number_format($milestone) }}</strong> signatures.</p>
-    <p style="margin:0;">Share the petition with your supporters to keep the momentum going.</p>
+    <p style="margin:0 0 16px;">{{ $hello }}</p>
+    <p style="margin:0 0 16px;">{!! $intro !!}</p>
+    <p style="margin:0;">{{ $share }}</p>
 @endsection
 
-@section('action', 'View your petition')
+@section('action', $action)
 @section('action_url', $petitionUrl)
 
 @section('footer')
-    You are receiving this email because you created a petition on FreeCause.<br>
-    <a href="{{ $unsubscribeUrl }}" style="color:#8E8A82;text-decoration:none;">Unsubscribe from these emails</a>
+    {{ $footer }}<br>
+    <a href="{{ $unsubscribeUrl }}" style="color:#8E8A82;text-decoration:none;">{{ $unsubscribeLabel }}</a>
     &middot;
-    <a href="{{ $preferencesUrl }}" style="color:#8E8A82;text-decoration:none;">Manage preferences</a>
+    <a href="{{ $preferencesUrl }}" style="color:#8E8A82;text-decoration:none;">{{ $manageLabel }}</a>
 @endsection

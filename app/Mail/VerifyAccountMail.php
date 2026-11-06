@@ -18,29 +18,39 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
 
     public $locale;
 
+    public bool $isEmailChange;
+
     public function __construct($user, string $locale)
     {
         $this->firstName = $user->first_name ?? '';
         $this->verificationToken = $user->verification_token ?? '';
         $this->locale = $locale;
+        $this->isEmailChange = ! empty($user->pending_email);
     }
 
     public function build()
     {
-        $subject = Settings::get('email_verify_subject', '', 'global') ?: 'Verify your account';
-        $greeting = Settings::get('email_verify_greeting', '', 'global') ?: 'Welcome to FreeCause';
-        $buttonText = Settings::get('email_verify_button_text', '', 'global') ?: 'Verify My Account';
-        $footer = Settings::get('email_verify_footer', '', 'global') ?: 'FreeCause – Online Petition Platform';
+        $subject = Settings::get('email_verify_subject', '', 'global') ?: trans('emails.verify_account.subject', [], $this->locale);
+        $greeting = Settings::get('email_verify_greeting', '', 'global') ?: trans('emails.verify_account.greeting', [], $this->locale);
+        $buttonText = Settings::get('email_verify_button_text', '', 'global') ?: trans('emails.verify_account.button', [], $this->locale);
+        $introKey = $this->isEmailChange ? 'emails.verify_account.intro_change' : 'emails.verify_account.intro';
 
         return $this->subject($subject)
             ->view('emails.verify-account')
             ->with([
-                'firstName' => $this->firstName,
                 'locale' => $this->locale,
+                'emailLocale' => $this->locale,
                 'token' => $this->verificationToken,
+                'preheader' => trans('emails.verify_account.preheader', [], $this->locale),
+                'eyebrow' => trans('emails.verify_account.eyebrow', [], $this->locale),
                 'greeting' => $greeting,
+                'hello' => trans('emails.verify_account.hello', ['name' => $this->firstName], $this->locale),
+                'intro' => trans($introKey, [], $this->locale),
+                'hint' => trans('emails.verify_account.hint', [], $this->locale),
                 'buttonText' => $buttonText,
-                'footer' => $footer,
+                'noteExpiry' => trans('emails.verify_account.note_expiry', [], $this->locale),
+                'noteLinkHelp' => trans('emails.verify_account.note_link_help', [], $this->locale),
+                'noteIgnore' => trans('emails.verify_account.note_ignore', [], $this->locale),
             ]);
     }
 }
