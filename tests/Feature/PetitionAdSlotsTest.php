@@ -197,7 +197,7 @@ class PetitionAdSlotsTest extends TestCase
         $cacheControl = (string) $response->headers->get('Cache-Control');
         $this->assertStringContainsString('public', $cacheControl);
         $this->assertStringContainsString('max-age=300', $cacheControl);
-        $this->assertStringContainsString('s-maxage=3600', $cacheControl);
+        $this->assertStringContainsString('s-maxage=300', $cacheControl);
         $response->assertHeaderMissing('Set-Cookie');
     }
 
