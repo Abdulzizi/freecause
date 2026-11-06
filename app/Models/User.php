@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\CacheVersion;
 use App\Support\Locale;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasLocalePreference
 {
     use HasFactory, Notifiable;
 
@@ -176,6 +177,11 @@ class User extends Authenticatable
         $short = array_search($locale, config('language_flags', []), true) ?: $locale;
 
         return in_array($short, Locale::supported(), true);
+    }
+
+    public function preferredLocale(): string
+    {
+        return Locale::toShort($this->locale);
     }
 
     public function wantsMilestoneEmails(): bool

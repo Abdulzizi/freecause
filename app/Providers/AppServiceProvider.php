@@ -12,6 +12,7 @@ use App\Observers\UserProfileCacheFlusher;
 use App\Services\PageContentService;
 use App\Support\Locale;
 use App\Support\MailQuota;
+use App\Support\MailText;
 use App\Support\Settings;
 use App\Support\TranslationJoin;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -267,10 +268,14 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             ResetPassword::toMailUsing(function ($notifiable, $token) {
+                $locale = $notifiable->preferredLocale();
+
                 return (new MailMessage)
-                    ->subject('Reset your FreeCause password')
+                    ->subject(MailText::get('reset_subject', [], $locale))
                     ->view('emails.reset-password', [
-                        'firstName' => $notifiable->first_name ?: ($notifiable->name ?? 'there'),
+                        'firstName' => $notifiable->first_name ?: ($notifiable->name ?? ''),
+                        'emailLocale' => $locale,
+                        'resetMinutes' => config('auth.passwords.users.expire', 60),
                         'resetUrl' => $this->buildPasswordResetUrl($notifiable, $token),
                         'email' => $notifiable->getEmailForPasswordReset(),
                     ]);
@@ -283,6 +288,7 @@ class AppServiceProvider extends ServiceProvider
     private function buildPasswordResetUrl($notifiable, string $token): string
     {
         return url(route('password.reset', [
+            'locale' => $notifiable->preferredLocale(),
             'token' => $token,
             'email' => $notifiable->getEmailForPasswordReset(),
         ], false));

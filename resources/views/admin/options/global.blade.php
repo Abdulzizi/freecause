@@ -230,22 +230,9 @@
             </x-admin.form-field>
         </x-admin.section-panel>
 
-        <x-admin.section-panel title="verify account email">
-            <p class="text-xs text-muted mb-2">
-                Customize the verification email sent to new users. Leave blank to use the default text.
-            </p>
-            <x-admin.form-field label="subject">
-                <x-ui.input name="email_verify_subject" :value="$email_verify_subject" placeholder="Verify your account" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
-            </x-admin.form-field>
-            <x-admin.form-field label="greeting / heading">
-                <x-ui.input name="email_verify_greeting" :value="$email_verify_greeting" placeholder="Welcome to FreeCause" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
-            </x-admin.form-field>
-            <x-admin.form-field label="button text">
-                <x-ui.input name="email_verify_button_text" :value="$email_verify_button_text" placeholder="Verify My Account" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
-            </x-admin.form-field>
-            <x-admin.form-field label="footer line">
-                <x-ui.input name="email_verify_footer" :value="$email_verify_footer" placeholder="FreeCause – Online Petition Platform" class="w-full box-border border border-solid border-border rounded-sm px-2 py-1.5 text-sm bg-white" />
-            </x-admin.form-field>
+        <x-admin.section-panel title="system email texts">
+            <p class="text-sm text-muted">Email subjects and messages are now managed for each language under Localized Content.</p>
+            <x-blatui.button :href="route('admin.options.language', ['locale' => 'en'])">Manage translated email templates</x-blatui.button>
         </x-admin.section-panel>
 
         <x-admin.section-panel title="contact email">

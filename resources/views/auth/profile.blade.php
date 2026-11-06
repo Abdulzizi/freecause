@@ -23,7 +23,7 @@
         $mustComplete = ! $u->hasCompleteProfile();
         $missingCountry = ! old('country', $u->country);
         $missingGender = ! old('gender', $u->gender);
-        $preferredLanguage = old('locale', $u->welcome_email_pending && ! $u->preferred_language_confirmed_at ? '' : ($u->hasSupportedPreferredLanguage() ? \App\Support\Locale::toShort($u->locale) : ''));
+        $preferredLanguage = old('locale', ! $u->preferred_language_confirmed_at ? '' : ($u->hasSupportedPreferredLanguage() ? \App\Support\Locale::toShort($u->locale) : ''));
         $missingLanguage = ! $preferredLanguage;
         $reasonKey = match (request('reason')) {
             'sign' => 'complete_required_sign',

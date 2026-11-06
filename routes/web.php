@@ -174,6 +174,7 @@ Route::prefix('admin')->name('admin.')->middleware('no.cache')->group(function (
         Route::post('/options/global', [GlobalOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.global.update');
         Route::post('/options/clear-cache', [GlobalOptionsController::class, 'clearCache'])->middleware('permission:options,edit')->name('options.clearCache');
         Route::get('/options/language', [LanguageOptionsController::class, 'edit'])->middleware('permission:options,view')->name('options.language');
+        Route::post('/options/language/translation-key', [LanguageOptionsController::class, 'saveTranslationKey'])->middleware(['permission:options,edit', 'throttle:5,1'])->name('options.language.translationKey');
         Route::post('/options/language', [LanguageOptionsController::class, 'update'])->middleware('permission:options,edit')->name('options.language.update');
         Route::get('/ads', [AdsTxtController::class, 'edit'])->middleware('permission:options,view')->name('ads');
         Route::post('/ads', [AdsTxtController::class, 'update'])->middleware('permission:options,edit')->name('ads.update');
@@ -350,9 +351,9 @@ Route::prefix('{locale}')
             ->middleware('optional.session')
             ->name('petition.show');
         Route::get('/petition/{slug}/{id}/signatures', [PetitionController::class, 'signatures'])->name('petition.signatures');
-        Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page');
+        Route::match(['get', 'post'], '/petition/{slug}/{id}/sign/confirm', [PetitionController::class, 'signPage'])->name('petition.sign.page')->middleware('profile.complete');
         Route::post('/petition/{slug}/{id}/sign', [PetitionController::class, 'sign'])->name('petition.sign')->middleware(['throttle:10,1', 'profile.complete']);
-        Route::post('/petition/{slug}/{id}/shoutbox', [PetitionController::class, 'shoutboxStore'])->name('petition.shoutbox')->middleware(['auth', 'throttle:10,1']);
+        Route::post('/petition/{slug}/{id}/shoutbox', [PetitionController::class, 'shoutboxStore'])->name('petition.shoutbox')->middleware(['auth', 'profile.complete', 'throttle:10,1']);
         Route::get('/petition/{slug}/{id}/thanks', [PetitionController::class, 'thanks'])->name('petition.thanks');
         Route::get('/petition/{slug}/{id}/thanksforsigning/{status?}', function (string $locale, string $slug, int $id, $status = null) {
             $mode = $status === 'created' ? 'created' : session('petition_mode', 'signed');

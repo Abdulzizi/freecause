@@ -1,21 +1,17 @@
 @extends('emails.layout')
 
-@section('preheader', 'Use the secure link below to set a new password for your FreeCause account.')
+@php $t = fn ($key, $replace = []) => \App\Support\MailText::get($key, $replace, $emailLocale); @endphp
 
-@section('eyebrow', 'Password Reset')
-@section('heading', 'Reset your password')
-@section('title', 'Reset your password · FreeCause')
-
+@section('title', $t('reset_subject'))
+@section('heading', $t('reset_subject'))
+@section('preheader', $t('reset_intro'))
 @section('content')
-    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
-    <p style="margin:0 0 16px;">We received a request to reset the password for your FreeCause account. Click the button below to choose a new one.</p>
-    <p style="margin:0;">This link is private and expires in 60 minutes. If you didn't request a reset, you can ignore this email and your password stays the same.</p>
+    <p style="margin:0 0 16px;">{{ $t('common_greeting', ['name' => $firstName]) }}</p>
+    <p style="margin:0 0 16px;">{{ $t('reset_intro') }}</p>
+    <p style="margin:0;">{{ $t('reset_note', ['minutes' => $resetMinutes]) }}</p>
 @endsection
-
-@section('action', 'Set a New Password')
+@section('action', $t('reset_action'))
 @section('action_url', $resetUrl)
-
 @section('note')
-    <strong>Can't see the button?</strong> Copy and paste this link into your browser:
-    <span style="word-break:break-all;">{{ $resetUrl }}</span>
+    <span style="word-break:break-all;">{{ $t('link_help', ['url' => $resetUrl]) }}</span>
 @endsection

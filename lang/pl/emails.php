@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Zobacz swoją petycję',
+    'link_help' => 'Otwórz ten link: :url',
+    'verify_subject' => 'Potwierdź email FreeCause',
+    'verify_intro' => 'Potwierdź ten adres email dla swojego konta FreeCause.',
+    'verify_action' => 'Potwierdź adres email',
+    'verify_note' => 'Ten link jest ważny przez :hours godzin. Jeśli nie proszono o tę wiadomość, możesz ją zignorować.',
+    'reset_subject' => 'Zresetuj hasło FreeCause',
+    'reset_intro' => 'Wybierz nowe hasło do swojego konta FreeCause.',
+    'reset_action' => 'Ustaw nowe hasło',
+    'reset_note' => 'Ten link wygaśnie za :minutes minut. Jeśli nie proszono o resetowanie, zignoruj tę wiadomość; hasło nie zostanie zmienione.',
+    'milestone_subject' => 'Twoja petycja osiągnęła :count podpisów',
+    'milestone_intro' => 'Twoja petycja „:title” osiągnęła :count podpisów.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',

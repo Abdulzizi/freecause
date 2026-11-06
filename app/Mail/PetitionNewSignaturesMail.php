@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\Petition;
 use App\Models\User;
 use App\Support\Locale;
+use App\Support\MailText;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -36,20 +37,21 @@ class PetitionNewSignaturesMail extends Mailable implements ShouldQueue
             ])
             : lroute('home', ['locale' => $locale]);
 
-        return $this->subject(trans('emails.petition_new_signatures.subject', ['count' => $this->count], $locale))
+        return $this->subject(MailText::get('petition_new_signatures_subject', ['count' => $this->count], $locale))
             ->view('emails.petition-new-signatures')
             ->with([
+                'emailLocale' => $locale,
                 'firstName' => $this->owner->first_name ?: $this->owner->name,
-                'petitionTitle' => $translation?->title ?? 'your petition',
+                'petitionTitle' => $translation?->title ?? MailText::get('common_petition', [], $locale),
                 'petitionUrl' => $petitionUrl,
                 'count' => $this->count,
                 'signers' => $this->signers,
-                'heading' => trans('emails.petition_new_signatures.heading', ['count' => $this->count], $locale),
-                'intro' => trans('emails.petition_new_signatures.intro', ['title' => $translation?->title ?? '', 'count' => $this->count], $locale),
-                'guestNote' => trans('emails.petition_new_signatures.guest_note', [], $locale),
-                'footer' => trans('emails.petition_new_signatures.footer', [], $locale),
-                'unsubscribeLabel' => trans('emails.petition_new_signatures.unsubscribe', [], $locale),
-                'manageLabel' => trans('preferences.manage_preferences', [], $locale),
+                'heading' => MailText::get('petition_new_signatures_heading', ['count' => $this->count], $locale),
+                'intro' => MailText::get('petition_new_signatures_intro', ['title' => $translation?->title ?? '', 'count' => $this->count], $locale),
+                'guestNote' => MailText::get('petition_new_signatures_guest_note', [], $locale),
+                'footer' => MailText::get('petition_new_signatures_footer', [], $locale),
+                'unsubscribeLabel' => MailText::get('petition_new_signatures_unsubscribe', [], $locale),
+                'manageLabel' => MailText::get('common_manage_preferences', [], $locale),
                 'unsubscribeUrl' => lroute('preferences.unsubscribe', ['locale' => $locale, 'token' => $token]),
                 'preferencesUrl' => lroute('preferences.show', ['locale' => $locale]),
             ]);
