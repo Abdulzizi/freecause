@@ -87,6 +87,15 @@ class PetitionSignatureExportTest extends TestCase
         $this->assertStringStartsWith('105,', $lines[105]);
     }
 
+    public function test_petition_page_links_csv_export_for_owner_only(): void
+    {
+        $page = '/en/petition/protect-the-reef/'.$this->petition->id;
+        $stranger = User::factory()->create(['verified' => true]);
+
+        $this->actingAs($this->owner)->get($page)->assertSee($this->url('csv'), false);
+        $this->actingAs($stranger)->get($page)->assertDontSee($this->url('csv'), false);
+    }
+
     public function test_non_owner_cannot_download_signatures(): void
     {
         $stranger = User::factory()->create(['verified' => true]);

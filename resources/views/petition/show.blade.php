@@ -626,6 +626,9 @@
                                             <span class="text-muted"> </span>
                                             <a class="text-brand"
                                                 href="{{ lroute('petition.download.pdf', ['slug' => $tr->slug, 'id' => $petition->id]) }}">PDF</a>
+                                            <span class="text-muted"> </span>
+                                            <a class="text-brand"
+                                                href="{{ lroute('petition.download.csv', ['slug' => $tr->slug, 'id' => $petition->id]) }}">CSV</a>
                                         </div>
 
                                         @if ($petition->status === 'published' && $petition->is_active)
