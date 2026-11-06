@@ -12,7 +12,7 @@ class Permission extends Model
     {
         return [
             'users' => ['view', 'edit', 'delete'],
-            'petitions' => ['view', 'edit'],
+            'petitions' => ['view', 'edit', 'delete'],
             'categories' => ['view', 'edit', 'delete'],
             'pages' => ['view', 'edit', 'delete'],
             'signatures' => ['view', 'edit', 'delete'],
