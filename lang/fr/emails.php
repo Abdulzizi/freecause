@@ -34,7 +34,6 @@ return [
         'note_expiry' => 'Your secure link is valid for 48 hours.',
         'note_link_help' => 'If the button above does not work, copy and paste this link into your browser:',
         'note_ignore' => "Didn't create an account with FreeCause? You can safely ignore this email.",
-        'footer' => 'FreeCause – Online Petition Platform',
     ],
     'petition_milestone' => [
         'subject' => 'Your petition just reached :count signatures',

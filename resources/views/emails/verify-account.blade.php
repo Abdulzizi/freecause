@@ -29,5 +29,3 @@
     <br><br>
     {{ $noteIgnore }}
 @endsection
-
-@section('footer', $footer)

@@ -33,7 +33,6 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
         $subject = Settings::get('email_verify_subject', '', 'global') ?: trans('emails.verify_account.subject', [], $this->locale);
         $greeting = Settings::get('email_verify_greeting', '', 'global') ?: trans('emails.verify_account.greeting', [], $this->locale);
         $buttonText = Settings::get('email_verify_button_text', '', 'global') ?: trans('emails.verify_account.button', [], $this->locale);
-        $footer = Settings::get('email_verify_footer', '', 'global') ?: trans('emails.verify_account.footer', [], $this->locale);
         $introKey = $this->isEmailChange ? 'emails.verify_account.intro_change' : 'emails.verify_account.intro';
 
         return $this->subject($subject)
@@ -52,7 +51,6 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
                 'noteExpiry' => trans('emails.verify_account.note_expiry', [], $this->locale),
                 'noteLinkHelp' => trans('emails.verify_account.note_link_help', [], $this->locale),
                 'noteIgnore' => trans('emails.verify_account.note_ignore', [], $this->locale),
-                'footer' => $footer,
             ]);
     }
 }

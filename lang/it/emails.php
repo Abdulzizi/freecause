@@ -34,7 +34,6 @@ return [
         'note_expiry' => 'Il tuo link sicuro è valido per 48 ore.',
         'note_link_help' => 'Se il pulsante qui sopra non funziona, copia e incolla questo link nel tuo browser:',
         'note_ignore' => 'Non hai creato un account su FreeCause? Puoi ignorare questa email.',
-        'footer' => 'FreeCause – Piattaforma di petizioni online',
     ],
     'petition_milestone' => [
         'subject' => 'La tua petizione ha appena raggiunto :count firme',
