@@ -1,0 +1,11 @@
+# Aggregate page loads
+
+`/site-metrics` is an anonymous, first-party page-load counter shared by the Laravel site and magazine. A visible top-level page sends one small POST, including when the optional-cookie choice is rejected. Prerenders only count after activation. No Google or Adsterra calls are made by this counter; their consent gates remain unchanged.
+
+Only an hourly UTC bucket, one of six page families, a supported language, a coarse device category and a browser/recognized-automation category are persisted, with an atomic integer counter. No IP address, user-agent string, URL, referrer, email, account ID, visitor ID, session ID or event history is stored in the metrics table. There is no attempt to deduplicate people, fingerprint browsers or reconstruct sessions. Existing web-server and security logs are separate from these metrics. The existing short-lived request limiter may use the request address for abuse prevention.
+
+The browser sends no credentials or referrer, sets no cookie or localStorage value, and honors Do Not Track and Global Privacy Control. The receiver also honors DNT/GPC, requires a matching configured application Origin, rejects cross-site requests and accepts only fixed dimension values in a small JSON body. This prevents accidental personal-data ingestion, but is not proof that a request was human: clients can forge both headers and data.
+
+Admin → Statistics shows browser page loads, recognized automated loads, page families and approximate devices under the existing locale/range filters. These are **not unique visitors, sessions, verified humans or ad impressions**. Undetected bots can count; blocked JavaScript and privacy signals can undercount. A page served from the CDN can still report because the counter runs in the browser. There is no historical backfill. Data starts at deployment and aggregate rows older than 90 days are pruned daily.
+
+The privacy-policy page explains the aggregate measurement in all 14 supported languages. Optional Google Analytics and Adsterra still require their service consent. This counter does not grant an advertising vendor permission to load after refusal. Set `AGGREGATE_TRAFFIC_ENABLED=false` to stop recording and hide the Laravel notice/script; the receiver becomes a no-op, including for the magazine script.
