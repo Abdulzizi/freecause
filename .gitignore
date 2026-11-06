@@ -48,3 +48,4 @@ bootstrap/cache/*.php
 
 /test-results
 /playwright-report
+/docs/operations.md

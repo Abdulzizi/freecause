@@ -4,7 +4,7 @@
 |---|---|
 | [`../README.md`](../README.md) | Project overview, stack, layout, admin panel, i18n, production notes |
 | [`../deploy/README.md`](../deploy/README.md) | Deploy/rollback runbook (Deployer 8), shared dirs, GitHub Environment setup |
-| [`operations.md`](operations.md) | Server facts, operational traps, parked backlog |
+| `operations.md` | Local only, not committed: server facts, operational traps, parked backlog |
 | [`design-system.md`](design-system.md) | Tokens, layers, components, metrics, exceptions, `ds-lint` gate |
 | [`ux-states.md`](ux-states.md) | Public UX state matrix (loading/empty/error/success), a11y gate rules, landing/redirect table |
 | [`mobile.md`](mobile.md) | Mobile layer: bottom nav/sheets, breakpoints, thumb-zone actions |
