@@ -119,6 +119,25 @@ class PetitionAdSlotsTest extends TestCase
         $this->get('https://www.freecause.com/ads/frame/rectangle')->assertNotFound();
     }
 
+    public function test_retired_frame_host_redirects_to_canonical_after_a_config_move(): void
+    {
+        config([
+            'ads.enabled' => true,
+            'app.canonical_url' => 'https://www.freecause.com',
+            'ads.frame_origin' => 'https://ads.example.net',
+        ]);
+
+        $this->get('https://ads.freecause.com/ads/frame/rectangle?v=2')
+            ->assertStatus(301)
+            ->assertRedirect('https://www.freecause.com/ads/frame/rectangle?v=2');
+
+        $this->get('https://ads.freecause.com/en')
+            ->assertStatus(301)
+            ->assertRedirect('https://www.freecause.com/en');
+
+        $this->get('https://ads.example.net/ads/frame/rectangle')->assertOk();
+    }
+
     public function test_parent_origin_prefers_the_canonical_url(): void
     {
         config(['app.canonical_url' => 'https://www.freecause.com:8443', 'app.url' => 'http://fallback.test']);

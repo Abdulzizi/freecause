@@ -26,8 +26,12 @@ class CanonicalHost
         $canonicalHost = strtolower((string) parse_url($canonicalUrl, PHP_URL_HOST));
 
         $host = strtolower($request->getHost());
-        $configuredFrameHost = strtolower((string) parse_url((string) config('ads.frame_origin'), PHP_URL_HOST));
-        $retiredAdHost = $configuredFrameHost !== '' && $host === $configuredFrameHost && $host !== Ads::frameHost();
+        $adHosts = array_filter([
+            'ads.freecause.com', // retired frame host that must keep 301-ing to canonical
+            Ads::frameHost(),
+            strtolower((string) parse_url((string) config('ads.frame_origin'), PHP_URL_HOST)),
+        ]);
+        $retiredAdHost = $host !== Ads::frameHost() && in_array($host, $adHosts, true);
         $isPublicDomain = $retiredAdHost || in_array($host, self::PUBLIC_HOSTS, true);
 
         if ($isPublicDomain && $host !== $canonicalHost) {
