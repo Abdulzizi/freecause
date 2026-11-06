@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Google verification is temporarily unavailable. Please try again later.',
     'google_delete_mismatch' => 'That Google account does not match your FreeCause account.',
     'google_delete_verified' => 'Google identity verified. You can now confirm account deletion.',
+    'page_title' => 'Account',
 ];

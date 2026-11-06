@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'My petitions - FreeCause')
+@section('title', __('nav.my_petitions'))
 
 @section('content')
     <x-ui.section>

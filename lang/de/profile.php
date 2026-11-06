@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Die Google-Verifizierung ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
     'google_delete_mismatch' => 'Dieses Google-Konto passt nicht zu deinem FreeCause-Konto.',
     'google_delete_verified' => 'Google-Identität bestätigt. Du kannst die Kontolöschung jetzt bestätigen.',
+    'page_title' => 'Konto',
 ];

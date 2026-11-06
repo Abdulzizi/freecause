@@ -8,7 +8,7 @@
     $coverImg = $petition->coverUrl();
 @endphp
 
-@section('title', 'Signatures: ' . $petitionTitle)
+@section('title', __('sig.page_title', ['title' => $petitionTitle]))
 
 @section('content')
     <x-ui.section>

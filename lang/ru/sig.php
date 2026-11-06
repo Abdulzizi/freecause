@@ -11,4 +11,5 @@ return [
     'continue' => 'читать далее »',
     'goal' => 'Цель:',
     'signatures' => 'подписи',
+    'page_title' => 'Подписи: :title',
 ];

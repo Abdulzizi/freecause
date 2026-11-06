@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Google-verifiering är tillfälligt otillgänglig. Försök igen senare.',
     'google_delete_mismatch' => 'Det Google-kontot matchar inte ditt FreeCause-konto.',
     'google_delete_verified' => 'Google-identitet verifierad. Du kan nu bekräfta borttagning av kontot.',
+    'page_title' => 'Konto',
 ];

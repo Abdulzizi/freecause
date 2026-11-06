@@ -11,4 +11,5 @@ return [
     'continue' => 'continuer la lecture »',
     'goal' => 'Objectif :',
     'signatures' => 'signatures',
+    'page_title' => 'Signatures : :title',
 ];

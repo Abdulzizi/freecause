@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Google-bekræftelse er midlertidigt utilgængelig. Prøv igen senere.',
     'google_delete_mismatch' => 'Den Google-konto matcher ikke din FreeCause-konto.',
     'google_delete_verified' => 'Google-identitet bekræftet. Du kan nu bekræfte sletning af kontoen.',
+    'page_title' => 'Konto',
 ];

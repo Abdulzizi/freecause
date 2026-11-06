@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'Google-verificatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
     'google_delete_mismatch' => 'Dat Google-account komt niet overeen met je FreeCause-account.',
     'google_delete_verified' => 'Google-identiteit geverifieerd. Je kunt het verwijderen van je account nu bevestigen.',
+    'page_title' => 'Account',
 ];

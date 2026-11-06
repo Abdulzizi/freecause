@@ -1,6 +1,6 @@
 @extends('layouts.legacy')
 
-@section('title', 'Account - FreeCause')
+@section('title', __('profile.page_title'))
 
 @section('content')
     @php

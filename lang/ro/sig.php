@@ -11,4 +11,5 @@ return [
     'continue' => 'citește mai mult »',
     'goal' => 'Obiectiv:',
     'signatures' => 'semnături',
+    'page_title' => 'Semnături: :title',
 ];

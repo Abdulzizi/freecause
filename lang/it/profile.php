@@ -95,4 +95,5 @@ return [
     'google_delete_unavailable' => 'La verifica con Google non è al momento disponibile. Riprova più tardi.',
     'google_delete_mismatch' => 'Quell\'account Google non corrisponde al tuo account FreeCause.',
     'google_delete_verified' => 'Identità Google verificata. Ora puoi confermare l\'eliminazione dell\'account.',
+    'page_title' => 'Account',
 ];
