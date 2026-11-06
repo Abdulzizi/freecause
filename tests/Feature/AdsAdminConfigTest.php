@@ -77,6 +77,19 @@ class AdsAdminConfigTest extends TestCase
         $this->assertSame('CONFIG_KEY', Ads::slot('rectangle')['key']);
     }
 
+    public function test_frame_url_changes_with_the_slot_key(): void
+    {
+        config(['ads.enabled' => true, 'ads.slots.rectangle.key' => 'CONFIG_KEY']);
+
+        $before = Ads::frameUrl('rectangle');
+
+        $this->assertSame($before, Ads::frameUrl('rectangle'));
+
+        Settings::set('ads_slot_rectangle_key', 'NEW_KEY', 'global');
+
+        $this->assertNotSame($before, Ads::frameUrl('rectangle'));
+    }
+
     public function test_resolver_master_flag_from_settings_overrides_config(): void
     {
         config(['ads.enabled' => true]);
@@ -100,7 +113,7 @@ class AdsAdminConfigTest extends TestCase
         [$petition, $slug] = $this->publishedPetition();
         $html = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk()->getContent();
 
-        preg_match('/<iframe[^>]*src="https:\/\/ads\.freecause\.com\/ads\/frame\/rectangle\?v=2"[^>]*>/', $html, $frame);
+        preg_match('/<iframe[^>]*src="https:\/\/ads\.freecause\.com\/ads\/frame\/rectangle\?v=[0-9a-f]{8}"[^>]*>/', $html, $frame);
         $this->assertNotEmpty($frame);
         $this->assertStringContainsString('allow-same-origin', $frame[0]);
     }

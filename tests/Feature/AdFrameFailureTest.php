@@ -21,7 +21,7 @@ class AdFrameFailureTest extends TestCase
 
     public function test_frame_urls_bypass_old_cached_permanent_redirects(): void
     {
-        $this->assertSame('https://ads.freecause.com/ads/frame/leaderboard?v=2', Ads::frameUrl('leaderboard'));
+        $this->assertMatchesRegularExpression('#^https://ads\.freecause\.com/ads/frame/leaderboard\?v=[0-9a-f]{8}$#', Ads::frameUrl('leaderboard'));
     }
 
     public function test_wrong_host_frame_failure_is_empty_and_cannot_recurse(): void
@@ -60,7 +60,7 @@ class AdFrameFailureTest extends TestCase
     {
         $response = $this->get('/en/petition/missing/999999999')->assertNotFound();
         $response->assertSee('id="fc-404-recovery"', false)
-            ->assertSee('https://ads.freecause.com/ads/frame/rectangle?v=2', false)
+            ->assertSee(Ads::frameUrl('rectangle'), false)
             ->assertSee('/en/petitions', false);
         $this->assertStringContainsString('noindex', $response->getContent());
     }
