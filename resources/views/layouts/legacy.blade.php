@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    @include('partials.consent')
 
     @php
         $locale = app()->getLocale();
@@ -97,7 +98,8 @@
     {!! $headExtraHtml !!}
 
     @if (config('services.adsense.enabled') && config('services.adsense.client'))
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client') }}" crossorigin="anonymous"></script>
+        {{-- Keep legacy AdSense inert until a certified CMP is configured. --}}
+        <script type="text/plain" data-fc-future-adsense data-src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client') }}" crossorigin="anonymous"></script>
     @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
