@@ -17,7 +17,7 @@
 
                     <tr>
                         <td align="center" style="padding:0 0 30px;">
-                            <a href="{{ url('/') }}" target="_blank" style="text-decoration:none;">
+                            <a href="{{ url('/'.($emailLocale ?? 'en')) }}" target="_blank" style="text-decoration:none;">
                                 <img src="{{ $logoUrl }}" width="168" alt="FreeCause" style="display:block;border:0;outline:none;width:168px;height:auto;">
                             </a>
                         </td>
@@ -78,13 +78,13 @@
                     <tr>
                         <td align="center" style="padding:28px 8px 0;">
                             <p style="margin:0 0 6px;font-family:Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#B6AFA5;">
-                                FreeCause &middot; Online Petitions
+                                FreeCause
                             </p>
                             <p style="margin:0 auto 8px;max-width:420px;font-size:12px;line-height:1.6;color:#A39A90;">
-                                @yield('footer', 'You are receiving this email because you signed up for a FreeCause account.')
+                                @yield('footer', \App\Support\MailText::get('common_footer', [], $emailLocale ?? 'en'))
                             </p>
                             <p style="margin:0;font-size:12px;color:#A39A90;">
-                                <a href="{{ url('/') }}" style="color:#8E8A82;text-decoration:none;">www.freecause.com</a>
+                                <a href="{{ url('/'.($emailLocale ?? 'en')) }}" style="color:#8E8A82;text-decoration:none;">www.freecause.com</a>
                             </p>
                         </td>
                     </tr>

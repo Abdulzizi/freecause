@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Kampanyanızı görüntüleyin',
+    'link_help' => 'Bu bağlantıyı açın: :url',
+    'verify_subject' => 'FreeCause e-postanızı doğrulayın',
+    'verify_intro' => 'FreeCause hesabınız için bu e-posta adresini doğrulayın.',
+    'verify_action' => 'E-posta adresini doğrula',
+    'verify_note' => 'Bu bağlantı :hours saat geçerlidir. Bu e-postayı siz istemediyseniz yok sayabilirsiniz.',
+    'reset_subject' => 'FreeCause parolanızı sıfırlayın',
+    'reset_intro' => 'FreeCause hesabınız için yeni bir parola seçin.',
+    'reset_action' => 'Yeni parola belirle',
+    'reset_note' => 'Bu bağlantı :minutes dakika içinde sona erer. Sıfırlama talep etmediyseniz bu e-postayı yok sayın; parolanız değişmez.',
+    'milestone_subject' => 'Kampanyanız :count imzaya ulaştı',
+    'milestone_intro' => '“:title” kampanyanız :count imzaya ulaştı.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',

@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Ihre Petition ansehen',
+    'link_help' => 'Öffnen Sie diesen Link: :url',
+    'verify_subject' => 'Bestätigen Sie Ihre FreeCause-E-Mail',
+    'verify_intro' => 'Bestätigen Sie diese E-Mail-Adresse für Ihr FreeCause-Konto.',
+    'verify_action' => 'E-Mail-Adresse bestätigen',
+    'verify_note' => 'Dieser Link ist :hours Stunden gültig. Wenn Sie diese E-Mail nicht angefordert haben, können Sie sie ignorieren.',
+    'reset_subject' => 'Ihr FreeCause-Passwort zurücksetzen',
+    'reset_intro' => 'Wählen Sie ein neues Passwort für Ihr FreeCause-Konto.',
+    'reset_action' => 'Neues Passwort festlegen',
+    'reset_note' => 'Dieser Link läuft in :minutes Minuten ab. Wenn Sie keine Zurücksetzung angefordert haben, ignorieren Sie diese E-Mail; Ihr Passwort bleibt unverändert.',
+    'milestone_subject' => 'Ihre Petition hat :count Unterschriften erreicht',
+    'milestone_intro' => 'Ihre Petition „:title“ hat :count Unterschriften erreicht.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',

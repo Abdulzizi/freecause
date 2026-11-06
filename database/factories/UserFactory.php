@@ -59,4 +59,11 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+
+    public function languageConfirmed(): static
+    {
+        return $this->state(fn () => [
+            'preferred_language_confirmed_at' => now(),
+        ]);
+    }
 }

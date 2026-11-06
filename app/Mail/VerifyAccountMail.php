@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Support\Locale;
 use App\Support\Settings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,7 +25,7 @@ class VerifyAccountMail extends Mailable implements ShouldQueue
     {
         $this->firstName = $user->first_name ?? '';
         $this->verificationToken = $user->verification_token ?? '';
-        $this->locale = $locale;
+        $this->locale = Locale::toShort($user->locale ?: $locale);
         $this->isEmailChange = ! empty($user->pending_email);
     }
 

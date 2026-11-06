@@ -1,13 +1,15 @@
 @extends('emails.layout')
 
+@php $t = fn ($key, $replace = []) => \App\Support\MailText::get($key, $replace, $emailLocale); @endphp
+
 @section('preheader', $heading)
 
-@section('eyebrow', 'New signatures')
+@section('eyebrow', $heading)
 @section('heading', $heading)
 @section('title', $heading.' · FreeCause')
 
 @section('content')
-    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
+    <p style="margin:0 0 16px;">{{ $t('common_greeting', ['name' => $firstName]) }}</p>
     <p style="margin:0 0 16px;">{{ $intro }}</p>
 
     @if ($signers->isNotEmpty())
@@ -28,7 +30,7 @@
     @endif
 @endsection
 
-@section('action', 'View your petition')
+@section('action', $t('view_petition'))
 @section('action_url', $petitionUrl)
 
 @section('footer')

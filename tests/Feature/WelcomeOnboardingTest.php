@@ -39,6 +39,7 @@ class WelcomeOnboardingTest extends TestCase
             'identify_mode' => 'full',
             'nickname' => null,
             'welcome_email_pending' => true,
+            'preferred_language_confirmed_at' => null,
         ], $attributes));
     }
 

@@ -697,7 +697,7 @@ class AuthenticationTest extends TestCase
 
     public function test_profile_renders_complete_country_and_supported_language_selectors(): void
     {
-        $user = User::factory()->create([
+        $user = User::factory()->languageConfirmed()->create([
             'country' => 'US',
             'locale' => 'en_US',
         ]);

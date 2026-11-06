@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'view_petition' => 'Посмотреть вашу петицию',
+    'link_help' => 'Откройте эту ссылку: :url',
+    'verify_subject' => 'Подтвердите email FreeCause',
+    'verify_intro' => 'Подтвердите этот адрес электронной почты для вашего аккаунта FreeCause.',
+    'verify_action' => 'Подтвердить адрес почты',
+    'verify_note' => 'Эта ссылка действительна :hours часов. Если вы не запрашивали это письмо, вы можете его проигнорировать.',
+    'reset_subject' => 'Сброс пароля FreeCause',
+    'reset_intro' => 'Выберите новый пароль для вашего аккаунта FreeCause.',
+    'reset_action' => 'Установить новый пароль',
+    'reset_note' => 'Ссылка истекает через :minutes минут. Если вы не запрашивали сброс, проигнорируйте это письмо; ваш пароль не изменится.',
+    'milestone_subject' => 'Ваша петиция собрала :count подписей',
+    'milestone_intro' => 'Ваша петиция «:title» собрала :count подписей.',
     'petition_digest' => [
         'subject' => 'Recent petitions on FreeCause',
         'preheader' => 'The newest petitions published on FreeCause.',
