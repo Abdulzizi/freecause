@@ -117,6 +117,14 @@ class AdminPerformanceFixesTest extends TestCase
         $this->assertSame(['x' => 1], Cache::get('settings:all'), 'non-system admin must not flush');
 
         $admin = $this->systemAdmin();
+
+        $this->actingAs($admin, 'admin')->get(route('admin.dashboard'))->assertOk();
+        $this->assertTrue(Cache::has('admin:dashboard:stats:v4'));
+        $this->assertTrue(Cache::has('admin:petitions:status_counts:v2'));
+        $this->assertTrue(Cache::has('admin:users:synthetic_count:v3'));
+        $this->assertTrue(Cache::has('admin:users:verified_real_count:v3'));
+        $this->assertTrue(Cache::has('admin:signatures:real_count:v3'));
+
         $this->actingAs($admin, 'admin')->post(route('admin.options.clearCache'))
             ->assertRedirect()
             ->assertSessionHas('success');
@@ -125,6 +133,12 @@ class AdminPerformanceFixesTest extends TestCase
         $this->assertSame(6, Cache::get('ver:home'));
         $this->assertSame(6, Cache::get('ver:list'));
         $this->assertSame('keepme', Cache::get('unrelated:key'), 'targeted rebuild must not wipe unrelated keys');
+
+        $this->assertFalse(Cache::has('admin:dashboard:stats:v4'));
+        $this->assertFalse(Cache::has('admin:petitions:status_counts:v2'));
+        $this->assertFalse(Cache::has('admin:users:synthetic_count:v3'));
+        $this->assertFalse(Cache::has('admin:users:verified_real_count:v3'));
+        $this->assertFalse(Cache::has('admin:signatures:real_count:v3'));
     }
 
     public function test_petitions_index_two_stage_query_filters_and_renders(): void
