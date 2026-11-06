@@ -14,4 +14,11 @@
         'slug' => $tr->slug,
         'fallback' => $fallback
     ])
+    @if ($tr->slug === 'privacy-policy' && config('aggregate-traffic.enabled'))
+        @php($notice = config('aggregate-traffic.notices.'.app()->getLocale(), config('aggregate-traffic.notices.en')))
+        <x-ui.section>
+            <h2 class="font-bold mb-3">{{ $notice[0] }}</h2>
+            <p>{{ $notice[1] }}</p>
+        </x-ui.section>
+    @endif
 @endsection
