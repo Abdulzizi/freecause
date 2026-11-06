@@ -107,6 +107,15 @@ class PetitionController extends Controller
         return $normalized ?: null;
     }
 
+    private function goalProgress(Petition $petition): array
+    {
+        $goalTotal = (int) ($petition->goal_signatures ?? 100);
+        $goalCurrent = (int) ($petition->signature_count ?? 0);
+        $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+
+        return [$goalTotal, $goalCurrent, $pct];
+    }
+
     private function storeCoverImage(UploadedFile $file): string
     {
         $size = @getimagesize($file->getPathname());
@@ -311,9 +320,7 @@ class PetitionController extends Controller
 
         $hasSigned = auth()->check() && $this->hasSigned($petition);
 
-        $goalTotal = (int) ($petition->goal_signatures ?? 100);
-        $goalCurrent = (int) ($petition->signature_count ?? 0);
-        $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+        [$goalTotal, $goalCurrent, $pct] = $this->goalProgress($petition);
 
         $latest = cache()->remember(
             "petition:latest_sigs:{$petition->id}",
@@ -652,15 +659,7 @@ class PetitionController extends Controller
         $content = collect(app(PageContentService::class)->getPage('petition_thanks', $tr->locale));
 
         $count = (int) ($petition->signature_count ?? 0);
-        $ladder = Petition::GOALS;
-        $nextMilestone = null;
-        foreach ($ladder as $m) {
-            if ($m > $count) {
-                $nextMilestone = $m;
-                break;
-            }
-        }
-        $nextMilestone ??= end($ladder);
+        $nextMilestone = collect(Petition::GOALS)->first(fn ($m) => $m > $count) ?? last(Petition::GOALS);
         $shareUrl = lroute('petition.show', ['slug' => $tr->slug, 'id' => $petition->id]);
 
         $reviewRequired = $petition->status !== 'published';
@@ -1126,9 +1125,7 @@ class PetitionController extends Controller
             ->paginate(25, ['*'], 'page', $page)
             ->withQueryString();
 
-        $goalTotal = (int) ($petition->goal_signatures ?? 100);
-        $goalCurrent = (int) ($petition->signature_count ?? 0);
-        $pct = $goalTotal > 0 ? min(100, round(($goalCurrent / $goalTotal) * 100)) : 0;
+        [$goalTotal, $goalCurrent, $pct] = $this->goalProgress($petition);
 
         return view('petition.signatures', compact(
             'petition',
