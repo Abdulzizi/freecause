@@ -144,7 +144,7 @@
                 <div class="relative flex flex-col min-w-0 bg-white bg-clip-border rounded-md border-0 shadow-elev-1">
                     <div class="grow shrink basis-auto p-6 max-md:p-4">
 
-                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" data-msg-type="{{ __('create.err_file_type') }}" data-msg-size="{{ __('create.err_file_size') }}" data-msg-conflict="{{ __('create.err_image_conflict') }}" data-step-label="{{ __('create.step_of') }}" data-next-label="{{ __('create.next') }}" data-back-label="{{ __('create.back') }}" data-draft-saved="{{ __('create.draft_saved') }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
+                        <form data-petition-form data-draft-locale="{{ app()->getLocale() }}" data-draft-user="{{ auth()->id() }}" data-draft-id="{{ $isEdit ? $petition->id : 'new' }}" data-msg-type="{{ __('create.err_file_type') }}" data-msg-size="{{ __('create.err_file_size') }}" data-msg-conflict="{{ __('create.err_image_conflict') }}" data-step-label="{{ __('create.step_of') }}" data-next-label="{{ __('create.next') }}" data-back-label="{{ __('create.back') }}" data-draft-saved="{{ __('create.draft_saved') }}" class="max-md:[&_.row]:[--bs-gutter-y:0.75rem] max-md:[&_.mb-3]:mb-3 max-md:[&_.form-control]:w-full max-md:[&_.form-select]:w-full" method="POST" action="{{ $isEdit
                             ? lroute('petition.update', ['slug' => $tr->slug, 'id' => $petition->id])
                             : lroute('petition.store') }}" enctype="multipart/form-data">
                             @csrf
