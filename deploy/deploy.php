@@ -120,6 +120,16 @@ task('scheduler:sync', function () {
     run('crontab -l 2>/dev/null | grep -v "freecause-release-v2026.09.19/artisan schedule:run" | crontab - || true');
 });
 
+desc('Restart the scheduler supervisor program');
+task('scheduler:restart', function () {
+    if (! get('manage_services')) {
+        writeln('manage_services=false: skipping scheduler restart');
+
+        return;
+    }
+    run('sudo supervisorctl restart freecause-release-scheduler');
+});
+
 desc('Snapshot the database before migrating (recovery point for schema deploys)');
 task('db:snapshot', function () {
     // Self-hosted MySQL on the deploy host. Dump to shared/ (persists across
@@ -230,6 +240,8 @@ after('deploy:symlink', 'cache:warm');
 after('deploy:symlink', 'queue:restart');
 after('deploy:symlink', 'scheduler:sync');
 after('deploy:symlink', 'php-fpm:reload');
+after('rollback', 'queue:restart');
+after('rollback', 'scheduler:restart');
 
 after('deploy:failed', 'artisan:up');
 after('deploy:failed', 'deploy:unlock');

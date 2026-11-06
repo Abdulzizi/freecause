@@ -73,4 +73,12 @@ PHP;
     {
         $this->assertSame([], $this->snapshot('none'));
     }
+
+    public function test_rollback_restarts_queue_and_scheduler(): void
+    {
+        $recipe = file_get_contents(dirname(__DIR__, 2).'/deploy/deploy.php');
+
+        $this->assertStringContainsString("after('rollback', 'queue:restart');", $recipe);
+        $this->assertStringContainsString("after('rollback', 'scheduler:restart');", $recipe);
+    }
 }
