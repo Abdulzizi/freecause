@@ -71,6 +71,27 @@ class PetitionCreateFlowTest extends TestCase
             ->assertDontSee('data-alert-variant="error"', false);
     }
 
+    public function test_phone_sized_photo_is_accepted_and_scaled_down(): void
+    {
+        $file = UploadedFile::fake()->image('phone.jpg', 4032, 3024);
+
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload(['image' => $file]))
+            ->assertSessionHasNoErrors();
+
+        $petition = Petition::latest('id')->first();
+        $size = getimagesize(Storage::disk('public')->path($petition->cover_image));
+        $this->assertLessThanOrEqual(800, max($size[0], $size[1]));
+    }
+
+    public function test_image_over_pixel_cap_is_rejected_with_translated_message(): void
+    {
+        $png = "\x89PNG\r\n\x1a\n".pack('N', 13).'IHDR'.pack('NN', 7000, 6000)."\x08\x02\x00\x00\x00".pack('N', 0);
+        $file = UploadedFile::fake()->createWithContent('huge.png', $png);
+
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload(['image' => $file]))
+            ->assertSessionHasErrors(['image' => __('create.err_image_pixels')]);
+    }
+
     public function test_failed_upload_shows_upload_failed_message(): void
     {
         $file = new UploadedFile(__FILE__, 'cover.jpg', 'image/jpeg', UPLOAD_ERR_INI_SIZE, true);

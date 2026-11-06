@@ -110,9 +110,9 @@ class PetitionController extends Controller
     private function storeCoverImage(UploadedFile $file): string
     {
         $size = @getimagesize($file->getPathname());
-        if ($size !== false && max($size[0], $size[1]) > 2000) {
+        if ($size !== false && $size[0] * $size[1] > 40_000_000) {
             throw ValidationException::withMessages([
-                'image' => 'The image must not exceed 2000 pixels on its longest side.',
+                'image' => __('create.err_image_pixels'),
             ]);
         }
 
@@ -126,7 +126,7 @@ class PetitionController extends Controller
 
             if (! Storage::disk('public')->exists($path)) {
                 throw ValidationException::withMessages([
-                    'image' => 'The image failed to save. Please try again.',
+                    'image' => __('create.err_image_save_failed'),
                 ]);
             }
         } catch (\Throwable $e) {
@@ -138,7 +138,7 @@ class PetitionController extends Controller
             }
 
             throw ValidationException::withMessages([
-                'image' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
+                'image' => __('create.err_image_processing_failed'),
             ]);
         }
 
@@ -1032,7 +1032,7 @@ class PetitionController extends Controller
                 ->download("petition-{$petition->id}.pdf");
         } catch (\Exception $e) {
             AppLog::error('PDF generation failed', $e->getMessage(), 'petition.pdf');
-            toast('PDF generation failed. Downloading as text instead.', 'warning');
+            toast(__('petition.pdf_failed_fallback'), 'warning');
 
             return $this->downloadTxt($request, $locale, $slug, $id);
         }

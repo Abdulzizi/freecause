@@ -39,4 +39,7 @@ return [
     'toast_updated' => 'Underskriftsindsamling opdateret.',
     'help_link' => 'Tips for writing a petition',
     'err_description_too_long' => 'Underskriftsindsamlingens tekst må ikke være længere end :max tegn.',
+    'err_image_pixels' => 'The image is too large. Please upload one under 40 megapixels.',
+    'err_image_save_failed' => 'The image failed to save. Please try again.',
+    'err_image_processing_failed' => 'The image could not be processed. Please upload a valid JPG, PNG, GIF, or WebP file.',
 ];
