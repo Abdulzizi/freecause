@@ -79,19 +79,10 @@ class Petition extends Model
 
     public function hasCover(): bool
     {
-        foreach ([$this->cover_image, $this->image_url] as $index => $coverPath) {
-            if (! $coverPath) {
-                continue;
-            }
-            if (str_starts_with($coverPath, 'http://') || str_starts_with($coverPath, 'https://') || Storage::disk('public')->exists($index === 0 ? $coverPath : 'petitions/'.$coverPath)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->resolvedCoverUrl() !== null;
     }
 
-    public function coverUrl(): string
+    private function resolvedCoverUrl(): ?string
     {
         if ($this->cover_image) {
             if (str_starts_with($this->cover_image, 'http://') || str_starts_with($this->cover_image, 'https://')) {
@@ -113,6 +104,16 @@ class Petition extends Model
             if (file_exists($path)) {
                 return Storage::disk('public')->url("petitions/{$this->image_url}");
             }
+        }
+
+        return null;
+    }
+
+    public function coverUrl(): string
+    {
+        $resolved = $this->resolvedCoverUrl();
+        if ($resolved !== null) {
+            return $resolved;
         }
 
         $n = ($this->id ? ($this->id % 7) : 0) + 1;
