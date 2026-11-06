@@ -102,4 +102,5 @@ return [
     'title' => ':title - FreeCause',
     'title_created' => '¡Gracias! - FreeCause',
     'title_signed' => 'Gracias por firmar - FreeCause',
+    'pdf_failed_fallback' => 'PDF generation failed. Downloading as text instead.',
 ];
