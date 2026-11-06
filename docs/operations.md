@@ -102,6 +102,14 @@ bot-traffic findings: [`edge-waf-bots.md`](edge-waf-bots.md).
 - 503 spikes track deploy maintenance windows + crawler retries (Oct 8: 6.2K);
   deploy fix `c02a8117` lifts maintenance earlier.
 
+## Ads kill switch
+
+Turning off `ads_enabled` (Global Options) or `ADS_ENABLED` purges nothing.
+Petition pages stay edge-cached for `EDGE_CACHE_TTL` (600s) with their ad
+iframes, and browsers keep each frame for `max-age=300`, so ads can keep
+showing for up to about 15 minutes. For an instant kill, also use Cloudflare
+dashboard "Purge Everything" for the zone.
+
 ## Parked backlog
 
 - Enable `fail2ban`; set `PermitRootLogin prohibit-password` and

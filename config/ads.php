@@ -1,7 +1,7 @@
 <?php
 
 // Adsterra banner slots for the petition page. IDs/keys live here (env-overridable)
-// so they can change without a template deploy. Set ADS_ENABLED=false to kill all slots.
+// so they can change without a template deploy. Set ADS_ENABLED=false to kill all slots; cached pages and frames can keep showing ads for up to ~15 min unless the edge is purged (docs/operations.md).
 return [
     // master switch -- disables every slot at once.
     // Default OFF: ads render as framed documents on the dedicated ad origin, which
