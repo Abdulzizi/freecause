@@ -45,6 +45,21 @@ class PetitionLocaleFallbackRoutingTest extends TestCase
             ->assertRedirect("/es/petition/zeta-unique-petition/{$petition->id}");
     }
 
+    public function test_old_slug_redirects_permanently_without_counting_a_view(): void
+    {
+        $petition = $this->petitionWithSpanishOnly();
+
+        $this->get("/es/petition/wrong-slug/{$petition->id}")
+            ->assertStatus(301)
+            ->assertRedirect("/es/petition/zeta-unique-petition/{$petition->id}");
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'views' => 0]);
+
+        $this->get("/es/petition/zeta-unique-petition/{$petition->id}")->assertOk();
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'views' => 1]);
+    }
+
     public function test_default_locale_listing_and_search_exclude_the_foreign_petition(): void
     {
         $this->petitionWithSpanishOnly();
