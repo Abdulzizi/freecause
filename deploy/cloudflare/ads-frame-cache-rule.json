@@ -1,0 +1,11 @@
+{
+  "description": "Ads frame origin cache. Applied manually in the Cloudflare dashboard because the API token cannot create cache rules. Enable only after the origin ships Cache-Control public on /ads/frame/*. The query string carries the ?v= cache buster and stays in the cache key.",
+  "expression": "http.host eq \"ads.freecause.com\" and http.request.uri.path contains \"/ads/frame/\"",
+  "action": "set_cache_settings",
+  "action_parameters": {
+    "cache": true,
+    "edge_ttl": { "mode": "bypass_by_default" },
+    "browser_ttl": { "mode": "respect_origin" }
+  },
+  "enabled": false
+}

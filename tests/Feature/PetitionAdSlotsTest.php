@@ -147,6 +147,19 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringNotContainsString((string) config('app.url'), $csp);
     }
 
+    public function test_ad_frame_response_is_publicly_cacheable_without_cookies(): void
+    {
+        config(['ads.enabled' => true]);
+
+        $response = $this->get('https://ads.freecause.com/ads/frame/rectangle')->assertOk();
+
+        $cacheControl = (string) $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('public', $cacheControl);
+        $this->assertStringContainsString('max-age=300', $cacheControl);
+        $this->assertStringContainsString('s-maxage=3600', $cacheControl);
+        $response->assertHeaderMissing('Set-Cookie');
+    }
+
     public function test_ad_frame_404s_for_unknown_or_keyless_slot(): void
     {
         config(['ads.enabled' => true]);
