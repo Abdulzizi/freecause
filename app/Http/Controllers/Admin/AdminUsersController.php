@@ -260,7 +260,7 @@ class AdminUsersController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($data, $user, $levelChangesRequested, $needsReverification, $nowVerified, $wasVerified, $emailChanged) {
+            DB::transaction(function () use ($request, $data, $user, $levelChangesRequested, $needsReverification, $nowVerified, $wasVerified, $emailChanged) {
                 if ($levelChangesRequested) {
                     $level = UserLevel::where('name', $data['level'])->first();
                     if ($level) {
@@ -274,10 +274,10 @@ class AdminUsersController extends Controller
                 }
 
                 $user->name = $data['username'] ?? $user->name;
-                $user->first_name = $data['first_name'] ?? $user->first_name;
-                $user->last_name = $data['last_name'] ?? $user->last_name;
-                $user->nickname = $data['nickname'] ?? $user->nickname;
-                $user->city = $data['city'] ?? $user->city;
+                $user->first_name = $request->has('first_name') ? $data['first_name'] : $user->first_name;
+                $user->last_name = $request->has('last_name') ? $data['last_name'] : $user->last_name;
+                $user->nickname = $request->has('nickname') ? $data['nickname'] : $user->nickname;
+                $user->city = $request->has('city') ? $data['city'] : $user->city;
                 $user->identify_mode = $data['identify_mode'] ?? $user->identify_mode;
                 $user->email = $data['email'] ?? $user->email;
                 $user->locale = isset($data['locale']) ? Locale::toFull($data['locale']) : $user->locale;

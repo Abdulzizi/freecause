@@ -65,6 +65,35 @@ class AdminUserProtectionTest extends TestCase
         $this->assertSame('Renamed', $target->fresh()->first_name);
     }
 
+    public function test_admin_save_clears_emptied_name_nickname_and_city_but_keeps_omitted_ones(): void
+    {
+        $target = User::factory()->create([
+            'level_id' => UserLevel::where('name', 'user')->value('id'),
+            'first_name' => 'Ann',
+            'last_name' => 'Lee',
+            'nickname' => 'offensive',
+            'city' => 'Paris',
+        ]);
+        $admin = $this->sysAdmin();
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'last_name' => '', 'nickname' => '', 'city' => ''])
+            ->assertSessionHasNoErrors();
+
+        $target->refresh();
+        $this->assertNull($target->last_name);
+        $this->assertNull($target->nickname);
+        $this->assertNull($target->city);
+        $this->assertSame('Ann', $target->first_name);
+
+        $this->actingAs($admin, 'admin')
+            ->post('/admin/users/save', ['id' => $target->id, 'first_name' => 'Bob'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Bob', $target->fresh()->first_name);
+        $this->assertNull($target->fresh()->city);
+    }
+
     public function test_system_admin_can_change_password_of_an_editor(): void
     {
         $target = $this->editor('ed_other');
