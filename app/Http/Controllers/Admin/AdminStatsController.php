@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Support\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
@@ -68,8 +69,14 @@ class AdminStatsController extends Controller
         $rangeKey = $from->toDateString().':'.($locale ?: 'all');
         $recent = Cache::remember("admin:stats:recent:{$rangeKey}", 300, function () use ($from, $locale) {
             return [
-                'users_new' => DB::table('users')->where('created_at', '>=', $from)->count(),
-                'petitions_new' => DB::table('petitions')->where('created_at', '>=', $from)->count(),
+                'users_new' => DB::table('users')
+                    ->where('created_at', '>=', $from)
+                    ->when($locale, fn ($q) => $q->where('locale', Locale::toFull($locale)))
+                    ->count(),
+                'petitions_new' => DB::table('petitions')
+                    ->where('created_at', '>=', $from)
+                    ->when($locale, fn ($q) => $this->wherePetitionLocale($q, 'petitions.id', $locale))
+                    ->count(),
                 'signatures_new' => DB::table('signatures')
                     ->where('created_at', '>=', $from)
                     ->when($locale, fn ($q) => $q->where('locale', $locale))
@@ -175,6 +182,7 @@ class AdminStatsController extends Controller
                 DB::raw('COUNT(*) as total')
             )
             ->where('p.created_at', '>=', $from)
+            ->when($locale, fn ($q) => $this->wherePetitionLocale($q, 'p.id', $locale))
             ->groupBy('u.email')
             ->orderByDesc('total');
 
@@ -189,6 +197,7 @@ class AdminStatsController extends Controller
         $q = DB::table('petitions')
             ->select('id', 'status', 'created_at')
             ->where('created_at', '>=', $from)
+            ->when($locale, fn ($q) => $this->wherePetitionLocale($q, 'petitions.id', $locale))
             ->orderByDesc('created_at');
 
         return [
@@ -202,11 +211,22 @@ class AdminStatsController extends Controller
         $q = DB::table('users')
             ->where('verified', 1)
             ->where('created_at', '>=', $from)
+            ->when($locale, fn ($q) => $q->where('locale', Locale::toFull($locale)))
             ->select('email');
 
         return [
             ['Verified Emails'],
             $q,
         ];
+    }
+
+    private function wherePetitionLocale($query, string $idColumn, string $locale)
+    {
+        return $query->whereExists(
+            fn ($sub) => $sub->selectRaw('1')
+                ->from('petition_translations as pt')
+                ->whereColumn('pt.petition_id', $idColumn)
+                ->where('pt.locale', $locale)
+        );
     }
 }
