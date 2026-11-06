@@ -122,7 +122,7 @@ class LegacyWordRedirect
             return redirect('/magazine/', 301);
         }
 
-        $segments = array_values(array_filter(explode('/', $request->path()), static fn ($s) => $s !== ''));
+        $segments = array_values(array_filter(explode('/', $request->decodedPath()), static fn ($s) => $s !== ''));
         $first = $segments[0] ?? null;
         if ($first === null) {
             return $next($request);

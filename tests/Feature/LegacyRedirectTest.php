@@ -109,6 +109,13 @@ class LegacyRedirectTest extends TestCase
             ->assertHeader('Location', 'http://localhost/de/user/killer1/2471185');
     }
 
+    public function test_polish_user_word_with_encoded_path_redirects_to_canonical_user(): void
+    {
+        $this->get('/pl/u%C5%BCytkownik/jan/5')
+            ->assertStatus(301)
+            ->assertHeader('Location', 'http://localhost/pl/user/jan/5');
+    }
+
     public function test_canonical_user_passes_through_untouched(): void
     {
         $this->get('/en/user/killer1/2471185')
