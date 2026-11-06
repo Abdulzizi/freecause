@@ -727,6 +727,7 @@ class PetitionController extends Controller
                 'signatures.created_at as signed_at',
             ])
             ->join('signatures', 'signatures.petition_id', '=', 'petitions.id')
+            ->where('petitions.status', 'published')
             ->where(fn ($q) => $q->where('signatures.email', $u->email)->orWhere('signatures.user_id', $u->id))
             ->tap($withTr)
             ->orderByDesc('signatures.created_at');

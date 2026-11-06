@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Petition;
 use App\Models\PetitionTranslation;
+use App\Models\Signature;
 use App\Models\User;
 use App\Support\CacheVersion;
 use Database\Seeders\LanguageSeeder;
@@ -32,5 +33,25 @@ class MyPetitionsTotalTest extends TestCase
         $res->assertOk();
         $this->assertSame(3, $res->viewData('created')->total());
         $this->assertSame(3, Cache::get("my-petitions:total:created:{$user->id}:en:".CacheVersion::get('list')));
+    }
+
+    public function test_signed_tab_hides_petitions_held_as_draft(): void
+    {
+        $this->seed([LanguageSeeder::class, UserLevelSeeder::class]);
+        Cache::flush();
+        $user = User::factory()->create(['verified' => true, 'country' => 'US', 'gender' => 'm']);
+
+        $held = Petition::factory()->create(['status' => 'published']);
+        $kept = Petition::factory()->create(['status' => 'published']);
+        foreach ([$held, $kept] as $p) {
+            PetitionTranslation::create(['petition_id' => $p->id, 'locale' => 'en', 'title' => 't'.$p->id, 'slug' => 's'.$p->id, 'description' => 'd']);
+            Signature::factory()->create(['petition_id' => $p->id, 'user_id' => $user->id, 'email' => $user->email]);
+        }
+        $held->forceFill(['status' => 'draft'])->save();
+
+        $res = $this->actingAs($user)->get('/en/my-petitions?tab=signed');
+
+        $res->assertOk();
+        $this->assertSame([$kept->id], $res->viewData('signed')->pluck('id')->all());
     }
 }
