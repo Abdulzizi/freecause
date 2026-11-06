@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\AdminSystemUserInfoRequest;
 use App\Support\AppLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AdminSystemController extends Controller
 {
@@ -32,6 +33,7 @@ class AdminSystemController extends Controller
         if (! empty($data['new_password'])) {
             $admin->password = Hash::make($data['new_password']);
             $admin->password_changed_at = now();
+            $admin->setRememberToken(Str::random(60));
         }
 
         $admin->email = strtolower(trim($data['email']));
