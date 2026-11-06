@@ -48,6 +48,9 @@
                                     </a>
                                 </li>
                             @endforeach
+                            <li>
+                                <button type="button" data-fc-cookie-settings data-cc="show-preferencesModal" class="text-on-dark text-sm">Cookies</button>
+                            </li>
                         </ul>
                     </nav>
 
