@@ -334,9 +334,7 @@
     @endif
 
     {{-- Ads: native --}}
-    <div class="my-6">
-        <x-ads.slot name="native" />
-    </div>
+    <x-ads.slot name="native" class="my-6" />
 @endsection
 
 @push('head')

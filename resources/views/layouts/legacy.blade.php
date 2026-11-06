@@ -139,7 +139,7 @@
 
     <main id="fc-main">
         @if (\App\Support\Ads::canShow('leaderboard') && ! request()->attributes->has('ads_slot_rendered_leaderboard'))
-            <div class="hidden lg:block text-center my-4"><x-ads.slot name="leaderboard" /></div>
+            <x-ads.slot name="leaderboard" class="hidden lg:block text-center my-4" />
         @endif
 
         @if (session('profile_completion'))

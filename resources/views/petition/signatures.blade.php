@@ -69,9 +69,7 @@
                 </div>
 
             {{-- ad: native, full width --}}
-            <div class="mb-4">
-                <x-ads.slot name="native" />
-            </div>
+            <x-ads.slot name="native" class="mb-4" />
 
             <div class="bg-white shadow-elev-1 rounded-md p-4 sm:p-6 fc-reveal">
 
@@ -89,9 +87,7 @@
                 </div>
 
                 {{-- ad: banner468, tablet+ --}}
-                <div class="mb-4 text-center hidden md:block">
-                    <x-ads.slot name="banner468" />
-                </div>
+                <x-ads.slot name="banner468" class="mb-4 text-center hidden md:block" />
                 @forelse($signatures as $sig)
                     @if ($loop->index > 0 && $loop->index % 4 === 0)
                         <x-ads.infeed />

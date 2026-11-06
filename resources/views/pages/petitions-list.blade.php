@@ -187,15 +187,11 @@
                 @include('partials.pagination', ['paginator' => $petitions])
 
                 {{-- Ads: banner468 (tablet+) --}}
-                <div class="text-center mb-4 hidden md:block">
-                    <x-ads.slot name="banner468" />
-                </div>
+                <x-ads.slot name="banner468" class="text-center mb-4 hidden md:block" />
             </div>
 
             {{-- ad: native, full width --}}
-            <div class="mb-4">
-                <x-ads.slot name="native" />
-            </div>
+            <x-ads.slot name="native" class="mb-4" />
 
         </x-ui.container>
     </section>

@@ -169,7 +169,7 @@ class Ads
     public static function pick(string $placement): ?string
     {
         $pool = (array) config("ads.placements.$placement", []);
-        $pool = array_values(array_filter($pool, fn ($n) => ($c = self::slot($n)) && ! empty($c['key']) && ! request()->attributes->has('ads_slot_rendered_'.$n)));
+        $pool = array_values(array_filter($pool, fn ($n) => self::canShow($n) && ! request()->attributes->has('ads_slot_rendered_'.$n)));
         if ($pool === []) {
             return null;
         }

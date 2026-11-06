@@ -9,7 +9,7 @@
         ? $name
         : \App\Support\Ads::pick('infeed_mobile');
 @endphp
-@if (\App\Support\Ads::enabled() && $rotated && ($cfg = \App\Support\Ads::slot($rotated)) && ! empty($cfg['key']) && \App\Support\Ads::renderOnce($rotated))
+@if ($rotated && \App\Support\Ads::canShow($rotated) && \App\Support\Ads::renderOnce($rotated))
     <div class="fc-ad-infeed lg:hidden text-center" role="complementary" aria-label="Advertisement">
         <x-ads.slot :name="$rotated" claimed class="mx-auto" />
     </div>
