@@ -75,7 +75,7 @@ class TransactionalEmailTemplatesTest extends TestCase
         $this->assertStringNotContainsString('Benvenuto nella nostra comunità', (new WelcomeAccountMail('fr'))->render());
     }
 
-    public function test_legacy_account_with_complete_profile_can_sign_without_language_confirmation(): void
+    public function test_legacy_account_must_confirm_language_before_signing(): void
     {
         $owner = User::factory()->create(['verified' => true]);
         $petition = Petition::factory()->create(['user_id' => $owner->id, 'status' => 'published', 'is_active' => true]);
@@ -90,13 +90,16 @@ class TransactionalEmailTemplatesTest extends TestCase
             'welcome_email_pending' => false,
         ]);
 
-        $this->assertTrue($user->hasCompleteProfile());
+        $this->assertFalse($user->hasCompleteProfile());
 
         $response = $this->actingAs($user)->post('/en/petition/legacy/'.$petition->id.'/sign', [
             'agree1' => 'agree', 'agree2' => 'agree', 'agree3' => 'agree',
         ]);
-        $response->assertSessionHasNoErrors();
-        $this->assertStringNotContainsString('/profile', (string) $response->headers->get('Location'));
+        $response->assertRedirectContains('/en/profile');
+        $this->assertDatabaseMissing('signatures', ['petition_id' => $petition->id, 'user_id' => $user->id]);
+
+        $user->forceFill(['preferred_language_confirmed_at' => now()])->save();
+        $this->assertTrue($user->fresh()->hasCompleteProfile());
     }
 
     public function test_incomplete_legacy_account_cannot_use_sign_confirmation_or_shoutbox(): void
