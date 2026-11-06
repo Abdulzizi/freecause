@@ -7,25 +7,27 @@
     ]);
 @endphp
 
-@section('preheader', 'One click and your FreeCause account is active.')
+@section('preheader', $preheader)
 
-@section('eyebrow', 'Account Verification')
-@section('heading', $greeting ?? 'Welcome to FreeCause')
-@section('title', ($greeting ?? 'Welcome to FreeCause').' · FreeCause')
+@section('eyebrow', $eyebrow)
+@section('heading', $greeting)
+@section('title', $greeting.' · FreeCause')
 
 @section('content')
-    <p style="margin:0 0 16px;">Hello {{ $firstName }},</p>
-    <p style="margin:0 0 16px;">Thank you for joining FreeCause. Please confirm your email address so your account is activated and your signature counts.</p>
-    <p style="margin:0;">Confirming takes a single click — no password required.</p>
+    <p style="margin:0 0 16px;">{{ $hello }}</p>
+    <p style="margin:0 0 16px;">{{ $intro }}</p>
+    <p style="margin:0;">{{ $hint }}</p>
 @endsection
 
-@section('action', $buttonText ?? 'Verify My Account')
+@section('action', $buttonText)
 @section('action_url', $verifyUrl)
 
 @section('note')
-    <strong>Your secure link is valid for 48 hours.</strong><br>
-    If the button above does not work, copy and paste this link into your browser:
+    <strong>{{ $noteExpiry }}</strong><br>
+    {{ $noteLinkHelp }}
     <span style="word-break:break-all;">{{ $verifyUrl }}</span>
     <br><br>
-    Didn't create an account with FreeCause? You can safely ignore this email.
+    {{ $noteIgnore }}
 @endsection
+
+@section('footer', $footer)
