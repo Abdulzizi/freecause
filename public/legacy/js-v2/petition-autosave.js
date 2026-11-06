@@ -21,7 +21,8 @@
 
     var locale = form.getAttribute('data-draft-locale') || 'new';
     var editId = form.getAttribute('data-draft-id') || 'new';
-    var key = 'fc_petition_draft_' + locale + '_' + editId;
+    var userId = form.getAttribute('data-draft-user') || 'guest';
+    var key = 'fc_petition_draft_' + userId + '_' + locale + '_' + editId;
 
     var status = form.querySelector('[data-autosave-status]');
     var statusTimer = null;
@@ -113,9 +114,6 @@
         var fields = collectFields();
         for (var i = 0; i < fields.length; i++) {
             var f = fields[i];
-            if (f.id === 'petition_description') {
-                continue;
-            }
             if (!Object.prototype.hasOwnProperty.call(draft, f.name)) {
                 continue;
             }
