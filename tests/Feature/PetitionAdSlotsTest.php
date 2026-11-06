@@ -144,7 +144,7 @@ class PetitionAdSlotsTest extends TestCase
         $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval'", $csp);
         $this->assertDoesNotMatchRegularExpression('/[\s;]http:[\s;]/', $csp);
         $this->assertStringContainsString('frame-ancestors '.config('app.canonical_url'), $csp);
-        $this->assertStringContainsString((string) config('app.url'), $csp);
+        $this->assertStringNotContainsString((string) config('app.url'), $csp);
     }
 
     public function test_ad_frame_404s_for_unknown_or_keyless_slot(): void

@@ -4,9 +4,9 @@
 // so they can change without a template deploy. Set ADS_ENABLED=false to kill all slots.
 return [
     // master switch -- disables every slot at once.
-    // Default OFF: the site's strict CSP must allow bicea.org (script-src + frame-src)
-    // and the inline atOptions blocks before ads can render; flipping this on without
-    // that would show empty reserved boxes. Enable via admin once CSP is extended.
+    // Default OFF: ads render as framed documents on the dedicated ad origin, which
+    // carries its own CSP; the main site's strict CSP no longer allows the network host.
+    // Enable via admin to start serving the reserved boxes.
     'enabled' => env('ADS_ENABLED', false),
 
     // network script host (Adsterra). Centralized so a domain change is one edit.
