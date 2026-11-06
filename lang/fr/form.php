@@ -13,7 +13,7 @@ return [
     'community_url' => 'URL de la communaute',
     'description' => 'Texte (obligatoire)',
     'goal_signatures' => 'Objectif (obligatoire)',
-    'image' => 'Image (Max 4Mo, JPG/PNG)',
+    'image' => 'Image (Max 8Mo, JPG/PNG)',
     'image_external' => 'Ou fournissez un lien externe:',
     'preview' => 'Apercu',
     'submit' => 'Soumettre',
