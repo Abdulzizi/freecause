@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Petition;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -55,5 +56,12 @@ class CleanOrphanImagesTest extends TestCase
             'petitions/http-banner.jpg', 'petitions/both.jpg', 'petitions/other.jpg',
         ]);
         $disk->assertMissing('petitions/gone.jpg');
+    }
+
+    public function test_cleanup_is_scheduled_daily(): void
+    {
+        $commands = collect(app(Schedule::class)->events())->pluck('command')->implode(' ');
+
+        $this->assertStringContainsString('images:cleanup', $commands);
     }
 }
