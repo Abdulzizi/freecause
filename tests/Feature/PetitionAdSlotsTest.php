@@ -109,7 +109,7 @@ class PetitionAdSlotsTest extends TestCase
         $page = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk();
         $html = $page->getContent();
 
-        $this->assertStringContainsString('src="https://ads.example.net/ads/frame/rectangle?v=2"', $html);
+        $this->assertMatchesRegularExpression('#src="https://ads\.example\.net/ads/frame/rectangle\?v=[0-9a-f]{8}"#', $html);
         $this->assertStringNotContainsString('ads.freecause.com', $html);
 
         $csp = (string) $page->headers->get('Content-Security-Policy');
