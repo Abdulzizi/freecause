@@ -33,14 +33,14 @@ set('writable_dirs', ['bootstrap/cache', 'storage']);
 set('manage_services', true);
 
 host('production')
-    ->set('hostname', getenv('DEPLOY_HOST') ?: '37.60.254.112')
+    ->set('hostname', getenv('DEPLOY_HOST') ?: '')
     ->set('remote_user', getenv('DEPLOY_USER') ?: 'root')
     ->set('deploy_path', getenv('DEPLOY_PATH') ?: '/var/www/freecause')
     ->set('identity_file', getenv('DEPLOY_IDENTITY') ?: '~/.ssh/id_deploy')
     ->set('labels', ['stage' => 'production']);
 
 host('rehearsal')
-    ->set('hostname', getenv('DEPLOY_HOST') ?: '37.60.254.112')
+    ->set('hostname', getenv('DEPLOY_HOST') ?: '')
     ->set('remote_user', getenv('DEPLOY_USER') ?: 'root')
     ->set('deploy_path', getenv('REHEARSAL_PATH') ?: '/var/www/freecause-rehearsal')
     ->set('identity_file', getenv('DEPLOY_IDENTITY') ?: '~/.ssh/id_deploy')

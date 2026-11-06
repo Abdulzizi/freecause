@@ -154,7 +154,7 @@ Access is gated by `permission:` middleware (view/edit/delete per section) plus 
 ## Documentation
 
 - `deploy/README.md` — deploy/rollback runbook, Deployer recipe, shared dirs, Environment setup.
-- `docs/operations.md` — server facts, operational traps (incl. the 900s deploy timeout), parked backlog.
+- `docs/operations.md` (local only, not committed) — server facts, operational traps (incl. the 900s deploy timeout), parked backlog.
 - `docs/design-system.md` — tokens, layers, components, and the `ds-lint` gate rules.
 - `docs/ux-states.md` — public loading/empty/error/success state matrix and a11y gate rules.
 - `docs/performance-edge-cache.md` — edge-cache design and why listings bypass.

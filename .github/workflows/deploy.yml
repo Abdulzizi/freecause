@@ -113,7 +113,7 @@ jobs:
       - name: Report the server PHP version
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           MIN_PHP: '8.3.36'
         run: |
           set -uo pipefail
@@ -129,7 +129,7 @@ jobs:
       - name: Deploy
         if: ${{ github.event_name == 'push' || inputs.action != 'rollback' }}
         env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
           DEPLOY_PATH: /var/www/freecause
           REVISION: ${{ steps.target.outputs.sha }}
@@ -140,7 +140,7 @@ jobs:
       - name: Rollback
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'rollback' }}
         env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
           DEPLOY_PATH: /var/www/freecause
         run: dep -f deploy/deploy.php rollback production --no-interaction
@@ -149,7 +149,7 @@ jobs:
         if: ${{ github.event_name == 'push' || inputs.action != 'rollback' }}
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           EXPECTED: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
@@ -173,7 +173,7 @@ jobs:
       - name: Roll back on failure
         if: ${{ failure() && (github.event_name == 'push' || inputs.action != 'rollback') }}
         env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST || '37.60.254.112' }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'root' }}
           DEPLOY_PATH: /var/www/freecause
         run: dep -f deploy/deploy.php rollback production --no-interaction || true
