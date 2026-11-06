@@ -144,10 +144,36 @@ class TransactionalEmailTemplatesTest extends TestCase
     public function test_provider_preserves_placeholders_and_uses_server_side_authentication(): void
     {
         Settings::set('deepl_api_key', Crypt::encryptString('synthetic-key:fx'));
-        Http::fake(['api-free.deepl.com/*' => Http::response(['translations' => [['text' => '<text>Ciao <keep>:name</keep></text>']]])]);
+        Http::fake(['api-free.deepl.com/*' => Http::response(['translations' => [['text' => '<text>Ciao <keep>__FC_VAR_0__</keep></text>']]])]);
         $result = app(EmailTemplateTranslator::class)->translate(['greeting' => 'Hello :name'], 'en', 'it');
         $this->assertSame('Ciao :name', $result['greeting']);
-        Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'DeepL-Auth-Key synthetic-key:fx') && $request['ignore_tags'] === ['keep'] && $request['target_lang'] === 'IT');
+        Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'DeepL-Auth-Key synthetic-key:fx') && $request['ignore_tags'] === ['keep'] && $request['target_lang'] === 'IT' && $request['text'] === ['<text>Hello <keep>__FC_VAR_0__</keep></text>']);
+    }
+
+    public function test_opaque_markers_keep_count_from_being_interpreted_as_a_verb(): void
+    {
+        Settings::set('deepl_api_key', Crypt::encryptString('synthetic-key:fx'));
+        Http::fake(['*' => Http::response(['translations' => [['text' => '<text><keep>__FC_VAR_0__</keep> nouvelles signatures</text>']]])]);
+        $result = app(EmailTemplateTranslator::class)->translate(['heading' => ':count new signatures'], 'en', 'fr');
+        $this->assertSame(':count nouvelles signatures', $result['heading']);
+        Http::assertSent(fn ($request) => ! str_contains(implode('', $request['text']), ':count'));
+    }
+
+    public function test_repeated_placeholders_can_be_reordered_without_losing_their_identity(): void
+    {
+        Settings::set('deepl_api_key', Crypt::encryptString('synthetic-key:fx'));
+        Http::fake(['*' => Http::response(['translations' => [['text' => '<text><keep>__FC_VAR_1__</keep>: <keep>__FC_VAR_0__</keep> / <keep>__FC_VAR_2__</keep></text>']]])]);
+        $result = app(EmailTemplateTranslator::class)->translate(['heading' => ':count signatures on :title (:count)'], 'en', 'fr');
+        $this->assertSame(':title: :count / :count', $result['heading']);
+    }
+
+    public function test_provider_output_with_a_changed_marker_is_rejected(): void
+    {
+        Settings::set('deepl_api_key', Crypt::encryptString('synthetic-key:fx'));
+        Http::fake(['*' => Http::response(['translations' => [['text' => '<text>Ciao <keep>__FC_VAR_9__</keep></text>']]])]);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('protected placeholder');
+        app(EmailTemplateTranslator::class)->translate(['greeting' => 'Hello :name'], 'en', 'it');
     }
 
     public function test_quota_exhaustion_does_not_overwrite_saved_translations(): void
