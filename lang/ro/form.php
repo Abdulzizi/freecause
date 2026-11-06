@@ -13,7 +13,7 @@ return [
     'community_url' => 'URL comunitate',
     'description' => 'Text (obligatoriu)',
     'goal_signatures' => 'Obiectiv (obligatoriu)',
-    'image' => 'Imagine (Max 4MB, JPG/PNG)',
+    'image' => 'Imagine (Max 8MB, JPG/PNG)',
     'image_external' => 'Sau furnizati un link extern:',
     'preview' => 'Previzualizare',
     'submit' => 'Trimite',
