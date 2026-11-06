@@ -8,6 +8,20 @@ const QUILL_CDN = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/';
 
 export const test = base.extend({
     page: async ({ page }, use) => {
+        // Ordinary workflows start after an explicit essential-only choice.
+        // cookie-consent.spec.js clears this cookie to exercise first-visit consent.
+        const chosenAt = new Date().toISOString();
+        await page.context().addCookies([{
+            name: 'fc_cookie_consent', url: ORIGIN,
+            value: encodeURIComponent(JSON.stringify({
+                categories: ['necessary'], revision: 1,
+                data: null, consentTimestamp: chosenAt, lastConsentTimestamp: chosenAt,
+                consentId: '11111111-1111-4111-8111-111111111111',
+                services: { necessary: [], analytics: [], advertising: [] },
+                languageCode: 'en',
+            })),
+            expires: Math.floor(Date.now() / 1000) + 86400,
+        }]);
         const errors = [];
         await page.route('**/*', (route) =>
             [ORIGIN, 'data:', QUILL_CDN].some((allowed) => route.request().url().startsWith(allowed)) ? route.continue() : route.abort(),

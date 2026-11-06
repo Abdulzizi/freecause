@@ -42,7 +42,7 @@
          style="min-height: {{ $h }}px; max-width: min(100%, {{ $w }}px); margin-inline: auto;">
         @if ($hasKey)
             <iframe
-                src="{{ \App\Support\Ads::frameUrl($name) }}"
+                data-fc-ad-src="{{ \App\Support\Ads::frameUrl($name) }}"
                 width="{{ $w }}" height="{{ $h }}"
                 title="Advertisement"
                 scrolling="no"

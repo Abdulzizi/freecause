@@ -20,8 +20,13 @@ test('guest can sign a petition', async ({ page }) => {
     await page.goto('/en/petition/clean-the-river/2');
     const cta = page.locator('[data-sign-cta]:visible').first();
     if (await cta.count()) {
+        const target = await cta.getAttribute('href');
         await cta.click();
-        await expect(page).toHaveURL(/\/sign\/confirm/);
+        if (target?.startsWith('#')) {
+            await expect(page.locator(target)).toBeInViewport();
+        } else {
+            await expect(page).toHaveURL(/\/sign\/confirm/);
+        }
     }
     const form = page.locator('form.fc-sign-form');
     await form.locator('[name=name]:visible').first().fill('Ada Tester');

@@ -1,0 +1,13 @@
+# First-party cookie preferences
+
+CookieConsent 3.2.1 (MIT) is pinned and self-hosted under `public/vendor/cookieconsent`. No CMP account, subscription, external CDN request or consent-logging service is used. The FreeCause configuration is `public/js/consent.js`; shared first-party bootstrap and styles are included before optional tags in Laravel and the WordPress magazine MU plugin.
+
+The compact non-blocking banner offers accept all, reject optional and granular preferences in all 14 active languages. `fc_cookie_consent` stores the revision, choices and library-generated consent identifier for up to 180 days on the current host and `/` path, shared by the site and magazine. Clearing browser storage, expiry or a future revision can show the banner again. The footer control reopens preferences. Essential login and security cookies remain available.
+
+Analytics and Adsterra default to disabled. Google tag loaders are inert `text/plain` scripts until the Google Analytics service is accepted; Adsterra frame URLs are inert data attributes until its advertising service is accepted. Google Consent Mode starts denied. Google advertising consent remains denied even when Adsterra is accepted. Revoking Analytics disables the measurement IDs and clears matching first-party Google analytics cookies; revoking Adsterra unloads its frames. Existing third-party cookies cannot be erased by this first-party page. Choices do not change authentication or require a page reload. No TCF string is generated or implied.
+
+The magazine plugin gates its existing Google tag on the server, removes Google resource hints, and adds the shared controls without changing editorial content or the separate magazine measurement ID. It leaves WordPress administration, feeds and JSON responses alone.
+
+**This banner is not a Google-certified CMP.** The user chose free first-party controls now and a certified CMP when AdSense is activated. Legacy AdSense loaders remain inert, including magazine snippets, until that future certified-CMP integration is implemented and tested. Do not enable AdSense by treating the Adsterra consent as Google advertising consent. InMobi Essentials was investigated, but custom non-IAB vendors such as Adsterra require Premium; no InMobi script or trial-dependent feature is installed.
+
+New optional tags must be declared and gated before deployment. Review the revision when vendors or purposes materially change. Tests should verify network requests before consent, rejection, granular consent, persistence and revocation; unrelated browser and visual tests use an explicit essential-only choice so their existing workflows are not obscured by the first-visit banner.
