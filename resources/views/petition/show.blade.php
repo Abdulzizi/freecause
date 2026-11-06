@@ -9,16 +9,7 @@
     $petitionImg = $petition->coverUrl();
     $coverVariants = \App\Support\ImageVariants::urls($petition->cover_image);
     $youtubeId = \App\Models\Petition::youtubeId($petition->youtube_url);
-    $hasCover = false;
-    foreach ([$petition->cover_image, $petition->image_url] as $index => $coverPath) {
-        if (!$coverPath) {
-            continue;
-        }
-        if (str_starts_with($coverPath, 'http://') || str_starts_with($coverPath, 'https://') || \Illuminate\Support\Facades\Storage::disk('public')->exists($index === 0 ? $coverPath : 'petitions/'.$coverPath)) {
-            $hasCover = true;
-            break;
-        }
-    }
+    $hasCover = $petition->hasCover();
     $petitionCredit = $petition->image_credit ?? '';
 
     $btnSignNow = __('show.btn_sign_now');

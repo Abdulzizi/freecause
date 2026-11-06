@@ -77,6 +77,20 @@ class Petition extends Model
         return preg_match($pattern, $value, $matches) ? $matches[1] : null;
     }
 
+    public function hasCover(): bool
+    {
+        foreach ([$this->cover_image, $this->image_url] as $index => $coverPath) {
+            if (! $coverPath) {
+                continue;
+            }
+            if (str_starts_with($coverPath, 'http://') || str_starts_with($coverPath, 'https://') || Storage::disk('public')->exists($index === 0 ? $coverPath : 'petitions/'.$coverPath)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function coverUrl(): string
     {
         if ($this->cover_image) {
