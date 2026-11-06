@@ -1023,7 +1023,7 @@ class PetitionController extends Controller
         // Stream ALL signatures as CSV (chunked cursor) so the export is
         // memory-safe on large petitions.
         $showEmail = admin_can('signatures', 'view');
-        $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'confirmed', 'signed_at'];
+        $header = $showEmail ? ['#', 'name', 'email', 'comment', 'locale', 'confirmed', 'signed_at'] : ['#', 'name', 'comment', 'locale', 'signed_at'];
 
         return response()->streamDownload(function () use ($petition, $showEmail, $header) {
             $out = fopen('php://output', 'w');
@@ -1037,6 +1037,7 @@ class PetitionController extends Controller
             Signature::query()
                 ->where('petition_id', $petition->id)
                 ->where('is_spam', false)
+                ->when(! $showEmail, fn ($q) => $q->where('confirmed', true))
                 ->chunkById(1000, function ($rows) use ($out, &$num, $showEmail) {
                     foreach ($rows as $sig) {
                         $num++;
@@ -1046,7 +1047,9 @@ class PetitionController extends Controller
                         }
                         $row[] = trim($sig->text ?? '');
                         $row[] = $sig->locale ?? '';
-                        $row[] = $sig->confirmed ? '1' : '0';
+                        if ($showEmail) {
+                            $row[] = $sig->confirmed ? '1' : '0';
+                        }
                         $row[] = optional($sig->created_at)->format('Y-m-d H:i:s');
                         fputcsv($out, array_map('csv_safe', $row));
                     }

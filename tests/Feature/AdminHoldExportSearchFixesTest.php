@@ -72,7 +72,7 @@ class AdminHoldExportSearchFixesTest extends TestCase
 
         $csv = $this->actingAs($owner)->get("/en/petition/my-petition/{$p->id}/download/csv")->streamedContent();
         $this->assertSame(1100, preg_match_all('/^\d+,n\d+,/m', $csv));
-        $this->assertStringContainsString(',unconfirmed,', $csv);
+        $this->assertStringNotContainsString(',unconfirmed,', $csv);
         $this->assertStringNotContainsString('spammer', $csv);
 
         $txt = $this->actingAs($owner)->get("/en/petition/my-petition/{$p->id}/download/txt")->streamedContent();

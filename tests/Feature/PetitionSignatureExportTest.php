@@ -67,8 +67,31 @@ class PetitionSignatureExportTest extends TestCase
 
         $body = $response->streamedContent();
         // Owners export signatures without signer emails (privacy); admins keep them.
-        $this->assertStringContainsString('#,name,comment,locale,confirmed,signed_at', $body);
+        $this->assertStringContainsString('#,name,comment,locale,signed_at', $body);
         $this->assertStringNotContainsString('name,email,comment', $body);
+    }
+
+    public function test_owner_csv_excludes_unconfirmed_signatures_but_admin_csv_keeps_them(): void
+    {
+        Signature::factory()->create([
+            'petition_id' => $this->petition->id,
+            'name' => 'Confirmed Carol',
+            'confirmed' => true,
+        ]);
+        Signature::factory()->create([
+            'petition_id' => $this->petition->id,
+            'name' => 'Unconfirmed Uma',
+            'confirmed' => false,
+        ]);
+
+        $ownerBody = $this->actingAs($this->owner)->get($this->url('csv'))->streamedContent();
+        $this->assertStringContainsString('Confirmed Carol', $ownerBody);
+        $this->assertStringNotContainsString('Unconfirmed Uma', $ownerBody);
+
+        $admin = $this->adminWith('signatures', 'view');
+        $adminBody = $this->actingAs($admin, 'admin')->get($this->url('csv'))->streamedContent();
+        $this->assertStringContainsString('Confirmed Carol', $adminBody);
+        $this->assertStringContainsString('Unconfirmed Uma', $adminBody);
     }
 
     public function test_csv_export_is_not_capped_at_100_rows(): void
