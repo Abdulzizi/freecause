@@ -43,9 +43,12 @@ scan "arbitrary colour utility" '(bg|text|border|ring|outline|fill|stroke|from|v
 
 scan "dead bootstrap responsive class" 'class="[^"]*(^|[[:space:]])(d|p|m|w|h|text|align-items|justify-content|flex|order|gap|border|rounded|float|overflow)-(sm|md|xl)-[a-z0-9]' "${VIEWS[@]}"
 
-a11y_hits=$(python3 scripts/ds-lint-a11y.py resources/views 2>/dev/null || true)
+a11y_status=0
+a11y_hits=$(python3 scripts/ds-lint-a11y.py resources/views) || a11y_status=$?
 if [ -n "$a11y_hits" ]; then
     report "accessibility (alt / labels / aria-hidden)" "$a11y_hits" "$(printf '%s\n' "$a11y_hits" | grep -c . || true)"
+elif [ "$a11y_status" -ne 0 ]; then
+    report "a11y script crashed" "ds-lint-a11y.py exited with status $a11y_status" 1
 fi
 
 missing_ui=$(grep '^| `x-ui\.' docs/design-system.md | cut -d'|' -f2 | grep -oE 'x-ui\.[a-z-]+' | sed 's/^x-ui\.//' | while read -r n; do [ -f "resources/views/components/ui/$n.blade.php" ] || echo "x-ui.$n"; done)
