@@ -46,18 +46,33 @@ class Ads
             ? self::bareOrigin((string) $v)
             : '';
 
-        if ($origin === '' || self::sameHostAsSite($origin)) {
+        if ($origin === '' || self::isSiteHost($origin)) {
             $origin = self::bareOrigin((string) config('ads.frame_origin', ''));
+        }
+
+        if (self::isSiteHost($origin)) {
+            return '';
         }
 
         return $origin;
     }
 
-    private static function sameHostAsSite(string $origin): bool
+    private static function isSiteHost(string $origin): bool
     {
         $host = strtolower((string) parse_url($origin, PHP_URL_HOST));
 
-        return $host !== '' && $host === strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
+        if ($host === '') {
+            return false;
+        }
+
+        $parentHost = strtolower((string) parse_url(self::parentOrigin(), PHP_URL_HOST));
+
+        return $host === $parentHost || in_array($host, [
+            'freecause.com',
+            'www.freecause.com',
+            'client.freecause.com',
+            'www.client.freecause.com',
+        ], true);
     }
 
     // exact scheme://host origin, or '' for anything else.

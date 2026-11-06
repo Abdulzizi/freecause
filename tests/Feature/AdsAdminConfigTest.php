@@ -105,6 +105,29 @@ class AdsAdminConfigTest extends TestCase
         $this->assertStringContainsString('allow-same-origin', $frame[0]);
     }
 
+    public function test_site_host_frame_origin_is_rejected_from_config_and_aliases(): void
+    {
+        config([
+            'app.canonical_url' => 'https://www.freecause.com',
+            'ads.enabled' => true,
+        ]);
+
+        config(['ads.frame_origin' => 'https://www.freecause.com']);
+        $this->assertSame('', Ads::frameOrigin());
+
+        config(['ads.frame_origin' => 'https://ads.freecause.com']);
+        Settings::set('ads_frame_origin', 'https://freecause.com', 'global');
+        $this->assertSame('https://ads.freecause.com', Ads::frameOrigin());
+
+        config(['ads.frame_origin' => 'https://freecause.com']);
+        Settings::set('ads_frame_origin', '', 'global');
+        $this->assertSame('', Ads::frameOrigin());
+
+        [$petition, $slug] = $this->publishedPetition();
+        $html = $this->get("/en/petition/{$slug}/{$petition->id}")->assertOk()->getContent();
+        $this->assertStringNotContainsString('/ads/frame/', $html);
+    }
+
     public function test_system_admin_can_save_ad_keys_and_they_render_on_the_petition_page(): void
     {
         config(['ads.enabled' => true]);
