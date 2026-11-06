@@ -110,6 +110,13 @@ class SitemapController extends Controller
                 ->join('category_translations as ct', 'ct.category_id', '=', 'c.id')
                 ->where('c.is_active', 1)
                 ->whereIn('ct.locale', active_locales())
+                ->whereExists(fn ($q) => $q->from('petitions as p')
+                    ->join('petition_translations as pt', 'pt.petition_id', '=', 'p.id')
+                    ->whereColumn('p.category_id', 'c.id')
+                    ->whereColumn('pt.locale', 'ct.locale')
+                    ->where('p.status', 'published')
+                    ->where('p.is_active', 1)
+                    ->whereNotNull('pt.title'))
                 ->select('c.id', 'ct.locale', 'ct.slug', 'c.updated_at', 'ct.updated_at as tr_updated_at')
                 ->get();
 

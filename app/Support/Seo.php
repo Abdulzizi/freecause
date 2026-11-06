@@ -102,7 +102,13 @@ class Seo
                 $links[$tr->locale] = canonical_url($tr->locale.'/'.rawurlencode($tr->slug));
             }
         } elseif (request()->routeIs('petitions.byCategory') && isset($data['category'])) {
-            foreach (CategoryTranslation::where('category_id', $data['category']->id)->whereIn('locale', $active)->get(['locale', 'slug']) as $tr) {
+            foreach (CategoryTranslation::where('category_id', $data['category']->id)->whereIn('locale', $active)->whereExists(fn ($q) => $q->from('petitions as p')
+                ->join('petition_translations as pt', 'pt.petition_id', '=', 'p.id')
+                ->where('p.category_id', $data['category']->id)
+                ->whereColumn('pt.locale', 'category_translations.locale')
+                ->where('p.status', 'published')
+                ->where('p.is_active', 1)
+                ->whereNotNull('pt.title'))->get(['locale', 'slug']) as $tr) {
                 $links[$tr->locale] = canonical_url($tr->locale.'/petitions/category-'.rawurlencode($tr->slug).'-'.$data['category']->id);
             }
         } elseif (request()->routeIs('home', 'petitions.index', 'contacts')) {

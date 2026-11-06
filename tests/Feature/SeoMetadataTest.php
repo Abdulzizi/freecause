@@ -90,7 +90,7 @@ class SeoMetadataTest extends TestCase
         $this->petition('de', ['category_id' => $category->id]);
         $r = $this->get('/de/petitions/category-natur-'.$category->id)->assertOk();
         $r->assertSee('hreflang="de" href="https://www.freecause.com/de/petitions/category-natur-'.$category->id.'"', false)
-            ->assertSee('hreflang="en" href="https://www.freecause.com/en/petitions/category-nature-'.$category->id.'"', false)
+            ->assertDontSee('hreflang="en"', false)
             ->assertDontSee('hreflang="fr"', false);
         $page = Page::create();
         foreach (['en' => 'about', 'de' => 'uber-uns'] as $locale => $slug) {

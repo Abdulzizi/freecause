@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\CategoryTranslation;
 use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Models\Petition;
@@ -101,6 +103,21 @@ class SitemapTest extends TestCase
         $this->assertStringContainsString('hreflang="x-default"', $content);
         $this->assertStringNotContainsString('p-draft', $content);
         $this->assertStringNotContainsString('p-inactive', $content);
+    }
+
+    public function test_category_sitemap_lists_only_locales_with_petitions(): void
+    {
+        $category = Category::factory()->create(['is_active' => true]);
+        foreach (['en' => 'nature', 'de' => 'natur'] as $locale => $slug) {
+            CategoryTranslation::create(['category_id' => $category->id, 'locale' => $locale, 'name' => ucfirst($slug), 'slug' => $slug]);
+        }
+        $petition = Petition::factory()->create(['status' => 'published', 'is_active' => true, 'category_id' => $category->id]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'de', 'title' => 'Titel', 'slug' => 'titel', 'description' => '<p>Text</p>']);
+
+        $content = $this->get('/sitemap-categories.xml')->assertOk()->getContent();
+
+        $this->assertStringContainsString('<loc>'.canonical_url('de/petitions/category-natur-'.$category->id).'</loc>', $content);
+        $this->assertStringNotContainsString('category-nature-', $content);
     }
 
     public function test_petition_sitemap_falls_back_to_first_active_locale_without_default_translation(): void
