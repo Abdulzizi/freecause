@@ -15,6 +15,8 @@ Schedule::command('backup:monitor')->dailyAt('06:00');
 Schedule::command('cache:warm')->hourly();
 Schedule::command('petition:send-digest')->dailyAt('09:00');
 Schedule::command('emails:petition-new-signatures')->hourly();
+Schedule::call(fn () => DB::table('aggregate_traffic')->where('hour', '<', now('UTC')->subDays(90))->delete())
+    ->name('aggregate-traffic:prune')->daily();
 
 Schedule::call(fn () => app(DashboardController::class)->warm())->name('dashboard:warm')->withoutOverlapping(30)->everyFiveMinutes();
 Schedule::command('queue:monitor', [
