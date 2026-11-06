@@ -18,7 +18,7 @@ Turn them back on only after the volume fixes below. Settings are cached 300 s; 
 
 1. **Digest**: one mail per verified user with `notify_product` and no unsubscribe, every day. Grows with the user base.
 2. **New signatures**: one mail per petition owner per hour that has new signatures (up to 24 a day per owner).
-3. **Verification on guest signing** (`PetitionSigning.php`): one mail per new email. Throttle is only 10/min per IP, so rotating IPs or a viral petition can send thousands.
+3. **Verification on guest signing** (`PetitionSigning.php`): one mail per new email. Throttle is 10/min per IP, plus a daily cap (`verify_guest_daily_cap`, default 200); over the cap the signature stays pending and no mail is queued.
 4. **Milestones**: one per milestone per petition. Low.
 5. **Contact form**: one per message, deferred while the quota is tripped. Low.
 6. **Password reset, resend, register, admin verify**: throttled (5-6/min) or manual. Low.
@@ -29,7 +29,7 @@ Turn them back on only after the volume fixes below. Settings are cached 300 s; 
 - Digest: weekly instead of daily.
 - New signatures: at most one mail per petition per day.
 - Queue alert: at most one per hour.
-- Verification on guest sign: a daily cap, not only a per-IP throttle.
+- Verification on guest sign: daily cap done (`verify_guest_daily_cap`).
 - Check the real recipient count first (`petition:send-digest --dry-run`) and the plan limit in the SMTP2GO dashboard.
 
 New queued mailables use the `GatedByMailQuota` trait; set `$transactional = true` only when losing the mail loses data.
