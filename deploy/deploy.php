@@ -136,9 +136,8 @@ task('db:snapshot', function () {
         return;
     }
 
-    invoke('artisan:down');
-
     if (! test("[ -f {$envPath} ]")) {
+        invoke('artisan:down');
         writeln('<comment>db:snapshot: no shared/.env yet (first deploy?); skipping.</comment>');
 
         return;
@@ -153,6 +152,7 @@ task('db:snapshot', function () {
 
     $conn = $get('DB_CONNECTION');
     if ($conn !== '' && $conn !== 'mysql' && $conn !== 'mariadb') {
+        invoke('artisan:down');
         writeln("<comment>db:snapshot: DB_CONNECTION={$conn} is not MySQL; skipping mysqldump.</comment>");
 
         return;
@@ -165,6 +165,7 @@ task('db:snapshot', function () {
     $pass = $get('DB_PASSWORD');
 
     if ($db === '' || $user === '') {
+        invoke('artisan:down');
         writeln('<comment>db:snapshot: DB_DATABASE/DB_USERNAME missing; skipping.</comment>');
 
         return;
@@ -188,6 +189,21 @@ task('db:snapshot', function () {
     // printed it verbatim). pipefail so a mysqldump error cannot be masked by
     // gzip's exit 0. single-transaction keeps it non-locking on InnoDB.
     $portOpt = $port !== '' ? "--port={$port}" : '';
+    // An InnoDB single-transaction snapshot does not need a quiet application.
+    // Keep non-transactional databases offline, but avoid a multi-minute 503
+    // while copying a fully transactional database before an additive migration.
+    $nonTransactional = trim(run(sprintf(
+        'MYSQL_PWD=%%dbpass%% mysql -N -B -h %s %s -u %s %s -e %s',
+        escapeshellarg($host), $portOpt, escapeshellarg($user), escapeshellarg($db),
+        escapeshellarg("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND ENGINE IS NOT NULL AND ENGINE <> 'InnoDB'")
+    ), secrets: ['dbpass' => escapeshellarg($pass)]));
+    if (! ctype_digit($nonTransactional)) {
+        throw new \RuntimeException('db:snapshot: cannot verify transactional storage engines.');
+    }
+    $onlineSnapshot = (int) $nonTransactional === 0;
+    if (! $onlineSnapshot) {
+        invoke('artisan:down');
+    }
     run(sprintf(
         'set -o pipefail; MYSQL_PWD=%%dbpass%% mysqldump --single-transaction --quick --no-tablespaces -h %s %s -u %s %s | gzip > %s',
         escapeshellarg($host),
@@ -201,6 +217,11 @@ task('db:snapshot', function () {
     run("ls -1t {$dir}/pre-migrate-*.sql.gz 2>/dev/null | tail -n +8 | xargs -r rm -f");
 
     writeln("<info>db:snapshot: wrote {$file}</info>");
+    if ($onlineSnapshot) {
+        // Quiesce only for schema changes and the release switch, after the
+        // consistent recovery point has finished copying successfully.
+        invoke('artisan:down');
+    }
 });
 
 before('artisan:migrate', 'db:snapshot');
