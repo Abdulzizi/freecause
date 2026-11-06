@@ -131,4 +131,28 @@ class AdminLogsSoftDeleteTest extends TestCase
         $this->assertStringNotContainsString('other ip', $content);
         $this->assertStringNotContainsString('not a prefix', $content);
     }
+
+    public function test_prune_and_bulk_delete_keep_admin_audit_rows(): void
+    {
+        $audit = Log::create(['level' => 'info', 'context' => 'admin.audit', 'title' => 'a', 'content' => 'c']);
+        $other = Log::create(['level' => 'info', 'context' => 'e2e', 'title' => 'o', 'content' => 'c']);
+        Log::query()->update(['created_at' => now()->subDays(10)]);
+
+        $this->actingAs($this->admin(), 'admin')
+            ->post(route('admin.logs.prune'), ['days' => 1])
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted($audit);
+        $this->assertSoftDeleted($other);
+
+        $other->restore();
+
+        $this->actingAs($this->admin(), 'admin')
+            ->post(route('admin.logs.bulkDelete'), ['ids' => [$audit->id, $other->id]])
+            ->assertOk()
+            ->assertJson(['ok' => true, 'deleted' => 1]);
+
+        $this->assertNotSoftDeleted($audit);
+        $this->assertSoftDeleted($other);
+    }
 }

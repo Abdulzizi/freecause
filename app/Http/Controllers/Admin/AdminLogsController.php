@@ -114,7 +114,9 @@ class AdminLogsController extends Controller
     public function prune(Request $request)
     {
         $days = max(1, (int) $request->input('days', 90));
-        $deleted = Log::where('created_at', '<', now()->subDays($days))->delete();
+        $deleted = Log::where('created_at', '<', now()->subDays($days))
+            ->where(fn ($q) => $q->whereNull('context')->orWhere('context', '!=', 'admin.audit'))
+            ->delete();
 
         return back()->with('success', "Deleted {$deleted} log entries older than {$days} days (restorable for 5 minutes).");
     }
@@ -135,7 +137,9 @@ class AdminLogsController extends Controller
     {
         $ids = $request->validated()['ids'];
 
-        $deleted = Log::whereIn('id', $ids)->delete();
+        $deleted = Log::whereIn('id', $ids)
+            ->where(fn ($q) => $q->whereNull('context')->orWhere('context', '!=', 'admin.audit'))
+            ->delete();
 
         return response()->json(['ok' => true, 'deleted' => $deleted, 'restorable' => 1]);
     }
