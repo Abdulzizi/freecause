@@ -13,6 +13,7 @@ use App\Support\Spam;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -218,6 +219,19 @@ class PetitionSigning
         }
 
         if ($mailUser) {
+            $capKey = 'mail:verify-guest:'.today()->toDateString();
+            Cache::add($capKey, 0, now()->endOfDay());
+            $sentToday = Cache::increment($capKey);
+            $cap = (int) Settings::get('verify_guest_daily_cap', 200, 'global');
+
+            if ($sentToday > $cap) {
+                if ($sentToday === $cap + 1) {
+                    AppLog::error('Guest verification mail daily cap reached', 'cap '.$cap, 'petition.sign');
+                }
+
+                return $response;
+            }
+
             try {
                 Mail::to($mailUser->email)->queue(new VerifyAccountMail($mailUser, $locale));
             } catch (\Throwable $e) {
