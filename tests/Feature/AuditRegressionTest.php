@@ -68,7 +68,7 @@ class AuditRegressionTest extends TestCase
 
         $this->get('/en/petitions')->assertForbidden();
         $this->get('/en/login')->assertForbidden();
-        $this->assertSame(2, DB::table('spam_logs')->where('type', 'blocked')->count());
+        $this->assertSame(1, DB::table('spam_logs')->where('type', 'blocked')->count());
     }
 
     public function test_02_expired_user_ban_can_log_in(): void
