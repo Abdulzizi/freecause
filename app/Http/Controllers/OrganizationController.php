@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\OrganizationImages;
 use App\Services\OrganizationLifecycle;
 use App\Support\Countries;
+use App\Support\ImageVariants;
 use App\Support\Locale;
 use Database\Seeders\OrganizationCauseSeeder;
 use Illuminate\Http\Request;
@@ -61,7 +62,7 @@ class OrganizationController extends Controller
                 return $org;
             }, 3);
         } catch (\Throwable $e) {
-            Storage::disk('public')->delete(array_values($paths));
+            $this->deleteImages(array_values($paths));
             throw $e;
         }
 
@@ -135,10 +136,10 @@ class OrganizationController extends Controller
                 return $org;
             }, 3);
         } catch (\Throwable $e) {
-            Storage::disk('public')->delete(array_values($paths));
+            $this->deleteImages(array_values($paths));
             throw $e;
         }
-        Storage::disk('public')->delete($oldPaths);
+        $this->deleteImages($oldPaths);
 
         return redirect()->to(lroute('organizations.manage', ['slug' => $org->slug]))->with('success', __('organizations.saved'));
     }
@@ -216,10 +217,18 @@ class OrganizationController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            Storage::disk('public')->delete(array_values($paths));
+            $this->deleteImages(array_values($paths));
             throw $e;
         }
 
         return $paths;
+    }
+
+    private function deleteImages(array $paths): void
+    {
+        foreach ($paths as $path) {
+            ImageVariants::purge($path);
+        }
+        Storage::disk('public')->delete($paths);
     }
 }
