@@ -6,13 +6,18 @@
 @section('canonical', $profileUrl)
 @section('og_url', $profileUrl)
 @push('preload')
-@if($org->cover_path)<link rel="preload" href="{{ Storage::disk('public')->url($org->cover_path) }}" as="image" fetchpriority="high">@endif
+@php
+    $coverVariants = \App\Support\ImageVariants::urls($org->cover_path);
+    $coverSrcset = $coverVariants ? $coverVariants['400'].' 400w, '.$coverVariants['800'].' 800w, '.Storage::disk('public')->url($org->cover_path).' 1500w' : null;
+    $coverSizes = '(max-width: 1024px) calc(100vw - 24px), 1000px';
+@endphp
+@if($org->cover_path)<link rel="preload" href="{{ Storage::disk('public')->url($org->cover_path) }}" as="image" fetchpriority="high" @if($coverSrcset) imagesrcset="{{ $coverSrcset }}" imagesizes="{{ $coverSizes }}" @endif>@endif
 <link rel="preload" href="{{ asset('fonts/Inter/InterVariable-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
 @endpush
 @section('content')
 <article class="container py-6 max-w-5xl" data-organization-share>
     @if($org->cover_path)
-        <img src="{{ Storage::disk('public')->url($org->cover_path) }}" alt="{{ __('organizations.cover') }}" width="1500" height="500" fetchpriority="high" class="w-full aspect-[3/1] object-cover rounded-lg">
+        <img src="{{ Storage::disk('public')->url($org->cover_path) }}" alt="{{ __('organizations.cover') }}" @if($coverSrcset) srcset="{{ $coverSrcset }}" sizes="{{ $coverSizes }}" @endif width="1500" height="500" fetchpriority="high" class="w-full aspect-[3/1] object-cover rounded-lg">
     @else
         <div class="w-full aspect-[3/1] rounded-lg {{ ['bg-surface-muted','bg-brand-soft','bg-surface-muted'][hexdec(substr(hash('sha256', $org->slug),0,2)) % 3] }}" aria-hidden="true"></div>
     @endif
