@@ -1671,6 +1671,43 @@ class PetitionTest extends TestCase
         ];
     }
 
+    public function test_edit_syncs_identical_copied_translations_only(): void
+    {
+        $petition = Petition::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'status' => 'published',
+            'is_active' => true,
+        ]);
+        foreach (['en' => 'Original', 'it' => 'Original', 'fr' => 'Titre different', 'es' => 'ORIGINAL'] as $locale => $title) {
+            PetitionTranslation::create([
+                'petition_id' => $petition->id,
+                'locale' => $locale,
+                'title' => $title.' Petition Title',
+                'slug' => $locale.'-original',
+                'description' => $locale === 'fr' ? 'Description differente.' : 'Original petition description.',
+            ]);
+        }
+
+        $this->actingAs($this->user)->post("/en/petition/en-original/{$petition->id}/edit", [
+            'title' => 'Updated Petition Title',
+            'description' => '<p>This updated description contains enough meaningful content.</p>',
+            'category_id' => $this->category->id,
+        ])->assertRedirect("/en/petition/updated-petition-title/{$petition->id}");
+
+        $it = PetitionTranslation::where('petition_id', $petition->id)->where('locale', 'it')->first();
+        $this->assertSame('Updated Petition Title', $it->title);
+        $this->assertSame('<p>This updated description contains enough meaningful content.</p>', $it->description);
+        $this->assertSame('it-original', $it->slug);
+
+        $fr = PetitionTranslation::where('petition_id', $petition->id)->where('locale', 'fr')->first();
+        $this->assertSame('Titre different Petition Title', $fr->title);
+        $this->assertSame('Description differente.', $fr->description);
+
+        $es = PetitionTranslation::where('petition_id', $petition->id)->where('locale', 'es')->first();
+        $this->assertSame('ORIGINAL Petition Title', $es->title);
+    }
+
     public function test_edit_updates_slug_but_preserves_goal(): void
     {
         $petition = Petition::factory()->create([
