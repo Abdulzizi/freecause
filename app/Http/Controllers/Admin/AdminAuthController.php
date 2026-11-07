@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminLoginRequest;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,11 @@ class AdminAuthController extends Controller
 
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
-        $user = User::where($field, $login)->first();
+        $user = User::where($field, $login)
+            ->when($field === 'name', fn ($q) => $q->whereHas('level', fn ($l) => $l->where(fn ($g) => $g
+                ->where('is_system', true)
+                ->orWhereIn('id', Permission::select('level_id')))))
+            ->first();
 
         if (! $user) {
             return back()->withErrors(['login' => 'Invalid credentials.'])->withInput();

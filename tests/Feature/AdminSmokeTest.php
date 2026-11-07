@@ -64,6 +64,21 @@ class AdminSmokeTest extends TestCase
         $this->assertAuthenticatedAs($this->admin, 'admin');
     }
 
+    public function test_admin_login_by_username_skips_same_named_public_account(): void
+    {
+        $public = User::factory()->create(['name' => 'mario', 'level_id' => null, 'verified' => true]);
+        $admin = User::factory()->create([
+            'name' => 'mario',
+            'level_id' => UserLevel::where('name', 'admin')->value('id'),
+            'verified' => true,
+        ]);
+        $this->assertLessThan($admin->id, $public->id);
+
+        $this->post('/admin/login', ['login' => 'mario', 'password' => 'password'])
+            ->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($admin, 'admin');
+    }
+
     public function test_admin_login_regenerates_session_id_and_csrf_token(): void
     {
         $this->withSession([]);
