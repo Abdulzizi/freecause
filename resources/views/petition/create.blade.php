@@ -272,11 +272,11 @@
 
                                         @if($oldImageUrl)
                                             <div class="mt-4">
-                                                <img src="{{ $oldImageUrl }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $oldTitle }}" onerror="this.style.display='none'">
+                                                <img src="{{ $isEdit && $oldImageUrl === $petition->image_url ? $petition->coverUrl() : $oldImageUrl }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $oldTitle }}">
                                             </div>
                                         @elseif($isEdit && ($petition->cover_image || $petition->image_url))
                                             <div class="mt-4">
-                                                <img src="{{ $petition->coverUrl() }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $tr->title }}" onerror="this.style.display='none'">
+                                                <img src="{{ $petition->coverUrl() }}" class="rounded-md border-border shadow-elev-1 max-h-[220px]" alt="{{ $tr->title }}">
                                                 <div class="block min-h-6 pl-6 mb-0.5 mt-2">
                                                     <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="remove-petition-image">
                                                     <label class="form-check-label" for="remove-petition-image">{{ __('create.remove_current_image') }}</label>

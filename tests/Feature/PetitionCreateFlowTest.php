@@ -170,6 +170,20 @@ class PetitionCreateFlowTest extends TestCase
         $this->assertDatabaseHas('petition_translations', ['petition_id' => $petition->id, 'slug' => 'save-the-old-town-now']);
     }
 
+    public function test_edit_form_previews_legacy_bare_image_name_from_storage_url(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('petitions/abc123.jpg', 'image');
+        $petition = Petition::factory()->create(['user_id' => $this->user->id, 'category_id' => $this->category->id, 'status' => 'published', 'is_active' => true, 'image_url' => 'abc123.jpg', 'cover_image' => null]);
+        PetitionTranslation::create(['petition_id' => $petition->id, 'locale' => 'en', 'title' => 'Legacy Cover Petition', 'slug' => 'legacy-cover-petition', 'description' => 'Original description.']);
+
+        $response = $this->actingAs($this->user)->get("/en/petition/legacy-cover-petition/{$petition->id}/edit");
+
+        $response->assertOk()
+            ->assertSee(Storage::disk('public')->url('petitions/abc123.jpg'), false)
+            ->assertDontSee('src="abc123.jpg"', false);
+    }
+
     public function test_text_only_update_keeps_cover(): void
     {
         Storage::fake('public');
