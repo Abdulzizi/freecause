@@ -10,7 +10,7 @@
 <details class="relative group">
     <summary class="list-none cursor-pointer flex items-center gap-1.5 px-2 py-1 min-h-11 rounded-full border border-border bg-white hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
         @if ($current?->flag)
-            <img class="block w-5 h-5 rounded-full" src="{{ asset($current->flag) }}" alt="">
+            <img class="block w-5 h-5 rounded-full" fetchpriority="low" decoding="async" src="{{ asset($current->flag) }}" alt="">
         @endif
         <span class="text-xs font-medium text-ink">{{ strtoupper($current->code ?? '') }}</span>
         <x-lucide-chevron-down class="size-3 text-muted" aria-hidden="true" />
