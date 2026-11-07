@@ -367,6 +367,7 @@ Route::prefix('{locale}')
             return redirect()->route('petition.thanks', ['locale' => $locale, 'slug' => $slug, 'id' => $id], 301)
                 ->with('petition_mode', $mode)->with('petition_verified', $verified);
         })->where('status', '([0-9]+|created)?')->name('petition.thanks.legacy');
+        Route::get('/privacy-policy-12', fn (string $locale) => redirect('/'.$locale.'/privacy-policy', 301));
 
         require __DIR__.'/reports.php';
         require __DIR__.'/preferences.php';
