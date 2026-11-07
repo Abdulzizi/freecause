@@ -57,7 +57,7 @@
         </div>
         <aside class="space-y-6 min-w-0">
             @if($org->country === 'IT' && $org->tax_code)
-                <section class="border border-border rounded-lg p-4"><h2 class="text-xl font-bold mb-3">{{ __('organizations.five_title') }}</h2><p>{{ __('organizations.five_help') }}</p><p class="font-mono text-2xl font-bold mt-3 break-all">{{ $org->tax_code }}</p><button type="button" class="underline mt-3" data-copy-text="{{ $org->tax_code }}">{{ __('organizations.copy_tax') }}</button></section>
+                <section class="border border-border rounded-lg p-4"><h2 class="text-xl font-bold mb-3">{{ __('organizations.five_title') }}</h2><p>{{ __('organizations.five_help') }}</p><p class="mt-3"><code class="font-mono text-2xl font-bold break-all text-ink">{{ $org->tax_code }}</code></p><button type="button" class="underline mt-3" data-copy-text="{{ $org->tax_code }}">{{ __('organizations.copy_tax') }}</button></section>
             @endif
             @if($org->website)<a class="block underline break-words" href="{{ $org->website }}" target="_blank" rel="noopener noreferrer nofollow">{{ __('organizations.website') }}</a>@endif
             @if($org->email_public)<a class="block underline break-all" href="mailto:{{ $org->email_public }}">{{ $org->email_public }}</a>@endif
