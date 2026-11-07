@@ -5,7 +5,7 @@
 @section('og_image', $org->cover_path || $org->logo_path ? Storage::disk('public')->url($org->cover_path ?: $org->logo_path) : asset('legacy/images-v2/freecause_logo_icon_clear.png'))
 @section('canonical', $profileUrl)
 @section('og_url', $profileUrl)
-@push('head')
+@push('preload')
 <link rel="preload" href="{{ asset('fonts/Inter/InterVariable-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
 @endpush
 @section('content')
