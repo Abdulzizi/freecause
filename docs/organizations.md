@@ -51,10 +51,19 @@ One PR per implementation phase. This draft PR begins phase 1 with the specifica
 
 Real applications remain closed until owner-approved terms/privacy text and the required transactional email readiness are in place. Development/test terms and sample organizations stay local/test-only. No fake acceptance timestamps, fictional production profiles, public disabled “coming soon” controls or premature phase-4 schema.
 
-## Decision required before dependent phase-1 schema work
+## Approved owner-account deletion rule
 
 **Owner account deletion:** the current account deletion flow removes the WordPress identity before deleting the personal User row. The new sole-owner foreign key must not accidentally block the second step or cascade-delete an organization.
 
-Proposed default, awaiting owner decision: preserve the organization and its history, suspend it, clear the deleted owner's reference and require administrator reassignment/review before restoring public access. This requires a nullable owner reference for that exceptional state. Alternative: require explicit reassignment before account deletion, with validation before any WordPress cleanup. Do not implement either silently.
+Approved by the project owner on 2026-11-07: preserve the organization and its history, suspend it, clear the deleted owner's reference and require administrator reassignment/review before restoring public access. Use a nullable owner reference for this exceptional state; never cascade-delete the organization.
+
+Implementation requirements for phase 1:
+
+- Suspend every organization owned by the departing user, including pending/rejected organizations, and remove public profile eligibility immediately.
+- Perform organization suspension, owner-reference clearing, event recording and local account deletion together in a database transaction after the existing WordPress cleanup succeeds. The current bulk User deletion does not fire model observers; an observer alone is insufficient.
+- Retain organization identity, first verification, founding recognition, campaigns, historical consents and original terms/declaration evidence. Do not transfer personal petition authorship or introduce new deletion of historical records.
+- Keep a dedicated event with the former owner ID and a system reason code; do not retain deleted-account contact details in that event.
+- Permit only an authorized administrator to assign an existing replacement user. Reassignment alone must not silently make a suspended organization public: restoration requires the normal admin review action.
+- Cover multiple owned organizations, rollback on failure, the public 404 state, reassignment and preservation of existing personal-petition permissions in phase-1 tests.
 
 Other documented assumptions: preserve the first verification timestamp for identity locking; restore previously verified suspended organizations only after admin review; profile edits remain moderated, with explicit preapproval for donation destinations. No database change is needed for future follower delivery in this MVP.
