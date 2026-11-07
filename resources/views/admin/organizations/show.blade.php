@@ -20,7 +20,7 @@
 @if(admin_can('organizations', 'edit'))
     <x-blatui.card class="p-6 mb-6">
         <h2 class="font-semibold text-xl mb-4">{{ __('organizations.status') }}</h2>
-        @php($actions = match($org->status) { 'pending'=>['verify','reject'], 'rejected'=>['verify'], 'verified'=>['suspend'], 'suspended'=>['restore'], default=>[] })
+        @php($actions = $org->owner_user_id ? match($org->status) { 'pending'=>['verify','reject'], 'rejected'=>['verify'], 'verified'=>['suspend'], 'suspended'=>['restore'], default=>[] } : [])
         @foreach($actions as $action)
             <form method="post" action="{{ route('admin.organizations.action', ['organization'=>$org->id, 'action'=>$action]) }}" class="border-t border-border pt-4 mt-4 space-y-3" data-turbo="false">
                 @csrf
