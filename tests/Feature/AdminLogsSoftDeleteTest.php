@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserLevel;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\UserLevelSeeder;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -154,5 +155,20 @@ class AdminLogsSoftDeleteTest extends TestCase
 
         $this->assertNotSoftDeleted($audit);
         $this->assertSoftDeleted($other);
+    }
+
+    public function test_scheduled_prune_keeps_admin_audit_rows(): void
+    {
+        $audit = Log::create(['level' => 'info', 'context' => 'admin.audit', 'title' => 'a', 'content' => 'c']);
+        $other = Log::create(['level' => 'info', 'context' => 'system.logs', 'title' => 'o', 'content' => 'c']);
+        $bare = Log::create(['level' => 'info', 'context' => null, 'title' => 'n', 'content' => 'c']);
+        Log::whereIn('id', [$audit->id, $other->id, $bare->id])->update(['created_at' => now()->subDays(40)]);
+
+        $event = collect(app(Schedule::class)->events())->first(fn ($e) => $e->description === 'logs:prune');
+        $event->run(app());
+
+        $this->assertNotSoftDeleted($audit);
+        $this->assertSoftDeleted($other);
+        $this->assertSoftDeleted($bare);
     }
 }

@@ -25,7 +25,9 @@ Schedule::command('queue:monitor', [
 ])->everyFiveMinutes();
 
 Schedule::call(function () {
-    $deleted = Log::where('created_at', '<', now()->subDays(30))->delete();
+    $deleted = Log::where('created_at', '<', now()->subDays(30))
+        ->where(fn ($q) => $q->whereNull('context')->orWhere('context', '!=', 'admin.audit'))
+        ->delete();
 
     if ($deleted > 0) {
         AppLog::info(
@@ -34,7 +36,7 @@ Schedule::call(function () {
             'system.logs'
         );
     }
-})->daily();
+})->name('logs:prune')->daily();
 
 Schedule::call(function () {
     $finalized = Log::onlyTrashed()->where('deleted_at', '<', now()->subDays(7))->forceDelete();
