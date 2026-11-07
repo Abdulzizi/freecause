@@ -58,7 +58,7 @@ return [
     'donation_approved' => 'Link per donare approvato',
     'donate' => 'Sostieni questa organizzazione',
     'donation_disclosure' => 'Uscirai da FreeCause. Le donazioni sono gestite dal sito esterno; FreeCause non raccoglie pagamenti.',
-    'five_title' => 'Sostieni con il tuo 5×1000',
+    'five_title' => 'Destina il tuo 5×1000',
     'five_help' => 'Per la dichiarazione dei redditi italiana: usa il codice fiscale dell’organizzazione.',
     'copy_tax' => 'Copia codice fiscale',
     'share' => 'Condividi profilo',
