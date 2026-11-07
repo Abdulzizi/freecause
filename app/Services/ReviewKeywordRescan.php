@@ -219,6 +219,12 @@ class ReviewKeywordRescan
     {
         $matches = [];
 
+        foreach ([(string) $petition->target, (string) $petition->tags] as $field) {
+            foreach (ReviewKeywords::matches($field) as $match) {
+                $matches[$match] = $match;
+            }
+        }
+
         foreach ($petition->translations as $translation) {
             $fields = [
                 (string) $translation->title,
