@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Cause;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\ImageVariants;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,6 +35,7 @@ class OrganizationE2eSeeder extends Seeder
         imagewebp($image, null, 85);
         $cover = ob_get_clean();
         Storage::disk('public')->put('organizations/e2e-cover.webp', $cover);
+        ImageVariants::ensure(Storage::disk('public')->path('organizations/e2e-cover.webp'));
         $image = imagecreatetruecolor(400, 400);
         imagefill($image, 0, 0, imagecolorallocate($image, 180, 200, 190));
         ob_start();
