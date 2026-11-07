@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ImageVariants;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -32,9 +33,14 @@ class OrganizationImages
                 throw new \RuntimeException('Image write failed');
             }
 
+            if ($kind === 'cover' && ImageVariants::ensure(Storage::disk('public')->path($path)) === null) {
+                throw new \RuntimeException('Responsive cover write failed');
+            }
+
             return [$kind.'_path' => $path];
         } catch (\Throwable $e) {
             if (isset($path)) {
+                ImageVariants::purge($path);
                 Storage::disk('public')->delete($path);
             }
             throw ValidationException::withMessages([$kind => __('organizations.invalid_image')]);
