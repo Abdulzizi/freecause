@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    @vite('resources/css/app.css')
     @stack('preload')
     @include('partials.consent')
 
@@ -103,7 +104,7 @@
         <script type="text/plain" data-fc-future-adsense data-src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client') }}" crossorigin="anonymous"></script>
     @endif
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/js/app.js')
 
     @stack('head')
 
