@@ -225,6 +225,17 @@ class AdminReviewKeywordRescanTest extends TestCase
         $this->assertSame([], $this->reviewLogsFor($clean->id));
     }
 
+    public function test_the_rescan_holds_a_published_petition_whose_keyword_is_only_in_the_target(): void
+    {
+        $petition = $this->createPetition('en', 'Keep the local library open');
+        $petition->update(['target' => 'Stop betting advertising']);
+
+        $result = (new ReviewKeywordRescan)->run();
+
+        $this->assertSame(1, $result['held']);
+        $this->assertSame('draft', $petition->fresh()->status);
+    }
+
     public function test_the_rescan_payload_is_truncated_and_keeps_the_petition_id(): void
     {
         $terms = [];

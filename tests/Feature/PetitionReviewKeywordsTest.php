@@ -171,6 +171,39 @@ class PetitionReviewKeywordsTest extends TestCase
         $this->assertDatabaseCount('petitions', 0);
     }
 
+    public function test_hard_block_word_only_in_target_is_rejected_on_create(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload([
+            'target' => 'Buy viagra cheap pills',
+        ]))->assertSessionHasErrors(['title' => __('create.err_suspicious')]);
+
+        $this->assertDatabaseCount('petitions', 0);
+    }
+
+    public function test_review_keyword_only_in_tags_stays_unpublished_and_is_logged(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload([
+            'tags' => 'casino, betting',
+        ]))->assertRedirect();
+
+        $this->assertDatabaseHas('petitions', ['status' => 'draft']);
+        $this->assertDatabaseHas('spam_logs', ['type' => 'petition.review']);
+    }
+
+    public function test_hard_block_word_only_in_target_is_rejected_on_update(): void
+    {
+        $this->actingAs($this->user)->post('/en/create-petition', $this->payload())->assertRedirect();
+
+        $petition = Petition::latest('id')->firstOrFail();
+        $slug = $petition->translations()->where('locale', 'en')->value('slug');
+
+        $this->actingAs($this->user)->post("/en/petition/{$slug}/{$petition->id}/edit", $this->payload([
+            'target' => 'Buy viagra cheap pills',
+        ]))->assertSessionHasErrors(['title' => __('create.err_suspicious')]);
+
+        $this->assertDatabaseHas('petitions', ['id' => $petition->id, 'target' => null]);
+    }
+
     public function test_hard_block_word_with_review_word_is_rejected_on_update(): void
     {
         $this->actingAs($this->user)->post('/en/create-petition', $this->payload([

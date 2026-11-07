@@ -493,7 +493,12 @@ class PetitionController extends Controller
     public function store(PetitionRequest $request, string $locale)
     {
         $data = $request->validated();
-        $petitionText = ($data['title'] ?? '').' '.strip_tags($data['description'] ?? '');
+        $petitionText = implode(' ', [
+            $data['title'] ?? '',
+            strip_tags($data['description'] ?? ''),
+            $data['target'] ?? '',
+            $data['tags'] ?? '',
+        ]);
         $reviewMatches = ReviewKeywords::matches($petitionText);
 
         if (Spam::isSpam($petitionText, Spam::reviewOwned())) {
@@ -806,9 +811,15 @@ class PetitionController extends Controller
         $tr = $trOrRedirect;
 
         $data = $request->validated();
-        $reviewMatches = ReviewKeywords::matches($data['title'].' '.strip_tags($data['description']));
+        $petitionText = implode(' ', [
+            $data['title'],
+            strip_tags($data['description']),
+            $data['target'] ?? '',
+            $data['tags'] ?? '',
+        ]);
+        $reviewMatches = ReviewKeywords::matches($petitionText);
 
-        if (Spam::isSpam($data['title'].' '.strip_tags($data['description']), Spam::reviewOwned())) {
+        if (Spam::isSpam($petitionText, Spam::reviewOwned())) {
             Spam::log('petition.update', json_encode(['petition_id' => $petition->id, 'title' => $data['title']]));
 
             return back()->withErrors(['title' => __('create.err_suspicious')])->withInput();
