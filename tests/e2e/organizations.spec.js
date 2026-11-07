@@ -18,7 +18,9 @@ for (const width of [375, 1280]) {
             if (slug === 'images') {
                 const cover = page.getByAltText('Cover image');
                 await expect(cover).toBeVisible();
-                expect(await cover.evaluate((img) => [img.naturalWidth, img.naturalHeight])).toEqual([1500, 500]);
+                await expect(cover).toHaveAttribute('width', '1500');
+                await expect(cover).toHaveAttribute('height', '500');
+                expect(await cover.evaluate((img) => img.currentSrc)).toMatch(width === 375 ? /_400w\.webp$/ : /e2e-cover\.webp$/);
             }
         });
     }
