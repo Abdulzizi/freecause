@@ -35,7 +35,7 @@ class SitemapTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
-        $response->assertHeader('Cache-Control', 'max-age=300, public, s-maxage=86400, stale-while-revalidate=3600');
+        $response->assertHeader('Cache-Control', 'max-age=300, public, s-maxage=3600, stale-while-revalidate=3600');
         $this->assertCount(0, $response->headers->getCookies());
         $response->assertSee('<sitemapindex', false);
     }
