@@ -870,9 +870,17 @@ class PetitionController extends Controller
                 if ($data['title'] !== $tr->title) {
                     $tr->slug = $this->makeUniqueSlug($data['title'], $tr->locale, $tr->id);
                 }
+                $oldTitle = $tr->title;
+                $oldDescription = $tr->description;
                 $tr->title = $data['title'];
                 $tr->description = sanitizePetitionHtml($data['description']);
                 $tr->save();
+
+                PetitionTranslation::where('petition_id', $petition->id)
+                    ->where('id', '!=', $tr->id)
+                    ->get()
+                    ->filter(fn ($copy) => $copy->title === $oldTitle && $copy->description === $oldDescription)
+                    ->each(fn ($copy) => $copy->update(['title' => $tr->title, 'description' => $tr->description]));
 
                 if ($heldForReview) {
                     Spam::log('petition.review', json_encode([
