@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
         hidden.value = quill.root.innerHTML;
     }
 
-    quill.on('text-change', syncHidden);
+    quill.on('text-change', function () {
+        syncHidden();
+        hidden.dispatchEvent(new Event('input', { bubbles: true }));
+    });
     syncHidden();
 
     var form = editorEl.closest('form');
