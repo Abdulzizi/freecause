@@ -99,3 +99,16 @@ for (const state of ['pending', 'rejected', 'suspended']) {
         expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
     });
 }
+
+
+test('public profile mobile menu and language controls work without legacy widgets', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto('/en/org/e2e-organization-images');
+    await page.locator('[data-sheet-open="mobile-menu"]:visible').first().click();
+    await expect(page.locator('#mobile-menu')).toBeVisible();
+    await expect(page.locator('#mobile-menu').getByRole('link', { name: 'For organizations' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#mobile-menu')).not.toBeVisible();
+    await page.locator('nav details:visible summary').first().click();
+    await expect(page.locator('nav details[open]')).toBeVisible();
+});
