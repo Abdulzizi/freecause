@@ -6,6 +6,7 @@
 @section('canonical', $profileUrl)
 @section('og_url', $profileUrl)
 @push('preload')
+@if($org->cover_path)<link rel="preload" href="{{ Storage::disk('public')->url($org->cover_path) }}" as="image" fetchpriority="high">@endif
 <link rel="preload" href="{{ asset('fonts/Inter/InterVariable-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
 @endpush
 @section('content')
