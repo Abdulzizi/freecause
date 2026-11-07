@@ -10,6 +10,7 @@ use App\Models\UserLevel;
 use App\Services\OrganizationImages;
 use App\Services\OrganizationLifecycle;
 use App\Services\WordPressUserDeletionService;
+use App\Support\ImageVariants;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\LanguageSeeder;
 use Database\Seeders\OrganizationCauseSeeder;
@@ -279,8 +280,15 @@ class OrganizationFoundationTest extends TestCase
         $this->assertSame([1500, 500], array_slice(getimagesize(Storage::disk('public')->path($org->cover_path)), 0, 2));
         $this->assertSame([400, 400], array_slice(getimagesize(Storage::disk('public')->path($org->logo_path)), 0, 2));
         $old = $org->cover_path;
+        $variants = ImageVariants::relativeVariantPaths($old);
+        foreach ($variants as $variant) {
+            Storage::disk('public')->assertExists($variant);
+        }
         $this->post('/en/org/'.$org->slug.'/manage/profile', $this->payload(['remove_cover' => 1]))->assertSessionHasNoErrors();
         Storage::disk('public')->assertMissing($old);
+        foreach ($variants as $variant) {
+            Storage::disk('public')->assertMissing($variant);
+        }
         $this->assertNull($org->fresh()->cover_path);
     }
 
